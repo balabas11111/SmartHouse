@@ -60,7 +60,8 @@ libraries\TimeTrigger\LedB.cpp.o: \
  D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\variants\nodemcu/pins_arduino.h \
  D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\variants\nodemcu/../generic/common.h \
  D:\projects\!!!SmartHouse\librarys\TimeTrigger\LedB.h \
- D:\projects\!!!SmartHouse\librarys\TimeTrigger\AbstractEvent.h
+ D:\projects\!!!SmartHouse\librarys\TimeTrigger\AbstractEvent.h \
+ D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\cores\esp8266/FunctionalInterrupt.h
 
 D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\cores\esp8266/Arduino.h:
 
@@ -183,3 +184,5 @@ D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\va
 D:\projects\!!!SmartHouse\librarys\TimeTrigger\LedB.h:
 
 D:\projects\!!!SmartHouse\librarys\TimeTrigger\AbstractEvent.h:
+
+D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\cores\esp8266/FunctionalInterrupt.h:

@@ -1,4 +1,4 @@
-20:09:12 **** Incremental Build of configuration Release for project MQTT_Switch_ON_OFF ****
+00:10:00 **** Incremental Build of configuration Release for project MQTT_Switch_ON_OFF ****
 "D:\\projects\\sloeber\\arduinoPlugin\\tools\\make\\make" all 
 'Do all objcopy commands'
 "D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/esptool/0.4.12/esptool.exe" -eo "D:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/bootloaders/eboot/eboot.elf" -bo "D:/projects/!!!SmartHouse/workspace/MQTT_Switch_ON_OFF/Release/MQTT_Switch_ON_OFF.bin" -bm dio -bf 40 -bz 4M -bs .text -bp 4096 -ec -eo "D:/projects/!!!SmartHouse/workspace/MQTT_Switch_ON_OFF/Release/MQTT_Switch_ON_OFF.elf" -bs .irom0.text -bs .text -bs .data -bs .rodata -bc -ec
@@ -10,18 +10,18 @@
 D:/projects/!!!SmartHouse/workspace/MQTT_Switch_ON_OFF/Release/MQTT_Switch_ON_OFF.elf  :
 section                                                                                                                                                                                                                        size         addr
 .data                                                                                                                                                                                                                          1384   1073643520
-.rodata                                                                                                                                                                                                                        6776   1073644912
-.bss                                                                                                                                                                                                                          33080   1073651688
-.irom0.text                                                                                                                                                                                                                  292624   1075843088
+.rodata                                                                                                                                                                                                                        7032   1073644912
+.bss                                                                                                                                                                                                                          33192   1073651944
+.irom0.text                                                                                                                                                                                                                  294736   1075843088
 .text                                                                                                                                                                                                                         27897   1074790400
-.debug_frame                                                                                                                                                                                                                  64768            0
-.debug_info                                                                                                                                                                                                                 1389876            0
-.debug_abbrev                                                                                                                                                                                                                153298            0
-.debug_loc                                                                                                                                                                                                                   480653            0
-.debug_aranges                                                                                                                                                                                                                20056            0
-.debug_ranges                                                                                                                                                                                                                 49784            0
-.debug_line                                                                                                                                                                                                                  411059            0
-.debug_str                                                                                                                                                                                                                   258148            0
+.debug_frame                                                                                                                                                                                                                  66192            0
+.debug_info                                                                                                                                                                                                                 1441485            0
+.debug_abbrev                                                                                                                                                                                                                158678            0
+.debug_loc                                                                                                                                                                                                                   490449            0
+.debug_aranges                                                                                                                                                                                                                20504            0
+.debug_ranges                                                                                                                                                                                                                 51360            0
+.debug_line                                                                                                                                                                                                                  421164            0
+.debug_str                                                                                                                                                                                                                   259809            0
 .comment                                                                                                                                                                                                                       7238            0
 .xtensa.info                                                                                                                                                                                                                     56            0
 .xt.lit._ZN13AbstractEventC2ERKS_                                                                                                                                                                                                 0            0
@@ -38,14 +38,9 @@ section                                                                         
 .xt.prop._ZN13AbstractEventD2Ev                                                                                                                                                                                                  36            0
 .xt.prop._ZNSt17_Function_handlerIF6String13AbstractEventEPS2_E9_M_invokeERKSt9_Any_dataS1_                                                                                                                                      36            0
 .xt.prop._ZN14EspSettingsBoxD2Ev                                                                                                                                                                                                 36            0
-.xt.lit._ZN13AbstractEventC2EOS_                                                                                                                                                                                                  0            0
-.xt.lit._ZNSt17_Function_handlerIFv13AbstractEventESt8functionIF6StringS0_EEE9_M_invokeERKSt9_Any_dataS0_                                                                                                                         0            0
-.xt.lit._ZNSt14_Function_base13_Base_managerISt8functionIF6String13AbstractEventEEE10_M_managerERSt9_Any_dataRKS7_St18_Manager_operation                                                                                          0            0
-.xt.prop._ZN13AbstractEventC2EOS_                                                                                                                                                                                                36            0
-.xt.prop._ZNSt17_Function_handlerIFv13AbstractEventESt8functionIF6StringS0_EEE9_M_invokeERKSt9_Any_dataS0_                                                                                                                       48            0
 .xt.prop._ZNSt8functionIF6String13AbstractEventEEC2ERKS3_                                                                                                                                                                        36            0
-.xt.prop._ZNSt14_Function_base13_Base_managerISt8functionIF6String13AbstractEventEEE10_M_managerERSt9_Any_dataRKS7_St18_Manager_operation                                                                                        84            0
-.xt.prop._ZSt4swapISt9_Any_dataEvRT_S2_                                                                                                                                                                                          36            0
+.xt.lit._ZN13AbstractEventC2EOS_                                                                                                                                                                                                  0            0
+.xt.prop._ZN13AbstractEventC2EOS_                                                                                                                                                                                                36            0
 .xt.lit._ZN2fs4File9readBytesEPcj                                                                                                                                                                                                 0            0
 .xt.lit._ZN11ArduinoJson9Internals8Encoding10escapeCharEc                                                                                                                                                                         8            0
 .xt.lit._ZN11ArduinoJson9JsonArray7invalidEv                                                                                                                                                                                      8            0
@@ -338,11 +333,11 @@ section                                                                         
 .xt.prop._ZTVSt19_Sp_counted_deleterIP14SPIFFSFileImplNSt12__shared_ptrIS0_LN9__gnu_cxx12_Lock_policyE0EE8_DeleterISaIS0_EEES7_LS4_0EE                                                                                           12            0
 .xt.prop._ZTVSt19_Sp_counted_deleterIP13SPIFFSDirImplNSt12__shared_ptrIS0_LN9__gnu_cxx12_Lock_policyE0EE8_DeleterISaIS0_EEES7_LS4_0EE                                                                                            12            0
 .xt.prop._ZNSt8functionIFvvEE4swapERS1_                                                                                                                                                                                          36            0
-Total                                                                                                                                                                                                                       3206977
+Total                                                                                                                                                                                                                       3291288
 
 
 'Finished building target: MQTT_Switch_ON_OFF'
 ' '
 
-20:09:14 Build Finished (took 2s.146ms)
+00:10:02 Build Finished (took 1s.938ms)
 

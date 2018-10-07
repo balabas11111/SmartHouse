@@ -10,6 +10,8 @@
 #include <ESP8266WebServer.h>
 #include "LedB.h"
 #include "ButtonB.h"
+#include "AnalogSensor.h"
+#include "Pir.h"
 
 #define FIRMVARE_VERSION "b@l@bas-soft SENSORZ v0.0.5"
 //Robot Dyn//vem  // 12E
@@ -63,18 +65,27 @@ void setupServerUrlsFunction(ESP8266WebServer server){};
 ButtonB button_1("Switch1",D7_PIN,processEvent,false);
 ButtonB button_2("Switch2",D6_PIN,processEvent,false);
 
-LedB Switch_1(D5_PIN,button_1.getPressed());
-LedB Switch_2(D8_PIN,button_2.getPressed());
+LedB Switch_1("Lamp1",D5_PIN,button_1.getPressed(),processEvent);
+LedB Switch_2("Lamp1",D8_PIN,button_2.getPressed(),processEvent);
+AnalogSensor ldrSensor("lightLevSens",processEvent,100);
+//Pir pir("IrDetector",D3_PIN,processEvent,true);
 
 String processEvent(AbstractEvent event){
 	//PIN_SC:01:001:onOffEvent:Button1
 	//BUILTIN_LED
 	/*
 	 * test Urls
-		http://192.168.0.178/runCommand?command=PIN_SC:14:1:dispatchedByHtml:Switch1
-		http://192.168.0.178/runCommand?command=PIN_SC:14:0:dispatchedByHtml:Switch1
-		http://192.168.0.178/runCommand?command=PIN_SC:15:1:dispatchedByHtml:Switch1
-		http://192.168.0.178/runCommand?command=PIN_SC:15:0:dispatchedByHtml:Switch1
+		http://192.168.0.178/runCommand?command=PIN_SC:14:1:Switch1:dispatchedByHtml
+		http://192.168.0.178/runCommand?command=PIN_SC:14:0:Switch1:dispatchedByHtml
+		http://192.168.0.178/runCommand?command=PIN_SC:15:1:Switch1:dispatchedByHtml
+		http://192.168.0.178/runCommand?command=PIN_SC:15:0:Switch1:dispatchedByHtml
+		http://192.168.0.178/runCommand?command=PIN_SC:15:0:Switch1:dispatchedByHtml
+
+		http://192.168.0.178/runCommand?command=GET_ANALOG:17:0:lightLevSens:extCommand
+		http://192.168.0.178/runCommand?command=GET_PIR_STATE:0:0:IrDetector:extCommand
+		http://192.168.0.178/runCommand?command=PIN_GET_STATE:14:0:IrDetector:extCommand
+		http://192.168.0.178/runCommand?command=GET_PIR_STATE:15:0:IrDetector:extCommand
+
 	*/
 
 	Serial.println("ProcessCommand "+event.getEventText());
@@ -83,14 +94,33 @@ String processEvent(AbstractEvent event){
 		return "InvalidEvent(event="+event.print()+")";
 	}
 
-	if(event.isEventOfKind(PIN_STATE_CHANGE_PREFFIX)){
+	if(event.isEventOfKind(COMMAND_PREFFIX_ANALOG_STATECHANGED)
+			|| event.isEventOfKind(COMMAND_PREFFIX_ANALOG_STATE)
+			|| event.isEventOfKind(PIN_CURRENT_STATE)
+			|| event.isEventOfKind(COMMAND_PIR_STATE)){
+
+		sendEventToTopic(event);
+
+		return "Ok";
+	}
+
+	if(event.isEventOfKind(COMMAND_GET_PIR_STATE)){
+		/*boolean result=pir.processEvent(event);
+		return (result)?"Ok":"NotFound";
+		*/
+	}
+
+	if(event.isEventOfKind(COMMAND_GET_ANALOG_DATA)){
+		boolean result=ldrSensor.processEvent(event);
+		return (result)?"Ok":"NotFound";
+	}
+
+	if(event.isEventOfKind(PIN_STATE_CHANGE_PREFFIX) || event.isEventOfKind(PIN_GET_STATE)){
 		if(Switch_1.processEvent(event)){
-			sendEventToTopic(event);
 			return "Ok";
 		}
 
 		if(Switch_2.processEvent(event)){
-			sendEventToTopic(event);
 			return "Ok";
 		}
 	}
@@ -146,13 +176,12 @@ void loop() {
 
   button_1.loop();
   button_2.loop();
+  ldrSensor.loop();
+  //pir.loop();
 
   server.handleClient();
 }
 
-void processInterrupt(){
-	Serial.println("gotInterrupt");
-}
 
 void sendData() {
 	static int counter = 0;

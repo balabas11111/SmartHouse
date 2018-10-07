@@ -164,8 +164,10 @@ sloeber.ino.cpp.o: ..\sloeber.ino.cpp \
  D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\libraries\ESP8266WebServer\src/detail/RequestHandler.h \
  D:\projects\!!!SmartHouse\librarys\TimeTrigger/LedB.h \
  D:\projects\!!!SmartHouse\librarys\TimeTrigger/AbstractEvent.h \
- D:\projects\!!!SmartHouse\librarys\TimeTrigger/ButtonB.h \
  D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\cores\esp8266/FunctionalInterrupt.h \
+ D:\projects\!!!SmartHouse\librarys\TimeTrigger/ButtonB.h \
+ D:\projects\!!!SmartHouse\librarys\TimeTrigger/AnalogSensor.h \
+ D:\projects\!!!SmartHouse\librarys\TimeTrigger/Pir.h \
  ..\MQTT_Switch_ON_OFF.ino
 
 D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\cores\esp8266/Arduino.h:
@@ -498,8 +500,12 @@ D:\projects\!!!SmartHouse\librarys\TimeTrigger/LedB.h:
 
 D:\projects\!!!SmartHouse\librarys\TimeTrigger/AbstractEvent.h:
 
+D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\cores\esp8266/FunctionalInterrupt.h:
+
 D:\projects\!!!SmartHouse\librarys\TimeTrigger/ButtonB.h:
 
-D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\cores\esp8266/FunctionalInterrupt.h:
+D:\projects\!!!SmartHouse\librarys\TimeTrigger/AnalogSensor.h:
+
+D:\projects\!!!SmartHouse\librarys\TimeTrigger/Pir.h:
 
 ..\MQTT_Switch_ON_OFF.ino:

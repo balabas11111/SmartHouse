@@ -14,15 +14,23 @@ const int defaultDelay=100;
 		_pin=pin;
 		turnOff();
 	}
-	LedB::LedB(uint8_t pin,uint8_t state){
+	LedB::LedB(String _name,uint8_t pin,uint8_t state,std::function<String(AbstractEvent)> _externalFunctionEvent){
 		_pin=pin;
 		pinMode(_pin, OUTPUT);
 		digitalWrite(_pin,state);
+
+		name=_name;
+		externalFunctionEvent=_externalFunctionEvent;
 
 		if(state==HIGH){
 			turnedOn=true;
 		}
 	}
+
+	String LedB::getName(){
+		return name;
+	}
+
 	void LedB::init(){
 		 pinMode(_pin, OUTPUT);
 	}
@@ -31,12 +39,16 @@ const int defaultDelay=100;
 		turnedOn=true;
 
 		Serial.println("Pin "+String(getPin())+" changed State to HIGH");
+
+		sendCurrentState();
 	}
 	void LedB::turnOff(){
 		digitalWrite(_pin,LOW);
 		turnedOn=false;
 
 		Serial.println("Pin "+String(getPin())+" changed State to LOW");
+
+		sendCurrentState();
 	}
 	void LedB::changeState(){
 		if(turnedOn){
@@ -76,9 +88,15 @@ const int defaultDelay=100;
 	}
 
 	boolean LedB::processEvent(AbstractEvent event){
+
 		if(getPin()==event.getPin()){
-			changeState(event.getIntCommand());
-			return true;
+			if(event.isEventOfKind(PIN_STATE_CHANGE_PREFFIX)){
+				changeState(event.getIntCommand());
+				return true;
+			}
+			if(event.isEventOfKind(PIN_GET_STATE)){
+				sendCurrentState();
+			}
 		}
 
 		return false;
@@ -86,6 +104,11 @@ const int defaultDelay=100;
 
 	boolean LedB::isDispatcherOfEvent(AbstractEvent event){
 		return false;
+	}
+
+	void LedB::sendCurrentState(){
+		String com=(turnedOn)?"ON":"OFF";
+		externalFunctionEvent(AbstractEvent(PIN_CURRENT_STATE,_pin,turnedOn,com,name));
 	}
 
 

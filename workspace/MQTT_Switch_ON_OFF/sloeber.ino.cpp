@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2018-10-07 20:08:07
+//This file has been generated on 2018-10-07 23:43:26
 
 #include "Arduino.h"
 #include <Arduino.h>
@@ -13,6 +13,8 @@
 #include <ESP8266WebServer.h>
 #include "LedB.h"
 #include "ButtonB.h"
+#include "AnalogSensor.h"
+#include "Pir.h"
 
 void clearDisplay();
 void displayLineFunction(String message,int row,int column);
@@ -23,7 +25,6 @@ String processEvent(AbstractEvent event);
 void sendEventToTopic(AbstractEvent event);
 void setup() ;
 void loop() ;
-void processInterrupt();
 void sendData() ;
 boolean publishToTopic(const char *topic, String payload);
 void callback(char* topic, uint8_t* payload, unsigned int length) ;

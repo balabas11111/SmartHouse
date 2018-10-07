@@ -9,6 +9,7 @@
 #define LIBRARIES_TIMETRIGGER_BUTTONB_H_
 
 #define COMMAND_PREFFIX_BUTTON_STATECHANGED "PIN_STATECHANGED"
+#define COMMAND_PREFFIX_BUTTON_GET_STATE "PIN_STATECHANGED"
 
 #include "Arduino.h"
 #include "AbstractEvent.h"
@@ -40,7 +41,7 @@ private:
 	boolean actionFlagOff;
 	boolean resetActionFlagAfterExecution;
 	boolean setActionOnlyIfChangedState;
-	std::function<void(AbstractEvent)> externalFunctionEvent;
+	std::function<String(AbstractEvent)> externalFunctionEvent;
 
 	void init(String name,uint8_t pin,uint8_t _pinMode,std::function<String(AbstractEvent)> funcEvent,int _buttonMode,boolean _resetActionFlagAfterExecution,boolean _setActionOnlyIfChangedState);
 	void setPressed(boolean pressed);

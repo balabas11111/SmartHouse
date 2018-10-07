@@ -157,7 +157,7 @@ String ButtonB::handleInternalFunction(){
 }
 
 AbstractEvent ButtonB::constructEvent(uint8_t state){
-	return AbstractEvent(COMMAND_PREFFIX_BUTTON_STATECHANGED,_pin,state,_name,_name);
+	return AbstractEvent(COMMAND_PREFFIX_BUTTON_STATECHANGED,_pin,state,"StateChanged",_name);
 }
 
 

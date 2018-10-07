@@ -1,7 +1,7 @@
 Automatically\ import\ libraries=true
-FbStatus=873
+FbStatus=884
 FsStatus=45
-FuStatus=800
+FuStatus=811
 JANTJE.TEMPLATE_USE_DEFAULT=defaultIno
 Last\ Used\ Upload\ port=COM7
 Last\ used\ Board=nodemcuv2
@@ -12,6 +12,6 @@ Private\ hardware\ Path=C\:/Users/Vitaliy/Arduino/hardware
 Use\ the\ algoritm\ to\ find\ the\ toolchain\ like\ Arduino\ IDE=true
 add\ pragma\ once\ to\ headers=true
 eclipse.preferences.version=1
-lFsStatus=1709
+lFsStatus=1739
 last\ Used\ upload\ Protocol=Default
 last\ used\ Board\ custom\ option\ selections=CpuFrequency\=80\nFlashSize\=4M3M\nUploadSpeed\=115200
