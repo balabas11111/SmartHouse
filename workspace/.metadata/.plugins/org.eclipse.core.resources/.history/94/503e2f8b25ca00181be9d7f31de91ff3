@@ -1,0 +1,43 @@
+#ifdef __IN_ECLIPSE__
+//This is a automatic generated file
+//Please do not modify this file
+//If you touch this file your change will be overwritten during the next build
+//This file has been generated on 2018-10-07 14:31:38
+
+#include "Arduino.h"
+#include <Arduino.h>
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
+#include "EspSettingsBox.h"
+#include "ActionEvent.h"
+#include "ActionListenerHelper.h"
+#include "MqttHelper.h"
+#include "WiFiHelper.h"
+#include <ESP8266WebServer.h>
+#include "LedB.h"
+#include "ButtonB.h"
+
+void clearDisplay();
+void displayLineFunction(String message,int row,int column);
+void ledOnFunction();
+void ledOffFunction();
+void setupServerUrlsFunction(ESP8266WebServer server);
+void processEvent(AbstractEvent event);
+void setup() ;
+void sendData() ;
+void callback(char* topic, uint8_t* payload, unsigned int length) ;
+void loop() ;
+void processHttpCommand();
+void processMqtt();
+void connectWifiIfNotConnected();
+boolean isWiFIConnected();
+void connectWiFi();
+boolean isMqttConnected();
+void connectMqttIfNotConnected();
+void subscribeToTopic(const char *topicIn);
+void processTopicMessage(String topic,String msg);
+
+#include "MQTT_Switch_ON_OFF.ino"
+
+
+#endif

@@ -1,0 +1,33 @@
+/*
+ * ButtonB.h
+ *
+ *  Created on: 13 ���. 2018 �.
+ *      Author: Vitaliy
+ */
+
+#ifndef LIBRARIES_TIMETRIGGER_WIFIHELPER_H_
+#define LIBRARIES_TIMETRIGGER_WIFIHELPER_H_
+
+#include "Arduino.h"
+#include "EspSettingsBox.h"
+
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266HTTPClient.h>
+
+class WiFiHelper{
+
+public:
+	WiFiHelper(EspSettingsBox *_settingsBox);
+	void init();
+	void connect();
+	boolean isConnected();
+	boolean connectIfNotConnected();
+
+private:
+	EspSettingsBox *settingsBox;
+	ESP8266WebServer server ( 80 );
+};
+
+
+#endif /* LIBRARIES_TIMETRIGGER_MQTTHELPER_H_ */

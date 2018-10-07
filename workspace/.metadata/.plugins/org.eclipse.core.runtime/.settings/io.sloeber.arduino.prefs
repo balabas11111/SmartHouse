@@ -1,0 +1,17 @@
+Automatically\ import\ libraries=true
+FbStatus=873
+FsStatus=45
+FuStatus=800
+JANTJE.TEMPLATE_USE_DEFAULT=defaultIno
+Last\ Used\ Upload\ port=COM7
+Last\ used\ Board=nodemcuv2
+Last\ used\ Boards\ file=D\:\\projects\\sloeber\\arduinoPlugin\\packages\\esp8266\\hardware\\esp8266\\2.4.0-rc2\\boards.txt
+Last\ used\ Examples=
+Private\ Library\ Path=D\:\\projects\\\!\!\!SmartHouse\\librarys;C\:/Users/Vitaliy/Arduino/libraries
+Private\ hardware\ Path=C\:/Users/Vitaliy/Arduino/hardware
+Use\ the\ algoritm\ to\ find\ the\ toolchain\ like\ Arduino\ IDE=true
+add\ pragma\ once\ to\ headers=true
+eclipse.preferences.version=1
+lFsStatus=1709
+last\ Used\ upload\ Protocol=Default
+last\ used\ Board\ custom\ option\ selections=CpuFrequency\=80\nFlashSize\=4M3M\nUploadSpeed\=115200

@@ -1,0 +1,28 @@
+/*
+ * ButtonB.h
+ *
+ *  Created on: 13 ���. 2018 �.
+ *      Author: Vitaliy
+ */
+
+#ifndef LIBRARIES_TIMETRIGGER_ACTIONLISTENERHELPER_H_
+#define LIBRARIES_TIMETRIGGER_ACTIONLISTENERHELPER_H_
+
+#include "Arduino.h"
+#include "ActionEvent.h"
+
+class ActionListenerHelper{
+
+public:
+	ActionListenerHelper(ActionEvent *_actionEvents);
+
+	static ActionEvent buildStringActionEvent(String eventName,std::function<void(void* arg)> _func);
+
+	boolean executeActionEvent(String eventName,String param);
+
+private:
+	ActionEvent *_actionEvents;
+};
+
+
+#endif /* LIBRARIES_TIMETRIGGER_ACTIONLISTENERHELPER_H_ */

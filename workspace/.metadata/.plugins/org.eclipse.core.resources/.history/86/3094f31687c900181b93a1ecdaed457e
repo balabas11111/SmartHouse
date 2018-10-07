@@ -1,0 +1,33 @@
+/*
+ * ButtonB.h
+ *
+ *  Created on: 13 ���. 2018 �.
+ *      Author: Vitaliy
+ */
+
+#ifndef LIBRARIES_TIMETRIGGER_ACTIONEVENT_H_
+#define LIBRARIES_TIMETRIGGER_ACTIONEVENT_H_
+
+#import "Arduino.h"
+#include <functional>
+
+class ActionEvent{
+
+public:
+	ActionEvent(String actionName,std::function<void(void)> func);
+	LedB(uint8_t pin,uint8_t state);
+	void init();
+	void turnOn();
+	void turnOff();
+	void changeStateForDefaultInterval();
+	void changeStateForInterval(int interval);
+	void changeState();
+	boolean getTurnedOn();
+
+private:
+	String actionName;
+	boolean turnedOn;
+};
+
+
+#endif /* LIBRARIES_TIMETRIGGER_BUTTONB_H_ */

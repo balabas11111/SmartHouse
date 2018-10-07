@@ -1,0 +1,28 @@
+/*
+ * TimeTrigger.cpp
+ *
+ *  Created on: 13 ���. 2018 �.
+ *      Author: Vitaliy
+ */
+
+#include "Arduino.h"
+#include "ActionListenerHelper.h"
+
+ActionListenerHelper::ActionListenerHelper(ActionEvent* _actionEvents){
+	actionEvents=_actionEvents;
+}
+
+static ActionEvent ActionListenerHelper::buildActionEvent(String eventName,std::function<void(void* arg)> _func){
+	ActionEvent result=ActionEvent(eventName,_func);
+	return result;
+}
+
+boolean ActionListenerHelper::executeActionEvent(String eventName,void* arg){
+
+	actionEvents.
+
+	for(int i=0;i<actionEvents;i++){
+
+	}
+}
+

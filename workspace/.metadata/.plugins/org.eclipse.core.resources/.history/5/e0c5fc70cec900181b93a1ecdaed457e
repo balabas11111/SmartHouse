@@ -1,0 +1,159 @@
+/*
+ * ButtonB.cpp
+ *
+ *  Created on: 13 џэт. 2018 у.
+ *      Author: Vitaliy
+ */
+
+#include "Arduino.h"
+#include "ButtonB.h"
+
+ButtonB::ButtonB(uint8_t pin){
+	init("",pin,INPUT,[this](AbstractEvent){handleInternalFunction();},CHANGE,true,true);
+}
+
+ButtonB::ButtonB(String name,uint8_t pin,uint8_t _pinMode,std::function<void(AbstractEvent)> funcEvent,int _buttonMode,boolean _resetActionFlagAfterExecution,boolean _setActionOnlyIfChangedState){
+	init(name,pin,_pinMode,funcEvent,_buttonMode,_resetActionFlagAfterExecution,_setActionOnlyIfChangedState);
+}
+
+ButtonB::ButtonB(String name,uint8_t pin,std::function<void(AbstractEvent)> funcEvent){
+	init(name,pin,INPUT,funcEvent,CHANGE,true,true);
+}
+
+void ButtonB::init(String name,uint8_t pin,uint8_t _pinMode,std::function<void(AbstractEvent)> funcEvent,int _buttonMode,boolean _resetActionFlagAfterExecution,boolean _setActionOnlyIfChangedState){
+	_pin=pin;
+	_name=name;
+	pinMode(_pin, _pinMode);
+	attachInterrupt(_pin, [this](){defaultExecFunction();}, _buttonMode);
+	externalFunctionEvent=funcEvent;
+
+	_previousStatePressed=false;
+	_changedToPressed=false;
+
+	resetActionFlagAfterExecution=_resetActionFlagAfterExecution;
+	setActionOnlyIfChangedState=_setActionOnlyIfChangedState;
+	actionFlagOn=false;
+	actionFlagOff=false;
+}
+
+uint8_t ButtonB::getPin(){
+	return _pin;
+}
+
+boolean ButtonB::checkPressed(){
+	boolean nowPressed=getPressed();
+	setPressed(nowPressed);
+
+	return nowPressed;
+}
+
+boolean ButtonB::getPressed(){
+	return (digitalRead(_pin) == HIGH)?false:true;
+}
+
+void ButtonB::setPressed(boolean pressed){
+	if(_previousStatePressed!=pressed){
+		_previousStatePressed=pressed;
+	}
+
+	if(pressed && !_previousStatePressed){
+		_changedToPressed=true;
+	}
+
+	if(!pressed && _previousStatePressed){
+		_changedToPressed=false;
+	}
+}
+
+boolean ButtonB::isStateChanged(){
+	boolean nowPressed=getPressed();
+
+	return (_previousStatePressed != nowPressed);
+}
+
+boolean ButtonB::isChangedToPressed(){
+	return _previousStatePressed;
+}
+
+boolean ButtonB::checkChangedToPressed(){
+	boolean nowPressed=getPressed();
+	boolean result=false;
+
+	if(!_previousStatePressed && nowPressed){
+		result=true;
+	}
+
+	if(_previousStatePressed!=nowPressed){
+		_previousStatePressed=nowPressed;
+	}
+
+	return result;
+}
+
+void ButtonB::setActionFlagOn(boolean actionFlagVal){
+	actionFlagOn=actionFlagVal;
+}
+
+void ButtonB::setActionFlagOff(boolean actionFlagVal){
+	actionFlagOff=actionFlagVal;
+}
+
+boolean ButtonB::getActionFlagOn(boolean doReset){
+	boolean result=actionFlagOn;
+	if(result && doReset){
+		actionFlagOn=false;
+	}
+	return result;
+}
+
+boolean ButtonB::getActionFlagOff(boolean doReset){
+	boolean result=actionFlagOn;
+		if(result && doReset){
+			actionFlagOn=false;
+		}
+		return result;
+}
+
+void ButtonB::defaultExecFunction(){
+	Serial.println("Interrupt "+_name);
+	boolean isPressed=checkPressed();
+
+	if((setActionOnlyIfChangedState && isStateChanged()) || !setActionOnlyIfChangedState){
+		setActionFlagOn(isPressed);
+		setActionFlagOff(!isPressed);
+	}
+}
+
+boolean ButtonB::loop(){
+	boolean result=false;
+
+	if(getActionFlagOn(resetActionFlagAfterExecution)){
+		handleExternalFunction(1);
+		result=true;
+	}
+
+	if(getActionFlagOff(resetActionFlagAfterExecution)){
+		handleExternalFunction(0);
+		result=true;
+	}
+
+	return result;
+}
+
+void ButtonB::handleExternalFunction(uint8_t isTurnedOn){
+	if(externalFunctionEvent!=NULL){
+		Serial.print("Button "+_name+" isTurnedOn="+isTurnedOn);
+		externalFunctionEvent(constructEvent(isTurnedOn));
+		Serial.println(" ...completed ");
+	}
+}
+
+void ButtonB::handleInternalFunction(){
+	Serial.println("Internal handle function executed");
+}
+
+AbstractEvent ButtonB::constructEvent(uint8_t state){
+	return AbstractEvent(String(COMMAND_PREFFIX_BUTTON_STATECHANGED)+":"+String(_pin)+":"+String(state)+":"+_name);
+}
+
+

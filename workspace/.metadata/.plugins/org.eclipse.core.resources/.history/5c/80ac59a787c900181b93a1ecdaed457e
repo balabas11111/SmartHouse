@@ -1,0 +1,33 @@
+/*
+ * ButtonB.h
+ *
+ *  Created on: 13 ���. 2018 �.
+ *      Author: Vitaliy
+ */
+
+#ifndef LIBRARIES_TIMETRIGGER_ACTIONLISTENERHELPER_H_
+#define LIBRARIES_TIMETRIGGER_ACTIONLISTENERHELPER_H_
+
+#include "Arduino.h"
+#include "ActionEvent.h"
+
+class ActionListenerHelper{
+
+public:
+	ActionListenerHelper(ActionEvent *_actionEvents);
+	LedB(uint8_t pin,uint8_t state);
+	void init();
+	void turnOn();
+	void turnOff();
+	void changeStateForDefaultInterval();
+	void changeStateForInterval(int interval);
+	void changeState();
+	boolean getTurnedOn();
+
+private:
+	uint8_t _pin;
+	boolean turnedOn;
+};
+
+
+#endif /* LIBRARIES_TIMETRIGGER_BUTTONB_H_ */

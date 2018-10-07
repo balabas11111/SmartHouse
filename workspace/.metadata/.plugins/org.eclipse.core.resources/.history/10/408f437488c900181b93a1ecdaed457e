@@ -1,0 +1,31 @@
+/*
+ * TimeTrigger.cpp
+ *
+ *  Created on: 13 ���. 2018 �.
+ *      Author: Vitaliy
+ */
+
+#include "Arduino.h"
+#include "ActionEvent.h"
+
+ActionEvent::ActionEvent(String _actionName,std::function<void(void)> _func){
+	actionName=_actionName;
+	func=_func;
+
+}
+
+ActionEvent::ActionEvent(String _actionName,std::function<void(String)> _func){
+	actionName=_actionName;
+	funcString=_func;
+}
+
+boolean ActionEvent::executeVoidFunction(){
+	if(func!=NULL){
+
+	}
+}
+
+boolean ActionEvent::executeStringFunction(String param){
+
+}
+

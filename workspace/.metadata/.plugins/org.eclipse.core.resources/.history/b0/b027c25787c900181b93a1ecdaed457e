@@ -1,0 +1,14 @@
+/*
+ * TimeTrigger.cpp
+ *
+ *  Created on: 13 ���. 2018 �.
+ *      Author: Vitaliy
+ */
+
+#include "Arduino.h"
+#include "ActionEvent.h"
+
+ActionEvent::ActionEvent(String actionName,std::function<void(void)> func){
+
+}
+

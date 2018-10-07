@@ -1,0 +1,311 @@
+#include <Arduino.h>
+
+#include <ESP8266WiFi.h>
+#include <PubSubClient.h>
+#include "EspSettingsBox.h"
+//#include "MqttHelper.h"
+//#include "WiFiHelper.h"
+#include "AbstractEvent.h"
+
+#include <ESP8266WebServer.h>
+#include "LedB.h"
+#include "ButtonB.h"
+
+#define FIRMVARE_VERSION "b@l@bas-soft SENSORZ v0.0.5"
+//Robot Dyn//vem  // 12E
+#define D0_PIN 16 //GPIO016 ////beeper
+#define D1_PIN 5  //GPIO05  //DallasTemp
+#define D2_PIN 4  //GPIO04  //OLED //SDA //blue
+#define D3_PIN 0  //GPIO00  //OLED //SCL //green
+#define D4_PIN 2  //GPIO02  //RedLed
+#define D5_PIN 14 //GPIO14  //DHT
+#define D6_PIN 12 //GPIO12  //DallasTemp red led2
+#define D7_PIN 13 //GPIO13  //GreenLed
+#define D8_PIN 15 //GPIO15  //button
+#define RX_PIN 3
+#define TX_PIN 1
+
+#define SD3_PIN 10
+#define SD2_PIN 9
+
+const char *ssid = "balabasKiev5"; // Имя роутера
+const char *pass = "wuWylKegayg2wu22"; // Пароль роутера
+
+const char *mqtt_server = "m23.cloudmqtt.com"; // Имя сервера MQTT
+const int mqtt_port = 10186; // Порт для подключения к серверу MQTT
+const char *mqtt_user = "tpheglmk"; // Логи для подключения к серверу MQTT
+const char *mqtt_pass = "QgYRfVzDhQ31"; // Пароль для подключения к серверу MQTT
+
+const char *topic="topic/test1";
+const char *topic_sub_s1="topic/switch1";
+const char *topic_sub_s2="topic/switch2";
+const char *topic_sub2="topic_switch";
+
+#define BUFFER_SIZE 100
+
+WiFiClient wclient;
+ESP8266WebServer server ( 80 );
+PubSubClient client(mqtt_server, mqtt_port, callback, wclient);
+/*
+EspSettingsBox espSettingsBox("/values.txt",true);
+
+WiFiHelper wiFiHelper(&espSettingsBox,&clearDisplay,displayLineFunction,&ledOnFunction,&ledOffFunction,&setupServerUrlsFunction);
+
+ActionEvent events[]={ActionEvent("topic/switch1",processCommand),
+					  ActionEvent("topic/switch2",processCommand)};
+
+ActionListenerHelper helper(events);
+MqttHelper mqttHelper(&espSettingsBox,&helper,wiFiHelper.getClientAs());
+*/
+LedB Switch_1(D7_PIN,HIGH);
+LedB Switch_2(D8_PIN,HIGH);
+
+void clearDisplay(){};
+void displayLineFunction(String message,int row,int column){};
+void ledOnFunction(){};
+void ledOffFunction(){};
+void setupServerUrlsFunction(ESP8266WebServer server){};
+
+ButtonB button_1("Switch1",D5_PIN,processEvent);
+ButtonB button_2("Switch2",D6_PIN,processEvent);
+
+void processEvent(AbstractEvent event){
+	//PIN_SC:01:001:onOffEvent:Button1
+
+	Serial.println("ProcessCommand"+event.getEventText());
+
+	if(event.isEventOfKind(PIN_STATE_CHANGE_PREFFIX)){
+		if(Switch_1.processEvent(event)){
+			return;
+		}
+
+		if(Switch_2.processEvent(event)){
+			return;
+		}
+	}
+
+	if(event.isEventOfKind(COMMAND_PREFFIX_BUTTON_STATECHANGED)){
+		int targetPin=-1;
+
+		if(button_1.isDispatcherOfEvent(event)){
+			targetPin=Switch_1.getPin();
+		}else
+			if(button_2.isDispatcherOfEvent(event)){
+				targetPin=Switch_2.getPin();
+			}
+
+		AbstractEvent newEvent=AbstractEvent(PIN_STATE_CHANGE_PREFFIX,
+												targetPin,
+												event.getIntCommand(),
+												"dispatchedByButton",event.getDispatcher());
+		processEvent(newEvent);
+	}
+
+}
+
+void setup() {
+  Serial.begin(115200);
+  delay(10);
+
+  Serial.println("Starting mqtt server");
+  Serial.println();
+
+  pinMode(D2_PIN, INPUT);
+  attachInterrupt(D2_PIN, intRoutine, mode)
+}
+
+void processInterrupt(){
+Serial.println();
+}
+
+void sendData() {
+	static int counter = 0;
+
+	  String payload = "{\"micros\":";
+	  payload += micros();
+	  payload += ",\"counter\":";
+	  payload += counter;
+	  payload += "}";
+
+	  if (client.connected()){
+	    Serial.print("Sending payload: ");
+	    Serial.println(payload);
+
+	    if (client.publish(topic, (char*) payload.c_str())) {
+	      Serial.println("Publish ok");
+	    }
+	    else {
+	      Serial.println("Publish failed");
+	    }
+	  }
+	  ++counter;
+	  delay(5000);
+
+  delay(1);
+}
+
+// Функция получения данных от сервера
+void callback(char* topic, uint8_t* payload, unsigned int length) {
+
+	String payloadIn = (char*)payload;
+	String topicIn=String(topic);
+
+	String msg;
+		for(int i=0;i<length;i++){
+			msg+=(char)payload[i];
+		}
+
+	String messageIn="Message received payload="+msg+" topic="+topic +" length="+length;
+
+	Serial.println(messageIn);
+	processTopicMessage(topic,msg);
+}
+
+void loop() {
+  if (WiFi.status() == WL_CONNECTED) {
+	connectMqttIfNotConnected();
+	processMqtt();
+  }
+
+  button_1.loop();
+  button_2.loop();
+}
+
+void processHttpCommand(){
+	if(server.args()!=0 && server.hasArg("command")){
+		String command=server.arg("command");
+		processEvent(AbstractEvent(command));
+
+		delay(1);
+		server.send ( 200, "text/html", "{\"status\":\"Ok\",\"command\":"+command+"}" );
+
+		//server.send(500,"text/html","{\"status\":\"Failed\",\"command\":"+command+"}");
+	}
+
+	server.send(500,"text/html","{\"status\":\"Failed\",\"command\":\"No command received\"}");
+}
+
+
+
+void processMqtt(){
+	if (client.connected()){
+	  client.loop();
+	  //sendData();
+	}
+}
+
+void connectWifiIfNotConnected(){
+	while(!isWiFIConnected()){
+		connectWiFi();
+
+		if(!isWiFIConnected()){
+			delay(5000);
+		}
+	}
+}
+
+boolean isWiFIConnected(){
+	return WiFi.status() == WL_CONNECTED;
+}
+
+void connectWiFi(){
+	if (!isWiFIConnected()) {
+	    Serial.print("Connecting to ");
+	    Serial.print(ssid);
+	    Serial.println("...");
+	    WiFi.begin(ssid, pass);
+
+	    if (WiFi.waitForConnectResult() != WL_CONNECTED) return;
+	    Serial.println("WiFi connected");
+
+		server.on ( "/runCommand", HTTP_POST, processHttpCommand );
+		server.begin();
+	  }
+}
+
+boolean isMqttConnected(){
+	return client.connected();
+}
+
+void connectMqttIfNotConnected(){
+	String clState=String(client.state());
+	String clConnected=String(client.connected());
+	String wifiState=String(wclient.status());
+	String wifiConnected=String(wclient.connected());
+
+	//Serial.println("Client State="+clState+" clConnected="+clConnected+" wifiState="+wifiState+" wifiConnected"+wifiConnected);
+
+	if (!client.connected()) {
+
+	    	  String clientName;
+	    	  clientName += "esp8266 "+millis();
+
+	    	if (client.connect((char*) clientName.c_str(),mqtt_user,mqtt_pass)) {
+	    	    Serial.println("Connected to MQTT broker");
+	    	    Serial.print("Publish Topic is: ");
+	    	    Serial.println(topic);
+
+	    	    if (client.publish(topic, "hello from ESP8266")) {
+	    	      Serial.println("Publish ok");
+	    	    }
+	    	    else {
+	    	      Serial.println("Publish failed");
+	    	    }
+
+	    	    subscribeToTopic(topic);
+	    	    subscribeToTopic(topic_sub_s1);
+	    	    subscribeToTopic(topic_sub_s2);
+	    	  }
+	    	  else {
+	    	    Serial.println("MQTT connect failed");
+	    	    Serial.println("Will reset and try again...");
+	    	    delay(5000);
+	    	    //abort();
+	    	  }
+	    }
+}
+
+void subscribeToTopic(const char *topicIn){
+	Serial.print("Subscribing to "+String(topicIn));
+	client.subscribe(topicIn);
+	Serial.println("   ...Subscribed");
+}
+
+void processTopicMessage(String topic,String msg){
+	if(msg==NULL || topic==NULL){
+		return;
+	}
+
+	String topic_subStr1=String(topic_sub_s1);
+	String topic_subStr2=String(topic_sub_s2);
+
+	Serial.println("Processing topic message topic="+topic+" msg="+msg);
+
+	if(topic.equals(topic_subStr1))
+	  {
+		Serial.println("Switch process");
+		if(msg.startsWith("Led1_State")){
+			if(msg.endsWith("ON")){
+				Switch_1.turnOn();
+			};
+			if(msg.endsWith("OFF")){
+				Switch_1.turnOff();
+			};
+		}
+	  }
+
+	if(topic.equals(topic_subStr2))
+		  {
+			if(msg.startsWith("Led2_State")){
+				if(msg.endsWith("ON")){
+					Switch_2.turnOn();
+				};
+				if(msg.endsWith("OFF")){
+					Switch_2.turnOff();
+				};
+			}
+
+		  }
+
+}
+

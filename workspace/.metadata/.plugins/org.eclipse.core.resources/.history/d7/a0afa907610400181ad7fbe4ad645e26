@@ -1,0 +1,163 @@
+/*
+ * ButtonB.cpp
+ *
+ *  Created on: 13 ���. 2018 �.
+ *      Author: Vitaliy
+ */
+
+#include "Arduino.h"
+#include "WiFiSettContainer.h"
+
+const String IS_ACCESS_POINT="isAccessPoint";
+const String DEVICE_ID="DeviceId";
+const String SSID="ssid";
+const String PASSWORD="password";
+const String SSID_AP="ssidAP";
+const String PASSWORD_AP="passwordAP";
+const String SETTINGS_USER="settingsUser";
+const String SETTINGS_PASS="settingsPass";
+const String LOCAL_IP="localIp";
+const String GATE_IP="gateIp";
+const String SUBNET_IP="subnetIp";
+const String DNS_IP="dnsIp";
+const String DNS_IP2="dnsIp2";
+
+WiFiSettContainer::WiFiSettContainer(KeyValueContainer *kvc){
+	_kvc=kvc;
+};
+
+void WiFiSettContainer::init(){
+	saveDefaultValuesIfFileNotExists();
+	loadSettingsFromFile();
+};
+
+void WiFiSettContainer::putDefaultValuesToContainer(){
+	_kvc->putKeyValue(IS_ACCESS_POINT, "1");
+
+	_kvc->putKeyValue(DEVICE_ID, "Sensors"+String(ESP.getChipId()));
+
+	_kvc->putKeyValue(SSID, "balabasKiev5");
+	_kvc->putKeyValue(PASSWORD, "wuWylKegayg2wu22");
+
+	_kvc->putKeyValue(SSID_AP, "BS_S_Setup"/*+String(ESP.getChipId())*/);
+	_kvc->putKeyValue(PASSWORD_AP, "balabas");
+
+	_kvc->putKeyValue(SETTINGS_USER, "balabas");
+	_kvc->putKeyValue(SETTINGS_PASS, "balabas");
+
+	_kvc->putKeyValue(LOCAL_IP, "192.168.0.178");
+	_kvc->putKeyValue(GATE_IP, "192.168.0.1");
+	_kvc->putKeyValue(SUBNET_IP, "255.255.255.0");
+	_kvc->putKeyValue(DNS_IP, "192.168.0.1");
+	_kvc->putKeyValue(DNS_IP2, "192.168.0.1");
+
+	_kvc->printAllKeyValues();
+
+	Serial.print("Default ");
+	Serial.print("isAccesPoint=");Serial.print(_kvc->getValue(IS_ACCESS_POINT));
+	Serial.print("; DeviceId=");Serial.print(_kvc->getValue(DEVICE_ID));
+	Serial.print("; ssid=");Serial.print(_kvc->getValue(SSID));
+	Serial.print("; password=");Serial.print(_kvc->getValue(PASSWORD));
+	Serial.print("; ssidAP=");Serial.print(_kvc->getValue(SSID_AP));
+	Serial.print("; passwordAP=");Serial.print(_kvc->getValue(PASSWORD_AP));
+	Serial.print("; settingsUser=");Serial.print(_kvc->getValue(SETTINGS_USER));
+	Serial.print("; settingsPass=");Serial.print(_kvc->getValue(SETTINGS_PASS));
+	Serial.print("; localIp=");Serial.print(_kvc->getValue(LOCAL_IP));
+	Serial.print("; gateIp=");Serial.print(_kvc->getValue(GATE_IP));
+	Serial.print("; subnetIp=");Serial.print(_kvc->getValue(SUBNET_IP));
+	Serial.print("; dnsIp=");Serial.print(_kvc->getValue(DNS_IP));
+	Serial.print("; dnsIp2=");Serial.println(_kvc->getValue(DNS_IP2));
+};
+
+void WiFiSettContainer::putFromContainerToVariables(){
+	isAccesPoint=(_kvc->getValue(IS_ACCESS_POINT)=="1");
+	DeviceId=_kvc->getValue(DEVICE_ID);
+	ssid=_kvc->getValue(SSID);
+	password=_kvc->getValue(PASSWORD);
+	ssidAP=_kvc->getValue(SSID_AP);
+	passwordAP=_kvc->getValue(PASSWORD_AP);
+	settingsUser=_kvc->getValue(SETTINGS_USER);
+	settingsPass=_kvc->getValue(SETTINGS_PASS);
+
+	localIp=IPAddress().fromString(_kvc->getValue(LOCAL_IP));
+	gateIp=IPAddress().fromString(_kvc->getValue(GATE_IP));
+	subnetIp=IPAddress().fromString(_kvc->getValue(SUBNET_IP));
+	dnsIp=IPAddress().fromString(_kvc->getValue(DNS_IP));
+	dnsIp2=IPAddress().fromString(_kvc->getValue(DNS_IP2));
+
+	Serial.println(_kvc->getValue(LOCAL_IP));
+
+
+	Serial.print("putFromCOntainer ");
+	Serial.print("isAccesPoint=");Serial.print(isAccesPoint);
+	Serial.print("; DeviceId=");Serial.print(DeviceId);
+	Serial.print("; ssid=");Serial.print(ssid);
+	Serial.print("; password=");Serial.print(password);
+	Serial.print("; ssidAP=");Serial.print(ssidAP);
+	Serial.print("; passwordAP=");Serial.print(passwordAP);
+	Serial.print("; settingsUser=");Serial.print(settingsUser);
+	Serial.print("; settingsPass=");Serial.print(settingsPass);
+	Serial.print("; localIp=");Serial.print(localIp);
+	Serial.print("; gateIp=");Serial.print(gateIp);
+	Serial.print("; subnetIp=");Serial.print(subnetIp);
+	Serial.print("; dnsIp=");Serial.print(dnsIp);
+	Serial.print("; dnsIp2=");Serial.println(dnsIp2);
+};
+
+void WiFiSettContainer::putFromVariablesToContainer(){
+	_kvc->putKeyValue(IS_ACCESS_POINT, String(isAccesPoint));
+
+	_kvc->putKeyValue(DEVICE_ID, String(DeviceId));
+
+	_kvc->putKeyValue(SSID, ssid);
+	_kvc->putKeyValue(PASSWORD, password);
+
+	_kvc->putKeyValue(SSID_AP, ssidAP);
+	_kvc->putKeyValue(PASSWORD_AP, passwordAP);
+
+	_kvc->putKeyValue(SETTINGS_USER, settingsUser);
+	_kvc->putKeyValue(SETTINGS_PASS, settingsPass);
+
+	_kvc->putKeyValue(LOCAL_IP, localIp.toString());
+	_kvc->putKeyValue(GATE_IP, gateIp.toString());
+	_kvc->putKeyValue(SUBNET_IP, subnetIp.toString());
+	_kvc->putKeyValue(DNS_IP, dnsIp.toString());
+	_kvc->putKeyValue(DNS_IP2, dnsIp2.toString());
+
+	Serial.print("putFromVariable ");
+	Serial.print("isAccesPoint=");Serial.print(_kvc->getValue(IS_ACCESS_POINT));
+	Serial.print("; DeviceId=");Serial.print(_kvc->getValue(DEVICE_ID));
+	Serial.print("; ssid=");Serial.print(_kvc->getValue(SSID));
+	Serial.print("; password=");Serial.print(_kvc->getValue(PASSWORD));
+	Serial.print("; ssidAP=");Serial.print(_kvc->getValue(SSID_AP));
+	Serial.print("; passwordAP=");Serial.print(_kvc->getValue(PASSWORD_AP));
+	Serial.print("; settingsUser=");Serial.print(_kvc->getValue(SETTINGS_USER));
+	Serial.print("; settingsPass=");Serial.print(_kvc->getValue(SETTINGS_PASS));
+	Serial.print("; localIp=");Serial.print(_kvc->getValue(LOCAL_IP));
+	Serial.print("; gateIp=");Serial.print(_kvc->getValue(GATE_IP));
+	Serial.print("; subnetIp=");Serial.print(_kvc->getValue(SUBNET_IP));
+	Serial.print("; dnsIp=");Serial.print(_kvc->getValue(DNS_IP));
+	Serial.print("; dnsIp2=");Serial.println(_kvc->getValue(DNS_IP2));
+};
+
+void WiFiSettContainer::saveDefaultValuesIfFileNotExists(){
+	if(!fileExists()){
+		putDefaultValuesToContainer();
+		saveSettingsToFile(true);
+	}
+};
+boolean WiFiSettContainer::fileExists(){
+	return _kvc->fileExists();
+};
+void WiFiSettContainer::loadSettingsFromFile(){
+	_kvc->loadFromFile();
+	putFromContainerToVariables();
+	Serial.println("Settings loaded from file");
+};
+void WiFiSettContainer::saveSettingsToFile(boolean recreate){
+	putFromVariablesToContainer();
+	_kvc->saveToFile(recreate);
+	Serial.println("Settings saved to file");
+};
+
+

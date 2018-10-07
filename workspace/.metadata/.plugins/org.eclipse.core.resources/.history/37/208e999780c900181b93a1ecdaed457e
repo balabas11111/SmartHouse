@@ -1,0 +1,55 @@
+/*
+ * ButtonB.h
+ *
+ *  Created on: 13 џэт. 2018 у.
+ *      Author: Vitaliy
+ */
+
+#ifndef LIBRARIES_TIMETRIGGER_BUTTONB_H_
+#define LIBRARIES_TIMETRIGGER_BUTTONB_H_
+
+#include "Arduino.h"
+#include <FunctionalInterrupt.h>
+
+class ButtonB{
+
+public:
+	ButtonB(uint8_t pin);
+	//ButtonB(uint8_t pin,uint8_t mode);
+	/*
+	 * pin =pin button connected
+	 * _pinMode INPUT
+	 *
+	 */
+	ButtonB(uint8_t pin,uint8_t _pinMode,std::function<void(void)> func,int _buttonMode,boolean _actionFlagTruePressedSTate,boolean _setActionOnlyIfChangedState);
+	void init();
+	boolean checkPressed();
+	void setPressed(boolean pressed);
+	boolean isStateChanged();
+	boolean getPressed();
+	boolean isInitialized();
+	boolean checkChangedToPressed();
+	boolean isChangedToPressed();
+	void setActionFlagOn(boolean actionFlagVal);
+	void setActionFlagOff(boolean actionFlagVal);
+	boolean getActionFlag();
+	void defaultExecFunction();
+	boolean getActionFlagAndResetIfTrue();
+	boolean getCurrentPressedEqualsToActionFlagTrueState();
+
+	boolean getActionFlagResetIfTrueAndExecFunction();
+
+private:
+	uint8_t _pin;
+	boolean _previousStatePressed;
+	boolean _changedToPressed;
+	boolean initialized;
+	boolean actionFlagOn;
+	boolean actionFlagOff;
+	boolean actionFlagTruePressedState=false;
+	boolean setActionOnlyIfChangedState;
+	std::function<void(void)> externalFunction;
+};
+
+
+#endif /* LIBRARIES_TIMETRIGGER_BUTTONB_H_ */

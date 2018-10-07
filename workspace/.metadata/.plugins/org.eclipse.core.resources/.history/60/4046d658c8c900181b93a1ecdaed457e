@@ -1,0 +1,27 @@
+/*
+ * ButtonB.h
+ *
+ *  Created on: 13 џэт. 2018 у.
+ *      Author: Vitaliy
+ */
+
+#ifndef LIBRARIES_TIMETRIGGER_ABSTRACTEVENT_H_
+#define LIBRARIES_TIMETRIGGER_ABSTRACTEVENT_H_
+
+#define EVENT_SEPARATOR ":"
+
+#include "Arduino.h"
+
+class AbstractEvent{
+
+public:
+	AbstractEvent(String eventText);
+
+private:
+	String eventPreffix;
+	uint8_t _pin;
+	boolean turnedOn;
+};
+
+
+#endif /* LIBRARIES_TIMETRIGGER_BUTTONB_H_ */

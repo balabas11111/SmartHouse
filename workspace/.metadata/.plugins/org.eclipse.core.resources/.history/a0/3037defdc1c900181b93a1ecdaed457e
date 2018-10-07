@@ -1,0 +1,51 @@
+/*
+ * ButtonB.h
+ *
+ *  Created on: 13 ���. 2018 �.
+ *      Author: Vitaliy
+ */
+
+#ifndef LIBRARIES_TIMETRIGGER_BUTTONB_H_
+#define LIBRARIES_TIMETRIGGER_BUTTONB_H_
+
+#include "Arduino.h"
+#include <FunctionalInterrupt.h>
+
+class ButtonB{
+
+public:
+	ButtonB(uint8_t pin);
+	ButtonB(uint8_t pin,std::function<void(uint8_t)> funcEvent);
+	ButtonB(uint8_t pin,uint8_t _pinMode,std::function<void(uint8_t)> funcEvent,int _buttonMode,boolean _resetActionFlagAfterExecution,boolean _setActionOnlyIfChangedState);
+	boolean checkPressed();
+	boolean isStateChanged();
+	boolean getPressed();
+	boolean checkChangedToPressed();
+	boolean isChangedToPressed();
+	void setActionFlagOn(boolean actionFlagVal);
+	void setActionFlagOff(boolean actionFlagVal);
+	boolean getActionFlagOn(boolean doReset);
+	boolean getActionFlagOff(boolean doReset);
+	void defaultExecFunction();
+
+
+	boolean loop();
+
+private:
+	uint8_t _pin;
+	boolean _previousStatePressed;
+	boolean _changedToPressed;
+	boolean actionFlagOn;
+	boolean actionFlagOff;
+	boolean resetActionFlagAfterExecution;
+	boolean setActionOnlyIfChangedState;
+	std::function<void(uint8_t)> externalFunctionEvent;
+
+	void init(String name,uint8_t pin,uint8_t _pinMode,std::function<void(uint8_t)> funcEvent,int _buttonMode,boolean _resetActionFlagAfterExecution,boolean _setActionOnlyIfChangedState);
+	void setPressed(boolean pressed);
+	void handleExternalFunction(uint8_t isTurnedOn);
+	void handleInternalFunction();
+};
+
+
+#endif /* LIBRARIES_TIMETRIGGER_BUTTONB_H_ */
