@@ -17,12 +17,11 @@ class MqttHelper{
 
 public:
 	MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,std::function<void(AbstractEvent)> afunc,Client& _client);
-	void init();
 	void connect();
 	boolean isConnected();
 	boolean connectIfNotConnected();
 	void subscribe(String topicName);
-	boolean publish(String topicName,String message);
+	boolean publish(char* topicName,String message);
 
 	void loop();
 
@@ -32,8 +31,12 @@ public:
 private:
 	String* subscribeTopics;
 	std::function<void(AbstractEvent)> externalhandlerFunction;
-	EspSettingsBox *settingsBox;
 	PubSubClient client;
+
+	char* mqtt_user;
+	char* mqtt_pass;
+	char* mqtt_topic;
+	char* mqtt_startMessage;
 };
 
 

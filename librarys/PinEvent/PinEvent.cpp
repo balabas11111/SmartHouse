@@ -20,20 +20,21 @@ PinEvent::PinEvent(String _kind,boolean _bubble,uint8_t _pinId,uint8_t _oldVal,u
 }
 
 
-//kind:bubble:pinId:oldVal:val:strVal:dispatcherName:
-PinEvent::PinEvent(String pinEventText){
-	Serial.println("Construct event "+pinEventText);
+//kind:bubble:pinId:oldVal:val:strVal:dispatcherName:targetName:
+PinEvent::PinEvent(String _pinEventText){
+	Serial.println("Construct event "+_pinEventText);
 
-	uint8_t len=6;
+	uint8_t len=7;
 
 	int ind[len];
 
-	ind[0]=pinEventText.indexOf(":");
-	ind[1]=(ind[0]>0)?pinEventText.indexOf(":",ind[0]+1):-1;
-	ind[2]=(ind[1]>0)?pinEventText.indexOf(":",ind[1]+1):-1;
-	ind[3]=(ind[2]>0)?pinEventText.indexOf(":",ind[2]+1):-1;
-	ind[4]=(ind[3]>0)?pinEventText.indexOf(":",ind[3]+1):-1;
-	ind[5]=(ind[4]>0)?pinEventText.indexOf(":",ind[4]+1):-1;
+	ind[0]=_pinEventText.indexOf(":");
+	ind[1]=(ind[0]>0)?_pinEventText.indexOf(":",ind[0]+1):-1;
+	ind[2]=(ind[1]>0)?_pinEventText.indexOf(":",ind[1]+1):-1;
+	ind[3]=(ind[2]>0)?_pinEventText.indexOf(":",ind[2]+1):-1;
+	ind[4]=(ind[3]>0)?_pinEventText.indexOf(":",ind[3]+1):-1;
+	ind[5]=(ind[4]>0)?_pinEventText.indexOf(":",ind[4]+1):-1;
+	ind[6]=(ind[5]>0)?_pinEventText.indexOf(":",ind[5]+1):-1;
 
 	boolean _valid=true;
 
@@ -42,13 +43,14 @@ PinEvent::PinEvent(String pinEventText){
 		valid=valid & (ind[i]!=-1);
 	}
 
-	kind=pinEventText.substring(0,ind[0]);
-	bubble=pinEventText.substring(ind[0]+1,ind[1]).toInt();
-	pinId=pinEventText.substring(ind[1]+1,ind[2]).toInt();
-	oldVal=pinEventText.substring(ind[2]+1,ind[3]);
-	val=pinEventText.substring(ind[3]+1);
-	strVal=pinEventText.substring(ind[4]+1);
-	dispatcherName=pinEventText.substring(ind[5]+1);
+	kind=_pinEventText.substring(0,ind[0]);
+	bubble=_pinEventText.substring(ind[0]+1,ind[1]).toInt();
+	pinId=_pinEventText.substring(ind[1]+1,ind[2]).toInt();
+	oldVal=(_pinEventText.substring(ind[2]+1,ind[3])).toInt();
+	val=(_pinEventText.substring(ind[3]+1)).toInt();
+	strVal=_pinEventText.substring(ind[4]+1);
+	dispatcherName=_pinEventText.substring(ind[5]+1);
+	targetName=_pinEventText.substring(ind[6]+1);
 
 	valid=_valid & validate();
 }
@@ -73,6 +75,9 @@ String PinEvent::getStrVal(){
 }
 String PinEvent::getDispatcherName(){
 	return dispatcherName;
+}
+String PinEvent::getTargetName(){
+	return targetName;
 }
 
 String PinEvent::getText(){

@@ -4,28 +4,21 @@
 #include <PubSubClient.h>
 
 MqttHelper::MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,std::function<void(AbstractEvent)> _externalhandlerFunction,Client& _client){
-	settingsBox=_settingsBox;
+	//settingsBox=_settingsBox;
 	externalhandlerFunction=_externalhandlerFunction;
 	subscribeTopics=_subscribeTopics;
 
 	std::function<void(char*, uint8_t*, unsigned int)> afunc =
 				(void(*)(char*, uint8_t*, unsigned int))&MqttHelper::callback;
 
-	const char *mqtt_server = settingsBox->mqtt_server.c_str(); // Имя сервера MQTT
-	const int mqtt_port = settingsBox->mqtt_port;
+	char* mqtt_server = (char*)_settingsBox->mqtt_server.c_str(); // Имя сервера MQTT
+	uint16_t mqtt_port = _settingsBox->mqtt_port;
+	mqtt_user = (char*)(_settingsBox->mqtt_user).c_str();
+	mqtt_pass = (char*)(_settingsBox->mqtt_pass).c_str();
+	mqtt_topic= (char*)(_settingsBox->mqtt_topic).c_str();
+	mqtt_startMessage = (char*)(_settingsBox->DeviceId).c_str();
 
 	client=PubSubClient(mqtt_server,mqtt_port, afunc, _client);
-	//client=PubSubClient(_client);
-}
-
-void MqttHelper::init(){
-	std::function<void(char*, uint8_t*, unsigned int)> afunc =
-			(void(*)(char*, uint8_t*, unsigned int))&MqttHelper::callback;
-
-	const char *mqtt_server = settingsBox->mqtt_server.c_str(); // Имя сервера MQTT
-	const int mqtt_port = settingsBox->mqtt_port;
-
-	connect();
 }
 
 void MqttHelper::connect(){
@@ -34,11 +27,11 @@ void MqttHelper::connect(){
 	  String clientName;
 	  clientName += "esp8266 "+millis();
 
-	if (client.connect((char*) clientName.c_str(),(char*)(settingsBox->mqtt_user).c_str(),(char*)(settingsBox->mqtt_pass).c_str())) {
+	if (client.connect((char*) clientName.c_str(),mqtt_user,mqtt_pass)) {
 		Serial.println("Connected to MQTT broker");
 		Serial.print("Publish Topic is: ");
 
-		if (publish(settingsBox->mqtt_topic, "hello from ESP8266")) {
+		if (publish(mqtt_topic, mqtt_startMessage)) {
 		  Serial.println("Publish ok");
 		}
 		else {
@@ -79,15 +72,14 @@ void MqttHelper::subscribe(String topicName){
 	client.subscribe((char*) topicName.c_str());
 }
 
-boolean MqttHelper::publish(String topicName,String message){
-	boolean result=client.publish((char*) topicName.c_str(),(char*) message.c_str());
+boolean MqttHelper::publish(char* topicName,String message){
+	boolean result=client.publish( topicName,(char*) message.c_str());
 	return result;
 }
 
 void MqttHelper::loop(){
 	if (client.connected()){
 	  client.loop();
-	  //sendData();
 	}
 }
 

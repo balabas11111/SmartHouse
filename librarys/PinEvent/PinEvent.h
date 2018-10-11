@@ -18,7 +18,8 @@
 class PinEvent{
 
 public:
-	PinEvent(String kind,boolean bubble,uint8_t pinId,uint8_t oldVal,uint8_t val,	String strVal,String dispatcherName);
+	PinEvent(String kind,boolean bubble,uint8_t pinId,uint8_t oldVal,uint8_t val,String strVal,String dispatcherName);
+	//kind:bubble:pinId:oldVal:val:strVal:dispatcherName:targetName:
 	PinEvent(String pinEventText);
 
 	String getKind();
@@ -28,6 +29,7 @@ public:
 	uint8_t getVal();
 	String getStrVal();
 	String getDispatcherName();
+	String getTargetName();
 
 	String getText();
 
@@ -43,6 +45,7 @@ private:
 	uint8_t val;
 	String strVal;
 	String dispatcherName;
+	String targetName;
 
 	boolean valid;
 
