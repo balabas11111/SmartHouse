@@ -1,8 +1,0 @@
-Build\ before\ upload\ option=TRUE
-Clean\ Serial\ Monitor\ after\ upload=false
-FmStatus=51
-Gui\ entry\ for\ private\ library\ paths=D\:\\projects\\\!\!\!SmartHouse\\librarys;C\:/Users/Vitaliy/Arduino/libraries
-Open\ serial\ connections\ with\ the\ monitor=true
-Serial\ monitor\ last\ selected\ Port=COM7
-Serial\ monitor\ last\ selected\ rate=115200
-eclipse.preferences.version=1
