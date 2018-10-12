@@ -1,0 +1,50 @@
+Comuniation
+
+	Ethernet      1.1.2
+	GSM           1.0.5
+	NrfLite       2.0.6
+	OneWire       2.3.3
+	PubSubClient  2.6.0
+	RF24          1.3.0
+	ThingSpeak    1.3.3
+	WiFi          1.2.6
+	Esp8266_mdns  1.1.7
+	
+	
+DataProessing
+
+	ArduinoJson   5.12.0
+	
+DataStorage
+
+	SD            1.2.1
+	
+DeviceControl
+
+	FirmData      2.5.7
+	Keyboard      1.0.1
+	Mouse         1.0.1
+	Rtc by macuna 2.0.2
+	Servo         1.1.2
+	Stepper       1.1.2
+	
+Display
+	
+	Adafruit GFX library 1.2.2
+	TFT                  1.0.5
+	
+Other
+
+	WiFiEsp              2.2.2
+	
+Sensors
+
+	CapacitiveSensor     0.5.1
+	DHT Sensor Library   1.2.2
+	Dallas Temperature   3.7.6
+	EmoLib               1.1.0
+	
+Timing
+
+	NTPclient            3.1.0    
+	
