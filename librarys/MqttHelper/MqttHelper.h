@@ -11,12 +11,12 @@
 #include "Arduino.h"
 #include "EspSettingsBox.h"
 #include <PubSubClient.h>
-#include "AbstractEvent.h"
+#include "PinEvent.h"
 
 class MqttHelper{
 
 public:
-	MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,std::function<void(AbstractEvent)> afunc,Client& _client);
+	MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,std::function<void(PinEvent)> externalPinEventFunction,std::function<void(String topic,String message)> externalCallbackFunction,Client& _client);
 	void connect();
 	boolean isConnected();
 	boolean connectIfNotConnected();
@@ -30,7 +30,8 @@ public:
 
 private:
 	String* subscribeTopics;
-	std::function<void(AbstractEvent)> externalhandlerFunction;
+	std::function<void(PinEvent)> externalPinEventFunction;
+	std::function<void(String topic,String message)> externalCallbackFunction;
 	PubSubClient client;
 
 	char* mqtt_user;

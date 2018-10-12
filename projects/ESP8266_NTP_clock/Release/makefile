@@ -11,7 +11,6 @@ RM := del
 -include subdir.mk
 -include libraries\TimeTriggerB\subdir.mk
 -include libraries\TM1637\subdir.mk
--include libraries\NTPClient\subdir.mk
 -include libraries\ESP8266WiFi\src\subdir.mk
 -include core\core\umm_malloc\subdir.mk
 -include core\core\spiffs\subdir.mk
@@ -56,7 +55,7 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 AR += \
-D:\projects\!!!SmartHouse\workspace\ESP8266_NTP_clock\Release\arduino.ar \
+D:\projects\!!!SmartHouse\projects\ESP8266_NTP_clock\Release\arduino.ar \
 
 ELF += \
 ESP8266_NTP_clock.elf \
@@ -72,25 +71,25 @@ all: ESP8266_NTP_clock
 ESP8266_NTP_clock: $(HEX)
 	@echo 'Building target: $@'
 	@echo 'Printing size:'
-	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/xtensa-lx106-elf-gcc/1.20.0-26-gb404fb9-2/bin/xtensa-lx106-elf-size" -A "D:/projects/!!!SmartHouse/workspace/ESP8266_NTP_clock/Release/ESP8266_NTP_clock.elf"
+	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/xtensa-lx106-elf-gcc/1.20.0-26-gb404fb9-2/bin/xtensa-lx106-elf-size" -A "D:/projects/!!!SmartHouse/projects/ESP8266_NTP_clock/Release/ESP8266_NTP_clock.elf"
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-D:\projects\!!!SmartHouse\workspace\ESP8266_NTP_clock\Release\arduino.ar: $(AR_OBJ)
+D:\projects\!!!SmartHouse\projects\ESP8266_NTP_clock\Release\arduino.ar: $(AR_OBJ)
 	@echo 'Starting archiver'
-	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/xtensa-lx106-elf-gcc/1.20.0-26-gb404fb9-2/bin/xtensa-lx106-elf-ar" cru "D:/projects/!!!SmartHouse/workspace/ESP8266_NTP_clock/Release/arduino.ar"    D:/projects/!!!SmartHouse/workspace/ESP8266_NTP_clock/Release/arduino.ar $(AR_OBJ)
+	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/xtensa-lx106-elf-gcc/1.20.0-26-gb404fb9-2/bin/xtensa-lx106-elf-ar" cru "D:/projects/!!!SmartHouse/workspace/ESP8266_NTP_clock/Release/arduino.ar"    D:/projects/!!!SmartHouse/projects/ESP8266_NTP_clock/Release/arduino.ar $(AR_OBJ)
 	@echo 'Finished building: $@'
 	@echo ' '
 
 ESP8266_NTP_clock.elf: $(LINK_OBJ) $(AR)
 	@echo 'Starting combiner'
-	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/xtensa-lx106-elf-gcc/1.20.0-26-gb404fb9-2/bin/xtensa-lx106-elf-gcc" -g -Wall -Wextra -Os -nostdlib -Wl,--no-check-sections -u call_user_start -u _printf_float -u _scanf_float -Wl,-static "-LD:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/tools/sdk/lib" "-LD:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/tools/sdk/ld" "-LD:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/tools/sdk/libc/xtensa-lx106-elf/lib" "-Teagle.flash.4m.ld" -Wl,--gc-sections -Wl,-wrap,system_restart_local -Wl,-wrap,spi_flash_read -o "D:/projects/!!!SmartHouse/workspace/ESP8266_NTP_clock/Release/ESP8266_NTP_clock.elf" -Wl,--start-group   $(LINK_OBJ)  "D:/projects/!!!SmartHouse/workspace/ESP8266_NTP_clock/Release/arduino.ar" -lhal -lphy -lpp -lnet80211 -llwip_gcc -lwpa -lcrypto -lmain -lwps -laxtls -lespnow -lsmartconfig -lairkiss -lmesh -lwpa2 -lstdc++ -lm -lc -lgcc -Wl,--end-group "-LD:/projects/!!!SmartHouse/workspace/ESP8266_NTP_clock/Release" D:/projects/!!!SmartHouse/workspace/ESP8266_NTP_clock/Release/arduino.ar
+	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/xtensa-lx106-elf-gcc/1.20.0-26-gb404fb9-2/bin/xtensa-lx106-elf-gcc" -g -Wall -Wextra -Os -nostdlib -Wl,--no-check-sections -u call_user_start -u _printf_float -u _scanf_float -Wl,-static "-LD:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/tools/sdk/lib" "-LD:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/tools/sdk/ld" "-LD:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/tools/sdk/libc/xtensa-lx106-elf/lib" "-Teagle.flash.4m.ld" -Wl,--gc-sections -Wl,-wrap,system_restart_local -Wl,-wrap,spi_flash_read -o "D:/projects/!!!SmartHouse/workspace/ESP8266_NTP_clock/Release/ESP8266_NTP_clock.elf" -Wl,--start-group   $(LINK_OBJ)  "D:/projects/!!!SmartHouse/workspace/ESP8266_NTP_clock/Release/arduino.ar" -lhal -lphy -lpp -lnet80211 -llwip_gcc -lwpa -lcrypto -lmain -lwps -laxtls -lespnow -lsmartconfig -lairkiss -lmesh -lwpa2 -lstdc++ -lm -lc -lgcc -Wl,--end-group "-LD:/projects/!!!SmartHouse/workspace/ESP8266_NTP_clock/Release" D:/projects/!!!SmartHouse/projects/ESP8266_NTP_clock/Release/arduino.ar
 	@echo 'Finished building: $@'
 	@echo ' '
 
 ESP8266_NTP_clock.hex: $(ELF)
 	@echo 'Do all objcopy commands'
-	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/esptool/0.4.12/esptool.exe" -eo "D:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/bootloaders/eboot/eboot.elf" -bo "D:/projects/!!!SmartHouse/workspace/ESP8266_NTP_clock/Release/ESP8266_NTP_clock.bin" -bm dio -bf 40 -bz 4M -bs .text -bp 4096 -ec -eo "D:/projects/!!!SmartHouse/workspace/ESP8266_NTP_clock/Release/ESP8266_NTP_clock.elf" -bs .irom0.text -bs .text -bs .data -bs .rodata -bc -ec
+	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/esptool/0.4.12/esptool.exe" -eo "D:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/bootloaders/eboot/eboot.elf" -bo "D:/projects/!!!SmartHouse/projects/ESP8266_NTP_clock/Release/ESP8266_NTP_clock.bin" -bm dio -bf 40 -bz 4M -bs .text -bp 4096 -ec -eo "D:/projects/!!!SmartHouse/projects/ESP8266_NTP_clock/Release/ESP8266_NTP_clock.elf" -bs .irom0.text -bs .text -bs .data -bs .rodata -bc -ec
 	@echo 'Finished building: $@'
 	@echo ' '
 
@@ -100,6 +99,5 @@ clean:
 	-@echo ' '
 
 .PHONY: all clean dependents
-.SECONDARY:
 
 -include ..\makefile.targets

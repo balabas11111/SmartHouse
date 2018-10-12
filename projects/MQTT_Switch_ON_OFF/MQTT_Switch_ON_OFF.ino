@@ -8,10 +8,11 @@
 #include "AbstractEvent.h"
 
 #include <ESP8266WebServer.h>
-#include "LedB.h"
-#include "ButtonB.h"
-#include "AnalogSensor.h"
-#include "Pir.h"
+#include "PinDigital.h"
+#include "PinEvent.h"
+#include "TimeTrigger.h"
+
+#include "BH1750.h"
 
 #define FIRMVARE_VERSION "b@l@bas-soft SENSORZ v0.0.5"
 //Robot Dyn//vem  // 12E
@@ -50,7 +51,7 @@ WiFiClient wclient;
 ESP8266WebServer server ( 80 );
 PubSubClient client(mqtt_server, mqtt_port, callback, wclient);
 
-EspSettingsBox espSettingsBox("/values.txt",true);
+EspSettingsBox espSettingsBox("/values.txt","",true);
 /*
 WiFiHelper wiFiHelper(&espSettingsBox,&clearDisplay,displayLineFunction,&ledOnFunction,&ledOffFunction,&setupServerUrlsFunction);
 
@@ -62,19 +63,22 @@ void ledOnFunction(){};
 void ledOffFunction(){};
 void setupServerUrlsFunction(ESP8266WebServer server){};
 
-ButtonB button_1("Switch1",D7_PIN,processEvent,false);
-ButtonB button_2("Switch2",D6_PIN,processEvent,false);
+TimeTrigger lmTrigger(0,1000,true,measureLm);
 
-LedB Switch_1("Lamp1",D5_PIN,button_1.getPressed(),processEvent);
-LedB Switch_2("Lamp1",D8_PIN,button_2.getPressed(),processEvent);
-AnalogSensor ldrSensor("lightLevSens",processEvent,100);
-//Pir pir("IrDetector",D3_PIN,processEvent,true);
+PinDigital buttonLeft("SwitchLeft",D7_PIN,processEvent);
+PinDigital buttonRight("SwitchRight",D6_PIN,processEvent);
 
-String processEvent(AbstractEvent event){
+PinDigital lampLeft("LampLeft",OUTPUT,D5_PIN,processEvent,CHANGE,HIGH);
+PinDigital lampRight("LampRight",OUTPUT,D8_PIN,processEvent,CHANGE,HIGH);
+
+PinDigital IrDetector("IrDetector",D3_PIN,processEvent);
+
+BH1750 lightMeter;
+
+PinEvent processEvent(PinEvent event){
 	//PIN_SC:01:001:onOffEvent:Button1
-	//BUILTIN_LED
 	/*
-	 * test Urls
+	  //test Urls
 		http://192.168.0.178/runCommand?command=PIN_SC:14:1:Switch1:dispatchedByHtml
 		http://192.168.0.178/runCommand?command=PIN_SC:14:0:Switch1:dispatchedByHtml
 		http://192.168.0.178/runCommand?command=PIN_SC:15:1:Switch1:dispatchedByHtml
@@ -88,70 +92,56 @@ String processEvent(AbstractEvent event){
 
 	*/
 
-	Serial.println("ProcessCommand "+event.getEventText());
+	Serial.println("ProcessCommand "+event.getText());
+	PinEvent newEvent=PinEvent();
 
 	if(!event.isValid()){
-		return "InvalidEvent(event="+event.print()+")";
+		return newEvent;
 	}
 
-	if(event.isEventOfKind(COMMAND_PREFFIX_ANALOG_STATECHANGED)
-			|| event.isEventOfKind(COMMAND_PREFFIX_ANALOG_STATE)
-			|| event.isEventOfKind(PIN_CURRENT_STATE)
-			|| event.isEventOfKind(COMMAND_PIR_STATE)){
-
-		sendEventToTopic(event);
-
-		return "Ok";
+	if(event.isEventOfKind(PIN_EVENT_STATE_GET)){
+		if(!newEvent.isValid())
+			newEvent=lampLeft.processEventNow(event);
+		if(!newEvent.isValid())
+			newEvent=lampRight.processEventNow(event);
+		if(!newEvent.isValid())
+			newEvent=buttonLeft.processEventNow(event);
+		if(!newEvent.isValid())
+			newEvent=buttonRight.processEventNow(event);
 	}
 
-	if(event.isEventOfKind(COMMAND_GET_PIR_STATE)){
-		/*boolean result=pir.processEvent(event);
-		return (result)?"Ok":"NotFound";
-		*/
+	if(event.isEventOfKind(PIN_EVENT_STATE_SET)){
+		if(!newEvent.isValid())
+			newEvent=lampLeft.processEventNow(event);
+		if(!newEvent.isValid())
+			newEvent=lampRight.processEventNow(event);
+
+		newEvent.setIsBubble(false);
 	}
 
-	if(event.isEventOfKind(COMMAND_GET_ANALOG_DATA)){
-		boolean result=ldrSensor.processEvent(event);
-		return (result)?"Ok":"NotFound";
-	}
-
-	if(event.isEventOfKind(PIN_STATE_CHANGE_PREFFIX) || event.isEventOfKind(PIN_GET_STATE)){
-		if(Switch_1.processEvent(event)){
-			return "Ok";
+	if(event.isEventOfKind(PIN_EVENT_STATE_UPDATED)){
+		if(buttonLeft.isDispatcherOfEvent(event)){
+			newEvent=lampLeft.constructPinEventSetState(event);
 		}
-
-		if(Switch_2.processEvent(event)){
-			return "Ok";
+		if(buttonRight.isDispatcherOfEvent(event)){
+			newEvent=lampRight.constructPinEventSetState(event);
+		}
+		if(IrDetector.isDispatcherOfEvent(event)){
+			Serial.println("ir change event processed");
 		}
 	}
 
-	if(event.isEventOfKind(COMMAND_PREFFIX_BUTTON_STATECHANGED)){
-		int targetPin=-1;
+	if(newEvent.isValid() && newEvent.isBubble())
+		sendEventToTopic(newEvent);
 
-		if(button_1.isDispatcherOfEvent(event)){
-			targetPin=Switch_1.getPin();
-		}else
-			if(button_2.isDispatcherOfEvent(event)){
-				targetPin=Switch_2.getPin();
-			}
-
-		AbstractEvent newEvent=AbstractEvent(PIN_STATE_CHANGE_PREFFIX,
-												targetPin,
-												event.getIntCommand(),
-												"dispatchedByButton",event.getDispatcher());
-		sendEventToTopic(event);
-		return "NewEventDispatched:"+processEvent(newEvent);
-	}
-
-	return "NotFound";
-
+	return newEvent;
 }
 
-void sendEventToTopic(AbstractEvent event){
+void sendEventToTopic(PinEvent event){
 
 	if(event.isValid()){
-		String topic=String(baseTopic)+event.getDispatcher();
-		String msg=event.getEventText();
+		String topic=String(baseTopic)+event.getDispatcherName();
+		String msg=event.getText();
 
 		publishToTopic((char*) topic.c_str(),msg);
 	}
@@ -160,6 +150,8 @@ void sendEventToTopic(AbstractEvent event){
 void setup() {
   Serial.begin(115200);
   delay(10);
+
+  lightMeter.begin();
 
   setupWiFi();
   setupServer();
@@ -174,12 +166,18 @@ void loop() {
 	processMqtt();
   }
 
-  button_1.loop();
-  button_2.loop();
-  ldrSensor.loop();
-  //pir.loop();
+ buttonLeft.loop();
+ buttonRight.loop();
+ IrDetector.loop();
+ lmTrigger.loop();
+ server.handleClient();
+}
 
-  server.handleClient();
+void measureLm(){
+  uint16_t lux = lightMeter.readLightLevel();
+  Serial.print("Light: ");
+  Serial.print(lux);
+  Serial.println(" lx");
 }
 
 
@@ -206,15 +204,15 @@ boolean publishToTopic(const char *topic, String payload){
 
 	if (client.connected()){
 		Serial.print("Sending payload: ");
-		Serial.println(payload);
+		Serial.print(payload);
 
 		result=client.publish(topic, (char*) payload.c_str());
 
 		if (result) {
-		  Serial.println("Publish ok");
+		  Serial.println("...ok");
 		}
 		else {
-		  Serial.println("Publish failed");
+		  Serial.println("...failed");
 		}
     }
 
@@ -235,7 +233,7 @@ void callback(char* topic, uint8_t* payload, unsigned int length) {
 	String messageIn="Message received payload="+msg+" topic="+topic +" length="+length;
 
 	Serial.println(messageIn);
-	String result=processEvent(AbstractEvent(msg));
+	PinEvent result=processEvent(PinEvent(msg));
 }
 
 void processHttpCommand(){
@@ -243,10 +241,10 @@ void processHttpCommand(){
 		String command=server.arg("command");
 
 		//AbstractEvent event=AbstractEvent(command);
-		String result=processEvent(AbstractEvent(command));
+		PinEvent result=processEvent(PinEvent(command));
 
 		delay(1);
-		server.send ( 200, "text/html", "{\"status\":\"Ok\",\"command\":"+command+",\"result\":"+result+"}" );
+		server.send ( 200, "text/html", "{\"status\":\"Ok\",\"command\":"+command+",\"result\":"+result.getText()+"}" );
 	}
 
 	server.send(500,"text/html","{\"status\":\"Failed\",\"command\":\"No command received\"}");

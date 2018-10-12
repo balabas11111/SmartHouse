@@ -7,7 +7,11 @@
 
 #include "PinEvent.h"
 
-PinEvent::PinEvent(String _kind,boolean _bubble,uint8_t _pinId,uint8_t _oldVal,uint8_t _val,String _strVal,String _dispatcherName){
+PinEvent::PinEvent(){
+	valid=false;
+}
+
+PinEvent::PinEvent(String _kind,boolean _bubble,uint8_t _pinId,uint8_t _oldVal,uint8_t _val,String _strVal,String _dispatcherName,String _targetName){
 	kind=_kind;
 	bubble=_bubble;
 	pinId=_pinId;
@@ -15,6 +19,7 @@ PinEvent::PinEvent(String _kind,boolean _bubble,uint8_t _pinId,uint8_t _oldVal,u
 	val=_val;
 	strVal=_strVal;
 	dispatcherName=_dispatcherName;
+	targetName=_targetName;
 
 	valid=validate();
 }
@@ -53,6 +58,10 @@ PinEvent::PinEvent(String _pinEventText){
 	targetName=_pinEventText.substring(ind[6]+1);
 
 	valid=_valid & validate();
+}
+
+void PinEvent::setIsBubble(boolean _bubble){
+	bubble=_bubble;
 }
 
 String PinEvent::getKind(){

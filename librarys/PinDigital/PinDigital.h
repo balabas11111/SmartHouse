@@ -18,7 +18,9 @@ public:
 	PinDigital(uint8_t pin);
 	PinDigital(String _name,uint8_t _pin);
 	PinDigital(String name,uint8_t pin,std::function<PinEvent(PinEvent)> funcEvent);
-	PinDigital(String name,uint8_t pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _buttonMode,uint8_t _pinVal);
+	PinDigital(String name,uint8_t pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _changeMode,uint8_t _pinVal);
+
+	boolean loop();
 
 	uint8_t getPin();
 	boolean isChanged();
@@ -29,8 +31,12 @@ public:
 	boolean hasExternalFunction();
 
 	boolean processEvent(PinEvent event);
+	PinEvent processEventNow(PinEvent event);
 	boolean isDispatcherOfEvent(PinEvent event);
 	boolean isTargetOfEvent(PinEvent event);
+
+	PinEvent constructPinEventSetState(uint8_t val,String strVal,String dispatcherName);
+	PinEvent constructPinEventSetState(PinEvent parentEvent);
 
 private:
 	String name;
@@ -48,8 +54,6 @@ private:
 	void handleExternalFunction(String str);
 
 	PinEvent constructEvent(String str);
-
-	boolean loop();
 
 };
 

@@ -7,12 +7,24 @@
 
 #include "Arduino.h"
 #include "TimeTrigger.h"
+#include "FunctionalInterrupt.h"
 
 TimeTrigger::TimeTrigger(unsigned long lastTriggerTime,unsigned long interval,boolean active){
+	construct(lastTriggerTime, interval, active, nullptr);
+}
+
+TimeTrigger::TimeTrigger(unsigned long lastTriggerTime,unsigned long interval,boolean active,std::function<void(void)> funcEvent){
+	construct(lastTriggerTime, interval, active, funcEvent);
+}
+
+void TimeTrigger::construct(unsigned long lastTriggerTime,unsigned long interval,boolean active,std::function<void(void)> funcEvent){
 	_lastTriggerTime=lastTriggerTime;
 	_interval=interval;
 	_active=active;
+
+	_funcEvent=funcEvent;
 }
+
 void TimeTrigger::init(){
 
 }
@@ -27,8 +39,6 @@ boolean TimeTrigger::checkTriggerAndSaveTime(){
 	return result;
 }
 boolean TimeTrigger::checkTrigger(){
-
-
 	//Serial.print("checkTrigger  --- ");
 	if(!_active){
 		return false;
@@ -41,6 +51,16 @@ boolean TimeTrigger::checkTrigger(){
 
 	if(expected<now){
 		result=true;
+	}
+
+	return result;
+}
+
+boolean TimeTrigger::loop(){
+	boolean result=checkTriggerAndSaveTime();
+
+	if(result && _funcEvent!=nullptr){
+		_funcEvent();
 	}
 
 	return result;

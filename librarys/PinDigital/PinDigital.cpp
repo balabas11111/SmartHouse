@@ -23,9 +23,9 @@ PinDigital::PinDigital(String _name,uint8_t _pin,std::function<PinEvent(PinEvent
 	initFunc(funcEvent,CHANGE);
 }
 
-PinDigital::PinDigital(String _name,uint8_t _pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _buttonMode,uint8_t _pinVal){
+PinDigital::PinDigital(String _name,uint8_t _pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _changeMode,uint8_t _pinVal){
 	init(_name,_pin,_pinMode,_pinVal);
-	initFunc(funcEvent,_buttonMode);
+	initFunc(funcEvent,_changeMode);
 }
 
 void PinDigital::init(String _name,uint8_t _pin,uint8_t _pinMode,uint8_t _pinVal){
@@ -60,10 +60,10 @@ uint8_t PinDigital::getVal(){
 boolean PinDigital::setVal(uint8_t val){
 	if(pinInOutVal==OUTPUT){
 		if(val!=getVal()){
-			changed=true;
+			digitalWrite(pin, val);
+			//changed=true;
 		}
-		dispatchState=true;
-		digitalWrite(pin, val);
+		//dispatchState=true;
 
 		return val==digitalRead(pin);
 	}
@@ -98,8 +98,8 @@ void PinDigital::processInterrupt(){
 
 boolean PinDigital::processEvent(PinEvent event){
 	if(event.isValid())
-		if(name.equals(event.getTargetName())){
-			Serial.println(event.getText());
+		if(isTargetOfEvent(event)){
+			Serial.println(name+" process "+event.getText());
 			if(event.getKind().equals(PIN_EVENT_STATE_GET)){
 				dispatchState=true;
 				return true;
@@ -112,9 +112,24 @@ boolean PinDigital::processEvent(PinEvent event){
 	return false;
 }
 
+PinEvent PinDigital::processEventNow(PinEvent event){
+	if(event.isValid())
+		if(isTargetOfEvent(event)){
+			Serial.println(name+" processNow "+event.getText());
+			if(event.getKind().equals(PIN_EVENT_STATE_GET)){
+				return constructEvent(PIN_EVENT_STATE_CURRENT);
+			}
+			if(event.getKind().equals(PIN_EVENT_STATE_SET)){
+				setVal(event.getVal());
+				return constructEvent(PIN_EVENT_STATE_CURRENT);
+			}
+		}
+	return PinEvent();
+}
+
 boolean PinDigital::isDispatcherOfEvent(PinEvent event){
 
-	if(name.equals(event.getDispatcherName())){
+	if(name.equals(event.getDispatcherName()) && event.getPinId()==pin){
 		return true;
 	}
 
@@ -123,7 +138,7 @@ boolean PinDigital::isDispatcherOfEvent(PinEvent event){
 
 boolean PinDigital::isTargetOfEvent(PinEvent event){
 
-	if(name.equals(event.getTargetName())){
+	if(name.equals(event.getTargetName()) && event.getPinId()==pin){
 		return true;
 	}
 
@@ -156,7 +171,15 @@ void PinDigital::handleExternalFunction(String str){
 }
 
 PinEvent PinDigital::constructEvent(String str){
-		return PinEvent(str,true,pin,oldVal,val,str,name);
+		return PinEvent(str,true,pin,oldVal,val,str,name,PIN_EVENT_TARGET_ANY);
+}
+
+PinEvent PinDigital::constructPinEventSetState(uint8_t _val,String _strVal,String _dispatcherName){
+	return PinEvent(PIN_EVENT_STATE_SET,true,pin,0,_val,_strVal,_dispatcherName,name);
+}
+
+PinEvent PinDigital::constructPinEventSetState(PinEvent parentEvent){
+	return PinEvent(PIN_EVENT_STATE_SET,true,pin,0,parentEvent.getVal(),parentEvent.getStrVal(),parentEvent.getDispatcherName(),name);
 }
 
 

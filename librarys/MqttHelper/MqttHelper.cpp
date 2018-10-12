@@ -1,11 +1,13 @@
 #include "Arduino.h"
 #include "MqttHelper.h"
-#include "AbstractEvent.h"
+#include "PinEvent.h"
 #include <PubSubClient.h>
 
-MqttHelper::MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,std::function<void(AbstractEvent)> _externalhandlerFunction,Client& _client){
+MqttHelper::MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,std::function<void(PinEvent)> _externalPinEventFunction,std::function<void(String topic,String message)> _externalCallbackFunction,Client& _client){
 	//settingsBox=_settingsBox;
-	externalhandlerFunction=_externalhandlerFunction;
+	externalPinEventFunction=_externalPinEventFunction;
+	externalCallbackFunction=_externalCallbackFunction;
+
 	subscribeTopics=_subscribeTopics;
 
 	std::function<void(char*, uint8_t*, unsigned int)> afunc =
@@ -25,7 +27,7 @@ void MqttHelper::connect(){
 	if (!client.connected()) {
 
 	  String clientName;
-	  clientName += "esp8266 "+millis();
+	  clientName += String(mqtt_startMessage)+millis();
 
 	if (client.connect((char*) clientName.c_str(),mqtt_user,mqtt_pass)) {
 		Serial.println("Connected to MQTT broker");
@@ -78,6 +80,8 @@ boolean MqttHelper::publish(char* topicName,String message){
 }
 
 void MqttHelper::loop(){
+	connectIfNotConnected();
+
 	if (client.connected()){
 	  client.loop();
 	}
@@ -97,7 +101,11 @@ void MqttHelper::callback(char* topic, uint8_t* payload, unsigned int _length) {
 
 	Serial.println(messageIn);
 
-	externalhandlerFunction(AbstractEvent(msg));
+	if(externalPinEventFunction!=nullptr && msg.length()>3 && msg.startsWith(PIN_EVENT_PREFFIX))
+		externalPinEventFunction(PinEvent(msg));
+
+	if(externalCallbackFunction!=nullptr)
+		externalCallbackFunction(topicIn,msg);
 }
 
 PubSubClient MqttHelper::getClient(){

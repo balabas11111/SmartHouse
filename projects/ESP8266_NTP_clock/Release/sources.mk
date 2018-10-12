@@ -35,12 +35,11 @@ CPP_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 . \
-core/core \
-core/core/libb64 \
-core/core/spiffs \
-core/core/umm_malloc \
-libraries/ESP8266WiFi/src \
-libraries/NTPClient \
-libraries/TM1637 \
-libraries/TimeTriggerB \
+core\core \
+core\core\libb64 \
+core\core\spiffs \
+core\core\umm_malloc \
+libraries\ESP8266WiFi\src \
+libraries\TM1637 \
+libraries\TimeTriggerB \
 

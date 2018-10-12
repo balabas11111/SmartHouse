@@ -9,11 +9,13 @@
 #define TIMETRIGGER_H_
 
 #include "Arduino.h"
+#include "FunctionalInterrupt.h"
 
 class TimeTrigger{
 
 public:
 	TimeTrigger(unsigned long lastTriggerTime,unsigned long interval,boolean active);
+	TimeTrigger(unsigned long lastTriggerTime,unsigned long interval,boolean active,std::function<void(void)> funcEvent);
 	void init();
 	boolean checkTriggerAndSaveTime();
 	boolean checkTrigger();
@@ -24,7 +26,12 @@ public:
 	unsigned long getLastTriggerTime();
 	unsigned long setLastTriggerTime(unsigned long lastTriggerTime);
 
+	boolean loop();
+
 private:
+
+	void construct(unsigned long lastTriggerTime,unsigned long interval,boolean active,std::function<void(void)> funcEvent);
+	std::function<void(void)> _funcEvent;
 	unsigned long _lastTriggerTime;
 	unsigned long _interval;
 	boolean _active;
