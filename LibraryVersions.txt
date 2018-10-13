@@ -1,4 +1,24 @@
-Comuniation
+Platform
+
+	Arduino AVR Boards
+	
+		1.6.11
+		1.6.20
+		
+	Esp8266
+	
+		2.1.0
+		2.2.0
+		2.3.0
+		2.4.0
+		2.4.0-rc2
+		
+Current platform
+
+		2.4.0-rc2
+
+---------------------------------------------		
+Comunication
 
 	Ethernet      1.1.2
 	GSM           1.0.5
