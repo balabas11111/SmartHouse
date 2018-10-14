@@ -6,97 +6,195 @@
  */
 
 #include "Arduino.h"
-#include "PinDigital.h"
+#include "PinAnalog.h"
 
-PinDigital::PinDigital(uint8_t pin){
-	init("PinDigital",pin,INPUT,LOW);
+PinAnalog::PinAnalog(uint8_t pin){
+	init("PinAnalog",pin,INPUT,LOW,CHANGE,0,0);
 	//initFunc(nullptr);
 }
 
-PinDigital::PinDigital(String _name,uint8_t _pin){
-	init(_name,_pin,INPUT,LOW);
+PinAnalog::PinAnalog(String _name,uint8_t _pin){
+	init(_name,_pin,INPUT,LOW,CHANGE,0,0);
 	//initFunc(nullptr);
 }
 
-PinDigital::PinDigital(String _name,uint8_t _pin,std::function<PinEvent(PinEvent)> funcEvent){
-	init(_name,_pin,INPUT,LOW);
+PinAnalog::PinAnalog(String _name,uint8_t _pin,std::function<PinEvent(PinEvent)> funcEvent){
+	init(_name,_pin,INPUT,LOW,CHANGE,0,0);
 	initFunc(funcEvent,CHANGE);
 }
 
-PinDigital::PinDigital(String _name,uint8_t _pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _changeMode,uint8_t _pinVal){
-	init(_name,_pin,_pinMode,_pinVal);
+PinAnalog::PinAnalog(String _name,uint8_t _pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _changeMode,uint8_t _pinVal){
+	init(_name,_pin,_pinMode,_pinVal,_changeMode,0,0);
 	initFunc(funcEvent,_changeMode);
 }
 
-void PinDigital::init(String _name,uint8_t _pin,uint8_t _pinMode,uint8_t _pinVal){
-	Serial.println("Start init pin "+_name);
+PinAnalog::~PinAnalog(){
+	Serial.println("destructed");
+}
+
+void PinAnalog::init(String _name,uint8_t _pin,uint8_t _pinMode,uint16_t _pinVal,uint8_t _changeMode,uint16_t _warmUpTime,uint16_t _measurePeriodTime){
+
+	String pinModeStr="OTHER";
+
+	if(_pinMode==INPUT){pinModeStr="INPUT";}
+	if(_pinMode==OUTPUT){pinModeStr="OUTPUT";}
+
+	String pinValStr=(_pinVal==HIGH)?"HIGH":"LOW";
+
+	Serial.print("PinAnalog(name="+_name+" pin="+String(_pin)+" _pinMode="+pinModeStr+" _pinVal="+pinValStr+")");
 	name=_name;
 	pin=_pin;
 	pinInOutVal=_pinMode;
 	changed=false;
+	warmUpTime=_warmUpTime;
+	measurePeriodTime=_measurePeriodTime;
+
+	lastTime=millis();
 
 	pinMode(pin, _pinMode);
 
 	if(pinInOutVal==OUTPUT)
-		digitalWrite(pin, _pinVal);
+		analogWrite(pin, _pinVal);
 
-	oldVal=getVal();
+	currentTotal=getCurrent();
+	currentIteration=1;
+
+	oldVal=currentTotal;
+
+	attachInterrupt(pin, [this](){processInterrupt();}, _changeMode);
+	Serial.print("...done");
 }
 
-void PinDigital::initFunc(std::function<PinEvent(PinEvent)> _externalFunction,uint8_t _buttonMode){
+String PinAnalog::displayDetails(){
+	String pinModeStr="OTHER";
+
+		if(pinInOutVal==INPUT){pinModeStr="INPUT";}
+		if(pinInOutVal==OUTPUT){pinModeStr="OUTPUT";}
+
+		String pinValStr=(val==HIGH)?"HIGH":"LOW";
+
+		String res=("PinDigital(name="+name+" pin="+String(pin)+" _pinMode="+pinModeStr+" _pinVal="+pinValStr+")");
+
+		Serial.println(res);
+
+		return res;
+}
+
+void PinAnalog::initFunc(std::function<PinEvent(PinEvent)> _externalFunction,uint8_t _buttonMode){
 	externalFunction=_externalFunction;
-	attachInterrupt(pin, [this](){processInterrupt();}, _buttonMode);
+	Serial.print("bm="+String(_buttonMode));
+	Serial.print("..function added");
 }
 
-boolean PinDigital::hasExternalFunction(){
+boolean PinAnalog::hasExternalFunction(){
 	return externalFunction!=nullptr;
 }
 
-uint8_t PinDigital::getVal(){
-	val=digitalRead(pin);
+uint16_t PinAnalog::getVal(){
+	val =currentTotal/currentIteration;
 	return val;
 }
 
-boolean PinDigital::setVal(uint8_t val){
+uint16_t PinAnalog::getCurrent(){
+	return analogRead(pin);
+}
+
+boolean PinAnalog::setVal(uint16_t val){
 	if(pinInOutVal==OUTPUT){
 		if(val!=getVal()){
-			digitalWrite(pin, val);
+			analogWrite(pin, val);
 			//changed=true;
 		}
 		//dispatchState=true;
 
-		return val==digitalRead(pin);
+		return val==analogRead(pin);
 	}
 	return false;
 }
 
-uint8_t  PinDigital::getPin(){
+String PinAnalog::getName(){
+	return name;
+}
+uint8_t  PinAnalog::getPin(){
 	return pin;
 }
-boolean  PinDigital::isChanged(){
+boolean  PinAnalog::isChanged(){
 	return changed;
 }
-boolean  PinDigital::isVal(uint8_t _val){
+boolean  PinAnalog::isVal(uint8_t _val){
 	return val==_val;
 }
 
-void PinDigital::processInterrupt(){
-	uint8_t now=getVal();
+void PinAnalog::processInterrupt(){
 
-	Serial.print("Interrupt "+name+" pin="+pin+" state="+now);
+	uint16_t curVal=getCurrent();
+	Serial.print("Interrupt "+name+" pin="+pin+" curVal="+curVal);
 
-	if(now!=oldVal){
-		Serial.println("...event dispatched");
-		changed=true;
-	}else{
-		changed=false;
-		Serial.println("...no event");
+	if(warmUpTime!=0){
+		//need to warm up sensor
+		currentIteration++;
+		currentTotal+=curVal;
+		oldVal=currentTotal/currentIteration;
+
+		if(lastTime+warmUpTime>millis()){
+			//still not warmed
+			Serial.println("Warming iter="+String(currentIteration)+" currTotal"+String(currentTotal)+" oldVal="+String(oldVal));
+		}else{
+			warmUpTime=0;
+			Serial.println("Warmed iter="+String(currentIteration)+" currTotal"+String(currentTotal)+" oldVal="+String(oldVal));
+
+			currentTotal=curVal;
+			currentIteration=1;
+
+			lastTime=millis();
+		}
+
+		return;
 	}
 
-	oldVal=now;
+	boolean complete=checkIfMeasureCompleted();
+
+	if(complete){
+		return;
+	}
+
+	Serial.println("Measure still not completed");
+	currentIteration++;
+	currentTotal+=curVal;
+
 }
 
-boolean PinDigital::processEvent(PinEvent event){
+boolean PinAnalog::checkIfMeasureCompleted(){
+	boolean completed=false;
+
+	if(lastTime+measurePeriodTime>millis()){
+		Serial.println("Measure complete");
+
+		uint16_t nowVal=getVal();
+
+		currentIteration=1;
+		currentTotal=getCurrent();
+
+		lastTime=millis();
+
+		uint16_t currDiff=(nowVal>oldVal)?(nowVal-oldVal):(oldVal-nowVal);
+
+		if(currDiff>maxDiffToDispatchEvent){
+			Serial.println("...event dispatched");
+			changed=true;
+		}else{
+			changed=false;
+			Serial.println("...no event");
+		}
+
+		oldVal=nowVal;
+		completed=true;
+	}
+
+	return completed;
+}
+
+boolean PinAnalog::processEvent(PinEvent event){
 	if(event.isValid())
 		if(isTargetOfEvent(event)){
 			Serial.println(name+" process "+event.getText());
@@ -112,7 +210,7 @@ boolean PinDigital::processEvent(PinEvent event){
 	return false;
 }
 
-PinEvent PinDigital::processEventNow(PinEvent event){
+PinEvent PinAnalog::processEventNow(PinEvent event){
 	if(event.isValid())
 		if(isTargetOfEvent(event)){
 			Serial.println(name+" processNow "+event.getText());
@@ -127,7 +225,7 @@ PinEvent PinDigital::processEventNow(PinEvent event){
 	return PinEvent();
 }
 
-boolean PinDigital::isDispatcherOfEvent(PinEvent event){
+boolean PinAnalog::isDispatcherOfEvent(PinEvent event){
 
 	if(name.equals(event.getDispatcherName()) && event.getPinId()==pin){
 		return true;
@@ -136,7 +234,7 @@ boolean PinDigital::isDispatcherOfEvent(PinEvent event){
 	return false;
 }
 
-boolean PinDigital::isTargetOfEvent(PinEvent event){
+boolean PinAnalog::isTargetOfEvent(PinEvent event){
 
 	if(name.equals(event.getTargetName()) && event.getPinId()==pin){
 		return true;
@@ -145,8 +243,12 @@ boolean PinDigital::isTargetOfEvent(PinEvent event){
 	return false;
 }
 
-boolean PinDigital::loop(){
+boolean PinAnalog::loop(){
 	boolean result=false;
+
+	if(!changed){
+		checkIfMeasureCompleted();
+	}
 
 	if(changed){
 		handleExternalFunction(PIN_EVENT_STATE_UPDATED);
@@ -162,7 +264,7 @@ boolean PinDigital::loop(){
 	return result;
 }
 
-void PinDigital::handleExternalFunction(String str){
+void PinAnalog::handleExternalFunction(String str){
 	if(hasExternalFunction()){
 		Serial.print("Pin "+name+" val="+getVal());
 		externalFunction(constructEvent(str));
@@ -170,15 +272,15 @@ void PinDigital::handleExternalFunction(String str){
 	}
 }
 
-PinEvent PinDigital::constructEvent(String str){
+PinEvent PinAnalog::constructEvent(String str){
 		return PinEvent(str,true,pin,oldVal,val,str,name,PIN_EVENT_TARGET_ANY);
 }
 
-PinEvent PinDigital::constructPinEventSetState(uint8_t _val,String _strVal,String _dispatcherName){
+PinEvent PinAnalog::constructPinEventSetState(uint16_t _val,String _strVal,String _dispatcherName){
 	return PinEvent(PIN_EVENT_STATE_SET,true,pin,0,_val,_strVal,_dispatcherName,name);
 }
 
-PinEvent PinDigital::constructPinEventSetState(PinEvent parentEvent){
+PinEvent PinAnalog::constructPinEventSetState(PinEvent parentEvent){
 	return PinEvent(PIN_EVENT_STATE_SET,true,pin,0,parentEvent.getVal(),parentEvent.getStrVal(),parentEvent.getDispatcherName(),name);
 }
 

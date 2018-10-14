@@ -16,7 +16,12 @@ Written by Christopher Laws, March, 2013.
 
 BH1750::BH1750() {
 }
-
+/*
+void BH1750::begin(){
+	Wire.begin();
+	configure(BH1750_CONTINUOUS_HIGH_RES_MODE);
+}
+*/
 void BH1750::begin(uint8_t mode) {
 
   Wire.begin();

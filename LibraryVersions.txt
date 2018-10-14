@@ -1,3 +1,14 @@
+Paths
+
+projects folder
+
+d:\projects\!!!SmartHouse
+
+workspace
+
+d:\projects\sloeber431Workspace\
+
+
 Platform
 
 	Arduino AVR Boards

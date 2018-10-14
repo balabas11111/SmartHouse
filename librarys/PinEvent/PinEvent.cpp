@@ -9,9 +9,10 @@
 
 PinEvent::PinEvent(){
 	valid=false;
+	empty=true;
 }
 
-PinEvent::PinEvent(String _kind,boolean _bubble,uint8_t _pinId,uint8_t _oldVal,uint8_t _val,String _strVal,String _dispatcherName,String _targetName){
+PinEvent::PinEvent(String _kind,boolean _bubble,uint8_t _pinId,uint16_t _oldVal,uint16_t _val,String _strVal,String _dispatcherName,String _targetName){
 	kind=_kind;
 	bubble=_bubble;
 	pinId=_pinId;
@@ -22,12 +23,13 @@ PinEvent::PinEvent(String _kind,boolean _bubble,uint8_t _pinId,uint8_t _oldVal,u
 	targetName=_targetName;
 
 	valid=validate();
+	empty=false;
 }
 
 
 //kind:bubble:pinId:oldVal:val:strVal:dispatcherName:targetName:
 PinEvent::PinEvent(String _pinEventText){
-	Serial.println("Construct event "+_pinEventText);
+	Serial.print("Con event text="+_pinEventText);
 
 	uint8_t len=7;
 
@@ -58,6 +60,9 @@ PinEvent::PinEvent(String _pinEventText){
 	targetName=_pinEventText.substring(ind[6]+1);
 
 	valid=_valid & validate();
+
+	Serial.println("...done valid="+String(valid));
+	empty=false;
 }
 
 void PinEvent::setIsBubble(boolean _bubble){
@@ -73,10 +78,10 @@ boolean PinEvent::isBubble(){
 uint8_t PinEvent::getPinId(){
 	return pinId;
 }
-uint8_t PinEvent::getOldVal(){
+uint16_t PinEvent::getOldVal(){
 	return oldVal;
 }
-uint8_t PinEvent::getVal(){
+uint16_t PinEvent::getVal(){
 	return val;
 }
 String PinEvent::getStrVal(){
@@ -100,8 +105,12 @@ boolean PinEvent::isEventOfKind(String _kind){
 	return kind.equals(_kind);
 }
 
+boolean PinEvent::isEmpty(){
+	return empty;
+}
+
 boolean PinEvent::validate(){
-	return kind.length()>0 && (pinId>-2) && strVal.length()>0 && dispatcherName.length()>0;
+	return kind.length()>0 && strVal.length()>0 && dispatcherName.length()>0;
 }
 
 

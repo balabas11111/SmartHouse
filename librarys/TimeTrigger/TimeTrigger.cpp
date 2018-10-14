@@ -17,6 +17,10 @@ TimeTrigger::TimeTrigger(unsigned long lastTriggerTime,unsigned long interval,bo
 	construct(lastTriggerTime, interval, active, funcEvent);
 }
 
+TimeTrigger::~TimeTrigger(){
+Serial.println("TimeTrigger destructed");
+}
+
 void TimeTrigger::construct(unsigned long lastTriggerTime,unsigned long interval,boolean active,std::function<void(void)> funcEvent){
 	_lastTriggerTime=lastTriggerTime;
 	_interval=interval;
@@ -29,6 +33,7 @@ void TimeTrigger::init(){
 
 }
 void TimeTrigger::setActive(boolean b){
+	Serial.println("TimeTrigger active="+String(b));
 	_active=b;
 }
 
@@ -56,14 +61,33 @@ boolean TimeTrigger::checkTrigger(){
 	return result;
 }
 
-boolean TimeTrigger::loop(){
-	boolean result=checkTriggerAndSaveTime();
+String TimeTrigger::getName(){
+	return "TimeTrigger(_interval="+String(_interval)+" _active="+String(_active)+")";
+}
 
-	if(result && _funcEvent!=nullptr){
-		_funcEvent();
+String TimeTrigger::displayDetails(){
+	String res=getName();
+	Serial.println(res);
+
+	return res;
+}
+
+boolean TimeTrigger::loop(){
+	if(_active){
+		boolean result=checkTrigger();
+
+		if(result && _funcEvent!=nullptr){
+			_funcEvent();
+		}
+
+		if(result){
+			saveTime();
+		}
+
+		return result;
 	}
 
-	return result;
+	return false;
 }
 
 void TimeTrigger::saveTime(){

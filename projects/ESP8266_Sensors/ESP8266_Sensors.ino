@@ -781,6 +781,7 @@ void setupWiFi(){
 		Serial.println(espSettingsBox.password);
 
 		WiFi.mode(WIFI_STA);
+
 		WiFi.config(espSettingsBox.localIp,espSettingsBox.gateIp,
 				espSettingsBox.subnetIp,espSettingsBox.dnsIp,espSettingsBox.dnsIp2);
 		WiFi.begin ( const_cast<char*>(espSettingsBox.ssid.c_str()),

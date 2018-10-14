@@ -18,7 +18,7 @@
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="io.sloeber.targetplatform.42723826" name="Arduino Target" osList="all" superClass="io.sloeber.targetplatform"/>
 							<builder buildPath="${workspace_loc:/MQTT_Switch_ON_OFF}/Release" id="io.sloeber.sketch.builder.763454281" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Arduino sketch builder" superClass="io.sloeber.sketch.builder"/>
 							<tool id="io.sloeber.tool.sketch.compiler.cpp.2069742094" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.cpp.sketch.option.incpath.112367367" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" valueType="includePath">
+								<option id="io.sloeber.compiler.cpp.sketch.option.incpath.112367367" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WiFi}&quot;"/>
@@ -27,7 +27,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PubSubClient/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ArduinoJson}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ArduinoJson/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/TimeTrigger}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266HTTPClient}&quot;"/>
@@ -37,11 +36,21 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinDigital}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinEvent}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/MqttHelper}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/TimeTrigger}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/EspSettingsBox}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Loopable}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinAnalog}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinExternalFunc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_BME280_Library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_Sensor}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/I2CHelper}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Measurer}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1640988995" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
 							<tool id="io.sloeber.tool.compiler.c.408309373" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.c.sketch.option.incpath.681807050" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" valueType="includePath">
+								<option id="io.sloeber.compiler.c.sketch.option.incpath.681807050" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WiFi}&quot;"/>
@@ -50,7 +59,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PubSubClient/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ArduinoJson}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ArduinoJson/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/TimeTrigger}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266HTTPClient}&quot;"/>
@@ -60,11 +68,21 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinDigital}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinEvent}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/MqttHelper}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/TimeTrigger}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/EspSettingsBox}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Loopable}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinAnalog}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinExternalFunc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_BME280_Library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_Sensor}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/I2CHelper}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Measurer}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1095845800" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
 							<tool id="io.sloeber.tool.sketch.compiler.s.1942866426" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s">
-								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="io.sloeber.compiler.asm.sketch.option.incpath.1546492331" name="Include Paths (-I)" superClass="io.sloeber.compiler.asm.sketch.option.incpath" valueType="includePath">
+								<option id="io.sloeber.compiler.asm.sketch.option.incpath.1546492331" name="Include Paths (-I)" superClass="io.sloeber.compiler.asm.sketch.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WiFi}&quot;"/>
@@ -73,7 +91,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PubSubClient/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ArduinoJson}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ArduinoJson/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/TimeTrigger}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266HTTPClient}&quot;"/>
@@ -83,6 +100,16 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinDigital}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinEvent}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/MqttHelper}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/TimeTrigger}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/EspSettingsBox}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Loopable}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinAnalog}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinExternalFunc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_BME280_Library}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_Sensor}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/I2CHelper}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Measurer}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.2135749945" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>

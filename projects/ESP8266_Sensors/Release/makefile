@@ -16,12 +16,17 @@ RM := del
 -include libraries\PubSubClient\src\subdir.mk
 -include libraries\OneWire\subdir.mk
 -include libraries\OLED\subdir.mk
+-include libraries\Loopable\subdir.mk
+-include libraries\LedB\subdir.mk
+-include libraries\EspSettingsBox\subdir.mk
 -include libraries\ESP8266WiFi\src\subdir.mk
 -include libraries\ESP8266WebServer\src\subdir.mk
 -include libraries\ESP8266HTTPClient\src\subdir.mk
 -include libraries\EEPROM\subdir.mk
 -include libraries\DallasTemperature\subdir.mk
 -include libraries\DHT_sensor_library\subdir.mk
+-include libraries\ButtonB\subdir.mk
+-include libraries\BeeperB\subdir.mk
 -include core\core\umm_malloc\subdir.mk
 -include core\core\spiffs\subdir.mk
 -include core\core\libb64\subdir.mk
@@ -65,7 +70,7 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 AR += \
-D:\projects\!!!SmartHouse\workspace\ESP8266_Sensors\Release\arduino.ar \
+D:\projects\!!!SmartHouse\projects\ESP8266_Sensors\Release\arduino.ar \
 
 ELF += \
 ESP8266_Sensors.elf \
@@ -81,25 +86,25 @@ all: ESP8266_Sensors
 ESP8266_Sensors: $(HEX)
 	@echo 'Building target: $@'
 	@echo 'Printing size:'
-	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/xtensa-lx106-elf-gcc/1.20.0-26-gb404fb9-2/bin/xtensa-lx106-elf-size" -A "D:/projects/!!!SmartHouse/workspace/ESP8266_Sensors/Release/ESP8266_Sensors.elf"
+	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/xtensa-lx106-elf-gcc/1.20.0-26-gb404fb9-2/bin/xtensa-lx106-elf-size" -A "D:/projects/!!!SmartHouse/projects/ESP8266_Sensors/Release/ESP8266_Sensors.elf"
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-D:\projects\!!!SmartHouse\workspace\ESP8266_Sensors\Release\arduino.ar: $(AR_OBJ)
+D:\projects\!!!SmartHouse\projects\ESP8266_Sensors\Release\arduino.ar: $(AR_OBJ)
 	@echo 'Starting archiver'
-	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/xtensa-lx106-elf-gcc/1.20.0-26-gb404fb9-2/bin/xtensa-lx106-elf-ar" cru "D:\projects\!!!SmartHouse\workspace\ESP8266_Sensors/Release/arduino.ar"    D:/projects/!!!SmartHouse/workspace/ESP8266_Sensors/Release/arduino.ar $(AR_OBJ)
+	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/xtensa-lx106-elf-gcc/1.20.0-26-gb404fb9-2/bin/xtensa-lx106-elf-ar" cru "D:\projects\!!!SmartHouse\projects\ESP8266_Sensors/Release/arduino.ar"    D:/projects/!!!SmartHouse/projects/ESP8266_Sensors/Release/arduino.ar $(AR_OBJ)
 	@echo 'Finished building: $@'
 	@echo ' '
 
 ESP8266_Sensors.elf: $(LINK_OBJ) $(AR)
 	@echo 'Starting combiner'
-	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/xtensa-lx106-elf-gcc/1.20.0-26-gb404fb9-2/bin/xtensa-lx106-elf-gcc" -g -Wall -Wextra -Os -nostdlib -Wl,--no-check-sections -u call_user_start -u _printf_float -u _scanf_float -Wl,-static "-LD:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/tools/sdk/lib" "-LD:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/tools/sdk/ld" "-LD:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/tools/sdk/libc/xtensa-lx106-elf/lib" "-Teagle.flash.4m.ld" -Wl,--gc-sections -Wl,-wrap,system_restart_local -Wl,-wrap,spi_flash_read -o "D:\projects\!!!SmartHouse\workspace\ESP8266_Sensors/Release/ESP8266_Sensors.elf" -Wl,--start-group   $(LINK_OBJ)  "D:\projects\!!!SmartHouse\workspace\ESP8266_Sensors/Release/arduino.ar" -lhal -lphy -lpp -lnet80211 -llwip_gcc -lwpa -lcrypto -lmain -lwps -laxtls -lespnow -lsmartconfig -lairkiss -lmesh -lwpa2 -lstdc++ -lm -lc -lgcc -Wl,--end-group "-LD:\projects\!!!SmartHouse\workspace\ESP8266_Sensors/Release" D:/projects/!!!SmartHouse/workspace/ESP8266_Sensors/Release/arduino.ar
+	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/xtensa-lx106-elf-gcc/1.20.0-26-gb404fb9-2/bin/xtensa-lx106-elf-gcc" -g -Wall -Wextra -Os -nostdlib -Wl,--no-check-sections -u call_user_start -u _printf_float -u _scanf_float -Wl,-static "-LD:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/tools/sdk/lib" "-LD:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/tools/sdk/ld" "-LD:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/tools/sdk/libc/xtensa-lx106-elf/lib" "-Teagle.flash.4m.ld" -Wl,--gc-sections -Wl,-wrap,system_restart_local -Wl,-wrap,spi_flash_read -o "D:\projects\!!!SmartHouse\projects\ESP8266_Sensors/Release/ESP8266_Sensors.elf" -Wl,--start-group   $(LINK_OBJ)  "D:\projects\!!!SmartHouse\projects\ESP8266_Sensors/Release/arduino.ar" -lhal -lphy -lpp -lnet80211 -llwip_gcc -lwpa -lcrypto -lmain -lwps -laxtls -lespnow -lsmartconfig -lairkiss -lmesh -lwpa2 -lstdc++ -lm -lc -lgcc -Wl,--end-group "-LD:\projects\!!!SmartHouse\projects\ESP8266_Sensors/Release" D:/projects/!!!SmartHouse/projects/ESP8266_Sensors/Release/arduino.ar
 	@echo 'Finished building: $@'
 	@echo ' '
 
 ESP8266_Sensors.hex: $(ELF)
 	@echo 'Do all objcopy commands'
-	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/esptool/0.4.12/esptool.exe" -eo "D:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/bootloaders/eboot/eboot.elf" -bo "D:/projects/!!!SmartHouse/workspace/ESP8266_Sensors/Release/ESP8266_Sensors.bin" -bm dio -bf 40 -bz 4M -bs .text -bp 4096 -ec -eo "D:/projects/!!!SmartHouse/workspace/ESP8266_Sensors/Release/ESP8266_Sensors.elf" -bs .irom0.text -bs .text -bs .data -bs .rodata -bc -ec
+	"D:\projects\sloeber\/arduinoPlugin/packages/esp8266/tools/esptool/0.4.12/esptool.exe" -eo "D:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/bootloaders/eboot/eboot.elf" -bo "D:/projects/!!!SmartHouse/projects/ESP8266_Sensors/Release/ESP8266_Sensors.bin" -bm dio -bf 40 -bz 4M -bs .text -bp 4096 -ec -eo "D:/projects/!!!SmartHouse/projects/ESP8266_Sensors/Release/ESP8266_Sensors.elf" -bs .irom0.text -bs .text -bs .data -bs .rodata -bc -ec
 	@echo 'Finished building: $@'
 	@echo ' '
 

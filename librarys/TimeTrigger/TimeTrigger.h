@@ -10,12 +10,14 @@
 
 #include "Arduino.h"
 #include "FunctionalInterrupt.h"
+#include "Loopable.h"
 
-class TimeTrigger{
+class TimeTrigger:public Loopable{
 
 public:
 	TimeTrigger(unsigned long lastTriggerTime,unsigned long interval,boolean active);
 	TimeTrigger(unsigned long lastTriggerTime,unsigned long interval,boolean active,std::function<void(void)> funcEvent);
+	virtual ~TimeTrigger();
 	void init();
 	boolean checkTriggerAndSaveTime();
 	boolean checkTrigger();
@@ -26,6 +28,8 @@ public:
 	unsigned long getLastTriggerTime();
 	unsigned long setLastTriggerTime(unsigned long lastTriggerTime);
 
+	String getName();
+	String displayDetails();
 	boolean loop();
 
 private:

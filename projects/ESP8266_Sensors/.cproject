@@ -22,7 +22,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/DallasTemperature}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266mDNS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266WiFi}&quot;"/>
@@ -40,10 +39,13 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266HTTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266HTTPClient/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266HTTPUpdateServer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/PubSubClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/PubSubClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/BeeperB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ButtonB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/EspSettingsBox}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/LedB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/Loopable}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.790807860" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -52,7 +54,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/DallasTemperature}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266mDNS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266WiFi}&quot;"/>
@@ -70,10 +71,13 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266HTTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266HTTPClient/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266HTTPUpdateServer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/PubSubClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/PubSubClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/BeeperB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ButtonB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/EspSettingsBox}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/LedB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/Loopable}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1959994074" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -82,7 +86,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/DallasTemperature}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266mDNS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266WiFi}&quot;"/>
@@ -100,10 +103,13 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266HTTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266HTTPClient/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266HTTPUpdateServer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/PubSubClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/PubSubClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/BeeperB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/ButtonB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/EspSettingsBox}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/LedB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Sensors/libraries/Loopable}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.856042340" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>

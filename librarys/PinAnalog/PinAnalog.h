@@ -5,51 +5,66 @@
  *      Author: Vitaliy_Vlasov
  */
 
-#ifndef LIBRARIES_PINEVENT_PINDIGITAL_H_
-#define LIBRARIES_PINEVENT_PINDIGITAL_H_
+#ifndef LIBRARIES_PINEVENT_PINANALOG_H_
+#define LIBRARIES_PINEVENT_PINANALOG_H_
 
 #include "Arduino.h"
 #include <FunctionalInterrupt.h>
+#include <Loopable.h>
 #include <PinEvent.h>
 
-class PinDigital{
+class PinAnalog: public Loopable {
 
 public:
-	PinDigital(uint8_t pin);
-	PinDigital(String _name,uint8_t _pin);
-	PinDigital(String name,uint8_t pin,std::function<PinEvent(PinEvent)> funcEvent);
-	PinDigital(String name,uint8_t pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _changeMode,uint8_t _pinVal);
+	PinAnalog(uint8_t pin);
+	PinAnalog(String _name,uint8_t _pin);
+	PinAnalog(String name,uint8_t pin,std::function<PinEvent(PinEvent)> funcEvent);
+	PinAnalog(String name,uint8_t pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _changeMode,uint8_t _pinVal);
 
+	virtual ~PinAnalog();
+
+	String displayDetails();
 	boolean loop();
 
+	String getName();
 	uint8_t getPin();
 	boolean isChanged();
 	boolean isVal(uint8_t _val);
-	uint8_t getVal();
-	boolean setVal(uint8_t);
+	uint16_t getCurrent();
+	uint16_t getVal();
+	boolean setVal(uint16_t);
 	void processInterrupt();
 	boolean hasExternalFunction();
 
+	boolean checkIfMeasureCompleted();
 	boolean processEvent(PinEvent event);
 	PinEvent processEventNow(PinEvent event);
 	boolean isDispatcherOfEvent(PinEvent event);
 	boolean isTargetOfEvent(PinEvent event);
 
-	PinEvent constructPinEventSetState(uint8_t val,String strVal,String dispatcherName);
+	PinEvent constructPinEventSetState(uint16_t val,String strVal,String dispatcherName);
 	PinEvent constructPinEventSetState(PinEvent parentEvent);
 
 private:
 	String name;
 	uint8_t pin;
 	uint8_t pinInOutVal;
-	uint8_t oldVal;
-	uint8_t val;
+	uint16_t oldVal;
+	uint16_t val;
 	boolean changed;
 	boolean dispatchState;
 	std::function<PinEvent(PinEvent)> externalFunction;
 
-	void init(String name,uint8_t pin,uint8_t _pinMode,uint8_t _pinVal);
-	void initFunc(std::function<PinEvent(PinEvent)> externalFunction,uint8_t _buttonMode);
+	uint16_t warmUpTime;
+	uint16_t measurePeriodTime;
+	uint16_t maxDiffToDispatchEvent;
+	ulong lastTime;
+
+	uint16_t currentIteration;
+	uint16_t currentTotal;
+
+	void init(String name,uint8_t pin,uint8_t _pinMode,uint16_t _pinVal,uint8_t _changeMode,uint16_t warmUpTime,uint16_t measurePeriodTime);
+	void initFunc(std::function<PinEvent(PinEvent)> externalFunction,uint8_t _changeMode);
 
 	void handleExternalFunction(String str);
 
