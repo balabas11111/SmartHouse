@@ -9,28 +9,42 @@
 #include "PinDigital.h"
 
 PinDigital::PinDigital(uint8_t pin){
-	init("PinDigital",pin,INPUT,LOW,LOW);
+	construct("PinDigital",pin,INPUT,LOW,LOW);
 	//initFunc(nullptr);
 }
 
 PinDigital::PinDigital(String _name,uint8_t _pin){
-	init(_name,_pin,INPUT,LOW,LOW);
+	construct(_name,_pin,INPUT,LOW,LOW);
 	//initFunc(nullptr);
 }
 
 PinDigital::PinDigital(String _name,uint8_t _pin,std::function<PinEvent(PinEvent)> funcEvent){
-	init(_name,_pin,INPUT,LOW,LOW);
-	initFunc(funcEvent,CHANGE);
+	construct(_name,_pin,INPUT,LOW,LOW);
+	initFunc(funcEvent,CHANGE,nullptr);
 }
 
+PinDigital::PinDigital(String _name,uint8_t _pin,std::function<PinEvent(PinEvent)> funcEvent,std::function<PinEvent(PinEvent)> _isDispatcherPostFunction){
+	construct(_name,_pin,INPUT,LOW,LOW);
+	initFunc(funcEvent,CHANGE,_isDispatcherPostFunction);
+}
 PinDigital::PinDigital(String _name,uint8_t _pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _changeMode,uint8_t _pinVal){
-	init(_name,_pin,_pinMode,_pinVal,LOW);
-	initFunc(funcEvent,_changeMode);
+	construct(_name,_pin,_pinMode,_pinVal,LOW);
+	initFunc(funcEvent,_changeMode,nullptr);
 }
 
 PinDigital::PinDigital(String _name,uint8_t _pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _changeMode,uint8_t _pinVal,uint8_t _turnOffLevel){
-	init(_name,_pin,_pinMode,_pinVal,_turnOffLevel);
-	initFunc(funcEvent,_changeMode);
+	construct(_name,_pin,_pinMode,_pinVal,_turnOffLevel);
+	initFunc(funcEvent,_changeMode,nullptr);
+}
+
+PinDigital::PinDigital(String _name,uint8_t _pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _changeMode,uint8_t _pinVal,std::function<PinEvent(PinEvent)> _isDispatcherPostFunction){
+	construct(_name,_pin,_pinMode,_pinVal,LOW);
+	initFunc(funcEvent,_changeMode,_isDispatcherPostFunction);
+}
+
+PinDigital::PinDigital(String _name,uint8_t _pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _changeMode,uint8_t _pinVal,uint8_t _turnOffLevel,std::function<PinEvent(PinEvent)> _isDispatcherPostFunction){
+	construct(_name,_pin,_pinMode,_pinVal,_turnOffLevel);
+	initFunc(funcEvent,_changeMode,_isDispatcherPostFunction);
 }
 
 PinDigital::~PinDigital(){
@@ -51,7 +65,7 @@ String PinDigital::displayDetails(){
 	return result;
 }
 
-void PinDigital::init(String _name,uint8_t _pin,uint8_t _pinMode,uint8_t _pinVal,uint8_t _turnOffLevel){
+void PinDigital::construct(String _name,uint8_t _pin,uint8_t _pinMode,uint8_t _pinVal,uint8_t _turnOffLevel){
 
 	name=_name;
 	pin=_pin;
@@ -68,29 +82,24 @@ void PinDigital::init(String _name,uint8_t _pin,uint8_t _pinMode,uint8_t _pinVal
 	Serial.print("...done");
 }
 
-void PinDigital::initFunc(std::function<PinEvent(PinEvent)> _externalFunction,uint8_t _buttonMode){
+void PinDigital::initFunc(std::function<PinEvent(PinEvent)> _externalFunction,uint8_t _buttonMode,std::function<PinEvent(PinEvent)> _isDispatcherPostFunction){
 	externalFunction=_externalFunction;
+	isDispatcherPostFunction=_isDispatcherPostFunction;
 	attachInterrupt(pin, [this](){processInterrupt();}, _buttonMode);
+	//attachInterrupt(pin, [this](){onRising();}, RISING);
+	//attachInterrupt(pin, [this](){onFalling();}, FALLING);
 	Serial.print("..function added");
 }
 
-boolean PinDigital::hasExternalFunction(){
-	return externalFunction!=nullptr;
+uint16_t PinDigital::getVal(){
+	return digitalRead(pin);
 }
 
-uint8_t PinDigital::getVal(){
-	val=digitalRead(pin);
-	return val;
-}
-
-boolean PinDigital::setVal(uint8_t val){
+boolean PinDigital::setVal(uint16_t _val){
 	if(pinInOutVal==OUTPUT){
-		if(val!=getVal()){
-			digitalWrite(pin, val);
-			//changed=true;
+		if(_val!=getVal()){
+			digitalWrite(pin, _val);
 		}
-		//dispatchState=true;
-
 		return val==digitalRead(pin);
 	}
 	return false;
@@ -143,35 +152,48 @@ boolean PinDigital::isOn(){
 	return turnOffLevel!=getVal();
 }
 
-String PinDigital::getName(){
-	return name;
-}
-uint8_t  PinDigital::getPin(){
-	return pin;
-}
-boolean  PinDigital::isChanged(){
-	return changed;
-}
-boolean  PinDigital::isVal(uint8_t _val){
-	return val==_val;
-}
-
 void PinDigital::processInterrupt(){
-	uint8_t now=getVal();
+	uint16_t now=getVal();
+	//val=now;
+	oldValToDisp=oldVal;
+	val=now;
 
 	if(now!=oldVal){
-		Serial.print("Interrupt "+name+" pin="+pin+" state="+now);
-		Serial.println("...event dispatched");
 		changed=true;
+		#ifdef DIGITAL_PIN_DISPLAY_CHANGE_EVENT
+			Serial.print(printState()+" now="+String(now));
+			Serial.println("...event dispatched");
+		#endif
 	}else{
+		//changed=false;
 		#ifdef DIGITAL_PIN_DISPLAY_NO_CHANGE_EVENT
-			Serial.print("Interrupt "+name+" pin="+pin+" state="+now);
-			changed=false;
-			Serial.println("...no event");
+		Serial.print(printState()+" now="+String(now));
+		Serial.println("...no event");
 		#endif
 	}
-
 	oldVal=now;
+}
+
+boolean PinDigital::loop(){
+	boolean result=false;
+	#ifdef DISPLAY_LOOPS
+		Serial.println("Digital pin loop ");
+	#endif
+
+	if(changed){
+		executeExternalFunction(constructEvent(PIN_EVENT_STATE_UPDATED,true));
+		//handleExternalFunction(PIN_EVENT_STATE_UPDATED);
+		changed=false;
+		result=true;
+	}
+	if(dispatchState){
+		executeExternalFunction(constructEvent(PIN_EVENT_STATE_CURRENT,true));
+		//handleExternalFunction(PIN_EVENT_STATE_CURRENT);
+		dispatchState=false;
+		result=true;
+	}
+
+	return result;
 }
 
 boolean PinDigital::processEvent(PinEvent event){
@@ -192,16 +214,27 @@ boolean PinDigital::processEvent(PinEvent event){
 
 PinEvent PinDigital::processEventNow(PinEvent event){
 	if(event.isValid())
+
+		//Serial.println("Pin("+name+") processEventNow ->"+event.getText());
+
 		if(isTargetOfEvent(event)){
-			Serial.println(name+" processNow "+event.getText());
+
+			//Serial.println("Pin("+name+") isTarget ->"+event.getText());
 			if(event.getKind().equals(PIN_EVENT_STATE_GET)){
-				return constructEvent(PIN_EVENT_STATE_CURRENT);
+				return constructEvent(PIN_EVENT_STATE_CURRENT,true);
 			}
 			if(event.getKind().equals(PIN_EVENT_STATE_SET)){
 				setVal(event.getVal());
-				return constructEvent(PIN_EVENT_STATE_CURRENT);
+				return constructEvent(PIN_EVENT_STATE_CURRENT,false);
 			}
 		}
+
+		if(isDispatcherOfEvent(event)){
+			//Serial.println("Pin("+name+") isDIspatcher ->"+event.getText());
+
+			return executeIsDispatcherFunction(event);
+		}
+
 	return PinEvent();
 }
 
@@ -223,36 +256,21 @@ boolean PinDigital::isTargetOfEvent(PinEvent event){
 	return false;
 }
 
-boolean PinDigital::loop(){
-	boolean result=false;
-	#ifdef DISPLAY_LOOPS
-		Serial.println("Digital pin loop ");
-	#endif
 
-	if(changed){
-		handleExternalFunction(PIN_EVENT_STATE_UPDATED);
-		changed=false;
-		result=true;
-	}
-	if(dispatchState){
-		handleExternalFunction(PIN_EVENT_STATE_CURRENT);
-		dispatchState=false;
-		result=true;
-	}
-
-	return result;
-}
-
+/*
 void PinDigital::handleExternalFunction(String str){
 	if(hasExternalFunction()){
-		Serial.println("handleExternalFunction name "+name+" val="+getVal());
-		externalFunction(constructEvent(str));
-		//Serial.println(" ...completed ");
+		#ifdef DIGITAL_PIN_DISPLAY_HANDLE_EXT_FUNCTION_EVENT
+			Serial.println("handleExternalFunction name "+name+" val="+getVal());
+		#endif
+
+		executeExternalFunction(constructEvent(str));
 	}
 }
-
-PinEvent PinDigital::constructEvent(String str){
-		return PinEvent(str,true,pin,oldVal,val,str,name,PIN_EVENT_TARGET_ANY);
+*/
+PinEvent PinDigital::constructEvent(String str,boolean _bubble){
+	//Serial.println(printState());
+	return PinEvent(str,_bubble,pin,oldValToDisp,val,str,name,PIN_EVENT_TARGET_ANY);
 }
 
 PinEvent PinDigital::constructPinEventSetState(uint8_t _val,String _strVal,String _dispatcherName){
@@ -267,4 +285,10 @@ uint8_t PinDigital::getOpposite(uint8_t _val){
 	return (_val==HIGH)?LOW:HIGH;
 }
 
+void PinDigital::onRising(){
+	Serial.println("Rised");
+}
 
+void PinDigital::onFalling(){
+	Serial.println("fall");
+}

@@ -18,8 +18,8 @@ Looper::Looper(Loopable** _items,uint8_t sizeIn){
 
 String Looper::displayDetails(){
 	Serial.println("----------------------");
-	int aSize=sizeof(items)/sizeof(items[0]);
-	String result="Looper size="+String(size)+" aSize="+String(aSize);
+
+	String result="Looper size="+String(size);
 
 	Serial.println(result);
 

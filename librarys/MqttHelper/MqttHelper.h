@@ -17,10 +17,10 @@
 class MqttHelper: public Loopable{
 
 public:
-	MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,std::function<void(PinEvent)> externalPinEventFunction,std::function<void(String topic,String message)> externalCallbackFunction);
+	MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,uint8_t _topicCount,std::function<void(char*, uint8_t*, unsigned int)> _callback,Client& _client/*std::function<void(PinEvent)> externalPinEventFunction,std::function<void(String topic,String message)> externalCallbackFunction,Client& _client*/);
 	virtual ~MqttHelper();
 
-	void init(Client& client);
+	void init();
 
 	boolean isConnected();
 	boolean connectIfNotConnected();
@@ -37,6 +37,7 @@ public:
 	PubSubClient getClient();
 
 private:
+	uint8_t topicCount;
 	String* subscribeTopics;
 	std::function<void(PinEvent)> externalPinEventFunction;
 	std::function<void(String topic,String message)> externalCallbackFunction;

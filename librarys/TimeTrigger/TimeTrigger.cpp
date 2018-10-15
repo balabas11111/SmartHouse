@@ -30,10 +30,10 @@ void TimeTrigger::construct(unsigned long lastTriggerTime,unsigned long interval
 }
 
 void TimeTrigger::init(){
-
+	setActive(true);
 }
 void TimeTrigger::setActive(boolean b){
-	Serial.println("TimeTrigger active="+String(b));
+	//Serial.println("TimeTrigger active="+String(b));
 	_active=b;
 }
 

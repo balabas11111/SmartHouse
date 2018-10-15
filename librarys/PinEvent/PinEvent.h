@@ -26,7 +26,7 @@ public:
 	//kind:bubble:pinId:oldVal:val:strVal:dispatcherName:targetName:
 	PinEvent(String pinEventText);
 
-	void setIsBubble(boolean bubble);
+	PinEvent setIsBubble(boolean bubble);
 
 	String getKind();
 	boolean isBubble();
@@ -41,7 +41,10 @@ public:
 
 	boolean isValid();
 	boolean isEventOfKind(String kind);
-	boolean isEmpty();
+	boolean isNotEmpty();
+	PinEvent setIsNotEmpty(boolean isNotEmpty);
+
+	void setSendDevice(String _sendDevice);
 
 private:
 
@@ -53,9 +56,10 @@ private:
 	String strVal;
 	String dispatcherName;
 	String targetName;
+	String sendDevice;
 
 	boolean valid;
-	boolean empty;
+	boolean notEmpty;
 
 	boolean validate();
 

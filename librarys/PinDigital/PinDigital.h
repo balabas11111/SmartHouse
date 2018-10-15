@@ -11,28 +11,24 @@
 #include "Arduino.h"
 #include <FunctionalInterrupt.h>
 #include <Loopable.h>
+#include <PinAbstract.h>
 #include <PinEvent.h>
+#include <PinEventProcessor.h>
 
-class PinDigital: public Loopable {
+class PinDigital: public Loopable, public PinEventProcessor, public PinAbstract {
 
 public:
 	PinDigital(uint8_t pin);
 	PinDigital(String _name,uint8_t _pin);
 	PinDigital(String name,uint8_t pin,std::function<PinEvent(PinEvent)> funcEvent);
+	PinDigital(String name,uint8_t pin,std::function<PinEvent(PinEvent)> funcEvent,std::function<PinEvent(PinEvent)> _isDispatcherPostFunction);
 	PinDigital(String name,uint8_t pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _changeMode,uint8_t _pinVal);
+	PinDigital(String name,uint8_t pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _changeMode,uint8_t _pinVal,std::function<PinEvent(PinEvent)> _isDispatcherPostFunction);
 	PinDigital(String name,uint8_t pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _changeMode,uint8_t _pinVal,uint8_t turnOffLevel);
+	PinDigital(String name,uint8_t pin,uint8_t _pinMode,std::function<PinEvent(PinEvent)> funcEvent,uint8_t _changeMode,uint8_t _pinVal,uint8_t turnOffLevel,std::function<PinEvent(PinEvent)> _isDispatcherPostFunction);
 
-	virtual ~PinDigital();
+	~PinDigital();
 
-	String displayDetails();
-	boolean loop();
-
-	String getName();
-	uint8_t getPin();
-	boolean isChanged();
-	boolean isVal(uint8_t _val);
-	uint8_t getVal();
-	boolean setVal(uint8_t);
 	uint8_t change();
 	uint8_t changeAndDelay(uint delayTime);
 	uint8_t changeAndDelay(uint delayTime,uint _count);
@@ -41,37 +37,44 @@ public:
 	uint8_t turnOnOff(boolean turnOn);
 	boolean isOn();
 	void setTurnOffLevel(uint8_t turnOffLevel);
-	void processInterrupt();
-	boolean hasExternalFunction();
-
-	uint8_t turnOffLevel;
-	boolean processEvent(PinEvent event);
-	PinEvent processEventNow(PinEvent event);
-	boolean isDispatcherOfEvent(PinEvent event);
-	boolean isTargetOfEvent(PinEvent event);
 
 	PinEvent constructPinEventSetState(uint8_t val,String strVal,String dispatcherName);
 	PinEvent constructPinEventSetState(PinEvent parentEvent);
 
+	String getName(){
+		return PinAbstract::getName();
+	}
+	//Loopable
+	String displayDetails() override;
+
+	void onRising();
+	void onFalling();
+
+	boolean loop() override;
+
+	//PinAbstract functions
+	uint16_t getVal() override;
+	boolean setVal(uint16_t _val) override;
+	void processInterrupt() override;
+
+	//PinEventProcessor
+	boolean processEvent(PinEvent event) override;
+	PinEvent processEventNow(PinEvent event) override;
+	boolean isDispatcherOfEvent(PinEvent event) override;
+	boolean isTargetOfEvent(PinEvent event) override;
+
+	PinEvent constructEvent(String str,boolean bubble) override;
+
 private:
-	String name;
-	uint8_t pin;
-	uint8_t pinInOutVal;
-	uint8_t oldVal;
-	uint8_t val;
-	boolean changed;
-	boolean dispatchState;
-	std::function<PinEvent(PinEvent)> externalFunction;
 
-	void init(String name,uint8_t pin,uint8_t _pinMode,uint8_t _pinVal,uint8_t _turnOffLevel);
-	void initFunc(std::function<PinEvent(PinEvent)> externalFunction,uint8_t _buttonMode);
-
-	void handleExternalFunction(String str);
-
-	PinEvent constructEvent(String str);
+	void construct(String name,uint8_t pin,uint8_t _pinMode,uint8_t _pinVal,uint8_t _turnOffLevel);
+	void initFunc(std::function<PinEvent(PinEvent)> externalFunction,uint8_t _buttonMode,std::function<PinEvent(PinEvent)> _isDispatcherPostFunction);
 
 	uint8_t getOpposite(uint8_t _val);
 
+protected:
+	//void handleExternalFunction(String str);
+	uint8_t turnOffLevel;
 };
 
 

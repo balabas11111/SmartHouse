@@ -5,13 +5,19 @@
 
 #include <ESP8266WiFi.h>
 
-MqttHelper::MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,std::function<void(PinEvent)> _externalPinEventFunction,std::function<void(String topic,String message)> _externalCallbackFunction){
+#define BUFFER_SIZE 100
+
+MqttHelper::MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,uint8_t _topicCount,std::function<void(char*, uint8_t*, unsigned int)> _callback,Client& _client){
 	Serial.println("-------------------------------");
 	Serial.println("Initialize MqttHelper");
 	//settingsBox=_settingsBox;
-	externalPinEventFunction=_externalPinEventFunction;
-	externalCallbackFunction=_externalCallbackFunction;
+	//externalPinEventFunction=_externalPinEventFunction;
+	//externalCallbackFunction=_externalCallbackFunction;
 
+	//std::function<void(char*, uint8_t*, unsigned int)> afunc =
+	//					(void(*)(char*, uint8_t*, unsigned int))&MqttHelper::callback;
+
+	topicCount=_topicCount;
 	subscribeTopics=_subscribeTopics;
 
 	mqtt_server = (char*)_settingsBox->mqtt_server.c_str(); // Имя сервера MQTT
@@ -21,7 +27,10 @@ MqttHelper::MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,std
 	mqtt_topic= (char*)(_settingsBox->mqtt_topic).c_str();
 	mqtt_startMessage = (char*)(_settingsBox->DeviceId).c_str();
 
+	client=PubSubClient(mqtt_server,mqtt_port, _callback, _client);
+
 	active=false;
+	displayDetails();
 
 	Serial.println("-------------------------------");
 }
@@ -30,39 +39,35 @@ MqttHelper::~MqttHelper(){
 	Serial.println("MqttHelper destructed");
 }
 
-void MqttHelper::init(Client& _client){
-	std::function<void(char*, uint8_t*, unsigned int)> afunc =
-					(void(*)(char*, uint8_t*, unsigned int))&MqttHelper::callback;
-
+void MqttHelper::init(){
 	Serial.println("Init mqtt client");
-	client=PubSubClient(mqtt_server,mqtt_port, afunc, _client);
+	displayDetails();
 
-	Serial.println("Connect to mq");
 	connectIfNotConnected();
-
-	wiFiClient=&_client;
+	Serial.println("Init completed");
+	displayDetails();
+	Serial.println("-------------------------------");
 
 	active=true;
 }
 
 String MqttHelper::displayDetails(){
-	int topicCount=sizeof(subscribeTopics);
 	String wfConnected=String(client.connected());
+
+	String res="MqttHelper mqtt_user="+String(mqtt_user)+" mqtt_pass="+String(mqtt_pass)+" mqtt_topic="+String(mqtt_topic)+" mqtt_startMessage="+String(mqtt_startMessage)+" topicCount="+String(topicCount)+" connected="+String(wfConnected);
+	Serial.println(res);
 
 	for(int i=0;i<topicCount;i++){
 		Serial.print(subscribeTopics[i]);
 		Serial.print(";");
 	}
 
-	String res="MqttHelper mqtt_user="+String(mqtt_user)+" mqtt_pass="+String(mqtt_pass)+" mqtt_topic="+String(mqtt_topic)+" mqtt_startMessage="+String(mqtt_startMessage)+" topicCount="+String(topicCount+" connected="+wfConnected);
-	Serial.println(res);
-
 	return res;
 }
 
 void MqttHelper::connect(){
-	Serial.println("Start connect mqttClient");
 	if (!client.connected()) {
+	  Serial.println("Start connect mqttClient");
 
 	  String clientName;
 	  clientName += String(mqtt_startMessage)+millis();
@@ -78,7 +83,7 @@ void MqttHelper::connect(){
 		  Serial.println("Publish failed");
 		}
 
-		for(int i=0;i<sizeof(subscribeTopics);i++){
+		for(int i=0;i<topicCount;i++){
 			subscribe(subscribeTopics[i]);
 		}
 
@@ -96,10 +101,9 @@ boolean MqttHelper::isConnected(){
 }
 
 boolean MqttHelper::connectIfNotConnected(){
-	Serial.println("WiFi.status="+WiFi.status());
-
 	if(WiFi.status()!=WL_CONNECTED){
-		Serial.println("Wait for wiFi connection");
+		Serial.println("No wiFi connection");
+		Serial.println("WiFi.status="+WiFi.status());
 		return false;
 	}
 
@@ -109,16 +113,27 @@ boolean MqttHelper::connectIfNotConnected(){
 }
 
 void MqttHelper::subscribe(String topicName){
-	Serial.println("subscribe to "+topicName);
-	client.subscribe((char*) topicName.c_str());
+	Serial.print("subscribe to "+(topicName));
+	boolean res=client.subscribe((char*) topicName.c_str());
+	String resStr=res?" OK":" FAILED";
+
+	Serial.println(" ..."+resStr);
 }
 
 boolean MqttHelper::publish(char* topicName,String message){
+	if(!connectIfNotConnected()){
+		return false;
+	}
+
 	boolean result=client.publish( topicName,(char*) message.c_str());
 	return result;
 }
 
 boolean MqttHelper::publish(String message){
+	if(!connectIfNotConnected()){
+		return false;
+	}
+
 	boolean result=client.publish( mqtt_topic,(char*) message.c_str());
 	return result;
 }

@@ -10,10 +10,11 @@
 
 #include "Arduino.h"
 #include <FunctionalInterrupt.h>
+#include <PinAbstract.h>
 #include <Loopable.h>
 #include <PinEvent.h>
 
-class PinAnalog: public Loopable {
+class PinAnalog: public Loopable,public PinAbstract {
 
 public:
 	PinAnalog(uint8_t pin);
@@ -26,13 +27,10 @@ public:
 	String displayDetails();
 	boolean loop();
 
-	String getName();
-	uint8_t getPin();
-	boolean isChanged();
-	boolean isVal(uint8_t _val);
 	uint16_t getCurrent();
-	uint16_t getVal();
-	boolean setVal(uint16_t);
+	uint16_t getVal() override;
+	boolean setVal(uint16_t val) override;
+
 	void processInterrupt();
 	boolean hasExternalFunction();
 

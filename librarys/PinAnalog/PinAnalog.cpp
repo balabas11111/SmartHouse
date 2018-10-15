@@ -112,19 +112,6 @@ boolean PinAnalog::setVal(uint16_t val){
 	return false;
 }
 
-String PinAnalog::getName(){
-	return name;
-}
-uint8_t  PinAnalog::getPin(){
-	return pin;
-}
-boolean  PinAnalog::isChanged(){
-	return changed;
-}
-boolean  PinAnalog::isVal(uint8_t _val){
-	return val==_val;
-}
-
 void PinAnalog::processInterrupt(){
 
 	uint16_t curVal=getCurrent();

@@ -9,33 +9,30 @@
 #define LIBRARIES_MEASURER_MEASURER_H_
 
 #include "Arduino.h"
-#include "Measureable.h"
+#include <Measureable.h>
 #include "FunctionalInterrupt.h"
+#include <PinEventProcessor.h>
 
-class Measurer: public Measureable{
+class Measurer: public Measureable,public PinEventProcessor{
 
 public:
 
-	Measurer(String _id,String _name,String _kind,String _val,uint8_t _count,std::function<Measureable*(void)> _measureFunction,std::function<Measureable*(void)> _initFunction,boolean _useCached){
-		id=_id;
-		name=_name;
-		kind=_kind;
-		val=_val;
-		itemsCount=_count;
-		measureFunction=_measureFunction;
-		initFunction=_initFunction;
+	virtual boolean init()=0;
+	virtual void getExternal()=0;
 
+	Measurer(String _id,String _name,String _kind,String _val,uint8_t _count,boolean _quoteValue)
+	:Measureable(_id, _name, _kind, _val){
+		itemsCount=_count;
 		lastMeasureTime=millis();
-		useCached=_useCached;
+		quoteValue=_quoteValue;
+
+		items=new Measureable[itemsCount];
 
 		initialized=false;
 	}
 
-	void init(){
-		if(initFunction!=nullptr){
-			initFunction();
-		}
-		initialized=true;
+	String getName() override{
+		return name;
 	}
 
 	boolean loop(){
@@ -47,46 +44,79 @@ public:
 	}
 
 	Measureable* getItems(){
-		if(!useCached){
-			return getExternal();
-		}
 		return items;
 	}
 
 	Measureable* measure(){
-		Measureable arr[itemsCount]=getExternal();
-		if(useCached){
-			items=arr;
-		}
-
-		return arr;
+		Serial.println("-measure "+name);
+		getExternal();
+		return getItems();
 	}
 
 	uint getLastMeasureTime(){
 		return millis()-lastMeasureTime;
 	}
 
+	String getJson(){
+		return getJson(String(millis()));
+	}
+
 	String getJson(String timeStamp){
-		String result="{"+getMeasuableAsJson((Measureable)this)+","
+		String result="{"+getMeasuableAsJson(*(this),true)+","
 						+getStringAsJson("itemsCount", String(itemsCount), false)+","
 						+getStringAsJson("time",timeStamp)+","
-						+getStringAsJson("items",getMeasurableArrayAsJson(items,itemsCount),false)+
+						+getStringAsJson("items",getMeasurableArrayAsJson(measure(),itemsCount,quoteValue),false)+
 						"}";
 
 		return result;
 	}
-private:
 
-	Measureable* getExternal(){
-		lastMeasureTime=millis();
-		return measureFunction();
+	boolean processEvent(PinEvent event) override{
+		Serial.println(event.getText());
+		return false;
+	}
+	PinEvent processEventNow(PinEvent event) override{
+		if(event.isValid())
+			if(isTargetOfEvent(event)){
+				//Serial.println(name+" processNow "+event.getText());
+				Serial.println("Measurer ("+name+") - PinEvent("+event.getText()+")");
+				if(event.getKind().equals(PIN_EVENT_STATE_GET)){
+					return constructEvent(PIN_EVENT_STATE_CURRENT,true);
+				}
+			}
+		//Serial.println("Not my event");
+		return PinEvent();
 	}
 
-	String getMeasurableArrayAsJson(Measureable* ar,uint count){
+	PinEvent constructEvent(String evName,boolean bubble) override{
+		String str=getJson();
+		//PinEvent res=PinEvent(evName,true,0,0,0,str,name,PIN_EVENT_TARGET_ANY);
+		//Serial.println("Event constructed "+res.getText());
+		return PinEvent(evName,bubble,0,0,0,str,name,PIN_EVENT_TARGET_ANY);
+	}
+
+	boolean isDispatcherOfEvent(PinEvent event) override{
+		if(name.equals(event.getDispatcherName())){
+			return true;
+		}
+
+		return false;
+	}
+
+	boolean isTargetOfEvent(PinEvent event) override{
+		if(name.equals(event.getTargetName())){
+			return true;
+		}
+
+		return false;
+	}
+private:
+
+	String getMeasurableArrayAsJson(Measureable* ar,uint count,boolean _quoteValue){
 		String result="[";
 
 		for (uint i=0;i<count;i++){
-			result+="{"+getMeasuableAsJson(ar[i])+"}";
+			result+="{"+getMeasuableAsJson(ar[i],_quoteValue)+"}";
 			if(i!=count-1){
 				result+=",";
 			}
@@ -97,11 +127,15 @@ private:
 		return result;
 	}
 
-	String getMeasuableAsJson(Measureable m){
-		String result=getStringAsJson("name",m.id)+","
-				+getStringAsJson("name",m.kind)+","
+	String getMeasuableAsJson(boolean _quoteValue){
+		return getMeasuableAsJson(*(this),_quoteValue);
+	}
+
+	String getMeasuableAsJson(Measureable m,boolean _quoteValue){
+		String result=getStringAsJson("id",m.id)+","
 				+getStringAsJson("name",m.name)+","
-				+getStringAsJson("name",m.val);
+				+getStringAsJson("val",m.val,_quoteValue)+","
+				+getStringAsJson("kind",m.kind);
 
 		return result;
 	}
@@ -115,15 +149,13 @@ private:
 		return "\""+nodeName+"\":"+quotes+nodeVal+quotes;
 	}
 
+protected:
 	boolean initialized;
-
-	std::function<Measureable*(void)> initFunction;
-	std::function<Measureable*(void)> measureFunction;
 	uint itemsCount;
 	Measureable* items;
 
 	ulong lastMeasureTime;
-	boolean useCached;
+	boolean quoteValue;
 };
 
 #endif /* LIBRARIES_MEASURER_MEASURER_H_ */

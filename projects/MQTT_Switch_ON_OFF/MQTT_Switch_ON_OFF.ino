@@ -6,6 +6,7 @@
 #include "MqttHelper.h"
 #include "Looper.h"
 #include "Loopable.h"
+#include "PinEventProcessor.h"
 //#include "WiFiHelper.h"
 
 #include "I2Chelper.h"
@@ -17,16 +18,19 @@
 #include "TimeTrigger.h"
 #include "PinExternalFuncUint16t.h"
 
-#include "BH1750.h"
-#include <Adafruit_BME280.h>
+#include <BME280_Measurer.h>
+#include <BH1750_Measurer.h>
 
-#define FIRMVARE_VERSION "b@l@bas-soft SENSORZ v0.0.5"
+#define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
+#define VAR_NAME(var) #var
+
+#define FIRMVARE_VERSION "b@l@bas-soft ONOFF v0.0.5"
 //Robot Dyn//vem  // 12E
 #define D0_PIN 16 //GPIO016 ////beeper
 #define D1_PIN 5  //GPIO05  //DallasTemp           PIN_WIRE_SCL
 #define D2_PIN 4  //GPIO04  //OLED //SDA //blue    PIN_WIRE_SDA
 #define D3_PIN 0  //GPIO00  //OLED //SCL //green
-#define D4_PIN 2  //GPIO02  //RedLed
+#define D4_PIN 2  //GPIO02  //RedLed               INTERNAL_LED_PIN
 #define D5_PIN 14 //GPIO14  //DHT
 #define D6_PIN 12 //GPIO12  //DallasTemp red led2
 #define D7_PIN 13 //GPIO13  //GreenLed
@@ -40,55 +44,54 @@
 #define HUMAN_PRESENTED LOW
 #define HUMAN_NOT_PRESENTED HIGH
 
-int humanNotPresentInterval=20000;
+const int humanNotPresentInterval=30000;
+const int sensorsInterval=60000;
+
 //const char *ssid = "balabasKiev5"; // Имя роутера
 //const char *pass = "wuWylKegayg2wu22"; // Пароль роутера
 
-#define BUFFER_SIZE 100
-
 EspSettingsBox espSettingsBox("/values2.txt","",true);
 
-//WiFiClient wclient;
+WiFiClient wclient;
 ESP8266WebServer server ( 80 );
 //PubSubClient client(mqtt_server, mqtt_port, callback, wclient);
 
 /*
 WiFiHelper wiFiHelper(&espSettingsBox,&clearDisplay,displayLineFunction,&ledOnFunction,&ledOffFunction,&setupServerUrlsFunction);
-*/
+
 void clearDisplay(){};
 void displayLineFunction(String message,int row,int column){};
 void ledOnFunction(){};
 void ledOffFunction(){};
 void setupServerUrlsFunction(ESP8266WebServer server){};
-
+*/
 I2Chelper i2cBus(D1_PIN,D2_PIN,false);
 
-BH1750 lightMeter;
-Adafruit_BME280 bme;
+String subscribeTopics[]={"topic/ESP8266Topic","topic/SwitchLeft","topic/SwitchRight"};
+MqttHelper mqttHelper(&espSettingsBox,subscribeTopics,ARRAY_SIZE(subscribeTopics),callback,wclient);
 
-//PinExternalFuncUint16t luxMeterPin("LuxMeter",10,setupLuxMeter,processEvent,10000,getLuxVal);
-
-String subscribeTopics[3]={"topic/ESP8266Topic""topic/SwitchLeft","topic/SwitchRight"};
-//MqttHelper mqttHelper(&espSettingsBox,subscribeTopics,processEvent,processMqttEvent);
-
-TimeTrigger bmeTrigger(0,30000,false,measureBme280);
-TimeTrigger luxTrigger(0,30000,false,getLuxVal);
+TimeTrigger sensorsTrigger(0,sensorsInterval,false,measureSensors);
 TimeTrigger wiFiTrigger(0,10000,false,checkWiFi);
 
 TimeTrigger humanPresentTrigger(0,humanNotPresentInterval,false,onHumanPresentTrigger);
 
-PinDigital buttonLeft("SwitchLeft",D7_PIN,processEvent);
-PinDigital buttonRight("SwitchRight",D6_PIN,processEvent);
+PinDigital pirDetector(VAR_NAME(pirDetector),D3_PIN,onPirWasChanged);
 
-PinDigital lampLeft("LampLeft",D5_PIN,OUTPUT,processEvent,CHANGE,HIGH);
-PinDigital lampRight("LampRight",D8_PIN,OUTPUT,processEvent,CHANGE,HIGH);
+PinDigital buttonLeft(VAR_NAME(buttonLeft),D7_PIN,processEvent,onButtonChanged);
+PinDigital buttonRight(VAR_NAME(buttonRight),D6_PIN,processEvent,onButtonChanged);
 
-PinDigital signalLed("signalLED",D4_PIN,OUTPUT,processEvent,CHANGE,LOW,HUMAN_NOT_PRESENTED);
+PinDigital signalLed(VAR_NAME(signalLED),D4_PIN,OUTPUT,nullptr,CHANGE,LOW,HUMAN_NOT_PRESENTED);
 
-PinDigital IrDetector("IrDetector2",D3_PIN,processEvent);
+PinDigital lampLeft(VAR_NAME(lampLeft),D5_PIN,OUTPUT,processEvent,CHANGE,HIGH);
+PinDigital lampRight(VAR_NAME(lampRight),D8_PIN,OUTPUT,processEvent,CHANGE,HIGH);
 
-Loopable *loopArray[]={&humanPresentTrigger,&luxTrigger,&bmeTrigger,&wiFiTrigger,&buttonLeft,&buttonRight,&lampLeft,&lampRight,&IrDetector};
-Looper looper(loopArray,9);
+Loopable* loopArray[]={&humanPresentTrigger,&sensorsTrigger,&buttonLeft,&buttonRight,&lampLeft,&lampRight,&pirDetector,&mqttHelper};
+//Loopable* loopArray[]={&humanPresentTrigger,&buttonLeft,&buttonRight,&pirDetector};
+
+Looper looper(loopArray,ARRAY_SIZE(loopArray));
+
+BME280_Measurer bmeMeasurer("0",VAR_NAME(bmeMeasurer));
+BH1750_Measurer luxMeasurer("1",VAR_NAME(luxMeasurer));
 
 void setup() {
   Serial.begin(115200);
@@ -97,64 +100,89 @@ void setup() {
   Serial.println("Start DeviceId="+espSettingsBox.DeviceId);
 
   i2cBus.init();
-  setupBme();
-  setupLuxMeter();
+  //sensorsTrigger.init();
+  bmeMeasurer.init();
+  luxMeasurer.init();
 
   setupWiFi();
   setupServer();
 
+  mqttHelper.init();
+
   looper.displayDetails();
+
+  Serial.println("var="+String(VAR_NAME(buttonRight)));
 }
 
 void loop() {
  looper.loop();
- //wiFiTrigger.loop();
  server.handleClient();
 }
 
-void setupBme(){
-	Serial.print("Init BME-280");
-	bool status=bme.begin();
-	Serial.print(" status="+String(status));
-	Serial.println("...done");
+//-------------------------------------------------------------
+boolean leftButtonPressed=false;
+boolean rightButtonPressed=false;
+boolean pirDetected=false;
 
-	bmeTrigger.setActive(true);
+PinEvent onLampLeftChanged(PinEvent event){
+	Serial.println("Left lamp changed");
+	return PinEvent();
 }
 
-void measureBme280(){
-	Serial.print("Temperature = ");
-	Serial.print(bme.readTemperature());
-	Serial.println(" *C");
-
-	Serial.print("Pressure = ");
-	Serial.print(bme.readPressure() / 100.0F);
-	Serial.println(" hPa");
-
-	Serial.print("Approx. Altitude = ");
-	Serial.print(bme.readAltitude(1013.25));
-	Serial.println(" m");
-
-	Serial.print("Humidity = ");
-	Serial.print(bme.readHumidity());
-	Serial.println(" %");
-
-	Serial.println("---------------------------------");
+PinEvent onLampRightChanged(PinEvent event){
+	Serial.println("right lamp changed");
+	return PinEvent();
 }
 
-void setupLuxMeter(){
-	Serial.print("Init luxmeter");
-	lightMeter.begin();
-	luxTrigger.setActive(true);
-	Serial.println("...done");
+PinEvent onButtonLeftChanged(PinEvent event){
+	leftButtonPressed=buttonLeft.isOn();
+	Serial.println("Left button changed"+String(leftButtonPressed));
+
+	lampLeft.turnOnOff(leftButtonPressed);
+	return PinEvent();
 }
-uint16_t getLuxVal(){
-	Serial.print("Read LuxMeter val=");
-	uint16_t val=lightMeter.readLightLevel();
-	Serial.print(val);
-	Serial.println(" lux");
-	Serial.println("---------------------------------");
-	return val;
+
+PinEvent onButtonRightChanged(PinEvent event){
+	rightButtonPressed=buttonRight.isOn();
+	Serial.println("Right button changed"+String(rightButtonPressed));
+	lampRight.turnOnOff(rightButtonPressed);
+	return PinEvent();
 }
+
+PinEvent onIrChanged(PinEvent event){
+	pirDetected=pirDetector.isOn();
+
+	if(pirDetected){
+		onMovementDetected();
+	} else{
+		onNoMovementDetected();
+	}
+
+	return PinEvent();
+}
+
+void measureSensors(){
+/*
+	Serial.println("SizeOf items="+String(sizeof(loopArray)));
+	Serial.println("SizeOf items[0]="+String(sizeof(loopArray[0])));
+
+	Serial.println(ARRAY_SIZE(loopArray));
+*/
+	Serial.println("FreeHeap="+String(ESP.getFreeHeap()));
+	Serial.println("CpuFreqMHz="+String(ESP.getCpuFreqMHz()));
+	Serial.println("FlashChipSize="+String(ESP.getFlashChipSize()));
+	Serial.println("FreeSketchSpace="+String(ESP.getFreeSketchSpace()));
+	Serial.println("ResetReason="+String(ESP.getResetReason()));
+	//Serial.println("CpuFreqMHz="+String(ESP.getCpuFreqMHz()));
+	//Serial.println("CpuFreqMHz="+String(ESP.getCpuFreqMHz()));
+
+	Serial.println("----------------------------------------------");
+	Serial.println(bmeMeasurer.getJson());
+	Serial.println("----------------------------------------------");
+	Serial.println(luxMeasurer.getJson());
+	Serial.println("----------------------------------------------");
+}
+
 //---------------------------------------------------------------------------------------
 void setupWiFi(){
 	Serial.println("-----Setup WiFi-----");
@@ -231,8 +259,11 @@ void setupServer(){
 	server.on ( "/test", HTTP_GET, processTestCommand );
 	server.begin();
 
-	Serial.println(WiFi.getMode());
-	Serial.println(WiFi.getAutoConnect());
+	Serial.print("WiFi.getMode=");
+	Serial.print(WiFi.getMode());
+	Serial.print(" WiFi.getAutoConnect=");
+	Serial.print(WiFi.getAutoConnect());
+	Serial.print(" WiFi.status=");
 	Serial.println(WiFi.status());
 	Serial.println("----------------------------");
 
@@ -243,11 +274,11 @@ void setupServer(){
 void processHttpCommand(){
 	if(server.args()!=0 && server.hasArg("command")){
 		String command=server.arg("command");
-
-		PinEvent result=processEvent(PinEvent(command));
+		Serial.println("Http command received "+command);
+		PinEvent result=processEvent(PinEvent(command).setIsBubble(true));
 
 		delay(1);
-		server.send ( 200, "text/html", "{\"status\":\"Ok\",\"command\":"+command+",\"result\":"+result.getText()+"}" );
+		server.send ( 200, "text/html", "{\"status\":\"Ok\",\"command\":\""+command+"\",\"result\":\""+result.getText()+"\"}" );
 	}
 
 	server.send(500,"text/html","{\"status\":\"Failed\",\"command\":\"No command received\"}");
@@ -256,105 +287,20 @@ void processHttpCommand(){
 void processTestCommand(){
 	server.send ( 200, "text/html", "I'm here" );
 }
-//-------------------------------------------------------------
-
-PinEvent processEvent(PinEvent event){
-	/*
-	 //kind:bubble:pinId:oldVal:val:strVal:dispatcherName:targetName:
-
-		http://192.168.0.178/runCommand?command=PE_SU:1:14:0:1:PE_SU:SwitchLeft:PE_ANY:
-		http://192.168.0.178/runCommand?command=PE_SU:1:14:1:0:PE_SU:SwitchLeft:PE_ANY:
-		http://192.168.0.178/runCommand?command=PE_SU:1:15:0:1:PE_SU:SwitchRight:PE_ANY:
-		http://192.168.0.178/runCommand?command=PE_SU:1:15:1:0:PE_SU:SwitchRight:PE_ANY:
-	*/
-
-	Serial.println(" ProcessEvent "+event.getText());
-	PinEvent newEvent=PinEvent();
-
-	if(!event.isValid()){
-		return newEvent;
+//-----------------------------------------------------------
+PinEvent onButtonChanged(PinEvent event){
+	//On button changed
+	Serial.println("//On button changed");
+	if(buttonLeft.isDispatcherOfEvent(event)){
+		return lampLeft.constructPinEventSetState(event);
 	}
-
-	if(event.isEventOfKind(PIN_EVENT_STATE_GET)){
-		Serial.println("-----GET STATE EVENT PROCESS-----");
-		if(!newEvent.isValid())
-			newEvent=lampLeft.processEventNow(event);
-		if(!newEvent.isValid())
-			newEvent=lampRight.processEventNow(event);
-		if(!newEvent.isValid())
-			newEvent=buttonLeft.processEventNow(event);
-		if(!newEvent.isValid())
-			newEvent=buttonRight.processEventNow(event);
+	if(buttonRight.isDispatcherOfEvent(event)){
+		return lampRight.constructPinEventSetState(event);
 	}
-
-	if(event.isEventOfKind(PIN_EVENT_STATE_SET)){
-		Serial.println("-----SET STATE EVENT PROCESS-----");
-		if(!newEvent.isValid())
-			newEvent=lampLeft.processEventNow(event);
-		if(!newEvent.isValid())
-			newEvent=lampRight.processEventNow(event);
-
-		newEvent.setIsBubble(false);
-	}
-
-	if(event.isEventOfKind(PIN_EVENT_STATE_UPDATED)){
-		Serial.println("-----UPDATED STATE EVENT PROCESS-----");
-		if(buttonLeft.isDispatcherOfEvent(event)){
-			newEvent=lampLeft.constructPinEventSetState(event);
-		}
-		if(buttonRight.isDispatcherOfEvent(event)){
-			newEvent=lampRight.constructPinEventSetState(event);
-		}
-		if(IrDetector.isDispatcherOfEvent(event)){
-			Serial.println("ir change event processed");
-
-			if(event.getVal()==HIGH){
-				onMovementDetected();
-			} else{
-				onNoMovementDetected();
-			}
-		}
-
-	}
-
-	if(!newEvent.isEmpty()){
-		Serial.print("New event ="+newEvent.getText());
-
-		if(newEvent.isValid()){
-
-			if(newEvent.isBubble()){
-				Serial.println("...start send");
-				//mqttHelper.publish(newEvent.getText());
-			}else{
-				Serial.println("...not sent");
-			}
-
-			processEvent(newEvent);
-		}else{
-			Serial.println("...not valid");
-		}
-	}
-
-	return newEvent;
+	return PinEvent();
 }
 
 boolean humanPresented=false;
-
-void handleHuman(uint8_t val){
-
-	if(val==1){
-		signalIrDetection();
-
-
-	}else{
-		humanPresentTrigger.saveTime();
-		humanPresentTrigger.setActive(true);
-
-		Serial.println("-------NO MOVEMENT. Start trigger");
-	}
-
-	handleLightOnOff();
-}
 
 void onMovementDetected(){
 	Serial.println("-------handleMovementDetected");
@@ -379,10 +325,105 @@ void onHumanPresentTrigger(){
 	humanPresentTrigger.setActive(false);
 
 	handleLightOnOff();
+
+	processEvent(pirDetector.constructEvent(PIN_EVENT_STATE_UPDATED,true));
 }
 
 void handleLightOnOff(){
 	signalLed.turnOnOff(humanPresented);
+}
+
+PinEvent onPirWasChanged(PinEvent event){
+	Serial.println("//On pir changed");
+	//On pir changed
+	boolean dispatch=!humanPresented;
+
+	if(event.getVal()==HIGH){
+		onMovementDetected();
+	} else{
+		onNoMovementDetected();
+	}
+
+	processEvent(event.setIsBubble(dispatch));
+
+	return PinEvent();
+}
+
+PinEvent processEvent(PinEvent event){
+	/*
+	 //kind:bubble:pinId:oldVal:val:strVal:dispatcherName:targetName:
+
+	UPDATESTate command
+
+		http://192.168.0.100/runCommand?command=PE_SS:1:14:0:1:PE_SS:http:lampLeft:
+		http://192.168.0.100/runCommand?command=PE_SS:1:14:1:0:PE_SS:http:lampLeft:
+		http://192.168.0.100/runCommand?command=PE_SS:1:15:0:1:PE_SS:http:lampRight:
+		http://192.168.0.100/runCommand?command=PE_SS:1:15:1:0:PE_SS:http:lampRight:
+
+	GETState measurers command
+
+		http://192.168.0.100/runCommand?command=PE_SG:1:0:0:0:PE_SG:http:bmeMeasurer:
+		http://192.168.0.100/runCommand?command=PE_SG:1:0:0:0:PE_SG:http:luxMeasurer:
+	*/
+	Serial.println("-----------------------------------------");
+	Serial.println(" ProcessEvent "+event.getText());
+	PinEvent newEvent=PinEvent();
+
+	if(!event.isValid() || !event.isNotEmpty()){
+		return newEvent;
+	}
+
+	if(event.isBubble()){
+		publishEvent(event);
+		event.setIsBubble(false);
+	}
+
+		PinEventProcessor *eventProcessors[]={&lampLeft,&lampRight,
+											&buttonLeft,&buttonRight,
+											&bmeMeasurer,&luxMeasurer};
+
+		boolean processed=false;
+
+		for(uint8_t i=0;i<ARRAY_SIZE(eventProcessors);i++){
+			newEvent=eventProcessors[i]->processEventNow(event);
+			if(newEvent.isNotEmpty()){
+				Serial.println(eventProcessors[i]->printProcessInfo(event)+" new->"+newEvent.getText());
+				processed=true;
+				break;
+			}
+		}
+
+	if(newEvent.isNotEmpty()){
+		//Serial.print("New event ="+newEvent.getText());
+		if(newEvent.isValid()){
+
+			if(newEvent.isBubble()){
+				publishEvent(newEvent);
+				newEvent.setIsBubble(false);
+			}else{
+				//Serial.println("...not sent");
+			}
+
+			processEvent(newEvent);
+		}else{
+			//Serial.println("...not valid");
+		}
+	}
+	if(!processed){
+		//Serial.println("NO PROCESSOR FOUND "+newEvent.getText());
+	}
+
+	return newEvent;
+}
+
+void publishEvent(PinEvent event){
+	event.setSendDevice(espSettingsBox.DeviceId);
+
+	String mess=event.getText();
+	Serial.print(mess+"...sending");
+	boolean res=mqttHelper.publish(mess);
+
+	Serial.println("..."+res?"OK":"FAILED");
 }
 
 void signalIrDetection(){
@@ -391,6 +432,22 @@ void signalIrDetection(){
 
 void processMqttEvent(String topic,String message){
 	Serial.println("Base process processMqttEvent topic="+topic+" message="+message);
+}
+
+void callback(char* topic, uint8_t* payload, unsigned int length) {
+
+	String payloadIn = (char*)payload;
+	String topicIn=String(topic);
+
+	String msg;
+		for(int i=0;i<length;i++){
+			msg+=(char)payload[i];
+		}
+
+	String messageIn="Message received payload="+msg+" topic="+topic +" length="+length;
+
+	Serial.println(messageIn);
+	PinEvent result=processEvent(PinEvent(msg));
 }
 
 /*
