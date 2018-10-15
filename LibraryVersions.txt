@@ -1,5 +1,6 @@
 Paths
 
+
 projects folder
 
 d:\projects\!!!SmartHouse
