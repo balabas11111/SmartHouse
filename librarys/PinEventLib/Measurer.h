@@ -13,6 +13,16 @@
 #include "FunctionalInterrupt.h"
 #include <PinEventProcessor.h>
 
+const char TEMPERATURE[] PROGMEM ="Temperature";
+const char HUMIDITY[] PROGMEM ="Humidity";
+const char PRESSURE[] PROGMEM ="Pressure";
+const char ALTITUDE[] PROGMEM ="Altitude";
+
+const char MEASURE_CELSIUS_DEGREES[] PROGMEM ="C";
+const char MEASURE_PERSENT[] PROGMEM ="%";
+const char MEASURE_PASCAL[] PROGMEM ="Pa";
+const char MEASURE_METER[] PROGMEM ="m";
+
 class Measurer: public Measureable,public PinEventProcessor{
 
 public:
@@ -57,11 +67,11 @@ public:
 		return millis()-lastMeasureTime;
 	}
 
-	String getJson(){
-		return getJson(String(millis()));
+	String getMeasurableAsJson(){
+		return getMeasurableAsJson(String(millis()));
 	}
 
-	String getJson(String timeStamp){
+	String getMeasurableAsJson(String timeStamp){
 		String result="{"+getMeasuableAsJson(*(this),true)+","
 						+getStringAsJson("itemsCount", String(itemsCount), false)+","
 						+getStringAsJson("time",timeStamp)+","
@@ -89,7 +99,7 @@ public:
 	}
 
 	PinEvent constructEvent(String evName,boolean bubble) override{
-		String str=getJson();
+		String str=getMeasurableAsJson();
 		//PinEvent res=PinEvent(evName,true,0,0,0,str,name,PIN_EVENT_TARGET_ANY);
 		//Serial.println("Event constructed "+res.getText());
 		return PinEvent(evName,bubble,0,0,0,str,name,PIN_EVENT_TARGET_ANY);

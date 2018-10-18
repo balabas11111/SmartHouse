@@ -11,7 +11,7 @@
 #include <Loopable.h>
 #include <Arduino.h>
 
-class Looper{
+class Looper:public Loopable{
 
 public:
 	Looper(Loopable** items,uint8_t sizeIn);

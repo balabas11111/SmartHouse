@@ -15,6 +15,9 @@ class Measureable{
 public:
 
 	Measureable(){};
+	virtual ~Measureable(){};
+
+	virtual Measureable* measure(){return (this);};
 
 	Measureable(String _id,String _name,String _kind,String _val){
 		id=_id;

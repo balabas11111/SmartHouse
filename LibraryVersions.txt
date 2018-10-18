@@ -8,11 +8,14 @@ d:\projects\!!!SmartHouse
 
 Links
 
+https://github.com/tzapu/WiFiManager
 https://tttapa.github.io/ESP8266/Chap13%20-%20OTA.html
 https://www.w3schools.com/howto/howto_html_include.asp
 https://arduinojson.org/v5/api/jsonobject/createnestedobject/
 https://github.com/jpswensen/ESP8266_WebGen
 https://github.com/balabas11111/WebServer/
+
+
 
 workspace
 
