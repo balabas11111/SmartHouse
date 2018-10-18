@@ -1,7 +1,7 @@
 /*
  * Measurer.h
  *
- *  Created on: 14 ���. 2018 �.
+ *  Created on: 14 îêò. 2018 ã.
  *      Author: Vitaliy
  */
 
@@ -12,6 +12,11 @@
 #include <Measureable.h>
 #include "FunctionalInterrupt.h"
 #include <PinEventProcessor.h>
+
+const char TEMPERATURE_RU[] PROGMEM ="Температура";
+const char HUMIDITY_RU[] PROGMEM ="Влажность";
+const char PRESSURE_RU[] PROGMEM ="Давление";
+const char ALTITUDE_RU[] PROGMEM ="Высота";
 
 const char TEMPERATURE[] PROGMEM ="Temperature";
 const char HUMIDITY[] PROGMEM ="Humidity";

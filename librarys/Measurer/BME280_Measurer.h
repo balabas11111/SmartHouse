@@ -1,7 +1,7 @@
 /*
  * Bme180Measures.h
  *
- *  Created on: 14 ���. 2018 �.
+ *  Created on: 14 îêò. 2018 ã.
  *      Author: Vitaliy
  */
 
@@ -17,8 +17,10 @@
 #include "Adafruit_BME280.h"
 #include "Adafruit_Sensor.h"
 
-const char MEASURER_NAME[] PROGMEM ="Bme180Sensor";
-const char MEASURER_DESCRIPTION[] PROGMEM ="Bme180Sensor";
+const char MEASURER_NAME[] PROGMEM ="Bme280Sensor";
+const char MEASURER_DESCRIPTION[] PROGMEM ="Bme280Sensor";
+
+const char MEASURER_DESCRIPTION_RU[] PROGMEM ="БМЕ 280 датчик";
 
 class BME280_Measurer: public Measurer, public HtmlWidget{
 
@@ -37,11 +39,43 @@ public:
 	}
 
 	String getJson(){
+		return getMeasurableAsJson();
+	}
+
+		const PROGMEM char HTML_DIV_OPEN_W3CARD_25_PERC[]     = "<div class=\"w3-card-4\" style=\"width:25%;  float:left; min-width: 250px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;\">";
+		const PROGMEM char HTML_DIV_OPEN_W3CONTAINER_W3TEAL[] = "<div class=\"w3-container w3-teal\">";
+		const PROGMEM char HTML_FORM_OPEN_W3Container[] = "<form class=\"w3-container\">";
+		const PROGMEM char HTML_LABEL_OPEN_WITH_B[] = "<label style=\"max-width: 240px;\"><b>";
+		const PROGMEM char HTML_LABEL_CLOSE_WITH_B[] = "</b></label>";
+		const PROGMEM char HTML_INPUT_OPEN_TILL_NAME[] = "<input class=\"w3-input w3-border\" style=\"width:95%\" name=\"";
+		const PROGMEM char HTML_INPUT_OPEN_AFTER_NAME_TILL_VALUE[] = "\" type=\"text\" value=\"";
+		const PROGMEM char HTML_INPUT_CLOSE_WITH_B[] = "\" disabled>";
+
+	String getHtml(){
+		String result=FPSTR(HTML_DIV_OPEN_W3CARD_25_PERC)+FPSTR(HTML_DIV_OPEN_W3CONTAINER_W3TEAL)
+								+FPSTR(HTML_H2_OPEN)+getName()+FPSTR(HTML_H2_CLOSE)
+					 +FPSTR(HTML_DIV_CLOSE)
+					 	 +FPSTR(HTML_FORM_OPEN_W3Container)
+						 	 +
+
+				<label style=\"max-width: 240px;\"><b>";
+				result+=sensorHelper.getValueByKey(dhtTemperatureAddress);
+				result+="</b></label>\
+				<input class=\"w3-input w3-border\" style=\"width:95%\" name=\"s_tempValue\" type=\"text\" value=\"";
+				result+=dht.readTemperature(false,false);
+				result+="\" disabled>\
+			<p></p>\
+			</form>\
+		</div>\
+
 		return "";
 	}
 
-	String getHtml(){
-		return "";
+	String getFormRow(String labelVal,String inputName,String inputVal){
+		String result=FPSTR(HTML_LABEL_OPEN_WITH_B)+labelVal+FPSTR(HTML_LABEL_OPEN_WITH_B)
+			 +FPSTR(HTML_INPUT_OPEN_TILL_NAME)+inputName+FPSTR(HTML_INPUT_OPEN_AFTER_NAME_TILL_VALUE)+inputVal+FPSTR(HTML_INPUT_CLOSE_WITH_B);
+
+		return result;
 	}
 
 	boolean init(){
