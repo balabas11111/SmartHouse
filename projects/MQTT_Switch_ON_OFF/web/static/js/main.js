@@ -87,3 +87,15 @@ function addPostponedUpdate(widgetId,widgetClass,timeout){
 	setTimeout(function(){updateWidgetByAjax(widgetId,widgetClass);}, timeout);
 }
 
+function w3_open(){
+	document.getElementById("leftSidebar").style.display = "block";
+}					
+function w3_close(){
+	document.getElementById("leftSidebar").style.display = "none";
+}
+
+function onLoadPageComplete(){
+	reloadSettingsWidgets();
+	reloadMeasurerWidgets();
+}
+
