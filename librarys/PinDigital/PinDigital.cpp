@@ -65,8 +65,8 @@ String PinDigital::displayDetails(){
 	return result;
 }
 
-void PinDigital::construct(String _name,uint8_t _pin,uint8_t _pinMode,uint8_t _pinVal,uint8_t _turnOffLevel){
 
+void PinDigital::construct(String _name,uint8_t _pin,uint8_t _pinMode,uint8_t _pinVal,uint8_t _turnOffLevel){
 	name=_name;
 	pin=_pin;
 	pinInOutVal=_pinMode;
@@ -284,7 +284,7 @@ PinEvent PinDigital::constructPinEventSetState(PinEvent parentEvent){
 uint8_t PinDigital::getOpposite(uint8_t _val){
 	return (_val==HIGH)?LOW:HIGH;
 }
-
+/*
 void PinDigital::onRising(){
 	Serial.println("Rised");
 }
@@ -292,3 +292,4 @@ void PinDigital::onRising(){
 void PinDigital::onFalling(){
 	Serial.println("fall");
 }
+*/

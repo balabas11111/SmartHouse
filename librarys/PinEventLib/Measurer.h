@@ -12,21 +12,7 @@
 #include <Measureable.h>
 #include "FunctionalInterrupt.h"
 #include <PinEventProcessor.h>
-
-const char TEMPERATURE_RU[] PROGMEM ="Температура";
-const char HUMIDITY_RU[] PROGMEM ="Влажность";
-const char PRESSURE_RU[] PROGMEM ="Давление";
-const char ALTITUDE_RU[] PROGMEM ="Высота";
-
-const char TEMPERATURE[] PROGMEM ="Temperature";
-const char HUMIDITY[] PROGMEM ="Humidity";
-const char PRESSURE[] PROGMEM ="Pressure";
-const char ALTITUDE[] PROGMEM ="Altitude";
-
-const char MEASURE_CELSIUS_DEGREES[] PROGMEM ="C";
-const char MEASURE_PERSENT[] PROGMEM ="%";
-const char MEASURE_PASCAL[] PROGMEM ="Pa";
-const char MEASURE_METER[] PROGMEM ="m";
+#include <MeasurerConsts.h>
 
 class Measurer: public Measureable,public PinEventProcessor{
 
@@ -35,8 +21,8 @@ public:
 	virtual boolean init()=0;
 	virtual void getExternal()=0;
 
-	Measurer(String _id,String _name,String _kind,String _val,uint8_t _count,boolean _quoteValue)
-	:Measureable(_id, _name, _kind, _val){
+	Measurer(String _id,String _name,String _kind,String _val,String _descr,uint8_t _count,boolean _quoteValue)
+	:Measureable(_id, _name, _kind, _val,_descr){
 		itemsCount=_count;
 		lastMeasureTime=millis();
 		quoteValue=_quoteValue;
@@ -147,10 +133,12 @@ private:
 	}
 
 	String getMeasuableAsJson(Measureable m,boolean _quoteValue){
-		String result=getStringAsJson("id",m.id)+","
-				+getStringAsJson("name",m.name)+","
-				+getStringAsJson("val",m.val,_quoteValue)+","
-				+getStringAsJson("kind",m.kind);
+		String result=
+				getStringAsJson(VAR_NAME(m.id),m.id)+","+
+				getStringAsJson(VAR_NAME(m.name),m.name)+","+
+				getStringAsJson(VAR_NAME(m.val),m.val,_quoteValue)+","+
+				getStringAsJson(VAR_NAME(m.kind),m.kind)+","+
+				getStringAsJson(VAR_NAME(m.descr),m.descr);
 
 		return result;
 	}

@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2018-10-18 18:03:52
+//This file has been generated on 2018-10-19 17:29:34
 
 #include "Arduino.h"
 #include <Arduino.h>
@@ -13,6 +13,7 @@
 #include "Looper.h"
 #include "Loopable.h"
 #include "PinEventProcessor.h"
+#include "FS.h"
 #include "I2Chelper.h"
 #include <Wire.h>
 #include <ESP8266WebServer.h>
@@ -35,8 +36,12 @@ void setupWiFi();
 boolean isWiFIConnected();
 void checkWiFi();
 void setupServer();
-void processHttpCommand();
-void processTestCommand();
+void initStaticPagesInWebFolder();
+void handleNotFound();
+void handleTest();
+void handleEspSettings();
+void handleHttpWidget();
+void handleHttpEvent();
 PinEvent onButtonChanged(PinEvent event);
 void onMovementDetected();
 void onNoMovementDetected();

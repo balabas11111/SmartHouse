@@ -19,16 +19,18 @@ public:
 
 	virtual Measureable* measure(){return (this);};
 
-	Measureable(String _id,String _name,String _kind,String _val){
+	Measureable(String _id,String _name,String _kind,String _val,String _descr){
 		id=_id;
 		name=_name;
 		kind=_kind;
 		val=_val;
+		descr=_descr;
 	}
 	String id;
 	String name;
 	String kind;
 	String val;
+	String descr;
 };
 
 #endif /* LIBRARIES_MEASURER_MEASUREABLE_H_ */

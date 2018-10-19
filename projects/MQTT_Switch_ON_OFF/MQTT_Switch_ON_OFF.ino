@@ -8,7 +8,7 @@
 #include "Loopable.h"
 #include "PinEventProcessor.h"
 //#include "WiFiHelper.h"
-
+#include "FS.h"
 #include "I2Chelper.h"
 #include <Wire.h>
 
@@ -25,6 +25,7 @@
 #define VAR_NAME(var) #var
 
 #define FIRMVARE_VERSION "b@l@bas-soft ONOFF v0.0.5"
+
 //Robot Dyn//vem  // 12E
 #define D0_PIN 16 //GPIO016 ////beeper
 #define D1_PIN 5  //GPIO05  //DallasTemp           PIN_WIRE_SCL
@@ -47,8 +48,8 @@
 const int humanNotPresentInterval=30000;
 const int sensorsInterval=60000;
 
-//const char *ssid = "balabasKiev5"; // Имя роутера
-//const char *pass = "wuWylKegayg2wu22"; // Пароль роутера
+//const char *ssid = "balabasKiev5"; // Г€Г¬Гї Г°Г®ГіГІГҐГ°Г 
+//const char *pass = "wuWylKegayg2wu22"; // ГЏГ Г°Г®Г«Гј Г°Г®ГіГІГҐГ°Г 
 
 EspSettingsBox espSettingsBox("/values2.txt","",true);
 
@@ -93,11 +94,15 @@ Looper looper(loopArray,ARRAY_SIZE(loopArray));
 BME280_Measurer bmeMeasurer("0",VAR_NAME(bmeMeasurer));
 BH1750_Measurer luxMeasurer("1",VAR_NAME(luxMeasurer));
 
+HtmlWidget* widgetsArray[]={&bmeMeasurer,&luxMeasurer};
+
 void setup() {
   Serial.begin(115200);
   delay(100);
 
   Serial.println("Start DeviceId="+espSettingsBox.DeviceId);
+
+  SPIFFS.begin();
 
   i2cBus.init();
   //sensorsTrigger.init();
@@ -255,10 +260,6 @@ void setupServer(){
 
 	Serial.println("SetupServer");
 
-	server.on ( "/runCommand", HTTP_GET, processHttpCommand );
-	server.on ( "/test", HTTP_GET, processTestCommand );
-	server.begin();
-
 	Serial.print("WiFi.getMode=");
 	Serial.print(WiFi.getMode());
 	Serial.print(" WiFi.getAutoConnect=");
@@ -267,11 +268,101 @@ void setupServer(){
 	Serial.println(WiFi.status());
 	Serial.println("----------------------------");
 
+	server.onNotFound(handleNotFound);
+
+	server.on ( "/test", HTTP_GET, handleTest);
+	server.on ( "/MeasurerWidgetESP", HTTP_GET, handleHttpWidget);
+	server.on ( "/SettingsWidgetESP", HTTP_GET, handleEspSettings);
+	server.on ( "/processEvent", HTTP_GET, handleHttpEvent );
+
+	initStaticPagesInWebFolder();
+
+	server.begin();
+
 	Serial.println("Server setup completed");
 	Serial.println("---------------------");
 }
 //---------------------------------------------------------------------------------------
-void processHttpCommand(){
+void initStaticPagesInWebFolder(){
+	String basePath="/web/static";
+	//        /js   /css     /html
+
+	Dir base=SPIFFS.openDir(basePath);
+
+	while(base.next()){
+		String subFolder=base.fileName();
+
+		String urlPreffix=subFolder+"/";
+		String currentFolder=basePath+subFolder;
+		Dir dir=SPIFFS.openDir(currentFolder);
+
+		while(dir.next()){
+			String fileName=dir.fileName();
+			String url=urlPreffix+fileName;
+			size_t size=dir.openFile("r").size();
+
+			String path=basePath+"/"+currentFolder+"/"+fileName;
+			Serial.print("Found file "+path+" size="+String(size)+" deploying");
+
+			server.serveStatic(url.c_str(), SPIFFS, path.c_str());
+			Serial.println("...done");
+		}
+	}
+}
+
+void handleNotFound(){
+	server.send(404,"text/html", "notFound");
+}
+
+void handleTest(){
+	server.send ( 200, "text/html", "I'm here" );
+}
+
+void handleEspSettings(){
+	//class ="SettingsWidgetESP"
+	const String wnParam="widgetName";
+
+	if(server.hasArg(wnParam)){
+		String wiName=server.arg(wnParam);
+		Serial.println("PorcessEspSetting="+wiName);
+
+		if(wiName.equals("espSettingsBox.DeviceId")){
+			server.send(200, "text/html", espSettingsBox.getHtmlVal(wiName));
+		}
+
+		server.send(404, "text/html", "РџР°СЂР°РјРµС‚СЂ "+wiName+" РЅРµ РЅР°Р№РґРµРЅ");
+	}
+
+	server.send(400, "text/html", "widgetName parameter missing");
+}
+
+void handleHttpWidget(){
+	//class ="MeasurerWidgetESP"
+	//    /processWidget   param=widgetName
+	const String wnParam="widgetName";
+
+	if(server.hasArg(wnParam)){
+		String wiName=server.arg(wnParam);
+		Serial.println("PorcessWidget="+wiName);
+
+		if(wiName.equals("espSettingsBox.DeviceId")){
+			server.send(200, "text/html", espSettingsBox.DeviceId);
+		}
+
+		for(uint8_t i=0;i<ARRAY_SIZE(widgetsArray);i++){
+			if(widgetsArray[i]->getName().equals(wiName)){
+				server.send(200, "text/html", (widgetsArray[i]->getHtml()));
+				return;
+			}
+		}
+
+		server.send(404, "text/html", "Р’РёРґР¶РµС‚ "+wiName+" РЅРµ РЅР°Р№РґРµРЅ");
+	}
+
+	server.send(400, "text/html", "widgetName parameter missing");
+}
+
+void handleHttpEvent(){
 	if(server.args()!=0 && server.hasArg("command")){
 		String command=server.arg("command");
 		Serial.println("Http command received "+command);
@@ -284,9 +375,8 @@ void processHttpCommand(){
 	server.send(500,"text/html","{\"status\":\"Failed\",\"command\":\"No command received\"}");
 }
 
-void processTestCommand(){
-	server.send ( 200, "text/html", "I'm here" );
-}
+
+
 //-----------------------------------------------------------
 PinEvent onButtonChanged(PinEvent event){
 	//On button changed
@@ -481,10 +571,10 @@ void connectWiFi(){
 	  }
 }
 
-const char *mqtt_server = "m23.cloudmqtt.com"; // Имя сервера MQTT
-const int mqtt_port = 10186; // Порт для подключения к серверу MQTT
-const char *mqtt_user = "tpheglmk"; // Логи для подключения к серверу MQTT
-const char *mqtt_pass = "QgYRfVzDhQ31"; // Пароль для подключения к серверу MQTT
+const char *mqtt_server = "m23.cloudmqtt.com"; // Г€Г¬Гї Г±ГҐГ°ГўГҐГ°Г  MQTT
+const int mqtt_port = 10186; // ГЏГ®Г°ГІ Г¤Г«Гї ГЇГ®Г¤ГЄГ«ГѕГ·ГҐГ­ГЁГї ГЄ Г±ГҐГ°ГўГҐГ°Гі MQTT
+const char *mqtt_user = "tpheglmk"; // Г‹Г®ГЈГЁ Г¤Г«Гї ГЇГ®Г¤ГЄГ«ГѕГ·ГҐГ­ГЁГї ГЄ Г±ГҐГ°ГўГҐГ°Гі MQTT
+const char *mqtt_pass = "QgYRfVzDhQ31"; // ГЏГ Г°Г®Г«Гј Г¤Г«Гї ГЇГ®Г¤ГЄГ«ГѕГ·ГҐГ­ГЁГї ГЄ Г±ГҐГ°ГўГҐГ°Гі MQTT
 
 const char *baseTopic="topic/";
 const char *topic_sub_s1="topic/switch1";
@@ -540,7 +630,7 @@ boolean publishToTopic(const char *topic, String payload){
 	return result;
 }
 
-// Функция получения данных от сервера
+// Г”ГіГ­ГЄГ¶ГЁГї ГЇГ®Г«ГіГ·ГҐГ­ГЁГї Г¤Г Г­Г­Г»Гµ Г®ГІ Г±ГҐГ°ГўГҐГ°Г 
 void callback(char* topic, uint8_t* payload, unsigned int length) {
 
 	String payloadIn = (char*)payload;

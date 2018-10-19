@@ -408,3 +408,10 @@ void EspSettingsBox::printFileToDIsc(){
   		Serial.println("FIleNot found");
   	}
 }
+
+String EspSettingsBox::getHtmlVal(String key){
+	if(key.equals("DeviceId")){
+		return "<h1>"+DeviceId+"</h1>";
+	}
+	return "";
+}

@@ -46,10 +46,6 @@ public:
 	}
 	//Loopable
 	String displayDetails() override;
-
-	void onRising();
-	void onFalling();
-
 	boolean loop() override;
 
 	//PinAbstract functions

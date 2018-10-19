@@ -17,6 +17,9 @@ const char HTML_B_OPEN[] PROGMEM ="<b>";
 const char HTML_H2_OPEN[] PROGMEM ="<h2>";
 const char HTML_H2_CLOSE[] PROGMEM ="</h2>";
 
+const char HTML_P_OPEN[] PROGMEM ="<p>";
+const char HTML_p_CLOSE[] PROGMEM ="</p>";
+
 //base attributes
 const PROGMEM char HTML_ATTR_ID_OPEN[]                = " id=\"";
 const PROGMEM char HTML_ATTR_NAME_OPEN[]              = " name=\"";
@@ -50,28 +53,54 @@ const PROGMEM char HTML_FORM_OPEN[]                   = "<form>";
 const PROGMEM char HTML_FORM_OPEN_NO_END_QUOTE[]      = "<form";
 const PROGMEM char HTML_FORM_CLOSE[]                  = "</form>";
 
-
 //label
 const PROGMEM char HTML_LABEL_OPEN[]                  = "<label>";
 const PROGMEM char HTML_LABEL_OPEN_NO_END_QUOTE[]     = "<label";
 const PROGMEM char HTML_LABEL_CLOSE[]                 = "</label>";
-
 
 //input
 const PROGMEM char HTML_INPUT_OPEN[]                  = "<input>";
 const PROGMEM char HTML_INPUT_OPEN_NO_END_QUOTE[]     = "<input";
 const PROGMEM char HTML_INPUT_CLOSE[]                 = "</input>";
 
-
+//
+const PROGMEM char WIDGET_NOT_ALLOWED[]                 = "<p>htmlReturnDisabled</p>";
 
 class HtmlWidget {
 public:
 
 	virtual ~HtmlWidget();
 
+	virtual String getHtml(){
+		if(htmlReturnDisabled){
+			return getNotAllowedHtml();
+		}else{
+			return constructHtml();
+		}
+	}
+
+	virtual String getJson(){
+			if(jsonReturnDisabled){
+				return getNotAllowedJson();
+			}else{
+				return constructJson();
+			}
+		}
+
+	virtual boolean isHtmlEnabled(){
+		return !htmlReturnDisabled;
+	}
+
 	virtual String getName()=0;
-	virtual String getHtml()=0;
-	virtual String getJson()=0;
+
+	virtual String getNotAllowedHtml(){return FPSTR(WIDGET_NOT_ALLOWED);};
+	virtual String getNotAllowedJson(){return "{\"result\":\"htmlReturnDisabled\"}";};
+protected:
+	virtual String constructHtml()=0;
+	virtual String constructJson()=0;
+
+	boolean htmlReturnDisabled;
+	boolean jsonReturnDisabled;
 };
 
 #endif /* LIBRARIES_PINEVENTLIB_HTMLWIDGET_H_ */

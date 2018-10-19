@@ -34,7 +34,7 @@ public:
 	}
 
 	virtual uint16_t getVal()=0;
-	virtual boolean setVal(uint16_t)=0;
+	virtual boolean setVal(uint16_t _val)=0;
 
 	virtual void processInterrupt()=0;
 

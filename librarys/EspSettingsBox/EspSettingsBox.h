@@ -19,6 +19,8 @@ public:
 	EspSettingsBox(String fileName,boolean forceLoad);
 	EspSettingsBox(String fileName,String extValuesFileName,boolean forceLoad);
 
+	String getHtmlVal(String key);
+
 	void loadExternalFile();
 	void saveExternalFile();
 	String getExternalVal(String key);

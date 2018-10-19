@@ -35,26 +35,21 @@ CPP_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 . \
-core/core \
-core/core/libb64 \
-core/core/spiffs \
-core/core/umm_malloc \
-libraries/BeeperB \
-libraries/ButtonB \
-libraries/DHT_sensor_library \
-libraries/DallasTemperature \
-libraries/EEPROM \
-libraries/ESP8266HTTPClient/src \
-libraries/ESP8266WebServer/src \
-libraries/ESP8266WiFi/src \
-libraries/EspSettingsBox \
-libraries/LedB \
-libraries/Loopable \
-libraries/OLED \
-libraries/OneWire \
-libraries/PubSubClient/src \
-libraries/Rtc_by_Makuna/src \
-libraries/SensorsDS18_helper \
-libraries/TimeTrigger \
-libraries/Wire \
+core\core \
+core\core\libb64 \
+core\core\spiffs \
+core\core\umm_malloc \
+libraries\BeeperB \
+libraries\ButtonB \
+libraries\EEPROM \
+libraries\ESP8266HTTPClient\src \
+libraries\ESP8266WebServer\src \
+libraries\ESP8266WiFi\src \
+libraries\EspSettingsBox \
+libraries\LedB \
+libraries\OLED \
+libraries\PubSubClient\src \
+libraries\SensorsDS18_helper \
+libraries\TimeTrigger \
+libraries\Wire \
 

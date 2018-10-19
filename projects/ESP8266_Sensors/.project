@@ -112,6 +112,11 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire/2.3.3</locationURI>
 		</link>
 		<link>
+			<name>libraries/PinEventLib</name>
+			<type>2</type>
+			<location>D:/projects/!!!SmartHouse/librarys/PinEventLib</location>
+		</link>
+		<link>
 			<name>libraries/PubSubClient</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/PubSubClient/2.6.0</locationURI>
