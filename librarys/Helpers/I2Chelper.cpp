@@ -4,8 +4,10 @@
  *  Created on: 13 окт. 2018 г.
  *      Author: Vitaliy
  */
+#include "Initializable.h"
 #include <I2Chelper.h>
 #include "Wire.h"
+
 
 	I2Chelper::I2Chelper(uint8_t _clockPin,uint8_t _dataPin,boolean _active){
 		Serial.println("Create I2C Helper");
@@ -14,20 +16,20 @@
 		sda=_dataPin;
 		scl=_clockPin;
 
-		active=false;
+		initialized=false;
 
-		if(_active){
-			init();
-		}
+		initialize(_active);
 	}
 
-	void I2Chelper::init(){
-		if(!active){
+	boolean I2Chelper::initialize(boolean init){
+		Serial.println("Begin initialize of I2CHelper");
+		if(init && !initialized){
 			initWire();
 			scan();
-
-			active=true;
 		}
+		initialized=init;
+
+		return initialized;
 	}
 
 	void I2Chelper::initWire(){

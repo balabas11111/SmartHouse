@@ -9,17 +9,18 @@
 #define LIBRARIES_I2CHELPER_I2CHELPER_H_
 
 #include <Arduino.h>
+#include "Initializable.h"
 
-class I2Chelper{
+class I2Chelper:public Initializable{
 
 public:
 	I2Chelper(uint8_t clockPin,uint8_t dataPin,boolean active);
-	void init();
+	virtual boolean initialize(boolean _init) override;
+
 	String scan();
 private:
 	uint8_t sda;
 	uint8_t scl;
-	boolean active;
 	uint8_t devCount;
 
 	void initWire();

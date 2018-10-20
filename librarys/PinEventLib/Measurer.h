@@ -13,12 +13,12 @@
 #include "FunctionalInterrupt.h"
 #include <PinEventProcessor.h>
 #include <MeasurerConsts.h>
+#include <Initializable.h>
 
-class Measurer: public Measureable,public PinEventProcessor{
+class Measurer: public Measureable,public PinEventProcessor,public Initializable{
 
 public:
 
-	virtual boolean init()=0;
 	virtual void getExternal()=0;
 
 	Measurer(String _id,String _name,String _kind,String _val,String _descr,uint8_t _count,boolean _quoteValue)

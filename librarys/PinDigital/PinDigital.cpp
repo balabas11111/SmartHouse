@@ -15,7 +15,7 @@ PinDigital::PinDigital(uint8_t pin){
 
 PinDigital::PinDigital(String _name,uint8_t _pin){
 	construct(_name,_pin,INPUT,LOW,LOW);
-	//initFunc(nullptr);
+	initFunc(nullptr,CHANGE,nullptr);
 }
 
 PinDigital::PinDigital(String _name,uint8_t _pin,std::function<PinEvent(PinEvent)> funcEvent){

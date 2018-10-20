@@ -12,7 +12,10 @@ RM := del
 -include libraries\Wire\subdir.mk
 -include libraries\TimeTrigger\subdir.mk
 -include libraries\SensorsDS18_helper\subdir.mk
+-include libraries\Rtc_by_Makuna\src\subdir.mk
 -include libraries\PubSubClient\src\subdir.mk
+-include libraries\PinEvent\subdir.mk
+-include libraries\OneWire\subdir.mk
 -include libraries\OLED\subdir.mk
 -include libraries\LedB\subdir.mk
 -include libraries\EspSettingsBox\subdir.mk
@@ -20,6 +23,8 @@ RM := del
 -include libraries\ESP8266WebServer\src\subdir.mk
 -include libraries\ESP8266HTTPClient\src\subdir.mk
 -include libraries\EEPROM\subdir.mk
+-include libraries\DallasTemperature\subdir.mk
+-include libraries\DHT_sensor_library\subdir.mk
 -include libraries\ButtonB\subdir.mk
 -include libraries\BeeperB\subdir.mk
 -include core\core\umm_malloc\subdir.mk
@@ -109,5 +114,6 @@ clean:
 	-@echo ' '
 
 .PHONY: all clean dependents
+.SECONDARY:
 
 -include ..\makefile.targets

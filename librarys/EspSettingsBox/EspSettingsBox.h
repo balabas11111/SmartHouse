@@ -11,13 +11,17 @@
 #include "Arduino.h"
 #include "ESP8266WiFi.h"
 #include "ArduinoJson.h"
+#include "Initializable.h"
 
-class EspSettingsBox{
+class EspSettingsBox: public Initializable{
 
 public:
 	EspSettingsBox(String fileName);
 	EspSettingsBox(String fileName,boolean forceLoad);
 	EspSettingsBox(String fileName,String extValuesFileName,boolean forceLoad);
+	EspSettingsBox(String fileName,String extValuesFileName,boolean forceLoad,boolean _initSpiff);
+
+	virtual boolean initialize(boolean _init) override;
 
 	String getHtmlVal(String key);
 
@@ -35,6 +39,10 @@ public:
 
 	void printFileToDIsc();
 	boolean isTrue(String str);
+
+	boolean isSpiffInitialized();
+
+	void printSpiffsInfo();
 
 	String DeviceId = "SENS_"+String(ESP.getChipId());
 	boolean displayAlvaysOn=false;
@@ -55,6 +63,7 @@ public:
 	String password = "wuWylKegayg2wu22";//wuWylKegayg2wu22
 
 	int serverPort=80;
+	boolean staticIp=false;
 
 	IPAddress localIp=IPAddress(192, 168, 0, 70);
 	IPAddress apIp=IPAddress(192, 168, 4, 1);
@@ -92,11 +101,13 @@ public:
 	String mqtt_topic="topic/basePublish";
 
 private:
+	boolean spiffInitialized;
 	String _fileName;
 	String _extFileName;
 	JsonObject* extRoot;
 
-	void init(String fileName,String extValuesFileName,boolean forceLoad);
+	void construct(String fileName,String extValuesFileName,boolean forceLoad,boolean initSpiff);
+	void initSpiff();
 };
 
 

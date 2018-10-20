@@ -10,24 +10,76 @@
 #include "FS.h"
 
 EspSettingsBox::EspSettingsBox(String fileName){
-	init(fileName,"",false);
+	construct(fileName,"",false,false);
 }
 
 EspSettingsBox::EspSettingsBox(String fileName,boolean forceLoad){
-	init(fileName,"",forceLoad);
+	construct(fileName,"",forceLoad,false);
 }
 
 EspSettingsBox::EspSettingsBox(String fileName,String extValuesFileName,boolean forceLoad){
-	init(fileName,extValuesFileName,forceLoad);
+	construct(fileName,extValuesFileName,forceLoad,false);
 }
 
-void EspSettingsBox::init(String fileName,String extValuesFileName,boolean forceLoad){
+EspSettingsBox::EspSettingsBox(String fileName,String extValuesFileName,boolean forceLoad,boolean _initSpiff){
+	construct(fileName,extValuesFileName,forceLoad,_initSpiff);
+}
+
+//Initializable
+	boolean EspSettingsBox::initialize(boolean _init){
+		Serial.println("Begin initialize of EspSettingsBox");
+
+		if(!initialized && _init){
+			loadSettingsJson();
+			initialized=_init;
+		}else{
+			if(initialized)
+				Serial.println("EspSettingsBox already initialized");
+		}
+
+		return initialized;
+	}
+
+boolean EspSettingsBox::isSpiffInitialized(){
+	return spiffInitialized;
+}
+
+void EspSettingsBox::printSpiffsInfo(){
+	FSInfo fs_info;
+	SPIFFS.info(fs_info);
+
+	Serial.println("--------------SPIFFS INFO--------------");
+	Serial.println("Initialized="+String(initialized));
+	Serial.println("spiffInitialized="+String(spiffInitialized));
+
+	Serial.println("blockSize="+String(fs_info.blockSize));
+	Serial.println("maxOpenFiles="+String(fs_info.maxOpenFiles));
+	Serial.println("maxPathLength="+String(fs_info.maxPathLength));
+	Serial.println("pageSize="+String(fs_info.pageSize));
+	Serial.println("totalBytes="+String(fs_info.totalBytes));
+	Serial.println("usedBytes="+String(fs_info.usedBytes));
+	Serial.println("---------------------------------------");
+}
+
+void EspSettingsBox::construct(String fileName,String extValuesFileName,boolean forceLoad,boolean _initSpiff){
 	_fileName=fileName;
 	_extFileName=extValuesFileName;
+
+	if(_initSpiff){
+		initSpiff();
+	}
 
 	if(forceLoad){
 		loadSettingsJson();
 	}
+
+	initialized=true;
+}
+
+void EspSettingsBox::initSpiff(){
+	spiffInitialized=SPIFFS.begin();
+
+	Serial.println("File system status"+String(spiffInitialized));
 }
 
 void EspSettingsBox::printVariablesToSerial(){
@@ -50,6 +102,7 @@ void EspSettingsBox::printVariablesToSerial(){
 
 	Serial.print("; ssid=");Serial.print(ssid);
 	Serial.print("; password=");Serial.print(password);
+	Serial.print("; staticIp=");Serial.print(staticIp);
 	Serial.print("; localIp=");Serial.print(localIp);
 	Serial.print("; gateIp=");Serial.print(gateIp);
 	Serial.print("; subnetIp=");Serial.print(subnetIp);
@@ -181,6 +234,7 @@ void EspSettingsBox::saveSettingsJson(){
 	root["sid"] = ssid;
 	root["pas"] = password;
 
+	root["staticIp"] = staticIp;
 	root["lip"] = localIp.toString();
 	root["aip"] = apIp.toString();
 	root["gip"] = gateIp.toString();
@@ -276,6 +330,7 @@ void EspSettingsBox::loadSettingsJson(){
 			ssid = root["sid"].asString();
 			password = root["pas"].asString();
 
+			staticIp=isTrue(root["staticIp"].asString());
 			localIp=stringToIp(String(root["lip"].asString()));
 			apIp=stringToIp(String(root["aip"].asString()));
 			gateIp=stringToIp(String(root["gip"].asString()));

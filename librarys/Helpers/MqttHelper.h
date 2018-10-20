@@ -13,21 +13,25 @@
 #include <PubSubClient.h>
 #include "PinEvent.h"
 #include "Loopable.h"
+#include "Initializable.h"
+#include "PinEventProcessor.h"
 
-class MqttHelper: public Loopable{
+class MqttHelper: public Loopable,public Initializable{
 
 public:
-	MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,uint8_t _topicCount,std::function<void(char*, uint8_t*, unsigned int)> _callback,Client& _client/*std::function<void(PinEvent)> externalPinEventFunction,std::function<void(String topic,String message)> externalCallbackFunction,Client& _client*/);
+	MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,uint8_t _topicCount,Client& _client,PinEventProcessor *eventProcessors[],uint8_t procSize,std::function<void(String topic,String message)> _externalCallbackFunction);
+
+	PinEvent processEvent(PinEvent event);
 	virtual ~MqttHelper();
 
-	void init();
+	virtual boolean initialize(boolean _init) override;
 
 	boolean isConnected();
 	boolean connectIfNotConnected();
 	void subscribe(String topicName);
 	boolean publish(char* topicName,String message);
 
-	boolean publish(String message);
+	boolean publish(PinEvent event);
 
 	String getName();
 	String displayDetails();
@@ -37,24 +41,29 @@ public:
 	PubSubClient getClient();
 
 private:
+	PinEventProcessor **eventProcessors;
+	uint8_t procSize;
+
 	uint8_t topicCount;
 	String* subscribeTopics;
-	std::function<void(PinEvent)> externalPinEventFunction;
+	//std::function<void(PinEvent)> externalPinEventFunction;
 	std::function<void(String topic,String message)> externalCallbackFunction;
 	PubSubClient client;
 
+	EspSettingsBox *settingsBox;
+/*
 	char* mqtt_server;
 	uint16_t mqtt_port;
 	char* mqtt_user;
 	char* mqtt_pass;
 	char* mqtt_topic;
 	char* mqtt_startMessage;
-
-	boolean active;
-
+	char* deviceId;
+*/
 	Client* wiFiClient;
 
 	void connect();
+	boolean publish(String message);
 };
 
 

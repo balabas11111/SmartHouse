@@ -26,6 +26,7 @@ public:
 		val=_val;
 		descr=_descr;
 	}
+
 	String id;
 	String name;
 	String kind;

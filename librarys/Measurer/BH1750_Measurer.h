@@ -30,12 +30,16 @@ public:
 		Serial.println("destructed");
 	}
 
-	boolean init(){
-		Serial.print("Init luxmeter");
-		lightMeter.begin();
-		Serial.println("...done");
-		initialized=true;
-		return true;
+	boolean initialize(boolean _init){
+		if(_init){
+			Serial.println("-------BH1750_Measurer initialize------------");
+			Serial.print("Init luxmeter");
+			lightMeter.begin();
+			Serial.println("...done");
+			Serial.println("---------------------------------------------");
+		}
+		initialized=_init;
+		return initialized;
 	}
 
 	void getExternal() override{

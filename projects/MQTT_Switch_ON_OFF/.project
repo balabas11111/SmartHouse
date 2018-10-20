@@ -54,7 +54,7 @@
 		<link>
 			<name>libraries/ArduinoJson</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/ArduinoJson/5.13.3</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/ArduinoJson/5.12.0</locationURI>
 		</link>
 		<link>
 			<name>libraries/BH1750</name>
@@ -87,19 +87,14 @@
 			<location>D:/projects/!!!SmartHouse/librarys/EspSettingsBox</location>
 		</link>
 		<link>
-			<name>libraries/I2CHelper</name>
+			<name>libraries/Helpers</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/I2CHelper</location>
+			<location>D:/projects/!!!SmartHouse/librarys/Helpers</location>
 		</link>
 		<link>
 			<name>libraries/Measurer</name>
 			<type>2</type>
 			<location>D:/projects/!!!SmartHouse/librarys/Measurer</location>
-		</link>
-		<link>
-			<name>libraries/MqttHelper</name>
-			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/MqttHelper</location>
 		</link>
 		<link>
 			<name>libraries/PinAnalog</name>

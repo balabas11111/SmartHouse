@@ -44,6 +44,14 @@ public:
 	String getName(){
 		return PinAbstract::getName();
 	}
+	boolean init(){
+
+	}
+
+	boolean init(boolean _init){
+
+	}
+
 	//Loopable
 	String displayDetails() override;
 	boolean loop() override;
@@ -67,6 +75,8 @@ private:
 	void initFunc(std::function<PinEvent(PinEvent)> externalFunction,uint8_t _buttonMode,std::function<PinEvent(PinEvent)> _isDispatcherPostFunction);
 
 	uint8_t getOpposite(uint8_t _val);
+
+	boolean _initialized;
 
 protected:
 	//void handleExternalFunction(String str);

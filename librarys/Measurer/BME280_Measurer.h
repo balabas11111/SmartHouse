@@ -11,6 +11,7 @@
 #include <memory>
 #include "Arduino.h"
 //#include "Wire.h"
+#include "Initializable.h"
 #include "Measurer.h"
 #include "HtmlWidget.h"
 
@@ -33,14 +34,18 @@ public:
 		Serial.println("destructed");
 	}
 
-	boolean init(){
-		Serial.print("Init BME-280");
-		bool status=bme.begin();
-		Serial.print(" status="+String(status));
-		Serial.println("...done");
-
-		initialized=true;
-		return status;
+	boolean initialize(boolean _init){
+		Serial.println("Begin initialize of BME280_Measurer");
+		if(_init){
+			Serial.println("-------BME280_Measurer initialize------------");
+			Serial.print("Init BME-280");
+			bool status=bme.begin();
+			Serial.print(" status="+String(status));
+			Serial.println("...done");
+			Serial.println("---------------------------------------------");
+		}
+		initialized=_init;
+		return initialized;
 	}
 
 	void getExternal() override{

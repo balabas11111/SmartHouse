@@ -69,7 +69,7 @@ const PROGMEM char WIDGET_NOT_ALLOWED[]                 = "<p>htmlReturnDisabled
 class HtmlWidget {
 public:
 
-	virtual ~HtmlWidget();
+	virtual ~HtmlWidget(){};
 
 	virtual String getHtml(){
 		if(htmlReturnDisabled){
