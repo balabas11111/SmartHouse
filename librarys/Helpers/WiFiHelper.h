@@ -8,6 +8,7 @@
 #ifndef LIBRARIES_TIMETRIGGER_WIFIHELPER_H_
 #define LIBRARIES_TIMETRIGGER_WIFIHELPER_H_
 
+#include <ESP_Consts.h>
 #include "Arduino.h"
 #include "Initializable.h"
 #include "EspSettingsBox.h"
@@ -73,10 +74,10 @@ public:
 
 		server->onNotFound([this](){handleNotFound();});
 
-		server->on ( "/test", HTTP_GET,[this](){handleTest();});
-		server->on ( "/MeasurerWidgetESP", HTTP_GET, [this](){handleHttpWidget();});
-		server->on ( "/SettingsWidgetESP", HTTP_GET, [this](){handleEspSettings();});
-		server->on ( "/processEvent", HTTP_GET, [this](){handleHttpEvent();});
+		server->serveStatic("/", SPIFFS, (espSettingsBox->webDefPage).c_str());
+		server->on ( "/"+String(FPSTR(URL_REMOTE_GET_WIDGETS)), HTTP_ANY, [this](){handleHttpWidget();});
+		//server->on ( "/SettingsWidgetESP", HTTP_ANY, [this](){handleEspSettings();});
+		server->on ( "/"+String(FPSTR(URL_PROCESS_EVENTS)), HTTP_GET, [this](){handleHttpEvent();});
 
 		if(initStaticPages){
 			initStaticPagesInWebFolder();
@@ -110,7 +111,8 @@ public:
 		 *  curl -X POST -F "data=@favicon.ico"   http://<ESP32 IP address>/edit >/dev/null
 		 *  curl -X POST -F "data=@edit.htm.gz"   http://<ESP32 IP address>/edit >/dev/null
 		 */
-
+		Serial.println("Deploying Filemanager /edit");
+		Serial.println("-----------------------------------");
 		#ifdef ESP8266
 			Dir dir = SPIFFS.openDir("/");
 			while (dir.next()) {
@@ -358,44 +360,59 @@ public:
 
 	//-----------------------------------------------------------------------
 	void initStaticPagesInWebFolder(){
-		String basePath="/web/static";
+		String basePath=espSettingsBox->webRoot;
+		String extensions=espSettingsBox->webDepExt;
+
+		Serial.println("Deploying "+String(basePath)+" as web files");
+		Serial.println("Extensions "+String(extensions)+" to be deployed");
+		Serial.println("-----------------------------------");
 		//        /js   /css     /html
+		Dir dir=SPIFFS.openDir(basePath);
 
-		Dir base=SPIFFS.openDir(basePath);
+		while(dir.next()){
+			File file=dir.openFile("r");
 
-		while(base.next()){
-			String subFolder=base.fileName();
+			String fileNameStr=String(file.name());
 
-			String urlPreffix=subFolder+"/";
-			String currentFolder=basePath+subFolder;
-			Dir dir=SPIFFS.openDir(currentFolder);
+			String url=fileNameStr.substring(basePath.length());
 
-			while(dir.next()){
-				String fileName=dir.fileName();
-				String url=urlPreffix+fileName;
-				size_t size=dir.openFile("r").size();
+			if(!url.startsWith("/")){
+				url="/"+url;
+			}else{
+			}
 
-				String path=basePath+"/"+currentFolder+"/"+fileName;
-				Serial.print("Found file "+path+" size="+String(size)+" url="+url);
+			File f=dir.openFile("r");
+			size_t size=f.size();
+			f.close();
 
-				server->serveStatic(url.c_str(), SPIFFS, path.c_str());
-				Serial.println("...done");
+			uint8_t extIndex=fileNameStr.lastIndexOf(".");
+			String extension=fileNameStr.substring(extIndex+1);
+
+			boolean add=extensions.indexOf(extension)!=-1;
+
+			//String path=basePath+"/"+currentFolder+"/"+fileName;
+			if(add){
+				Serial.println("Added file "+fileNameStr+" size="+String(size)+" ext="+extension+"   URL="+url);
+				server->serveStatic(url.c_str(), SPIFFS, fileNameStr.c_str());
 			}
 		}
+		Serial.println("-----------------------------------");
+		//addFileHandlersForDir(base,basePath,baseUrl);
 	}
+
 	//-----------------------------------------------------------------------
 
 	void handleNotFound(){
-		if(!handleFileRead(server->uri()))
+		/*if(!handleFileRead(server->uri()))
 			  server->send(404, "text/plain", "FileNotFound");
-
+*/
 		server->send(404,"text/html", "notFound");
 	}
 
 	void handleTest(){
 		server->send ( 200, "text/html", "I'm here" );
 	}
-
+/*
 	void handleEspSettings(){
 		//class ="SettingsWidgetESP"
 		const String wnParam="widgetName";
@@ -404,16 +421,25 @@ public:
 			String wiName=server->arg(wnParam);
 			Serial.println("PorcessEspSetting="+wiName);
 
-			if(wiName.equals("espSettingsBox.DeviceId")){
-				server->send(200, "text/html", espSettingsBox->getHtmlVal(wiName));
+			String result="Not found";
+			String key;
+
+			if(wiName.startsWith("espSettingsBox")){
+				key=wiName.substring(wiName.indexOf(".")+1);
+				result=espSettingsBox->getHtmlVal(key);
+			}
+			if(!result.equals("")){
+				server->send(200, "text/html",result);
+			}else{
+				Serial.println(wiName+" not found key="+key);
 			}
 
-			server->send(404, "text/html", "Параметр "+wiName+" не найден");
+			server->send(404, "text/html", "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "+wiName+" пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ");
 		}
 
 		server->send(400, "text/html", "widgetName parameter missing");
 	}
-
+*/
 	void handleHttpEvent(){
 		if(server->args()!=0 && server->hasArg("command")){
 			String command=server->arg("command");

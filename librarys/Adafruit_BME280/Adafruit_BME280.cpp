@@ -148,6 +148,7 @@ bool Adafruit_BME280::init()
     }
 
     write8(BME280_REGISTER_CHIPID,0x60);
+    /*
     Serial.println("BME-280 chipId="+String(read8(BME280_REGISTER_CHIPID)));
     Serial.println("Status ="+read8(BME280_REGISTER_STATUS));
     Serial.println("BME280_REGISTER_CONTROL="+String(read8(BME280_REGISTER_CONTROL)));
@@ -156,7 +157,7 @@ bool Adafruit_BME280::init()
     Serial.println("BME280_REGISTER_CONFIG="+String(read24(BME280_REGISTER_CONFIG)));
     Serial.println("BME280_REGISTER_PRESSUREDATA="+String(read24(BME280_REGISTER_PRESSUREDATA)));
     Serial.println("BME280_REGISTER_HUMIDDATA="+String(read24(BME280_REGISTER_HUMIDDATA)));
-
+*/
     // check if sensor, i.e. the chip ID is correct
 
     if (read8(BME280_REGISTER_CHIPID) != 0x60)

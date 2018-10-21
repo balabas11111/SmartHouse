@@ -1,7 +1,7 @@
 /*
  * WidgetHelper.h
  *
- *  Created on: 20 окт. 2018 г.
+ *  Created on: 20 пїЅпїЅпїЅ. 2018 пїЅ.
  *      Author: Vitaliy
  */
 
@@ -9,6 +9,8 @@
 #define LIBRARIES_HELPERS_WIDGETHELPER_H_
 
 #include "HtmlWidget.h"
+//#include "HtmlWidgetAction.h"
+#include "ESP_Consts.h"
 #include "EspSettingsBox.h"
 
 class WidgetHelper {
@@ -29,6 +31,33 @@ public:
 		Serial.println("-------------Widgets--------------------------");
 		Serial.println(result);
 		Serial.println("----------------------------------------------");
+		return result;
+	}
+
+	static String executeClientAction(EspSettingsBox *espSettingsBox,HtmlWidget* widgetsArray[],uint8_t size,
+		String actionName,String remoteId,String remoteVal, String className, String childClass,String clientData){
+
+		Serial.println("Process actionName="+actionName+" remoteId="+remoteId+" remoteVal="+remoteVal+" className="+className
+				+" childClass="+childClass);
+		Serial.println(" clientData="+clientData);
+
+		String result="";
+
+		//TODO: create espSettings htmlWidget
+		String espSettAction=FPSTR(ACTION_GET_STATIC_SETTINGS_DATA);
+
+		if(actionName.equals(espSettAction)){
+			result=espSettingsBox->getParamVal(remoteVal);
+			Serial.println("remoteVal("+remoteVal+","+result+")");
+			return result;
+		}
+
+		for(uint8_t i=0;i<size;i++){
+			if((widgetsArray[i]->getName()).equals(remoteId)){
+				return widgetsArray[i]->executeClientAction(actionName, remoteId, remoteVal, className, childClass, clientData);
+			}
+		}
+
 		return result;
 	}
 

@@ -8,11 +8,11 @@
 #ifndef LIBRARIES_MEASURER_MEASURER_H_
 #define LIBRARIES_MEASURER_MEASURER_H_
 
+#include <ESP_Consts.h>
 #include "Arduino.h"
 #include <Measureable.h>
 #include "FunctionalInterrupt.h"
 #include <PinEventProcessor.h>
-#include <MeasurerConsts.h>
 #include <Initializable.h>
 
 class Measurer: public Measureable,public PinEventProcessor,public Initializable{
@@ -24,12 +24,28 @@ public:
 	Measurer(String _id,String _name,String _kind,String _val,String _descr,uint8_t _count,boolean _quoteValue)
 	:Measureable(_id, _name, _kind, _val,_descr){
 		itemsCount=_count;
-		lastMeasureTime=millis();
+		lastMeasureTime=-120000;
+		minMeasureInterval=120000;
 		quoteValue=_quoteValue;
 
 		items=new Measureable[itemsCount];
 
 		initialized=false;
+	}
+
+	String constructSimpleJson(){
+		String result="{";
+
+		for(uint8_t i=0;i<itemsCount;i++){
+			result+="\""+items[i].id+"\":";
+			result+="\""+items[i].val+"\"";
+			if(i!=itemsCount-1){
+				result+=",";
+			}
+		}
+
+		result+="}";
+		return result;
 	}
 
 	String getName() override{
@@ -49,8 +65,15 @@ public:
 	}
 
 	Measureable* measure(){
-		Serial.println("-measure "+name);
-		getExternal();
+		uint now=millis();
+		if(lastMeasureTime+minMeasureInterval<millis()){
+			Serial.println("-measure "+name);
+			getExternal();
+			lastMeasureTime=now;
+		}else{
+			ulong left=(lastMeasureTime+minMeasureInterval-now)/1000;
+			Serial.println("-measure is too often left="+String(left)+" name="+name);
+		}
 		return getItems();
 	}
 
@@ -59,7 +82,7 @@ public:
 	}
 
 	String getMeasurableAsJson(){
-		return getMeasurableAsJson(String(millis()));
+		return getMeasurableAsJson(String(getLastMeasureTime()));
 	}
 
 	String getMeasurableAsJson(String timeStamp){
@@ -157,6 +180,7 @@ protected:
 	uint itemsCount;
 	Measureable* items;
 
+	ulong minMeasureInterval;
 	ulong lastMeasureTime;
 	boolean quoteValue;
 };

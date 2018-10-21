@@ -43,6 +43,7 @@ public:
 			Serial.print(" status="+String(status));
 			Serial.println("...done");
 			Serial.println("---------------------------------------------");
+			measure();
 		}
 		initialized=_init;
 		return initialized;
@@ -64,27 +65,14 @@ public:
 		return getMeasurableAsJson();
 	}
 
+	//TODO: move to upper level. Externalize template
 	String constructHtml(){
-		String result=FPSTR(OPEN_HEADER);
-			result+=getName();
-			result+=FPSTR(ClOSE_HEAD_OPEN_CONT);
-			for(uint8_t i=0;i<itemsCount;i++){
-				result+=getFormRow(items[i].descr,(items[i].name+" "+items[i].kind),items[i].val);
-			}
-			result+=FPSTR(HTML_P_FORM_DIV_CLOSE);
+		String result=FPSTR(HTML_BME280);
 		return result;
 	}
 
-	String getFormRow(String labelVal,String inputName,String inputVal){
-		String result = FPSTR(HTML_LABEL_OPEN_WITH_B);
-				result+=labelVal;
-				result+=FPSTR(HTML_LABEL_CLOSE_WITH_B_INPUT);
-				result+=inputName;
-				result+=FPSTR(HTML_INPUT_OPEN_AFTER_NAME_TILL_VALUE);
-				result+=inputVal;
-				result+=FPSTR(HTML_INPUT_CLOSE_WITH_B);
-
-		return result;
+	String constructSimpleJson(){
+		return Measurer::constructSimpleJson();
 	}
 	//----------------------------------------------
 

@@ -52,12 +52,12 @@
 
 const int sensorsInterval=60000;
 
-EspSettingsBox espSettingsBox("/values2.txt","",true,true);
+EspSettingsBox espSettingsBox("/settings.txt","",true,true);
 
 WiFiClient wclient;
 ESP8266WebServer server ( 80 );
 
-I2Chelper i2cBus(D1_PIN,D2_PIN,false);
+I2Chelper i2cHelper(D1_PIN,D2_PIN,false);
 DisplayHelper displayHelper(true);
 
 String subscribeTopics[]={"topic/ESP8266Topic","topic/SwitchLeft","topic/SwitchRight"};
@@ -88,7 +88,7 @@ MqttHelper mqttHelper(&espSettingsBox,subscribeTopics,ARRAY_SIZE(subscribeTopics
 
 Loopable* loopArray[]={&buttonLeft,&buttonRight,
 							&lampLeft,&lampRight/*,&mqttHelper*/};
-Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cBus,&bmeMeasurer,&luxMeasurer};
+Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer};
 
 HtmlWidget* widgetsArray[]={&bmeMeasurer,&luxMeasurer};
 
@@ -98,9 +98,44 @@ DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray));
 void setup() {
   deviceHelper.startDevice(espSettingsBox.DeviceId);
 
-  espSettingsBox.printSpiffsInfo();
+  deviceHelper.printDeviceDiagnostic();
 
+  espSettingsBox.printSettingsFile();
+  espSettingsBox.printSpiffsInfo();
+/*
+  deviceHelper.printDeviceDiagnostic();
+
+  espSettingsBox.webDefPage="/web/index.htm";
+  espSettingsBox.webDepExt="html,htm,js,css,jpeg,png,jpg,bmp";
+  espSettingsBox.webRoot="/web/";
+
+  Serial.println("webDefPage="+espSettingsBox.webDefPage);
+  Serial.println("webDepExt="+espSettingsBox.webDepExt);
+  Serial.println("webRoot="+espSettingsBox.webRoot);
+
+  espSettingsBox.getSettingsFromMemory(false);
+  Serial.println("------------------------");
+
+  String str="";
+  (espSettingsBox.getSettingsFromMemory(false)).printTo(str);
+
+  Serial.println("str="+str);
+  Serial.println("------------------------");
+  deviceHelper.printDeviceDiagnostic();
+  (espSettingsBox.getSettingsFromMemory(true));
+  deviceHelper.printDeviceDiagnostic();
+  //espSettingsBox.saveSettingsJson();
+  espSettingsBox.loadSettingsJson();
+  deviceHelper.printDeviceDiagnostic();
+  Serial.println("sid="+espSettingsBox.getParamVal("sid"));
+  deviceHelper.printDeviceDiagnostic();
+  espSettingsBox.loadSettingsJson();
+  deviceHelper.printDeviceDiagnostic();
+  espSettingsBox.getSettingsFromMemory(false);
+  deviceHelper.printDeviceDiagnostic();
+  */
   deviceHelper.init(initializeArray, ARRAY_SIZE(initializeArray));
+  deviceHelper.printDeviceDiagnostic();
 }
 
 void loop() {
@@ -112,31 +147,55 @@ void postInitWebServer(){
 	server.on("/getWidgets", [](){
 		server.send(200, "text/html", WidgetHelper::getWidgetsJson(&espSettingsBox, widgetsArray, ARRAY_SIZE(widgetsArray)));
 	});
+	server.on("/getI2C", [](){
+		server.send(200, "text/html", i2cHelper.scan());
+	});
 }
 
 void handleHttpWidget(){
-	//class ="MeasurerWidgetESP"
-	//    /processWidget   param=widgetName
-	const String wnParam="widgetName";
+	if(!server.hasArg(FPSTR(PARAM_ACTION_ID))
+			||!server.hasArg(FPSTR(PARAM_REMOTE_ID))
+			||!server.hasArg(FPSTR(PARAM_REMOTE_VAL))
+			||!server.hasArg(FPSTR(PARAM_CLASS_NAME))
+			||!server.hasArg(FPSTR(PARAM_CHILD_CLASS))
+			||!server.hasArg(FPSTR(PARAM_CLIENT_DATA))){
 
-	if(server.hasArg(wnParam)){
-		String wiName=server.arg(wnParam);
-		Serial.println("PorcessWidget="+wiName);
-
-		String html=WidgetHelper::getHtmlWidgetHtml(&espSettingsBox, wiName, widgetsArray, ARRAY_SIZE(widgetsArray));
-
-		if(!html.equals("")){
-			server.send(200, "text/html", html);
-		}
-
-		server.send(404, "text/html", "Виджет "+wiName+" не найден");
+		server.send(400, "text/html", "Miss one of params "
+				+String(FPSTR(PARAM_ACTION_ID))
+				+String(FPSTR(PARAM_REMOTE_ID))
+				+String(FPSTR(PARAM_REMOTE_VAL))
+				+String(FPSTR(PARAM_CLASS_NAME))
+				+String(FPSTR(PARAM_CHILD_CLASS))
+				+String(FPSTR(PARAM_CLIENT_DATA)));
 	}
 
-	server.send(400, "text/html", "widgetName parameter missing");
-}
+	if(server.arg(FPSTR(PARAM_ACTION_ID)).equals("")
+				||server.arg(FPSTR(PARAM_REMOTE_ID)).equals("")
+				||server.arg(FPSTR(PARAM_CLASS_NAME)).equals("")
+				){
 
-String getWidgetsHtlm(){
-	return WidgetHelper::getWidgetsJson(&espSettingsBox, widgetsArray, ARRAY_SIZE(widgetsArray));
+			server.send(400, "text/html", "Empty one of params "
+					+String(FPSTR(PARAM_ACTION_ID))
+					+String(FPSTR(PARAM_REMOTE_ID))
+					+String(FPSTR(PARAM_CLASS_NAME))
+					);
+		}
+
+	String actionName=server.arg(FPSTR(PARAM_ACTION_ID));
+	String remoteId=server.arg(FPSTR(PARAM_REMOTE_ID));
+	String remoteVal=server.arg(FPSTR(PARAM_REMOTE_VAL));
+	String className=server.arg(FPSTR(PARAM_CLASS_NAME));
+	String childClass=server.arg(FPSTR(PARAM_CHILD_CLASS));
+	String clientData=server.arg(FPSTR(PARAM_CLIENT_DATA));
+
+	String html= WidgetHelper::executeClientAction(&espSettingsBox, widgetsArray, ARRAY_SIZE(widgetsArray),
+			actionName,remoteId,remoteVal,className,childClass,clientData);
+
+	if(!html.equals("")){
+		server.send(200, "text/html", html);
+	}
+
+	server.send(404, "text/html", "Виджет "+remoteId+" не найден");
 }
 
 //---------------------------------------------------------------------

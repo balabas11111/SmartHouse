@@ -10,6 +10,7 @@
 
 #include "Arduino.h"
 #include <ArduinoJson.h>
+#include <ESP_Consts.h>
 
 //base controls
 const char HTML_B_OPEN[] PROGMEM ="<b>";
@@ -71,6 +72,28 @@ public:
 
 	virtual ~HtmlWidget(){};
 
+	virtual String executeClientAction(String actionName,String remoteId,String remoteVal, String className, String childClass,String clientData){
+		String result="";
+
+		Serial.println("Process actionName="+actionName+" remoteId="+remoteId+" remoteVal="+remoteVal+" className="+className
+						+" childClass="+childClass);
+		Serial.println(" clientData="+clientData);
+
+		if(actionName.equals(String(FPSTR(ACTION_GET_WIDGETS_CHILDREN_AS_JSON)))){
+			return getSimpleJson();
+		}
+
+		if(actionName.equals(String(FPSTR(ACTION_GET_WIDGET_HTML)))){
+			return getHtml();
+		}
+
+		if(actionName.equals(String(FPSTR(ACTION_GET_WIDGET_JSON)))){
+			return getJson();
+		}
+
+		return getJson();
+	}
+
 	virtual String getHtml(){
 		if(htmlReturnDisabled){
 			return getNotAllowedHtml();
@@ -80,12 +103,20 @@ public:
 	}
 
 	virtual String getJson(){
-			if(jsonReturnDisabled){
-				return getNotAllowedJson();
-			}else{
-				return constructJson();
-			}
+		if(jsonReturnDisabled){
+			return getNotAllowedJson();
+		}else{
+			return constructJson();
 		}
+	}
+
+	virtual String getSimpleJson(){
+		if(jsonReturnDisabled){
+			return getNotAllowedJson();
+		}else{
+			return constructSimpleJson();
+		}
+	}
 
 	virtual boolean isHtmlEnabled(){
 		return !htmlReturnDisabled;
@@ -98,6 +129,7 @@ public:
 protected:
 	virtual String constructHtml()=0;
 	virtual String constructJson()=0;
+	virtual String constructSimpleJson()=0;
 
 	boolean htmlReturnDisabled;
 	boolean jsonReturnDisabled;

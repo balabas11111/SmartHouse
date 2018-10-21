@@ -23,7 +23,7 @@ public:
 
 	virtual boolean initialize(boolean _init) override;
 
-	String getHtmlVal(String key);
+	String getParamVal(String key);
 
 	void loadExternalFile();
 	void saveExternalFile();
@@ -31,20 +31,31 @@ public:
 
 	IPAddress stringToIp(String str);
 	boolean validateIP(String str);
-	void printVariablesToSerial();
 	void saveSettingsJson();
+	String getSettingsAsJsonString();
 	void loadSettingsJson();
+
+	void getSettingsFromMemory(){
+		getSettingsFromMemory(false);
+	}
+	JsonObject& getSettingsFromMemory(boolean doSave);
+	boolean putSettingsToMemory(JsonObject& root);
 
 	String clearNlFromString(String str);
 
-	void printFileToDIsc();
 	boolean isTrue(String str);
+
+	void printSettingsFile();
 
 	boolean isSpiffInitialized();
 
 	void printSpiffsInfo();
 
 	String DeviceId = "SENS_"+String(ESP.getChipId());
+	String DeviceKind = "Климат и управление выключателями";
+	String DeviceDescription = "";
+	String DeviceLocation = "Кухня";
+
 	boolean displayAlvaysOn=false;
 	uint8_t displayAutochange=15;
 	uint8_t pageAutochange=60;
@@ -100,6 +111,10 @@ public:
 	String mqtt_pass = "QgYRfVzDhQ31";
 	String mqtt_topic="topic/basePublish";
 
+	String webDefPage="/web/index.htm";
+	String webRoot="/web/";
+	String webDepExt="html,htm,js,css,jpeg,png,jpg";
+
 private:
 	boolean spiffInitialized;
 	String _fileName;
@@ -108,6 +123,8 @@ private:
 
 	void construct(String fileName,String extValuesFileName,boolean forceLoad,boolean initSpiff);
 	void initSpiff();
+
+	size_t bufferLength=2048;
 };
 
 

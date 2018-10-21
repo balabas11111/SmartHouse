@@ -37,6 +37,7 @@ public:
 			lightMeter.begin();
 			Serial.println("...done");
 			Serial.println("---------------------------------------------");
+			measure();
 		}
 		initialized=_init;
 		return initialized;
@@ -55,24 +56,12 @@ public:
 		}
 
 		String constructHtml(){
-			String result=FPSTR(OPEN_HEADER);
-				result+=getName();
-				result+=FPSTR(ClOSE_HEAD_OPEN_CONT);
-					result+=getFormRow(items[0].descr,(items[0].name+" "+items[0].kind),items[0].val);
-				result+=FPSTR(HTML_P_FORM_DIV_CLOSE);
+			String result=FPSTR(HTML_BH1750);
 			return result;
 		}
 
-		String getFormRow(String labelVal,String inputName,String inputVal){
-			String result = FPSTR(HTML_LABEL_OPEN_WITH_B);
-					result+=labelVal;
-					result+=FPSTR(HTML_LABEL_CLOSE_WITH_B_INPUT);
-					result+=inputName;
-					result+=FPSTR(HTML_INPUT_OPEN_AFTER_NAME_TILL_VALUE);
-					result+=inputVal;
-					result+=FPSTR(HTML_INPUT_CLOSE_WITH_B);
-
-			return result;
+		String constructSimpleJson(){
+			return Measurer::constructSimpleJson();
 		}
 		//----------------------------------------------
 private:
