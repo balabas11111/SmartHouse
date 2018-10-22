@@ -5,9 +5,10 @@
 
 #include <ESP8266WiFi.h>
 
+
 #define BUFFER_SIZE 100
 
-MqttHelper::MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,uint8_t _topicCount,Client& _client,PinEventProcessor *_eventProcessors[],uint8_t _procSize,std::function<void(String topic,String message)> _externalCallbackFunction){
+MqttHelper::MqttHelper(ConfigStorage *_configStorage,EspSettingsBox *_settingsBox,String* _subscribeTopics,uint8_t _topicCount,Client& _client,PinEventProcessor *_eventProcessors[],uint8_t _procSize,std::function<void(String topic,String message)> _externalCallbackFunction){
 	Serial.println("-------------------------------");
 	Serial.println("Initialize MqttHelper");
 	//settingsBox=_settingsBox;
@@ -22,8 +23,9 @@ MqttHelper::MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,uin
 	subscribeTopics=_subscribeTopics;
 
 	settingsBox=_settingsBox;
+	configStorage=_configStorage;
 
-	client=PubSubClient((char*)_settingsBox->mqtt_server.c_str(), _settingsBox->mqtt_port, [this](char* topic, uint8_t* payload, unsigned int length){callback(topic,payload,length);}, _client);
+	client=PubSubClient(configStorage->get(MQTT_SERVER_URL_INDX), configStorage->getUint16t(MQTT_SERVER_PORT_INDX), [this](char* topic, uint8_t* payload, unsigned int length){callback(topic,payload,length);}, _client);
 
 	initialized=false;
 	displayDetails();

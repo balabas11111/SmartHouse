@@ -276,6 +276,16 @@ void ConfigStorage::setFloat(uint16_t keyId, float val) {
 	values[keyId]=s;
 }
 
+uint16_t ConfigStorage::getUint16t(char* key) {
+	uint16_t keyId=getKeyIndex(key);
+	return getUint16t(keyId);
+}
+
+uint16_t ConfigStorage::getUint16t(uint16_t keyId) {
+	char* c =values[keyId];
+	return (uint16_t)atoi(c);
+}
+
 void ConfigStorage::construct(const char* _fileName, boolean init,
 		boolean initSpiff) {
 	fileName=_fileName;

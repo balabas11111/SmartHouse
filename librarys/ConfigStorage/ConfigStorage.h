@@ -174,9 +174,11 @@ public:
 
 	char* get(char* key);
 	int   getInt(char* key);
+	uint16_t getUint16t(char* key);
 	float   getFloat(char* keyId);
 
 	char* get(uint16_t keyId);
+	uint16_t  getUint16t(uint16_t keyId);
 	int   getInt(uint16_t keyId);
 	float   getFloat(uint16_t keyId);
 
