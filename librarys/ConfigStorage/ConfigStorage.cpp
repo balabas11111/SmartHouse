@@ -21,8 +21,7 @@ boolean ConfigStorage::initialize(boolean _init) {
 		if(_init){
 			load();
 		}
-
-		initialized=init;
+		initialized=_init;
 	}
 
 	print();
@@ -175,16 +174,6 @@ char* ConfigStorage::getAsJson() {
 	return const_cast<char*>(print.c_str());
 }
 
-int16_t ConfigStorage::getKeyIndex(char* key){
-	for(uint16_t i=0;i<ITEMS_COUNT;i++){
-		if(strcmp ( values[i],key)==0){
-			return i;
-		}
-	}
-
-	return -1;
-}
-
 char* ConfigStorage::getAsJson(char* key) {
 	int16_t ind=getKeyIndex(key);
 	String result="{\""+String(key)+"\":\"";
@@ -198,6 +187,92 @@ char* ConfigStorage::getAsJson(char* key) {
 	result+="\"}";
 
 	return const_cast<char*>(result.c_str());
+}
+
+int16_t ConfigStorage::getKeyIndex(char* key){
+	for(uint16_t i=0;i<ITEMS_COUNT;i++){
+		if(strcmp ( values[i],key)==0){
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+char* ConfigStorage::get(char* key) {
+	uint16_t ind=getKeyIndex(key);
+
+	return get(ind);
+}
+
+int ConfigStorage::getInt(char* key) {
+	uint16_t ind=getKeyIndex(key);
+
+	return getInt(ind);
+}
+
+char* ConfigStorage::get(uint16_t keyId) {
+	if(keyId>=ITEMS_COUNT){
+		//return -32768;
+	}
+	return values[keyId];
+}
+
+int ConfigStorage::getInt(uint16_t keyId) {
+	if(keyId>=ITEMS_COUNT){
+		//return -32768;
+	}
+	char* c =values[keyId];
+	return atoi(c);
+}
+
+void ConfigStorage::set(char* key, char* val) {
+	uint16_t keyId=getKeyIndex(key);
+	set(keyId,val);
+}
+
+void ConfigStorage::setInt(char* key, int val) {
+	uint16_t keyId=getKeyIndex(key);
+
+	setInt(keyId,val);
+}
+
+void ConfigStorage::set(uint16_t keyId, char* val) {
+	if(keyId<ITEMS_COUNT){
+		values[keyId]=val;
+	}
+}
+
+void ConfigStorage::setInt(uint16_t keyId, int val) {
+	if(keyId<ITEMS_COUNT){
+		char s[13];
+		itoa (val, s, 10);
+
+		values[keyId]=s;
+	}
+}
+
+float ConfigStorage::getFloat(char* key) {
+	int16_t keyId=getKeyIndex(key);
+
+	return getFloat(keyId);
+}
+
+
+void ConfigStorage::setFloat(char* key, float val) {
+	int16_t keyId=getKeyIndex(key);
+	setFloat(keyId,val);
+}
+
+float ConfigStorage::getFloat(uint16_t keyId) {
+	char* c=values[keyId];
+	return atof(c);
+}
+
+void ConfigStorage::setFloat(uint16_t keyId, float val) {
+	char s[15];
+	dtostrf (val, 10, 2, s);
+	values[keyId]=s;
 }
 
 void ConfigStorage::construct(const char* _fileName, boolean init,

@@ -174,15 +174,19 @@ public:
 
 	char* get(char* key);
 	int   getInt(char* key);
+	float   getFloat(char* keyId);
 
 	char* get(uint16_t keyId);
 	int   getInt(uint16_t keyId);
+	float   getFloat(uint16_t keyId);
 
 	void set(char* key,char* val);
 	void setInt(char* key,int val);
+	void setFloat(char* key,float val);
 
 	void set(uint16_t keyId,char* val);
 	void setInt(uint16_t keyId,int val);
+	void setFloat(uint16_t keyId,float val);
 
 	void printMemory();
 	void printSettingsFile();
