@@ -110,6 +110,10 @@ JsonObject& EspSettingsBox::getSettingsFromMemory(boolean doSave){
 	JsonObject& root = jsonBuffer.createObject();
 
 	root["dId"] = DeviceId;
+
+	root["DeviceKind"] = DeviceKind;
+	root["DeviceDescription"] =  DeviceDescription;
+	root["DeviceLocation"] =  DeviceLocation;
 	root["iAp"] = isAccesPoint;
 	root["rin"] = refreshInterval;
 	root["dao"] = displayAlvaysOn;
@@ -189,6 +193,9 @@ JsonObject& EspSettingsBox::getSettingsFromMemory(boolean doSave){
 
 boolean EspSettingsBox::putSettingsToMemory(JsonObject& root){
 	DeviceId = root["dId"].as<char*>();
+	DeviceKind = root["DeviceKind"].as<char*>();
+	DeviceDescription =root["DeviceDescription"].as<char*>();
+	DeviceLocation=root["DeviceLocation"].as<char*>();
 	isAccesPoint = isTrue(root["iAp"].as<char*>()) ;
 	Serial.print("isAccesPoint=");
 	Serial.println(isAccesPoint);
@@ -458,10 +465,10 @@ String EspSettingsBox::getExternalVal(String key){
 
 String EspSettingsBox::getParamVal(String key){
 	JsonObject& root=getSettingsFromMemory(false);
-	if(root.containsKey(key)){
+	//if(root.containsKey(key)){
 		return root[key].as<char*>();
-	}
-	return "";
+	//}
+	//return "";
 }
 
 String EspSettingsBox::getSettingsAsJsonString(){

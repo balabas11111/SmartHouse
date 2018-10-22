@@ -63,7 +63,6 @@ const CLASS_REFRESHABLE_CHILD="refreshableChild"; //view of returnable json
 //const VIEW_NAME_jsonFormView="jsonFormView"; //view of returnable json
 //attributes
 const ATTRIBUTE_REMOTE_ID="remoteId";       //remoteId tag. SPecifies widgetName on ESP
-const ATTRIBUTE_REMOTE_ID="remoteId";       //remoteId tag. SPecifies widgetName on ESP
 const ATTRIBUTE_REMOTE_VAL="remoteVal";     //whichValueSelect from received JSON
 const ATTRIBUTE_RELOAD_INTERVAL="reloadInterval";       //used to auto reload some component
 const ATTRIBUTE_TARGET_TAG="targetTag";                 //tag which should be updated
@@ -144,7 +143,7 @@ function getWidgetsRemoteId(component){
 	var remoteId=undefined;
 	
 	if(component!=undefined){
-		if(component.hasAttribute(ATTRIBUTE_REMOTE)){
+		if(component.hasAttribute(ATTRIBUTE_REMOTE_ID)){
 			remoteId=component.getAttribute(ATTRIBUTE_REMOTE_ID);
 		}else{
 			remoteId=component.id;

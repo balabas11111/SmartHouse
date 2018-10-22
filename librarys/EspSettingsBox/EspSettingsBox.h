@@ -53,7 +53,7 @@ public:
 
 	String DeviceId = "SENS_"+String(ESP.getChipId());
 	String DeviceKind = "Климат и управление выключателями";
-	String DeviceDescription = "";
+	String DeviceDescription = "_";
 	String DeviceLocation = "Кухня";
 
 	boolean displayAlvaysOn=false;
