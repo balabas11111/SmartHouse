@@ -84,8 +84,8 @@ boolean ConfigStorage::save() {
 
 	JsonObject& root = jsonBuffer.createObject();
 	for(uint16_t i=0;i<ITEMS_COUNT;i++){
-		char* key=const_cast<char*>(configNames[i]);
-		root[key]=values[i];
+		//char* key=const_cast<char*>(configNames[i]);
+		root[configNames[i]]=values[i];
 	}
 
 	Serial.println("Save device settings to file");
@@ -152,6 +152,7 @@ void ConfigStorage::printSettingsFile(){
 
 void ConfigStorage::fillDefaultValues() {
 	for(uint16_t i=0;i<ITEMS_COUNT;i++){
+		//FPSTR(defaultValues[i]);
 		values[i]=const_cast<char*> ( defaultValues[i]);
 	}
 
