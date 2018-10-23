@@ -33,7 +33,7 @@ public:
 		initialized=false;
 	}
 
-	String constructSimpleJson(){
+	String getChildrenJson(){
 		String result="{";
 
 		for(uint8_t i=0;i<itemsCount;i++){

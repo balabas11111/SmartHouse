@@ -36,10 +36,11 @@ function loadForm(viewName,updateName){
 //----------------------constants---------------------------------------------
 //widget actions
 const ACTION_GET_STATIC_SETTINGS_DATA="getStSettData";       //returns static data from espSettings
-const ACTION_GET_WIDGET_HTML="getWidgetHtml";       //returns all components text
+const ACTION_GET_WIDGET_HTML_OR_VAL="getWidgetHtml";       //returns all components text
 const ACTION_GET_WIDGET_JSON="getWidgetJson";
 const ACTION_GET_WIDGETS_CHILDREN_AS_JSON="getWidgetChildrenAsJson";       //returns all components children as json
-const ACTION_SUBMIT_FORM_GET_WIDGETS_CHILDREN_AS_JSON="submitFormGetChildrenAsJson";       //used to process data from client
+const ACTION_SUBMIT_FORM_GET_WIDGETS_CHILDREN_AS_JSON="submitFormGetChildrenAsJson"; 
+const ACTION_SUBMIT_WIDGET_GET_VALUE="submitAndGetWidget"; //used to process data from client
 //url constants
 const URL_REMOTE_GET_WIDGETS="handleHttpWidget";       //url to reload httpWidgets on client
 const URL_PROCESS_EVENTS="processEvent";       //url to process incoming pin events
@@ -57,6 +58,7 @@ const CLASS_REFRESHABLE_SettingsWidgetESP="SettingsWidgetESP";       //used to a
 const CLASS_REFRESHABLE_MeasurerWidgetESP="MeasurerWidgetESP";       //used to update whole html
 const CLASS_REFRESHABLE_CHILDREN_MeasurerWidgetESPJson="MeasurerWidgetESPJson"; //used to update form values by json
 const CLASS_REFRESHABLE_MeasurerWidgetESPJsonStatus="MeasurerWidgetESPJsonStatus"; //class for display status of ajax
+const CLASS_REFRESHABLE_IMAGE="refreshableImage";
 
 const CLASS_REFRESHABLE_CHILD="refreshableChild"; //view of returnable json
 //viewNames
@@ -275,7 +277,7 @@ function updateComponentsChildrenByAjaxJson(actionId, remoteId, widgetId, widget
 								childComponent=children[index];
 								componentTag=childComponent.tagName.toLowerCase();
 																
-								componentId=getWidgetsRemoteId(childComponent);								
+								componentId=getWidgetsRemoteVal(childComponent);								
 																
 								if(json.hasOwnProperty(componentId)){
 									receivedValue=json[componentId];
@@ -320,7 +322,14 @@ function w3_close(){
 function onLoadPageComplete(){
 	w3_close();
 	reloadAllWidgetsByClassname(ACTION_GET_STATIC_SETTINGS_DATA,CLASS_REFRESHABLE_SettingsWidgetESP,false);
-	reloadAllWidgetsByClassname(ACTION_GET_WIDGET_HTML,CLASS_REFRESHABLE_MeasurerWidgetESP,false);
+	reloadAllWidgetsByClassname(ACTION_GET_WIDGET_HTML_OR_VAL,CLASS_REFRESHABLE_MeasurerWidgetESP,true);
+	reloadAllWidgetsByClassname(ACTION_GET_WIDGET_HTML_OR_VAL,CLASS_REFRESHABLE_IMAGE,true);
 	reloadAllWidgetsChildsByClassnameJson(ACTION_GET_WIDGETS_CHILDREN_AS_JSON,CLASS_REFRESHABLE_CHILDREN_MeasurerWidgetESPJson, CLASS_REFRESHABLE_CHILD,true);
 };
+
+function lampWidgetClick(component){
+	widgetId=component.id;
+	remoteId=getWidgetsRemoteId(component)
+	updateHtmlComponentByAjax(ACTION_SUBMIT_WIDGET_GET_VALUE, remoteId, widgetId, CLASS_REFRESHABLE_IMAGE, "", URL_REMOTE_GET_WIDGETS_METHOD, URL_REMOTE_GET_WIDGETS, false);
+}
 

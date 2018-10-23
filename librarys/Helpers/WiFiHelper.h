@@ -10,6 +10,7 @@
 
 #include <ESP_Consts.h>
 #include "Arduino.h"
+#include "Loopable.h"
 #include "Initializable.h"
 #include "EspSettingsBox.h"
 #include "DisplayHelper.h"
@@ -20,7 +21,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 
-class WiFiHelper:public Initializable {
+class WiFiHelper:public Initializable,public Loopable {
 
 public:
 	WiFiHelper(String _name,EspSettingsBox *_settingsBox, DisplayHelper *_displayHelper, PinDigital *_signalPin,
@@ -57,6 +58,13 @@ public:
 		}
 		initialized=_init;
 		return true;
+	}
+
+	boolean loop(){
+		if(initialized){
+			server->handleClient();
+		}
+		return initialized;
 	}
 
 	//---------------------------------------------------------------------------------------
@@ -516,12 +524,13 @@ public:
 
 	void connectToWiFiIfNotConnected(){
 		while(!isWiFIConnected()){
-			signalPin->changeAndDelay(250);
-			printWiFidiagnostic();
+			if(signalPin!=nullptr)
+				signalPin->changeAndDelay(250);
+			displayDetails();
 		}
 	}
 
-	void printWiFidiagnostic(){
+	String displayDetails(){
 		Serial.println("-----------wiFi diagnostic-------------------");
 		WiFi.printDiag(Serial);
 
@@ -565,13 +574,12 @@ public:
 			Serial.println ( WiFi.localIP() );
 		}
 
-
-
-
 		Serial.print(" Mac:");
 		Serial.println(WiFi.macAddress());
 
 		Serial.println("------------------------------");
+
+		return statusStr;
 	}
 
 	boolean cleanDisplay(){

@@ -22,7 +22,9 @@
 #include <BME280_Measurer.h>
 #include <BH1750_Measurer.h>
 #include <DeviceHelper.h>
-#include "WidgetHelper.h"
+#include "ConfigStorage.h"
+#include "ConfigStorageWidget.h"
+#include "PinDigitalWidget.h"
 
 #include "PirDetector.h"
 
@@ -52,6 +54,7 @@
 
 const int sensorsInterval=60000;
 
+ConfigStorage configStorage;
 EspSettingsBox espSettingsBox("/settings.txt","",true,true);
 
 WiFiClient wclient;
@@ -72,10 +75,14 @@ PinDigital signalLed(VAR_NAME(signalLED),D4_PIN,OUTPUT,nullptr,CHANGE,LOW,HUMAN_
 PinDigital lampLeft(VAR_NAME(lampLeft),D5_PIN,OUTPUT,processEvent,CHANGE,HIGH);
 PinDigital lampRight(VAR_NAME(lampRight),D8_PIN,OUTPUT,processEvent,CHANGE,HIGH);
 
-PirDetector pirDetector(D3_PIN,&signalLed,processEvent);
+PirDetector pirDetector(D3_PIN,&signalLed,processEvent,nullptr);
 
 BME280_Measurer bmeMeasurer("0",VAR_NAME(bmeMeasurer));
 BH1750_Measurer luxMeasurer("1",VAR_NAME(luxMeasurer));
+
+ConfigStorageWidget configStorageWidget(&configStorage,VAR_NAME(configStorageWidget));
+PinDigitalWidget lampLeftWidget(&lampLeft,"./img/OnLamp.png","./img/OnLamp.png");
+PinDigitalWidget lampRightWidget(&lampRight,"./img/OnLamp.png","./img/OnLamp.png");
 
 PinEventProcessor *eventProcessors[]={&lampLeft,&lampRight,
 												&buttonLeft,&buttonRight,
@@ -84,13 +91,13 @@ PinEventProcessor *eventProcessors[]={&lampLeft,&lampRight,
 WiFiHelper wifiHelper("WiFiHelper",&espSettingsBox, &displayHelper, &signalLed,	&server,
 		postInitWebServer,false, handleHttpWidget, processEvent);
 
-MqttHelper mqttHelper(&espSettingsBox,subscribeTopics,ARRAY_SIZE(subscribeTopics),wclient,eventProcessors,ARRAY_SIZE(eventProcessors),processMqttEvent);
+MqttHelper mqttHelper(&configStorage,&espSettingsBox,subscribeTopics,ARRAY_SIZE(subscribeTopics),wclient,eventProcessors,ARRAY_SIZE(eventProcessors),processMqttEvent);
 
 Loopable* loopArray[]={&buttonLeft,&buttonRight,
-							&lampLeft,&lampRight/*,&mqttHelper*/};
+							&lampLeft,&lampRight,&wifiHelper/*,&mqttHelper*/};
 Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer};
 
-HtmlWidget* widgetsArray[]={&bmeMeasurer,&luxMeasurer};
+HtmlWidget* widgetsArray[]={&bmeMeasurer,&luxMeasurer,&configStorageWidget,&lampLeftWidget,&lampRightWidget};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray));
 
@@ -140,19 +147,21 @@ void setup() {
 
 void loop() {
  deviceHelper.loop();
- server.handleClient();
 }
 
 void postInitWebServer(){
+	/*
 	server.on("/getWidgets", [](){
 		server.send(200, "text/html", WidgetHelper::getWidgetsJson(&espSettingsBox, widgetsArray, ARRAY_SIZE(widgetsArray)));
 	});
+	*/
 	server.on("/getI2C", [](){
 		server.send(200, "text/html", i2cHelper.scan());
 	});
 }
 
 void handleHttpWidget(){
+
 	if(!server.hasArg(FPSTR(PARAM_ACTION_ID))
 			||!server.hasArg(FPSTR(PARAM_REMOTE_ID))
 			||!server.hasArg(FPSTR(PARAM_REMOTE_VAL))
@@ -180,7 +189,6 @@ void handleHttpWidget(){
 					+String(FPSTR(PARAM_CLASS_NAME))
 					);
 		}
-
 	String actionName=server.arg(FPSTR(PARAM_ACTION_ID));
 	String remoteId=server.arg(FPSTR(PARAM_REMOTE_ID));
 	String remoteVal=server.arg(FPSTR(PARAM_REMOTE_VAL));
@@ -188,11 +196,20 @@ void handleHttpWidget(){
 	String childClass=server.arg(FPSTR(PARAM_CHILD_CLASS));
 	String clientData=server.arg(FPSTR(PARAM_CLIENT_DATA));
 
-	String html= WidgetHelper::executeClientAction(&espSettingsBox, widgetsArray, ARRAY_SIZE(widgetsArray),
-			actionName,remoteId,remoteVal,className,childClass,clientData);
+	int16_t index=-1;
 
-	if(!html.equals("")){
-		server.send(200, "text/html", html);
+	for(uint8_t i=0;i<ARRAY_SIZE(widgetsArray);i++){
+		if(widgetsArray[i]->isTargetOfAction(actionName, remoteId, remoteVal, className, childClass, clientData)){
+			index=i;
+			break;
+		}
+	}
+
+	if(index!=-1){
+		server.send(200, "text/html",
+			widgetsArray[index]->
+			executeClientAction(actionName, remoteId, remoteVal, className, childClass, clientData)
+			);
 	}
 
 	server.send(404, "text/html", "Виджет "+remoteId+" не найден");

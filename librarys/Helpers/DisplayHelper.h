@@ -1,7 +1,7 @@
 /*
  * DisplayHelper.h
  *
- *  Created on: 20 окт. 2018 г.
+ *  Created on: 20 пїЅпїЅпїЅ. 2018 пїЅ.
  *      Author: Vitaliy
  */
 
@@ -15,7 +15,7 @@ class DisplayHelper: public Initializable {
 
 public:
 	DisplayHelper(boolean _init);
-	virtual ~DisplayHelper();
+	virtual ~DisplayHelper(){};
 
 	virtual boolean initialize(boolean _init) override{
 		Serial.println("--------------Display Helper init------------");

@@ -12,7 +12,7 @@
 
 #include "Arduino.h"
 
-
+//sensors constants
 const char TEMPERATURE_RU[] PROGMEM ="Температура";
 const char HUMIDITY_RU[] PROGMEM ="Влажность";
 const char PRESSURE_RU[] PROGMEM ="Давление";
@@ -36,10 +36,11 @@ const char MEASURE_METER[] PROGMEM ="m";
 //const PROGMEM char HTML_BH1750_MEASURER[] = ""
 //widget actions
 const PROGMEM char ACTION_GET_STATIC_SETTINGS_DATA[]="getStSettData";       //returns static data from espSettings
-const PROGMEM char ACTION_GET_WIDGET_HTML[]="getWidgetHtml";       //returns all components text
+const PROGMEM char ACTION_GET_WIDGET_HTML_OR_VAL[]="getWidgetHtml";       //returns all components text
 const PROGMEM char ACTION_GET_WIDGET_JSON[]="getWidgetJson";       //returns all components text
 const PROGMEM char ACTION_GET_WIDGETS_CHILDREN_AS_JSON[]="getWidgetChildrenAsJson";       //returns all components children as json
 const PROGMEM char ACTION_SUBMIT_FORM_GET_WIDGETS_CHILDREN_AS_JSON[]="submitFormGetChildrenAsJson";       //used to process data from client
+const PROGMEM char ACTION_SUBMIT_WIDGET_GET_VALUE[]="submitAndGetWidget"; //used to process data from client
 //url constants
 const PROGMEM char URL_REMOTE_GET_WIDGETS[]="handleHttpWidget";       //url to reload httpWidgets on client
 const PROGMEM char URL_PROCESS_EVENTS[]="processEvent";       //url to process incoming pin events
@@ -57,6 +58,7 @@ const PROGMEM char CLASS_REFRESHABLE_SettingsWidgetESP[]="SettingsWidgetESP";   
 const PROGMEM char CLASS_REFRESHABLE_MeasurerWidgetESP[]="MeasurerWidgetESP";       //used to update whole html
 const PROGMEM char CLASS_REFRESHABLE_CHILDREN_MeasurerWidgetESPJson[]="MeasurerWidgetESPJson"; //used to update form values by json
 const PROGMEM char CLASS_REFRESHABLE_MeasurerWidgetESPJsonStatus[]="MeasurerWidgetESPJsonStatus"; //class for display status of ajax
+const PROGMEM char CLASS_REFRESHABLE_IMAGE[]="refreshableImage";
 
 const PROGMEM char CLASS_REFRESHABLE_CHILD[]="refreshableChild"; //view of returnable json
 //attributes
@@ -65,8 +67,58 @@ const PROGMEM char ATTRIBUTE_REMOTE_VAL[]="remoteVal";     //whichValueSelect fr
 const PROGMEM char ATTRIBUTE_RELOAD_INTERVAL[]="reloadInterval";       //used to auto reload some component
 const PROGMEM char ATTRIBUTE_TARGET_TAG[]="targetTag";                 //tag which should be updated
 const PROGMEM char ATTRIBUTE_TARGET_TAG_REPLACE_PART[]="targetTagReplacePart";  //if partOf tag should be updated
+//Some stamdard values
+const PROGMEM char REMOTE_VAL_VALUE[]="value";
+const PROGMEM char REMOTE_VAL_IMAGE[]="Image";
+
 //viewNames
 //const PROGMEM char VIEW_NAME_jsonFormView[]="jsonFormView"; //view of returnable json
+//base controls
+const char HTML_B_OPEN[] PROGMEM ="<b>";
+const char HTML_B_CLOSE[] PROGMEM ="</b>";
+
+const char HTML_H2_OPEN[] PROGMEM ="<h2>";
+const char HTML_H2_CLOSE[] PROGMEM ="</h2>";
+
+const char HTML_P_OPEN[] PROGMEM ="<p>";
+const char HTML_p_CLOSE[] PROGMEM ="</p>";
+//base attributes
+const PROGMEM char HTML_ATTR_ID_OPEN[]                = " id=\"";
+const PROGMEM char HTML_ATTR_NAME_OPEN[]              = " name=\"";
+const PROGMEM char HTML_ATTR_TYPE_OPEN[]              = " type=\"";
+const PROGMEM char HTML_ATTR_VALUE_OPEN[]             = " value=\"";
+const PROGMEM char HTML_ATTR_CLASS_OPEN[]             = " class=\"";
+const PROGMEM char HTML_ATTR_STYLE_OPEN[]             = " style=\"";
+const PROGMEM char HTML_ATTR_CLOSE[]                  = "\"";
+const PROGMEM char HTML_ATTR_SPACE[]                  = " ";
+
+//class names W3
+const PROGMEM char HTML_CLASS_W3card4[]               = "w3-card-4";
+const PROGMEM char HTML_CLASS_W3container[]           = "w3-container";
+const PROGMEM char HTML_CLASS_W3teal[]                = "w3-teal";
+const PROGMEM char HTML_CLASS_W3border[]              = "w3-border";
+const PROGMEM char HTML_CLASS_W3input[]               = "w3-input";
+
+const PROGMEM char HTML_CLASS_W3containerTeal[]       = "w3-container w3-teal";
+//styles
+const PROGMEM char HTML_STYLE_width25_perc[]          = "width:25%;";
+const PROGMEM char HTML_STYLE_float_left[]            = "float:left;";
+//DIV section
+const PROGMEM char HTML_DIV_OPEN[]                    = "<div>";
+const PROGMEM char HTML_DIV_OPEN_NO_END_QUOTE[]       = "<div";
+const PROGMEM char HTML_DIV_CLOSE[] PROGMEM           = "</div>";
+//form
+const PROGMEM char HTML_FORM_OPEN[]                   = "<form>";
+const PROGMEM char HTML_FORM_OPEN_NO_END_QUOTE[]      = "<form";
+const PROGMEM char HTML_FORM_CLOSE[]                  = "</form>";
+//label
+const PROGMEM char HTML_LABEL_OPEN[]                  = "<label>";
+const PROGMEM char HTML_LABEL_OPEN_NO_END_QUOTE[]     = "<label";
+const PROGMEM char HTML_LABEL_CLOSE[]                 = "</label>";
+//input
+const PROGMEM char HTML_INPUT_OPEN[]                  = "<input>";
+const PROGMEM char HTML_INPUT_OPEN_NO_END_QUOTE[]     = "<input";
+const PROGMEM char HTML_INPUT_CLOSE[]                 = "</input>";
 //id helper constants
 const PROGMEM char ID_STATUS_SUFFIX[]="_status";
 const PROGMEM char STATUS_OK_CLASS[]="w3-panel w3-green w3-card-4";

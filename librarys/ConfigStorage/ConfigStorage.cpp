@@ -8,6 +8,7 @@
 #include <ConfigStorage.h>
 #include "FS.h"
 #include "ArduinoJson.h"
+#include "ctype.h"
 
 ConfigStorage::ConfigStorage() { construct(DEFAULT_FILE_NAME, true, true); }
 ConfigStorage::ConfigStorage(const char* _filename) {construct(_filename, true, true);}
@@ -64,7 +65,7 @@ boolean ConfigStorage::load() {
 
 				//putSettingsToMemory(root);
 				for(uint16_t i=0;i<ITEMS_COUNT;i++){
-					char* key=const_cast<char*>(configNames[i]);
+					char* key=const_cast<char*>(keys[i]);
 					values[i]=const_cast<char*>(root[key].as<char*>());
 				}
 
@@ -85,7 +86,7 @@ boolean ConfigStorage::save() {
 	JsonObject& root = jsonBuffer.createObject();
 	for(uint16_t i=0;i<ITEMS_COUNT;i++){
 		//char* key=const_cast<char*>(configNames[i]);
-		root[configNames[i]]=values[i];
+		root[keys[i]]=values[i];
 	}
 
 	Serial.println("Save device settings to file");
@@ -113,7 +114,7 @@ void ConfigStorage::printMemory(){
 	Serial.println("----------------Properties from memory------------");
 
 	for(uint16_t i=0;i<ITEMS_COUNT;i++){
-		char* key=const_cast<char*>(configNames[i]);
+		char* key=const_cast<char*>(keys[i]);
 		char* val=const_cast<char*>(values[i]);
 		Serial.print(key);
 		Serial.print('=');
@@ -164,7 +165,7 @@ char* ConfigStorage::getAsJson() {
 
 	JsonObject& root = jsonBuffer.createObject();
 	for(uint16_t i=0;i<ITEMS_COUNT;i++){
-		char* key=const_cast<char*>(configNames[i]);
+		char* key=const_cast<char*>(keys[i]);
 		root[key]=values[i];
 	}
 
@@ -192,7 +193,7 @@ char* ConfigStorage::getAsJson(char* key) {
 
 int16_t ConfigStorage::getKeyIndex(char* key){
 	for(uint16_t i=0;i<ITEMS_COUNT;i++){
-		if(strcmp ( values[i],key)==0){
+		if(strcmp ( keys[i],key)==0){
 			return i;
 		}
 	}
@@ -301,6 +302,11 @@ void ConfigStorage::construct(const char* _fileName, boolean init,
 	}
 
 }
+
+char* ConfigStorage::get(const char* key) {
+	char* keyC=(char*) key;
+	return get(keyC);
+};
 /*
 boolean ConfigStorage::putSettingsToMemory(JsonObject& root){
 	for(uint16_t i=0;i<ITEMS_COUNT;i++){

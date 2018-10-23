@@ -17,7 +17,7 @@ class WidgetHelper {
 public:
 	WidgetHelper();
 	virtual ~WidgetHelper();
-
+/*
 	static String getWidgetsJson(EspSettingsBox *espSettingsBox,HtmlWidget* widgetsArray[],uint8_t size){
 		String result="{\"deviceId\":\""+espSettingsBox->DeviceId+"\",\"count\":"+String(size)+
 							",\"widgets\":[";
@@ -53,7 +53,7 @@ public:
 		}
 
 		for(uint8_t i=0;i<size;i++){
-			if((widgetsArray[i]->getName()).equals(remoteId)){
+			if(widgetsArray[i]->isTargetOfAction(actionName, remoteId, remoteVal, className, childClass, clientData)){
 				return widgetsArray[i]->executeClientAction(actionName, remoteId, remoteVal, className, childClass, clientData);
 			}
 		}
@@ -61,21 +61,19 @@ public:
 		return result;
 	}
 
-	static String getHtmlWidgetHtml(EspSettingsBox *espSettingsBox,String wiName,HtmlWidget* widgetsArray[],uint8_t size){
-		String result="";
+	static HtmlWidgetAction getHtmlActtion(String _actionName,String _remoteId,String _remoteVal, String _className, String _childClass,String _clientData){
+		HtmlWidgetAction action;
 
-			Serial.println("PorcessWidget="+wiName);
+		action.actionName=_actionName;
+		action.remoteId=_remoteId;
+		action.remoteVal=_remoteVal;
+		action.className=_className;
+		action.childClass=_childClass;
+		action.clientData=_clientData;
+		action.valid=false;
 
-			if(wiName.equals("espSettingsBox.DeviceId")){
-				return espSettingsBox->DeviceId;
-			}
-
-			for(uint8_t i=0;i<size;i++){
-				if(widgetsArray[i]->getName().equals(wiName)){
-					return widgetsArray[i]->getHtml();
-				}
-			}
-			return result;
+		return action;
 	}
+*/
 };
 #endif /* LIBRARIES_HELPERS_WIDGETHELPER_H_ */

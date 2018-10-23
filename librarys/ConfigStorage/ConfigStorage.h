@@ -24,12 +24,12 @@ const PROGMEM boolean PROPERTY_EDITABLE=1;
 const PROGMEM boolean PROPERTY_NOT_EDITABLE=0;
 //--------------allowed properties----------------------
 //device props
-const PROGMEM char DEVICE_ID[]            = "DevId";                 const PROGMEM char DEVICE_ID_DEF[]            = "DefDevice";            const PROGMEM uint16_t DEVICE_ID_INDX                   =0; const PROGMEM boolean DEVICE_ID_SEC=0;             const PROGMEM boolean DEVICE_ID_ED=0;
-const PROGMEM char DEVICE_KIND[]          = "DevKind";               const PROGMEM char DEVICE_KIND_DEF[]          = "Sensors";              const PROGMEM uint16_t DEVICE_KIND_INDX                 =1; const PROGMEM boolean DEVICE_KIND_SEC=0;           const PROGMEM boolean DEVICE_KIND_ED=0;
-const PROGMEM char DEVICE_DESCRIPTION[]   = "DevDescr";              const PROGMEM char DEVICE_DESCRIPTION_DEF[]   = "Dev Descr";            const PROGMEM uint16_t DEVICE_DESCRIPTION_INDX          =2; const PROGMEM boolean DEVICE_DESCRIPTION_SEC=0;    const PROGMEM boolean DEVICE_DESCRIPTION_ED=1;
-const PROGMEM char DEVICE_LOCATION[]      = "DevLoc";                const PROGMEM char DEVICE_LOCATION_DEF[]      = "Dev Loc";              const PROGMEM uint16_t DEVICE_LOCATION_INDX             =3; const PROGMEM boolean DEVICE_LOCATION_SEC=0;       const PROGMEM boolean DEVICE_LOCATION_ED=1;
-const PROGMEM char DEVICE_VERSION[]       = "DevVer";                const PROGMEM char DEVICE_VERSION_DEF[]       = "1.0.1";                const PROGMEM uint16_t DEVICE_VERSION_INDX              =4; const PROGMEM boolean DEVICE_VERSION_SEC=0;        const PROGMEM boolean DEVICE_VERSION_ED=0;
-const PROGMEM char DEVICE_SOUND_ENABLED[] = "DevSoundEn";            const PROGMEM char DEVICE_SOUND_ENABLED_DEF[] = "DevSoundEn";           const PROGMEM uint16_t DEVICE_SOUND_ENABLED_INDX        =5; const PROGMEM boolean DEVICE_SOUND_ENABLED_SEC=0;  const PROGMEM boolean DEVICE_SOUND_ENABLED_ED=1;
+const PROGMEM char DEVICE_ID[]            = "DeviceId";                 const PROGMEM char DEVICE_ID_DEF[]            = "DefDevice";            const PROGMEM uint16_t DEVICE_ID_INDX                   =0; const PROGMEM boolean DEVICE_ID_SEC=0;             const PROGMEM boolean DEVICE_ID_ED=0;
+const PROGMEM char DEVICE_KIND[]          = "DeviceKind";               const PROGMEM char DEVICE_KIND_DEF[]          = "Sensors";              const PROGMEM uint16_t DEVICE_KIND_INDX                 =1; const PROGMEM boolean DEVICE_KIND_SEC=0;           const PROGMEM boolean DEVICE_KIND_ED=0;
+const PROGMEM char DEVICE_DESCRIPTION[]   = "DeviceDescr";              const PROGMEM char DEVICE_DESCRIPTION_DEF[]   = "Dev Descr";            const PROGMEM uint16_t DEVICE_DESCRIPTION_INDX          =2; const PROGMEM boolean DEVICE_DESCRIPTION_SEC=0;    const PROGMEM boolean DEVICE_DESCRIPTION_ED=1;
+const PROGMEM char DEVICE_LOCATION[]      = "DeviceLoc";                const PROGMEM char DEVICE_LOCATION_DEF[]      = "Dev Loc";              const PROGMEM uint16_t DEVICE_LOCATION_INDX             =3; const PROGMEM boolean DEVICE_LOCATION_SEC=0;       const PROGMEM boolean DEVICE_LOCATION_ED=1;
+const PROGMEM char DEVICE_VERSION[]       = "DeviceVer";                const PROGMEM char DEVICE_VERSION_DEF[]       = "1.0.1";                const PROGMEM uint16_t DEVICE_VERSION_INDX              =4; const PROGMEM boolean DEVICE_VERSION_SEC=0;        const PROGMEM boolean DEVICE_VERSION_ED=0;
+const PROGMEM char DEVICE_SOUND_ENABLED[] = "DeviceSoundEn";            const PROGMEM char DEVICE_SOUND_ENABLED_DEF[] = "DevSoundEn";           const PROGMEM uint16_t DEVICE_SOUND_ENABLED_INDX        =5; const PROGMEM boolean DEVICE_SOUND_ENABLED_SEC=0;  const PROGMEM boolean DEVICE_SOUND_ENABLED_ED=1;
 //display props
 const PROGMEM char DISPLAY_MODEL[]              = "DispModel";       const PROGMEM char DISPLAY_MODEL_DEF[]              = "DispModel";       const PROGMEM uint16_t DISPLAY_MODEL_INDX               =6;  const PROGMEM boolean DISPLAY_MODEL_SEC=0;                const PROGMEM boolean DISPLAY_MODEL_ED=0;
 const PROGMEM char DISPLAY_AUTOCHANGE_INTERVAL[]= "DispAutoChgInt";  const PROGMEM char DISPLAY_AUTOCHANGE_INTERVAL_DEF[]= "DispAutoChgInt";  const PROGMEM uint16_t DISPLAY_AUTOCHANGE_INTERVAL_INDX =7;  const PROGMEM boolean DISPLAY_AUTOCHANGE_INTERVAL_SEC=0;  const PROGMEM boolean DISPLAY_AUTOCHANGE_INTERVAL_ED=1;
@@ -112,7 +112,7 @@ const PROGMEM char SENSOR_DHT_MIN_HUM[]     = "dhtMinHum";        const PROGMEM 
 
 const PROGMEM uint16_t ITEMS_COUNT=64;
 
-const char * const configNames[] PROGMEM =
+const char * const keys[] PROGMEM =
 {
 		DEVICE_ID, DEVICE_KIND,	DEVICE_DESCRIPTION,	DEVICE_LOCATION, DEVICE_VERSION, DEVICE_SOUND_ENABLED,
 		DISPLAY_MODEL, DISPLAY_AUTOCHANGE_INTERVAL,	DISPLAY_ALWAYS_ON, DISPLAY_AUTO_OFF_TIME,
@@ -171,6 +171,8 @@ public:
 	char* getAsJson(char* key);
 
 	int16_t getKeyIndex(char* key);
+
+	char* get(const char* key);
 
 	char* get(char* key);
 	int   getInt(char* key);

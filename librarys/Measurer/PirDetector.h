@@ -1,7 +1,7 @@
 /*
  * PirDetector.h
  *
- *  Created on: 20 окт. 2018 г.
+ *  Created on: 20 пїЅпїЅпїЅ. 2018 пїЅ.
  *      Author: Vitaliy
  */
 
@@ -15,12 +15,13 @@
 
 class PirDetector {
 public:
-	PirDetector(uint8_t _pin,PinDigital *_signalLed,std::function<PinEvent(PinEvent)> _processPinEvent){
+	PirDetector(uint8_t _pin,PinDigital *_signalLed,std::function<PinEvent(PinEvent)> _processPinEvent,std::function<void(void)> _externalFunction){
 		pirDetectorPin=new PinDigital("pirDetectorPin",_pin);
 		humanPresentTrigger=new TimeTrigger(0,humanNotPresentInterval,false,[this](){onHumanPresentTrigger();});
 		//pirPin=_pin;
 		signalLed=_signalLed;
 		processPinEvent=_processPinEvent;
+		externalFunction=_externalFunction;
 	}
 	virtual ~PirDetector();
 
@@ -32,9 +33,14 @@ public:
 		return changed;
 	}
 
+	boolean isHumanPresented(){
+		return humanPresented;
+	}
+
 	void onMovementDetected(){
 		Serial.println("-------handleMovementDetected");
-		signalLed->changeAndDelay(50, 2);
+		if(signalLed!=nullptr)
+			signalLed->changeAndDelay(50, 2);
 
 		humanPresented=true;
 		humanPresentTrigger->setActive(false);
@@ -56,11 +62,17 @@ public:
 
 		handleLightOnOff();
 
-		processPinEvent(pirDetectorPin->constructEvent(PIN_EVENT_STATE_UPDATED,true));
+		if(processPinEvent!=nullptr)
+			processPinEvent(pirDetectorPin->constructEvent(PIN_EVENT_STATE_UPDATED,true));
+
+		if(externalFunction!=nullptr){
+			externalFunction();
+		}
 	}
 
 	void handleLightOnOff(){
-		signalLed->turnOnOff(humanPresented);
+		if(signalLed!=nullptr)
+			signalLed->turnOnOff(humanPresented);
 	}
 
 	PinEvent onPirWasChanged(PinEvent event){
@@ -88,6 +100,7 @@ private:
 
 	PinDigital *signalLed;
 	std::function<PinEvent(PinEvent)> processPinEvent;
+	std::function<void(void)> externalFunction;
 };
 
 #endif /* LIBRARIES_MEASURER_PIRDETECTOR_H_ */

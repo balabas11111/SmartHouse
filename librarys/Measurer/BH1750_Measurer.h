@@ -47,22 +47,31 @@ public:
 		items[0]=Measureable("light","Освещенность","Lux",String(lightMeter.readLightLevel()),"Люкс");
 	}
 	//------------------------HtmlWidgetProcessing---------------------------
+
 		String getName(){
 			return Measurer::getName();
 		}
 
-		String constructJson(){
-			return getMeasurableAsJson();
+		String executeClientAction(String actionName,String remoteId,String remoteVal, String className, String childClass,String clientData){
+
+			printCommand(actionName, remoteId, remoteVal, className, childClass, clientData);
+
+			if(actionName.equals(ACTION_GET_WIDGET_HTML_OR_VAL)
+					&&className.equals(CLASS_REFRESHABLE_MeasurerWidgetESP)){
+
+				return FPSTR(HTML_BH1750);
+			}
+
+			if(actionName.equals(ACTION_GET_WIDGETS_CHILDREN_AS_JSON)
+					&&className.equals(CLASS_REFRESHABLE_CHILDREN_MeasurerWidgetESPJson)
+					&&childClass.equals(CLASS_REFRESHABLE_CHILD)){
+
+				return Measurer::getChildrenJson();
+			}
+
+			return getNotAllowed();
 		}
 
-		String constructHtml(){
-			String result=FPSTR(HTML_BH1750);
-			return result;
-		}
-
-		String constructSimpleJson(){
-			return Measurer::constructSimpleJson();
-		}
 		//----------------------------------------------
 private:
 	BH1750 lightMeter;;

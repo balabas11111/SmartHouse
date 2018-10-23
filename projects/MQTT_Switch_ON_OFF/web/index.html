@@ -16,7 +16,7 @@
 <div id="leftSidebar" class="w3-sidebar w3-bar-block w3-light-grey w3-border-right w3-animate-left" style="display: none;">
 	<button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Свернуть</button>
 	<a href="settings.htm" class="w3-bar-item w3-button w3-hover-green">Настройки</a>
-	<a id="thingSpeakUrl" remoteId="SettingsWidget" remoteVal="DeviceId" targetTag="href" targetTagReplacePart="<channelId>" class="SettingsWidgetESP w3-bar-item w3-button w3-hover-green" href="https://thingspeak.com/channels/<channelId>/private_show" >ThingSpeak.com</a>
+	<a id="thingSpeakUrl" remoteId="configStorageWidget" remoteVal="thSpChannel" targetTag="href" targetTagReplacePart="<channelId>" class="SettingsWidgetESP w3-bar-item w3-button w3-hover-green" href="https://thingspeak.com/channels/<channelId>/private_show" >ThingSpeak.com</a>
 </div>
 
 <div id="main">
@@ -24,15 +24,15 @@
 		<button id="openNavBtn" class="w3-button w3-teal w3-xlarge" onclick="w3_open()">☰</button>
 		
 		<div class="w3-container w3-animate-opacity">
-			<h2 id="dId" remoteVal="DeviceId" class="SettingsWidgetESP" style="width:33%">Устройство</h2>
-			<h1 id="DeviceLocation" remoteVal="DeviceId" class="SettingsWidgetESP" style="width:33%">Локация</h1>
+			<h2 id="dId" remoteId="configStorageWidget" remoteVal="DeviceId" class="SettingsWidgetESP" style="width:33%">Устройство</h2>
+			<h1 id="DeviceLocation" remoteId="configStorageWidget" remoteVal="DeviceLoc" class="SettingsWidgetESP" style="width:33%">Локация</h1>
 		</div>
 	</div>					
 	
 	<div class="w3-container">
 		<!--Main content starts here-->
 		
-		<!--OneVIre info starts-->
+		<!--DME280 info starts-->
 		<div>
 			<div class="w3-card-4" style="width:25%;  float:left; min-width: 250px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 					<div class="w3-container w3-teal">
@@ -41,21 +41,21 @@
 					
 					<form id="bmeMeasurer" remoteId="bmeMeasurer" reloadInterval="120000" class="MeasurerWidgetESPJson ReloadableWidget w3-container">
 				   		<label style="max-width: 240px;"><b>Температура °C</b></label>
-				   		<input id="Temperature" remoteId="Temperature" targetTag="value" class="refreshableChild w3-input w3-border" style="width:95%" type="text" value="" disabled>
+				   		<input id="Temperature" remoteVal="Temperature" targetTag="value" class="refreshableChild w3-input w3-border" style="width:95%" type="text" value="" disabled>
 				   		<label style="max-width: 240px;"><b>Давление (Паскаль)</b></label>
-				   		<input id="Pressure" remoteId="Pressure"  targetTag="value" class="refreshableChild w3-input w3-border" style="width:95%" type="text" value="" disabled>
+				   		<input id="Pressure" remoteVal="Pressure"  targetTag="value" class="refreshableChild w3-input w3-border" style="width:95%" type="text" value="" disabled>
 				   		<label style="max-width: 240px;"><b>Влажность (%)</b></label>
-				   		<input id="Humidity" remoteId="Humidity" targetTag="value" class="refreshableChild w3-input w3-border" style="width:95%" type="text" value="" disabled>
+				   		<input id="Humidity" remoteVal="Humidity" targetTag="value" class="refreshableChild w3-input w3-border" style="width:95%" type="text" value="" disabled>
 				   		<label style="max-width: 240px;"><b>Высота над морем (метров)</b></label>
-				   		<input id="Altitude" remoteId="Altitude" targetTag="value" class="refreshableChild w3-input w3-border" style="width:95%" type="text" value="" disabled>
+				   		<input id="Altitude" remoteVal="Altitude" targetTag="value" class="refreshableChild w3-input w3-border" style="width:95%" type="text" value="" disabled>
 				   		<p></p>
 				   		<div id="bmeMeasurer_status" class="w3-panel w3-green w3-card-4"><p>Загружаю</p></div>
 					</form>
 			</div>
 		</div>
-		<!--OneVire info ends-->
+		<!--DME280 info ends-->
 		
-		<!--OneVIre info starts-->
+		<!--BH1750 info starts-->
 		<div>
 			<div class="w3-card-4" style="width:25%;  float:left; min-width: 250px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 					<div class="w3-container w3-teal">
@@ -64,14 +64,46 @@
 					 
 					<form id="luxMeasurer" remoteId="luxMeasurer" reloadInterval="120000" class="MeasurerWidgetESPJson ReloadableWidget w3-container">
 						<label style="max-width: 240px;"><b>Освещение (Люкс)</b></label>
-						<input id="light" remoteId="light" targetTag="value" class="refreshableChild w3-input w3-border" style="width:95%" type="text" value="" disabled>
+						<input id="light" remoteVal="light" targetTag="value" class="refreshableChild w3-input w3-border" style="width:95%" type="text" value="" disabled>
 						
 						<p></p>
 						<div id="luxMeasurer_status" class="MeasurerWidgetESPJsonStatus w3-panel w3-green w3-card-4"><p>Загружаю</p></div>
 					</form>
 			</div>
 		</div>
-		<!--OneVire info ends-->
+		<!--BH1750 info ends-->
+		
+		<!--Leftlamp info starts-->
+		<div>
+			<div class="w3-card-4" style="width:25%;  float:left; min-width: 250px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+					<div class="w3-container w3-teal">
+						  <h2>Лампа левая</h2>
+					</div>
+					 
+					<form id="lampLeft" class="w3-container">
+						<img id="leftlampImg" remoteId="lampLeft" remoteVal="Image" targetTag="src" 
+								class="refreshableImage" reloadInterval="2000" 
+								onclick="lampWidgetClick(this);" src="img" alt="Загружаю"/>
+					</form>
+			</div>
+		</div>
+		<!--Leftlamp info ends-->
+		
+		<!--RightLamp info starts-->
+		<div>
+			<div class="w3-card-4" style="width:25%;  float:left; min-width: 250px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+					<div class="w3-container w3-teal">
+						  <h2>Лампа правая</h2>
+					</div>
+					 
+					<form id="lampLeft" class="w3-container">
+						<img id="RightlampImg" remoteId="lampRight" remoteVal="Image" targetTag="src" 
+								class="refreshableImage" reloadInterval="2000" 
+								onclick="lampWidgetClick(this);" src="img" alt="Загружаю"/>
+					</form>
+			</div>
+		</div>
+		<!--RightLamp info ends-->
 		
 	<!--Main content ends here-->
 	</div>				

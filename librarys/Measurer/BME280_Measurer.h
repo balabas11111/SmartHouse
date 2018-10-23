@@ -8,9 +8,7 @@
 #ifndef LIBRARIES_MEASURER_BME280_MEASURER_H_
 #define LIBRARIES_MEASURER_BME280_MEASURER_H_
 
-#include <memory>
 #include "Arduino.h"
-//#include "Wire.h"
 #include "Initializable.h"
 #include "Measurer.h"
 #include "HtmlWidget.h"
@@ -27,7 +25,7 @@ class BME280_Measurer: public Measurer, public HtmlWidget{
 public:
 
 	BME280_Measurer(String _id,String _name)
-			: Measurer(_id, _name, FPSTR(MEASURER_BME280_NAME),FPSTR(MEASURER_BME280_DESCRIPTION),FPSTR(MEASURER_BME280_DESCRIPTION_RU), 4, false){
+			:Measurer(_id, _name, FPSTR(MEASURER_BME280_NAME),FPSTR(MEASURER_BME280_DESCRIPTION),FPSTR(MEASURER_BME280_DESCRIPTION_RU), 4, false){
 	}
 
 	~BME280_Measurer(){
@@ -61,18 +59,24 @@ public:
 		return Measurer::getName();
 	}
 
-	String constructJson(){
-		return getMeasurableAsJson();
-	}
+	String executeClientAction(String actionName,String remoteId,String remoteVal, String className, String childClass,String clientData){
 
-	//TODO: move to upper level. Externalize template
-	String constructHtml(){
-		String result=FPSTR(HTML_BME280);
-		return result;
-	}
+		printCommand(actionName, remoteId, remoteVal, className, childClass, clientData);
 
-	String constructSimpleJson(){
-		return Measurer::constructSimpleJson();
+		if(actionName.equals(ACTION_GET_WIDGET_HTML_OR_VAL)
+				&&className.equals(CLASS_REFRESHABLE_MeasurerWidgetESP)){
+
+			return FPSTR(HTML_BME280);
+		}
+
+		if(actionName.equals(ACTION_GET_WIDGETS_CHILDREN_AS_JSON)
+				&&className.equals(CLASS_REFRESHABLE_CHILDREN_MeasurerWidgetESPJson)
+				&&childClass.equals(CLASS_REFRESHABLE_CHILD)){
+
+			return Measurer::getChildrenJson();
+		}
+
+		return getNotAllowed();
 	}
 	//----------------------------------------------
 

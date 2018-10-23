@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2018-10-22 01:12:02
+//This file has been generated on 2018-10-23 18:54:15
 
 #include "Arduino.h"
 #include <Arduino.h>
@@ -25,7 +25,9 @@
 #include <BME280_Measurer.h>
 #include <BH1750_Measurer.h>
 #include <DeviceHelper.h>
-#include "WidgetHelper.h"
+#include "ConfigStorage.h"
+#include "ConfigStorageWidget.h"
+#include "PinDigitalWidget.h"
 #include "PirDetector.h"
 
 void setup() ;
