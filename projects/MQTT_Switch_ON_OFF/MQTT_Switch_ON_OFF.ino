@@ -33,6 +33,7 @@
 
 #define FIRMVARE_VERSION "b@l@bas-soft ONOFF v0.0.5"
 
+
 //Robot Dyn//vem  // 12E
 #define D0_PIN 16 //GPIO016 ////beeper
 #define D1_PIN 5  //GPIO05  //DallasTemp           PIN_WIRE_SCL
