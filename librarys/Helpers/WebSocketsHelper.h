@@ -19,7 +19,7 @@ public:
 		webSocket=_webSocket;
 		funcEvent=_funcEvent;
 	}
-	virtual ~WebSocketsHelper();
+	virtual ~WebSocketsHelper(){};
 
 	virtual boolean initialize(boolean _init){
 		if(_init){
@@ -41,6 +41,7 @@ public:
 
 	virtual String displayDetails(){
 	   Serial.println("-----------Web socket details-----");
+
 	   int clientsCount=(webSocket->connectedClients(true));
 	   Serial.print("clients=");Serial.println(clientsCount);
 

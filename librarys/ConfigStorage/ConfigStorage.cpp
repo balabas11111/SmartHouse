@@ -10,13 +10,14 @@
 #include "ArduinoJson.h"
 #include "ctype.h"
 
-ConfigStorage::ConfigStorage() { construct(DEFAULT_FILE_NAME, true, true); }
+ConfigStorage::ConfigStorage() { construct(String(FPSTR(DEFAULT_FILE_NAME)), false, false); }
 ConfigStorage::ConfigStorage(const char* _filename) {construct(_filename, true, true);}
 ConfigStorage::ConfigStorage(const char* _filename, boolean forceload) {construct(_filename, forceload, true);}
 ConfigStorage::ConfigStorage(boolean forceload) {construct(DEFAULT_FILE_NAME, forceload, true);}
 ConfigStorage::~ConfigStorage() {}
 
 boolean ConfigStorage::initialize(boolean _init) {
+	Serial.println("-----Start initialize configStorage-----");
 	if(!initialized){
 
 		if(_init){
@@ -31,6 +32,9 @@ boolean ConfigStorage::initialize(boolean _init) {
 }
 
 boolean ConfigStorage::load() {
+	Serial.print("Load file ");
+	Serial.println(fileName);
+
 	File file = SPIFFS.open(fileName, "r");
 
 	boolean result=false;
@@ -38,6 +42,7 @@ boolean ConfigStorage::load() {
 	if(!file){
 		Serial.println("-----FILE not exists. Default settings save");
 		fillDefaultValues();
+		printMemory();
 		save();
 		file = SPIFFS.open(fileName, "r");
 	}
@@ -114,11 +119,11 @@ void ConfigStorage::printMemory(){
 	Serial.println("----------------Properties from memory------------");
 
 	for(uint16_t i=0;i<ITEMS_COUNT;i++){
-		char* key=const_cast<char*>(keys[i]);
-		char* val=const_cast<char*>(values[i]);
-		Serial.print(key);
+		//char* key=const_cast<char*>(keys[i]);
+		//char* val=const_cast<char*>(values[i]);
+		Serial.print(FPSTR(keys[i]));
 		Serial.print('=');
-		Serial.print(val);
+		Serial.print(FPSTR(values[i]));
 		Serial.println(';');
 	}
 
@@ -152,9 +157,29 @@ void ConfigStorage::printSettingsFile(){
 }
 
 void ConfigStorage::fillDefaultValues() {
+	Serial.println("---default values");
+
+	Serial.print("---len=");
+	Serial.println(sizeof(values));
+
 	for(uint16_t i=0;i<ITEMS_COUNT;i++){
+		//char * ptr = (char *) pgm_read_word (&defaultValues [i]);
 		//FPSTR(defaultValues[i]);
-		values[i]=const_cast<char*> ( defaultValues[i]);
+		//values[i]=String(FPSTR(defaultValues[i])).c_str();
+		Serial.print("i=");
+		Serial.print(i);
+		Serial.print(" def= ");
+		Serial.print(FPSTR(defaultValues[i]));
+		Serial.print(" dest= ");
+		char* dest=new char[20];
+
+		strcpy_P(dest, defaultValues[i]);
+		Serial.print(dest);
+		values[i]=dest;
+		Serial.print(" values= ");
+		Serial.println(values[i]);
+		//values[i]=const_cast<char*> (String(FPSTR(values[i])).c_str());
+		//Serial.println(String(FPSTR(values[i])));
 	}
 
 	Serial.println("Default values put to current values");
@@ -287,7 +312,7 @@ uint16_t ConfigStorage::getUint16t(uint16_t keyId) {
 	return (uint16_t)atoi(c);
 }
 
-void ConfigStorage::construct(const char* _fileName, boolean init,
+void ConfigStorage::construct(String _fileName, boolean init,
 		boolean initSpiff) {
 	fileName=_fileName;
 

@@ -1,12 +1,11 @@
 #include <Arduino.h>
-
+#include <Hash.h>
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include "EspSettingsBox.h"
 #include "MqttHelper.h"
 #include "Loopable.h"
 #include "PinEventProcessor.h"
-//#include "WiFiHelper.h"
 #include "FS.h"
 #include "I2Chelper.h"
 #include "DisplayHelper.h"
@@ -58,7 +57,7 @@ const int sensorsInterval=60000;
 
 WiFiClient wclient;
 ESP8266WebServer server ( 80 );
-WebSocketsServer webSocket = WebSocketsServer(81);
+//WebSocketsServer webSocket = WebSocketsServer(81);
 
 ConfigStorage configStorage;
 EspSettingsBox espSettingsBox("/settings.txt","",true,true);
@@ -94,15 +93,15 @@ PinEventProcessor *eventProcessors[]={&lampLeft,&lampRight,
 WiFiHelper wifiHelper("WiFiHelper",&espSettingsBox, &displayHelper, &signalLed,	&server,
 		postInitWebServer,false, handleHttpWidget, processEvent);
 
-MqttHelper mqttHelper(&configStorage,&espSettingsBox,subscribeTopics,ARRAY_SIZE(subscribeTopics),wclient,eventProcessors,ARRAY_SIZE(eventProcessors),processMqttEvent);
+//MqttHelper mqttHelper(&configStorage,&espSettingsBox,subscribeTopics,ARRAY_SIZE(subscribeTopics),wclient,eventProcessors,ARRAY_SIZE(eventProcessors),processMqttEvent);
+
+//WebSocketsHelper webSocketHelper(&webSocket,webSocketEvent);
 
 Loopable* loopArray[]={&buttonLeft,&buttonRight,
 							&lampLeft,&lampRight,&wifiHelper/*,&mqttHelper*/};
-Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer};
+Initializable* initializeArray[]={&configStorage,&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer};
 
 HtmlWidget* widgetsArray[]={&bmeMeasurer,&luxMeasurer,&configStorageWidget,&lampLeftWidget,&lampRightWidget};
-
-WebSocketsHelper webSocketHelper(webSocket,webSocketEvent);
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray));
 
@@ -236,18 +235,17 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 //---------------------------------------------------------------------
 //button handling
 PinEvent onLeftButtonChanged(PinEvent event){
-	webSocketHelper.sendMessageToAll(lampLeftWidget.getWsText());
+	//webSocketHelper.sendMessageToAll(lampLeftWidget.getWsText());
 	return lampLeft.constructPinEventSetState(event);
 }
 
 PinEvent onRightButtonChanged(PinEvent event){
-	webSocketHelper.sendMessageToAll(lampRightWidget.getWsText());
+	//webSocketHelper.sendMessageToAll(lampRightWidget.getWsText());
 	return lampRight.constructPinEventSetState(event);
 }
 //---------------------------------------------------------------------
 //event and mqtt processing
-PinEvent processEvent(PinEvent event){
-	/*
+/*
 	 //kind:bubble:pinId:oldVal:val:strVal:dispatcherName:targetName:
 
 	UPDATESTate command
@@ -262,11 +260,14 @@ PinEvent processEvent(PinEvent event){
 		http://192.168.0.100/runCommand?command=PE_SG:1:0:0:0:PE_SG:http:bmeMeasurer:
 		http://192.168.0.100/runCommand?command=PE_SG:1:0:0:0:PE_SG:http:luxMeasurer:
 	*/
-	if(!event.isValid() || !event.isNotEmpty()){
+
+PinEvent processEvent(PinEvent event){
+		if(!event.isValid() || !event.isNotEmpty()){
 		return PinEvent();
 	}
 
-	return mqttHelper.processEvent(event);
+	//return mqttHelper.processEvent(event);
+	return PinEvent();
 }
 
 void processMqttEvent(String topic,String message){

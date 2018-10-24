@@ -13,7 +13,7 @@
 #include <ArduinoJson.h>
 
 
-const PROGMEM char DEFAULT_FILE_NAME[]          = "ConfigStorage.txt";
+const PROGMEM char DEFAULT_FILE_NAME[]          = "/ConfigStorage.txt";
 const PROGMEM char MESSAGE_PROPERTY_NOT_FOUND[] = "Not found";
 const PROGMEM char MESSAGE_PROPERTY_SECURED[]   = "Secured property";
 //
@@ -198,12 +198,12 @@ public:
 protected:
 	void fillDefaultValues();
 
-	const char* fileName;
+	String fileName;
 	char* values[ITEMS_COUNT];
 
 private:
 	boolean spiffInitialized;
-	void construct(const char* _filename,boolean init,boolean initSpiff);
+	void construct(String _filename,boolean init,boolean initSpiff);
 	//boolean putSettingsToMemory(JsonObject& root);
 };
 

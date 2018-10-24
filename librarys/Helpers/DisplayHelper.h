@@ -14,7 +14,9 @@
 class DisplayHelper: public Initializable {
 
 public:
-	DisplayHelper(boolean _init);
+	DisplayHelper(boolean _init){
+		initialized=_init;
+	}
 	virtual ~DisplayHelper(){};
 
 	virtual boolean initialize(boolean _init) override{
