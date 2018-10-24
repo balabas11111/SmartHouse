@@ -4,5 +4,4 @@ sloeber
 *
 *.cproject
 *.project
-*.ino
 *.cpp
