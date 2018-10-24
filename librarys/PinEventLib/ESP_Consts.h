@@ -71,7 +71,11 @@ const PROGMEM char ATTRIBUTE_TARGET_TAG_REPLACE_PART[]="targetTagReplacePart";  
 const PROGMEM char REMOTE_VAL_VALUE[]="value";
 const PROGMEM char REMOTE_VAL_IMAGE[]="Image";
 
-//viewNames
+const PROGMEM char WS_TAG_ID[]="wsId";
+const PROGMEM char WS_TAG_VALUE[]="wsValue";
+const PROGMEM char WS_TAG_PARENT[]="wsParent";
+const PROGMEM char WS_TAG_CHILD[]="wsChild";
+const PROGMEM char WS_TAG_ITEM[]="wsItem";
 //const PROGMEM char VIEW_NAME_jsonFormView[]="jsonFormView"; //view of returnable json
 //base controls
 const char HTML_B_OPEN[] PROGMEM ="<b>";

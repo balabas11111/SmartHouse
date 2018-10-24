@@ -85,6 +85,13 @@ const MESSAGE_SENSOR_BROKEN="Датчик неисправен";
 const MESSAGE_DEVICE_BROKEN="Устройство неисправно"; 
 
 const MIN_TIMEOUT_VALUE_SENSOR=2000;
+
+const WS_TAG_ID="wsId";
+const WS_TAG_VALUE="wsValue";
+const WS_TAG_PARENT="wsParent";
+const WS_TAG_CHILD="wsChild";
+const WS_TAG_ITEM="wsItem";
+
 //-------------------base functions----------------------------------
 function updateComponentHtmlTagRequiredValueByName(updateName,receivedValue){
 	var component=document.getElementById(updateName);
@@ -310,7 +317,7 @@ function addPostponedUpdateComponentsChildrenByAjaxJson(actionId, remoteId, widg
 		setTimeout(function(){updateComponentsChildrenByAjaxJson(actionId, remoteId, widgetId, widgetClass, childClass, clientData, requestmethod, url, allowAutoRefresh);}, timeout);
 	}
 };
-
+//--------------------------Menu functions-----------------------------
 function w3_open(){
 	document.getElementById("leftSidebar").style.display = "block";
 };
@@ -318,7 +325,56 @@ function w3_open(){
 function w3_close(){
 	document.getElementById("leftSidebar").style.display = "none";
 };
+//----------------------Web sockets--------------------------
 
+var socket=undefined;
+
+ function WebSocketTest() {
+            
+            if ("WebSocket" in window) {
+               alert("WebSocket is supported by your Browser!");
+               
+               // Let us open a web socket
+               socket=new WebSocket("ws://"+window.location.hostname+":8081");
+				
+               socket.onopen = function() {
+                  // Web Socket is connected, send data using send()
+                  socket.send("Message to send");
+                  alert("Message is sent...");
+               };
+				
+               socket.onmessage = function(event){
+					var incomingMessage=event.data;
+					receiveWsMessage(incomingMessage);
+               };
+				
+               socket.onclose = function() { 
+                  // websocket is closed.
+                  alert("Connection is closed..."); 
+               };
+            } else {
+              
+               // The browser doesn't support WebSocket
+               alert("WebSocket NOT supported by your Browser!");
+            }
+         }
+
+function receiveWsMessage(message){
+	var widgetId="websocket_status";
+	var component=document.getElementById(widgetId);
+	
+	component.innerHtml=message;
+}
+
+function sendWsMessage(message){
+	socket.send(message);
+}
+
+
+fuction processComponentUpdate(message){
+{\"wsId
+}
+//---------------------On Load functions-------------------------------
 function onLoadPageComplete(){
 	w3_close();
 	reloadAllWidgetsByClassname(ACTION_GET_STATIC_SETTINGS_DATA,CLASS_REFRESHABLE_SettingsWidgetESP,false);
@@ -327,9 +383,5 @@ function onLoadPageComplete(){
 	reloadAllWidgetsChildsByClassnameJson(ACTION_GET_WIDGETS_CHILDREN_AS_JSON,CLASS_REFRESHABLE_CHILDREN_MeasurerWidgetESPJson, CLASS_REFRESHABLE_CHILD,true);
 };
 
-function lampWidgetClick(component){
-	widgetId=component.id;
-	remoteId=getWidgetsRemoteId(component)
-	updateHtmlComponentByAjax(ACTION_SUBMIT_WIDGET_GET_VALUE, remoteId, widgetId, CLASS_REFRESHABLE_IMAGE, "", URL_REMOTE_GET_WIDGETS_METHOD, URL_REMOTE_GET_WIDGETS, false);
-}
+
 

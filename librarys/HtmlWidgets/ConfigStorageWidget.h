@@ -18,7 +18,7 @@ public:
 		configStorage=_configStrorage;
 	}
 
-	virtual ~ConfigStorageWidget();
+	virtual ~ConfigStorageWidget(){};
 
 	String getName(){
 		return name;
@@ -35,6 +35,10 @@ public:
 		}
 
 		return getNotAllowed();
+	}
+
+	String getWsText(){
+		return "";
 	}
 
 private:

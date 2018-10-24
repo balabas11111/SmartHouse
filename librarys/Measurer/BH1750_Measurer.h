@@ -72,6 +72,8 @@ public:
 			return getNotAllowed();
 		}
 
+
+
 		//----------------------------------------------
 private:
 	BH1750 lightMeter;;

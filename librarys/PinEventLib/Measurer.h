@@ -33,6 +33,10 @@ public:
 		initialized=false;
 	}
 
+	String getWsJson(){
+		return "{\"wsId\":\""+getName()+"\",\"wsClass\":\"wsParent\",\"items\":\""+getChildrenJson()+"\"}";
+	}
+
 	String getChildrenJson(){
 		String result="{";
 

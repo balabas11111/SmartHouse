@@ -20,7 +20,7 @@ public:
 		OFF_img=_OFF_img;
 	}
 
-	virtual ~PinDigitalWidget();
+	virtual ~PinDigitalWidget(){};
 
 	String getName(){
 		return pin->getName();
@@ -54,6 +54,10 @@ public:
 		}else{
 			return OFF_img;
 		}
+	}
+
+	String getWsText(){
+		return "{\"wsId\":\""+getName()+"\",\"wsClass\":\"wsItem\",\"wsValue\":\""+getPinsImage()+"\"}";
 	}
 
 private:
