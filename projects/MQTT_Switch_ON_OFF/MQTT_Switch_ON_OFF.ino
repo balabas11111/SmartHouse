@@ -12,6 +12,8 @@
 #include "DisplayHelper.h"
 #include "WiFiHelper.h"
 #include <Wire.h>
+#include <WebSocketsServer.h>
+#include <WebSocketsHelper.h>
 
 #include <ESP8266WebServer.h>
 #include "PinDigital.h"
@@ -32,7 +34,6 @@
 #define VAR_NAME(var) #var
 
 #define FIRMVARE_VERSION "b@l@bas-soft ONOFF v0.0.5"
-
 
 //Robot Dyn//vem  // 12E
 #define D0_PIN 16 //GPIO016 ////beeper
@@ -55,11 +56,12 @@
 
 const int sensorsInterval=60000;
 
-ConfigStorage configStorage;
-EspSettingsBox espSettingsBox("/settings.txt","",true,true);
-
 WiFiClient wclient;
 ESP8266WebServer server ( 80 );
+WebSocketsServer webSocket = WebSocketsServer(81);
+
+ConfigStorage configStorage;
+EspSettingsBox espSettingsBox("/settings.txt","",true,true);
 
 I2Chelper i2cHelper(D1_PIN,D2_PIN,false);
 DisplayHelper displayHelper(true);
@@ -68,8 +70,8 @@ String subscribeTopics[]={"topic/ESP8266Topic","topic/SwitchLeft","topic/SwitchR
 
 //TimeTrigger sensorsTrigger(0,sensorsInterval,false,[](){Serial.println(getWidgetsHtlm())});
 
-PinDigital buttonLeft(VAR_NAME(buttonLeft),D7_PIN,processEvent,onButtonChanged);
-PinDigital buttonRight(VAR_NAME(buttonRight),D6_PIN,processEvent,onButtonChanged);
+PinDigital buttonLeft(VAR_NAME(buttonLeft),D7_PIN,processEvent,onLeftButtonChanged);
+PinDigital buttonRight(VAR_NAME(buttonRight),D6_PIN,processEvent,onRightButtonChanged);
 
 PinDigital signalLed(VAR_NAME(signalLED),D4_PIN,OUTPUT,nullptr,CHANGE,LOW,HUMAN_NOT_PRESENTED);
 
@@ -99,6 +101,8 @@ Loopable* loopArray[]={&buttonLeft,&buttonRight,
 Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer};
 
 HtmlWidget* widgetsArray[]={&bmeMeasurer,&luxMeasurer,&configStorageWidget,&lampLeftWidget,&lampRightWidget};
+
+WebSocketsHelper webSocketHelper(webSocket,webSocketEvent);
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray));
 
@@ -216,18 +220,29 @@ void handleHttpWidget(){
 	server.send(404, "text/html", "Виджет "+remoteId+" не найден");
 }
 
+//--------------------------websockets----------------
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length){
+  if (type == WStype_TEXT){
+   Serial.println("-----------Web socket event-----");
+   Serial.print("num=");Serial.print(num);
+   Serial.print("type=");Serial.print(type);
+   Serial.print("length=");Serial.print(length);
+   Serial.println();
+
+   for(size_t i = 0; i < length; i++) Serial.print((char) payload[i]);
+   Serial.println();
+  }
+}
 //---------------------------------------------------------------------
 //button handling
-PinEvent onButtonChanged(PinEvent event){
-	//On button changed
-	Serial.println("//On button changed");
-	if(buttonLeft.isDispatcherOfEvent(event)){
-		return lampLeft.constructPinEventSetState(event);
-	}
-	if(buttonRight.isDispatcherOfEvent(event)){
-		return lampRight.constructPinEventSetState(event);
-	}
-	return PinEvent();
+PinEvent onLeftButtonChanged(PinEvent event){
+	webSocketHelper.sendMessageToAll(lampLeftWidget.getWsText());
+	return lampLeft.constructPinEventSetState(event);
+}
+
+PinEvent onRightButtonChanged(PinEvent event){
+	webSocketHelper.sendMessageToAll(lampRightWidget.getWsText());
+	return lampRight.constructPinEventSetState(event);
 }
 //---------------------------------------------------------------------
 //event and mqtt processing
