@@ -33,15 +33,14 @@ public:
 		initialized=false;
 	}
 
-	String getWsJson(){
-		return "{\"wsId\":\""+getName()+"\",\"wsClass\":\"wsParent\",\"items\":\""+getChildrenJson()+"\"}";
-	}
-
 	String getChildrenJson(){
+
+		//Serial.println("Measure childrens of "+name);
+
 		String result="{";
 
 		for(uint8_t i=0;i<itemsCount;i++){
-			result+="\""+items[i].id+"\":";
+			result+="\""+String(items[i].id)+"\":";
 			result+="\""+items[i].val+"\"";
 			if(i!=itemsCount-1){
 				result+=",";
@@ -76,7 +75,10 @@ public:
 			lastMeasureTime=now;
 		}else{
 			ulong left=(lastMeasureTime+minMeasureInterval-now)/1000;
-			Serial.println("-measure is too often left="+String(left)+" name="+name);
+			Serial.print("-measure is too often left=");
+			Serial.print(String(left));
+			Serial.print(" name=");
+			Serial.println(name);
 		}
 		return getItems();
 	}
@@ -160,14 +162,12 @@ private:
 	}
 
 	String getMeasuableAsJson(Measureable m,boolean _quoteValue){
-		String result=
-				getStringAsJson(VAR_NAME(m.id),m.id)+","+
+		return
+				getStringAsJson(VAR_NAME(m.id),String(m.id))+","+
 				getStringAsJson(VAR_NAME(m.name),m.name)+","+
 				getStringAsJson(VAR_NAME(m.val),m.val,_quoteValue)+","+
 				getStringAsJson(VAR_NAME(m.kind),m.kind)+","+
 				getStringAsJson(VAR_NAME(m.descr),m.descr);
-
-		return result;
 	}
 
 	String getStringAsJson(String nodeName,String nodeVal){
@@ -187,6 +187,10 @@ protected:
 	ulong minMeasureInterval;
 	ulong lastMeasureTime;
 	boolean quoteValue;
+
+	String getWsJson(){
+			return "{\"wsId\":\""+getName()+"\",\"wsClass\":\"wsParent\",\"items\":"+getChildrenJson()+"}";
+		}
 };
 
 #endif /* LIBRARIES_MEASURER_MEASURER_H_ */

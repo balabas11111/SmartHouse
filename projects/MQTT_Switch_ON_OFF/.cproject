@@ -54,6 +54,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WebSockets/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Hash}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/NTPClient}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1640988995" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -94,6 +95,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WebSockets/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Hash}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/NTPClient}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1095845800" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -134,6 +136,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WebSockets/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Hash}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/NTPClient}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.2135749945" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>

@@ -163,7 +163,7 @@ void ConfigStorage::fillDefaultValues() {
 	Serial.println(sizeof(values));
 
 	for(uint16_t i=0;i<ITEMS_COUNT;i++){
-		//char * ptr = (char *) pgm_read_word (&defaultValues [i]);
+		char * ptr = (char *) pgm_read_word (&defaultValues [i]);
 		//FPSTR(defaultValues[i]);
 		//values[i]=String(FPSTR(defaultValues[i])).c_str();
 		Serial.print("i=");

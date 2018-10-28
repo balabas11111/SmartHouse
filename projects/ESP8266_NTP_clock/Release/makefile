@@ -10,6 +10,7 @@ RM := del
 -include sources.mk
 -include subdir.mk
 -include libraries\TM1637\subdir.mk
+-include libraries\NTPClient\subdir.mk
 -include libraries\ESP8266WiFi\src\subdir.mk
 -include core\core\umm_malloc\subdir.mk
 -include core\core\spiffs\subdir.mk
@@ -98,5 +99,6 @@ clean:
 	-@echo ' '
 
 .PHONY: all clean dependents
+.SECONDARY:
 
 -include ..\makefile.targets

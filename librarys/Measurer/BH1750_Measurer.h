@@ -54,24 +54,31 @@ public:
 
 		String executeClientAction(String actionName,String remoteId,String remoteVal, String className, String childClass,String clientData){
 
-			printCommand(actionName, remoteId, remoteVal, className, childClass, clientData);
+			//printCommand(actionName, remoteId, remoteVal, className, childClass, clientData);
 
-			if(actionName.equals(ACTION_GET_WIDGET_HTML_OR_VAL)
-					&&className.equals(CLASS_REFRESHABLE_MeasurerWidgetESP)){
+			if(actionName==(FPSTR(ACTION_GET_WIDGET_HTML_OR_VAL))
+					&&className==(FPSTR(CLASS_REFRESHABLE_MeasurerWidgetESP))){
 
 				return FPSTR(HTML_BH1750);
 			}
 
-			if(actionName.equals(ACTION_GET_WIDGETS_CHILDREN_AS_JSON)
-					&&className.equals(CLASS_REFRESHABLE_CHILDREN_MeasurerWidgetESPJson)
-					&&childClass.equals(CLASS_REFRESHABLE_CHILD)){
+			if(actionName==(FPSTR(ACTION_GET_WIDGETS_CHILDREN_AS_JSON))
+					&&className==(FPSTR(CLASS_REFRESHABLE_CHILDREN_MeasurerWidgetESPJson))
+					&&childClass==(FPSTR(CLASS_REFRESHABLE_CHILD))){
 
 				return Measurer::getChildrenJson();
+			}
+
+			if(actionName==FPSTR(ACTION_GET_WIDGET_JSON)){
+				return Measurer::getMeasurableAsJson();
 			}
 
 			return getNotAllowed();
 		}
 
+		String getWsText(){
+			return Measurer::getWsJson();
+		}
 
 
 		//----------------------------------------------

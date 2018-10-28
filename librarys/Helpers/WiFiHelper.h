@@ -48,6 +48,12 @@ public:
 		if(_init){
 			Serial.println("------------------Init WiFi connection------------------");
 
+			displayDetails();
+			if(WiFi.status()==WL_CONNECTED){
+				Serial.println("WiFi disconnecting");
+				WiFi.disconnect(1);
+			}
+
 			if(espSettingsBox->isAccesPoint){
 				startAsAccessPoint();
 			}else{
@@ -83,7 +89,7 @@ public:
 		server->onNotFound([this](){handleNotFound();});
 
 		server->serveStatic("/", SPIFFS, (espSettingsBox->webDefPage).c_str());
-		server->on ( "/"+String(FPSTR(URL_REMOTE_GET_WIDGETS)), HTTP_ANY, [this](){handleHttpWidget();});
+		server->on ( "/"+String(FPSTR(URL_REMOTE_GET_WIDGETS)), HTTP_ANY, [this](){handleHttpWidgetExternal();});
 		//server->on ( "/SettingsWidgetESP", HTTP_ANY, [this](){handleEspSettings();});
 		server->on ( "/"+String(FPSTR(URL_PROCESS_EVENTS)), HTTP_GET, [this](){handleHttpEvent();});
 
@@ -106,265 +112,43 @@ public:
 		Serial.println("-------------------------------------------");
 
 	}
-	//---------------------------------------------------------------------
-	//fileManager section
-	void initFileManager(){
 
-		/*
-		 * Uploading html, css, javascript, etc.
-		 * Use curl to upload the files from the SPIFFS data directory.
-		 *  cd data/
-		 *  curl -X POST -F "data=@index.htm"     http://<ESP32 IP address>/edit >/dev/null
-		 *  curl -X POST -F "data=@graphs.js.gz"  http://<ESP32 IP address>/edit >/dev/null
-		 *  curl -X POST -F "data=@favicon.ico"   http://<ESP32 IP address>/edit >/dev/null
-		 *  curl -X POST -F "data=@edit.htm.gz"   http://<ESP32 IP address>/edit >/dev/null
-		 */
-		Serial.println("Deploying Filemanager /edit");
-		Serial.println("-----------------------------------");
-		#ifdef ESP8266
-			Dir dir = SPIFFS.openDir("/");
-			while (dir.next()) {
-			  String fileName = dir.fileName();
-			  size_t fileSize = dir.fileSize();
-			  Serial.printf("FS File: %s, size: %s\n", fileName.c_str(), formatBytes(fileSize).c_str());
-			}
-		#else
-			listDir(SPIFFS, "/", 0);
-		#endif
+	void handleHttpWidgetExternal(){
 
-		server->on("/list", HTTP_GET, [this](){handleFileList();});
-		//load editor
-		server->on("/edit", HTTP_GET, [this](){
-		if(!handleFileRead("/edit.htm")) server->send(404, "text/plain", "FileNotFound");
-		});
-		//create file
-		server->on("/edit", HTTP_PUT, [this](){handleFileCreate();});
-		//delete file
-		server->on("/edit", HTTP_DELETE, [this](){handleFileDelete();});
-		//first callback is called after the request has ended with all parsed arguments
-		//second callback handles file uploads at that location
-		server->on("/edit", HTTP_POST, [this](){ server->send(200, "text/plain", ""); }, [this](){handleFileUpload();});
+		if(!server->hasArg(FPSTR(PARAM_ACTION_ID))
+					||!server->hasArg(FPSTR(PARAM_REMOTE_ID))
+					//||!server.hasArg(FPSTR(PARAM_REMOTE_VAL))
+					//||!server.hasArg(FPSTR(PARAM_CLASS_NAME))
+					//||!server.hasArg(FPSTR(PARAM_CHILD_CLASS))
+					//||!server.hasArg(FPSTR(PARAM_CLIENT_DATA))
+					){
 
-		  //get heap status, analog input value and all GPIO statuses in one json call
-		  server->on("/all", HTTP_GET, [this](){
-		    String json = "{";
-		    json += "\"heap\":"+String(ESP.getFreeHeap());
-		    json += ", \"analog\":"+String(analogRead(A0));
-		#ifdef ESP8266
-		    json += ", \"gpio\":"+String((uint32_t)(((GPI | GPO) & 0xFFFF) | ((GP16I & 0x01) << 16)));
-		#endif
-		    json += "}";
-		    server->send(200, "text/json", json);
-		    json = String();
-		  });
+			//Serial.println("One of required parameters missing");
 
-		  Serial.println("HTTP server started");
+			server->send(400, FPSTR(CONTENT_TYPE_JSON), FPSTR(MESSAGE_STATUS_JSON_PARAMETERS_MISSING));
+
+			return;
+		}
+
+		Serial.println(FPSTR(MESSAGE_HANDLE_HTTP_WIDGET));
+		Serial.print(FPSTR(MESSAGE_SPACE));Serial.print(FPSTR(PARAM_ACTION_ID));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(server->arg(FPSTR(PARAM_ACTION_ID)));
+		Serial.print(FPSTR(MESSAGE_SPACE));Serial.print(FPSTR(PARAM_REMOTE_ID));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(server->arg(FPSTR(PARAM_REMOTE_ID)));
+		Serial.print(FPSTR(MESSAGE_SPACE));Serial.print(FPSTR(PARAM_REMOTE_VAL));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(server->arg(FPSTR(PARAM_REMOTE_VAL)));
+		Serial.print(FPSTR(MESSAGE_SPACE));Serial.print(FPSTR(PARAM_CLASS_NAME));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(server->arg(FPSTR(PARAM_CLASS_NAME)));
+		Serial.print(FPSTR(MESSAGE_SPACE));Serial.print(FPSTR(PARAM_CHILD_CLASS));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(server->arg(FPSTR(PARAM_CHILD_CLASS)));
+		Serial.print(FPSTR(MESSAGE_SPACE));Serial.print(FPSTR(PARAM_CLIENT_DATA));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.println(server->arg(FPSTR(PARAM_CLIENT_DATA)));
+
+
+		if(server->arg(FPSTR(PARAM_ACTION_ID)).equals("")
+						||server->arg(FPSTR(PARAM_REMOTE_ID)).equals("")
+						){
+
+			server->send(400, FPSTR(CONTENT_TYPE_JSON), FPSTR(MESSAGE_STATUS_JSON_PARAMETERS_MISSING));
+			return;
+		}
+		handleHttpWidget();
 	}
 
-	String formatBytes(size_t bytes){
-	  if (bytes < 1024){
-	    return String(bytes)+"B";
-	  } else if(bytes < (1024 * 1024)){
-	    return String(bytes/1024.0)+"KB";
-	  } else if(bytes < (1024 * 1024 * 1024)){
-	    return String(bytes/1024.0/1024.0)+"MB";
-	  } else {
-	    return String(bytes/1024.0/1024.0/1024.0)+"GB";
-	  }
-	}
-
-	String getContentType(String filename){
-	  if(server->hasArg("download")) return "application/octet-stream";
-	  else if(filename.endsWith(".htm")) return "text/html";
-	  else if(filename.endsWith(".html")) return "text/html";
-	  else if(filename.endsWith(".css")) return "text/css";
-	  else if(filename.endsWith(".js")) return "application/javascript";
-	  else if(filename.endsWith(".png")) return "image/png";
-	  else if(filename.endsWith(".gif")) return "image/gif";
-	  else if(filename.endsWith(".jpg")) return "image/jpeg";
-	  else if(filename.endsWith(".ico")) return "image/x-icon";
-	  else if(filename.endsWith(".xml")) return "text/xml";
-	  else if(filename.endsWith(".pdf")) return "application/x-pdf";
-	  else if(filename.endsWith(".zip")) return "application/x-zip";
-	  else if(filename.endsWith(".gz")) return "application/x-gzip";
-	  return "text/plain";
-	}
-
-	bool handleFileRead(String path){
-	  Serial.println("handleFileRead: " + path);
-	  if(path.endsWith("/")) path += "index.htm";
-	  String contentType = getContentType(path);
-	  String pathWithGz = path + ".gz";
-	  if(SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)){
-	    if(SPIFFS.exists(pathWithGz))
-	      path += ".gz";
-	    File file = SPIFFS.open(path, "r");
-	    size_t sent = server->streamFile(file, contentType);
-	    file.close();
-	    return true;
-	  }
-	  return false;
-	}
-
-	void handleFileUpload(){
-	  if(server->uri() != "/edit") return;
-	  HTTPUpload& upload = server->upload();
-	  if(upload.status == UPLOAD_FILE_START){
-	    String filename = upload.filename;
-	    if(!filename.startsWith("/")) filename = "/"+filename;
-	    Serial.print("handleFileUpload Name: "); Serial.println(filename);
-	    fsUploadFile = SPIFFS.open(filename, "w");
-	    filename = String();
-	  } else if(upload.status == UPLOAD_FILE_WRITE){
-	    //DBG_OUTPUT_PORT.print("handleFileUpload Data: "); DBG_OUTPUT_PORT.println(upload.currentSize);
-	    if(fsUploadFile)
-	      fsUploadFile.write(upload.buf, upload.currentSize);
-	  } else if(upload.status == UPLOAD_FILE_END){
-	    if(fsUploadFile)
-	      fsUploadFile.close();
-	    Serial.print("handleFileUpload Size: "); Serial.println(upload.totalSize);
-	  }
-	}
-
-	void handleFileDelete(){
-	  if(server->args() == 0) return server->send(500, "text/plain", "BAD ARGS");
-	  String path = server->arg(0);
-	  Serial.println("handleFileDelete: " + path);
-	  if(path == "/")
-	    return server->send(500, "text/plain", "BAD PATH");
-	  if(!SPIFFS.exists(path))
-	    return server->send(404, "text/plain", "FileNotFound");
-	  SPIFFS.remove(path);
-	  server->send(200, "text/plain", "");
-	  path = String();
-	}
-
-	void handleFileCreate(){
-	  if(server->args() == 0)
-	    return server->send(500, "text/plain", "BAD ARGS");
-	  String path = server->arg(0);
-	  Serial.println("handleFileCreate: " + path);
-	  if(path == "/")
-	    return server->send(500, "text/plain", "BAD PATH");
-	  if(SPIFFS.exists(path))
-	    return server->send(500, "text/plain", "FILE EXISTS");
-	  File file = SPIFFS.open(path, "w");
-	  if(file)
-	    file.close();
-	  else
-	    return server->send(500, "text/plain", "CREATE FAILED");
-	  server->send(200, "text/plain", "");
-	  path = String();
-	}
-
-	void returnFail(String msg) {
-	  server->send(500, "text/plain", msg + "\r\n");
-	}
-
-	#ifdef ESP8266
-	void handleFileList() {
-	  if(!server->hasArg("dir")) {
-	    returnFail("BAD ARGS Dir is missed in params");
-	    return;
-	  }
-
-	  String path = server->arg("dir");
-	  Serial.println("handleFileList: " + path);
-	  Dir dir = SPIFFS.openDir(path);
-	  path = String();
-
-	  String output = "[";
-	  while(dir.next()){
-	    File entry = dir.openFile("r");
-	    if (output != "[") output += ',';
-	    bool isDir = false;
-	    output += "{\"type\":\"";
-	    output += (isDir)?"dir":"file";
-	    output += "\",\"name\":\"";
-	    output += String(entry.name()).substring(1);
-	    output += "\"}";
-	    entry.close();
-	  }
-
-	  output += "]";
-	  server->send(200, "text/json", output);
-	}
-	#else
-	void handleFileList() {
-	  if(!server.hasArg("dir")) {
-	    returnFail("BAD ARGS");
-	    return;
-	  }
-	  String path = server.arg("dir");
-	  if(path != "/" && !SPIFFS.exists((char *)path.c_str())) {
-	    returnFail("BAD PATH");
-	    return;
-	  }
-	  File dir = SPIFFS.open((char *)path.c_str());
-	  path = String();
-	  if(!dir.isDirectory()){
-	    dir.close();
-	    returnFail("NOT DIR");
-	    return;
-	  }
-	  dir.rewindDirectory();
-
-	  String output = "[";
-	  for (int cnt = 0; true; ++cnt) {
-	    File entry = dir.openNextFile();
-	    if (!entry)
-	    break;
-
-	    if (cnt > 0)
-	      output += ',';
-
-	    output += "{\"type\":\"";
-	    output += (entry.isDirectory()) ? "dir" : "file";
-	    output += "\",\"name\":\"";
-	    // Ignore '/' prefix
-	    output += entry.name()+1;
-	    output += "\"";
-	    output += "}";
-	    entry.close();
-	  }
-	  output += "]";
-	  server.send(200, "text/json", output);
-	  dir.close();
-	}
-
-	void listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
-	  DBG_OUTPUT_PORT.printf("Listing directory: %s\n", dirname);
-
-	  File root = fs.open(dirname);
-	  if (!root) {
-	    DBG_OUTPUT_PORT.println("Failed to open directory");
-	    return;
-	  }
-	  if (!root.isDirectory()) {
-	    DBG_OUTPUT_PORT.println("Not a directory");
-	    return;
-	  }
-
-	  File file = root.openNextFile();
-	  while (file) {
-	    if (file.isDirectory()) {
-	      DBG_OUTPUT_PORT.print("  DIR : ");
-	      DBG_OUTPUT_PORT.println(file.name());
-	      if (levels) {
-	        listDir(fs, file.name(), levels - 1);
-	      }
-	    } else {
-	      DBG_OUTPUT_PORT.print("  FILE: ");
-	      DBG_OUTPUT_PORT.print(file.name());
-	      DBG_OUTPUT_PORT.print("  SIZE: ");
-	      DBG_OUTPUT_PORT.println(file.size());
-	    }
-	    file = root.openNextFile();
-	  }
-	}
-	#endif
-
-	//end fileManager
 
 	//-----------------------------------------------------------------------
 	void initStaticPagesInWebFolder(){
@@ -498,6 +282,7 @@ public:
 		Serial.print("espSettingsBox.password=");
 		Serial.println(espSettingsBox->password);
 
+		WiFi.disconnect(0);
 		WiFi.mode(WIFI_STA);
 
 		if(espSettingsBox->staticIp){
@@ -523,11 +308,20 @@ public:
 	}
 
 	void connectToWiFiIfNotConnected(){
-		while(!isWiFIConnected()){
+		uint8_t count=0;
+		while(!isWiFIConnected() ){
 			if(signalPin!=nullptr)
 				signalPin->changeAndDelay(250);
-			displayDetails();
+			if(count==10){
+				displayDetails();
+				count=0;
+			}else{
+				Serial.print(".");
+				count++;
+			}
+			//
 		}
+		Serial.println();
 	}
 
 	String displayDetails(){
@@ -550,7 +344,10 @@ public:
 		        case WL_IDLE_STATUS:
 		        	statusStr="WL_IDLE_STATUS";
 		        	break;
-		        default:
+		        case WL_SCAN_COMPLETED:
+					statusStr="WL_SCAN_COMPLETED";
+					break;
+				default:
 		        	statusStr="WL_DISCONNECTED";
 		}
 		Serial.print("Status=");
@@ -589,6 +386,266 @@ public:
 	boolean displayLine(String str,int row,int col){
 		return displayHelper->addStringToDisplay(str, row, col, name);
 	}
+
+	//---------------------------------------------------------------------
+		//fileManager section
+		void initFileManager(){
+
+			/*
+			 * Uploading html, css, javascript, etc.
+			 * Use curl to upload the files from the SPIFFS data directory.
+			 *  cd data/
+			 *  curl -X POST -F "data=@index.htm"     http://<ESP32 IP address>/edit >/dev/null
+			 *  curl -X POST -F "data=@graphs.js.gz"  http://<ESP32 IP address>/edit >/dev/null
+			 *  curl -X POST -F "data=@favicon.ico"   http://<ESP32 IP address>/edit >/dev/null
+			 *  curl -X POST -F "data=@edit.htm.gz"   http://<ESP32 IP address>/edit >/dev/null
+			 */
+			Serial.println("Deploying Filemanager /edit");
+			Serial.println("-----------------------------------");
+			#ifdef ESP8266
+				Dir dir = SPIFFS.openDir("/");
+				while (dir.next()) {
+				  String fileName = dir.fileName();
+				  size_t fileSize = dir.fileSize();
+				  Serial.printf("FS File: %s, size: %s\n", fileName.c_str(), formatBytes(fileSize).c_str());
+				}
+			#else
+				listDir(SPIFFS, "/", 0);
+			#endif
+
+			server->on("/list", HTTP_GET, [this](){handleFileList();});
+			//load editor
+			server->on("/edit", HTTP_GET, [this](){
+			if(!handleFileRead("/edit.htm")) server->send(404, "text/plain", "FileNotFound");
+			});
+			//create file
+			server->on("/edit", HTTP_PUT, [this](){handleFileCreate();});
+			//delete file
+			server->on("/edit", HTTP_DELETE, [this](){handleFileDelete();});
+			//first callback is called after the request has ended with all parsed arguments
+			//second callback handles file uploads at that location
+			server->on("/edit", HTTP_POST, [this](){ server->send(200, "text/plain", ""); }, [this](){handleFileUpload();});
+
+			  //get heap status, analog input value and all GPIO statuses in one json call
+			  server->on("/all", HTTP_GET, [this](){
+			    String json = "{";
+			    json += "\"heap\":"+String(ESP.getFreeHeap());
+			    json += ", \"analog\":"+String(analogRead(A0));
+			#ifdef ESP8266
+			    json += ", \"gpio\":"+String((uint32_t)(((GPI | GPO) & 0xFFFF) | ((GP16I & 0x01) << 16)));
+			#endif
+			    json += "}";
+			    server->send(200, "text/json", json);
+			    json = String();
+			  });
+
+			  Serial.println("HTTP server started");
+		}
+
+		String formatBytes(size_t bytes){
+		  if (bytes < 1024){
+		    return String(bytes)+"B";
+		  } else if(bytes < (1024 * 1024)){
+		    return String(bytes/1024.0)+"KB";
+		  } else if(bytes < (1024 * 1024 * 1024)){
+		    return String(bytes/1024.0/1024.0)+"MB";
+		  } else {
+		    return String(bytes/1024.0/1024.0/1024.0)+"GB";
+		  }
+		}
+
+		String getContentType(String filename){
+		  if(server->hasArg("download")) return "application/octet-stream";
+		  else if(filename.endsWith(".htm")) return "text/html";
+		  else if(filename.endsWith(".html")) return "text/html";
+		  else if(filename.endsWith(".css")) return "text/css";
+		  else if(filename.endsWith(".js")) return "application/javascript";
+		  else if(filename.endsWith(".png")) return "image/png";
+		  else if(filename.endsWith(".gif")) return "image/gif";
+		  else if(filename.endsWith(".jpg")) return "image/jpeg";
+		  else if(filename.endsWith(".ico")) return "image/x-icon";
+		  else if(filename.endsWith(".xml")) return "text/xml";
+		  else if(filename.endsWith(".pdf")) return "application/x-pdf";
+		  else if(filename.endsWith(".zip")) return "application/x-zip";
+		  else if(filename.endsWith(".gz")) return "application/x-gzip";
+		  return "text/plain";
+		}
+
+		bool handleFileRead(String path){
+		  Serial.println("handleFileRead: " + path);
+		  if(path.endsWith("/")) path += "index.htm";
+		  String contentType = getContentType(path);
+		  String pathWithGz = path + ".gz";
+		  if(SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)){
+		    if(SPIFFS.exists(pathWithGz))
+		      path += ".gz";
+		    File file = SPIFFS.open(path, "r");
+		    size_t sent = server->streamFile(file, contentType);
+		    file.close();
+		    return true;
+		  }
+		  return false;
+		}
+
+		void handleFileUpload(){
+		  if(server->uri() != "/edit") return;
+		  HTTPUpload& upload = server->upload();
+		  if(upload.status == UPLOAD_FILE_START){
+		    String filename = upload.filename;
+		    if(!filename.startsWith("/")) filename = "/"+filename;
+		    Serial.print("handleFileUpload Name: "); Serial.println(filename);
+		    fsUploadFile = SPIFFS.open(filename, "w");
+		    filename = String();
+		  } else if(upload.status == UPLOAD_FILE_WRITE){
+		    //DBG_OUTPUT_PORT.print("handleFileUpload Data: "); DBG_OUTPUT_PORT.println(upload.currentSize);
+		    if(fsUploadFile)
+		      fsUploadFile.write(upload.buf, upload.currentSize);
+		  } else if(upload.status == UPLOAD_FILE_END){
+		    if(fsUploadFile)
+		      fsUploadFile.close();
+		    Serial.print("handleFileUpload Size: "); Serial.println(upload.totalSize);
+		  }
+		}
+
+		void handleFileDelete(){
+		  if(server->args() == 0) return server->send(500, "text/plain", "BAD ARGS");
+		  String path = server->arg(0);
+		  Serial.println("handleFileDelete: " + path);
+		  if(path == "/")
+		    return server->send(500, "text/plain", "BAD PATH");
+		  if(!SPIFFS.exists(path))
+		    return server->send(404, "text/plain", "FileNotFound");
+		  SPIFFS.remove(path);
+		  server->send(200, "text/plain", "");
+		  path = String();
+		}
+
+		void handleFileCreate(){
+		  if(server->args() == 0)
+		    return server->send(500, "text/plain", "BAD ARGS");
+		  String path = server->arg(0);
+		  Serial.println("handleFileCreate: " + path);
+		  if(path == "/")
+		    return server->send(500, "text/plain", "BAD PATH");
+		  if(SPIFFS.exists(path))
+		    return server->send(500, "text/plain", "FILE EXISTS");
+		  File file = SPIFFS.open(path, "w");
+		  if(file)
+		    file.close();
+		  else
+		    return server->send(500, "text/plain", "CREATE FAILED");
+		  server->send(200, "text/plain", "");
+		  path = String();
+		}
+
+		void returnFail(String msg) {
+		  server->send(500, "text/plain", msg + "\r\n");
+		}
+
+		#ifdef ESP8266
+		void handleFileList() {
+		  if(!server->hasArg("dir")) {
+		    returnFail("BAD ARGS Dir is missed in params");
+		    return;
+		  }
+
+		  String path = server->arg("dir");
+		  Serial.println("handleFileList: " + path);
+		  Dir dir = SPIFFS.openDir(path);
+		  path = String();
+
+		  String output = "[";
+		  while(dir.next()){
+		    File entry = dir.openFile("r");
+		    if (output != "[") output += ',';
+		    bool isDir = false;
+		    output += "{\"type\":\"";
+		    output += (isDir)?"dir":"file";
+		    output += "\",\"name\":\"";
+		    output += String(entry.name()).substring(1);
+		    output += "\"}";
+		    entry.close();
+		  }
+
+		  output += "]";
+		  server->send(200, "text/json", output);
+		}
+		#else
+		void handleFileList() {
+		  if(!server.hasArg("dir")) {
+		    returnFail("BAD ARGS");
+		    return;
+		  }
+		  String path = server.arg("dir");
+		  if(path != "/" && !SPIFFS.exists((char *)path.c_str())) {
+		    returnFail("BAD PATH");
+		    return;
+		  }
+		  File dir = SPIFFS.open((char *)path.c_str());
+		  path = String();
+		  if(!dir.isDirectory()){
+		    dir.close();
+		    returnFail("NOT DIR");
+		    return;
+		  }
+		  dir.rewindDirectory();
+
+		  String output = "[";
+		  for (int cnt = 0; true; ++cnt) {
+		    File entry = dir.openNextFile();
+		    if (!entry)
+		    break;
+
+		    if (cnt > 0)
+		      output += ',';
+
+		    output += "{\"type\":\"";
+		    output += (entry.isDirectory()) ? "dir" : "file";
+		    output += "\",\"name\":\"";
+		    // Ignore '/' prefix
+		    output += entry.name()+1;
+		    output += "\"";
+		    output += "}";
+		    entry.close();
+		  }
+		  output += "]";
+		  server.send(200, "text/json", output);
+		  dir.close();
+		}
+
+		void listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
+		  DBG_OUTPUT_PORT.printf("Listing directory: %s\n", dirname);
+
+		  File root = fs.open(dirname);
+		  if (!root) {
+		    DBG_OUTPUT_PORT.println("Failed to open directory");
+		    return;
+		  }
+		  if (!root.isDirectory()) {
+		    DBG_OUTPUT_PORT.println("Not a directory");
+		    return;
+		  }
+
+		  File file = root.openNextFile();
+		  while (file) {
+		    if (file.isDirectory()) {
+		      DBG_OUTPUT_PORT.print("  DIR : ");
+		      DBG_OUTPUT_PORT.println(file.name());
+		      if (levels) {
+		        listDir(fs, file.name(), levels - 1);
+		      }
+		    } else {
+		      DBG_OUTPUT_PORT.print("  FILE: ");
+		      DBG_OUTPUT_PORT.print(file.name());
+		      DBG_OUTPUT_PORT.print("  SIZE: ");
+		      DBG_OUTPUT_PORT.println(file.size());
+		    }
+		    file = root.openNextFile();
+		  }
+		}
+		#endif
+
+		//end fileManager
 
 
 

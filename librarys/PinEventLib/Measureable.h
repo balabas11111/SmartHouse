@@ -1,7 +1,7 @@
 /*
  * Measureable.h
  *
- *  Created on: 14 окт. 2018 г.
+ *  Created on: 14 пїЅпїЅпїЅ. 2018 пїЅ.
  *      Author: Vitaliy
  */
 

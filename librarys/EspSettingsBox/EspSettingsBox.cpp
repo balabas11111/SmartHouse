@@ -166,6 +166,11 @@ JsonObject& EspSettingsBox::getSettingsFromMemory(boolean doSave){
 	root["webDefPage"]=webDefPage;
 	root["webDepExt"]=webDepExt;
 
+	root["NTP_poolServerName"]=NTP_poolServerName;
+	root["NTP_timeOffset"]=NTP_timeOffset;
+	root["NTP_timeTriggerInterval"]=NTP_timeTriggerInterval;
+	root["NTP_updateInterval"]=NTP_updateInterval;
+
 
 	Serial.println("-----------------Settings from memory-------");
 	String vals="";
@@ -249,6 +254,11 @@ boolean EspSettingsBox::putSettingsToMemory(JsonObject& root){
 	webRoot=root["webRoot"].as<char*>();
 	webDefPage=root["webDefPage"].as<char*>();
 	webDepExt=root["webDepExt"].as<char*>();
+
+	NTP_poolServerName=root["NTP_poolServerName"].as<char*>();
+	NTP_timeOffset=root["NTP_timeOffset"];
+	NTP_timeTriggerInterval=root["NTP_timeTriggerInterval"];
+	NTP_updateInterval=root["NTP_updateInterval"];
 
 	Serial.println("-----------------Settings loaded to memory-------");
 	String vals="";

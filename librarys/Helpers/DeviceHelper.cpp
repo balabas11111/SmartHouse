@@ -1,11 +1,12 @@
 /*
  * Looper.cpp
  *
- *  Created on: 13 окт. 2018 г.
+ *  Created on: 13 пїЅпїЅпїЅ. 2018 пїЅ.
  *      Author: Vitaliy
  */
 
 #include <DeviceHelper.h>
+#include "ESP_Consts.h"
 
 DeviceHelper::DeviceHelper(Loopable** _loopItems,uint8_t _loopItemsSize){
 	loopItems=_loopItems;
@@ -16,20 +17,18 @@ DeviceHelper::DeviceHelper(Loopable** _loopItems,uint8_t _loopItemsSize){
 }
 
 String DeviceHelper::displayDetails(){
-	Serial.println("----------------------");
+	Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_LOOPERS));
 
-	String result="DeviceHelper loop size="+String(loopItemsSize);
+	Serial.print(FPSTR(MESSAGE_DEVICE_HELPER_LOOP_SIZE));
+	Serial.println(loopItemsSize);
 
-	Serial.println(result);
-
-	Serial.println();
 	for(uint8_t i=0;i<loopItemsSize;i++){
 		loopItems[i]->displayDetails();
 	}
 
-	Serial.println("----------------------");
+	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
-	return result;
+	return "";
 }
 
 
@@ -37,7 +36,7 @@ boolean DeviceHelper::loop(){
 	boolean result=false;
 
 	for(uint8_t i=0;i<loopItemsSize;i++){
-		result=result || loopItems[i]->loop();
+		result=result | loopItems[i]->loop();
 	}
 	#ifdef DISPLAY_LOOPS
 		Serial.println("DeviceHelper loop="+String(result));
@@ -48,16 +47,16 @@ boolean DeviceHelper::loop(){
 
 void DeviceHelper::startDevice(String deviceId){
   Serial.begin(115200);
-  delay(100);
+  yield();
 
-  Serial.println("-------------Device helper-----------");
-  Serial.println("Start DeviceId="+deviceId);
-  Serial.println("-------------------------------------");
+  Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_STARTED));
+  Serial.print(FPSTR(MESSAGE_DEVICE_START_DEVICE_ID));Serial.println(deviceId);
+  Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
 
 boolean DeviceHelper::init(Initializable** initItems,uint8_t initItemsSize){
-	Serial.println("-------------Device helper-----------");
-	Serial.println("Init started count="+String(initItemsSize));
+	Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_INITIALIZING));
+	Serial.print(FPSTR(MESSAGE_DEVICE_INIT_STARTED_COUNT));Serial.println(initItemsSize);
 	uint8_t initOk=0;
 
 	for(uint8_t i=0;i<initItemsSize;i++){
@@ -67,21 +66,22 @@ boolean DeviceHelper::init(Initializable** initItems,uint8_t initItemsSize){
 		}
 	}
 
-	Serial.println("Initialized count="+String(initOk));
-	Serial.println("-------------Device helper COMPLETE-----------");
+	Serial.print(FPSTR(MESSAGE_DEVICE_INIT_COUNT));Serial.println(initOk);
+	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 	displayDetails();
 
 	return initOk==initItemsSize;
 }
 
 void DeviceHelper::printDeviceDiagnostic(){
-	Serial.println("--------------Device diagnostic-------------------");
-	Serial.println("FreeHeap="+String(ESP.getFreeHeap()));
-	Serial.println("CpuFreqMHz="+String(ESP.getCpuFreqMHz()));
-	Serial.println("FlashChipSize="+String(ESP.getFlashChipSize()));
-	Serial.println("FreeSketchSpace="+String(ESP.getFreeSketchSpace()));
-	Serial.println("ResetReason="+String(ESP.getResetReason()));
-	Serial.println("--------------------------------------------------");
+	yield();
+	Serial.println(FPSTR(MESSAGE_DEVICE_DIAGNOSTIC_BEGIN));
+	Serial.print(FPSTR(MESSAGE_DEVICE_FREE_HEAP));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(ESP.getFreeHeap());Serial.print(FPSTR(MESSAGE_DOT_COMMA));
+	Serial.print(FPSTR(MESSAGE_DEVICE_CPU_MHZ));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(ESP.getCpuFreqMHz());Serial.print(FPSTR(MESSAGE_DOT_COMMA));
+	Serial.print(FPSTR(MESSAGE_DEVICE_FLASH_CHIP_SIZE));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(ESP.getFlashChipSize());Serial.print(FPSTR(MESSAGE_DOT_COMMA));
+	Serial.print(FPSTR(MESSAGE_DEVICE_FREE_SCETCH_SPACE));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(ESP.getFreeSketchSpace());Serial.print(FPSTR(MESSAGE_DOT_COMMA));
+	Serial.print(FPSTR(MESSAGE_DEVICE_RESET_REASON));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(ESP.getResetReason());Serial.println(FPSTR(MESSAGE_DOT_COMMA));
+	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
 
 

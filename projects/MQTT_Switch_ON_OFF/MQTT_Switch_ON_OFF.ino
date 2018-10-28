@@ -19,18 +19,20 @@
 #include "PinEvent.h"
 #include "TimeTrigger.h"
 #include "PinExternalFuncUint16t.h"
-
+#include <NtpTimeClientService.h>
 #include <BME280_Measurer.h>
 #include <BH1750_Measurer.h>
 #include <DeviceHelper.h>
 #include "ConfigStorage.h"
 #include "ConfigStorageWidget.h"
 #include "PinDigitalWidget.h"
-
+#include "EspSettingsBoxWidget.h"
 #include "PirDetector.h"
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
+
+#define DISPLAY_LOOPS 1
 
 #define FIRMVARE_VERSION "b@l@bas-soft ONOFF v0.0.5"
 
@@ -57,9 +59,8 @@ const int sensorsInterval=60000;
 
 WiFiClient wclient;
 ESP8266WebServer server ( 80 );
-//WebSocketsServer webSocket = WebSocketsServer(81);
+WebSocketsServer webSocket = WebSocketsServer(8081);
 
-ConfigStorage configStorage;
 EspSettingsBox espSettingsBox("/settings.txt","",true,true);
 
 I2Chelper i2cHelper(D1_PIN,D2_PIN,false);
@@ -67,7 +68,7 @@ DisplayHelper displayHelper(true);
 
 String subscribeTopics[]={"topic/ESP8266Topic","topic/SwitchLeft","topic/SwitchRight"};
 
-//TimeTrigger sensorsTrigger(0,sensorsInterval,false,[](){Serial.println(getWidgetsHtlm())});
+TimeTrigger sensorsTrigger(0,sensorsInterval,true,measureSensors);
 
 PinDigital buttonLeft(VAR_NAME(buttonLeft),D7_PIN,processEvent,onLeftButtonChanged);
 PinDigital buttonRight(VAR_NAME(buttonRight),D6_PIN,processEvent,onRightButtonChanged);
@@ -79,12 +80,16 @@ PinDigital lampRight(VAR_NAME(lampRight),D8_PIN,OUTPUT,processEvent,CHANGE,HIGH)
 
 PirDetector pirDetector(D3_PIN,&signalLed,processEvent,nullptr);
 
-BME280_Measurer bmeMeasurer("0",VAR_NAME(bmeMeasurer));
-BH1750_Measurer luxMeasurer("1",VAR_NAME(luxMeasurer));
+NtpTimeClientService timeClient(&espSettingsBox,processTimeClientEvent);
 
-ConfigStorageWidget configStorageWidget(&configStorage,VAR_NAME(configStorageWidget));
-PinDigitalWidget lampLeftWidget(&lampLeft,"./img/OnLamp.png","./img/OnLamp.png");
-PinDigitalWidget lampRightWidget(&lampRight,"./img/OnLamp.png","./img/OnLamp.png");
+EspSettingsBoxWidget espSettingsBoxWidget("0",&
+		espSettingsBox,VAR_NAME(espSettingsBox));
+BME280_Measurer bmeMeasurer("1",VAR_NAME(bmeMeasurer));
+BH1750_Measurer luxMeasurer("2",VAR_NAME(luxMeasurer));
+
+PinDigitalWidget lampLeftWidget("3",&lampLeft,"./img/OnLamp.png","./img/OffLamp.png");
+PinDigitalWidget lampRightWidget("4",&lampRight,"./img/OnLamp.png","./img/OffLamp.png");
+
 
 PinEventProcessor *eventProcessors[]={&lampLeft,&lampRight,
 												&buttonLeft,&buttonRight,
@@ -93,64 +98,40 @@ PinEventProcessor *eventProcessors[]={&lampLeft,&lampRight,
 WiFiHelper wifiHelper("WiFiHelper",&espSettingsBox, &displayHelper, &signalLed,	&server,
 		postInitWebServer,false, handleHttpWidget, processEvent);
 
-//MqttHelper mqttHelper(&configStorage,&espSettingsBox,subscribeTopics,ARRAY_SIZE(subscribeTopics),wclient,eventProcessors,ARRAY_SIZE(eventProcessors),processMqttEvent);
+MqttHelper mqttHelper(&espSettingsBox,subscribeTopics,ARRAY_SIZE(subscribeTopics),wclient,eventProcessors,ARRAY_SIZE(eventProcessors),processMqttEvent);
+WebSocketsHelper webSocketHelper(&webSocket,webSocketEvent);
 
-//WebSocketsHelper webSocketHelper(&webSocket,webSocketEvent);
+Loopable* loopArray[]={&wifiHelper,&webSocketHelper,&sensorsTrigger,&timeClient,&buttonLeft,&buttonRight,&lampLeft,&lampRight};
 
-Loopable* loopArray[]={&buttonLeft,&buttonRight,
-							&lampLeft,&lampRight,&wifiHelper/*,&mqttHelper*/};
-Initializable* initializeArray[]={&configStorage,&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer};
+Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&webSocketHelper,&timeClient,&i2cHelper,&bmeMeasurer,&luxMeasurer};
 
-HtmlWidget* widgetsArray[]={&bmeMeasurer,&luxMeasurer,&configStorageWidget,&lampLeftWidget,&lampRightWidget};
+HtmlWidget* widgetsArray[]={&espSettingsBoxWidget,&bmeMeasurer,&luxMeasurer,&lampLeftWidget,&lampRightWidget};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray));
 
-
 void setup() {
   deviceHelper.startDevice(espSettingsBox.DeviceId);
-
   deviceHelper.printDeviceDiagnostic();
 
   espSettingsBox.printSettingsFile();
   espSettingsBox.printSpiffsInfo();
-/*
-  deviceHelper.printDeviceDiagnostic();
 
-  espSettingsBox.webDefPage="/web/index.htm";
-  espSettingsBox.webDepExt="html,htm,js,css,jpeg,png,jpg,bmp";
-  espSettingsBox.webRoot="/web/";
-
-  Serial.println("webDefPage="+espSettingsBox.webDefPage);
-  Serial.println("webDepExt="+espSettingsBox.webDepExt);
-  Serial.println("webRoot="+espSettingsBox.webRoot);
-
-  espSettingsBox.getSettingsFromMemory(false);
-  Serial.println("------------------------");
-
-  String str="";
-  (espSettingsBox.getSettingsFromMemory(false)).printTo(str);
-
-  Serial.println("str="+str);
-  Serial.println("------------------------");
-  deviceHelper.printDeviceDiagnostic();
-  (espSettingsBox.getSettingsFromMemory(true));
-  deviceHelper.printDeviceDiagnostic();
-  //espSettingsBox.saveSettingsJson();
-  espSettingsBox.loadSettingsJson();
-  deviceHelper.printDeviceDiagnostic();
-  Serial.println("sid="+espSettingsBox.getParamVal("sid"));
-  deviceHelper.printDeviceDiagnostic();
-  espSettingsBox.loadSettingsJson();
-  deviceHelper.printDeviceDiagnostic();
-  espSettingsBox.getSettingsFromMemory(false);
-  deviceHelper.printDeviceDiagnostic();
-  */
   deviceHelper.init(initializeArray, ARRAY_SIZE(initializeArray));
   deviceHelper.printDeviceDiagnostic();
+  deviceHelper.displayDetails();
 }
 
 void loop() {
- deviceHelper.loop();
+	deviceHelper.loop();
+/*
+	webSocketHelper.loop();
+	sensorsTrigger.loop();
+
+	buttonLeft.loop();
+	buttonRight.loop();
+	lampLeft.loop();
+	lampRight.loop();
+	*/
 }
 
 void postInitWebServer(){
@@ -165,64 +146,73 @@ void postInitWebServer(){
 }
 
 void handleHttpWidget(){
-
-	if(!server.hasArg(FPSTR(PARAM_ACTION_ID))
-			||!server.hasArg(FPSTR(PARAM_REMOTE_ID))
-			||!server.hasArg(FPSTR(PARAM_REMOTE_VAL))
-			||!server.hasArg(FPSTR(PARAM_CLASS_NAME))
-			||!server.hasArg(FPSTR(PARAM_CHILD_CLASS))
-			||!server.hasArg(FPSTR(PARAM_CLIENT_DATA))){
-
-		server.send(400, "text/html", "Miss one of params "
-				+String(FPSTR(PARAM_ACTION_ID))
-				+String(FPSTR(PARAM_REMOTE_ID))
-				+String(FPSTR(PARAM_REMOTE_VAL))
-				+String(FPSTR(PARAM_CLASS_NAME))
-				+String(FPSTR(PARAM_CHILD_CLASS))
-				+String(FPSTR(PARAM_CLIENT_DATA)));
-	}
-
-	if(server.arg(FPSTR(PARAM_ACTION_ID)).equals("")
-				||server.arg(FPSTR(PARAM_REMOTE_ID)).equals("")
-				||server.arg(FPSTR(PARAM_CLASS_NAME)).equals("")
-				){
-
-			server.send(400, "text/html", "Empty one of params "
-					+String(FPSTR(PARAM_ACTION_ID))
-					+String(FPSTR(PARAM_REMOTE_ID))
-					+String(FPSTR(PARAM_CLASS_NAME))
-					);
-		}
-	String actionName=server.arg(FPSTR(PARAM_ACTION_ID));
-	String remoteId=server.arg(FPSTR(PARAM_REMOTE_ID));
-	String remoteVal=server.arg(FPSTR(PARAM_REMOTE_VAL));
-	String className=server.arg(FPSTR(PARAM_CLASS_NAME));
-	String childClass=server.arg(FPSTR(PARAM_CHILD_CLASS));
-	String clientData=server.arg(FPSTR(PARAM_CLIENT_DATA));
+	//http://192.168.0.100/handleHttpWidget?actionName=getAllWidgetsJson&widgetName=SENS_2252482
+	//http://192.168.0.100/handleHttpWidget?actionName=getWidgetJson&widgetName=bmeMeasurer
+	deviceHelper.printDeviceDiagnostic();
 
 	int16_t index=-1;
 
+	if(server.arg(FPSTR(PARAM_ACTION_ID))==FPSTR(ACTION_GET_ALL_WIDGET_JSON)
+			&& server.arg(FPSTR(PARAM_REMOTE_ID))==espSettingsBox.DeviceId
+			){
+		//Serial.println("Processing ACTION_GET_ALL_WIDGET_JSON '"+espSettingsBox.DeviceId+"'");
+
+		String result=
+				"{\"m.id\":\""+espSettingsBox.DeviceId+"\",\"m.name\":\""+espSettingsBox.DeviceLocation+"\",\"m.val\":\""+espSettingsBox.DeviceId+"\",\"m.kind\":\""+espSettingsBox.DeviceKind+"\",\"m.descr\":\""+espSettingsBox.DeviceDescription+"\",\"itemsCount\":"+String(ARRAY_SIZE(widgetsArray))+",\"time\":\""+String(millis())+"\",\
+						\"items\":[";
+		uint8_t size=ARRAY_SIZE(widgetsArray);
+		for(uint8_t i=0;i<size;i++){
+			result+=widgetsArray[i]->executeClientAction(FPSTR(ACTION_GET_WIDGET_JSON), "", "", "", "", "");
+			if(i!=size-1){
+				result+=",";
+			}
+		}
+
+		result+="]}";
+
+		server.send(200, "text/html", result);
+		//delete &result;
+		return;
+	}
+
 	for(uint8_t i=0;i<ARRAY_SIZE(widgetsArray);i++){
-		if(widgetsArray[i]->isTargetOfAction(actionName, remoteId, remoteVal, className, childClass, clientData)){
+		//if(widgetsArray[i]->isTargetOfAction(actionName, remoteId, remoteVal, className, childClass, clientData)){
+		if(widgetsArray[i]->getName()==server.arg(FPSTR(PARAM_REMOTE_ID))){
 			index=i;
 			break;
 		}
 	}
 
 	if(index!=-1){
-		server.send(200, "text/html",
-			widgetsArray[index]->
-			executeClientAction(actionName, remoteId, remoteVal, className, childClass, clientData)
-			);
+		String result=widgetsArray[index]->executeClientAction(
+						server.arg(FPSTR(PARAM_ACTION_ID)),
+						server.arg(FPSTR(PARAM_REMOTE_ID)),
+						server.arg(FPSTR(PARAM_REMOTE_VAL)),
+						server.arg(FPSTR(PARAM_CLASS_NAME)),
+						server.arg(FPSTR(PARAM_CHILD_CLASS)),
+						server.arg(FPSTR(PARAM_CLIENT_DATA)));
+		//Serial.print("result=");
+		//Serial.println(result);
+
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), result);
+		return;
 	}
 
-	server.send(404, "text/html", "Виджет "+remoteId+" не найден");
+	server.send(404, FPSTR(CONTENT_TYPE_TEXT_HTML), FPSTR(MESSAGE_STATUS_JSON_WIDGET_NOT_FOUND));
 }
 
 //--------------------------websockets----------------
 void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length){
+  //Serial.println("num="+String(num)+" type="+String(type)+" length="+String(length));
+	Serial.println("-----------Web socket event-----");
+  if(type==WStype_CONNECTED){
+	  Serial.println("Connected");
+  }
+  if(type==WStype_DISCONNECTED){
+  	  Serial.println("Disconnected");
+    }
+
   if (type == WStype_TEXT){
-   Serial.println("-----------Web socket event-----");
    Serial.print("num=");Serial.print(num);
    Serial.print("type=");Serial.print(type);
    Serial.print("length=");Serial.print(length);
@@ -235,12 +225,12 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length
 //---------------------------------------------------------------------
 //button handling
 PinEvent onLeftButtonChanged(PinEvent event){
-	//webSocketHelper.sendMessageToAll(lampLeftWidget.getWsText());
+	Serial.println("Left button changed");
 	return lampLeft.constructPinEventSetState(event);
 }
 
 PinEvent onRightButtonChanged(PinEvent event){
-	//webSocketHelper.sendMessageToAll(lampRightWidget.getWsText());
+	Serial.println("right button changed");
 	return lampRight.constructPinEventSetState(event);
 }
 //---------------------------------------------------------------------
@@ -262,16 +252,110 @@ PinEvent onRightButtonChanged(PinEvent event){
 	*/
 
 PinEvent processEvent(PinEvent event){
-		if(!event.isValid() || !event.isNotEmpty()){
+	//Serial.println("processEvent handled "+event.getText());
+	if(!event.isValid() || !event.isNotEmpty()){
 		return PinEvent();
 	}
 
-	//return mqttHelper.processEvent(event);
-	return PinEvent();
+	if(lampLeft.isDispatcherOfEvent(event) && event.getKind()==PIN_EVENT_STATE_UPDATED){
+		webSocketHelper.sendMessageToAll(lampLeftWidget.getWsText());
+	}
+
+	if(lampRight.isDispatcherOfEvent(event) && event.getKind()==PIN_EVENT_STATE_UPDATED){
+		webSocketHelper.sendMessageToAll(lampRightWidget.getWsText());
+	}
+
+	deviceHelper.printDeviceDiagnostic();
+
+	return mqttHelper.processEvent(event);
+}
+
+void measureSensors(){
+	Serial.println("---Measure sensors---");
+	bmeMeasurer.measure();
+	luxMeasurer.measure();
+
+	webSocketHelper.sendMessageToAll(bmeMeasurer.getWsText());
+	webSocketHelper.sendMessageToAll(luxMeasurer.getWsText());
+
+	deviceHelper.printDeviceDiagnostic();
 }
 
 void processMqttEvent(String topic,String message){
 	Serial.println("Base process processMqttEvent topic="+topic+" message="+message);
 }
 
+void processTimeClientEvent(){
+	Serial.print("--");
+	Serial.print(timeClient.displayDetails());
+	Serial.println("--");
+	webSocketHelper.sendMessageToAll(timeClient.getCurrentTimeAsString(":"));
+}
+
 //---------------------------------------------------
+//----------------NTP clock section-----------------------
+/*
+const char* poolServerName="europe.pool.ntp.org";
+int timeOffset=7200;
+int updateInterval=120000;
+
+int timeTriggerInterval=30000;
+
+uint8_t currentTime[6] = {0x00,0x00,0x00,0x00,0x00,0x00};
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, poolServerName, timeOffset, updateInterval);
+
+TimeTrigger timeClientTrigger(0,sensorsInterval,false,processTimeClient);
+
+void initTimeClient(){
+	timeClient.begin();
+	timeClientTrigger.init();
+}
+
+void loopTimeClient(){
+	timeClient.update();
+	timeClientTrigger.loop();
+}
+
+void processTimeClient(){
+	boolean update=false;
+	uint8_t h=timeClient.getHours();
+	uint8_t m=timeClient.getMinutes();
+	uint8_t s=timeClient.getSeconds();
+
+	uint8_t tmp[6] = {0x00,0x00,0x00,0x00,0x00,0x00};
+
+	tmp[0] = h / 10;
+	tmp[1] = h % 10;
+	tmp[2] = m / 10;
+	tmp[3] = m % 10;
+	tmp[4] = s / 10;
+	tmp[5] = s % 10;
+
+	for(uint8_t i=0;i<5;i++){
+		if(tmp[i]!=currentTime[i]){
+			update=true;
+			currentTime[i]!=tmp[i];
+		}
+	}
+
+	if(update){
+		executeTimeClientExternalFunction();
+	}
+}
+
+void executeTimeClientExternalFunction(){
+	Serial.print("--");
+	Serial.print(currentTime[0]);
+	Serial.print(currentTime[1]);
+	Serial.print(":");
+	Serial.print(currentTime[2]);
+	Serial.print(currentTime[3]);
+	Serial.print(":");
+	Serial.print(currentTime[4]);
+	Serial.print(currentTime[5]);
+	Serial.println("--");
+}
+*/
+//--------------------------------------------------------

@@ -23,6 +23,9 @@ public:
 
 	virtual boolean initialize(boolean _init){
 		if(_init){
+
+			Serial.println("init webSocket");
+
 			webSocket->begin();
 			webSocket->onEvent([this](uint8_t num, WStype_t type, uint8_t * payload, size_t length){
 				if(funcEvent!=nullptr)
@@ -35,6 +38,7 @@ public:
 	};
 
 	virtual boolean loop(){
+		//Serial.println("WebSOcket loop");
 		webSocket->loop();
 		return initialized;
 	}
@@ -56,7 +60,7 @@ public:
 
 	boolean sendMessageToAll(String message){
 		Serial.print("sendMessages ");
-		Serial.print(message);
+		Serial.println(message);
 		return webSocket->broadcastTXT(message);
 	}
 

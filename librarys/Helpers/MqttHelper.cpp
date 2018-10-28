@@ -8,7 +8,7 @@
 
 #define BUFFER_SIZE 100
 
-MqttHelper::MqttHelper(ConfigStorage *_configStorage,EspSettingsBox *_settingsBox,String* _subscribeTopics,uint8_t _topicCount,Client& _client,PinEventProcessor *_eventProcessors[],uint8_t _procSize,std::function<void(String topic,String message)> _externalCallbackFunction){
+MqttHelper::MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,uint8_t _topicCount,Client& _client,PinEventProcessor *_eventProcessors[],uint8_t _procSize,std::function<void(String topic,String message)> _externalCallbackFunction){
 	Serial.println("-------------------------------");
 	Serial.println("Initialize MqttHelper");
 	//settingsBox=_settingsBox;
@@ -23,9 +23,8 @@ MqttHelper::MqttHelper(ConfigStorage *_configStorage,EspSettingsBox *_settingsBo
 	subscribeTopics=_subscribeTopics;
 
 	settingsBox=_settingsBox;
-	configStorage=_configStorage;
 
-	client=PubSubClient(configStorage->get(MQTT_SERVER_URL_INDX), configStorage->getUint16t(MQTT_SERVER_PORT_INDX), [this](char* topic, uint8_t* payload, unsigned int length){callback(topic,payload,length);}, _client);
+	client=PubSubClient((char*)_settingsBox->mqtt_server.c_str(), _settingsBox->mqtt_port, [this](char* topic, uint8_t* payload, unsigned int length){callback(topic,payload,length);}, _client);
 
 	initialized=false;
 	displayDetails();
@@ -198,9 +197,14 @@ boolean MqttHelper::publish(String message){
 		}
 
 		boolean result=client.publish( (char*)settingsBox->mqtt_topic.c_str(),(char*) message.c_str());
+		if(result){
+			Serial.println(" sent");
+		}else{
+			Serial.println(" mq FAILED");
+		}
 		return result;
 	}
-	Serial.println("MqttHelper is not initialized");
+	Serial.println(" MqttHelper is not initialized");
 
 	return false;
 

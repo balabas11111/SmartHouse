@@ -20,7 +20,7 @@
 class MqttHelper: public Loopable,public Initializable{
 
 public:
-	MqttHelper(ConfigStorage *_configStorage,EspSettingsBox *_settingsBox,String* _subscribeTopics,uint8_t _topicCount,Client& _client,PinEventProcessor *eventProcessors[],uint8_t procSize,std::function<void(String topic,String message)> _externalCallbackFunction);
+	MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,uint8_t _topicCount,Client& _client,PinEventProcessor *eventProcessors[],uint8_t procSize,std::function<void(String topic,String message)> _externalCallbackFunction);
 
 	PinEvent processEvent(PinEvent event);
 	virtual ~MqttHelper();
@@ -52,7 +52,6 @@ private:
 	PubSubClient client;
 
 	EspSettingsBox *settingsBox;
-	ConfigStorage *configStorage;
 /*
 	char* mqtt_server;
 	uint16_t mqtt_port;

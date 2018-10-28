@@ -1,7 +1,7 @@
 /*
  * ButtonB.cpp
  *
- *  Created on: 13 ÿíâ. 2018 ã.
+ *  Created on: 13 ï¿½ï¿½ï¿½. 2018 ï¿½.
  *      Author: Vitaliy
  */
 
@@ -149,10 +149,17 @@ uint8_t PinDigital::turnOnOff(boolean _turnOn){
 }
 
 boolean PinDigital::isOn(){
+	/*
+	Serial.print("turnOffLevel=");
+	Serial.print(turnOffLevel);
+	Serial.print(" val=");
+	Serial.println(getVal());
+	*/
 	return turnOffLevel!=getVal();
 }
 
 void PinDigital::processInterrupt(){
+	//Serial.print("Interrupt processed");
 	uint16_t now=getVal();
 	//val=now;
 	oldValToDisp=oldVal;
@@ -160,17 +167,20 @@ void PinDigital::processInterrupt(){
 
 	if(now!=oldVal){
 		changed=true;
+		//Serial.println(" changed");
 		#ifdef DIGITAL_PIN_DISPLAY_CHANGE_EVENT
 			Serial.print(printState()+" now="+String(now));
 			Serial.println("...event dispatched");
 		#endif
 	}else{
 		//changed=false;
+		Serial.println(" not changed");
 		#ifdef DIGITAL_PIN_DISPLAY_NO_CHANGE_EVENT
 		Serial.print(printState()+" now="+String(now));
 		Serial.println("...no event");
 		#endif
 	}
+	printState();
 	oldVal=now;
 }
 

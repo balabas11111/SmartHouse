@@ -1,7 +1,7 @@
 /*
  * PinEventProcessor.h
  *
- *  Created on: 14 окт. 2018 г.
+ *  Created on: 14 пїЅпїЅпїЅ. 2018 пїЅ.
  *      Author: Vitaliy
  */
 
@@ -35,7 +35,10 @@ public:
 	}
 	void executeExternalFunction(PinEvent event){
 		if(externalFunction!=nullptr){
+			Serial.println("Execute external function");
 			externalFunction(event);
+		}else{
+			Serial.println("No external function attached");
 		}
 	}
 	boolean hasExternalFunction(){
@@ -43,6 +46,7 @@ public:
 	}
 
 	virtual PinEvent constructEvent(String evName,boolean bubble){
+		Serial.println("Empty Event constructed");
 		return PinEvent();
 	}
 

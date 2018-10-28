@@ -87,11 +87,11 @@ public:
 	boolean beepOnAlert=false;
 
 	uint8_t postDataToTSInterval=241;
-	String thSkUsrKey="";//="U6KUFVOVLGBA0FD2";
-	String thSkWKey="";//="BN4T5Z1M0ZVALWYR";
-	String thSkRKey="";//="SB58HIU5UR4F8WOW";
-	int thSkChId=0;//=418229;
-	String thSkTKey="";//="3L0KJ5J1YO247PFV";
+	String thSkUsrKey="YV1SA7H87PS8RFMU";
+	String thSkWKey="V8V5G1W2CACCQOMV";
+	String thSkRKey="SPH0UG4JJZC7GDDH";
+	int thSkChId=612324;
+	String thSkTKey="ZSFBN9V1K2QMB9M1";
 
 	boolean alarmSendNotifAlertStart=true;
 	boolean alarmSendNotifAlertStop=true;
@@ -113,7 +113,14 @@ public:
 
 	String webDefPage="/web/index.htm";
 	String webRoot="/web/";
-	String webDepExt="html,htm,js,css,jpeg,png,jpg";
+	String webDepExt="html,htm,js,css,jpeg,png,jpg,gif,ttf,woff,woff2,tpl";
+
+	String NTP_poolServerName="europe.pool.ntp.org";
+	int NTP_timeOffset=7200;
+	int NTP_updateInterval=120000;
+
+	ulong NTP_timeTriggerInterval=1000;
+
 
 private:
 	boolean spiffInitialized;

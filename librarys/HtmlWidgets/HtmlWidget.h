@@ -54,15 +54,22 @@ public:
 			||actionName!=FPSTR(ACTION_GET_WIDGET_JSON)){
 			return false;
 		}
+		Serial.print("Widget target =");
+		Serial.println(getName());
 */
+
 		return true;
 	}
 
-	virtual String getNotAllowed(){return FPSTR(WIDGET_NOT_ALLOWED);};
+	virtual String getNotAllowed(){
+		return FPSTR(MESSAGE_STATUS_JSON_ACTION_NOT_ALLOWED);
+	};
 
 	virtual String executeClientAction(String actionName,String remoteId,String remoteVal, String className, String childClass,String clientData)=0;
 
 	virtual String getName()=0;
+
+	virtual String getWsText()=0;
 
 protected:
 

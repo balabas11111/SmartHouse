@@ -37,6 +37,7 @@ const char MEASURE_METER[] PROGMEM ="m";
 //widget actions
 const PROGMEM char ACTION_GET_STATIC_SETTINGS_DATA[]="getStSettData";       //returns static data from espSettings
 const PROGMEM char ACTION_GET_WIDGET_HTML_OR_VAL[]="getWidgetHtml";       //returns all components text
+const PROGMEM char ACTION_GET_ALL_WIDGET_JSON[]="getAllWidgetsJson";
 const PROGMEM char ACTION_GET_WIDGET_JSON[]="getWidgetJson";       //returns all components text
 const PROGMEM char ACTION_GET_WIDGETS_CHILDREN_AS_JSON[]="getWidgetChildrenAsJson";       //returns all components children as json
 const PROGMEM char ACTION_SUBMIT_FORM_GET_WIDGETS_CHILDREN_AS_JSON[]="submitFormGetChildrenAsJson";       //used to process data from client
@@ -139,6 +140,46 @@ const PROGMEM char MESSAGE_SENSOR_BROKEN[]="Датчик неисправен";
 const PROGMEM char MESSAGE_DEVICE_BROKEN[]="Устройство неисправно";
 
 const PROGMEM char MIN_TIMEOUT_VALUE_SENSOR[]="2000";
+//--------------------------------------------------------
+//status messages
+const PROGMEM char MESSAGE_STATUS_JSON_WIDGET_NOT_FOUND[]="{\"status\":\"widgetNotFound\"}";
+const PROGMEM char MESSAGE_STATUS_JSON_ACTION_NOT_ALLOWED[]="{\"status\":\"ACTION_NOT_ALLOWED_On_ThisWidget\"}";
+const PROGMEM char MESSAGE_STATUS_JSON_PARAMETERS_MISSING[]="{\"status\":\"One of req params miss actionName,widgetName\"}";
+const PROGMEM char MESSAGE_STATUS_JSON_EMPTY_REQUIRED_PARAM[]="{\"status\":\"One of req params empty actionName,widgetName\"}";
+
+//content types
+const PROGMEM char CONTENT_TYPE_TEXT_HTML[]="text/html";
+const PROGMEM char CONTENT_TYPE_JSON[]="application/json";
+
+//serial println constants
+const PROGMEM char MESSAGE_EMPTY_STRING[]="";
+const PROGMEM char MESSAGE_SPACE[]=" ";
+const PROGMEM char MESSAGE_EQUALS[]="=";
+const PROGMEM char MESSAGE_DOT_COMMA[]=";";
+const PROGMEM char MESSAGE_HORIZONTAL_LINE[]="------------------------------";
+
+//serial println wifi constants
+const PROGMEM char MESSAGE_HANDLE_HTTP_WIDGET[]="----------Handle Http widget----------";
+
+//serial println device diagnostic constants
+//before 16936 17048 17696
+const PROGMEM char MESSAGE_DEVICE_DIAGNOSTIC_BEGIN[]="----------Device diagnostic----------";
+const PROGMEM char MESSAGE_DEVICE_FREE_HEAP[]="FreeHeap";
+const PROGMEM char MESSAGE_DEVICE_CPU_MHZ[]="CpuFreqMHz";
+const PROGMEM char MESSAGE_DEVICE_FLASH_CHIP_SIZE[]="FlashChipSize";
+const PROGMEM char MESSAGE_DEVICE_FREE_SCETCH_SPACE[]="FreeSketchSpace";
+const PROGMEM char MESSAGE_DEVICE_RESET_REASON[]="ResetReason";
+
+const PROGMEM char MESSAGE_DEVICE_HELPER_STARTED[]="----------Device helper----------";
+const PROGMEM char MESSAGE_DEVICE_HELPER_INITIALIZING[]="----------Device helper init----------";
+const PROGMEM char MESSAGE_DEVICE_HELPER_LOOPERS[]="----------Device helper loopers----------";
+const PROGMEM char MESSAGE_DEVICE_HELPER_LOOP_SIZE[]="DeviceHelper loop size=";
+const PROGMEM char MESSAGE_DEVICE_START_DEVICE_ID[]="Start DeviceId=";
+const PROGMEM char MESSAGE_DEVICE_INIT_STARTED_COUNT[]="Init started count=";
+const PROGMEM char MESSAGE_DEVICE_INIT_COUNT[]="Initialized count=";
+
+//device widgets snapshot TODO: add this
+const PROGMEM char DEVICE_WIDGETS_SNAPSHOT[]="----------Device helper----------";
 
 //--------------------------------------------------------
 

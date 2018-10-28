@@ -1,7 +1,7 @@
 /*
  * I2Chelper.h
  *
- *  Created on: 13 окт. 2018 г.
+ *  Created on: 13 пїЅпїЅпїЅ. 2018 пїЅ.
  *      Author: Vitaliy
  */
 
@@ -10,20 +10,98 @@
 
 #include <Arduino.h>
 #include "Initializable.h"
+#include "Wire.h"
 
 class I2Chelper:public Initializable{
 
 public:
-	I2Chelper(uint8_t clockPin,uint8_t dataPin,boolean active);
-	virtual boolean initialize(boolean _init) override;
+	I2Chelper(uint8_t _clockPin,uint8_t _dataPin,boolean _active){
+		Serial.println("Create I2C Helper");
 
-	String scan();
+		devCount=0;
+		sda=_dataPin;
+		scl=_clockPin;
+
+		initialized=false;
+
+		initialize(_active);
+	}
+
+	virtual boolean initialize(boolean init) override{
+			Serial.println("Begin initialize of I2CHelper");
+			if(init && !initialized){
+				initWire();
+				scan();
+			}
+			initialized=init;
+
+			return initialized;
+		}
+
+	String scan(){
+			Serial.println("---------------");
+			Serial.println("Setup I2C bus...");
+			  byte error, address;
+			  int nDevices;
+			  String result="";
+
+			  Serial.println("Scanning I2C...");
+
+			  nDevices = 0;
+			  for(address = 1; address < 127; address++ )
+			  {
+
+				Wire.beginTransmission(address);
+				error = Wire.endTransmission();
+
+				if (error == 0)
+				{
+				  Serial.print("I2C device found at address 0x");
+				  if (address<16){
+					Serial.print("0");
+					result.concat("0");
+				  }
+				  Serial.print(address,HEX);
+
+				  result.concat(String(address));
+				  result.concat(";");
+
+				  Serial.println("  !");
+
+				  nDevices++;
+				}
+				else if (error==4)
+				{
+				  Serial.print("Unknow error at address 0x");
+				  if (address<16)
+					Serial.print("0");
+				  Serial.println(address,HEX);
+				}
+			  }
+
+			  result.concat(" count="+String(nDevices));
+
+			  if (nDevices == 0)
+				Serial.println("No I2C devices found\n");
+			  else
+				Serial.println("done\n");
+			  Serial.println("---------------");
+
+			  devCount=nDevices;
+
+			  return result;
+		}
+
 private:
 	uint8_t sda;
 	uint8_t scl;
 	uint8_t devCount;
 
-	void initWire();
+	void initWire(){
+		Serial.println("---------------");
+		Serial.println("Setup I2C bus Wire lib...");
+		Wire.begin(sda, scl);
+	}
 };
 
 
