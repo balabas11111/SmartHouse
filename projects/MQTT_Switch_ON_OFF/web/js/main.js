@@ -1,3 +1,6 @@
+//web sockets part------------------------------------------------------------
+
+//----------------------------------form submit unsed currently---------------
 function submitForm(vievName,formName,updateName){
 	var f = document.forms[formName];
 	var isValidForm = f.checkValidity();
@@ -223,7 +226,8 @@ function updateHtmlComponentByAjax(actionId, remoteId, widgetId, widgetClass, cl
 						addPostponedUpdate(actionId, remoteId, widgetId, widgetClass, clientData, requestmethod, url, allowAutoRefresh, timeout);
 					}
 				}else{
-					component.innerHTML = this.responseText;
+					addPostponedUpdate(actionId, remoteId, widgetId, widgetClass, clientData, requestmethod, url, allowAutoRefresh, timeout);
+					//component.innerHTML = this.responseText;
 				}
 			};
 		};
@@ -304,9 +308,11 @@ function updateComponentsChildrenByAjaxJson(actionId, remoteId, widgetId, widget
 					
 				}else{
 					//
+					addPostponedUpdateComponentsChildrenByAjaxJson(actionId, remoteId, widgetId, widgetClass, childClass, clientData, requestmethod, url, allowAutoRefresh, 5000);
+					/*
 					if(!updateStatusComponentInnerHtml(statusComponent,"block",STATUS_ERROR_CLASS,MESSAGE_ERROR)){
 						container.innerHTML = MESSAGE_ERROR+" "+this.responseText;
-					}
+					}*/
 				}
 			};
 		};
@@ -326,141 +332,12 @@ function w3_open(){
 function w3_close(){
 	document.getElementById("leftSidebar").style.display = "none";
 };
-//----------------------Web sockets--------------------------
 
-var socket=undefined;
-
- function WebSocketInit() {
-            
-            if ("WebSocket" in window) {
-               printMainStatus("WebSocket is supported by your Browser!");
-               
-               // Let us open a web socket
-               socket=new WebSocket("ws://"+window.location.hostname+":8081");
-			   
-			   var status=socket.readyState;
-			   
-			   if(status==3){
-               		printMainStatus("connection refused");
-               }
-				
-               socket.onopen = function() {
-                  // Web Socket is connected, send data using send()
-                  socket.send("Message to send");
-                  printMainStatus("Message is sent...");
-               };
-				
-               socket.onmessage = function(event){
-					var incomingMessage=event.data;
-					receiveWsMessage(incomingMessage);
-               };
-				
-               socket.onclose = function() { 
-                  // websocket is closed.
-                  printMainStatus("Connection is closed..."); 
-               };
-			   
-			   socket.onerror = function(){
-				   printMainStatus("Socket error..."); 
-			   };
-            } else {
-              
-               // The browser doesn't support WebSocket
-               printMainStatus("WebSocket NOT supported by your Browser!");
-            }
-			
-	
-}
-
-function receiveWsMessage(message){
-	printMainStatus("Message received : "+message);
-	if(message.startsWith('{"wsId":')){
-		processComponentUpdate(message);
-	}
-}
-
-function sendWsMessage(message){
-	socket.send(message);
-	printMainStatus("Message sent "+message);
-}
-
-function processComponentUpdate(message){
-// {"wsId":"luxMeasurer","wsClass":"wsParent","items":"{"light":"5"}"}
-// {"wsId":"bmeMeasurer","wsClass":"wsParent","items":"{"Temperature":"23.57","Pressure":"99943.66","Humidity":"50.04","Altitude":"115.65"}"}
-// {"wsId":"lampLeft","wsClass":"wsItem","wsValue":"./img/OffLamp.png"}
-	
-	var json = JSON.parse(message);
-
-	var wsId=json.wsId;
-	var wsClass=json.wsClass;
-	
-	if(wsClass==WS_TAG_PARENT){
-		var items=json.items;
-		var components=getComponentsByWsId(wsId,wsClass);
-		
-		if(components!=undefined){
-			for (i = 0; i < components.length; i++){
-				var children = component.getElementsByClassName(WS_TAG_CHILD);
-				
-				for (index = 0; index < children.length; ++index) {
-					childComponent=children[index];
-					
-					var wsId=childComponent.getAttribute(WS_TAG_ID);
-					var wsValueTagValue=childComponent.getAttribute(WS_TAG_VALUE);
-															
-					if(items.hasOwnProperty(wsId)){
-						receivedValue=items[wsId];
-						
-						childComponent.setAttribute(wsValueTagValue,receivedValue);
-					}
-				}
-			}
-		}
-	}
-	
-	if(wsClass==WS_TAG_ITEM){
-		var components=getComponentsByWsId(wsId,wsClass);
-		
-		if(components!=undefined){
-			for (i = 0; i < components.length; i++){
-				var component=components[i];
-				var wsValue=component.getAttribute(WS_TAG_VALUE);
-				var value=json.wsValue;
-				
-				if(wsValue!=undefined){
-					component.setAttribute(wsValue,value);
-				}else{
-					component.innerHTML=value;
-				}
-			}
-		}
-	}
-}
-
-function getComponentsByWsId(wsId,wsClass){
-	widgets=document.getElementsByClassName(wsClass);
-	
-	var result=[];
-	var index=0;
-	
-	for (i = 0; i < widgets.length; i++) {
-		var component=widgets[i];
-		
-		if(component.hasAttribute(WS_TAG_ID) 
-			&& component.getAttribute(WS_TAG_ID)==wsId){
-				result.push(component);
-				index++;
-			}
-	}
-	
-	return result;
-}
-
-function printMainStatus(message){
+function printMainStatus(message,compClass){
 	var widgetId="websocket_status";
 	var component=document.getElementById(widgetId);
 		
-	updateStatusComponentInnerHtml(component,"block",STATUS_OK_CLASS,message);
+	updateStatusComponentInnerHtml(component,"block",compClass,message);
 }
 //--------------------Lamp click handler------------------------------
 function lampWidgetClick(component){
@@ -481,11 +358,11 @@ function onLoadPageComplete(){
 	}
 	
 	w3_close();
-	WebSocketInit();
+	//WebSocketInit();
 	reloadAllWidgetsByClassname(ACTION_GET_STATIC_SETTINGS_DATA,CLASS_REFRESHABLE_SettingsWidgetESP,false);
 	//reloadAllWidgetsByClassname(ACTION_GET_WIDGET_HTML_OR_VAL,CLASS_REFRESHABLE_MeasurerWidgetESP,true);
-	reloadAllWidgetsByClassname(ACTION_GET_WIDGET_HTML_OR_VAL,CLASS_REFRESHABLE_IMAGE,false);
-	reloadAllWidgetsChildsByClassnameJson(ACTION_GET_WIDGETS_CHILDREN_AS_JSON,CLASS_REFRESHABLE_CHILDREN_MeasurerWidgetESPJson, CLASS_REFRESHABLE_CHILD,false);
+	reloadAllWidgetsByClassname(ACTION_GET_WIDGET_HTML_OR_VAL,CLASS_REFRESHABLE_IMAGE,true);
+	reloadAllWidgetsChildsByClassnameJson(ACTION_GET_WIDGETS_CHILDREN_AS_JSON,CLASS_REFRESHABLE_CHILDREN_MeasurerWidgetESPJson, CLASS_REFRESHABLE_CHILD,true);
 };
 
 

@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <Hash.h>
 #include <ESP8266WiFi.h>
-#include <PubSubClient.h>
 #include "EspSettingsBox.h"
 #include "MqttHelper.h"
 #include "Loopable.h"
@@ -11,15 +10,13 @@
 #include "DisplayHelper.h"
 #include "WiFiHelper.h"
 #include <Wire.h>
-#include <WebSocketsServer.h>
-#include <WebSocketsHelper.h>
 
 #include <ESP8266WebServer.h>
 #include "PinDigital.h"
 #include "PinEvent.h"
 #include "TimeTrigger.h"
 #include "PinExternalFuncUint16t.h"
-#include <NtpTimeClientService.h>
+
 #include <BME280_Measurer.h>
 #include <BH1750_Measurer.h>
 #include <DeviceHelper.h>
@@ -59,7 +56,7 @@ const int sensorsInterval=60000;
 
 WiFiClient wclient;
 ESP8266WebServer server ( 80 );
-WebSocketsServer webSocket = WebSocketsServer(8081);
+//WebSocketsServer webSocket = WebSocketsServer(8081);
 
 EspSettingsBox espSettingsBox("/settings.txt","",true,true);
 
@@ -80,7 +77,7 @@ PinDigital lampRight(VAR_NAME(lampRight),D8_PIN,OUTPUT,processEvent,CHANGE,HIGH)
 
 PirDetector pirDetector(D3_PIN,&signalLed,processEvent,nullptr);
 
-NtpTimeClientService timeClient(&espSettingsBox,processTimeClientEvent);
+//NtpTimeClientService timeClient(&espSettingsBox,processTimeClientEvent,60000);
 
 EspSettingsBoxWidget espSettingsBoxWidget("0",&
 		espSettingsBox,VAR_NAME(espSettingsBox));
@@ -99,11 +96,11 @@ WiFiHelper wifiHelper("WiFiHelper",&espSettingsBox, &displayHelper, &signalLed,	
 		postInitWebServer,false, handleHttpWidget, processEvent);
 
 MqttHelper mqttHelper(&espSettingsBox,subscribeTopics,ARRAY_SIZE(subscribeTopics),wclient,eventProcessors,ARRAY_SIZE(eventProcessors),processMqttEvent);
-WebSocketsHelper webSocketHelper(&webSocket,webSocketEvent);
+//WebSocketsHelper webSocketHelper(&webSocket,webSocketEvent);
 
-Loopable* loopArray[]={&wifiHelper,&webSocketHelper,&sensorsTrigger,&timeClient,&buttonLeft,&buttonRight,&lampLeft,&lampRight};
+Loopable* loopArray[]={&wifiHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&lampLeft,&lampRight};
 
-Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&webSocketHelper,&timeClient,&i2cHelper,&bmeMeasurer,&luxMeasurer};
+Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer};
 
 HtmlWidget* widgetsArray[]={&espSettingsBoxWidget,&bmeMeasurer,&luxMeasurer,&lampLeftWidget,&lampRightWidget};
 
@@ -119,6 +116,7 @@ void setup() {
   deviceHelper.init(initializeArray, ARRAY_SIZE(initializeArray));
   deviceHelper.printDeviceDiagnostic();
   deviceHelper.displayDetails();
+
 }
 
 void loop() {
@@ -201,27 +199,6 @@ void handleHttpWidget(){
 	server.send(404, FPSTR(CONTENT_TYPE_TEXT_HTML), FPSTR(MESSAGE_STATUS_JSON_WIDGET_NOT_FOUND));
 }
 
-//--------------------------websockets----------------
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length){
-  //Serial.println("num="+String(num)+" type="+String(type)+" length="+String(length));
-	Serial.println("-----------Web socket event-----");
-  if(type==WStype_CONNECTED){
-	  Serial.println("Connected");
-  }
-  if(type==WStype_DISCONNECTED){
-  	  Serial.println("Disconnected");
-    }
-
-  if (type == WStype_TEXT){
-   Serial.print("num=");Serial.print(num);
-   Serial.print("type=");Serial.print(type);
-   Serial.print("length=");Serial.print(length);
-   Serial.println();
-
-   for(size_t i = 0; i < length; i++) Serial.print((char) payload[i]);
-   Serial.println();
-  }
-}
 //---------------------------------------------------------------------
 //button handling
 PinEvent onLeftButtonChanged(PinEvent event){
@@ -256,7 +233,7 @@ PinEvent processEvent(PinEvent event){
 	if(!event.isValid() || !event.isNotEmpty()){
 		return PinEvent();
 	}
-
+	/*
 	if(lampLeft.isDispatcherOfEvent(event) && event.getKind()==PIN_EVENT_STATE_UPDATED){
 		webSocketHelper.sendMessageToAll(lampLeftWidget.getWsText());
 	}
@@ -264,7 +241,7 @@ PinEvent processEvent(PinEvent event){
 	if(lampRight.isDispatcherOfEvent(event) && event.getKind()==PIN_EVENT_STATE_UPDATED){
 		webSocketHelper.sendMessageToAll(lampRightWidget.getWsText());
 	}
-
+*/
 	deviceHelper.printDeviceDiagnostic();
 
 	return mqttHelper.processEvent(event);
@@ -274,10 +251,10 @@ void measureSensors(){
 	Serial.println("---Measure sensors---");
 	bmeMeasurer.measure();
 	luxMeasurer.measure();
-
+/*
 	webSocketHelper.sendMessageToAll(bmeMeasurer.getWsText());
 	webSocketHelper.sendMessageToAll(luxMeasurer.getWsText());
-
+*/
 	deviceHelper.printDeviceDiagnostic();
 }
 
@@ -285,77 +262,51 @@ void processMqttEvent(String topic,String message){
 	Serial.println("Base process processMqttEvent topic="+topic+" message="+message);
 }
 
-void processTimeClientEvent(){
-	Serial.print("--");
-	Serial.print(timeClient.displayDetails());
-	Serial.println("--");
-	webSocketHelper.sendMessageToAll(timeClient.getCurrentTimeAsString(":"));
+void sendInitDataToClient(){
+	//Serial.println("New client connected");
+	//webSocketHelper.sendMessageToAll(timeClient.getWsText(false,':'));
+	//webSocketHelper.sendMessageToAll(lampLeftWidget.getWsText());
+	//webSocketHelper.sendMessageToAll(lampRightWidget.getWsText());
+	//webSocketHelper.sendMessageToAll(bmeMeasurer.getWsText());
+	//webSocketHelper.sendMessageToAll(luxMeasurer.getWsText());
 }
 
 //---------------------------------------------------
-//----------------NTP clock section-----------------------
 /*
-const char* poolServerName="europe.pool.ntp.org";
-int timeOffset=7200;
-int updateInterval=120000;
+ void processTimeClientEvent(){
+	webSocketHelper.sendMessageToAll(timeClient.getWsText(false,':'));
+}
+//--------------------------websockets----------------
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length){
+  //Serial.println("num="+String(num)+" type="+String(type)+" length="+String(length));
+	Serial.println("-----------Web socket event-----");
+  if(type==WStype_CONNECTED){
+	  Serial.println("Connected");
+	  sendInitDataToClient();
+  }
+  if(type==WStype_DISCONNECTED){
+  	  Serial.println("Disconnected");
+    }
 
-int timeTriggerInterval=30000;
+  if (type == WStype_TEXT){
+   Serial.print("num=");Serial.print(num);
+   Serial.print("type=");Serial.print(type);
+   Serial.print("length=");Serial.print(length);
+   Serial.println();
 
-uint8_t currentTime[6] = {0x00,0x00,0x00,0x00,0x00,0x00};
+   String message="";
 
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, poolServerName, timeOffset, updateInterval);
+   for(size_t i = 0; i < length; i++){
+	   Serial.print((char) payload[i]);
+	   message+=(char) payload[i];
+   }
 
-TimeTrigger timeClientTrigger(0,sensorsInterval,false,processTimeClient);
 
-void initTimeClient(){
-	timeClient.begin();
-	timeClientTrigger.init();
+   //if(message=="__ping__"){
+   //webSocketHelper.sendMessageToAll("__pong__");
+   //}
+   Serial.println();
+  }
 }
 
-void loopTimeClient(){
-	timeClient.update();
-	timeClientTrigger.loop();
-}
-
-void processTimeClient(){
-	boolean update=false;
-	uint8_t h=timeClient.getHours();
-	uint8_t m=timeClient.getMinutes();
-	uint8_t s=timeClient.getSeconds();
-
-	uint8_t tmp[6] = {0x00,0x00,0x00,0x00,0x00,0x00};
-
-	tmp[0] = h / 10;
-	tmp[1] = h % 10;
-	tmp[2] = m / 10;
-	tmp[3] = m % 10;
-	tmp[4] = s / 10;
-	tmp[5] = s % 10;
-
-	for(uint8_t i=0;i<5;i++){
-		if(tmp[i]!=currentTime[i]){
-			update=true;
-			currentTime[i]!=tmp[i];
-		}
-	}
-
-	if(update){
-		executeTimeClientExternalFunction();
-	}
-}
-
-void executeTimeClientExternalFunction(){
-	Serial.print("--");
-	Serial.print(currentTime[0]);
-	Serial.print(currentTime[1]);
-	Serial.print(":");
-	Serial.print(currentTime[2]);
-	Serial.print(currentTime[3]);
-	Serial.print(":");
-	Serial.print(currentTime[4]);
-	Serial.print(currentTime[5]);
-	Serial.println("--");
-}
-*/
-//--------------------------------------------------------
+ */

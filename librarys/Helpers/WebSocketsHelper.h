@@ -59,8 +59,10 @@ public:
 	}
 
 	boolean sendMessageToAll(String message){
+/*
 		Serial.print("sendMessages ");
 		Serial.println(message);
+*/
 		return webSocket->broadcastTXT(message);
 	}
 

@@ -178,6 +178,10 @@ const PROGMEM char MESSAGE_DEVICE_START_DEVICE_ID[]="Start DeviceId=";
 const PROGMEM char MESSAGE_DEVICE_INIT_STARTED_COUNT[]="Init started count=";
 const PROGMEM char MESSAGE_DEVICE_INIT_COUNT[]="Initialized count=";
 
+//Ntp clock client
+const PROGMEM char MESSAGE_TIME_CLIENT_JSON_BEFORE_TIME[]="{\"wsId\":\"clock\",\"wsClass\":\"wsItem\",\"wsValue\":\"";
+const PROGMEM char MESSAGE_TIME_CLIENT_JSON_AFTER_TIME[]="\"}";
+
 //device widgets snapshot TODO: add this
 const PROGMEM char DEVICE_WIDGETS_SNAPSHOT[]="----------Device helper----------";
 

@@ -112,11 +112,6 @@
 			<location>D:/projects/!!!SmartHouse/librarys/Measurer</location>
 		</link>
 		<link>
-			<name>libraries/NTPClient</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/NTPClient/3.1.0</locationURI>
-		</link>
-		<link>
 			<name>libraries/PinAnalog</name>
 			<type>2</type>
 			<location>D:/projects/!!!SmartHouse/librarys/PinAnalog</location>
@@ -155,11 +150,6 @@
 			<name>libraries/TimeTrigger</name>
 			<type>2</type>
 			<location>D:/projects/!!!SmartHouse/librarys/TimeTrigger</location>
-		</link>
-		<link>
-			<name>libraries/WebSockets</name>
-			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/WebSockets</location>
 		</link>
 		<link>
 			<name>libraries/WiFiManager</name>
