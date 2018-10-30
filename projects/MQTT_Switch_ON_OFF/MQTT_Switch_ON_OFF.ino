@@ -12,7 +12,6 @@
 #include <Wire.h>
 
 #include <ESP8266WebServer.h>
-#include "PinDigital.h"
 #include "PinEvent.h"
 #include "TimeTrigger.h"
 #include "PinExternalFuncUint16t.h"
@@ -20,6 +19,7 @@
 #include <BME280_Measurer.h>
 #include <BH1750_Measurer.h>
 #include <DeviceHelper.h>
+#include <PinDigital_Event.h>
 #include "ConfigStorage.h"
 #include "ConfigStorageWidget.h"
 #include "PinDigitalWidget.h"

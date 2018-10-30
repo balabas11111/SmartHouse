@@ -5,8 +5,8 @@
  *      Author: Vitaliy
  */
 
+#include <PinDigital_Event.h>
 #include "Arduino.h"
-#include "PinDigital.h"
 
 PinDigital::PinDigital(uint8_t pin){
 	construct("PinDigital",pin,INPUT,LOW,LOW);

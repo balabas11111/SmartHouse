@@ -8,9 +8,9 @@
 #ifndef LIBRARIES_MEASURER_PIRDETECTOR_H_
 #define LIBRARIES_MEASURER_PIRDETECTOR_H_
 
+#include <PinDigital_Event.h>
 #include "Arduino.h"
 #include "TimeTrigger.h"
-#include "PinDigital.h"
 #include "Loopable.h"
 
 class PirDetector {

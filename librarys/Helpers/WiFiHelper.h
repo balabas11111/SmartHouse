@@ -14,12 +14,12 @@
 #include "Initializable.h"
 #include "EspSettingsBox.h"
 #include "DisplayHelper.h"
-#include "PinDigital.h"
 #include "FS.h"
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
+#include <PinDigital_Event.h>
 
 class WiFiHelper:public Initializable,public Loopable {
 

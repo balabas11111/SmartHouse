@@ -8,7 +8,7 @@
 #ifndef LIBRARIES_HTMLWIDGETS_PINDIGITALWIDGET_H_
 #define LIBRARIES_HTMLWIDGETS_PINDIGITALWIDGET_H_
 
-#include "PinDigital.h"
+#include <PinDigital_Event.h>
 #include "HtmlWidget.h"
 
 class PinDigitalWidget:public HtmlWidget {

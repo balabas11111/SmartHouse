@@ -72,6 +72,11 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/DNSServer</locationURI>
 		</link>
 		<link>
+			<name>libraries/DeviceLib</name>
+			<type>2</type>
+			<location>D:/projects/!!!SmartHouse/librarys/DeviceLib</location>
+		</link>
+		<link>
 			<name>libraries/ESP8266HTTPClient</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266HTTPClient</locationURI>
