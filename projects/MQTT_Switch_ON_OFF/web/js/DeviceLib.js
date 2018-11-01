@@ -1,12 +1,12 @@
 function hideComponent(componentId){
 	document.getElementById(componentId).style.display = "none";
-}
+};
 
 function showComponent(componentId){
 	document.getElementById(componentId).style.display = "block";
-}
+};
 
-var processLampJsonF=function processLampJson(data){
+function processLampJson(data){
 	
 	var compId_Q=data.name+'_Q';
 	var compId_On=data.name+'_On';
@@ -16,7 +16,7 @@ var processLampJsonF=function processLampJson(data){
 	
 	hideComponent(compId_Q);
 	
-	if(0nOff==1.00){
+	if(onOff=='1.00'){
 		hideComponent(compId_Off);
 		showComponent(compId_On);
 	}else{
@@ -25,13 +25,57 @@ var processLampJsonF=function processLampJson(data){
 	}
 }
 
-var processMeasurerJsonF=function processMeasurerJson(data){
+function processSimpleJson(data){
 	var items=data.items;
 	for(var i in items){
 		var name=items[i].name;
 		var val=items[i].val;
 		
-		document.getElementById(name).value=val;
+		var component=document.getElementById(name);
+		
+		if(component!=undefined){
+			var tagName = component.tagName.toLowerCase();
+			
+			if (tagName == 'h2' || tagName == 'h4'){
+				component.innerHTML=val;
+			};
+			
+			if (tagName == 'input'){
+				component.value=val;
+			};
+			
+			if (tagName == 'a'){
+				component.href=val;
+			};
+		}
+	}
+}
+
+function processSettingsJson(data){
+	var items=data.items;
+	for(var i in items){
+		var name=items[i].name;
+		var val=items[i].val;
+		
+		var component=document.getElementById(name);
+		
+		if(component!=undefined){
+			
+			showComponent(component.id);
+			var tagName = component.tagName.toLowerCase();
+			
+			if (tagName == 'h2' || tagName == 'h4'){
+				component.innerHTML=val;
+			};
+			
+			if (tagName == 'input'){
+				component.value=val;
+			};
+			
+			if (tagName == 'a'){
+				component.href=val;
+			};
+		}
 	}
 }
 
@@ -75,18 +119,25 @@ function addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val
 //--------------------Lamp click handler------------------------------
 function lampWidgetClick(component){
 	var componentId=component.id;
-	var ind=componentId.indexOf('_')-1;
+	var ind=componentId.indexOf('_');
 	var url='/'+componentId.substr(0,ind)+'/setValue';
 	
-	updateComponentsByAjaxCall('POST', url, processLampJsonF,componentId.endsWith('Off'),0);
+	var onOff=componentId.endsWith('Off');
+	var val=0;
+	
+	if(onOff){val=1;}
+	
+	updateComponentsByAjaxCall('POST', url, processLampJson,val,0);
 }
 
 function onLoadPageComplete(){
-	 updateComponentsByAjaxCall('GET', '/bmeMeasurer/getSimpleJson', processMeasurerJsonF,"", 120000);
-	 updateComponentsByAjaxCall('GET', '/luxMeasurer/getSimpleJson', processMeasurerJsonF,"", 120000);
+	 updateComponentsByAjaxCall('GET', '/espSettingsBox/getJson', processSettingsJson,"", 0);
+	
+	 updateComponentsByAjaxCall('GET', '/bmeMeasurer/getSimpleJson', processSimpleJson,"", 120000);
+	 updateComponentsByAjaxCall('GET', '/luxMeasurer/getSimpleJson', processSimpleJson,"", 120000);
 	 
-	 updateComponentsByAjaxCall('GET', '/lampLeft/getSimpleJson', processLampJsonF,"", 5000);
-	 updateComponentsByAjaxCall('GET', '/lampRight/getSimpleJson', processLampJsonF,"", 5000);
+	 updateComponentsByAjaxCall('GET', '/lampLeft/getSimpleJson', processLampJson,"", 5000);
+	 updateComponentsByAjaxCall('GET', '/lampRight/getSimpleJson', processLampJson,"", 5000);
 }
 
 

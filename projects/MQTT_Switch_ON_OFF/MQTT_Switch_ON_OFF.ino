@@ -169,6 +169,9 @@ void onRightButtonChanged(){
 void handleLampChange(PinDigital* lamp){
 	wifiHelper.checkAuthentication();
 	int8_t on=server.arg("val").toInt();
+	Serial.print(" Lamp on=");
+	Serial.println(on);
+
 	if(on==-1){
 		lamp->change();
 	}

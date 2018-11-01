@@ -17,7 +17,7 @@
 <div id="leftSidebar" class="w3-sidebar w3-bar-block w3-light-grey w3-border-right w3-animate-left" style="display: none;">
 	<button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Свернуть</button>
 	<a href="settings.htm" class="w3-bar-item w3-button w3-hover-green">Настройки</a>
-	<a id="thingSpeakUrl" remoteId="espSettingsBox" remoteVal="thSkChId" targetTag="href" targetTagReplacePart="<channelId>" class="SettingsWidgetESP w3-bar-item w3-button w3-hover-green" href="https://thingspeak.com/channels/<channelId>/private_show" >ThingSpeak.com</a>
+	<a id="thinkSpeakChannelUrl" class="w3-bar-item w3-button w3-hover-green" style="display: none;" href="https://thingspeak.com/channels/<channelId>/private_show" >ThingSpeak.com</a>
 </div>
 
 <div id="main">
@@ -27,11 +27,11 @@
 			<button id="openNavBtn" class="w3-button w3-teal w3-xlarge" onclick="w3_open()" title="Открыть меню">☰</button>
 		</div>
 		<div class="w3-quarter w3-container w3-animate-opacity"	style="width: 150px;" >
-			<h4 id="dId" remoteId="espSettingsBox" remoteVal="DeviceId" class="SettingsWidgetESP" style="margin-top: 20px;" 
+			<h4 id="DeviceId" style="margin-top: 20px;" 
 				title="Идентификатор устройства">Устройство</h4>	
 		</div>
 		<div class="w3-third w3-container w3-animate-opacity">
-			<h2 id="DeviceLocation" remoteId="espSettingsBox" remoteVal="DeviceLocation" class="SettingsWidgetESP" style="margin-left: 20px;" 
+			<h2 id="DeviceLocation" style="margin-left: 20px;" 
 				title="Наименование/размещение устройства">Загрузка</h2>
 		</div>
 	</div>					
@@ -125,11 +125,11 @@
 								<img id="lampLeft_On" class="w3-center" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; display: none;"
 									title="Левая лампочка"
-									onclick="lampWidgetClick(this);" src="./img/OnLamp_64.png" alt="Загружаю"/>
+									onclick="lampWidgetClick(this);" src="./img/OnLamp.png" alt="Загружаю"/>
 								<img id="lampLeft_Off" class="w3-center" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; display: none;"
 									title="Левая лампочка"
-									onclick="lampWidgetClick(this);" src="./img/OffLamp_64.png" alt="Загружаю"/>
+									onclick="lampWidgetClick(this);" src="./img/OffLamp.png" alt="Загружаю"/>
 							</div>
 							<div class="w3-half w3-card-4 w3-center" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; width: 92px; height: 120px; ">
 								<div style="width: 90%">
@@ -142,11 +142,11 @@
 								<img id="lampRight_On" class="w3-center" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; display: none;"
 									title="Правая лампочка"
-									onclick="lampWidgetClick(this);" src="./img/OnLamp_64.png" alt="Загружаю"/>
+									onclick="lampWidgetClick(this);" src="./img/OnLamp.png" alt="Загружаю"/>
 								<img id="lampRight_Off" class="w3-center" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; display: none;"
 									title="Правая лампочка"
-									onclick="lampWidgetClick(this);" src="./img/OffLamp_64.png" alt="Загружаю"/>
+									onclick="lampWidgetClick(this);" src="./img/OffLamp.png" alt="Загружаю"/>
 							</div>
 						</div>
 					</form>

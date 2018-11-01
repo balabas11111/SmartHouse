@@ -500,8 +500,9 @@ boolean EspSettingsBox::isTrue(String str){
 String EspSettingsBox::getJson(){
 
 	String result="{\"name\":\"espSettingsBox\",\"val\":\"3\",\"fieldId\":\"0\",\"queueName\":\"\",\"items\":[\
-					{\"DeviceLocation\":\""+DeviceId+"\"},\
-			        {\"DeviceLocation\":\""+DeviceLocation+"\"},\
-					{\"thSkChId\":\""+thSkChId+"\"}]}";
+					{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\"},\
+					{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\"},\
+					{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
+					{\"name\":\"thinkSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}]}";
 	return result;
 }
