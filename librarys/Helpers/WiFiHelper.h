@@ -373,6 +373,20 @@ public:
 		return statusStr;
 	}
 
+	void checkAuthentication(){
+		if(espSettingsBox->settingsUser.length()!=0 && espSettingsBox->settingsPass.length()!=0){
+			Serial.println("Authentication is REQUIRED for setupPage");
+			if(!server->authenticate(const_cast<char*>(espSettingsBox->settingsUser.c_str()),
+				const_cast<char*>(espSettingsBox->settingsPass.c_str()))){
+				return server->requestAuthentication();
+			}else{
+				Serial.println("User entered correct User/pass");
+			}
+		}else{
+			Serial.println("Authentication is not required for setupPage");
+		}
+	}
+
 	boolean cleanDisplay(){
 		return displayHelper->clearDisplay();
 	}

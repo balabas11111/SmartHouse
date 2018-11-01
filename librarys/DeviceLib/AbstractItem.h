@@ -38,7 +38,9 @@ public:
 		this->queueName=queueName;
 
 		if(childCount>0)
-		items=new SensorValue[childCount];
+			items=new SensorValue[childCount];
+
+		Serial.println("AbstractItem ="+name+" count="+sizeof(items));
 	}
 	virtual ~AbstractItem(){};
 
@@ -98,6 +100,7 @@ public:
 					}
 
 					result+="]}";
+
 			return result;
 	}
 

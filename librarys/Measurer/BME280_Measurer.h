@@ -27,7 +27,7 @@ public:
 
 	BME280_Measurer(uint8_t id,String name,uint8_t fieldId,String queueName)
 		: AbstractItem(id,name,FPSTR(MEASURER_BME280_DESCRIPTION),FPSTR(MEASURER_BME280_SIZE),FPSTR(MEASURER_BME280_DESCRIPTION_RU),
-					0, 1,fieldId,queueName){
+					0, 4,fieldId,queueName){
 	}
 
 	~BME280_Measurer(){

@@ -104,6 +104,9 @@ void setup() {
 
 void loop() {
 	deviceHelper.loop();
+
+	buttonLeft.loop();
+	buttonRight.loop();
 }
 
 void postInitWebServer(){
@@ -125,17 +128,11 @@ void postInitWebServer(){
 	server.on("/lampRight/getSimpleJson", HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lampRight.getSimpleJson());
 	});
-	server.on("/lampLeft/setValue", HTTP_POST, [](){
-		server.authenticate(espSettingsBox.settingsUser.c_str(), espSettingsBox.settingsPass.c_str());
-		boolean on=server.arg("val").toInt();
-		lampLeft.setVal(on);
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lampLeft.getSimpleJson());
+	server.on("/lampLeft/setValue", HTTP_ANY, [](){
+		handleLampChange(&lampLeft);
 	});
-	server.on("/lampRight/setValue", HTTP_POST, [](){
-		server.authenticate(espSettingsBox.settingsUser.c_str(), espSettingsBox.settingsPass.c_str());
-		boolean on=server.arg("val").toInt();
-		lampLeft.setVal(on);
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lampRight.getSimpleJson());
+	server.on("/lampRight/setValue", HTTP_ANY, [](){
+		handleLampChange(&lampRight);
 	});
 
 	server.on("/pirDetector/getSimpleJson", HTTP_GET, [](){
@@ -148,8 +145,6 @@ void postInitWebServer(){
 	server.on("/luxMeasurer/getSimpleJson", HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), luxMeasurer.getSimpleJson());
 	});
-
-
 
 	server.on("/getI2C", [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), i2cHelper.scan());
@@ -171,6 +166,16 @@ void onRightButtonChanged(){
 }
 //---------------------------------------------------------------------
 //handle lamp events
+void handleLampChange(PinDigital* lamp){
+	wifiHelper.checkAuthentication();
+	int8_t on=server.arg("val").toInt();
+	if(on==-1){
+		lamp->change();
+	}
+	lamp->setVal(on);
+	server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lamp->getSimpleJson());
+}
+
 void onLeftLampChanged(){
 	Serial.println("* Left lamp changed");
 }
@@ -197,110 +202,3 @@ void measureSensors(){
 void processMqttEvent(String topic,String message){
 	Serial.println("Base process processMqttEvent topic="+topic+" message="+message);
 }
-
-void sendInitDataToClient(){
-	//Serial.println("New client connected");
-	//webSocketHelper.sendMessageToAll(timeClient.getWsText(false,':'));
-	//webSocketHelper.sendMessageToAll(lampLeftWidget.getWsText());
-	//webSocketHelper.sendMessageToAll(lampRightWidget.getWsText());
-	//webSocketHelper.sendMessageToAll(bmeMeasurer.getWsText());
-	//webSocketHelper.sendMessageToAll(luxMeasurer.getWsText());
-}
-
-//---------------------------------------------------
-/*
-void handleHttpWidget(){
-	//http://192.168.0.100/handleHttpWidget?actionName=getAllWidgetsJson&widgetName=SENS_2252482
-	//http://192.168.0.100/handleHttpWidget?actionName=getWidgetJson&widgetName=bmeMeasurer
-	deviceHelper.printDeviceDiagnostic();
-
-	int16_t index=-1;
-
-	if(server.arg(FPSTR(PARAM_ACTION_ID))==FPSTR(ACTION_GET_ALL_WIDGET_JSON)
-			&& server.arg(FPSTR(PARAM_REMOTE_ID))==espSettingsBox.DeviceId
-			){
-		//Serial.println("Processing ACTION_GET_ALL_WIDGET_JSON '"+espSettingsBox.DeviceId+"'");
-
-		String result=
-				"{\"m.id\":\""+espSettingsBox.DeviceId+"\",\"m.name\":\""+espSettingsBox.DeviceLocation+"\",\"m.val\":\""+espSettingsBox.DeviceId+"\",\"m.kind\":\""+espSettingsBox.DeviceKind+"\",\"m.descr\":\""+espSettingsBox.DeviceDescription+"\",\"itemsCount\":"+String(ARRAY_SIZE(widgetsArray))+",\"time\":\""+String(millis())+"\",\
-						\"items\":[";
-		uint8_t size=ARRAY_SIZE(widgetsArray);
-		for(uint8_t i=0;i<size;i++){
-			result+=widgetsArray[i]->executeClientAction(FPSTR(ACTION_GET_WIDGET_JSON), "", "", "", "", "");
-			if(i!=size-1){
-				result+=",";
-			}
-		}
-
-		result+="]}";
-
-		server.send(200, "text/html", result);
-		//delete &result;
-		return;
-	}
-
-	for(uint8_t i=0;i<ARRAY_SIZE(widgetsArray);i++){
-		//if(widgetsArray[i]->isTargetOfAction(actionName, remoteId, remoteVal, className, childClass, clientData)){
-		if(widgetsArray[i]->getName()==server.arg(FPSTR(PARAM_REMOTE_ID))){
-			index=i;
-			break;
-		}
-	}
-
-	if(index!=-1){
-		String result=widgetsArray[index]->executeClientAction(
-						server.arg(FPSTR(PARAM_ACTION_ID)),
-						server.arg(FPSTR(PARAM_REMOTE_ID)),
-						server.arg(FPSTR(PARAM_REMOTE_VAL)),
-						server.arg(FPSTR(PARAM_CLASS_NAME)),
-						server.arg(FPSTR(PARAM_CHILD_CLASS)),
-						server.arg(FPSTR(PARAM_CLIENT_DATA)));
-		//Serial.print("result=");
-		//Serial.println(result);
-
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), result);
-		return;
-	}
-
-	server.send(404, FPSTR(CONTENT_TYPE_TEXT_HTML), FPSTR(MESSAGE_STATUS_JSON_WIDGET_NOT_FOUND));
-}
-*/
-
-/*
- void processTimeClientEvent(){
-	webSocketHelper.sendMessageToAll(timeClient.getWsText(false,':'));
-}
-//--------------------------websockets----------------
-void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length){
-  //Serial.println("num="+String(num)+" type="+String(type)+" length="+String(length));
-	Serial.println("-----------Web socket event-----");
-  if(type==WStype_CONNECTED){
-	  Serial.println("Connected");
-	  sendInitDataToClient();
-  }
-  if(type==WStype_DISCONNECTED){
-  	  Serial.println("Disconnected");
-    }
-
-  if (type == WStype_TEXT){
-   Serial.print("num=");Serial.print(num);
-   Serial.print("type=");Serial.print(type);
-   Serial.print("length=");Serial.print(length);
-   Serial.println();
-
-   String message="";
-
-   for(size_t i = 0; i < length; i++){
-	   Serial.print((char) payload[i]);
-	   message+=(char) payload[i];
-   }
-
-
-   //if(message=="__ping__"){
-   //webSocketHelper.sendMessageToAll("__pong__");
-   //}
-   Serial.println();
-  }
-}
-
- */

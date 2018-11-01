@@ -9,7 +9,7 @@
 
 <link rel="stylesheet" href="./css/w3.css">
 <link rel="stylesheet" href="./css/digitalClock.css">
-<script src="./js/main.js"></script>
+<script src="./js/DeviceLib.js"></script>
 
 </head>
 <body onload="onLoadPageComplete()">
@@ -21,23 +21,6 @@
 </div>
 
 <div id="main">
-	<!--<div id="deviceStatusRow" class="w3-teal w3-row">
-		<div class="w3-row">
-			<div class="w3-yellow w3-quarter" style="width: 35px; height: 32px;">
-				<img id="connectingImage" style="cursor: pointer; width: 32px; height: 32px; object-fit: contain; display: block;"
-										src="./img/connecting.png" title="Соединяюсь" alt="Соединяюсь"/>
-				<img id="connectedImage" style="cursor: pointer; width: 32px; height: 32px; object-fit: contain; display: none;"
-										src="./img/connected.png" title="Соединено" alt="Соединено"/>
-			</div>
-			<div id="dId" remoteid="espSettingsBox" remoteval="DeviceId"  class="SettingsWidgetESP w3-rest w3-center w3-yellow"
-				style="height: 32px; width: 150px;" title="Идентификатор устройства">
-				
-			</div>
-			
-		</div>
-	</div>
-	-->
-	
 	<div id="pageHeader" class="w3-teal w3-row">
 		
 		<div class="w3-quarter w3-container w3-animate-opacity" style="width: 70px; height: 70px;">
@@ -62,18 +45,14 @@
 						  <h1><div>Микроклимат</div></h1>
 					</div>
 					
-					<form id="bmeMeasurer" remoteId="bmeMeasurer" reloadInterval="120000" 
-								wsId="bmeMeasurer"
-								class="wsParent MeasurerWidgetESPJson ReloadableWidget w3-container">
+					<form id="bmeMeasurer" class="w3-container">
 								
 						<div id="temperatureDiv" class="w3-row" style="margin-top: 15px;">
 							<div class="w3-quarter">
 								<img src="./img/Temperature.png"/>
 							</div>
 							<div class="w3-third">
-								<input id="Temperature" remoteVal="Temperature" targetTag="value"
-									wsId="Temperature" wsValue="value"
-									class="wsChild refreshableChild w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
+								<input id="Temperature"	class="w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
 							</div>
 							<div>
 								<b>Температура °C</b>
@@ -85,9 +64,7 @@
 								<img src="./img/Pressure.png"/>
 							</div>
 							<div class="w3-third">
-								<input id="Pressure" remoteVal="Pressure" targetTag="value"
-									wsId="Pressure" wsValue="value"
-									class="wsChild refreshableChild w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
+								<input id="Pressure" class="w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
 							</div>
 							<div>
 								<b>Давление (Паскаль)</b>
@@ -99,9 +76,7 @@
 								<img src="./img/Humidity.png"/>
 							</div>
 							<div class="w3-third">
-								<input id="Humidity" remoteVal="Humidity" targetTag="value"
-									wsId="Humidity" wsValue="value"
-									class="wsChild refreshableChild w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
+								<input id="Humidity" class="w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
 							</div>
 							<div>
 								<b>Влажность (%)</b>
@@ -118,9 +93,7 @@
 								<img src="./img/LightLevel.png"/>
 							</div>
 							<div class="w3-third">
-								<input id="light" remoteVal="light" targetTag="value"
-									wsId="light" wsValue="value"
-									class="wsChild refreshableChild w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
+								<input id="light" class="w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
 							</div>
 							<div>
 								<b>Освещение (Люкс)</b>
@@ -145,21 +118,35 @@
 								<div style="width: 90%">
 									<b>Левая лампа</b>
 								</div>
-								<img id="leftlampImg" remoteId="lampLeft" remoteVal="Image" targetTag="src" 
-										class="wsItem refreshableImage w3-center" reloadInterval="10000" style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px;"
-										wsId="lampLeft" wsValue="src"
-										title="Левая лампочка"
-										onclick="lampWidgetClick(this);" src="./img/question.png" alt="Загружаю"/>
+								<img id="lampLeft_Q" class="w3-center" 
+									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; "
+									title="Левая лампочка"
+									src="./img/question.png" alt="Загружаю"/>
+								<img id="lampLeft_On" class="w3-center" 
+									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; display: none;"
+									title="Левая лампочка"
+									onclick="lampWidgetClick(this);" src="./img/OnLamp_64.png" alt="Загружаю"/>
+								<img id="lampLeft_Off" class="w3-center" 
+									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; display: none;"
+									title="Левая лампочка"
+									onclick="lampWidgetClick(this);" src="./img/OffLamp_64.png" alt="Загружаю"/>
 							</div>
 							<div class="w3-half w3-card-4 w3-center" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; width: 92px; height: 120px; ">
 								<div style="width: 90%">
 									<b>Правая лампа</b>
 								</div>
-								<img id="RightlampImg" remoteId="lampRight" remoteVal="Image" targetTag="src" 
-										class="wsItem refreshableImage w3-center" reloadInterval="10000" style="cursor: pointer; width: 64x; height: 64px; object-fit: contain;  margin-top: 10px;"
-										wsId="lampRight" wsValue="src"
-										title="Левая лампочка"
-										onclick="lampWidgetClick(this);" src="./img/question.png" alt="Загружаю"/>
+								<img id="lampRight_Q" class="w3-center" 
+									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; "
+									title="Правая лампочка"
+									src="./img/question.png" alt="Загружаю"/>
+								<img id="lampRight_On" class="w3-center" 
+									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; display: none;"
+									title="Правая лампочка"
+									onclick="lampWidgetClick(this);" src="./img/OnLamp_64.png" alt="Загружаю"/>
+								<img id="lampRight_Off" class="w3-center" 
+									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; display: none;"
+									title="Правая лампочка"
+									onclick="lampWidgetClick(this);" src="./img/OffLamp_64.png" alt="Загружаю"/>
 							</div>
 						</div>
 					</form>
@@ -172,10 +159,7 @@
 	</div>
 	<div class="w3-footer">	
 		<form name="publish_form">
-			<!--<a href = "javascript:sendWsMessage(message.value)">SendText</a>
-			<input id=message type="text" name="message">-->
-		  
-   	     	<div id="websocket_status" class="w3-panel w3-teal w3-card-4">Устройство управления лампочками и просмотра параметров микроклимата</div>
+			<div id="websocket_status" class="w3-panel w3-teal w3-card-4">Устройство управления лампочками и просмотра параметров микроклимата</div>
 		</form>
 	</div>
 	

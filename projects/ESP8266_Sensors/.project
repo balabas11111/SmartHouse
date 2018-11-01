@@ -67,6 +67,11 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DallasTemperature/3.7.6</locationURI>
 		</link>
 		<link>
+			<name>libraries/DeviceLib</name>
+			<type>2</type>
+			<location>D:/projects/!!!SmartHouse/librarys/DeviceLib</location>
+		</link>
+		<link>
 			<name>libraries/EEPROM</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/EEPROM</locationURI>
@@ -92,6 +97,16 @@
 			<location>D:/projects/!!!SmartHouse/librarys/EspSettingsBox</location>
 		</link>
 		<link>
+			<name>libraries/Hash</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Hash</locationURI>
+		</link>
+		<link>
+			<name>libraries/Helpers</name>
+			<type>2</type>
+			<location>D:/projects/!!!SmartHouse/librarys/Helpers</location>
+		</link>
+		<link>
 			<name>libraries/LedB</name>
 			<type>2</type>
 			<location>D:/projects/!!!SmartHouse/librarys/LedB</location>
@@ -100,6 +115,11 @@
 			<name>libraries/Loopable</name>
 			<type>2</type>
 			<location>D:/projects/!!!SmartHouse/librarys/Loopable</location>
+		</link>
+		<link>
+			<name>libraries/NTPClient</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/NTPClient/3.1.0</locationURI>
 		</link>
 		<link>
 			<name>libraries/OLED</name>
@@ -140,6 +160,11 @@
 			<name>libraries/TimeTrigger</name>
 			<type>2</type>
 			<location>D:/projects/!!!SmartHouse/librarys/TimeTrigger</location>
+		</link>
+		<link>
+			<name>libraries/WebSockets</name>
+			<type>2</type>
+			<location>D:/projects/!!!SmartHouse/librarys/WebSockets</location>
 		</link>
 		<link>
 			<name>libraries/Wire</name>
