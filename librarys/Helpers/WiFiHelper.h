@@ -19,14 +19,13 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
-#include <PinDigital_Event.h>
+#include <PinDigital.h>
 
 class WiFiHelper:public Initializable,public Loopable {
 
 public:
 	WiFiHelper(String _name,EspSettingsBox *_settingsBox, DisplayHelper *_displayHelper, PinDigital *_signalPin,
-			ESP8266WebServer *_server,std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected,
-			std::function<void(void)> _handleHttpWidget,std::function<PinEvent(PinEvent)> _processPinEvent){
+			ESP8266WebServer *_server,std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
 		name=_name;
 		espSettingsBox=_settingsBox;
 		displayHelper=_displayHelper;
@@ -34,9 +33,6 @@ public:
 		serverPostInitFunc=_serverPostInitFunc;
 		disconnectOnStartIfConnected=_disconnectOnStartIfConnected;
 		server=_server;
-
-		handleHttpWidget=_handleHttpWidget;
-		processPinEvent=_processPinEvent;
 
 		initStaticPages=true;
 		initFilesManager=true;
@@ -89,9 +85,6 @@ public:
 		server->onNotFound([this](){handleNotFound();});
 
 		server->serveStatic("/", SPIFFS, (espSettingsBox->webDefPage).c_str());
-		server->on ( "/"+String(FPSTR(URL_REMOTE_GET_WIDGETS)), HTTP_ANY, [this](){handleHttpWidgetExternal();});
-		//server->on ( "/SettingsWidgetESP", HTTP_ANY, [this](){handleEspSettings();});
-		server->on ( "/"+String(FPSTR(URL_PROCESS_EVENTS)), HTTP_GET, [this](){handleHttpEvent();});
 
 		if(initStaticPages){
 			initStaticPagesInWebFolder();
@@ -112,7 +105,7 @@ public:
 		Serial.println("-------------------------------------------");
 
 	}
-
+/*
 	void handleHttpWidgetExternal(){
 
 		if(!server->hasArg(FPSTR(PARAM_ACTION_ID))
@@ -148,7 +141,7 @@ public:
 		}
 		handleHttpWidget();
 	}
-
+*/
 
 	//-----------------------------------------------------------------------
 	void initStaticPagesInWebFolder(){
@@ -231,7 +224,7 @@ public:
 
 		server->send(400, "text/html", "widgetName parameter missing");
 	}
-*/
+
 	void handleHttpEvent(){
 		if(server->args()!=0 && server->hasArg("command")){
 			String command=server->arg("command");
@@ -244,6 +237,7 @@ public:
 
 		server->send(500,"text/html","{\"status\":\"Failed\",\"command\":\"No command received\"}");
 	}
+	*/
 	//-----------------------------------------------------------------------
 
 	boolean startAsAccessPoint(){
@@ -658,8 +652,8 @@ private:
 	std::function<void(void)> serverPostInitFunc;
 	boolean disconnectOnStartIfConnected;
 
-	std::function<void(void)> handleHttpWidget;
-	std::function<PinEvent(PinEvent)> processPinEvent;
+	//std::function<void(void)> handleHttpWidget;
+	//std::function<PinEvent(PinEvent)> processPinEvent;
 
 	boolean initStaticPages;
 	boolean initFilesManager;

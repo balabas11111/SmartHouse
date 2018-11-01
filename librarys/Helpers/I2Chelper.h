@@ -12,7 +12,7 @@
 #include "Initializable.h"
 #include "Wire.h"
 
-class I2Chelper:public Initializable{
+class I2Chelper: public Initializable{
 
 public:
 	I2Chelper(uint8_t _clockPin,uint8_t _dataPin,boolean _active){
@@ -22,21 +22,26 @@ public:
 		sda=_dataPin;
 		scl=_clockPin;
 
-		initialized=false;
-
 		initialize(_active);
 	}
 
-	virtual boolean initialize(boolean init) override{
-			Serial.println("Begin initialize of I2CHelper");
-			if(init && !initialized){
-				initWire();
-				scan();
-			}
-			initialized=init;
+	virtual ~I2Chelper(){};
 
-			return initialized;
+	virtual bool init(){
+		return initialize(true);
+	}
+
+	virtual boolean initialize(boolean init){
+		Serial.println("Begin initialize of I2CHelper");
+		if(init){
+			initWire();
+			scan();
 		}
+
+		initialized=init;
+
+		return init;
+	}
 
 	String scan(){
 			Serial.println("---------------");

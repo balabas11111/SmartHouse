@@ -1,7 +1,7 @@
 /*
  * Initializable.h
  *
- *  Created on: 20 окт. 2018 г.
+ *  Created on: 20 пїЅпїЅпїЅ. 2018 пїЅ.
  *      Author: Vitaliy
  */
 

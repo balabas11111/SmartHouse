@@ -9,21 +9,23 @@
 #define LIBRARIES_MEASURER_BH1750_MEASURER_H_
 
 #include "Arduino.h"
-#include "Measurer.h"
-#include "HtmlWidget.h"
+#include "AbstractItem.h"
+#include "Initializable.h"
 
 #include "BH1750.h"
 
 const char MEASURER_BH1750_NAME[] PROGMEM ="BH1750_Sensor";
 const char MEASURER_BH1750_DESCRIPTION[] PROGMEM ="LuxMeter";
+const char MEASURER_BH1750_SIZE[] PROGMEM ="Lux";
 const char MEASURER_BH1750_DESCRIPTION_RU[] PROGMEM ="Освещенность BH1750";
 
-class BH1750_Measurer: public Measurer, public HtmlWidget{
+class BH1750_Measurer: public AbstractItem, public Initializable{
 
 public:
 
-	BH1750_Measurer(String _id,String _name)
-			: Measurer(_id, _name, FPSTR(MEASURER_BH1750_NAME),FPSTR(MEASURER_BH1750_DESCRIPTION),FPSTR(MEASURER_BH1750_DESCRIPTION_RU), 1,false){
+	BH1750_Measurer(uint8_t id,String name,uint8_t fieldId,String queueName)
+			: AbstractItem(id,name,FPSTR(MEASURER_BH1750_DESCRIPTION),FPSTR(MEASURER_BH1750_SIZE),FPSTR(MEASURER_BH1750_DESCRIPTION_RU),
+					0, 1,fieldId,queueName){
 	}
 
 	~BH1750_Measurer(){
@@ -37,51 +39,24 @@ public:
 			lightMeter.begin();
 			Serial.println("...done");
 			Serial.println("---------------------------------------------");
+
+			initSensor();
 			measure();
 		}
 		initialized=_init;
 		return initialized;
 	}
 
-	void getExternal() override{
-		items[0]=Measureable("light","Освещенность","Lux",String(lightMeter.readLightLevel()),"Люкс");
+
+	void initSensor(){
+		items[0]={0,"light","LuxMeter","Люкс","Освещенность",(float)lightMeter.readLightLevel(),0};
 	}
-	//------------------------HtmlWidgetProcessing---------------------------
+	//----------------------------------------------
 
-		String getName(){
-			return Measurer::getName();
-		}
+	void measure(){
+		items[0].val=(float)lightMeter.readLightLevel();
+	}
 
-		String executeClientAction(String actionName,String remoteId,String remoteVal, String className, String childClass,String clientData){
-
-			//printCommand(actionName, remoteId, remoteVal, className, childClass, clientData);
-
-			if(actionName==(FPSTR(ACTION_GET_WIDGET_HTML_OR_VAL))
-					&&className==(FPSTR(CLASS_REFRESHABLE_MeasurerWidgetESP))){
-
-				return FPSTR(HTML_BH1750);
-			}
-
-			if(actionName==(FPSTR(ACTION_GET_WIDGETS_CHILDREN_AS_JSON))
-					&&className==(FPSTR(CLASS_REFRESHABLE_CHILDREN_MeasurerWidgetESPJson))
-					&&childClass==(FPSTR(CLASS_REFRESHABLE_CHILD))){
-
-				return Measurer::getChildrenJson();
-			}
-
-			if(actionName==FPSTR(ACTION_GET_WIDGET_JSON)){
-				return Measurer::getMeasurableAsJson();
-			}
-
-			return getNotAllowed();
-		}
-
-		String getWsText(){
-			return Measurer::getWsJson();
-		}
-
-
-		//----------------------------------------------
 private:
 	BH1750 lightMeter;;
 };

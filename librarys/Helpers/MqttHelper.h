@@ -11,18 +11,14 @@
 #include "Arduino.h"
 #include <EspSettingsBox.h>
 #include <PubSubClient.h>
-#include "PinEvent.h"
 #include "Loopable.h"
 #include "Initializable.h"
-#include "PinEventProcessor.h"
-#include <ConfigStorage.h>
 
 class MqttHelper: public Loopable,public Initializable{
 
 public:
-	MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,uint8_t _topicCount,Client& _client,PinEventProcessor *eventProcessors[],uint8_t procSize,std::function<void(String topic,String message)> _externalCallbackFunction);
+	MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,uint8_t _topicCount,Client& _client,std::function<void(String topic,String message)> _externalCallbackFunction);
 
-	PinEvent processEvent(PinEvent event);
 	virtual ~MqttHelper();
 
 	virtual boolean initialize(boolean _init) override;
@@ -32,8 +28,6 @@ public:
 	void subscribe(String topicName);
 	boolean publish(char* topicName,String message);
 
-	boolean publish(PinEvent event);
-
 	String getName();
 	String displayDetails();
 	boolean loop();
@@ -42,12 +36,8 @@ public:
 	PubSubClient getClient();
 
 private:
-	PinEventProcessor **eventProcessors;
-	uint8_t procSize;
-
 	uint8_t topicCount;
 	String* subscribeTopics;
-	//std::function<void(PinEvent)> externalPinEventFunction;
 	std::function<void(String topic,String message)> externalCallbackFunction;
 	PubSubClient client;
 

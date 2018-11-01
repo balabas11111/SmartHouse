@@ -491,10 +491,17 @@ String EspSettingsBox::getSettingsAsJsonString(){
 	return "";
 }
 
-
-
 boolean EspSettingsBox::isTrue(String str){
 	String tmp=String(str);
 
 	return (tmp.toInt()==1) ;
+}
+
+String EspSettingsBox::getJson(){
+
+	String result="{\"name\":\"espSettingsBox\",\"val\":\"3\",\"fieldId\":\"0\",\"queueName\":\"\",\"items\":[\
+					{\"DeviceLocation\":\""+DeviceId+"\"},\
+			        {\"DeviceLocation\":\""+DeviceLocation+"\"},\
+					{\"thSkChId\":\""+thSkChId+"\"}]}";
+	return result;
 }

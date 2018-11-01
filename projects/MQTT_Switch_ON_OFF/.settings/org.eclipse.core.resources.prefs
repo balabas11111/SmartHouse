@@ -2,7 +2,6 @@ eclipse.preferences.version=1
 encoding//libraries/Measurer/BH1750_Measurer.h=UTF-8
 encoding//libraries/Measurer/BME280_Measurer.h=UTF-8
 encoding//libraries/PinEventLib/ESP_Consts.h=UTF-8
-encoding//libraries/PinEventLib/Measurer.h=UTF-8
 encoding//web/index.html=UTF-8
 encoding//web/js/main.js=UTF-8
 encoding/<project>=UTF-8

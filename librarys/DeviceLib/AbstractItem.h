@@ -37,24 +37,35 @@ public:
 		this->childCount=childCount;
 		this->queueName=queueName;
 
-
-		init();
+		if(childCount>0)
+		items=new SensorValue[childCount];
 	}
 	virtual ~AbstractItem(){};
 
+	SensorValue getItem(){
+		return item;
+	}
+
+	SensorValue* getItems(){
+		return items;
+	}
+
+	String getQueueName(){
+		return queueName;
+	}
+
 	virtual void update(){};
 
-	virtual bool loop()=0;
+	virtual boolean loop(){return false;};
 
 	virtual String getJson(){
-
 		String result=
 				"{\"id\":\""+String(item.id)+"\","
 				+"\"name\":\""+item.name+"\","
 				+"\"type\":\""+item.type+"\","
 				+"\"size\":\""+item.size+"\","
 				+"\"descr\":\""+item.descr+"\","
-				+"\"count\":\""+String(item.val)+"\","
+				+"\"val\":\""+String(item.val)+"\","
 				+"\"fieldId\":\""+String(item.fieldId)+"\","
 				+"\"childCount\":\""+String(childCount)+"\","
 				+"\"queueName\":\""+queueName+"\","
@@ -72,18 +83,54 @@ public:
 		return result;
 	}
 
+	virtual String getSimpleJson(){
+		String result="{\"name\":\""+item.name+"\","
+						+"\"val\":\""+String(item.val)+"\","
+						+"\"fieldId\":\""+String(item.fieldId)+"\","
+						+"\"queueName\":\""+queueName+"\","
+						+"\"items\":[";
+
+					for(uint8_t i=0;i<childCount;i++){
+						result+=getSensorValueSimpleJson(items[i]);
+						if(i!=childCount-1){
+							result+=",";
+						}
+					}
+
+					result+="]}";
+			return result;
+	}
+
+	virtual String getJson(uint8_t id){
+		return getSensorValueJson(items[id]);
+	}
+
+	String getName(){
+		return this->item.name;
+	}
+
+	void setFieldId(int8_t fieldId){
+		this->item.fieldId=fieldId;
+	}
+
+	void setFieldId(uint8_t child,int8_t fieldId){
+		if(childCount>child){
+			this->items[child].fieldId=fieldId;
+		}
+	}
+
+	void setQueueName(String queueName){
+		this->queueName=queueName;
+	}
+
 protected:
 
 	SensorValue item;
 
-	boolean initialized;
-
 	uint8_t childCount;
 	String queueName;
 
-	SensorValue items[];
-
-	virtual void init()=0;
+	SensorValue* items;
 
 	String getSensorValueJson(SensorValue m){
 		return "{\"id\":\""+String(m.id)+"\","
@@ -91,7 +138,13 @@ protected:
 				+"\"type\":\""+m.type+"\","
 				+"\"size\":\""+m.size+"\","
 				+"\"descr\":\""+m.descr+"\","
-				+"\"count\":\""+String(m.val)+"\","
+				+"\"val\":\""+String(m.val)+"\","
+				+"\"fieldId\":\""+String(m.fieldId)+"\"}";
+	}
+
+	String getSensorValueSimpleJson(SensorValue m){
+		return "{\"name\":\""+m.name+"\","
+				+"\"val\":\""+String(m.val)+"\","
 				+"\"fieldId\":\""+String(m.fieldId)+"\"}";
 	}
 

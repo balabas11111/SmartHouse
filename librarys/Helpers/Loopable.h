@@ -1,7 +1,7 @@
 /*
  * Looper.h
  *
- *  Created on: 13 окт. 2018 г.
+ *  Created on: 13 пїЅпїЅпїЅ. 2018 пїЅ.
  *      Author: Vitaliy
  */
 
@@ -15,7 +15,9 @@ class Loopable{
 public:
 	virtual boolean loop()=0;
 	//virtual String getName()=0;
-	virtual String displayDetails()=0;
+	virtual String displayDetails(){
+		return "";
+	}
 	virtual ~Loopable(){};
 };
 

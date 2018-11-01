@@ -45,6 +45,11 @@ public:
 
 	boolean isTrue(String str);
 
+	String getJson();
+	String getSimpleJson(){
+		return getJson();
+	}
+
 	void printSettingsFile();
 
 	boolean isSpiffInitialized();

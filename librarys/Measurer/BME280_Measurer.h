@@ -10,22 +10,24 @@
 
 #include "Arduino.h"
 #include "Initializable.h"
-#include "Measurer.h"
-#include "HtmlWidget.h"
+#include "AbstractItem.h"
+#include "Initializable.h"
 
 #include "Adafruit_BME280.h"
 #include "Adafruit_Sensor.h"
 
 const char MEASURER_BME280_NAME[] PROGMEM ="Bme280Sensor";
 const char MEASURER_BME280_DESCRIPTION[] PROGMEM ="Bme280Sensor";
+const char MEASURER_BME280_SIZE[] PROGMEM ="C/%/Pa/m";
 const char MEASURER_BME280_DESCRIPTION_RU[] PROGMEM ="Климат BME280";
 
-class BME280_Measurer: public Measurer, public HtmlWidget{
+class BME280_Measurer: public AbstractItem, public Initializable{
 
 public:
 
-	BME280_Measurer(String _id,String _name)
-			:Measurer(_id, _name, FPSTR(MEASURER_BME280_NAME),FPSTR(MEASURER_BME280_DESCRIPTION),FPSTR(MEASURER_BME280_DESCRIPTION_RU), 4, false){
+	BME280_Measurer(uint8_t id,String name,uint8_t fieldId,String queueName)
+		: AbstractItem(id,name,FPSTR(MEASURER_BME280_DESCRIPTION),FPSTR(MEASURER_BME280_SIZE),FPSTR(MEASURER_BME280_DESCRIPTION_RU),
+					0, 1,fieldId,queueName){
 	}
 
 	~BME280_Measurer(){
@@ -41,54 +43,25 @@ public:
 			Serial.print(" status="+String(status));
 			Serial.println("...done");
 			Serial.println("---------------------------------------------");
-			measure();
+			initSensor();
 		}
 		initialized=_init;
 		return initialized;
 	}
 
-	void getExternal() override{
-		items[0]=Measureable(FPSTR(TEMPERATURE),FPSTR(TEMPERATURE_RU),FPSTR(MEASURE_CELSIUS_DEGREES),String(bme.readTemperature()),FPSTR(MEASURE_CELSIUS_DEGREES_RU));
-		items[1]=Measureable(FPSTR(PRESSURE),FPSTR(PRESSURE_RU),FPSTR(MEASURE_PASCAL),String(bme.readPressure()),FPSTR(MEASURE_PASCAL_RU));
-		items[2]=Measureable(FPSTR(HUMIDITY),FPSTR(HUMIDITY_RU),FPSTR(MEASURE_PERSENT),String(bme.readHumidity()),FPSTR(MEASURE_PERSENT_RU));
-		items[3]=Measureable(FPSTR(ALTITUDE),FPSTR(ALTITUDE_RU),FPSTR(MEASURE_METER),String(bme.readAltitude(1013.25)),FPSTR(MEASURE_METER_RU));
+	void initSensor(){
+		items[0]={0,FPSTR(TEMPERATURE),FPSTR(MEASURE_CELSIUS_DEGREES),FPSTR(MEASURE_CELSIUS_DEGREES_RU),FPSTR(TEMPERATURE_RU),(float)bme.readTemperature(),1};
+		items[1]={0,FPSTR(PRESSURE),FPSTR(MEASURE_PASCAL),FPSTR(MEASURE_PASCAL_RU),FPSTR(PRESSURE_RU),(float)bme.readPressure(),2};
+		items[2]={0,FPSTR(HUMIDITY),FPSTR(MEASURE_PERSENT),FPSTR(MEASURE_PERSENT_RU),FPSTR(HUMIDITY_RU),(float)bme.readHumidity(),3};
+		items[3]={0,FPSTR(ALTITUDE),FPSTR(MEASURE_METER),FPSTR(MEASURE_METER_RU),FPSTR(ALTITUDE_RU),(float)bme.readAltitude(1013.25),4};
 	}
 
-	//------------------------HtmlWidgetProcessing---------------------------
-	String getName(){
-		return Measurer::getName();
+	void measure(){
+		items[0].val=(float)bme.readTemperature();
+		items[1].val=(float)bme.readPressure();
+		items[2].val=(float)bme.readHumidity();
+		items[3].val=(float)bme.readAltitude(1013.25);
 	}
-
-	String executeClientAction(String actionName,String remoteId,String remoteVal, String className, String childClass,String clientData){
-
-		//printCommand(actionName, remoteId, remoteVal, className, childClass, clientData);
-
-		if(actionName==(FPSTR(ACTION_GET_WIDGET_HTML_OR_VAL))
-				&&className==(FPSTR(CLASS_REFRESHABLE_MeasurerWidgetESP))){
-
-			Serial.println("return html");
-			return FPSTR(HTML_BME280);
-		}
-
-		if(actionName==(FPSTR(ACTION_GET_WIDGETS_CHILDREN_AS_JSON))
-				&&className==(FPSTR(CLASS_REFRESHABLE_CHILDREN_MeasurerWidgetESPJson))
-				&&childClass==(FPSTR(CLASS_REFRESHABLE_CHILD))){
-
-			return Measurer::getChildrenJson();
-		}
-
-		if(actionName==FPSTR(ACTION_GET_WIDGET_JSON)){
-			return Measurer::getMeasurableAsJson();
-		}
-
-		return getNotAllowed();
-	}
-
-	String getWsText(){
-		return Measurer::getWsJson();
-	}
-
-	//----------------------------------------------
 
 private:
 	Adafruit_BME280 bme;

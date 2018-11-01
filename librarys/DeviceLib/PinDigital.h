@@ -11,17 +11,29 @@
 #include "Arduino.h"
 #include <FunctionalInterrupt.h>
 #include <AbstractItem.h>
+#include <Loopable.h>
 
-class PinDigital:  public AbstractItem {
+class PinDigital:  public AbstractItem, public Loopable {
 
 public:
-	PinDigital(uint8_t id,String name,uint8_t pin,std::function<void(void)> onChanged,uint8_t fieldId,String queueName)
-		:AbstractItem(id,name,"PinDigital","HIGH/LOW","",0, 0,fieldId,queueName){
+
+	PinDigital(String name,uint8_t pin,std::function<void(void)> onChanged)
+		:AbstractItem(pin,name,"PinDigital","HIGH/LOW","",0, 0,0,""){
 		construct(pin, onChanged, INPUT, CHANGE, pinVal, turnOffLevel);
 	}
 
-	PinDigital(uint8_t id,String name,uint8_t pin,std::function<void(void)> onChanged,uint8_t pinMode,uint8_t changeMode,uint8_t pinVal,uint8_t turnOffLevel,uint8_t fieldId,String queueName)
-		:AbstractItem(id,name,"PinDigital","HIGH/LOW","",pinVal, 0,fieldId,queueName){
+	PinDigital(String name,uint8_t pin,std::function<void(void)> onChanged,uint8_t fieldId,String queueName)
+		:AbstractItem(pin,name,"PinDigital","HIGH/LOW","",0, 0,fieldId,queueName){
+		construct(pin, onChanged, INPUT, CHANGE, pinVal, turnOffLevel);
+	}
+
+	PinDigital(String name,uint8_t pin,std::function<void(void)> onChanged,uint8_t pinMode,uint8_t changeMode,uint8_t pinVal,uint8_t turnOffLevel)
+			:AbstractItem(pin,name,"PinDigital","HIGH/LOW","",pinVal, 0,0,""){
+			construct(pin, onChanged, pinMode, changeMode, pinVal, turnOffLevel);
+		}
+
+	PinDigital(String name,uint8_t pin,std::function<void(void)> onChanged,uint8_t pinMode,uint8_t changeMode,uint8_t pinVal,uint8_t turnOffLevel,uint8_t fieldId,String queueName)
+		:AbstractItem(pin,name,"PinDigital","HIGH/LOW","",pinVal, 0,fieldId,queueName){
 		construct(pin, onChanged, pinMode, changeMode, pinVal, turnOffLevel);
 	}
 
@@ -37,33 +49,13 @@ public:
 	void setTurnOffLevel(uint8_t turnOffLevel);
 
 	//AbstractItem functions
-	virtual bool loop() override{
-		bool result=false;
-			#ifdef DISPLAY_LOOPS
-				Serial.println("Digital pin loop ");
-			#endif
-
-			if(changed){
-				if(onChanged!=nullptr){
-					onChanged();
-				}
-
-				changed=false;
-				result=true;
-			}
-			if(dispatchState){
-				if(onChanged!=nullptr){
-					onChanged();
-				}
-				dispatchState=false;
-				result=true;
-			}
-
-			return result;
+	virtual boolean loop() override{
+		return handleLoop();
 	}
-	virtual void init() override{
-		initialized=true;
+	virtual String displayDetails(){
+		return getJson();
 	}
+
 	//PinAbstract functions
 	uint16_t getVal();
 	bool setVal(uint16_t _val);
@@ -86,6 +78,8 @@ protected:
 	uint8_t changeMode;
 	uint8_t pinVal;
 	uint8_t turnOffLevel;
+
+	boolean handleLoop();
 };
 
 

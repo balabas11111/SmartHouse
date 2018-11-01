@@ -38,10 +38,57 @@ bool PinDigital::setVal(uint16_t _val){
 	if(pinModeInOut==OUTPUT){
 		if(_val!=getVal()){
 			digitalWrite(pin, _val);
+			//dispatchState=true;
 		}
 		return _val==digitalRead(pin);
 	}
 	return false;
+}
+
+void PinDigital::processInterrupt(){
+	uint16_t now=getVal();
+
+	item.val=now;
+
+	if(now!=oldVal){
+		changed=true;
+		#ifdef DIGITAL_PIN_DISPLAY_CHANGE_EVENT
+			Serial.print(printState()+" now="+String(now));
+			Serial.println("...event dispatched");
+		#endif
+	}else{
+		Serial.println(" not changed");
+		#ifdef DIGITAL_PIN_DISPLAY_NO_CHANGE_EVENT
+		Serial.print(printState()+" now="+String(now));
+		Serial.println("...no event");
+		#endif
+	}
+	oldVal=now;
+}
+
+boolean PinDigital::handleLoop(){
+	bool result=false;
+	#ifdef DISPLAY_LOOPS
+		Serial.println("Digital pin loop ");
+	#endif
+
+	if(changed){
+		if(onChanged!=nullptr){
+			onChanged();
+		}
+
+		changed=false;
+		result=true;
+	}
+	if(dispatchState){
+		if(onChanged!=nullptr){
+			onChanged();
+		}
+		dispatchState=false;
+		result=true;
+	}
+
+	return result;
 }
 
 uint8_t PinDigital::change(){
@@ -89,27 +136,6 @@ uint8_t PinDigital::turnOnOff(boolean _turnOn){
 
 boolean PinDigital::isOn(){
 	return turnOffLevel!=getVal();
-}
-
-void PinDigital::processInterrupt(){
-	uint16_t now=getVal();
-
-	item.val=now;
-
-	if(now!=oldVal){
-		changed=true;
-		#ifdef DIGITAL_PIN_DISPLAY_CHANGE_EVENT
-			Serial.print(printState()+" now="+String(now));
-			Serial.println("...event dispatched");
-		#endif
-	}else{
-		Serial.println(" not changed");
-		#ifdef DIGITAL_PIN_DISPLAY_NO_CHANGE_EVENT
-		Serial.print(printState()+" now="+String(now));
-		Serial.println("...no event");
-		#endif
-	}
-	oldVal=now;
 }
 
 void PinDigital::setTurnOffLevel(uint8_t turnOffLevel) {

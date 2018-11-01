@@ -8,27 +8,31 @@
 #ifndef LIBRARIES_MEASURER_PIRDETECTOR_H_
 #define LIBRARIES_MEASURER_PIRDETECTOR_H_
 
-#include <PinDigital_Event.h>
+#include <PinDigital.h>
 #include "Arduino.h"
 #include "TimeTrigger.h"
 #include "Loopable.h"
 
-class PirDetector {
+class PirDetector: public Loopable {
 public:
-	PirDetector(uint8_t _pin,PinDigital *_signalLed,std::function<PinEvent(PinEvent)> _processPinEvent,std::function<void(void)> _externalFunction){
-		pirDetectorPin=new PinDigital("pirDetectorPin",_pin);
+	PirDetector(String name,uint8_t _pin,PinDigital *_signalLed,std::function<void(void)> onChangeFunction,uint8_t fieldId,String queueName){
+		pirDetectorPin=new PinDigital(name,_pin,nullptr,fieldId,queueName);
 		humanPresentTrigger=new TimeTrigger(0,humanNotPresentInterval,false,[this](){onHumanPresentTrigger();});
 		//pirPin=_pin;
 		signalLed=_signalLed;
-		processPinEvent=_processPinEvent;
-		externalFunction=_externalFunction;
+		externalFunction=onChangeFunction;
 	}
-	virtual ~PirDetector();
+	virtual ~PirDetector(){};
 
 	boolean loop(){
 		boolean changed=humanPresentTrigger->loop();
+
 		if(changed){
-			onPirWasChanged(pirDetectorPin->constructEvent(PIN_EVENT_STATE_UPDATED,true));
+			if(pirDetectorPin->isOn()){
+				onMovementDetected();
+			}else{
+				onNoMovementDetected();
+			}
 		}
 		return changed;
 	}
@@ -42,8 +46,13 @@ public:
 		if(signalLed!=nullptr)
 			signalLed->changeAndDelay(50, 2);
 
+		if(!humanPresented && externalFunction!=nullptr){
+			externalFunction();
+		}
+
 		humanPresented=true;
 		humanPresentTrigger->setActive(false);
+
 		handleLightOnOff();
 	}
 
@@ -51,7 +60,6 @@ public:
 		Serial.println("-------handle NO MovementDetected");
 		humanPresentTrigger->saveTime();
 		humanPresentTrigger->setActive(true);
-		handleLightOnOff();
 	}
 
 	void onHumanPresentTrigger(){
@@ -61,9 +69,6 @@ public:
 		humanPresentTrigger->setActive(false);
 
 		handleLightOnOff();
-
-		if(processPinEvent!=nullptr)
-			processPinEvent(pirDetectorPin->constructEvent(PIN_EVENT_STATE_UPDATED,true));
 
 		if(externalFunction!=nullptr){
 			externalFunction();
@@ -75,21 +80,33 @@ public:
 			signalLed->turnOnOff(humanPresented);
 	}
 
-	PinEvent onPirWasChanged(PinEvent event){
-		Serial.println("//On pir changed");
-		//On pir changed
-		boolean dispatch=!humanPresented;
+	virtual String getJson(){
+		String result=
+				"{\"id\":\""+String(pirDetectorPin->getItem().id)+"\","
+				+"\"name\":\""+pirDetectorPin->getItem().name+"\","
+				+"\"type\":\"PirDetector\","
+				+"\"size\":\"Human/No_Human\","
+				+"\"descr\":\"Human detector\","
+				+"\"val\":\""+String(humanPresented)+"\","
+				+"\"fieldId\":\""+String(pirDetectorPin->getItem().fieldId)+"\","
+				+"\"childCount\":\"0\","
+				+"\"queueName\":\""+pirDetectorPin->getQueueName()+"\","
+				+"\"items\":[]}";
 
-		if(event.getVal()==HIGH){
-			onMovementDetected();
-		} else{
-			onNoMovementDetected();
-		}
-
-		processPinEvent(event.setIsBubble(dispatch));
-
-		return PinEvent();
+		return result;
 	}
+	virtual String getSimpleJson(){
+		String result=
+				"{\"name\":\""+pirDetectorPin->getItem().name+"\","
+				+"\"descr\":\"Human detector\","
+				+"\"val\":\""+String(humanPresented)+"\","
+				+"\"fieldId\":\""+String(pirDetectorPin->getItem().fieldId)+"\","
+				+"\"queueName\":\""+pirDetectorPin->getQueueName()+"\","
+				+"\"items\":[]}";
+
+		return result;
+	}
+
 private:
 	PinDigital *pirDetectorPin;
 	TimeTrigger *humanPresentTrigger;
@@ -99,8 +116,8 @@ private:
 	boolean humanPresented=false;
 
 	PinDigital *signalLed;
-	std::function<PinEvent(PinEvent)> processPinEvent;
 	std::function<void(void)> externalFunction;
+
 };
 
 #endif /* LIBRARIES_MEASURER_PIRDETECTOR_H_ */
