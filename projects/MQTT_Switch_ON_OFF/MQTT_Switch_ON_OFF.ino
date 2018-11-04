@@ -242,15 +242,11 @@ String setAllSensorsJson(){
 	Serial.print("Total arguments=");
 	Serial.println(size);
 
+	uint8_t lastDevice=0;
+
 	for(int i=0;i<size;i++){
 		String argName=server.argName(i);
 		String argVal=server.arg(i);
-
-		/*
-		Serial.print(argName);
-		Serial.print("=");
-		Serial.println(argVal);
-		*/
 
 		if(argName.startsWith("s_")){
 
@@ -263,7 +259,7 @@ String setAllSensorsJson(){
 
 			uint8_t size=ARRAY_SIZE(minMaxValues);
 
-			for(uint8_t i=0;i<size;i++){
+			for(uint8_t i=lastDevice;i<size;i++){
 
 				if((minMaxValues[i]->getItem().id)==deviceId && minMaxValues[i]->getChildCount()>sensorId){
 					if(type=="descr"){
@@ -278,6 +274,9 @@ String setAllSensorsJson(){
 					if(type=="fieldId"){
 						minMaxValues[i]->setFieldId(sensorId, argVal.toInt());
 					}
+
+					lastDevice=i;
+					break;
 				}
 
 			}

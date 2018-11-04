@@ -267,52 +267,7 @@ function submitSensorsForm(formName,updateName){
 		formData.append("currentTab", currentTab);
 		
 		document.getElementById(currentContainerName).innerHTML="Сохраняю данные...";
-		/*
-		formData.append('s_20_0_descr', 'Температура');
-		formData.append('s_20_0_minVal', '-512.00');
-		formData.append('s_20_0_maxVal', '512.00');
-		formData.append('s_20_0_fieldId', '0');
 		
-		formData.append('s_20_1_descr', 'Давление');
-		formData.append('s_20_1_minVal', '-512.00');
-		formData.append('s_20_1_maxVal', '120000.00');
-		formData.append('s_20_1_fieldId', '0');
-		
-		formData.append('s_20_2_descr', 'Влажность');
-		formData.append('s_20_2_minVal', '-512.00');
-		formData.append('s_20_2_maxVal', '512.00');
-		formData.append('s_20_2_fieldId', '0');
-		
-		formData.append('s_20_3_descr', 'Высота');
-		formData.append('s_20_3_minVal', '-512.00');
-		formData.append('s_20_3_maxVal', '10000.00');
-		formData.append('s_20_3_fieldId', '0');
-
-		formData.append('s_21_0_descr', 'Освещение');
-		formData.append('s_21_0_minVal', '-512.00');
-		formData.append('s_21_0_maxVal', '512.00');
-		formData.append('s_21_0_fieldId', '0');
-
-		formData.append('s_16_0_descr', 'Температура');
-		formData.append('s_16_0_minVal', '-512.00');
-		formData.append('s_16_0_maxVal', '512.00');
-		formData.append('s_16_0_fieldId', '0');
-
-		formData.append('s_16_1_descr', 'Влажность');
-		formData.append('s_16_1_minVal', '-512.00');
-		formData.append('s_16_1_maxVal', '512.00');
-		formData.append('s_16_1_fieldId', '0');
-
-		formData.append('s_0_0_descr', 'Тестовый термометр1');
-		formData.append('s_0_0_minVal', '-512.00');
-		formData.append('s_0_0_maxVal', '512.00');
-		formData.append('s_0_0_fieldId', '0');
-
-		formData.append('s_0_1_descr', 'Тестовый термометр 2');
-		formData.append('s_0_1_minVal', '-512.00');
-		formData.append('s_0_1_maxVal', '512.00');
-		formData.append('s_0_1_fieldId', '0');
-*/
 		var request = new XMLHttpRequest();
 		request.open("POST", "/submitAllSensorsJson", true);
 		request.onreadystatechange  = 
@@ -339,6 +294,7 @@ function submitSensorsForm(formName,updateName){
 function validateMinMaxValues(){
 	var minValComponents=document.getElementsByClassName(MIN_VAL_SUFFIX);
 	var result='';
+	var error=false;
 		
 	for (var i in minValComponents) {
 		var comp=minValComponents[i];
@@ -346,18 +302,27 @@ function validateMinMaxValues(){
 		if(compId!=undefined){
 			var compVal=comp.value;
 			
-			var component=document.getElementById(compId);
-					
-			var sensorName=component.getAttribute(SENSOR_NAME_ATTR);
-			var itemName=component.getAttribute(ITEM_NAME_ATTR);
+			var sensorName=comp.getAttribute(SENSOR_NAME_ATTR);
+			var itemName=comp.getAttribute(ITEM_NAME_ATTR);
 			
 			var maxComp=getMaxComponent(sensorName,itemName);
 			var maxCompVal=maxComp.value;
 			
+			comp.classList.remove('w3-border-red');
+			maxComp.classList.remove('w3-border-red');
+			
 			if(compVal>=maxCompVal){
-				result+="Сенсор "+sensorName+" Тип датчика "+itemName+" неверное значение 'Мин/Макс' мин должно быть меньше макс; <br>";
+				comp.classList.add('w3-border-red');
+				maxComp.classList.add('w3-border-red');	
+				
+				error=true;
+				
 			}
 		}
+	}
+	
+	if(error){
+		result="Неверное значение 'Мин/Макс' мин должно быть меньше макс; <br>";
 	}
 
 	return result;
@@ -384,21 +349,27 @@ function getMaxComponent(sensorName,itemName){
 function validateDescrValues(){
 	var descrComponents=document.getElementsByClassName(DESCR_SUFFIX);
 	var result='';
+	var error=false;
 	
 	for (var i in descrComponents) {
 		var comp=descrComponents[i];
 		var compId=comp.id;
 		if(compId!=undefined){
 			var compVal=comp.value;
+			
+			comp.classList.remove('w3-border-red');
 					
 			if(compVal==''){
-				
+				comp.classList.add('w3-border-red');
 				var sensorName=comp.getAttribute(SENSOR_NAME_ATTR);
 				var itemName=comp.getAttribute(ITEM_NAME_ATTR);
-				
-				result+="Сенсор "+sensorName+" Тип датчика "+itemName+" пустое значение 'Описание'; <br>";
+				error=true;
 			}
 		}
+	}
+	
+	if(error){
+		result="Пустое значение поля'Описание'; <br>";
 	}
 
 	return result;
@@ -406,12 +377,15 @@ function validateDescrValues(){
 
 function validateFieldIdValues(){
 	var result='';
+	var error=false;
 	var fieldIdComponents=document.getElementsByClassName(FIELD_ID_SUFFIX);
 	var fieldIdComponents2=document.getElementsByClassName(FIELD_ID_SUFFIX);
 	
 	for (var i in fieldIdComponents) {
 		var comp=fieldIdComponents[i];
 		var compId=comp.id;
+		comp.classList.remove('w3-border-red');
+		
 		if(compId!=undefined){
 			var compVal=comp.value;
 					
@@ -420,15 +394,19 @@ function validateFieldIdValues(){
 				var sensorName=comp.getAttribute(SENSOR_NAME_ATTR);
 				var itemName=comp.getAttribute(ITEM_NAME_ATTR);
 				
-				result+="Сенсор "+sensorName+" Тип датчика "+itemName+" неверное значение 'Поле ThingSpeak'; <br>";
+				comp.classList.add('w3-border-red');
+				error=true;
+				result="Неверное значение 'Поле ThingSpeak'; <br>";
 			}else{
 				if(compVal!='0'){	
 					for (var j in fieldIdComponents2) {
 						var comp2=fieldIdComponents2[j];
 						var compId2=comp2.id;
 						
-						if(compId!=undefined){
+						if(compId!=undefined && compId2!=undefined){
 							var compVal2=comp2.value;
+							
+							comp2.classList.remove('w3-border-red');
 							
 							if(compId!=compId2 && compVal==compVal2){
 								var sensorName=comp.getAttribute(SENSOR_NAME_ATTR);
@@ -437,7 +415,10 @@ function validateFieldIdValues(){
 								var sensorName2=comp2.getAttribute(SENSOR_NAME_ATTR);
 								var itemName2=comp2.getAttribute(ITEM_NAME_ATTR);
 								
-								result+="Сенсор "+sensorName+" Тип датчика "+itemName+" 'Поле ThingSpeak' не уникально --> сенсор "+sensorName2+" тип датчика "+itemName2+"; <br>";
+								comp.classList.add('w3-border-red');
+								comp.classList.add('w3-border-red');
+								error=true;
+								result="'Поле ThingSpeak' не уникальное; <br>";
 							}
 						
 						}
@@ -447,6 +428,6 @@ function validateFieldIdValues(){
 			}
 		}
 	}
-
+	
 	return result;
 }
