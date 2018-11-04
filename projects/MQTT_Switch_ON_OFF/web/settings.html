@@ -8,36 +8,116 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="./css/w3.css">
-<script src="./js/main.js"></script>
+<script src="./js/DeviceLib.js"></script>
+<script src="./js/settings.js"></script>
+<script src="./js/menu.js"></script>
 
 </head>
-<body>
 
-<div class="w3-sidebar w3-light-grey w3-bar-block" style="width:20%">
-	<h3 class="w3-bar-item">Навигация</h3>
-	<a href="index.html" class="w3-bar-item w3-button w3-hover-green">Датчики (главная)</a>
-	<a onclick="loadForm(&#39;info&#39;,&#39;mainContent&#39;)" class="w3-bar-item w3-button w3-hover-green">Информация</a>
-	<h3 class="w3-bar-item">Настройки</h3>
-	<a onclick="loadForm(&#39;device&#39;,&#39;mainContent&#39;)" class="w3-bar-item w3-button w3-hover-green">Устройство</a>
-	<a onclick="loadForm(&#39;net&#39;,&#39;mainContent&#39;)" class="w3-bar-item w3-button w3-hover-green">Сеть</a>
-	<a onclick="loadForm(&#39;thingspeak&#39;,&#39;mainContent&#39;)" class="w3-bar-item w3-button w3-hover-green">ThingSpeak</a>
-	<a onclick="loadForm(&#39;sensors&#39;,&#39;mainContent&#39;)" class="w3-bar-item w3-button w3-hover-green">Датчики</a>
-	<a onclick="loadForm(&#39;alarm&#39;,&#39;mainContent&#39;)" class="w3-bar-item w3-button w3-hover-green">Режим тревоги</a>
-	<a onclick="loadForm(&#39;restart&#39;,&#39;mainContent&#39;)" class="w3-bar-item w3-button w3-hover-green">Управление</a>
+<body onload="onLoadPageComplete()">
+				
+<div id="leftSidebar" class="w3-sidebar w3-bar-block w3-light-grey w3-border-right w3-animate-left" style="display: none;">
+	<button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Свернуть</button>
+	<a href="settings.htm" class="w3-bar-item w3-button w3-hover-green">Главная</a>
 </div>
 <!-- Page Content -->
-<div style="margin-left:20%">
+<div id="mainContent">
 
-<div class="w3-container w3-teal w3-animate-opacity">
-	<h1>Настройки устройства</h1>
-</div>
-<div id="mainContent" class="w3-card-4" style="width:60%; min-width: 600px; margin-top:30px; margin-left:30px;  margin-bottom:30px;">
-	<div class="w3-container w3-teal">
-		<h2>Датчики</h2>
+	<div class="w3-container w3-teal w3-animate-opacity">
+		<div class="w3-quarter w3-container w3-animate-opacity" style="width: 70px; height: 70px;">
+			<button id="openNavBtn" class="w3-button w3-teal w3-xlarge" onclick="w3_open()" title="Открыть меню">☰</button>
+		</div>
+		<h1>Настройки устройства</h1>
 	</div>
-		<form id="settForm" class="w3-container" action="http://192.168.0.50/setup" method="POST">
+	
+	<div class="w3-bar w3-teal">
+	  <button class="w3-bar-item w3-button" onclick="openTab('device','Устройство')">Устройство</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('net','Сеть')">Сеть</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('sensors','Датчики')">Датчики</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('security','Безопасность')">Безопасность</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('manage','Управление')">Управление</button>
+	</div>
+
+	<div id="mainContent" class="w3-card-4" style="width:90%; min-width: 600px; margin-top:10px; margin-left:10px;  margin-bottom:30px;">
+	
+		<div id="device" class="settingsTab">
+			<div class="w3-container w3-teal">
+				<h2>Устройство</h2>
+			</div>
+		  
+			  <p>Настройки устройства</p>
+			  <div id="device_content">
+			  
+			  </div>
+		</div>
+
+		<div id="net" class="settingsTab" style="display:none">
+			<div class="w3-container w3-teal">
+				<h2>Сеть</h2>
+			</div>	
+			
+			  <p>Общие сетевые настройки устройства</p> 
+			  <div id="net_content">
+			  
+			  </div>
+		</div>
+
+		<div id="sensors" class="settingsTab reloadableSettingsContainer" style="display:none">
+			<div class="w3-container w3-teal">
+				<h2>Датчики</h2>
+			</div>
+			
+			  <p>Настройки датчиков. Описание, настройки режима тревоги</p>
+			  <form id="sensors_form" action="/submitAllSensorsJson">
+				  <div id="sensors_content">
+				  
+				  </div>
+			  </form>
+			  
+				<div id="sensors_msg" class="w3-card-4" style="margin-left:10px; margin-right:10px; margin-top:10px; margin-bottom:10px;">
+				</div>
+		</div>
+		
+		<div id="security" class="settingsTab" style="display:none">
+			<div class="w3-container w3-teal">
+				<h2>Безопасность</h2>
+			</div>
+			
+			  <p>Пароли и учетные записи</p>
+			  <div id="security_content">
+			  
+			  </div>
+		</div>
+		
+		<div id="manage" class="settingsTab" style="display:none">
+			<div class="w3-container w3-teal">
+				<h2>Управление</h2>
+			</div>
+			
+			  <p>Общее управление устройством</p>
+			   <div id="manage_content">
+			  
+			  </div>
+		</div>
+		
+		
+		<!--
+		<form id="settingsForm" class="w3-container" action="/settings" method="POST">
+			
 			<div id="sensorsTable" class="w3-container">
-				<p>Адресс - уникальный идентификатор, Псевдоним - имя датчика или шины отображаемое на главной странице, Id thingSpeak - цифровой индекс датчика на сервисе (целое число &gt;0 и&lt;8) если 0 то данные не отправляются, Шина данных - физический адресс куда подключены датчики. </p>
-				<p>Всего подключено датчиков <b>5</b></p>
 				
-				<table class="w3-table-all" style="width: 95%;"><thead><tr class="w3-teal"><th>Адресс</th><th>Псевдоним</th><th>Id thingSpeak</th></tr></thead><tbody><tr></tr><tr>					<td>Pin_D6</td><td><b>(Шина данных)</b>					<input type="text" name="SR_Pin_D6" value="Накопительный бак">							</td>					<td></td></tr><tr>					<td>402552047160223147</td><td><input type="text" name="SR_402552047160223147" value="Верх">						</td>				<td><input type="text" name="TS_402552047160223147" value="1" maxlength="2" size="2">					</td></tr><tr>					<td>402556066160225133</td><td><input type="text" name="SR_402556066160225133" value="Середина">						</td>				<td><input type="text" name="TS_402556066160225133" value="2" maxlength="2" size="2">					</td></tr><tr>					<td>4025523241223455</td><td><input type="text" name="SR_4025523241223455" value="Низ">						</td>				<td><input type="text" name="TS_4025523241223455" value="3" maxlength="2" size="2">					</td></tr><tr>					<td>Pin_D1</td><td><b>(Шина данных)</b>					<input type="text" name="SR_Pin_D1" value="Гребенка">							</td>					<td></td></tr><tr>					<td>4025556133223588</td><td><input type="text" name="SR_4025556133223588" value="Верх">						</td>				<td><input type="text" name="TS_4025556133223588" value="4" maxlength="2" size="2">					</td></tr><tr>					<td>40255159135223561</td><td><input type="text" name="SR_40255159135223561" value="Низ">						</td>				<td><input type="text" name="TS_40255159135223561" value="5" maxlength="2" size="2">					</td></tr></tbody></table></div><div id="msgContent" class="w3-card-4" style="margin-left:10px; margin-right:10px; margin-top:10px; margin-bottom:10px;"></div><p><button class="w3-btn w3-teal" onclick="submitForm(&#39;sensors&#39;,&#39;settForm&#39;,&#39;msgContent&#39;);">Сохранить</button></p><p></p></form></div></div></body></html>
+			</div>
+			
+			<div id="msgContent" class="w3-card-4" style="margin-left:10px; margin-right:10px; margin-top:10px; margin-bottom:10px;">
+			</div>
+			
+			<p><button class="w3-btn w3-teal" onclick="submitForm(&#39;sensors&#39;,&#39;settForm&#39;,&#39;msgContent&#39;);">Сохранить</button>
+			</p><p></p>
+		</form>
+		-->
+		
+	</div>
+	
+</div>
+</body>
+</html>

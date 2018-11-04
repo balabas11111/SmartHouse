@@ -121,6 +121,15 @@ void postInitWebServer(){
 	server.on(espSettingsBox.getJsonPublishUrl(), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getJson());
 	});
+	server.on("/submitAllSensorsJson", HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), setAllSensorsJson());
+	});
+	server.on("/getAllSensorsJson", HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), getAllSensorsJson());
+	});
+	server.on(espSettingsBox.getSetValueUrl(), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), setEspSettingsBoxValues());
+	});
 
 	server.on(buttonLeft.getJsonPublishUrl(), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), buttonLeft.getJson());
@@ -199,6 +208,12 @@ void onLeftLampChanged(){
 void onRightLampChanged(){
 	Serial.println("* Right lamp changed");
 }
+//----------espSettings save-------------------------------------------
+String setEspSettingsBoxValues(){
+	wifiHelper.checkAuthentication();
+
+	return "";
+}
 //---------------------------------------------------------------------
 //handle pirDetector events
 void onPirDetectorChanged(){
@@ -214,6 +229,44 @@ void loadSensors(){
 
 void saveSensors(){
 	espSettingsBox.saveAbstractItemsToFile(minMaxValues, ARRAY_SIZE(minMaxValues));
+}
+
+String setAllSensorsJson(){
+	Serial.println("processing all form values");
+	wifiHelper.checkAuthentication();
+
+	for(int i=0;i<server.args();i++){
+		String argName=server.argName(i);
+		String argVal=server.arg(i);
+
+		if(argName.startsWith("sensors_")){
+
+			Serial.print("argName=");
+			Serial.print(argName);
+			Serial.print(" argVal=");
+			Serial.print(argVal);
+			Serial.print(";");
+		}
+	}
+
+	return getAllSensorsJson();
+}
+
+String getAllSensorsJson(){
+	wifiHelper.checkAuthentication();
+
+	uint8_t size=ARRAY_SIZE(measurableArray);
+	String result="{\"sensors\":[";
+
+		for(uint8_t i=0;i<size;i++){
+			result+=minMaxValues[i]->getJson();
+			if(i!=size-1){
+				result+=",";
+			}
+		}
+	result+="]}";
+
+	return result;
 }
 
 void measureSensors(){

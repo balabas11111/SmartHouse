@@ -73,6 +73,9 @@ public:
 	String getJsonPublishUrl(){
 		return "/"+getName()+"/getJson";
 	}
+	String getSetValueUrl(){
+		return "/"+getName()+"/setValue";
+	}
 
 	void printSettingsFile();
 
