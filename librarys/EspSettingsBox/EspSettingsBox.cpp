@@ -11,32 +11,32 @@
 #include "AbstractItem.h"
 #include "ESP_Consts.h"
 
-EspSettingsBox::EspSettingsBox(String fileName){
-	construct(fileName,"",false,false);
+EspSettingsBox::EspSettingsBox(){
+	construct("",false,false);
 }
 
-EspSettingsBox::EspSettingsBox(String fileName,boolean forceLoad){
-	construct(fileName,"",forceLoad,false);
+EspSettingsBox::EspSettingsBox(boolean forceLoad){
+	construct("",forceLoad,false);
 }
 
-EspSettingsBox::EspSettingsBox(String fileName,String extValuesFileName,boolean forceLoad){
-	construct(fileName,extValuesFileName,forceLoad,false);
+EspSettingsBox::EspSettingsBox(String extValuesFileName,boolean forceLoad){
+	construct(extValuesFileName,forceLoad,false);
 }
 
-EspSettingsBox::EspSettingsBox(String fileName,String extValuesFileName,boolean forceLoad,boolean _initSpiff){
-	construct(fileName,extValuesFileName,forceLoad,_initSpiff);
+EspSettingsBox::EspSettingsBox(String extValuesFileName,boolean forceLoad,boolean _initSpiff){
+	construct(extValuesFileName,forceLoad,_initSpiff);
 }
 
 //Initializable
 	boolean EspSettingsBox::initialize(boolean _init){
-		Serial.println("Begin initialize of EspSettingsBox");
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_INITIALIZE));
 
 		if(!initialized && _init){
 			loadSettingsJson();
 			initialized=_init;
 		}else{
 			if(initialized)
-				Serial.println("EspSettingsBox already initialized");
+				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ALREADY_INITIALIZE));
 		}
 
 		return initialized;
@@ -47,19 +47,20 @@ boolean EspSettingsBox::isSpiffInitialized(){
 }
 
 void EspSettingsBox::saveSettingsJson(){
-	Serial.println("Save device settings to file");
+	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVE_DEVICE_SETTINGS_TO_FILE));
 
 	saveExternalFile();
 
 	File settFile = SPIFFS.open(_fileName, "w");
 
-	Serial.println(" startSave");
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
 	getSettingsFromMemory(false).printTo(settFile);
 	settFile.close();
 
 	delay(1);
 
-	Serial.println("Device settings saved to file");
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SAVED));
+	Serial.println(FPSTR(MESSAGE_DONE));
 }
 
 void EspSettingsBox::loadSettingsJson(){
@@ -69,17 +70,17 @@ void EspSettingsBox::loadSettingsJson(){
 	File file = SPIFFS.open(_fileName, "r");
 
 	if(!file){
-		Serial.println("-----FILE not exists. Default settings save");
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS));
 		saveSettingsJson();
 		file = SPIFFS.open(_fileName, "r");
 	}
 
 	  if (!file){
-	    Serial.println("No settings file exists");
+	    Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_NO_SETTINGS_FILE_EXISTS));
 	  } else {
 	    size_t size = file.size();
 	    if ( size == 0 ) {
-	      Serial.println("Empty settings file");
+	      Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_EMPTY));
 	    } else {
 
 	    	StaticJsonBuffer<1024> jsonBuffer;
@@ -89,9 +90,9 @@ void EspSettingsBox::loadSettingsJson(){
 	      file.readBytes(buf.get(), size);
 	      JsonObject& root = jsonBuffer.parseObject(buf.get());
 	      if (!root.success()) {
-	        Serial.println("Impossible to read JSON file");
+	    	  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
 	      } else {
-	        Serial.println("Settings parsed");
+	    	  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
 
 	        putSettingsToMemory(root);
 
@@ -159,35 +160,31 @@ JsonObject& EspSettingsBox::getSettingsFromMemory(boolean doSave){
 	root["mqtt_pass"]=mqtt_pass;
 	root["mqtt_topic"]=mqtt_topic;
 
-	root["webRoot"]=webRoot;
-	root["webDefPage"]=webDefPage;
-	root["webDepExt"]=webDepExt;
-
 	root["NTP_poolServerName"]=NTP_poolServerName;
 	root["NTP_timeOffset"]=NTP_timeOffset;
 	root["NTP_timeTriggerInterval"]=NTP_timeTriggerInterval;
 	root["NTP_updateInterval"]=NTP_updateInterval;
 
 
-	Serial.println("-----------------Settings from memory-------");
+	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_FROM_MEMORY));
 	String vals="";
 	root.printTo(vals);
 	Serial.println(vals);
-	Serial.println("--------------------------------------------");
+	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
 	if(doSave){
-		Serial.println("Save device settings to file");
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVE_DEVICE_SETTINGS_TO_FILE));
 
 		File settFile = SPIFFS.open(_fileName, "w");
 
-		Serial.println("begin save");
+		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
 		root.printTo(settFile);
 		settFile.close();
-		Serial.println(" saved");
+		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SAVED));
 
 		delay(1);
 
-		Serial.println("Device settings saved to file");
+		Serial.println(FPSTR(MESSAGE_DONE));
 	}
 
 	return root;
@@ -243,34 +240,30 @@ boolean EspSettingsBox::putSettingsToMemory(JsonObject& root){
 	mqtt_pass=root["mqtt_pass"].as<char*>();
 	mqtt_topic=root["mqtt_topic"].as<char*>();
 
-	webRoot=root["webRoot"].as<char*>();
-	webDefPage=root["webDefPage"].as<char*>();
-	webDepExt=root["webDepExt"].as<char*>();
-
 	NTP_poolServerName=root["NTP_poolServerName"].as<char*>();
 	NTP_timeOffset=root["NTP_timeOffset"];
 	NTP_timeTriggerInterval=root["NTP_timeTriggerInterval"];
 	NTP_updateInterval=root["NTP_updateInterval"];
 
-	Serial.println("-----------------Settings loaded to memory-------");
+	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_MEMORY));
 	String vals="";
 	root.printTo(vals);
 	Serial.println(vals);
-	Serial.println("--------------------------------------------");
+	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
 	return true;
 }
 
 void EspSettingsBox::printSettingsFile(){
-		Serial.println("-----------Print settings file----------------");
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_PRINT_SETTINGS_FILE));
 		//loadExternalFile();
-		Serial.println("Current memory state");
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_CURRENT_MEMORY_STATE));
 		getSettingsFromMemory();
-		Serial.println("-------------------------------------");
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 		File file = SPIFFS.open(_fileName, "r");
 
 		if(!file){
-			Serial.println("-----FILE not exists. Default settings save");
+			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED));
 			saveSettingsJson();
 			file = SPIFFS.open(_fileName, "r");
 		}
@@ -302,7 +295,7 @@ void EspSettingsBox::printSettingsFile(){
 		    file.close();
 		  }
 */
-		    Serial.println("----------------direct file read------------");
+		    Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_DIRECT_FILE_READ));
 		    File fileSet = SPIFFS.open(_fileName, "r");
 		    	if(fileSet){
 		    		String str;
@@ -317,37 +310,49 @@ void EspSettingsBox::printSettingsFile(){
 		    		 }
 		    		 file.close();
 
-		    		 Serial.println("settings.txt exists");
+		    		 Serial.print(_fileName);
+		    		 Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_EXISTS));
 		    	}else{
-		    		 Serial.println("settings.txt MISSED");
+		    		Serial.print(_fileName);
+		    		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_MISSED));
 		    	}
 		    delay(1);
 
 		    //printVariablesToSerial();
-		    Serial.println("-------------------------------------------");
+		    Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
 
 void EspSettingsBox::printSpiffsInfo(){
 	FSInfo fs_info;
 	SPIFFS.info(fs_info);
 
-	Serial.println("--------------SPIFFS INFO--------------");
-	Serial.println("Initialized="+String(initialized));
-	Serial.println("spiffInitialized="+String(spiffInitialized));
-
-	Serial.println("blockSize="+String(fs_info.blockSize));
-	Serial.println("maxOpenFiles="+String(fs_info.maxOpenFiles));
-	Serial.println("maxPathLength="+String(fs_info.maxPathLength));
-	Serial.println("pageSize="+String(fs_info.pageSize));
-	Serial.println("totalBytes="+String(fs_info.totalBytes));
-	Serial.println("usedBytes="+String(fs_info.usedBytes));
-	Serial.println("---------------------------------------");
+	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SPIFFS_INFO));
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_INITIALIZED_EQ));
+	Serial.println(initialized);
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_SPIFF_INIT_EQ));
+	Serial.println(spiffInitialized);
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BLOCK_SIZE));
+	Serial.println(fs_info.blockSize);
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_MAX_OPEN_FILES));
+	Serial.println(fs_info.maxOpenFiles);
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_MAX_PATH_LENGTH));
+	Serial.println(fs_info.maxPathLength);
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_PAGE_SIZE));
+	Serial.println(fs_info.pageSize);
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_TOTAL_BYTES));
+	Serial.println(fs_info.totalBytes);
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_USED_BYTES));
+	Serial.println(fs_info.usedBytes);
+	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 			#ifdef ESP8266
 			Dir dir = SPIFFS.openDir("/");
 			while (dir.next()) {
 			  String fileName = dir.fileName();
 			  size_t fileSize = dir.fileSize();
-			  Serial.println("name="+fileName+" size="+String(fileSize));
+			  Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_NAME_EQ));
+			  Serial.print(fileName);
+			  Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_SIZE_EQ));
+			  Serial.println(fileSize);
 			}
 		#else
 			listDir(SPIFFS, "/", 0);
@@ -355,8 +360,9 @@ void EspSettingsBox::printSpiffsInfo(){
 	Serial.println("---------------------------------------");
 }
 
-void EspSettingsBox::construct(String fileName,String extValuesFileName,boolean forceLoad,boolean _initSpiff){
-	_fileName=fileName;
+void EspSettingsBox::construct(String extValuesFileName,boolean forceLoad,boolean _initSpiff){
+	_fileName=FPSTR(ESPSETTINGSBOX_SETTINGS_PATH);
+	_fileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_DEFAULT_FILE);
 	_extFileName=extValuesFileName;
 
 	if(_initSpiff){
@@ -418,17 +424,17 @@ void EspSettingsBox::loadExternalFile(){
 	File file = SPIFFS.open(_fileName, "r");
 
 		if(!file){
-			Serial.println("-----FILE not exists. Default settings save");
+			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED));
 			saveSettingsJson();
 			file = SPIFFS.open(_fileName, "r");
 		}
 
 		  if (!file){
-		    Serial.println("No settings file exists");
+			  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS));
 		  } else {
 		    size_t size = file.size();
 		    if ( size == 0 ) {
-		      Serial.println("Empty settings file");
+		    	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_EMPTY));
 		    } else {
 
 					StaticJsonBuffer<1024> jsonBuffer;
@@ -441,9 +447,9 @@ void EspSettingsBox::loadExternalFile(){
 				  //extRoot=&jsonBuffer.parseObject(buf.get());
 
 				  if (!extRoot->success()) {
-					Serial.println("Impossible to read JSON file");
+					  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
 				  } else {
-					Serial.println("Settings parsed");
+					  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
 					extRoot->printTo(Serial);
 				  }
 		    }
@@ -500,7 +506,11 @@ String EspSettingsBox::getJson(){
 }
 
 String EspSettingsBox::getFileName(AbstractItem* item){
-	return "/settings/"+item->getName();
+	String result=FPSTR(ESPSETTINGSBOX_SETTINGS_PATH);
+		   result+=item->getName();
+		   result+=FPSTR(ESPSETTINGSBOX_SETTINGS_TXT_EXT);
+
+	return result;
 }
 
 

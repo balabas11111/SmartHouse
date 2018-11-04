@@ -44,11 +44,11 @@ public:
 
 	boolean initialize(boolean _init){
 		if(_init){
-			Serial.println("------------------Init WiFi connection------------------");
+			Serial.println(FPSTR(MESSAGE_WIFIHELPER_INIT_CONNECTION));
 
 			displayDetails();
 			if(WiFi.status()==WL_CONNECTED){
-				Serial.println("WiFi disconnecting");
+				Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_DISCONNECTING));
 				WiFi.disconnect(1);
 			}
 
@@ -74,19 +74,19 @@ public:
 	//---------------------------------------------------------------------------------------
 	void setupServer(){
 
-		Serial.println("----------------------------");
-		Serial.println("SetupServer");
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+		Serial.println(FPSTR(MESSAGE_WIFIHELPER_SETUP_SERVER));
 
-		Serial.print("WiFi.getMode=");
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_MODE_EQ));
 		Serial.print(WiFi.getMode());
-		Serial.print(" WiFi.getAutoConnect=");
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_GET_AUTO_CONNECT));
 		Serial.print(WiFi.getAutoConnect());
-		Serial.print(" WiFi.status=");
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
 		Serial.println(WiFi.status());
 
 		server->onNotFound([this](){handleNotFound();});
 
-		server->serveStatic("/", SPIFFS, (espSettingsBox->webDefPage).c_str());
+		server->serveStatic("/", SPIFFS, String(FPSTR(ESPSETTINGSBOX_DEFAULT_PAGE)).c_str());
 
 		if(initStaticPages){
 			initStaticPagesInWebFolder();
@@ -97,62 +97,37 @@ public:
 		}
 
 		if(serverPostInitFunc!=nullptr){
-			Serial.println("--------------------PostInit Web server handlers---------");
+			Serial.println(FPSTR(MESSAGE_WIFIHELPER_POST_INIT_WEB_SERV_HANDLERS));
 			serverPostInitFunc();
 		}
 
 		server->begin();
 
-		Serial.println("Server setup completed");
-		Serial.println("-------------------------------------------");
+		Serial.println(FPSTR(MESSAGE_WIFIHELPER_SERVER_SETUP_COMPLETED));
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
 	}
-/*
-	void handleHttpWidgetExternal(){
-
-		if(!server->hasArg(FPSTR(PARAM_ACTION_ID))
-					||!server->hasArg(FPSTR(PARAM_REMOTE_ID))
-					//||!server.hasArg(FPSTR(PARAM_REMOTE_VAL))
-					//||!server.hasArg(FPSTR(PARAM_CLASS_NAME))
-					//||!server.hasArg(FPSTR(PARAM_CHILD_CLASS))
-					//||!server.hasArg(FPSTR(PARAM_CLIENT_DATA))
-					){
-
-			//Serial.println("One of required parameters missing");
-
-			server->send(400, FPSTR(CONTENT_TYPE_JSON), FPSTR(MESSAGE_STATUS_JSON_PARAMETERS_MISSING));
-
-			return;
-		}
-
-		Serial.println(FPSTR(MESSAGE_HANDLE_HTTP_WIDGET));
-		Serial.print(FPSTR(MESSAGE_SPACE));Serial.print(FPSTR(PARAM_ACTION_ID));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(server->arg(FPSTR(PARAM_ACTION_ID)));
-		Serial.print(FPSTR(MESSAGE_SPACE));Serial.print(FPSTR(PARAM_REMOTE_ID));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(server->arg(FPSTR(PARAM_REMOTE_ID)));
-		Serial.print(FPSTR(MESSAGE_SPACE));Serial.print(FPSTR(PARAM_REMOTE_VAL));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(server->arg(FPSTR(PARAM_REMOTE_VAL)));
-		Serial.print(FPSTR(MESSAGE_SPACE));Serial.print(FPSTR(PARAM_CLASS_NAME));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(server->arg(FPSTR(PARAM_CLASS_NAME)));
-		Serial.print(FPSTR(MESSAGE_SPACE));Serial.print(FPSTR(PARAM_CHILD_CLASS));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(server->arg(FPSTR(PARAM_CHILD_CLASS)));
-		Serial.print(FPSTR(MESSAGE_SPACE));Serial.print(FPSTR(PARAM_CLIENT_DATA));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.println(server->arg(FPSTR(PARAM_CLIENT_DATA)));
-
-
-		if(server->arg(FPSTR(PARAM_ACTION_ID)).equals("")
-						||server->arg(FPSTR(PARAM_REMOTE_ID)).equals("")
-						){
-
-			server->send(400, FPSTR(CONTENT_TYPE_JSON), FPSTR(MESSAGE_STATUS_JSON_PARAMETERS_MISSING));
-			return;
-		}
-		handleHttpWidget();
-	}
-*/
 
 	//-----------------------------------------------------------------------
 	void initStaticPagesInWebFolder(){
-		String basePath=espSettingsBox->webRoot;
-		String extensions=espSettingsBox->webDepExt;
+		deployStaticFolder(FPSTR(ESPSETTINGSBOX_DEFAULT_WEB_FOLDER),
+							FPSTR(ESPSETTINGSBOX_DEPLOY_EXT),
+							"");
+		deployStaticFolder(FPSTR(ESPSETTINGSBOX_SETTINGS_PATH),
+									FPSTR(ESPSETTINGSBOX_DEPLOY_EXT),
+									FPSTR(ESPSETTINGSBOX_SETTINGS_DEPLOY_PATH));
+	}
 
-		Serial.println("Deploying "+String(basePath)+" as web files");
-		Serial.println("Extensions "+String(extensions)+" to be deployed");
-		Serial.println("-----------------------------------");
+	void deployStaticFolder(String basePath,String extensions,String baseUrl){
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_DEPLOYING_PATH));
+		Serial.print(basePath);
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_AS_WEB_FILES));
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_EXTENSIONS));
+		Serial.print(extensions);
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_TO_BE_DEPLOYED));
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_BASE_URL_EQ));
+		Serial.println(baseUrl);
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 		//        /js   /css     /html
 		Dir dir=SPIFFS.openDir(basePath);
 
@@ -168,6 +143,8 @@ public:
 			}else{
 			}
 
+			url=baseUrl+url;
+
 			File f=dir.openFile("r");
 			size_t size=f.size();
 			f.close();
@@ -177,16 +154,21 @@ public:
 
 			boolean add=extensions.indexOf(extension)!=-1;
 
-			//String path=basePath+"/"+currentFolder+"/"+fileName;
 			if(add){
-				Serial.println("Added file "+fileNameStr+" size="+String(size)+" ext="+extension+"   URL="+url);
+				Serial.print(FPSTR(MESSAGE_WIFIHELPER_ADDED_FILE));
+				Serial.print(fileNameStr);
+				Serial.print(FPSTR(MESSAGE_WIFIHELPER_SIZE_EQ));
+				Serial.print(size);
+				Serial.print(FPSTR(MESSAGE_WIFIHELPER_EXT_EQ));
+				Serial.print(extension);
+				Serial.print(FPSTR(MESSAGE_WIFIHELPER_URL_EQ));
+				Serial.println(url);
 				server->serveStatic(url.c_str(), SPIFFS, fileNameStr.c_str());
 			}
 		}
 		Serial.println("-----------------------------------");
 		//addFileHandlersForDir(base,basePath,baseUrl);
 	}
-
 	//-----------------------------------------------------------------------
 
 	void handleNotFound(){
@@ -199,47 +181,6 @@ public:
 	void handleTest(){
 		server->send ( 200, "text/html", "I'm here" );
 	}
-/*
-	void handleEspSettings(){
-		//class ="SettingsWidgetESP"
-		const String wnParam="widgetName";
-
-		if(server->hasArg(wnParam)){
-			String wiName=server->arg(wnParam);
-			Serial.println("PorcessEspSetting="+wiName);
-
-			String result="Not found";
-			String key;
-
-			if(wiName.startsWith("espSettingsBox")){
-				key=wiName.substring(wiName.indexOf(".")+1);
-				result=espSettingsBox->getHtmlVal(key);
-			}
-			if(!result.equals("")){
-				server->send(200, "text/html",result);
-			}else{
-				Serial.println(wiName+" not found key="+key);
-			}
-
-			server->send(404, "text/html", "�������� "+wiName+" �� ������");
-		}
-
-		server->send(400, "text/html", "widgetName parameter missing");
-	}
-
-	void handleHttpEvent(){
-		if(server->args()!=0 && server->hasArg("command")){
-			String command=server->arg("command");
-			Serial.println("Http command received "+command);
-			PinEvent result=processPinEvent(PinEvent(command).setIsBubble(true));
-
-			delay(1);
-			server->send ( 200, "text/html", "{\"status\":\"Ok\",\"command\":\""+command+"\",\"result\":\""+result.getText()+"\"}" );
-		}
-
-		server->send(500,"text/html","{\"status\":\"Failed\",\"command\":\"No command received\"}");
-	}
-	*/
 	//-----------------------------------------------------------------------
 
 	boolean startAsAccessPoint(){
@@ -307,15 +248,18 @@ public:
 
 	void connectToWiFiIfNotConnected(){
 		uint8_t count=0;
+		displayDetails();
+
 		while(!isWiFIConnected() ){
 			/*if(signalPin!=nullptr)
 				signalPin->changeAndDelay(250);
 				*/
-			if(count==10){
+			if(count==20){
 				displayDetails();
 				count=0;
 			}else{
 				Serial.print(".");
+				delay(500);
 				count++;
 			}
 			//

@@ -197,6 +197,67 @@ const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS[]="File not exis
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_FILE_EMPTY[]="File is empty";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON[]="Error parse JSON file";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_VALUE_PARSED[]="values parsed";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_NO_SETTINGS_FILE_EXISTS[]="No settings file exists";
+
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_PRINT_SETTINGS_FILE[]="-----------Print settings file----------------";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_CURRENT_MEMORY_STATE[]="Current memory state";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_DIRECT_FILE_READ[]="----------------direct file read------------";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_SETTINGS_FROM_MEMORY[]="-----------------Settings from memory-------";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_SAVE_DEVICE_SETTINGS_TO_FILE[]="Save device settings to file";
+
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_MEMORY[]="-----------------Settings loaded to memory-------";
+
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE[]=" Begin save";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_FILE_SAVED[]="...saved";
+
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_FILE_EXISTS[]=" file exists";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_FILE_MISSED[]=" file MISSED";
+
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_BEGIN_INITIALIZE[]="Begin initialize of EspSettingsBox";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_ALREADY_INITIALIZE[]="EspSettingsBox already initialized";
+
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_SPIFFS_INFO[]="--------------SPIFFS INFO--------------";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_INITIALIZED_EQ[]="Initialized=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_SPIFF_INIT_EQ[]="spiffInitialized=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_BLOCK_SIZE[]="blockSize=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_MAX_OPEN_FILES[]="maxOpenFiles=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_MAX_PATH_LENGTH[]="maxPathLength=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_PAGE_SIZE[]="pageSize=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_TOTAL_BYTES[]="totalBytes=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_USED_BYTES[]="usedBytes=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_NAME_EQ[]="name=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_SIZE_EQ[]="size=";
+
+//ESPSettings box defaults
+const PROGMEM char ESPSETTINGSBOX_SETTINGS_DEPLOY_PATH[]="/settings";
+const PROGMEM char ESPSETTINGSBOX_SETTINGS_PATH[]="/settings/";
+const PROGMEM char ESPSETTINGSBOX_SETTINGS_DEFAULT_FILE[]="settings.txt";
+const PROGMEM char ESPSETTINGSBOX_SETTINGS_TXT_EXT[]=".txt";
+
+//WiFi deploy folder
+const PROGMEM char ESPSETTINGSBOX_DEFAULT_PAGE[]="/web/index.htm";
+const PROGMEM char ESPSETTINGSBOX_DEFAULT_WEB_FOLDER[]="/web/";
+const PROGMEM char ESPSETTINGSBOX_DEPLOY_EXT[]="html,htm,js,css,jpeg,png,jpg,gif,ttf,woff,woff2,tpl,txt";
+
+//Wifi helper messages-----------------------------
+const PROGMEM char MESSAGE_WIFIHELPER_INIT_CONNECTION[]="------------------Init WiFi connection------------------";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_DISCONNECTING[]="WiFi disconnecting";
+const PROGMEM char MESSAGE_WIFIHELPER_SETUP_SERVER[]="SetupServer";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_MODE_EQ[]="WiFi.getMode=";
+const PROGMEM char MESSAGE_WIFIHELPER_GET_AUTO_CONNECT[]=" WiFi.getAutoConnect=";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_EQ[]=" WiFi.status=";
+const PROGMEM char MESSAGE_WIFIHELPER_POST_INIT_WEB_SERV_HANDLERS[]="--------------------PostInit Web server handlers---------";
+const PROGMEM char MESSAGE_WIFIHELPER_SERVER_SETUP_COMPLETED[]="Server setup completed";
+
+const PROGMEM char MESSAGE_WIFIHELPER_DEPLOYING_PATH[]="Deploying Path=";
+const PROGMEM char MESSAGE_WIFIHELPER_AS_WEB_FILES[]=" as web files";
+const PROGMEM char MESSAGE_WIFIHELPER_EXTENSIONS[]="Extensions ";
+const PROGMEM char MESSAGE_WIFIHELPER_TO_BE_DEPLOYED[]=" to be deployed";
+const PROGMEM char MESSAGE_WIFIHELPER_BASE_URL_EQ[]="Base URL ";
+const PROGMEM char MESSAGE_WIFIHELPER_ADDED_FILE[]="Added file ";
+const PROGMEM char MESSAGE_WIFIHELPER_SIZE_EQ[]=" size=";
+const PROGMEM char MESSAGE_WIFIHELPER_EXT_EQ[]=" ext=";
+const PROGMEM char MESSAGE_WIFIHELPER_URL_EQ[]="   URL=";
 
 //Ntp clock client
 const PROGMEM char MESSAGE_TIME_CLIENT_JSON_BEFORE_TIME[]="{\"wsId\":\"clock\",\"wsClass\":\"wsItem\",\"wsValue\":\"";

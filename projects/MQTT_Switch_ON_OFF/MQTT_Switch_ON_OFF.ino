@@ -59,7 +59,7 @@ WiFiClient wclient;
 ESP8266WebServer server ( 80 );
 //WebSocketsServer webSocket = WebSocketsServer(8081);
 
-EspSettingsBox espSettingsBox("/settings.txt","",true,true);
+EspSettingsBox espSettingsBox("",true,true);
 
 I2Chelper i2cHelper(D1,D2,false);
 DisplayHelper displayHelper(true);

@@ -17,10 +17,10 @@
 class EspSettingsBox: public Initializable{
 
 public:
-	EspSettingsBox(String fileName);
-	EspSettingsBox(String fileName,boolean forceLoad);
-	EspSettingsBox(String fileName,String extValuesFileName,boolean forceLoad);
-	EspSettingsBox(String fileName,String extValuesFileName,boolean forceLoad,boolean _initSpiff);
+	EspSettingsBox();
+	EspSettingsBox(boolean forceLoad);
+	EspSettingsBox(String extValuesFileName,boolean forceLoad);
+	EspSettingsBox(String extValuesFileName,boolean forceLoad,boolean _initSpiff);
 
 	virtual boolean initialize(boolean _init) override;
 
@@ -135,10 +135,6 @@ public:
 	String mqtt_pass = "QgYRfVzDhQ31";
 	String mqtt_topic="topic/basePublish";
 
-	String webDefPage="/web/index.htm";
-	String webRoot="/web/";
-	String webDepExt="html,htm,js,css,jpeg,png,jpg,gif,ttf,woff,woff2,tpl";
-
 	String NTP_poolServerName="europe.pool.ntp.org";
 	int NTP_timeOffset=7200;
 	int NTP_updateInterval=120000;
@@ -152,7 +148,7 @@ private:
 	String _extFileName;
 	JsonObject* extRoot;
 
-	void construct(String fileName,String extValuesFileName,boolean forceLoad,boolean initSpiff);
+	void construct(String extValuesFileName,boolean forceLoad,boolean initSpiff);
 	void initSpiff();
 
 	size_t bufferLength=2048;
