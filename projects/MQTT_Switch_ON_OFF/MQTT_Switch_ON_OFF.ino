@@ -80,8 +80,8 @@ Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged,0,"");
 
 //NtpTimeClientService timeClient(&espSettingsBox,processTimeClientEvent,60000);
 
-BME280_Sensor bmeMeasurer(D1,VAR_NAME(bmeMeasurer),0,"");
-BH1750_Sensor luxMeasurer(D1,VAR_NAME(luxMeasurer),0,"");
+BME280_Sensor bmeMeasurer(20,VAR_NAME(bmeMeasurer),0,"");
+BH1750_Sensor luxMeasurer(21,VAR_NAME(luxMeasurer),0,"");
 
 DHT22_Sensor dhtMeasurer(VAR_NAME(dhtSensor), D0, 22,0,"");
 
@@ -121,7 +121,7 @@ void postInitWebServer(){
 	server.on(espSettingsBox.getJsonPublishUrl(), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getJson());
 	});
-	server.on("/submitAllSensorsJson", HTTP_GET, [](){
+	server.on("/submitAllSensorsJson", HTTP_POST, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), setAllSensorsJson());
 	});
 	server.on("/getAllSensorsJson", HTTP_GET, [](){
@@ -232,30 +232,86 @@ void saveSensors(){
 }
 
 String setAllSensorsJson(){
-	Serial.println("processing all form values");
-	wifiHelper.checkAuthentication();
+	delay(1);
+	Serial.println("---processing all form values");
+	deviceHelper.printDeviceDiagnostic();
+	//wifiHelper.checkAuthentication();
 
-	for(int i=0;i<server.args();i++){
+	int size=server.args();
+
+	Serial.print("Total arguments=");
+	Serial.println(size);
+
+	for(int i=0;i<size;i++){
 		String argName=server.argName(i);
 		String argVal=server.arg(i);
 
-		if(argName.startsWith("sensors_")){
+		/*
+		Serial.print(argName);
+		Serial.print("=");
+		Serial.println(argVal);
+		*/
 
+		if(argName.startsWith("s_")){
+
+			int8_t ind1=argName.indexOf("_", 2)+1;
+			int8_t ind2=argName.indexOf("_",ind1+1);
+
+			uint8_t deviceId=argName.substring(2,ind1-1).toInt();
+			uint8_t sensorId=argName.substring(ind1,ind2).toInt();
+			String type=argName.substring(ind2+1);
+
+			uint8_t size=ARRAY_SIZE(minMaxValues);
+
+			for(uint8_t i=0;i<size;i++){
+
+				if((minMaxValues[i]->getItem().id)==deviceId && minMaxValues[i]->getChildCount()>sensorId){
+					if(type=="descr"){
+						minMaxValues[i]->setDescr(sensorId, argVal);
+					}else
+					if(type=="minVal"){
+						minMaxValues[i]->setMinVal(sensorId, argVal.toFloat());
+					}else
+					if(type=="maxVal"){
+						minMaxValues[i]->setMaxVal(sensorId, argVal.toFloat());
+					}else
+					if(type=="fieldId"){
+						minMaxValues[i]->setFieldId(sensorId, argVal.toInt());
+					}
+				}
+
+			}
+			/*
 			Serial.print("argName=");
 			Serial.print(argName);
 			Serial.print(" argVal=");
 			Serial.print(argVal);
-			Serial.print(";");
+			Serial.print(" deviceId=");
+			Serial.print(deviceId);
+			Serial.print(" sensorId=");
+			Serial.print(sensorId);
+			Serial.print(" type=");
+			Serial.print(type);
+			Serial.print(" ind1=");
+			Serial.print(ind1);
+			Serial.print(" ind2=");
+			Serial.print(ind2);
+			Serial.println(";");
+			*/
 		}
 	}
+
+	saveSensors();
+	deviceHelper.printDeviceDiagnostic();
 
 	return getAllSensorsJson();
 }
 
 String getAllSensorsJson(){
+	delay(1);
 	wifiHelper.checkAuthentication();
 
-	uint8_t size=ARRAY_SIZE(measurableArray);
+	uint8_t size=ARRAY_SIZE(minMaxValues);
 	String result="{\"sensors\":[";
 
 		for(uint8_t i=0;i<size;i++){
