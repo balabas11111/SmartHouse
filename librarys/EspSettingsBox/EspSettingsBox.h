@@ -12,6 +12,7 @@
 #include "ESP8266WiFi.h"
 #include "ArduinoJson.h"
 #include "Initializable.h"
+#include "AbstractItem.h"
 
 class EspSettingsBox: public Initializable{
 
@@ -48,6 +49,29 @@ public:
 	String getJson();
 	String getSimpleJson(){
 		return getJson();
+	}
+
+	void saveAbstractItemsToFile(AbstractItem** items,uint8_t size){
+		for(uint8_t i=0;i<size;i++){
+			saveAbstractItemToFile(items[i]);
+		}
+	}
+	void loadAbstractItemsFromFile(AbstractItem** items,uint8_t size){
+		for(uint8_t i=0;i<size;i++){
+			loadAbstractItemFromFile(items[i]);
+		}
+	}
+
+	void saveAbstractItemToFile(AbstractItem* item);
+	void loadAbstractItemFromFile(AbstractItem* item);
+
+	String getFileName(AbstractItem* item);
+
+	String getName(){
+		return "espSettingsBox";
+	}
+	String getJsonPublishUrl(){
+		return "/"+getName()+"/getJson";
 	}
 
 	void printSettingsFile();
@@ -103,11 +127,6 @@ public:
 	boolean alarmPlaySound=true;
 	uint16_t alamSoundInterval=30;
 	//uint16_t alamNotificationInterval=60;
-
-	uint8_t maxDHtTemp=255;
-	int8_t minDHtTemp=-120;
-	uint8_t maxDHtHum=255;
-	uint8_t minDHtHum=0;
 
 	boolean isMqttEnabled=false;
 	String mqtt_server = "m23.cloudmqtt.com";

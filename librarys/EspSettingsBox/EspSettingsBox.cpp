@@ -8,6 +8,8 @@
 #include "ESP8266WiFi.h"
 #include "ArduinoJson.h"
 #include "FS.h"
+#include "AbstractItem.h"
+#include "ESP_Consts.h"
 
 EspSettingsBox::EspSettingsBox(String fileName){
 	construct(fileName,"",false,false);
@@ -150,11 +152,6 @@ JsonObject& EspSettingsBox::getSettingsFromMemory(boolean doSave){
 	root["AlSi"]=alamSoundInterval;
 	//root["AlNi"]=alamNotificationInterval;
 
-	root["mxDT"]=maxDHtTemp;
-	root["mnDT"]=minDHtTemp;
-	root["mxDH"]=maxDHtHum;
-	root["mnDH"]=minDHtHum;
-
 	root["isMqttEnabled"]=isMqttEnabled;
 	root["mqtt_server"]=mqtt_server;
 	root["mqtt_port"]=mqtt_port;
@@ -238,11 +235,6 @@ boolean EspSettingsBox::putSettingsToMemory(JsonObject& root){
 	alarmPlaySound=isTrue(root["AlPs"].as<char*>());
 	alamSoundInterval=root["AlSi"];
 	//alamNotificationInterval=root["AlNi"];
-
-	maxDHtTemp=root["mxDT"];
-	minDHtTemp=root["mnDT"];
-	maxDHtHum=root["mxDH"];
-	minDHtHum=root["mnDH"];
 
 	isMqttEnabled=isTrue(root["isMqttEnabled"]);
 	mqtt_server=root["mqtt_server"].as<char*>();
@@ -505,4 +497,106 @@ String EspSettingsBox::getJson(){
 					{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
 					{\"name\":\"thinkSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}]}";
 	return result;
+}
+
+String EspSettingsBox::getFileName(AbstractItem* item){
+	return "/settings/"+item->getName();
+}
+
+
+
+void EspSettingsBox::saveAbstractItemToFile(AbstractItem* item){
+
+	//String itemStr=item->getJson();
+	String fileName=getFileName(item);
+
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN));
+	Serial.print(fileName);
+
+	File file = SPIFFS.open(fileName, "w");
+
+	file.println(item->getJson());
+
+	file.close();
+	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVED));
+
+	delay(1);
+}
+
+void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
+
+	String fileName=getFileName(item);
+
+	File file = SPIFFS.open(fileName, "r");
+
+	if(!file){
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED));
+		saveAbstractItemToFile(item);
+		file = SPIFFS.open(fileName, "r");
+	}
+
+	  if (!file){
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS));
+	  } else {
+		size_t size = file.size();
+		if ( size == 0 ) {
+		  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_EMPTY));
+		} else {
+
+			StaticJsonBuffer<1024> jsonBuffer;
+			delay(1);
+
+			std::unique_ptr<char[]> buf (new char[size]);
+			file.readBytes(buf.get(), size);
+
+			JsonObject& root = jsonBuffer.parseObject(buf.get());
+
+			if (!root.success()) {
+				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
+			} else {
+				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
+				root.printTo(Serial);
+
+				item->setDescr(root["descr"].as<char*>());
+				item->setFieldId(root["fieldId"]);
+				item->setMinVal(root["minVal"]);
+				item->setMaxVal(root["maxVal"]);
+				item->setQueueName(root["queueName"].as<char*>());
+
+				uint8_t childCountJson=root["childCount"];
+
+				if(item->getChildCount()>0 && childCountJson>0){
+					//JsonArray& arrayJson=root["items"].asArray();
+					Serial.print("totalChilds=");
+					Serial.println(childCountJson);
+
+					for(uint8_t i=0;i<childCountJson;i++){
+
+						String name=root["items"][i]["name"];
+						String descr=root["items"][i]["descr"];
+						uint8_t fieldId=root["items"][i]["fieldId"];
+						float minVal=root["items"][i]["minVal"];
+						float maxVal=root["items"][i]["maxVal"];
+
+						Serial.println("name="+name+" descr="+descr
+								+" fieldId="+String(fieldId)
+								+" minVal="+String(minVal)
+								+" maxVal="+String(maxVal));
+
+						uint8_t child=item->getChildItemIndexByName(name);
+
+						item->setDescr(child, descr);
+						item->setFieldId(child, fieldId);
+						item->setMinVal(child, minVal);
+						item->setMaxVal(child, maxVal);
+
+						Serial.println(item->getJson(child));
+					}
+				}
+				//-----------------------------------------
+			}
+		}
+	  }
+
+	  Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }

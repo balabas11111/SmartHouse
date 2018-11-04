@@ -17,21 +17,28 @@ const char TEMPERATURE_RU[] PROGMEM ="Температура";
 const char HUMIDITY_RU[] PROGMEM ="Влажность";
 const char PRESSURE_RU[] PROGMEM ="Давление";
 const char ALTITUDE_RU[] PROGMEM ="Высота";
+const char LIGHT_RU[] PROGMEM ="Освещение";
 
 const char MEASURE_CELSIUS_DEGREES_RU[] PROGMEM ="°C";
 const char MEASURE_PERSENT_RU[] PROGMEM ="%";
 const char MEASURE_PASCAL_RU[] PROGMEM ="па";
 const char MEASURE_METER_RU[] PROGMEM ="м";
+const char MEASURE_LIGHT_RU[] PROGMEM ="Люкс";
 
 const char TEMPERATURE[] PROGMEM ="Temperature";
 const char HUMIDITY[] PROGMEM ="Humidity";
 const char PRESSURE[] PROGMEM ="Pressure";
 const char ALTITUDE[] PROGMEM ="Altitude";
+const char LIGHT[] PROGMEM ="Light";
+
+const char TEMPERATURE_DHT22[] PROGMEM ="Temperature_DHT22";
+const char HUMIDITY_DHT22[] PROGMEM ="Humidity_DHT22";
 
 const char MEASURE_CELSIUS_DEGREES[] PROGMEM ="°C";
 const char MEASURE_PERSENT[] PROGMEM ="%";
 const char MEASURE_PASCAL[] PROGMEM ="Pa";
 const char MEASURE_METER[] PROGMEM ="m";
+const char MEASURE_LIGHT[] PROGMEM ="Lux";
 
 //const PROGMEM char HTML_BH1750_MEASURER[] = ""
 //widget actions
@@ -152,10 +159,13 @@ const PROGMEM char CONTENT_TYPE_TEXT_HTML[]="text/html";
 const PROGMEM char CONTENT_TYPE_JSON[]="application/json";
 
 //serial println constants
+
+const PROGMEM char MESSAGE_STATUS_EQUAL[]="Status=";
 const PROGMEM char MESSAGE_EMPTY_STRING[]="";
 const PROGMEM char MESSAGE_SPACE[]=" ";
 const PROGMEM char MESSAGE_EQUALS[]="=";
 const PROGMEM char MESSAGE_DOT_COMMA[]=";";
+const PROGMEM char MESSAGE_DONE[]="...done";
 const PROGMEM char MESSAGE_HORIZONTAL_LINE[]="------------------------------";
 
 //serial println wifi constants
@@ -170,6 +180,7 @@ const PROGMEM char MESSAGE_DEVICE_FLASH_CHIP_SIZE[]="FlashChipSize";
 const PROGMEM char MESSAGE_DEVICE_FREE_SCETCH_SPACE[]="FreeSketchSpace";
 const PROGMEM char MESSAGE_DEVICE_RESET_REASON[]="ResetReason";
 
+const PROGMEM char MESSAGE_DEVICE_HELPER_UPDATE_EXECUTION[]="----------Device helper UpdateExecution----";
 const PROGMEM char MESSAGE_DEVICE_HELPER_STARTED[]="----------Device helper----------";
 const PROGMEM char MESSAGE_DEVICE_HELPER_INITIALIZING[]="----------Device helper init----------";
 const PROGMEM char MESSAGE_DEVICE_HELPER_LOOPERS[]="----------Device helper loopers----------";
@@ -177,6 +188,15 @@ const PROGMEM char MESSAGE_DEVICE_HELPER_LOOP_SIZE[]="DeviceHelper loop size=";
 const PROGMEM char MESSAGE_DEVICE_START_DEVICE_ID[]="Start DeviceId=";
 const PROGMEM char MESSAGE_DEVICE_INIT_STARTED_COUNT[]="Init started count=";
 const PROGMEM char MESSAGE_DEVICE_INIT_COUNT[]="Initialized count=";
+
+//----------EspSettingsBox Messages---------------
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN[]="Save AbstractItem to file=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_SAVED[]="...saved";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED[]="Default settings will be saved";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS[]="File not exists";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_FILE_EMPTY[]="File is empty";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON[]="Error parse JSON file";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_VALUE_PARSED[]="values parsed";
 
 //Ntp clock client
 const PROGMEM char MESSAGE_TIME_CLIENT_JSON_BEFORE_TIME[]="{\"wsId\":\"clock\",\"wsClass\":\"wsItem\",\"wsValue\":\"";

@@ -68,7 +68,7 @@ void PinDigital::processInterrupt(){
 			Serial.println("...event dispatched");
 		#endif
 	}else{
-		Serial.println(" not changed");
+		//Serial.println(" not changed");
 		#ifdef DIGITAL_PIN_DISPLAY_NO_CHANGE_EVENT
 		Serial.print(printState()+" now="+String(now));
 		Serial.println("...no event");

@@ -36,7 +36,8 @@ boolean DeviceHelper::loop(){
 	boolean result=false;
 
 	for(uint8_t i=0;i<loopItemsSize;i++){
-		result=result | loopItems[i]->loop();
+		bool currentLoop=loopItems[i]->loop();
+		result=result | currentLoop;
 	}
 	#ifdef DISPLAY_LOOPS
 		Serial.println("DeviceHelper loop="+String(result));
@@ -84,5 +85,14 @@ void DeviceHelper::printDeviceDiagnostic(){
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
 
+void DeviceHelper::update(Measurable** sensors, uint8_t sensorsSize) {
+	Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_UPDATE_EXECUTION));
 
+	for(uint8_t i=0;i<sensorsSize;i++){
+		sensors[i]->update();
+		sensors[i]->print();
+	}
 
+	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+	printDeviceDiagnostic();
+}

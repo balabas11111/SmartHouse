@@ -21,15 +21,17 @@
 #include <ESP8266HTTPClient.h>
 #include <PinDigital.h>
 
+#include <AbstractItem.h>
+
 class WiFiHelper:public Initializable,public Loopable {
 
 public:
-	WiFiHelper(String _name,EspSettingsBox *_settingsBox, DisplayHelper *_displayHelper, PinDigital *_signalPin,
+	WiFiHelper(String _name,EspSettingsBox *_settingsBox, DisplayHelper *_displayHelper/*, PinDigital *_signalPin*/,
 			ESP8266WebServer *_server,std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
 		name=_name;
 		espSettingsBox=_settingsBox;
 		displayHelper=_displayHelper;
-		signalPin=_signalPin;
+		//signalPin=_signalPin;
 		serverPostInitFunc=_serverPostInitFunc;
 		disconnectOnStartIfConnected=_disconnectOnStartIfConnected;
 		server=_server;
@@ -290,9 +292,11 @@ public:
 				const_cast<char*>(espSettingsBox->password.c_str()) );
 
 		// Wait for connection
-		signalPin->turnOn();
+		//if(signalPin!=nullptr){signalPin->turnOn();}
+
 		connectToWiFiIfNotConnected();
-		signalPin->turnOff();
+
+		//if(signalPin!=nullptr){signalPin->turnOff();}
 
 		return true;
 	}
@@ -304,8 +308,9 @@ public:
 	void connectToWiFiIfNotConnected(){
 		uint8_t count=0;
 		while(!isWiFIConnected() ){
-			if(signalPin!=nullptr)
+			/*if(signalPin!=nullptr)
 				signalPin->changeAndDelay(250);
+				*/
 			if(count==10){
 				displayDetails();
 				count=0;
@@ -319,6 +324,7 @@ public:
 	}
 
 	String displayDetails(){
+		delay(1);
 		Serial.println("-----------wiFi diagnostic-------------------");
 		WiFi.printDiag(Serial);
 
@@ -386,7 +392,8 @@ public:
 			Serial.println("Authentication is not required for setupPage");
 		}
 	}
-
+	//------------------------------
+	//display helper functions
 	boolean cleanDisplay(){
 		return displayHelper->clearDisplay();
 	}
@@ -394,6 +401,7 @@ public:
 	boolean displayLine(String str,int row,int col){
 		return displayHelper->addStringToDisplay(str, row, col, name);
 	}
+	//-------------------------------
 
 	//---------------------------------------------------------------------
 		//fileManager section
@@ -488,7 +496,8 @@ public:
 		    if(SPIFFS.exists(pathWithGz))
 		      path += ".gz";
 		    File file = SPIFFS.open(path, "r");
-		    size_t sent = server->streamFile(file, contentType);
+		    //size_t sent =
+		    server->streamFile(file, contentType);
 		    file.close();
 		    return true;
 		  }
@@ -662,7 +671,7 @@ private:
 	String name;
 	EspSettingsBox *espSettingsBox;
 	DisplayHelper *displayHelper;
-	PinDigital *signalPin;
+	//PinDigital *signalPin;
 	std::function<void(void)> serverPostInitFunc;
 	boolean disconnectOnStartIfConnected;
 

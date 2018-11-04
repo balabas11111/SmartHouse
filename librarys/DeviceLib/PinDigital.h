@@ -18,23 +18,23 @@ class PinDigital:  public AbstractItem, public Loopable {
 public:
 
 	PinDigital(String name,uint8_t pin,std::function<void(void)> onChanged)
-		:AbstractItem(pin,name,"PinDigital","HIGH/LOW","",0, 0,0,""){
-		construct(pin, onChanged, INPUT, CHANGE, pinVal, turnOffLevel);
+		:AbstractItem(pin,name,"PinDigital","HIGH/LOW","",0, 0,0,"",-2,2){
+		construct(pin, onChanged, INPUT, CHANGE, LOW, LOW);
 	}
 
 	PinDigital(String name,uint8_t pin,std::function<void(void)> onChanged,uint8_t fieldId,String queueName)
-		:AbstractItem(pin,name,"PinDigital","HIGH/LOW","",0, 0,fieldId,queueName){
-		construct(pin, onChanged, INPUT, CHANGE, pinVal, turnOffLevel);
+		:AbstractItem(pin,name,"PinDigital","HIGH/LOW","",0, 0,fieldId,queueName,-2,2){
+		construct(pin, onChanged, INPUT, CHANGE, LOW, LOW);
 	}
 
-	PinDigital(String name,uint8_t pin,std::function<void(void)> onChanged,uint8_t pinMode,uint8_t changeMode,uint8_t pinVal,uint8_t turnOffLevel)
-			:AbstractItem(pin,name,"PinDigital","HIGH/LOW","",pinVal, 0,0,""){
-			construct(pin, onChanged, pinMode, changeMode, pinVal, turnOffLevel);
+	PinDigital(String name,uint8_t _pin,std::function<void(void)> _onChanged,uint8_t _pinMode,uint8_t _changeMode,uint8_t _pinVal,uint8_t _turnOffLevel)
+			:AbstractItem(_pin,name,"PinDigital","HIGH/LOW","",_pinVal, 0,0,"",-2,2){
+			construct(_pin, _onChanged, _pinMode, _changeMode, _pinVal, _turnOffLevel);
 		}
 
-	PinDigital(String name,uint8_t pin,std::function<void(void)> onChanged,uint8_t pinMode,uint8_t changeMode,uint8_t pinVal,uint8_t turnOffLevel,uint8_t fieldId,String queueName)
-		:AbstractItem(pin,name,"PinDigital","HIGH/LOW","",pinVal, 0,fieldId,queueName){
-		construct(pin, onChanged, pinMode, changeMode, pinVal, turnOffLevel);
+	PinDigital(String _name,uint8_t _pin,std::function<void(void)> _onChanged,uint8_t _pinMode,uint8_t _changeMode,uint8_t _pinVal,uint8_t _turnOffLevel,uint8_t _fieldId,String _queueName)
+		:AbstractItem(_pin,_name,"PinDigital","HIGH/LOW","",_pinVal, 0,_fieldId,_queueName,-2,2){
+		construct(_pin, _onChanged, _pinMode, _changeMode, _pinVal, _turnOffLevel);
 	}
 
 	~PinDigital();

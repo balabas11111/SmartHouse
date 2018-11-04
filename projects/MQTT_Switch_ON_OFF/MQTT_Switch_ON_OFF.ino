@@ -1,10 +1,11 @@
 #include <Arduino.h>
+#include <BH1750_Sensor.h>
+#include <BME280_Sensor.h>
 #include <Hash.h>
 #include <ESP8266WiFi.h>
 #include "EspSettingsBox.h"
 #include "MqttHelper.h"
 #include "Loopable.h"
-#include "PinEventProcessor.h"
 #include "FS.h"
 #include "I2Chelper.h"
 #include "DisplayHelper.h"
@@ -12,16 +13,16 @@
 #include <Wire.h>
 
 #include <ESP8266WebServer.h>
-#include "PinEvent.h"
 #include "TimeTrigger.h"
-#include "PinExternalFuncUint16t.h"
 
-#include <BME280_Measurer.h>
-#include <BH1750_Measurer.h>
 #include <DeviceHelper.h>
 #include <PinDigital.h>
+#include <Pir_Sensor.h>
 #include "ConfigStorage.h"
-#include "PirDetector.h"
+#include "BH1750_Sensor.h"
+#include "BME280_Sensor.h"
+#include "DHT22_Sensor.h"
+#include "DS18D20_Sensor.h"
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
@@ -31,6 +32,8 @@
 #define FIRMVARE_VERSION "b@l@bas-soft ONOFF v0.0.5"
 
 //Robot Dyn//vem  // 12E
+/*
+#define A0_PIN 17
 #define D0_PIN 16 //GPIO016 ////beeper
 #define D1_PIN 5  //GPIO05  //DallasTemp           PIN_WIRE_SCL
 #define D2_PIN 4  //GPIO04  //OLED //SDA //blue    PIN_WIRE_SDA
@@ -40,11 +43,12 @@
 #define D6_PIN 12 //GPIO12  //DallasTemp red led2
 #define D7_PIN 13 //GPIO13  //GreenLed
 #define D8_PIN 15 //GPIO15  //button
+#define SD3_PIN 10
+#define SD2_PIN 9
+*/
 #define RX_PIN 3
 #define TX_PIN 1
 
-#define SD3_PIN 10
-#define SD2_PIN 9
 
 #define HUMAN_PRESENTED LOW
 #define HUMAN_NOT_PRESENTED HIGH
@@ -57,41 +61,46 @@ ESP8266WebServer server ( 80 );
 
 EspSettingsBox espSettingsBox("/settings.txt","",true,true);
 
-I2Chelper i2cHelper(D1_PIN,D2_PIN,false);
+I2Chelper i2cHelper(D1,D2,false);
 DisplayHelper displayHelper(true);
 
 String subscribeTopics[]={"topic/ESP8266Topic","topic/SwitchLeft","topic/SwitchRight"};
 
 TimeTrigger sensorsTrigger(0,sensorsInterval,true,measureSensors);
 
-PinDigital buttonLeft(VAR_NAME(buttonLeft),D7_PIN,onLeftButtonChanged,0,"");
-PinDigital buttonRight(VAR_NAME(buttonRight),D6_PIN,onRightButtonChanged,0,"");
+PinDigital buttonLeft(VAR_NAME(buttonLeft),D7,onLeftButtonChanged,0,"");
+PinDigital buttonRight(VAR_NAME(buttonRight),D6,onRightButtonChanged,0,"");
 
-PinDigital signalLed(VAR_NAME(signalLED),D4_PIN,nullptr,OUTPUT,CHANGE,LOW,HUMAN_NOT_PRESENTED,0,"");
+//PinDigital signalLed(VAR_NAME(signalLED),D4,nullptr,OUTPUT,CHANGE,LOW,HUMAN_NOT_PRESENTED,0,"");
 
-PinDigital lampLeft(VAR_NAME(lampLeft),D5_PIN,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW,0,"");
-PinDigital lampRight(VAR_NAME(lampRight),D8_PIN,onRightLampChanged,OUTPUT,CHANGE,HIGH,LOW,0,"");
+PinDigital lampLeft(VAR_NAME(lampLeft),D5,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW,0,"");
+PinDigital lampRight(VAR_NAME(lampRight),D8,onRightLampChanged,OUTPUT,CHANGE,HIGH,LOW,0,"");
 
-PirDetector pirDetector(VAR_NAME(pirDetector),D3_PIN,&signalLed,nullptr,0,"");
+Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged,0,"");
 
 //NtpTimeClientService timeClient(&espSettingsBox,processTimeClientEvent,60000);
 
-BME280_Measurer bmeMeasurer(D1_PIN,VAR_NAME(bmeMeasurer),0,"");
-BH1750_Measurer luxMeasurer(D1_PIN,VAR_NAME(luxMeasurer),0,"");
+BME280_Sensor bmeMeasurer(D1,VAR_NAME(bmeMeasurer),0,"");
+BH1750_Sensor luxMeasurer(D1,VAR_NAME(luxMeasurer),0,"");
 
-WiFiHelper wifiHelper("WiFiHelper",&espSettingsBox, &displayHelper, &signalLed,	&server,postInitWebServer,false);
+DHT22_Sensor dhtMeasurer(VAR_NAME(dhtSensor), D0, 22,0,"");
+
+DS18D20_Sensor ds18d20Measurer(VAR_NAME(ds18d20Measurer), D3,0,"");
+
+WiFiHelper wifiHelper("WiFiHelper",&espSettingsBox, &displayHelper, /*nullptr,*/&server,postInitWebServer,false);
 
 MqttHelper mqttHelper(&espSettingsBox,subscribeTopics,ARRAY_SIZE(subscribeTopics),wclient,processMqttEvent);
 
 Loopable* loopArray[]={&wifiHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&pirDetector};
+Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
 
-Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer};
+Measurable* measurableArray[]={&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
+AbstractItem* minMaxValues[]={&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray));
 
 void setup() {
   deviceHelper.startDevice(espSettingsBox.DeviceId);
-  deviceHelper.printDeviceDiagnostic();
 
   espSettingsBox.printSettingsFile();
   espSettingsBox.printSpiffsInfo();
@@ -100,50 +109,54 @@ void setup() {
   deviceHelper.printDeviceDiagnostic();
   deviceHelper.displayDetails();
 
+  loadSensors();
+  measureSensors();
 }
 
 void loop() {
 	deviceHelper.loop();
-
-	buttonLeft.loop();
-	buttonRight.loop();
 }
 
 void postInitWebServer(){
-
-	server.on("/espSettingsBox/getJson", HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getSimpleJson());
+	server.on(espSettingsBox.getJsonPublishUrl(), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getJson());
 	});
 
-	server.on("/buttonLeft/getSimpleJson", HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), buttonLeft.getSimpleJson());
+	server.on(buttonLeft.getJsonPublishUrl(), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), buttonLeft.getJson());
 	});
-	server.on("/buttonRight/getSimpleJson", HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), buttonRight.getSimpleJson());
+	server.on(buttonRight.getJsonPublishUrl(), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), buttonRight.getJson());
 	});
 
-	server.on("/lampLeft/getSimpleJson", HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lampLeft.getSimpleJson());
+	server.on(lampLeft.getJsonPublishUrl(), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lampLeft.getJson());
 	});
-	server.on("/lampRight/getSimpleJson", HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lampRight.getSimpleJson());
+	server.on(lampRight.getJsonPublishUrl(), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lampRight.getJson());
 	});
-	server.on("/lampLeft/setValue", HTTP_ANY, [](){
+	server.on(lampLeft.getSetValueUrl(), HTTP_ANY, [](){
 		handleLampChange(&lampLeft);
 	});
-	server.on("/lampRight/setValue", HTTP_ANY, [](){
+	server.on(lampRight.getSetValueUrl(), HTTP_ANY, [](){
 		handleLampChange(&lampRight);
 	});
 
-	server.on("/pirDetector/getSimpleJson", HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), pirDetector.getSimpleJson());
+	server.on(pirDetector.getJsonPublishUrl(), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), pirDetector.getJson());
 	});
 
-	server.on("/bmeMeasurer/getSimpleJson", HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), bmeMeasurer.getSimpleJson());
+	server.on(bmeMeasurer.getJsonPublishUrl(), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), bmeMeasurer.getJson());
 	});
-	server.on("/luxMeasurer/getSimpleJson", HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), luxMeasurer.getSimpleJson());
+	server.on(luxMeasurer.getJsonPublishUrl(), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), luxMeasurer.getJson());
+	});
+	server.on(dhtMeasurer.getJsonPublishUrl(), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), dhtMeasurer.getJson());
+	});
+	server.on(ds18d20Measurer.getJsonPublishUrl(), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), ds18d20Measurer.getJson());
 	});
 
 	server.on("/getI2C", [](){
@@ -189,17 +202,22 @@ void onRightLampChanged(){
 //---------------------------------------------------------------------
 //handle pirDetector events
 void onPirDetectorChanged(){
-	Serial.println("* Right lamp changed");
+	Serial.println("* Pir changed");
 }
 
 //---------------------------------------------------------------------
 //event and mqtt processing
 
+void loadSensors(){
+	espSettingsBox.loadAbstractItemsFromFile(minMaxValues, ARRAY_SIZE(minMaxValues));
+}
+
+void saveSensors(){
+	espSettingsBox.saveAbstractItemsToFile(minMaxValues, ARRAY_SIZE(minMaxValues));
+}
+
 void measureSensors(){
-	Serial.println("---Measure sensors---");
-	bmeMeasurer.measure();
-	luxMeasurer.measure();
-	deviceHelper.printDeviceDiagnostic();
+	deviceHelper.update(measurableArray, ARRAY_SIZE(measurableArray));
 }
 
 void processMqttEvent(String topic,String message){

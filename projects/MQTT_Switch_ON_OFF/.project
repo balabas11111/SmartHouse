@@ -67,9 +67,19 @@
 			<location>D:/projects/!!!SmartHouse/librarys/ConfigStorage</location>
 		</link>
 		<link>
+			<name>libraries/DHT_sensor_library</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DHT_sensor_library/1.2.2</locationURI>
+		</link>
+		<link>
 			<name>libraries/DNSServer</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/DNSServer</locationURI>
+		</link>
+		<link>
+			<name>libraries/DallasTemperature</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DallasTemperature/3.7.6</locationURI>
 		</link>
 		<link>
 			<name>libraries/DeviceLib</name>
@@ -107,29 +117,14 @@
 			<location>D:/projects/!!!SmartHouse/librarys/Helpers</location>
 		</link>
 		<link>
-			<name>libraries/Measurer</name>
-			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/Measurer</location>
-		</link>
-		<link>
 			<name>libraries/NTPClient</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/NTPClient/3.1.0</locationURI>
 		</link>
 		<link>
-			<name>libraries/PinEvent</name>
+			<name>libraries/OneWire</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/PinEvent</location>
-		</link>
-		<link>
-			<name>libraries/PinEventLib</name>
-			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/PinEventLib</location>
-		</link>
-		<link>
-			<name>libraries/PinExternalFunc</name>
-			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/PinExternalFunc</location>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire/2.3.3</locationURI>
 		</link>
 		<link>
 			<name>libraries/PubSubClient</name>
@@ -140,6 +135,11 @@
 			<name>libraries/SPI</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/SPI</locationURI>
+		</link>
+		<link>
+			<name>libraries/SensorsLib</name>
+			<type>2</type>
+			<location>D:/projects/!!!SmartHouse/librarys/SensorsLib</location>
 		</link>
 		<link>
 			<name>libraries/TimeTrigger</name>

@@ -1,7 +1,7 @@
 /*
  * DeviceHelper.h
  *
- *  Created on: 13 окт. 2018 г.
+ *  Created on: 13 пїЅпїЅпїЅ. 2018 пїЅ.
  *      Author: Vitaliy
  */
 
@@ -11,6 +11,7 @@
 #include <Loopable.h>
 #include <Initializable.h>
 #include <Arduino.h>
+#include "Measurable.h"
 
 class DeviceHelper:public Loopable{
 
@@ -21,9 +22,9 @@ public:
 
 	void startDevice(String deviceId);
 	boolean init(Initializable** initItems,uint8_t initItemsSize);
+	void update(Measurable** sensors,uint8_t sensorsSize);
 
 	void printDeviceDiagnostic();
-	String getWidgetsJson();
 private:
 	Loopable** loopItems;
 	uint8_t loopItemsSize;

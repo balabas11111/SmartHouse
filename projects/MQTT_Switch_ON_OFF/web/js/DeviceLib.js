@@ -16,7 +16,7 @@ function processLampJson(data){
 	
 	hideComponent(compId_Q);
 	
-	if(onOff=='1.00'){
+	if(onOff=='1.00' || onOff=='1'){
 		hideComponent(compId_Off);
 		showComponent(compId_On);
 	}else{
@@ -129,15 +129,79 @@ function lampWidgetClick(component){
 	
 	updateComponentsByAjaxCall('POST', url, processLampJson,val,0);
 }
+//------------------------------DS18D20--------------------------------
+function processDS18D20Json(data){
+	var items=data.items;
+	var parentId=data.name;
+	var childCount=data.childCount;
+	
+	var countCompId="Count_"+parentId;
+	var countComponent=document.getElementById(countCompId);
+	
+	if(countComponent!=undefined){
+		countComponent.innerHTML=childCount;
+	}
+		
+	for(var i in items){
+		var inputId=items[i].name;
+		var labelVal=items[i].descr;
+		var inputVal=items[i].val;
+		
+		addDS18D20Component(parentId,inputId,labelVal,inputVal);
+	}
+}
 
+function addDS18D20Component(parentId,inputId,labelVal,inputVal){
+		
+	var newLabelId="Label_"+inputId;
+	var newInputId="Input_"+inputId;
+	var newLabelHtml="<b>"+labelVal+"</b>"
+	//<label style="max-width: 240px;" for="Temperature"><b id="temp1"></b></label>		
+	//<input id="Temperature"	class="" ="" type="text" value="обновл€ю" disabled>	
+	var inputComponent=document.getElementById(newInputId);
+	var labelComponent=document.getElementById(newLabelId);
+	
+	if(inputComponent!=undefined && labelComponent!=undefined){
+		inputComponent.value=inputVal;
+		labelComponent.innerHTML=newLabelHtml;
+		return;
+	}
+	
+	var container=document.getElementById(parentId);
+	
+	if(container!=undefined){
+		
+		var newLabel = document.createElement("Label");
+		newLabel.setAttribute("id",newLabelId);
+		newLabel.setAttribute("for",newInputId);
+		newLabel.setAttribute("style","max-width: 240px;");
+		newLabel.innerHTML = newLabelHtml ;
+		
+		var newInput=document.createElement("Input");
+		newInput.setAttribute("id",newInputId);
+		newInput.setAttribute("class","w3-input w3-border");
+		newInput.setAttribute("style","width:30%");
+		newInput.setAttribute("disabled","disabled");
+		newInput.setAttribute("value",inputVal);
+		
+		container.appendChild(newLabel);
+		container.appendChild(newInput);
+	}
+	
+}
+//------------------------------Base logic----------------------------
 function onLoadPageComplete(){
 	 updateComponentsByAjaxCall('GET', '/espSettingsBox/getJson', processSettingsJson,"", 0);
 	
-	 updateComponentsByAjaxCall('GET', '/bmeMeasurer/getSimpleJson', processSimpleJson,"", 120000);
-	 updateComponentsByAjaxCall('GET', '/luxMeasurer/getSimpleJson', processSimpleJson,"", 120000);
+	 updateComponentsByAjaxCall('GET', '/bmeMeasurer/getJson', processSimpleJson,"", 120000);
+	 updateComponentsByAjaxCall('GET', '/luxMeasurer/getJson', processSimpleJson,"", 120000);
+	 updateComponentsByAjaxCall('GET', '/dhtMeasurer/getJson', processSimpleJson,"", 120000);
+	 updateComponentsByAjaxCall('GET', '/ds18d20Measurer/getJson', processDS18D20Json,"", 120000);
 	 
-	 updateComponentsByAjaxCall('GET', '/lampLeft/getSimpleJson', processLampJson,"", 5000);
-	 updateComponentsByAjaxCall('GET', '/lampRight/getSimpleJson', processLampJson,"", 5000);
+	 updateComponentsByAjaxCall('GET', '/lampLeft/getJson', processLampJson,"", 5000);
+	 updateComponentsByAjaxCall('GET', '/lampRight/getJson', processLampJson,"", 5000);
+	 
+	 updateComponentsByAjaxCall('GET', '/pirDetector/getJson', processLampJson,"", 5000);
 }
 
 
