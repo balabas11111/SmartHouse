@@ -27,9 +27,9 @@ const char INIT_STR_DHT22[] PROGMEM ="Init DHT22";
 
 class DHT22_Sensor: public AbstractItem, public Initializable,public Measurable {
 public:
-	DHT22_Sensor(String name, uint8_t pin, uint8_t type,uint8_t fieldId,String queueName)
+	DHT22_Sensor(String name, uint8_t pin, uint8_t type)
 				: AbstractItem(pin,name,FPSTR(SENSOR_DHT22_DESCRIPTION),FPSTR(SENSOR_DHT22_SIZE),FPSTR(SENSOR_DHT22_DESCRIPTION_RU),
-				0, 2,fieldId,queueName,-512,512){
+				0, 2,-512,512){
 
 		dht=new DHT(pin,type);
 	};

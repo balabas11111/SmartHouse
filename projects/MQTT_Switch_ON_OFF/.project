@@ -54,7 +54,7 @@
 		<link>
 			<name>libraries/ArduinoJson</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/ArduinoJson/5.12.0</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/ArduinoJson/5.13.1</locationURI>
 		</link>
 		<link>
 			<name>libraries/BH1750</name>
@@ -69,17 +69,17 @@
 		<link>
 			<name>libraries/DHT_sensor_library</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DHT_sensor_library/1.2.2</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DHT_sensor_library/1.3.0</locationURI>
 		</link>
 		<link>
 			<name>libraries/DNSServer</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/DNSServer</locationURI>
+			<location>D:/projects/sloeber/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/DNSServer</location>
 		</link>
 		<link>
 			<name>libraries/DallasTemperature</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DallasTemperature/3.7.6</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DallasTemperature/3.8.0</locationURI>
 		</link>
 		<link>
 			<name>libraries/DeviceLib</name>
@@ -89,17 +89,17 @@
 		<link>
 			<name>libraries/ESP8266HTTPClient</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266HTTPClient</locationURI>
+			<location>D:/projects/sloeber/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266HTTPClient</location>
 		</link>
 		<link>
 			<name>libraries/ESP8266WebServer</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/ESP8266WebServer</location>
+			<location>D:/projects/sloeber/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266WebServer</location>
 		</link>
 		<link>
 			<name>libraries/ESP8266WiFi</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266WiFi</locationURI>
+			<location>D:/projects/sloeber/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266WiFi</location>
 		</link>
 		<link>
 			<name>libraries/EspSettingsBox</name>
@@ -109,7 +109,7 @@
 		<link>
 			<name>libraries/Hash</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Hash</locationURI>
+			<location>D:/projects/sloeber/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Hash</location>
 		</link>
 		<link>
 			<name>libraries/Helpers</name>
@@ -124,7 +124,12 @@
 		<link>
 			<name>libraries/OneWire</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire/2.3.3</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire/2.3.4</locationURI>
+		</link>
+		<link>
+			<name>libraries/PinEvent</name>
+			<type>2</type>
+			<location>D:/projects/!!!SmartHouse/librarys/PinEvent</location>
 		</link>
 		<link>
 			<name>libraries/PubSubClient</name>
@@ -134,7 +139,7 @@
 		<link>
 			<name>libraries/SPI</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/SPI</locationURI>
+			<location>D:/projects/sloeber/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/SPI</location>
 		</link>
 		<link>
 			<name>libraries/SensorsLib</name>
@@ -149,12 +154,17 @@
 		<link>
 			<name>libraries/WebSockets</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/WebSockets</location>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/WebSockets/2.1.1</locationURI>
+		</link>
+		<link>
+			<name>libraries/WiFiManager</name>
+			<type>2</type>
+			<location>D:/projects/!!!SmartHouse/librarys/WiFiManager</location>
 		</link>
 		<link>
 			<name>libraries/Wire</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Wire</locationURI>
+			<location>D:/projects/sloeber/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Wire</location>
 		</link>
 	</linkedResources>
 </projectDescription>

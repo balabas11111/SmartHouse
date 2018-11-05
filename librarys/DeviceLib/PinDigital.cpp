@@ -33,6 +33,8 @@ void PinDigital::construct(uint8_t pin,std::function<void(void)> onChanged,uint8
 
 	oldVal=getVal();
 	this->turnOffLevel=turnOffLevel;
+
+	items[0]={0,item.name,item.type,PinDigital,item.descr,pinVal,0,-2,2,""};
 }
 
 uint16_t PinDigital::getVal(){

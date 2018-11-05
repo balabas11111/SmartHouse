@@ -29,9 +29,9 @@ const char INIT_STR_DS18D20[] PROGMEM ="Init DS18D20";
 
 class DS18D20_Sensor: public AbstractItem, public Initializable, public Measurable {
 public:
-	DS18D20_Sensor(String name, uint8_t pin, uint8_t fieldId,String queueName)
+	DS18D20_Sensor(String name, uint8_t pin)
 				: AbstractItem(pin,name,FPSTR(SENSOR_DS18D20_DESCRIPTION),FPSTR(SENSOR_DS18D20_SIZE),FPSTR(SENSOR_DS18D20_DESCRIPTION_RU),
-						0, 0,fieldId,queueName,-512,512){
+						0, 0,-512,512){
 
 		oneWire=new OneWire(pin);
 		dallasTemperature=new DallasTemperature(oneWire);
@@ -56,7 +56,7 @@ public:
 
 	void initSensor(){
 		dallasTemperature->begin();
-		dallasTemperature->setDescription(getName());
+		//dallasTemperature->setDescription(getName());
 
 		childCount=dallasTemperature->getDeviceCount();
 

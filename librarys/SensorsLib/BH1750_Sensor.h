@@ -29,9 +29,9 @@ class BH1750_Sensor: public AbstractItem, public Initializable, public Measurabl
 
 public:
 
-	BH1750_Sensor(uint8_t id,String name,uint8_t fieldId,String queueName)
+	BH1750_Sensor(uint8_t id,String name)
 			: AbstractItem(id,name,FPSTR(SENSOR_BH1750_DESCRIPTION),FPSTR(SENSOR_BH1750_SIZE),FPSTR(SENSOR_BH1750_DESCRIPTION_RU),
-					0, 1,fieldId,queueName,-512,512){
+					0, 1,-512,512){
 	}
 
 	~BH1750_Sensor(){
@@ -55,7 +55,7 @@ public:
 
 	void initSensor(){
 		lightMeter.begin();
-		items[0]={0,FPSTR(LIGHT),FPSTR(MEASURE_LIGHT),FPSTR(MEASURE_LIGHT_RU),FPSTR(LIGHT_RU),-127,0,-512,512};
+		items[0]={0,FPSTR(LIGHT),FPSTR(MEASURE_LIGHT),FPSTR(MEASURE_LIGHT_RU),FPSTR(LIGHT_RU),-127,0,-512,512,""};
 	}
 	//----------------------------------------------
 

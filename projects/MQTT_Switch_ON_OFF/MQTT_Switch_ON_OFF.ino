@@ -68,24 +68,24 @@ String subscribeTopics[]={"topic/ESP8266Topic","topic/SwitchLeft","topic/SwitchR
 
 TimeTrigger sensorsTrigger(0,sensorsInterval,true,measureSensors);
 
-PinDigital buttonLeft(VAR_NAME(buttonLeft),D7,onLeftButtonChanged,0,"");
-PinDigital buttonRight(VAR_NAME(buttonRight),D6,onRightButtonChanged,0,"");
+PinDigital buttonLeft(VAR_NAME(buttonLeft),D7,onLeftButtonChanged);
+PinDigital buttonRight(VAR_NAME(buttonRight),D6,onRightButtonChanged);
 
 //PinDigital signalLed(VAR_NAME(signalLED),D4,nullptr,OUTPUT,CHANGE,LOW,HUMAN_NOT_PRESENTED,0,"");
 
-PinDigital lampLeft(VAR_NAME(lampLeft),D5,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW,0,"");
-PinDigital lampRight(VAR_NAME(lampRight),D8,onRightLampChanged,OUTPUT,CHANGE,HIGH,LOW,0,"");
+PinDigital lampLeft(VAR_NAME(lampLeft),D5,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW);
+PinDigital lampRight(VAR_NAME(lampRight),D8,onRightLampChanged,OUTPUT,CHANGE,HIGH,LOW);
 
-Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged,0,"");
+Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged);
 
 //NtpTimeClientService timeClient(&espSettingsBox,processTimeClientEvent,60000);
 
-BME280_Sensor bmeMeasurer(20,VAR_NAME(bmeMeasurer),0,"");
-BH1750_Sensor luxMeasurer(21,VAR_NAME(luxMeasurer),0,"");
+BME280_Sensor bmeMeasurer(20,VAR_NAME(bmeMeasurer));
+BH1750_Sensor luxMeasurer(21,VAR_NAME(luxMeasurer));
 
-DHT22_Sensor dhtMeasurer(VAR_NAME(dhtSensor), D0, 22,0,"");
+DHT22_Sensor dhtMeasurer(VAR_NAME(dhtSensor), D0, 22);
 
-DS18D20_Sensor ds18d20Measurer(VAR_NAME(ds18d20Measurer), D3,0,"");
+DS18D20_Sensor ds18d20Measurer(VAR_NAME(ds18d20Measurer), D3);
 
 WiFiHelper wifiHelper("WiFiHelper",&espSettingsBox, &displayHelper, /*nullptr,*/&server,postInitWebServer,false);
 
@@ -235,68 +235,22 @@ String setAllSensorsJson(){
 	delay(1);
 	Serial.println("---processing all form values");
 	deviceHelper.printDeviceDiagnostic();
-	//wifiHelper.checkAuthentication();
-
-	int size=server.args();
-
-	Serial.print("Total arguments=");
-	Serial.println(size);
-
+	wifiHelper.checkAuthentication();
 	uint8_t lastDevice=0;
 
-	for(int i=0;i<size;i++){
-		String argName=server.argName(i);
-		String argVal=server.arg(i);
+	for(int i=0;i<server.args();i++){
+		AbstractItemRequest req=AbstractItem::createitemRequest(server.argName(i),server.arg(i));
 
-		if(argName.startsWith("s_")){
-
-			int8_t ind1=argName.indexOf("_", 2)+1;
-			int8_t ind2=argName.indexOf("_",ind1+1);
-
-			uint8_t deviceId=argName.substring(2,ind1-1).toInt();
-			uint8_t sensorId=argName.substring(ind1,ind2).toInt();
-			String type=argName.substring(ind2+1);
-
+		if(req.valid){
 			uint8_t size=ARRAY_SIZE(minMaxValues);
 
 			for(uint8_t i=lastDevice;i<size;i++){
-
-				if((minMaxValues[i]->getItem().id)==deviceId && minMaxValues[i]->getChildCount()>sensorId){
-					if(type=="descr"){
-						minMaxValues[i]->setDescr(sensorId, argVal);
-					}else
-					if(type=="minVal"){
-						minMaxValues[i]->setMinVal(sensorId, argVal.toFloat());
-					}else
-					if(type=="maxVal"){
-						minMaxValues[i]->setMaxVal(sensorId, argVal.toFloat());
-					}else
-					if(type=="fieldId"){
-						minMaxValues[i]->setFieldId(sensorId, argVal.toInt());
-					}
-
-					lastDevice=i;
-					break;
+				if(minMaxValues[i]->setFieldFromRequest(req)){
+						lastDevice=i;
+						break;
 				}
-
 			}
-			/*
-			Serial.print("argName=");
-			Serial.print(argName);
-			Serial.print(" argVal=");
-			Serial.print(argVal);
-			Serial.print(" deviceId=");
-			Serial.print(deviceId);
-			Serial.print(" sensorId=");
-			Serial.print(sensorId);
-			Serial.print(" type=");
-			Serial.print(type);
-			Serial.print(" ind1=");
-			Serial.print(ind1);
-			Serial.print(" ind2=");
-			Serial.print(ind2);
-			Serial.println(";");
-			*/
+
 		}
 	}
 

@@ -16,15 +16,19 @@
 
 class Pir_Sensor: public Loopable,public AbstractItem {
 public:
-	Pir_Sensor(String name,uint8_t _pin,std::function<void(void)> onChangeFunction,uint8_t fieldId,String queueName)
-		:AbstractItem(_pin,name,"PirDetector","Human/No_Human","Human detector",0, 0,0,"",-2,2){
-		pirDetectorPin=new PinDigital(name,_pin,[this](){processPinChange();},fieldId,queueName);
+	Pir_Sensor(String name,uint8_t _pin,std::function<void(void)> onChangeFunction)
+		:AbstractItem(_pin,name,"PirDetector","Human/No_Human","Human detector",0, 1,-2,2){
+		pirDetectorPin=new PinDigital(name,_pin,[this](){processPinChange();});
 		humanPresentTrigger=new TimeTrigger(0,humanNotPresentInterval,false,[this](){onHumanPresentTrigger();});
 		//pirPin=_pin;
 		//signalLed=_signalLed;
 		externalFunction=onChangeFunction;
+
+		items[0]={0,item.name,item.type,PinDigital,item.descr,pirDetectorPin->getVal(),0,-2,2,""};
 	}
 	virtual ~Pir_Sensor(){};
+
+
 
 	boolean loop(){
 		humanPresentTrigger->loop();

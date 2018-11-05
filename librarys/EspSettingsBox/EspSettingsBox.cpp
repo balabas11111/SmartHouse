@@ -571,7 +571,7 @@ void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 				item->setFieldId(root["fieldId"]);
 				item->setMinVal(root["minVal"]);
 				item->setMaxVal(root["maxVal"]);
-				item->setQueueName(root["queueName"].as<char*>());
+				item->setQueue(root["queueName"].as<char*>());
 
 				uint8_t childCountJson=root["childCount"];
 
@@ -587,11 +587,13 @@ void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 						uint8_t fieldId=root["items"][i]["fieldId"];
 						float minVal=root["items"][i]["minVal"];
 						float maxVal=root["items"][i]["maxVal"];
+						String queue=root["items"][i]["queue"];
 
 						Serial.println("name="+name+" descr="+descr
 								+" fieldId="+String(fieldId)
 								+" minVal="+String(minVal)
-								+" maxVal="+String(maxVal));
+								+" maxVal="+String(maxVal)
+								+" queue="+queue);
 
 						uint8_t child=item->getChildItemIndexByName(name);
 
@@ -599,6 +601,7 @@ void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 						item->setFieldId(child, fieldId);
 						item->setMinVal(child, minVal);
 						item->setMaxVal(child, maxVal);
+						item->setQueue(child, queue);
 
 						Serial.println(item->getJson(child));
 					}
