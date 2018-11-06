@@ -33,8 +33,9 @@ void PinDigital::construct(uint8_t pin,std::function<void(void)> onChanged,uint8
 
 	oldVal=getVal();
 	this->turnOffLevel=turnOffLevel;
+	float val=pinVal;
 
-	items[0]={0,item.name,item.type,PinDigital,item.descr,pinVal,0,-2,2,""};
+	items[0]={0,name,type,size,descr,val,0,-2,2,""};
 }
 
 uint16_t PinDigital::getVal(){
@@ -43,7 +44,7 @@ uint16_t PinDigital::getVal(){
 
 bool PinDigital::setVal(uint16_t _val){
 	if(pinModeInOut==OUTPUT){
-		item.val=_val;
+		items[0].val=_val;
 
 		if(_val!=getVal()){
 			digitalWrite(pin, _val);
@@ -57,9 +58,8 @@ bool PinDigital::setVal(uint16_t _val){
 void PinDigital::processInterrupt(){
 
 	uint16_t now=getVal();
+	items[0].val=now;
 	//Serial.print("interrupted");
-
-	item.val=now;
 
 	Serial.println(" old="+String(oldVal)+" now="+String(now));
 

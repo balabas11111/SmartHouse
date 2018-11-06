@@ -7,6 +7,7 @@
 
 #include <DeviceHelper.h>
 #include "ESP_Consts.h"
+#include "ESP8266WebServer.h"
 
 DeviceHelper::DeviceHelper(Loopable** _loopItems,uint8_t _loopItemsSize){
 	loopItems=_loopItems;
@@ -95,4 +96,44 @@ void DeviceHelper::update(Measurable** sensors, uint8_t sensorsSize) {
 
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 	printDeviceDiagnostic();
+}
+
+String DeviceHelper::getJson(AbstractItem** sensors, uint8_t size) {
+		String result="{\"sensors\":[";
+
+			for(uint8_t i=0;i<size;i++){
+				result+=sensors[i]->getJson();
+				if(i!=size-1){
+					result+=",";
+				}
+			}
+		result+="]}";
+
+		return result;
+}
+
+uint8_t DeviceHelper::processAbstractitemsSettings(AbstractItem** sensors,
+		uint8_t size, ESP8266WebServer* server) {
+
+		uint8_t argsProcessed=0;
+		uint8_t lastDevice=0;
+
+		for(int i=0;i<server->args();i++){
+			AbstractItemRequest req=AbstractItem::createitemRequest(server->argName(i),server->arg(i));
+
+			if(req.valid){
+
+				for(uint8_t i=lastDevice;i<size;i++){
+					if(sensors[i]->setFieldFromRequest(req)){
+							argsProcessed++;
+							lastDevice=i;
+							break;
+					}
+				}
+
+			}
+		}
+
+		return argsProcessed;
+
 }

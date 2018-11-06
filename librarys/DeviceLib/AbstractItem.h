@@ -45,17 +45,12 @@ typedef struct childRecords SensorValue;
 
 public:
 
-	AbstractItem(uint8_t id,String name,String type,String size,String descr,float val, uint8_t childCount,float minVal,float maxVal){
-		this->item.id=id;
-		this->item.name=name;
-		this->item.type=type;
-		this->item.size=size;
-		this->item.descr=descr;
-		this->item.val=val;
-		this->item.fieldId=0;
-		this->item.minVal=minVal;
-		this->item.maxVal=maxVal;
-		this->item.queue="";
+	AbstractItem(uint8_t id,String name,String type,String size,String descr, uint8_t childCount){
+		this->id=id;
+		this->name=name;
+		this->type=type;
+		this->size=size;
+		this->descr=descr;
 		this->childCount=childCount;
 
 		initializeChildren();
@@ -64,16 +59,8 @@ public:
 	}
 	virtual ~AbstractItem(){};
 
-	SensorValue getItem(){
-		return item;
-	}
-
 	SensorValue* getItems(){
 		return items;
-	}
-
-	String getQueue(){
-		return item.queue;
 	}
 
 	virtual void update(){};
@@ -81,19 +68,7 @@ public:
 	virtual boolean loop(){return false;};
 
 	virtual String getJson(){
-		String result=
-				"{\"id\":\""+String(item.id)+"\","
-				+"\"name\":\""+item.name+"\","
-				+"\"type\":\""+item.type+"\","
-				+"\"size\":\""+item.size+"\","
-				+"\"descr\":\""+item.descr+"\","
-				+"\"val\":\""+String(item.val)+"\","
-				+"\"fieldId\":\""+String(item.fieldId)+"\","
-				+"\"childCount\":\""+String(childCount)+"\","
-				+"\"queue\":\""+item.queue+"\","
-				+"\"minVal\":\""+String(item.minVal)+"\","
-				+"\"maxVal\":\""+String(item.maxVal)+"\","
-				+"\"items\":[";
+		String result="{"+getItemJson()+",\"items\":[";
 
 			for(uint8_t i=0;i<childCount;i++){
 				result+=getSensorValueJson(items[i]);
@@ -108,13 +83,7 @@ public:
 	}
 
 	virtual String getSimpleJson(){
-		String result="{\"name\":\""+item.name+"\","
-						+"\"val\":\""+String(item.val)+"\","
-						+"\"fieldId\":\""+String(item.fieldId)+"\","
-						+"\"queue\":\""+item.queue+"\","
-						+"\"minVal\":\""+String(item.minVal)+"\","
-						+"\"maxVal\":\""+String(item.maxVal)+"\","
-						+"\"items\":[";
+		String result="{"+getItemJson()+",\"items\":[";
 
 					for(uint8_t i=0;i<childCount;i++){
 						result+=getSensorValueSimpleJson(items[i]);
@@ -133,11 +102,11 @@ public:
 	}
 
 	uint8_t getId(){
-		return this->item.id;
+		return this->id;
 	}
 
 	String getName(){
-		return this->item.name;
+		return this->name;
 	}
 
 	uint8_t getChildCount(){
@@ -153,7 +122,7 @@ public:
 	}
 
 	void setDescr(String descr){
-		this->item.descr=descr;
+		this->descr=descr;
 	}
 	void setDescr(uint8_t child,String descr){
 		if(childCount>child){
@@ -161,36 +130,23 @@ public:
 		}
 	}
 
-	void setMinVal(float minVal){
-		this->item.minVal=minVal;
-	}
 	void setMinVal(uint8_t child,float minVal){
 		if(childCount>child){
 			this->items[child].minVal=minVal;
 		}
 	}
 
-	void setMaxVal(float maxVal){
-		this->item.maxVal=maxVal;
-	}
+
 	void setMaxVal(uint8_t child,float maxVal){
 		if(childCount>child){
 			this->items[child].maxVal=maxVal;
 		}
 	}
 
-	void setFieldId(int8_t fieldId){
-		this->item.fieldId=fieldId;
-	}
-
 	void setFieldId(uint8_t child,int8_t fieldId){
 		if(childCount>child){
 			this->items[child].fieldId=fieldId;
 		}
-	}
-
-	void setQueue(String queue){
-		this->item.queue=queue;
 	}
 
 	void setQueue(uint8_t child,String queue){
@@ -201,7 +157,7 @@ public:
 
 	void printValues(){
 		Serial.print("NAME=");
-		Serial.print(item.name);
+		Serial.print(name);
 		Serial.print("; ");
 		for(uint8_t i=0;i<childCount;i++){
 			Serial.print(items[i].name);
@@ -210,22 +166,6 @@ public:
 			Serial.print("; ");
 		}
 		Serial.println();
-	}
-
-	void setFieldIds(uint8_t* fieldsArray){
-		item.fieldId=fieldsArray[0];
-
-		for(uint8_t i=1;i<=childCount;i++){
-			items[i-1].fieldId=fieldsArray[i];
-		}
-	}
-
-	void setDescriptions(String* descrArray){
-		item.descr=descrArray[0];
-
-		for(uint8_t i=1;i<=childCount;i++){
-			items[i-1].descr=descrArray[i];
-		}
 	}
 
 	String getJsonPublishUrl(){
@@ -238,18 +178,23 @@ public:
 
 	boolean setFieldFromRequest(AbstractItemRequest req){
 
-		if(item.id!=req.deviceId){
+		if(this->id!=req.deviceId || !req.valid){
 			return false;
 		}
 		if(req.itemId!=255 && req.itemId>childCount){
 			return false;
 		}
 
-		SensorValue* targetItem=&item;
-
-		if(req.itemId!=255){
-			targetItem=&items[req.itemId];
+		if(req.itemId==255){
+			//we can set only abstractItem desciption. All other values belong to its items values
+			if(req.fieldId==FIELD_DESCR_ID){
+				setDescr(req.fieldVal);
+				return true;
+			}
+			return false;
 		}
+
+		SensorValue* targetItem=&items[req.itemId];
 
 		boolean result=false;
 
@@ -279,42 +224,12 @@ public:
 		}
 
 		return result;
-
 	}
 
 	//if(ietmId=255 then it is parentItem)
 	boolean setField(String fieldName,String fieldVal,uint8_t itemId){
-		if(itemId!=255 && itemId>childCount){
-			return false;
-		}
-		SensorValue* targetItem=&item;
-
-		if(itemId!=255){
-			targetItem=&items[itemId];
-		}
-
-		if(fieldName==FPSTR(FIELD_DESCR)){
-			targetItem->descr=fieldVal;
-			return true;
-		}else
-		if(fieldName==FPSTR(FIELD_MIN_VAL)){
-			targetItem->minVal=fieldVal.toFloat();
-			return true;
-		}else
-		if(fieldName==FPSTR(FIELD_MAX_VAL)){
-			targetItem->maxVal=fieldVal.toFloat();
-			return true;
-		}else
-		if(fieldName==FPSTR(FIELD_FIELDID)){
-			targetItem->fieldId=fieldVal.toInt();
-			return true;
-		}else
-		if(fieldName==FPSTR(FIELD_QUEUE)){
-			targetItem->queue=fieldVal;
-			return true;
-		}
-
-		return false;
+		AbstractItemRequest req=AbstractItem::createitemRequest(fieldName,fieldVal);
+		return setFieldFromRequest(req);
 	}
 
 	static AbstractItemRequest createitemRequest(String argName,String argValue){
@@ -352,11 +267,23 @@ public:
 
 protected:
 
-	SensorValue item;
-
+	uint8_t id;
+	String name;
+	String type;
+	String size;
+	String descr;
 	uint8_t childCount;
 
 	SensorValue* items;
+
+	String getItemJson(){
+		return "\"id\":\""+String(id)+"\","
+				+"\"name\":\""+name+"\","
+				+"\"type\":\""+type+"\","
+				+"\"size\":\""+size+"\","
+				+"\"descr\":\""+descr+"\","
+				+"\"childCount\":\""+String(childCount)+"\"";
+	}
 
 	String getSensorValueJson(SensorValue m){
 		return "{\"id\":\""+String(m.id)+"\","

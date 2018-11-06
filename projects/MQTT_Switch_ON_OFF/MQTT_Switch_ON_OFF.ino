@@ -95,7 +95,7 @@ Loopable* loopArray[]={&wifiHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&pir
 Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
 
 Measurable* measurableArray[]={&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
-AbstractItem* minMaxValues[]={&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
+AbstractItem* minMaxValues[]={&lampLeft,&lampRight,&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray));
 
@@ -232,50 +232,16 @@ void saveSensors(){
 }
 
 String setAllSensorsJson(){
-	delay(1);
-	Serial.println("---processing all form values");
-	deviceHelper.printDeviceDiagnostic();
 	wifiHelper.checkAuthentication();
-	uint8_t lastDevice=0;
-
-	for(int i=0;i<server.args();i++){
-		AbstractItemRequest req=AbstractItem::createitemRequest(server.argName(i),server.arg(i));
-
-		if(req.valid){
-			uint8_t size=ARRAY_SIZE(minMaxValues);
-
-			for(uint8_t i=lastDevice;i<size;i++){
-				if(minMaxValues[i]->setFieldFromRequest(req)){
-						lastDevice=i;
-						break;
-				}
-			}
-
-		}
-	}
-
-	saveSensors();
-	deviceHelper.printDeviceDiagnostic();
+	deviceHelper.processAbstractitemsSettings(minMaxValues, ARRAY_SIZE(minMaxValues),&server);
 
 	return getAllSensorsJson();
 }
 
 String getAllSensorsJson(){
-	delay(1);
 	wifiHelper.checkAuthentication();
+	return deviceHelper.getJson(minMaxValues, ARRAY_SIZE(minMaxValues));
 
-	uint8_t size=ARRAY_SIZE(minMaxValues);
-	String result="{\"sensors\":[";
-
-		for(uint8_t i=0;i<size;i++){
-			result+=minMaxValues[i]->getJson();
-			if(i!=size-1){
-				result+=",";
-			}
-		}
-	result+="]}";
-
-	return result;
 }
 
 void measureSensors(){

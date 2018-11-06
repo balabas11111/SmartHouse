@@ -14,32 +14,27 @@
 #include "Loopable.h"
 #include "AbstractItem.h"
 
-class Pir_Sensor: public Loopable,public AbstractItem {
+class Pir_Sensor: public PinDigital {
 public:
 	Pir_Sensor(String name,uint8_t _pin,std::function<void(void)> onChangeFunction)
-		:AbstractItem(_pin,name,"PirDetector","Human/No_Human","Human detector",0, 1,-2,2){
-		pirDetectorPin=new PinDigital(name,_pin,[this](){processPinChange();});
+		:PinDigital(name,_pin,[this](){processPinChange();}){
 		humanPresentTrigger=new TimeTrigger(0,humanNotPresentInterval,false,[this](){onHumanPresentTrigger();});
 		//pirPin=_pin;
 		//signalLed=_signalLed;
 		externalFunction=onChangeFunction;
-
-		items[0]={0,item.name,item.type,PinDigital,item.descr,pirDetectorPin->getVal(),0,-2,2,""};
 	}
 	virtual ~Pir_Sensor(){};
 
-
-
 	boolean loop(){
 		humanPresentTrigger->loop();
-		return pirDetectorPin->loop();
+		return PinDigital::loop();
 	}
 
 	void processPinChange(){
 		Serial.print("Pir change ");
-		Serial.println(pirDetectorPin->getVal());
+		Serial.println(getVal());
 
-		if(pirDetectorPin->isOn()){
+		if(isOn()){
 			onMovementDetected();
 		}else{
 			onNoMovementDetected();
@@ -92,7 +87,6 @@ public:
 	}
 
 private:
-	PinDigital *pirDetectorPin;
 	TimeTrigger *humanPresentTrigger;
 
 	const int humanNotPresentInterval=30000;

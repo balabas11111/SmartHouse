@@ -31,8 +31,7 @@ class BME280_Sensor: public AbstractItem, public Initializable,public Measurable
 public:
 
 	BME280_Sensor(uint8_t id,String name)
-		: AbstractItem(id,name,FPSTR(SENSOR_BME280_DESCRIPTION),FPSTR(SENSOR_BME280_SIZE),FPSTR(SENSOR_BME280_DESCRIPTION_RU),
-					0, 4,-512,512){
+		: AbstractItem(id,name,FPSTR(SENSOR_BME280_DESCRIPTION),FPSTR(SENSOR_BME280_SIZE),FPSTR(SENSOR_BME280_DESCRIPTION_RU),4){
 	}
 
 	~BME280_Sensor(){

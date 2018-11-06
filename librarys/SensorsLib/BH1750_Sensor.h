@@ -30,8 +30,7 @@ class BH1750_Sensor: public AbstractItem, public Initializable, public Measurabl
 public:
 
 	BH1750_Sensor(uint8_t id,String name)
-			: AbstractItem(id,name,FPSTR(SENSOR_BH1750_DESCRIPTION),FPSTR(SENSOR_BH1750_SIZE),FPSTR(SENSOR_BH1750_DESCRIPTION_RU),
-					0, 1,-512,512){
+	: AbstractItem(id,name,FPSTR(SENSOR_BH1750_DESCRIPTION),FPSTR(SENSOR_BH1750_SIZE),FPSTR(SENSOR_BH1750_DESCRIPTION_RU),1){
 	}
 
 	~BH1750_Sensor(){

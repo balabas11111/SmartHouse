@@ -30,8 +30,7 @@ const char INIT_STR_DS18D20[] PROGMEM ="Init DS18D20";
 class DS18D20_Sensor: public AbstractItem, public Initializable, public Measurable {
 public:
 	DS18D20_Sensor(String name, uint8_t pin)
-				: AbstractItem(pin,name,FPSTR(SENSOR_DS18D20_DESCRIPTION),FPSTR(SENSOR_DS18D20_SIZE),FPSTR(SENSOR_DS18D20_DESCRIPTION_RU),
-						0, 0,-512,512){
+				: AbstractItem(pin,name,FPSTR(SENSOR_DS18D20_DESCRIPTION),FPSTR(SENSOR_DS18D20_SIZE),FPSTR(SENSOR_DS18D20_DESCRIPTION_RU),0){
 
 		oneWire=new OneWire(pin);
 		dallasTemperature=new DallasTemperature(oneWire);

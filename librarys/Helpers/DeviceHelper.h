@@ -12,6 +12,8 @@
 #include <Initializable.h>
 #include <Arduino.h>
 #include "Measurable.h"
+#include "AbstractItem.h"
+#include "ESP8266WebServer.h"
 
 class DeviceHelper:public Loopable{
 
@@ -23,6 +25,9 @@ public:
 	void startDevice(String deviceId);
 	boolean init(Initializable** initItems,uint8_t initItemsSize);
 	void update(Measurable** sensors,uint8_t sensorsSize);
+
+	String getJson(AbstractItem** sensors,uint8_t size);
+	uint8_t processAbstractitemsSettings(AbstractItem** sensors,uint8_t size,ESP8266WebServer* server );
 
 	void printDeviceDiagnostic();
 private:
