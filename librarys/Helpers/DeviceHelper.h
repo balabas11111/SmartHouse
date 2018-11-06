@@ -27,7 +27,6 @@ public:
 	void update(Measurable** sensors,uint8_t sensorsSize);
 
 	String getJson(AbstractItem** sensors,uint8_t size);
-	uint8_t processAbstractitemsSettings(AbstractItem** sensors,uint8_t size,ESP8266WebServer server );
 
 	void printDeviceDiagnostic();
 private:

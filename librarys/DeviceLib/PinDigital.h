@@ -17,14 +17,14 @@ class PinDigital:  public AbstractItem, public Loopable {
 
 public:
 
-	PinDigital(String name,uint8_t pin,std::function<void(void)> onChanged)
-		:AbstractItem(pin,name,"PinDigital","HIGH/LOW",name,1){
-		construct(pin, onChanged, INPUT, CHANGE, LOW, LOW);
+	PinDigital(String _name,uint8_t _pin,std::function<void(void)> onChanged)
+		:AbstractItem(_pin,_name,"PinDigital","HIGH/LOW",_name,1){
+		construct(_pin, onChanged, INPUT, CHANGE, LOW, LOW);
 	}
 
 
 	PinDigital(String _name,uint8_t _pin,std::function<void(void)> _onChanged,uint8_t _pinMode,uint8_t _changeMode,uint8_t _pinVal,uint8_t _turnOffLevel)
-		:AbstractItem(_pin,_name,"PinDigital","HIGH/LOW","",1){
+		:AbstractItem(_pin,_name,"PinDigital","HIGH/LOW",_name,1){
 		construct(_pin, _onChanged, _pinMode, _changeMode, _pinVal, _turnOffLevel);
 	}
 

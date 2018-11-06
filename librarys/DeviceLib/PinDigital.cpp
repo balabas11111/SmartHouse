@@ -61,7 +61,7 @@ void PinDigital::processInterrupt(){
 	items[0].val=now;
 	//Serial.print("interrupted");
 
-	Serial.println(" old="+String(oldVal)+" now="+String(now));
+	//Serial.println(" old="+String(oldVal)+" now="+String(now));
 
 	if(now!=oldVal){
 		changed=true;

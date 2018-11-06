@@ -71,8 +71,6 @@ TimeTrigger sensorsTrigger(0,sensorsInterval,true,measureSensors);
 PinDigital buttonLeft(VAR_NAME(buttonLeft),D7,onLeftButtonChanged);
 PinDigital buttonRight(VAR_NAME(buttonRight),D6,onRightButtonChanged);
 
-//PinDigital signalLed(VAR_NAME(signalLED),D4,nullptr,OUTPUT,CHANGE,LOW,HUMAN_NOT_PRESENTED,0,"");
-
 PinDigital lampLeft(VAR_NAME(lampLeft),D5,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW);
 PinDigital lampRight(VAR_NAME(lampRight),D8,onRightLampChanged,OUTPUT,CHANGE,HIGH,LOW);
 
@@ -176,28 +174,32 @@ void postInitWebServer(){
 //---------------------------------------------------------------------
 //button handling
 void onLeftButtonChanged(){
-	Serial.println("Left button changed");
 	bool isOn=buttonLeft.isOn();
 	lampLeft.setVal(isOn);
+
+	buttonLeft.printValues();
 }
 
 void onRightButtonChanged(){
-	Serial.println("right button changed");
 	bool isOn=buttonRight.isOn();
 	lampRight.setVal(isOn);
+
+	buttonRight.printValues();
 }
 //---------------------------------------------------------------------
 //handle lamp events
 void handleLampChange(PinDigital* lamp){
 	wifiHelper.checkAuthentication();
 	int8_t on=server.arg("val").toInt();
-	Serial.print(" Lamp on=");
-	Serial.println(on);
 
 	if(on==-1){
 		lamp->change();
 	}
 	lamp->setVal(on);
+
+	Serial.print("HTTP ");
+	lamp->printValues();
+
 	server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lamp->getSimpleJson());
 }
 
@@ -233,15 +235,47 @@ void saveSensors(){
 
 String setAllSensorsJson(){
 	wifiHelper.checkAuthentication();
-	deviceHelper.processAbstractitemsSettings(minMaxValues, ARRAY_SIZE(minMaxValues),server);
+
+	Serial.println("begin settings parsing");
+
+	Serial.print("args count =");
+	Serial.println(server.args());
+
+	uint8_t argsProcessed=0;
+	uint8_t lastDevice=0;
+
+	for(int i=0;i<server.args();i++){
+		AbstractItemRequest req=AbstractItem::createitemRequest(server.argName(i),server.arg(i));
+
+		if(req.valid){
+
+			for(uint8_t i=lastDevice;i<ARRAY_SIZE(minMaxValues);i++){
+				if(minMaxValues[i]->setFieldFromRequest(req)){
+						argsProcessed++;
+						lastDevice=i;
+						break;
+				}
+			}
+
+		}
+	}
+
+	Serial.println("settings save processed");
+
+	saveSensors();
+
+	Serial.println("return settings Json");
 
 	return getAllSensorsJson();
 }
 
 String getAllSensorsJson(){
 	wifiHelper.checkAuthentication();
-	return deviceHelper.getJson(minMaxValues, ARRAY_SIZE(minMaxValues));
+	String result=deviceHelper.getJson(minMaxValues, ARRAY_SIZE(minMaxValues));
 
+	Serial.println(result);
+
+	return result;
 }
 
 void measureSensors(){

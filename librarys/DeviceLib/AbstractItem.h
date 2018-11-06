@@ -227,7 +227,7 @@ public:
 	}
 
 	//if(ietmId=255 then it is parentItem)
-	boolean setField(String fieldName,String fieldVal,uint8_t itemId){
+	boolean setField(String fieldName,String fieldVal){
 		AbstractItemRequest req=AbstractItem::createitemRequest(fieldName,fieldVal);
 		return setFieldFromRequest(req);
 	}
@@ -295,7 +295,7 @@ protected:
 				+"\"minVal\":\""+String(m.minVal)+"\","
 				+"\"maxVal\":\""+String(m.maxVal)+"\","
 				+"\"fieldId\":\""+String(m.fieldId)+"\","
-				+"\"queue\";\""+m.queue+"\"}";
+				+"\"queue\":\""+m.queue+"\"}";
 	}
 
 	String getSensorValueSimpleJson(SensorValue m){
