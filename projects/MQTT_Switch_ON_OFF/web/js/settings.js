@@ -1,5 +1,6 @@
 //------------------------------Base logic----------------------------
 function onLoadPageComplete(){
+	document.title='Настройки устройства';
 	w3_close();
 }
 //----------------------------------------------------------------------
@@ -45,6 +46,7 @@ function openTab(tabName,headerName) {
 	
 	currentContainerName=tabName+'_content';
 	currentMessageCompName=tabName+'_msg';
+	document.title='Настройки устройства - '+tabName;
 	
 	if(containerComponent.classList.contains('reloadableSettingsContainer')){
 				

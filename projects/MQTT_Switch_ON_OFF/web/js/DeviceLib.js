@@ -53,11 +53,24 @@ function processSimpleJson(data){
 
 function processSettingsJson(data){
 	var items=data.items;
+	var pageHeader='';
+	var devId='';
+	var devLocation='';
+	
+	
 	for(var i in items){
 		var name=items[i].name;
 		var val=items[i].val;
 		
 		var component=document.getElementById(name);
+		
+		if(name=='DeviceId'){
+			devId=val;
+		}
+		
+		if(name=='DeviceLocation'){
+			devLocation=val;
+		}
 		
 		if(component!=undefined){
 			
@@ -76,6 +89,11 @@ function processSettingsJson(data){
 				component.href=val;
 			};
 		}
+	}
+	
+	if(devId!=undefined && devId!='' && devLocation!=undefined && devLocation!=''){
+		pageHeader='–£—Å—Ç—Ä–æ–π—Å—Ç–≤–æ !!!SmartHouse - '+devId+' '+devLocation;
+		document.title=pageHeader;
 	}
 }
 
@@ -107,7 +125,7 @@ function addDS18D20Component(parentId,inputId,labelVal,inputVal){
 	var newInputId="Input_"+inputId;
 	var newLabelHtml="<b>"+labelVal+"</b>"
 	//<label style="max-width: 240px;" for="Temperature"><b id="temp1"></b></label>		
-	//<input id="Temperature"	class="" ="" type="text" value="Ó·ÌÓ‚Îˇ˛" disabled>	
+	//<input id="Temperature"	class="" ="" type="text" value="ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ" disabled>	
 	var inputComponent=document.getElementById(newInputId);
 	var labelComponent=document.getElementById(newLabelId);
 	
