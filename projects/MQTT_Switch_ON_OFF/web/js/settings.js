@@ -1,9 +1,6 @@
 //------------------------------Base logic----------------------------
 function onLoadPageComplete(){
 	w3_close();
-	
-	
-	 
 }
 //----------------------------------------------------------------------
 const DESCR_SUFFIX="descr";
@@ -94,13 +91,10 @@ function processSensorsJsonGet(data){
 		var sensorId=sensors[s].id;
 		var sensorName=sensors[s].name;
 		var sensorType=sensors[s].type;
+		var sensorSize=sensors[s].size;
 		var sensorDescr=sensors[s].descr;
-		var sensorMinVal=sensors[s].minVal;
-		var sensorMaxVal=sensors[s].maxVal;
-		var sensorQueue=sensors[s].queue;
-		var sensorFieldId=sensors[s].fieldId;
 		
-		var sensorsHeaderText=sensorName+' ('+sensorType+')';
+		var sensorsHeaderText=sensorName+' ('+sensorType+')  '+sensorSize;
 				
 		var header = document.createElement("h2");
 		header.setAttribute('style','margin-left: 20px;');
@@ -116,67 +110,18 @@ function processSensorsJsonGet(data){
 		divh.setAttribute('style','margin-top: 15px;');
 		
 		var div1h=createDivComponent('w3-threequarter');
-		var div2h=createDivComponent('w3-quarter');
+				
+		var col0h=createDivComponent('w3-third w3-green','Описание');
+		var col1h=createDivComponent('w3-third','');
 		
-		var col0h=createDivComponent('w3-third w3-green','');
-		var col1h=createDivComponent('w3-third w3-green','очередь MQTT');
-		var col2h=createDivComponent('w3-third w3-green','Описание');
+		var input1h=createInputComponent(sensorId,255,FIELD_DESCR_ID,DESCR_SUFFIX,sensorDescr,sensorName,itemName);
 		
-		var col3h=createDivComponent('w3-third w3-green','Мин значение');
-		var col4h=createDivComponent('w3-third w3-green','Макс значение');
-		var col5h=createDivComponent('w3-third w3-green','Поле ThingSpeak');
-		
+		col1h.appendChild(input1h);
 		div1h.appendChild(col0h);
 		div1h.appendChild(col1h);
-		div1h.appendChild(col2h);
-		
-		div2h.appendChild(col3h);
-		div2h.appendChild(col4h);
-		div2h.appendChild(col5h);
-		
-		divh.appendChild(div1h);
-		divh.appendChild(div2h);
-		container.appendChild(divh);
-		//sensor own values
-		var divhv=document.createElement('div');
-		divhv.setAttribute('class','w3-row');
-		divhv.setAttribute('style','margin-top: 5px;');
-		
-		var div1hv=createDivComponent('w3-threequarter','');
-		var div2hv=createDivComponent('w3-quarter','');
-		
-		var col0hv=createDivComponent('w3-third','');
-		var col1hv=createDivComponent('w3-third','');
-		var col2hv=createDivComponent('w3-third','');
-							
-		var col3hv=createDivComponent('w3-third','');
-		var col4hv=createDivComponent('w3-third','');
-		var col5hv=createDivComponent('w3-third','');
-		
-		var input1hv=createInputComponent(sensorId,255,FIELD_QUEUE_ID,QUEUE_SUFFIX,sensorQueue,sensorName,itemName);
-		var input2hv=createInputComponent(sensorId,255,FIELD_DESCR_ID,DESCR_SUFFIX,sensorDescr,sensorName,itemName);
-
-		var input3hv=createInputComponent(sensorId,255,FIELD_MIN_ID,MIN_VAL_SUFFIX,sensorMinVal,sensorName,itemName);
-		var input4hv=createInputComponent(sensorId,255,FIELD_MAX_ID,MAX_VAL_SUFFIX,sensorMaxVal,sensorName,itemName);
-		var input5hv=createInputComponent(sensorId,255,FIELD_FIELDID_ID,FIELD_ID_SUFFIX,sensorFieldId,sensorName,itemName);
 				
-		col1hv.appendChild(input1hv)
-		col2hv.appendChild(input2hv);
-		col3hv.appendChild(input3hv);
-		col4hv.appendChild(input4hv);
-		col5hv.appendChild(input5hv);
-		
-		div1hv.appendChild(col0hv);
-		div1hv.appendChild(col1hv);
-		div1hv.appendChild(col2hv);
-		div2hv.appendChild(col3hv);
-		div2hv.appendChild(col4hv);
-		div2hv.appendChild(col5hv);
-		
-		divhv.appendChild(div1hv);
-		divhv.appendChild(div2hv);
-		
-		container.appendChild(divhv);
+		divh.appendChild(div1h);
+		container.appendChild(divh);
 		
 		//sensor children header
 		container.appendChild(hr);
@@ -190,8 +135,8 @@ function processSensorsJsonGet(data){
 		var div2=createDivComponent('w3-quarter');
 		
 		var col0=createDivComponent('w3-third w3-green','ID');
-		var col1=createDivComponent('w3-third w3-green','Очередь');
-		var col2=createDivComponent('w3-third w3-green','Описание');
+		var col1=createDivComponent('w3-third w3-green','Описание');
+		var col2=createDivComponent('w3-third w3-green','Очередь');
 		
 		var col3=createDivComponent('w3-third w3-green','Мин значение');
 		var col4=createDivComponent('w3-third w3-green','Макс значение');
@@ -238,9 +183,9 @@ function processSensorsJsonGet(data){
 					text0.setAttribute('class','w3-half');
 					text0.setAttribute('style','margin-left: 20px; width: 90%;');
 					text0.innerHTML="<b>"+itemName+"</b>";
-					
-					var input1=createInputComponent(sensorId,itemId,FIELD_QUEUE_ID,QUEUE_SUFFIX,queue,sensorName,itemName);
-					var input2=createInputComponent(sensorId,itemId,FIELD_DESCR_ID,DESCR_SUFFIX,descr,sensorName,itemName);
+
+					var input1=createInputComponent(sensorId,itemId,FIELD_DESCR_ID,DESCR_SUFFIX,descr,sensorName,itemName);
+					var input2=createInputComponent(sensorId,itemId,FIELD_QUEUE_ID,QUEUE_SUFFIX,queue,sensorName,itemName);
 					var input3=createInputComponent(sensorId,itemId,FIELD_MIN_ID,MIN_VAL_SUFFIX,minVal,sensorName,itemName);
 					var input4=createInputComponent(sensorId,itemId,FIELD_MAX_ID,MAX_VAL_SUFFIX,maxVal,sensorName,itemName);
 					var input5=createInputComponent(sensorId,itemId,FIELD_FIELDID_ID,FIELD_ID_SUFFIX,fieldId,sensorName,itemName);

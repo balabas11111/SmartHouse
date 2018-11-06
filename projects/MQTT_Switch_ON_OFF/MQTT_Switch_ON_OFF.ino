@@ -233,7 +233,7 @@ void saveSensors(){
 
 String setAllSensorsJson(){
 	wifiHelper.checkAuthentication();
-	deviceHelper.processAbstractitemsSettings(minMaxValues, ARRAY_SIZE(minMaxValues),&server);
+	deviceHelper.processAbstractitemsSettings(minMaxValues, ARRAY_SIZE(minMaxValues),server);
 
 	return getAllSensorsJson();
 }

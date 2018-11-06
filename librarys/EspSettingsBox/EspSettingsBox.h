@@ -24,11 +24,7 @@ public:
 
 	virtual boolean initialize(boolean _init) override;
 
-	String getParamVal(String key);
-
 	void loadExternalFile();
-	void saveExternalFile();
-	String getExternalVal(String key);
 
 	IPAddress stringToIp(String str);
 	boolean validateIP(String str);

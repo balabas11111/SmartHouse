@@ -49,8 +49,6 @@ boolean EspSettingsBox::isSpiffInitialized(){
 void EspSettingsBox::saveSettingsJson(){
 	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVE_DEVICE_SETTINGS_TO_FILE));
 
-	saveExternalFile();
-
 	File settFile = SPIFFS.open(_fileName, "w");
 
 	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
@@ -456,29 +454,6 @@ void EspSettingsBox::loadExternalFile(){
 		  }
 }
 
-void EspSettingsBox::saveExternalFile(){
-
-}
-
-String EspSettingsBox::getExternalVal(String key){
-	if(extRoot->containsKey(key)){
-		String keyName="123";
-
-		return extRoot->operator [](key).as<char*>();
-	}
-
-	return "";
-}
-
-
-String EspSettingsBox::getParamVal(String key){
-	JsonObject& root=getSettingsFromMemory(false);
-	//if(root.containsKey(key)){
-		return root[key].as<char*>();
-	//}
-	//return "";
-}
-
 String EspSettingsBox::getSettingsAsJsonString(){
 	/*String result="";
 
@@ -568,10 +543,6 @@ void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 				root.printTo(Serial);
 
 				item->setDescr(root["descr"].as<char*>());
-				item->setFieldId(root["fieldId"]);
-				item->setMinVal(root["minVal"]);
-				item->setMaxVal(root["maxVal"]);
-				item->setQueue(root["queueName"].as<char*>());
 
 				uint8_t childCountJson=root["childCount"];
 
