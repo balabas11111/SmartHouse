@@ -79,6 +79,7 @@ public:
 
 	void printSpiffsInfo();
 
+	String deviceFirmWareVersion = "v.1.0";
 	String DeviceId = "SENS_"+String(ESP.getChipId());
 	String DeviceKind = "Климат и управление выключателями";
 	String DeviceDescription = "_";

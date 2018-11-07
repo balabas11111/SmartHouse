@@ -473,8 +473,11 @@ boolean EspSettingsBox::isTrue(String str){
 String EspSettingsBox::getJson(){
 
 	String result="{\"name\":\"espSettingsBox\",\"val\":\"3\",\"fieldId\":\"0\",\"queueName\":\"\",\"items\":[\
-					{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\"},\
-					{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\"},\
+					{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\",\"label\":\"Прошивка\",\"type\":\"label\",\"disabled\":\"1\",\"page\":\"device\"},\
+					{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\",\"label\":\"ID устройства\",\"type\":\"label\",\"disabled\":\"1\",\"page\":\"device\"},\
+					{\"name\":\"DeviceKind\",\"val\":\""+DeviceKind+"\",\"label\":\"Тип устройства\",\"type\":\"text\",\"disabled\":\"1\",\"page\":\"device\"},\
+					{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\",\"label\":\"Описание устройства\",\"type\":\"text\",\"disabled\":\"0\",\"page\":\"device\"},\		
+					{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\",\"label\":\"Размещение устройства\",\"type\":\"text\",\"disabled\":\"0\",\"page\":\"device\"},\
 					{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
 					{\"name\":\"thinkSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}]}";
 	return result;
