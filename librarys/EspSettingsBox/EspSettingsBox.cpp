@@ -39,6 +39,10 @@ EspSettingsBox::EspSettingsBox(String extValuesFileName,boolean forceLoad,boolea
 				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ALREADY_INITIALIZE));
 		}
 
+		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_LOADED));
+		Serial.println(loaded);
+		Serial.print(FPSTR(MESSAGE_HORIZONTAL_LINE));
+
 		return initialized;
 	}
 
@@ -52,7 +56,7 @@ void EspSettingsBox::saveSettingsJson(){
 	File settFile = SPIFFS.open(_fileName, "w");
 
 	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
-	getSettingsFromMemory(false).printTo(settFile);
+	getSettingsFromMemory(true);//.printTo(settFile);
 	settFile.close();
 
 	delay(1);
@@ -62,8 +66,6 @@ void EspSettingsBox::saveSettingsJson(){
 }
 
 void EspSettingsBox::loadSettingsJson(){
-
-	//loadExternalFile();
 
 	File file = SPIFFS.open(_fileName, "r");
 
@@ -92,8 +94,73 @@ void EspSettingsBox::loadSettingsJson(){
 	      } else {
 	    	  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
 
-	        putSettingsToMemory(root);
+	    	  DeviceId = root["dId"].as<char*>();
+	    	  	DeviceKind = root["DeviceKind"].as<char*>();
+	    	  	DeviceDescription =root["DeviceDescription"].as<char*>();
+	    	  	DeviceLocation=root["DeviceLocation"].as<char*>();
+	    	  	isAccesPoint = isTrue(root["iAp"].as<char*>()) ;
+	    	  	Serial.print("isAccesPoint=");
+	    	  	Serial.println(isAccesPoint);
+	    	  	refreshInterval = root["rin"];
+	    	  	displayAlvaysOn = root["dao"];
+	    	  	displayAutochange = root["dac"];
+	    	  	settingsUser = root["sur"].as<char*>();
+	    	  	settingsPass = root["sps"].as<char*>();
+	    	  	accessUser = root["aur"].as<char*>();
+	    	  	accessPass = root["aps"].as<char*>();
+	    	  	ssidAP = root["sap"].as<char*>();
+	    	  	//passwordAP = root["pap"].asString();
+	    	  	ssid = root["sid"].as<char*>();
+	    	  	password = root["pas"].as<char*>();
 
+	    	  	staticIp=isTrue(root["staticIp"].as<char*>());
+	    	  	localIp=stringToIp(String(root["lip"].as<char*>()));
+	    	  	apIp=stringToIp(String(root["aip"].as<char*>()));
+	    	  	gateIp=stringToIp(String(root["gip"].as<char*>()));
+	    	  	subnetIp=stringToIp(String(root["sip"].as<char*>()));
+	    	  	dnsIp=stringToIp(String(root["dip"].as<char*>()));
+	    	  	dnsIp2=stringToIp(String(root["dip2"].as<char*>()));
+	    	  	serverIp=stringToIp(String(root["serverip"].as<char*>()));
+
+	    	  	beepOnAlert=root["bOnA"];
+
+	    	  	isThingSpeakEnabled=root["ptTsEnabled"];
+	    	  	postDataToTSInterval = root["pdTs"];
+	    	  	thSkUsrKey=root["sPk"].as<char*>();
+	    	  	thSkWKey = root["sWk"].as<char*>();
+	    	  	thSkRKey = root["sRk"].as<char*>();
+	    	  	thSkTKey = root["sTk"].as<char*>();
+	    	  	thSkChId = root["sCi"];
+
+	    	  	isMqttEnabled=isTrue(root["isMqttEnabled"]);
+	    	  	mqtt_server=root["mqtt_server"].as<char*>();
+	    	  	mqtt_port=root["mqtt_port"];
+	    	  	mqtt_user=root["mqtt_user"].as<char*>();
+	    	  	mqtt_pass=root["mqtt_pass"].as<char*>();
+	    	  	mqtt_topic=root["mqtt_topic"].as<char*>();
+
+	    	  	isHttpPostEnabled=isTrue(root["isHttpSendEnabled"]);
+	    	  	httpPostIp=stringToIp(String(root["httpPostIp"].as<char*>()));
+
+	    	  	alarmSendNotifAlertStart=isTrue(root["AlSAs"].as<char*>());
+	    	  	alarmSendNotifAlertStop=isTrue(root["AlSn"].as<char*>());
+	    	  	alarmPlaySound=isTrue(root["AlPs"].as<char*>());
+	    	  	alamSoundInterval=root["AlSi"];
+	    	  	//alamNotificationInterval=root["AlNi"];
+
+	    	  	ntpEnabled=isTrue(root["ntpEnabled"]);
+	    	  	NTP_poolServerName=root["NTP_poolServerName"].as<char*>();
+	    	  	NTP_timeOffset=root["NTP_timeOffset"];
+	    	  	NTP_timeTriggerInterval=root["NTP_timeTriggerInterval"];
+	    	  	NTP_updateInterval=root["NTP_updateInterval"];
+
+	    	  	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_MEMORY));
+	    	  	String vals="";
+	    	  	root.printTo(vals);
+	    	  	Serial.println(vals);
+	    	  	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+
+	    	  	loaded=true;
 	      }
 	    }
 	    file.close();
@@ -195,76 +262,6 @@ JsonObject& EspSettingsBox::getSettingsFromMemory(boolean doSave){
 	return root;
 }
 
-boolean EspSettingsBox::putSettingsToMemory(JsonObject& root){
-	DeviceId = root["dId"].as<char*>();
-	DeviceKind = root["DeviceKind"].as<char*>();
-	DeviceDescription =root["DeviceDescription"].as<char*>();
-	DeviceLocation=root["DeviceLocation"].as<char*>();
-	isAccesPoint = isTrue(root["iAp"].as<char*>()) ;
-	Serial.print("isAccesPoint=");
-	Serial.println(isAccesPoint);
-	refreshInterval = root["rin"];
-	displayAlvaysOn = root["dao"];
-	displayAutochange = root["dac"];
-	settingsUser = root["sur"].as<char*>();
-	settingsPass = root["sps"].as<char*>();
-	accessUser = root["aur"].as<char*>();
-	accessPass = root["aps"].as<char*>();
-	ssidAP = root["sap"].as<char*>();
-	//passwordAP = root["pap"].asString();
-	ssid = root["sid"].as<char*>();
-	password = root["pas"].as<char*>();
-
-	staticIp=isTrue(root["staticIp"].as<char*>());
-	localIp=stringToIp(String(root["lip"].as<char*>()));
-	apIp=stringToIp(String(root["aip"].as<char*>()));
-	gateIp=stringToIp(String(root["gip"].as<char*>()));
-	subnetIp=stringToIp(String(root["sip"].as<char*>()));
-	dnsIp=stringToIp(String(root["dip"].as<char*>()));
-	dnsIp2=stringToIp(String(root["dip2"].as<char*>()));
-	serverIp=stringToIp(String(root["serverip"].as<char*>()));
-
-	beepOnAlert=root["bOnA"];
-
-	isThingSpeakEnabled=root["ptTsEnabled"];
-	postDataToTSInterval = root["pdTs"];
-	thSkUsrKey=root["sPk"].as<char*>();
-	thSkWKey = root["sWk"].as<char*>();
-	thSkRKey = root["sRk"].as<char*>();
-	thSkTKey = root["sTk"].as<char*>();
-	thSkChId = root["sCi"];
-
-	isMqttEnabled=isTrue(root["isMqttEnabled"]);
-	mqtt_server=root["mqtt_server"].as<char*>();
-	mqtt_port=root["mqtt_port"];
-	mqtt_user=root["mqtt_user"].as<char*>();
-	mqtt_pass=root["mqtt_pass"].as<char*>();
-	mqtt_topic=root["mqtt_topic"].as<char*>();
-
-	isHttpPostEnabled=isTrue(root["isHttpSendEnabled"]);
-	httpPostIp=stringToIp(String(root["httpPostIp"].as<char*>()));
-
-	alarmSendNotifAlertStart=isTrue(root["AlSAs"].as<char*>());
-	alarmSendNotifAlertStop=isTrue(root["AlSn"].as<char*>());
-	alarmPlaySound=isTrue(root["AlPs"].as<char*>());
-	alamSoundInterval=root["AlSi"];
-	//alamNotificationInterval=root["AlNi"];
-
-	ntpEnabled=isTrue(root["ntpEnabled"]);
-	NTP_poolServerName=root["NTP_poolServerName"].as<char*>();
-	NTP_timeOffset=root["NTP_timeOffset"];
-	NTP_timeTriggerInterval=root["NTP_timeTriggerInterval"];
-	NTP_updateInterval=root["NTP_updateInterval"];
-
-	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_MEMORY));
-	String vals="";
-	root.printTo(vals);
-	Serial.println(vals);
-	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-
-	return true;
-}
-
 void EspSettingsBox::printSettingsFile(){
 		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_PRINT_SETTINGS_FILE));
 		//loadExternalFile();
@@ -278,34 +275,7 @@ void EspSettingsBox::printSettingsFile(){
 			saveSettingsJson();
 			file = SPIFFS.open(_fileName, "r");
 		}
-		/*
-		  if (!file){
-		    Serial.println("No settings file exists");
-		  } else {
-		    size_t size = file.size();
-		    if ( size == 0 ) {
-		      Serial.println("Empty settings file");
-		    } else {
-		    	Serial.println("Begin json parse");
-		    	StaticJsonBuffer<1024> jsonBuffer;
-		    	delay(1);
 
-		      std::unique_ptr<char[]> buf (new char[size]);
-		      file.readBytes(buf.get(), size);
-		      JsonObject& root = jsonBuffer.parseObject(buf.get());
-
-		      if (!root.success()) {
-		        Serial.println("Impossible to read JSON file");
-		      } else {
-		        Serial.println("Settings parsed");
-
-		        putSettingsToMemory(root);
-		      }
-		    }
-
-		    file.close();
-		  }
-*/
 		    Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_DIRECT_FILE_READ));
 		    File fileSet = SPIFFS.open(_fileName, "r");
 		    	if(fileSet){
@@ -381,7 +351,7 @@ void EspSettingsBox::construct(String extValuesFileName,boolean forceLoad,boolea
 	}
 
 	if(forceLoad){
-		loadSettingsJson();
+		init();
 	}
 
 	initialized=true;
@@ -398,6 +368,10 @@ boolean EspSettingsBox::validateIP(String str){
 	boolean result=str==ip.toString();
 
 	return result;
+}
+
+boolean EspSettingsBox::stringToBoolean(String str){
+	return (str=="on" || str=="1" || str=="true" || str=="True");
 }
 
 IPAddress EspSettingsBox::stringToIp(String str){
@@ -485,14 +459,14 @@ boolean EspSettingsBox::isTrue(String str){
 
 String EspSettingsBox::getSimpleJson(){
 	String result="{\"name\":\"espSettingsBox\",\"childCount\":\"8\",\"items\":[\
-						{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\",\
+						{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\"},\
 						{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\",\"label\":\"ID устройства\"},\
 						{\"name\":\"DeviceKind\",\"val\":\""+DeviceKind+"\",\"label\":\"Тип устройства\"},\
 						{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\"},\
 						{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\"},\
 						\
 						{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
-						{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"}\
+						{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
 						{\"name\":\"thinkSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}]}";
 		return result;
 
@@ -514,9 +488,9 @@ String EspSettingsBox::getJson(){
 					{\"name\":\"refreshInterval\",\"val\":\""+String(refreshInterval)+"\"},\
 					\
 					{\"name\":\"accessUser\",\"val\":\""+String(accessUser)+"\"},\
-					{\"name\":\"accessPass\",\"val\":\"******\"},\
+					{\"name\":\"accessPass\",\"val\":\"*****\"},\
 					{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\"},\
-					{\"name\":\"settingsPass\",\"val\":\"******\"},\
+					{\"name\":\"settingsPass\",\"val\":\"*****\"},\
 					\
 					{\"name\":\"isAccesPoint\",\"val\":\""+String(isAccesPoint)+"\"},\
 					{\"name\":\"ssidAP\",\"val\":\""+ssidAP+"\"},\
@@ -524,13 +498,13 @@ String EspSettingsBox::getJson(){
 					{\"name\":\"password\",\"val\":\"*****\"},\
 					{\"name\":\"serverPort\",\"val\":\""+String(serverPort)+"\"},\
 					{\"name\":\"staticIp\",\"val\":\""+String(staticIp)+"\"},\
-					{\"name\":\"localIp\",\"val\":\""+String(localIp)+"\"},\
-					{\"name\":\"apIp\",\"val\":\""+String(apIp)+"\"},\
-					{\"name\":\"gateIp\",\"val\":\""+String(gateIp)+"\"},\
-					{\"name\":\"subnetIp\",\"val\":\""+String(subnetIp)+"\"},\
-					{\"name\":\"dnsIp\",\"val\":\""+String(dnsIp)+"\"},\
-					{\"name\":\"dnsIp2\",\"val\":\""+String(dnsIp2)+"\"},\
-					{\"name\":\"serverIp\",\"val\":\""+String(serverIp)+"\"},\
+					{\"name\":\"localIp\",\"val\":\""+localIp.toString()+"\"},\
+					{\"name\":\"apIp\",\"val\":\""+apIp.toString()+"\"},\
+					{\"name\":\"gateIp\",\"val\":\""+gateIp.toString()+"\"},\
+					{\"name\":\"subnetIp\",\"val\":\""+subnetIp.toString()+"\"},\
+					{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\"},\
+					{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\"},\
+					{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\"},\
 					\
 					{\"name\":\"isThingSpeakEnabled\",\"val\":\""+String(isThingSpeakEnabled)+"\"},\
 					{\"name\":\"postDataToTSInterval\",\"val\":\""+String(postDataToTSInterval)+"\"},\
@@ -548,7 +522,7 @@ String EspSettingsBox::getJson(){
 					{\"name\":\"mqtt_port\",\"val\":\""+String(mqtt_port)+"\"},\
 					\
 					{\"name\":\"isHttpPostEnabled\",\"val\":\""+String(isHttpPostEnabled)+"\"},\
-					{\"name\":\"httpPostIp\",\"val\":\""+String(httpPostIp)+"\"},\
+					{\"name\":\"httpPostIp\",\"val\":\""+httpPostIp.toString()+"\"},\
 					\
 					{\"name\":\"ntpEnabled\",\"val\":\""+String(ntpEnabled)+"\"},\
 					{\"name\":\"NTP_poolServerName\",\"val\":\""+String(NTP_poolServerName)+"\"},\
@@ -557,7 +531,7 @@ String EspSettingsBox::getJson(){
 					{\"name\":\"NTP_timeTriggerInterval\",\"val\":\""+NTP_timeTriggerInterval+"\"},\
 					\
 					{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
-					{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"}\
+					{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
 					{\"name\":\"thinkSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}]}";
 	return result;
 }
@@ -665,4 +639,222 @@ void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 	  }
 
 	  Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+}
+
+boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
+	Serial.print(fieldName);
+	Serial.print("=");
+	Serial.print(fieldValue);
+	Serial.print(" (");
+	Serial.print(fieldName.substring(4));
+	Serial.println(")");
+
+	if(!fieldName.startsWith("set_")){
+		return false;
+	}else{
+		fieldName=fieldName.substring(4);
+	}
+
+	if(fieldName=="deviceFirmWareVersion"){
+		deviceFirmWareVersion=fieldValue;
+		return true;
+	}
+	if(fieldName=="DeviceId"){
+		DeviceId=fieldValue;
+		return true;
+	}
+	if(fieldName=="DeviceKind"){
+		DeviceKind=fieldValue;
+		return true;
+	}
+	if(fieldName=="DeviceDescription"){
+		DeviceDescription=fieldValue;
+		return true;
+	}
+	if(fieldName=="DeviceLocation"){
+		DeviceLocation=fieldValue;
+		return true;
+	}
+	if(fieldName=="displayAlvaysOn"){
+		displayAlvaysOn=stringToBoolean(fieldValue);
+		return true;
+	}
+	if(fieldName=="displayAutochange"){
+		displayAutochange=fieldValue.toInt();
+		return true;
+	}
+	if(fieldName=="refreshInterval"){
+		refreshInterval=fieldValue.toInt();
+		return true;
+	}
+	if(fieldName=="accessUser"){
+		accessUser=fieldValue;
+		return true;
+	}
+	if(fieldName=="accessPass"){
+		accessPass=fieldValue;
+		return true;
+	}
+	if(fieldName=="settingsUser"){
+		settingsUser=fieldValue;
+		return true;
+	}
+	if(fieldName=="settingsPass"){
+		settingsPass=fieldValue;
+		return true;
+	}
+	if(fieldName=="isAccesPoint"){
+		isAccesPoint=stringToBoolean(fieldValue);
+		return true;
+	}
+	if(fieldName=="ssidAP"){
+		ssidAP=fieldValue;
+		return true;
+	}
+	if(fieldName=="ssid"){
+		ssid=fieldValue;
+		return true;
+	}
+	if(fieldName=="password"){
+		password=fieldValue;
+		return true;
+	}
+	if(fieldName=="serverPort"){
+		serverPort=fieldValue.toInt();
+		return true;
+	}
+	if(fieldName=="staticIp"){
+		staticIp=stringToBoolean(fieldValue);
+		return true;
+	}
+	if(fieldName=="localIp"){
+		localIp=stringToIp(fieldValue);
+		return true;
+	}
+	if(fieldName=="apIp"){
+		apIp=stringToIp(fieldValue);
+		return true;
+	}
+	if(fieldName=="gateIp"){
+		gateIp=stringToIp(fieldValue);
+		return true;
+	}
+	if(fieldName=="subnetIp"){
+		subnetIp=stringToIp(fieldValue);
+		return true;
+	}
+	if(fieldName=="dnsIp"){
+		dnsIp=stringToIp(fieldValue);
+		return true;
+	}
+	if(fieldName=="dnsIp2"){
+		dnsIp2=stringToIp(fieldValue);
+		return true;
+	}
+	if(fieldName=="serverIp"){
+		serverIp=stringToIp(fieldValue);
+		return true;
+	}
+	if(fieldName=="beepOnAlert"){
+		beepOnAlert=stringToBoolean(fieldValue);
+		return true;
+	}
+	if(fieldName=="alarmSendNotifAlertStart"){
+		alarmSendNotifAlertStart=stringToBoolean(fieldValue);
+		return true;
+	}
+	if(fieldName=="alarmSendNotifAlertStop"){
+		alarmSendNotifAlertStop=stringToBoolean(fieldValue);
+		return true;
+	}
+	if(fieldName=="alarmPlaySound"){
+		alarmPlaySound=stringToBoolean(fieldValue);
+		return true;
+	}
+	if(fieldName=="alamSoundInterval"){
+		alamSoundInterval=fieldValue.toInt();
+		return true;
+	}
+	if(fieldName=="isThingSpeakEnabled"){
+		isThingSpeakEnabled=stringToBoolean(fieldValue);
+		return true;
+	}
+	if(fieldName=="postDataToTSInterval"){
+		postDataToTSInterval=fieldValue.toInt();
+		return true;
+	}
+	if(fieldName=="thSkUsrKey"){
+		thSkUsrKey=fieldValue;
+		return true;
+	}
+	if(fieldName=="thSkWKey"){
+		thSkWKey=fieldValue;
+		return true;
+	}
+	if(fieldName=="thSkRKey"){
+		thSkRKey=fieldValue;
+		return true;
+	}
+	if(fieldName=="thSkChId"){
+		thSkChId=fieldValue.toInt();
+		return true;
+	}
+	if(fieldName=="thSkTKey"){
+		thSkTKey=fieldValue;
+		return true;
+	}
+	if(fieldName=="isMqttEnabled"){
+		isMqttEnabled=stringToBoolean(fieldValue);
+		return true;
+	}
+	if(fieldName=="mqtt_server"){
+		mqtt_server=fieldValue;
+		return true;
+	}
+	if(fieldName=="mqtt_user"){
+		mqtt_user=fieldValue;
+		return true;
+	}
+	if(fieldName=="mqtt_pass"){
+		mqtt_pass=fieldValue;
+		return true;
+	}
+	if(fieldName=="mqtt_topic"){
+		mqtt_topic=fieldValue;
+		return true;
+	}
+	if(fieldName=="mqtt_port"){
+		mqtt_port=fieldValue.toInt();
+		return true;
+	}
+	if(fieldName=="isHttpPostEnabled"){
+		isHttpPostEnabled=stringToBoolean(fieldValue);
+		return true;
+	}
+	if(fieldName=="httpPostIp"){
+		httpPostIp=stringToIp(fieldValue);
+		return true;
+	}
+	if(fieldName=="ntpEnabled"){
+		ntpEnabled=stringToBoolean(fieldValue);
+		return true;
+	}
+	if(fieldName=="NTP_poolServerName"){
+		NTP_poolServerName=fieldValue;
+		return true;
+	}
+	if(fieldName=="NTP_timeOffset"){
+		NTP_timeOffset=fieldValue.toInt();
+		return true;
+	}
+	if(fieldName=="NTP_updateInterval"){
+		NTP_updateInterval=fieldValue.toInt();
+		return true;
+	}
+	if(fieldName=="NTP_timeTriggerInterval"){
+		NTP_timeTriggerInterval=fieldValue.toInt();
+		return true;
+	}
+
+	return false;
 }

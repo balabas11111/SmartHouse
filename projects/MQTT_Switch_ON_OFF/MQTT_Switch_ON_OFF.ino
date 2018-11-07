@@ -55,11 +55,11 @@
 
 const int sensorsInterval=60000;
 
+EspSettingsBox espSettingsBox("",true,true);
+
 WiFiClient wclient;
 ESP8266WebServer server ( 80 );
 //WebSocketsServer webSocket = WebSocketsServer(8081);
-
-EspSettingsBox espSettingsBox("",true,true);
 
 I2Chelper i2cHelper(D1,D2,false);
 DisplayHelper displayHelper(true);
@@ -109,6 +109,7 @@ void setup() {
 
   loadSensors();
   measureSensors();
+  Serial.println("=========================Device Started=========================");
 }
 
 void loop() {
@@ -119,7 +120,7 @@ void postInitWebServer(){
 	server.on(espSettingsBox.getSimpleJsonPublishUrl(), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getSimpleJson());
 	});
-	server.on("/submitForm_settings", HTTP_GET, [](){
+	server.on("/submitForm_settings", HTTP_POST, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), setEspSettingsBoxValues());
 	});
 	server.on("/getJson_settings", HTTP_GET, [](){
@@ -278,17 +279,22 @@ String getAllSensorsJson(){
 //----------espSettings save-------------------------------------------
 String setEspSettingsBoxValues(){
 	wifiHelper.checkAuthentication();
+	boolean result=false;
 
 	for(uint8_t i=0;i<server.args();i++){
 		String argName=server.argName(i);
 		String argVal=server.arg(i);
 
-		Serial.print(argName);
-		Serial.print("=");
-		Serial.println(argVal);
+		result=espSettingsBox.setSettingsValue(argName,argVal) || result;
+
 	}
 
-	return "";
+	if(result){
+		espSettingsBox.saveSettingsJson();
+	}
+
+
+	return espSettingsBox.getJson();
 }
 
 void measureSensors(){

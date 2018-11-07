@@ -265,6 +265,7 @@ public:
 			//
 		}
 		Serial.println();
+		displayDetails();
 	}
 
 	String displayDetails(){

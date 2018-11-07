@@ -34,171 +34,390 @@
 	  <button class="w3-bar-item w3-button" onclick="openTab('device','Устройство')">Устройство</button>
 	  <button class="w3-bar-item w3-button" onclick="openTab('net','Сеть')">Сеть</button>
 	  <button class="w3-bar-item w3-button" onclick="openTab('sensors','Датчики')">Датчики</button>
-	  <button class="w3-bar-item w3-button" onclick="openTab('publish','Публикация')">Безопасность</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('publish','Публикация')">Публикация</button>
 	  <button class="w3-bar-item w3-button" onclick="openTab('manage','Управление')">Управление</button>
 	</div>
 
 	<div id="mainContent" class="w3-card-4" style="width:90%; min-width: 600px; margin-top:10px; margin-left:10px;  margin-bottom:30px;">
 	
-		<div id="device" class="settingsTab">
+		<div id="device" class="settingsTab reloadableSettingsContainer w3-container" style="display:none">
 			<div class="w3-container w3-teal">
 				<h2>Устройство</h2>
 			</div>
 		  
-			<form id="device_form" action="/submitAllEspSettingsJson" method="POST">
-				<div id="device_content">
-						<div><h3>Общие настройки устройства</h3></div>
-						
-					  	<label id="lbl_deviceFirmWareVersion" for="set_deviceFirmWareVersion">Версия прошивки</label>
-					  	<h4 id=set_deviceFirmWareVersion>Загружаю</h4>
-	
-					  	<label id="lbl_DeviceId" for="set_DeviceId">ID устройства</label>
-					  	<h4 id=set_DeviceId>Загружаю</h4>
-					  	
-					  	<label id="lbl_DeviceKind" for="set_DeviceKind">Тип устройства</label>
-					  	<h4 id=set_DeviceKind>Загружаю</h4>	
-					  	
-					  	<label id="lbl_DeviceDescription" for="set_DeviceDescription">Описание устройства</label>
-					  	<input id="set_DeviceDescription" name="set_DeviceDescription" class="w3-input w3-border" style="width:50%" type="text" value="обновляю"/>
-					  	
-					  	<label id="lbl_DeviceLocation" for="set_DeviceLocation">размещение устройства</label>
-					  	<input id="set_DeviceLocation" name="set_DeviceLocation" class="w3-input w3-border" style="width:50%" type="text" value="обновляю"/>
-					  	
-					  	<div><h3>Настройки экрана</h3></div>
-					  	
-					  	<label id="lbl_displayAlvaysOn" for="set_displayAlvaysOn">Экран всегда включен</label>
-					  	<input id="set_displayAlvaysOn" name="set_displayAlvaysOn" class="w3-check" type="checkbox" checked="false">
-					  	
-					  	<label id="lbl_displayAutochange" for="set_displayAutochange">Автопереключение страниц экрана</label>
-					  	<input id="set_displayAutochange" name="set_displayAutochange" class="w3-input w3-border" style="width:50%" 
-					  			type="number" min="10" max="255" step="1" value="обновляю"/>
-					  	
-					  	<div><h3>Настройки обновления датчиков</h3></div>
-					  	
-					  	<label id="lbl_refreshInterval" for="set_refreshInterval">Обновление значений датчиков</label>
-					  	<input id="set_refreshInterval" name="set_refreshInterval" class="w3-input w3-border" style="width:50%" 
-					  			type="number" min="60" max="1024" step="1" value="обновляю"/>
-					  	
-					  	<div><h3>Настройки доступа</h3></div>
-					  	
-					  	<div><h4>Главная страница</h4></div>
-					  	<label id="lbl_accessUser" for="set_accessUser">Пользователь главной страницы</label>
-					  	<input id="set_accessUser" name="set_accessUser" class="w3-input w3-border" style="width:50%" 
-					  			type="text" value="обновляю"/>
-					  	
-					  	<label id="lbl_accessPass" for="set_accessPass">Пароль главной страницы</label>
-					  	<input id="set_accessPass" name="set_accessPass" class="w3-input w3-border" style="width:50%" type="password" value="обновляю"/>
-					  	
-					  	<label id="lbl_accessPassConfirm" for="set_accessPassConfirm">Подтверждение пароля</label>
-					  	<input id="set_accessPassConfirm" name="set_accessPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="обновляю"/>
-					  					  	
-					  	<div><h4>Настройки</h4></div>
-					  	<label id="lbl_settingsUser" for="set_settingsUser">Пользователь страницы настроек</label>
-					  	<input id="set_settingsUser" name="set_settingsUser" class="w3-input w3-border" style="width:50%"
-					  			 type="text" value="обновляю" required="required" pattern="[A-Za-z0-9]{1,20}"/>
-					  	
-					  	<label id="lbl_settingsPass" for="set_settingsPass">Пароль страницы настроек</label>
-					  	<input id="set_settingsPass" name="set_settingsPass" class="w3-input w3-border" style="width:50%"
-					  			type="password" value="обновляю"/>
-					  	
-					  	<label id="lbl_settingsPassConfirm" for="set_settingsPassConfirm">Подтверждение пароля</label>
-					  	<input id="set_settingsPassConfirm" name="set_settingsPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="обновляю"/>
-					  	
-					  	<div><h4>Синхронизация времени NTP</h4></div>
-					  	
-					  	<label id="lbl_ntpEnabled" for="set_ntpEnabled">Синхронизация времени разрешена</label>
-						<input id="set_ntpEnabled" name="set_ntpEnabled" class="w3-check" type="checkbox" checked="false">
-
-						<label id="lbl_NTP_poolServerName" for="set_NTP_poolServerName">Имя сервера NTP</label>
-					  	<input id="set_NTP_poolServerName" name="set_NTP_poolServerName" class="w3-input w3-border" style="width:50%" 
-					  			type="text" value="обновляю"/>
-					  			
-					  	<label id="lbl_NTP_timeOffset" for="set_NTP_timeOffset">Разница времени с устройством (сек)</label>
-						<input id="set_NTP_timeOffset" name="set_NTP_timeOffset" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
-						
-						<label id="lbl_NTP_updateInterval" for="set_NTP_updateInterval">Интервал синхронизации времени (сек)</label>
-						<input id="set_NTP_updateInterval" name="set_NTP_updateInterval" class="w3-input w3-border" style="width:50%" type="number" min="120" step="10">
-						
-						<label id="lbl_NTP_timeTriggerInterval" for="set_NTP_timeTriggerInterval">Интервал отправки времени клиентам (мс)</label>
-						<input id="set_NTP_timeTriggerInterval" name="set_NTP_timeTriggerInterval" class="w3-input w3-border" style="width:50%" type="number" min="100" step="10">
+		  	<div id="device_content">
+				<form id="device_form" class="w3-container">
 				
-				</div>
-					<p>
-				  		<button id="saveDeviceSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
-								onclick="submitCurrentForm();">Сохранить</button>
-					</p>
-			</form>
+						<div class="w3-row w3-green" style="height: 50px;">
+							<h2>Общие настройки устройства</h2>
+						</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_deviceFirmWareVersion" for="set_deviceFirmWareVersion">Версия прошивки</label>
+					  		</div>
+					  		<div class="w3-half w3-threequarter">
+					  			<h3 id=set_deviceFirmWareVersion>Загружаю</h3>
+					  		</div>
+					  	</div>
+	
+						<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_DeviceId" for="set_DeviceId">ID устройства</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<h3 id=set_DeviceId>Загружаю</h3>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_DeviceKind" for="set_DeviceKind">Тип устройства</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<h3 id=set_DeviceKind>Загружаю</h3>	
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_DeviceDescription" for="set_DeviceDescription">Описание устройства</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="set_DeviceDescription" name="set_DeviceDescription" class="w3-input w3-border" type="text" value="обновляю"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_DeviceLocation" for="set_DeviceLocation">размещение устройства</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="set_DeviceLocation" name="set_DeviceLocation" class="w3-input w3-border" type="text" value="обновляю"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row w3-green" style="height: 50px;">
+							<h2>Настройки экрана</h2>
+						</div>
+						
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_displayAlvaysOn" for="set_displayAlvaysOn">Экран всегда включен</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="set_displayAlvaysOn" name="set_displayAlvaysOn" class="w3-check" type="checkbox">
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_displayAutochange" for="set_displayAutochange">Автопереключение страниц экрана</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="set_displayAutochange" name="set_displayAutochange" class="w3-input w3-border" style="width:50%" 
+					  				type="number" min="10" max="255" step="1" value="обновляю"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row w3-green" style="height: 50px;">
+							<h2>Настройки обновления датчиков</h2>
+						</div>
+						
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_refreshInterval" for="set_refreshInterval">Обновление значений датчиков</label>
+					  		</div>
+					  		<div class="w3-half">	
+					  			<input id="set_refreshInterval" name="set_refreshInterval" class="w3-input w3-border" style="width:50%" 
+					  				type="number" min="60" max="1024" step="1" value="обновляю"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row w3-green" style="height: 50px;">
+					  		<h2>Настройки доступа</h2>
+					  	</div>
+					  	
+					  	<div class="w3-row" style="height: 50px;">
+					  		<h2>Главная страница</h2>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_accessUser" for="set_accessUser">Пользователь главной страницы</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="set_accessUser" name="set_accessUser" class="w3-input w3-border" style="width:50%" 
+					  				type="text" value="обновляю"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_accessPass" for="set_accessPass">Пароль главной страницы</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="set_accessPass" name="set_accessPass" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_accessPassConfirm" for="set_accessPassConfirm">Подтверждение пароля</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="set_accessPassConfirm" name="set_accessPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row" style="height: 50px;">
+					  		<h2>Страница настроек</h2>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_settingsUser" for="set_settingsUser">Пользователь страницы настроек</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="set_settingsUser" name="set_settingsUser" class="w3-input w3-border" style="width:50%"
+					  				 type="text" value="обновляю" required="required" pattern="[A-Za-z0-9]{1,20}"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_settingsPass" for="set_settingsPass">Пароль страницы настроек</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="set_settingsPass" name="set_settingsPass" class="w3-input w3-border" style="width:50%"
+					  				type="password" value="*****"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_settingsPassConfirm" for="set_settingsPassConfirm">Подтверждение пароля</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="set_settingsPassConfirm" name="set_settingsPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row w3-green" style="height: 50px;">
+					  		<h2>Синхронизация времени NTP</h2>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_ntpEnabled" for="set_ntpEnabled">Синхронизация времени разрешена</label>
+					  		</div>
+					  		<div class="w3-half">
+								<input id="set_ntpEnabled" name="set_ntpEnabled" class="w3-check" type="checkbox">
+							</div>
+					  	</div>
+
+						<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_NTP_poolServerName" for="set_NTP_poolServerName">Имя сервера NTP</label>
+							</div>
+					  		<div class="w3-half">
+					  			<input id="set_NTP_poolServerName" name="set_NTP_poolServerName" class="w3-input w3-border" style="width:50%" 
+					  				type="text" value="обновляю"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">		
+					  			<label id="lbl_NTP_timeOffset" for="set_NTP_timeOffset">Разница времени с устройством (сек)</label>
+					  		</div>
+					  		<div class="w3-half">
+								<input id="set_NTP_timeOffset" name="set_NTP_timeOffset" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_NTP_updateInterval" for="set_NTP_updateInterval">Интервал синхронизации времени (сек)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_NTP_updateInterval" name="set_NTP_updateInterval" class="w3-input w3-border" style="width:50%" type="number" min="120" step="10">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_NTP_timeTriggerInterval" for="set_NTP_timeTriggerInterval">Интервал отправки времени клиентам (мс)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_NTP_timeTriggerInterval" name="set_NTP_timeTriggerInterval" class="w3-input w3-border" style="width:50%" type="number" min="100" step="10">
+							</div>
+					  	</div>
+				</form>	
+			</div>
+			
+			
+			<p>
+		  		<button id="saveDeviceSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
+						onclick="submitCurrentForm();">Сохранить</button>
+			</p>
 			  
 			<div id="device_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
 				
 			<div style="height:20px;"></div>
 		</div>
 
-		<div id="net" class="settingsTab" style="display:none">
+		<div id="net" class="settingsTab reloadableSettingsContainer" style="display:none">
 			<div class="w3-container w3-teal">
 				<h2>Сеть</h2>
 			</div>	
 			
 			<p>Устройство может работать как точка доступа или подключаться к существующей WiFi</p>
-			<form id="net_form">
-			  <div id="net_content">
+			
+			<div id="net_content">
+				
+				<form id="net_form" class="w3-container">
 			  
-				<label id="lbl_isAccesPoint" for="set_isAccesPoint">Является точкой доступа</label>
-				<input id="set_isAccesPoint" name="set_isAccesPoint" class="w3-check" type="checkbox" checked="false">
-				
-				<label id="lbl_ssidAP" for="set_ssidAP">SSID если в режиме точки доступа</label>
-				<input id="set_ssidAP" name="set_ssidAP" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
-				
-				<label id="lbl_ssid" for="set_ssid">SSID если в режиме клиента</label>
-				<input id="set_ssid" name="set_ssid" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
-				
-				<label id="lbl_password" for="set_password">Пароль WiFi</label>
-				<input id="set_password" name="set_password" class="w3-input w3-border" style="width:50%" type="password" value="*****" >
-				
-				<label id="lbl_passwordConfirm" for="set_passwordConfirm">Подтверждение Пароль WiFi</label>
-				<input id="set_passwordConfirm" name="set_passwordConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****">
-				
-				<label id="lbl_serverPort" for="set_serverPort">Порт Http</label>
-				<input id="set_serverPort" name="set_serverPort" class="w3-input w3-border" style="width:50%" type="number" min="80" max="1024" step="1" value="обновляю">
-				
-				<label id="lbl_staticIp" for="set_staticIp">Использовать статический IP</label>
-				<input id="set_staticIp" name="set_staticIp" class="w3-check" type="checkbox" checked="false">
-
-				<label id="lbl_localIp" for="set_localIp">IP адресс в локальной сети (LocalIp)</label>
-				<input id="set_localIp" name="set_localIp" class="w3-input w3-border" style="width:50%" type="text" 
-						value="" pattern="((^|\\.)((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]?\\d))){4}$">
-
-				<label id="lbl_apIp" for="set_apIp">IP адресс Если точка доступа (Access point IP)</label>
-				<input id="set_apIp" name="set_apIp" class="w3-input w3-border" style="width:50%" type="text" 
-						value="" pattern="((^|\\.)((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]?\\d))){4}$">
-
-				<label id="lbl_gateIp" for="set_gateIp">IP адресс шлюза (GateWay)</label>
-				<input id="set_gateIp" name="set_gateIp" class="w3-input w3-border" style="width:50%" type="text" 
-						value="" pattern="((^|\\.)((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]?\\d))){4}$">
-
-				<label id="lbl_subnetIp" for="set_subnetIp">IP адресс подсети (Subnet)</label>
-				<input id="set_subnetIp" name="set_subnetIp" class="w3-input w3-border" style="width:50%" type="text" 
-						value="" pattern="((^|\\.)((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]?\\d))){4}$">
-
-				<label id="lbl_dnsIp" for="set_dnsIp">IP адресс DNS</label>
-				<input id="set_dnsIp" name="set_dnsIp" class="w3-input w3-border" style="width:50%" type="text" 
-						value="" pattern="((^|\\.)((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]?\\d))){4}$">
-
-				<label id="lbl_gateIp2" for="set_gateIp2">IP адресс DNS2</label>
-				<input id="set_gateIp2" name="set_gateIp2" class="w3-input w3-border" style="width:50%" type="text" 
-						value="" pattern="((^|\\.)((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]?\\d))){4}$">
-
-				<label id="lbl_serverIp" for="set_serverIp">IP адресс Сервера !!!SmartHouse</label>
-				<input id="set_serverIp" name="set_serverIp" class="w3-input w3-border" style="width:50%" type="text" 
-						value="" pattern="((^|\\.)((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]?\\d))){4}$">
-			  	
+			  		<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_isAccesPoint" for="set_isAccesPoint">Является точкой доступа</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="set_isAccesPoint" name="set_isAccesPoint" class="w3-check" type="checkbox">
+						</div>
+				  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_ssidAP" for="set_ssidAP">SSID если в режиме точки доступа</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_ssidAP" name="set_ssidAP" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_ssid" for="set_ssid">SSID если в режиме клиента</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_ssid" name="set_ssid" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_password" for="set_password">Пароль WiFi</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_password" name="set_password" class="w3-input w3-border" style="width:50%" type="password" value="*****" >
+							</div>
+					  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_passwordConfirm" for="set_passwordConfirm">Подтверждение Пароль WiFi</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_passwordConfirm" name="set_passwordConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****">
+							</div>
+					  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_serverPort" for="set_serverPort">Порт Http</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_serverPort" name="set_serverPort" class="w3-input w3-border" style="width:50%" type="number" min="80" max="1024" step="1" value="обновляю">
+							</div>
+					  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_staticIp" for="set_staticIp">Использовать статический IP</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_staticIp" name="set_staticIp" class="w3-check" type="checkbox">
+							</div>
+					  	</div>
+	
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_localIp" for="set_localIp">IP адресс в локальной сети (LocalIp)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_localIp" name="set_localIp" class="w3-input w3-border" style="width:50%" type="text" 
+									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+							</div>
+					  	</div>
+	
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_apIp" for="set_apIp">IP адресс Если точка доступа (Access point IP)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_apIp" name="set_apIp" class="w3-input w3-border" style="width:50%" type="text" 
+										value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+							</div>
+					  	</div>
+	
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_gateIp" for="set_gateIp">IP адресс шлюза (GateWay)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_gateIp" name="set_gateIp" class="w3-input w3-border" style="width:50%" type="text" 
+										value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+							</div>
+					  	</div>
+	
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_subnetIp" for="set_subnetIp">IP адресс подсети (Subnet)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_subnetIp" name="set_subnetIp" class="w3-input w3-border" style="width:50%" type="text" 
+									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+							</div>
+					  	</div>
+	
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_dnsIp" for="set_dnsIp">IP адресс DNS</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_dnsIp" name="set_dnsIp" class="w3-input w3-border" style="width:50%" type="text" 
+									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+							</div>
+					  	</div>
+	
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_dnsIp2" for="set_dnsIp2">IP адресс DNS2</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_dnsIp2" name="set_dnsIp2" class="w3-input w3-border" style="width:50%" type="text" 
+										value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+							</div>
+					  	</div>
+	
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_serverIp" for="set_serverIp">IP адресс Сервера !!!SmartHouse</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_serverIp" name="set_serverIp" class="w3-input w3-border" style="width:50%" type="text" 
+										value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+							</div>
+					  	</div>
+			
+				</form>	  	
 			  </div>
 			  
 			  <p>
 		  		<button id="saveNetSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
 						onclick="submitCurrentForm();">Сохранить</button>
 			  </p>
-			</form>
+			
 			
 			<div id="net_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
 				
@@ -211,93 +430,193 @@
 			</div>
 			
 			  <p>Настройки датчиков. Описание. Режим тревоги. Очереди </p>
-			  <form id="sensors_form">
-				  <div id="sensors_content">
-				  
-				  </div>
+			  
+				<div id="sensors_content">
+					<form id="sensors_form" class="w3-container">
+					
+					</form>  
+				</div>
 				  
 				  <p>
-				  		<button id="saveSensorSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
-								onclick="submitCurrentForm();">Сохранить</button>
+				  	<button id="saveSensorSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
+							onclick="submitCurrentForm();">Сохранить</button>
 				  </p>
-			  </form>
+			  
 			  
 				<div id="sensors_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
 				
 				<div style="height:20px;"></div>
 		</div>
 		
-		<div id="publish" class="settingsTab" style="display:none">
+		<div id="publish" class="settingsTab reloadableSettingsContainer" style="display:none">
 			<div class="w3-container w3-teal">
 				<h2>Публикация данных</h2>
 			</div>
 			
 			  <p>Публикация значений сенсоров ThingSpeak, Mqtt, Http</p>
 			  
-			   	<form id="publish_form">
-				  <div id="publish_content">
+				<div id="publish_content">
+				
+					<form id="publish_form" class="w3-container">
 				  
-				  	<div><h4>Отправка в ThingSpeak</h4></div>
-				  	
-				  	<label for="set_isThingSpeakEnabled">Отправка разрешена</label>
-					<input id="set_isThingSpeakEnabled" name="set_isThingSpeakEnabled" class="w3-check" type="checkbox" checked="false">
-					
-					<label for="set_postDataToTSInterval">Интервал публикации значений (сек)</label>
-					<input id="set_postDataToTSInterval" name="set_postDataToTSInterval" class="w3-input w3-border" style="width:50%" type="number" min="241" step="1">
-					
-					<label for="set_thSkUsrKey">Ключ пользователя</label>
-					<input id="set_thSkUsrKey" name="set_thSkUsrKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
-					
-					<label for="set_thSkWKey">Ключ записи</label>
-					<input id="set_thSkWKey" name="set_thSkWKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
-					
-					<label for="set_thSkRKey">Ключ чтения</label>
-					<input id="set_thSkRKey" name="set_thSkRKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
-					
-					<label for="set_thSkChId">Канал</label>
-					<input id="set_thSkChId" name="set_thSkChId" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
-					
-					<label for="set_thSkTKey">Ключ твиттер</label>
-					<input id="set_thSkTKey" name="set_thSkTKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
-
-					<div><h4>Отправка в очередь MQTT</h4></div>	
-					
-					<label for="set_isMqttEnabled">Отправка разрешена</label>
-					<input id="set_isMqttEnabled" name="set_isMqttEnabled" class="w3-check" type="checkbox" checked="false">
-					
-					<label for="set_mqtt_server">Сервер</label>
-					<input id="set_mqtt_server" name="set_mqtt_server" class="w3-input w3-border" style="width:50%" type="text" min="241" step="1">
-					
-					<label for="set_mqtt_user">Пользователь</label>
-					<input id="set_mqtt_user" name="set_mqtt_user" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
-					
-					<label for="set_mqtt_pass">Пароль</label>
-					<input id="set_mqtt_pass" name="set_mqtt_pass" class="w3-input w3-border" style="width:50%" type="password" value="*****">
-					
-					<label for="set_mqtt_topic">Базовая очередь</label>
-					<input id="set_mqtt_topic" name="set_mqtt_topic" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
-					
-					<label for="set_mqtt_port">Порт</label>
-					<input id="set_mqtt_port" name="set_mqtt_port" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
-					
-					<div><h4>Отправка на сервер !!!SmartHouse</h4></div>	
-					
-					<label for="set_isHttpPostEnabled">Отправка разрешена</label>
-					<input id="set_isHttpPostEnabled" name="set_isHttpPostEnabled" class="w3-check" type="checkbox" checked="false">
-					
-					<label id="lbl_httpPostIp" for="set_httpPostIp">IP адресс отправки данных по Http</label>
-					<input id="set_httpPostIp" name="set_httpPostIp" class="w3-input w3-border" style="width:50%" type="text" 
-						value="" pattern="((^|\\.)((25[0-5])|(2[0-4]\\d)|(1\\d\\d)|([1-9]?\\d))){4}$">
-				  
+					  	<div class="w3-row w3-green" style="height: 50px;">
+					  		<h3>Отправка в ThingSpeak</h3>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label for="set_isThingSpeakEnabled">Отправка разрешена</label>
+					  		</div>
+					  		<div class="w3-half">
+								<input id="set_isThingSpeakEnabled" name="set_isThingSpeakEnabled" class="w3-check" type="checkbox">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">
+								<label for="set_postDataToTSInterval">Интервал публикации значений (сек)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_postDataToTSInterval" name="set_postDataToTSInterval" class="w3-input w3-border" style="width:50%" type="number" min="241" step="1">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">		
+								<label for="set_thSkUsrKey">Ключ пользователя</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_thSkUsrKey" name="set_thSkUsrKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">		
+								<label for="set_thSkWKey">Ключ записи</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_thSkWKey" name="set_thSkWKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">		
+								<label for="set_thSkRKey">Ключ чтения</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_thSkRKey" name="set_thSkRKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">		
+								<label for="set_thSkChId">Канал</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_thSkChId" name="set_thSkChId" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
+							</div>
+					  	</div>
+								
+						<div class="w3-row">
+							<div class="w3-half">								
+								<label for="set_thSkTKey">Ключ твиттер</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_thSkTKey" name="set_thSkTKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+			
+						<div class="w3-row w3-green" style="height: 50px;">
+							<h3>Отправка в очередь MQTT</h3>
+						</div>	
+						
+						<div class="w3-row">
+							<div class="w3-half">			
+								<label for="set_isMqttEnabled">Отправка разрешена</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_isMqttEnabled" name="set_isMqttEnabled" class="w3-check" type="checkbox">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">			
+								<label for="set_mqtt_server">Сервер</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_mqtt_server" name="set_mqtt_server" class="w3-input w3-border" style="width:50%" type="text" min="241" step="1">
+							</div>
+					  	</div>
+								
+						<div class="w3-row">
+							<div class="w3-half">			
+								<label for="set_mqtt_user">Пользователь</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_mqtt_user" name="set_mqtt_user" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+								
+						<div class="w3-row">
+							<div class="w3-half">			
+								<label for="set_mqtt_pass">Пароль</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_mqtt_pass" name="set_mqtt_pass" class="w3-input w3-border" style="width:50%" type="password" value="*****">
+							</div>
+					  	</div>
+								
+						<div class="w3-row">
+							<div class="w3-half">			
+								<label for="set_mqtt_topic">Базовая очередь</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_mqtt_topic" name="set_mqtt_topic" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+								
+						<div class="w3-row">
+							<div class="w3-half">			
+								<label for="set_mqtt_port">Порт</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_mqtt_port" name="set_mqtt_port" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
+							</div>
+					  	</div>
+						
+						<div class="w3-row w3-green" style="height: 50px;">
+							<h3>Отправка на сервер !!!SmartHouse</h3>
+						</div>	
+						
+						<div class="w3-row">
+							<div class="w3-half">	
+								<label for="set_isHttpPostEnabled">Отправка разрешена</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_isHttpPostEnabled" name="set_isHttpPostEnabled" class="w3-check" type="checkbox">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_httpPostIp" for="set_httpPostIp">IP адресс отправки данных по Http</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="set_httpPostIp" name="set_httpPostIp" class="w3-input w3-border" style="width:50%" type="text" 
+									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+							</div>
+					  	</div>
+					  	
+					</form>  
 				  </div>
 				  
 				  <p>
 			  		<button id="savePublishSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
 							onclick="submitCurrentForm();">Сохранить</button>
 				  </p>
-				</form>
 				
-				<div id="net_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
+				
+				<div id="publish_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
 				
 				<div style="height:20px;"></div>
 		</div>

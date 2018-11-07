@@ -28,6 +28,8 @@ public:
 
 	IPAddress stringToIp(String str);
 	boolean validateIP(String str);
+
+	boolean stringToBoolean(String str);
 	void saveSettingsJson();
 	String getSettingsAsJsonString();
 	void loadSettingsJson();
@@ -36,7 +38,6 @@ public:
 		getSettingsFromMemory(false);
 	}
 	JsonObject& getSettingsFromMemory(boolean doSave);
-	boolean putSettingsToMemory(JsonObject& root);
 
 	String clearNlFromString(String str);
 
@@ -60,6 +61,8 @@ public:
 	void loadAbstractItemFromFile(AbstractItem* item);
 
 	String getFileName(AbstractItem* item);
+
+	boolean setSettingsValue(String fieldName,String fieldValue);
 
 	String getName(){
 		return "espSettingsBox";
@@ -150,6 +153,8 @@ public:
 
 
 private:
+	boolean loaded=false;
+
 	boolean spiffInitialized;
 	String _fileName;
 	String _extFileName;

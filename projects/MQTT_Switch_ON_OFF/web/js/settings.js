@@ -23,6 +23,7 @@ const SENSORS="sensors_";
 const SENSORS_SHORT="s_";
 
 var currentTab='';
+var currentHeaderName='';
 var currentContainerName='';
 var currentMessageCompName='';
 
@@ -37,11 +38,12 @@ var submitValuesUrl='';
 
 function openTab(tabName,headerName) {
 	currentTab=tabName;
+	currentHeaderName=headerName;
 	
 	var headerComponent=document.getElementById('settingsHeaderName');
 	
 	if(headerComponent!=undefined){
-		headerComponent.innerHTML=headerName;
+		headerComponent.innerHTML=currentHeaderName;
 	}
 	
     var i;
@@ -53,33 +55,42 @@ function openTab(tabName,headerName) {
 
 	var containerComponent=document.getElementById(tabName);
 	
-	currentContainerName=tabName+'_content';
+	//currentContainerName=tabName+'_content';
 	currentMessageCompName=tabName+'_msg';
 	currentFormName=tabName+'_form';
 	//submitValuesUrl='/submitForm_'+tabName;
 	//getValuesUrl='/getJson_'+tabName;
 	
-	document.title='Настройки устройства - '+tabName;
+	document.title='Настройки устройства - '+currentHeaderName;
 	
 	
 	if(containerComponent.classList.contains('reloadableSettingsContainer')){
 				
-		document.getElementById(currentContainerName).innerHTML="Загружаю данные...";
+		
+		showMessage('Загружаю данные...','w3-yellow');
 		
 		var handler=undefined;
-		
-		if(tabName=='sensors'){
-			getValuesHandler=processSensorsJsonGet;
-			validateValuesHandler=validateSensorsPage;
-			submitValuesUrl='/submitForm_'+'sensors';
-			getValuesUrl='/getJson_'+'sensors';
-		}
 		
 		if(tabName=='device'){
 			getValuesHandler=processDeviceSettingsGet;
 			validateValuesHandler=validateDeviceSettingsForm;
 			submitValuesUrl='/submitForm_'+'settings';
 			getValuesUrl='/getJson_'+'settings';
+		}
+		
+		if(tabName=='net'){
+			getValuesHandler=processDeviceSettingsGet;
+			validateValuesHandler=undefined;
+			submitValuesUrl='/submitForm_'+'settings';
+			getValuesUrl='/getJson_'+'settings';
+		}
+		
+		if(tabName=='sensors'){
+			document.getElementById(currentFormName).innerHTML="";
+			getValuesHandler=processSensorsJsonGet;
+			validateValuesHandler=validateSensorsPage;
+			submitValuesUrl='/submitForm_'+'sensors';
+			getValuesUrl='/getJson_'+'sensors';
 		}
 		
 		if(tabName=='publish'){
@@ -105,6 +116,7 @@ function openTab(tabName,headerName) {
 
 //---------------------------------device settings tab----------------------
 function processDeviceSettingsGet(data){
+	showMessage('Загружено '+currentHeaderName,'w3-green');
 	processSimpleJsonResponse(data,'set_');
 }
 
@@ -144,10 +156,17 @@ function processPassConfirmPath(pass,conf){
 	return message;
 }
 
+function ValidateIPaddress(ipaddress) {  
+	  if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {  
+	    return (true)  
+	  }  
+	  alert("You have entered an invalid IP address!")  
+	  return (false)  
+	}
 
 //-------------------------------------------------------
 function processSensorsJsonGet(data){
-	var container=document.getElementById(currentContainerName);
+	var container=document.getElementById(currentFormName);
 
 	container.innerHTML='';
 	var sensors=data.sensors;
@@ -280,11 +299,9 @@ function processSensorsJsonGet(data){
 				var input5=createInputComponent(sensorId,itemId,FIELD_FIELDID_ID,FIELD_ID_SUFFIX,fieldId,sensorName,itemName);
 				
 				input5.setAttribute('type','number');
-				input5.setAttribute('min','15');
-				input5.setAttribute('max','120');
+				input5.setAttribute('min','0');
+				input5.setAttribute('max','');
 				input5.setAttribute('step','1');
-				
-				min=\"15\" max=\"120\" step=\"1\"
 				
 				col0.appendChild(text0);
 				col1.appendChild(input1);
@@ -556,7 +573,7 @@ function submitCurrentForm(){
 			errorMessage=validateValuesHandler();
 		}
 		
-		if(errorMessage!=''){
+		if(!(0===errorMessage.length)){
 			isValidForm=false;
 		}
 	}

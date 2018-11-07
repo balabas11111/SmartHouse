@@ -5,7 +5,7 @@ function processLampJson(data){
 	var compId_On=data.name+'_On';
 	var compId_Off=data.name+'_Off';
 	
-	var onOff=data.val;
+	var onOff=data.items[0].val;
 	
 	hideComponent(compId_Q);
 	

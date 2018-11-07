@@ -1,10 +1,16 @@
 //-----------------------------------------------------------------------------------
 function hideComponent(componentId){
-	document.getElementById(componentId).style.display = "none";
+	var comp=document.getElementById(componentId);
+	if(comp!=undefined){
+		comp.style.display = "none";
+	}
 };
 
 function showComponent(componentId){
-	document.getElementById(componentId).style.display = "block";
+	var comp=document.getElementById(componentId);
+	if(comp!=undefined){
+		comp.style.display = "block";
+	}
 };
 
 function markComponentAs_Valid(comp){
@@ -65,7 +71,24 @@ function processSimpleJsonResponse(data,idPreffix){
 			};
 			
 			if (tagName == 'input'){
-				component.value=val;
+				if(component.type!=undefined){
+					var type=component.type.toLowerCase();
+					
+					if(type=='checkbox'){
+						var chbVal=false;
+						if(val==1 || val=='1'){
+							chbVal=true;
+						}
+						component.checked=chbVal;
+					}else{
+						component.value=val;
+					}
+				}else{
+					component.value=val;
+				}
+				
+				
+				
 			};
 			
 			if (tagName == 'a'){

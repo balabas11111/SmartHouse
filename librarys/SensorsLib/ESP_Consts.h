@@ -216,6 +216,8 @@ const PROGMEM char MESSAGE_ESPSETTINGSBOX_FILE_MISSED[]=" file MISSED";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_BEGIN_INITIALIZE[]="Begin initialize of EspSettingsBox";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ALREADY_INITIALIZE[]="EspSettingsBox already initialized";
 
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_LOADED[]="EspSettingsBox settings loaded=";
+
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SPIFFS_INFO[]="--------------SPIFFS INFO--------------";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_INITIALIZED_EQ[]="Initialized=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SPIFF_INIT_EQ[]="spiffInitialized=";
