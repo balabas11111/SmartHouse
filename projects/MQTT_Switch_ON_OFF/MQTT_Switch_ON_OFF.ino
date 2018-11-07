@@ -116,17 +116,23 @@ void loop() {
 }
 
 void postInitWebServer(){
-	server.on(espSettingsBox.getJsonPublishUrl(), HTTP_GET, [](){
+	server.on(espSettingsBox.getSimpleJsonPublishUrl(), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getSimpleJson());
+	});
+	server.on("/submitForm_settings", HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), setEspSettingsBoxValues());
+	});
+	server.on("/getJson_settings", HTTP_GET, [](){
+		wifiHelper.checkAuthentication();
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getJson());
 	});
-	server.on("/submitAllSensorsJson", HTTP_POST, [](){
+	server.on("/submitForm_sensors", HTTP_POST, [](){
+		wifiHelper.checkAuthentication();
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), setAllSensorsJson());
 	});
-	server.on("/getAllSensorsJson", HTTP_GET, [](){
+	server.on("/getJson_sensors", HTTP_GET, [](){
+		wifiHelper.checkAuthentication();
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), getAllSensorsJson());
-	});
-	server.on(espSettingsBox.getSetValueUrl(), HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), setEspSettingsBoxValues());
 	});
 
 	server.on(buttonLeft.getJsonPublishUrl(), HTTP_GET, [](){
@@ -210,12 +216,7 @@ void onLeftLampChanged(){
 void onRightLampChanged(){
 	Serial.println("* Right lamp changed");
 }
-//----------espSettings save-------------------------------------------
-String setEspSettingsBoxValues(){
-	wifiHelper.checkAuthentication();
 
-	return "";
-}
 //---------------------------------------------------------------------
 //handle pirDetector events
 void onPirDetectorChanged(){
@@ -223,8 +224,6 @@ void onPirDetectorChanged(){
 }
 
 //---------------------------------------------------------------------
-//event and mqtt processing
-
 void loadSensors(){
 	espSettingsBox.loadAbstractItemsFromFile(minMaxValues, ARRAY_SIZE(minMaxValues));
 }
@@ -232,10 +231,8 @@ void loadSensors(){
 void saveSensors(){
 	espSettingsBox.saveAbstractItemsToFile(minMaxValues, ARRAY_SIZE(minMaxValues));
 }
-
+//-----------------------------------------------------
 String setAllSensorsJson(){
-	wifiHelper.checkAuthentication();
-
 	Serial.println("begin settings parsing");
 
 	Serial.print("args count =");
@@ -276,6 +273,22 @@ String getAllSensorsJson(){
 	Serial.println(result);
 
 	return result;
+}
+
+//----------espSettings save-------------------------------------------
+String setEspSettingsBoxValues(){
+	wifiHelper.checkAuthentication();
+
+	for(uint8_t i=0;i<server.args();i++){
+		String argName=server.argName(i);
+		String argVal=server.arg(i);
+
+		Serial.print(argName);
+		Serial.print("=");
+		Serial.println(argVal);
+	}
+
+	return "";
 }
 
 void measureSensors(){

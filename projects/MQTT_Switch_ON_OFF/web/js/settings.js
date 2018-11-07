@@ -26,6 +26,15 @@ var currentTab='';
 var currentContainerName='';
 var currentMessageCompName='';
 
+var currentFormName='';
+
+var getValuesHandler=undefined;
+var validateValuesHandler=undefined;
+
+var getValuesUrl='';
+var submitValuesUrl='';
+
+
 function openTab(tabName,headerName) {
 	currentTab=tabName;
 	
@@ -46,58 +55,96 @@ function openTab(tabName,headerName) {
 	
 	currentContainerName=tabName+'_content';
 	currentMessageCompName=tabName+'_msg';
+	currentFormName=tabName+'_form';
+	//submitValuesUrl='/submitForm_'+tabName;
+	//getValuesUrl='/getJson_'+tabName;
+	
 	document.title='Настройки устройства - '+tabName;
+	
 	
 	if(containerComponent.classList.contains('reloadableSettingsContainer')){
 				
 		document.getElementById(currentContainerName).innerHTML="Загружаю данные...";
 		
+		var handler=undefined;
+		
 		if(tabName=='sensors'){
-			var f = document.forms['sensors_form'];
+			getValuesHandler=processSensorsJsonGet;
+			validateValuesHandler=validateSensorsPage;
+			submitValuesUrl='/submitForm_'+'sensors';
+			getValuesUrl='/getJson_'+'sensors';
+		}
+		
+		if(tabName=='device'){
+			getValuesHandler=processDeviceSettingsGet;
+			validateValuesHandler=validateDeviceSettingsForm;
+			submitValuesUrl='/submitForm_'+'settings';
+			getValuesUrl='/getJson_'+'settings';
+		}
+		
+		if(tabName=='publish'){
+			getValuesHandler=processDeviceSettingsGet;
+			validateValuesHandler=undefined;
+			submitValuesUrl='/submitForm_'+'settings';
+			getValuesUrl='/getJson_'+'settings';
+		}
+
+		if(getValuesHandler!=undefined){
+			var f = document.forms[currentFormName];
 			f.addEventListener('submit', 
 								function(evt){
 									evt.preventDefault();
 								},false);
 			
-			updateComponentsByAjaxCall('GET', '/getAllSensorsJson', processSensorsJsonGet,"", 0);
+			updateComponentsByAjaxCall('GET', getValuesUrl, getValuesHandler,"", 0);
+		}else{
+			alert('Error on page!');
 		}
 	}
 }
 
-//-------------------------------------------------------
-function createDivComponent(className,innerHtml){
-	var div=document.createElement('div');
-		div.setAttribute('class',className);
-		if(innerHtml!=undefined && innerHtml!=''){
-			div.innerHTML=innerHtml;
-		}
-		
-	return div;
+//---------------------------------device settings tab----------------------
+function processDeviceSettingsGet(data){
+	processSimpleJsonResponse(data,'set_');
 }
 
-function createInputComponent(id1,id2,fieldIntId,suffixName,fieldVal,sensorName,itemName){
-	var input1=document.createElement("Input");
-		input1.setAttribute("id",getInputCompName(id1,id2,fieldIntId));
-		input1.setAttribute("name",getInputCompName(id1,id2,fieldIntId));
-		input1.setAttribute("class","w3-input w3-border "+suffixName);
-		input1.setAttribute("style",'width: 90%;');
-		input1.setAttribute("value",fieldVal);
-		input1.setAttribute(SENSOR_NAME_ATTR,sensorName);
-		if(itemName!=undefined)
-			input1.setAttribute(ITEM_NAME_ATTR,itemName);	
-		
-	return input1; 
-}
-
-function createHeaderElement(elType,elStyle,elText){
-	var sensorHeader = document.createElement(elType);
-	if(elStyle!=undefined && elStyle!='')
-		sensorHeader.setAttribute('style',elStyle);
-	var textNode = document.createTextNode(elText);
-	sensorHeader.appendChild(textNode);
+function validateDeviceSettingsForm(){
+	var errorMessage='';
 	
-	return sensorHeader;
+	var pass=document.getElementById('set_accessPass');
+	var conf=document.getElementById('set_accessPassConfirm');
+	
+	errorMessage=processPassConfirmPath(pass,conf);
+	
+	pass=document.getElementById('set_settingsPass');
+	conf=document.getElementById('set_settingsPass');
+	
+	errorMessage=errorMessage+processPassConfirmPath(pass,conf);
+	
+	if(!pass || pass.value==undefined || 0===pass.length){
+		errorMessage='Доступ на страницу пароля возможен только по паролю!';
+	}
+			
+	return errorMessage;
 }
+
+function processPassConfirmPath(pass,conf){
+	var message="";
+	
+	markComponentAs_Valid(pass);
+	markComponentAs_Valid(conf);
+	
+	if(pass.value!=conf.value){
+		markComponentAs_InValid(pass);
+		markComponentAs_InValid(conf);
+		
+		message="Пароль и подьверждение пароля не равны";
+	}
+	
+	return message;
+}
+
+
 //-------------------------------------------------------
 function processSensorsJsonGet(data){
 	var container=document.getElementById(currentContainerName);
@@ -232,6 +279,13 @@ function processSensorsJsonGet(data){
 				var input4=createInputComponent(sensorId,itemId,FIELD_MAX_ID,MAX_VAL_SUFFIX,maxVal,sensorName,itemName);
 				var input5=createInputComponent(sensorId,itemId,FIELD_FIELDID_ID,FIELD_ID_SUFFIX,fieldId,sensorName,itemName);
 				
+				input5.setAttribute('type','number');
+				input5.setAttribute('min','15');
+				input5.setAttribute('max','120');
+				input5.setAttribute('step','1');
+				
+				min=\"15\" max=\"120\" step=\"1\"
+				
 				col0.appendChild(text0);
 				col1.appendChild(input1);
 				col2.appendChild(input2);
@@ -264,87 +318,20 @@ function processSensorsJsonGet(data){
 		//end of sensors loop
 	}	
 	
-		var p=document.createElement("p");
-		var butt=document.createElement("button");
-		butt.setAttribute("class","w3-btn w3-teal");
-		butt.setAttribute("style","margin-left: 20px; margin-bottom: 20px;");
-		butt.setAttribute("onclick","submitSensorsForm('sensors_form','sensors_msg');");
-		butt.innerHTML="Сохранить";
-		
-		p.appendChild(butt);
-		
-		container.appendChild(p);
 }
 
-function getInputCompName(sensorName,itemName,suffix){
-	return SENSORS_SHORT+sensorName+"_"+itemName+"_"+suffix;
-}
-
-function submitSensorsForm(formName,updateName){
-	console.log('submitting form');
-	
-	var f = document.forms[formName];
-	var isValidForm = f.checkValidity();
-	
+function validateSensorsPage(){
 	var errorMessage='';
 	
-	if(isValidForm){
-		errorMessage=errorMessage+validateFieldValuesUnique(QUEUE_SUFFIX,"Неверное значение 'Очередь'; <br>","Поле 'Очередь' не уникальное; <br>",false);
-		errorMessage=errorMessage+validateFieldValuesUnique(FIELD_ID_SUFFIX,"Неверное значение 'Поле ThingSpeak'; <br>","'Поле ThingSpeak' не уникальное; <br>",true);
-		errorMessage=errorMessage+validateMinMaxValues();
-		errorMessage=errorMessage+validateDescrValues();
-		
-		if(errorMessage!=''){
-			isValidForm=false;
-		}
-	}
+	errorMessage=errorMessage+validateFieldValuesUnique(QUEUE_SUFFIX,"Неверное значение 'Очередь'; <br>","Поле 'Очередь' не уникальное; <br>",false);
+	errorMessage=errorMessage+validateFieldValuesUnique(FIELD_ID_SUFFIX,"Неверное значение 'Поле ThingSpeak'; <br>","'Поле ThingSpeak' не уникальное; <br>",true);
+	errorMessage=errorMessage+validateMinMaxValues();
+	errorMessage=errorMessage+validateDescrValues();
 	
-	if(isValidForm){
-		
-		var formData = new FormData(f);
-		formData.append("currentTab", currentTab);
-		
-		showMessage('Сохраняю данные...','w3-yellow');
-		
-		var request = new XMLHttpRequest();
-		request.open("POST", "/submitAllSensorsJson", true);
-		request.onreadystatechange  = 
-			function(){
-				if(this.readyState == 4){
-					if (this.status == 200){
-						
-						var json = JSON.parse(this.responseText);
-						processSensorsJsonGet(json);
-						
-						showMessage('Настройки сохранены!','w3-green');
-						
-					} else {
-						showMessage('Ошибка на стророне сервера!','w3-red');
-					};
-				};
-			};
-		request.send(formData);
-	}else{
-		errorMessage='Некоторые значения неверны:  '+errorMessage;
-		showMessage(errorMessage,'w3-red');
-	}
+	return errorMessage;
 }
 
-function showMessage(message,className){
-	var msgComp=document.getElementById(currentMessageCompName);
-	
-	if(className!=undefined && className!=''){
-		msgComp.setAttribute('class',className);
-	}
-	
-	if(message!=undefined && message!=''){
-		msgComp.style.display = "block";
-		msgComp.innerHTML = message;
-	}else{
-		msgComp.style.display = "none"; 
-	}
-}
-
+//------------------------validators------------------------------------
 function validateMinMaxValues(){
 	var minValComponents=document.getElementsByClassName(MIN_VAL_SUFFIX);
 	var maxValComponents=document.getElementsByClassName(MAX_VAL_SUFFIX);
@@ -354,14 +341,14 @@ function validateMinMaxValues(){
 	for (var i in minValComponents) {
 		var comp=minValComponents[i];
 		if(comp!=undefined && comp.classList!=undefined){
-			comp.classList.remove('w3-border-red');
+			markComponentAs_Valid(comp);
 		}
 	}
 	
 	for (var i in maxValComponents) {
 		var comp=maxValComponents[i];
 		if(comp!=undefined && comp.classList!=undefined){
-			comp.classList.remove('w3-border-red');
+			markComponentAs_Valid(comp);
 		}
 	}
 		
@@ -378,8 +365,8 @@ function validateMinMaxValues(){
 			var maxCompVal=maxComp.value;
 				
 			if(compVal>=maxCompVal){
-				comp.classList.add('w3-border-red');
-				maxComp.classList.add('w3-border-red');	
+				markComponentAs_InValid(comp);
+				markComponentAs_InValid(maxComp);
 				
 				error=true;
 				
@@ -420,7 +407,7 @@ function validateDescrValues(){
 	for (var i in descrComponents) {
 		var comp=descrComponents[i];
 		if(comp!=undefined && comp.classList!=undefined){
-			comp.classList.remove('w3-border-red');
+			markComponentAs_Valid(comp);
 		}
 	}
 	
@@ -431,7 +418,7 @@ function validateDescrValues(){
 			var compVal=comp.value;
 			
 			if(compVal==''){
-				comp.classList.add('w3-border-red');
+				markComponentAs_InValid(comp);
 				var sensorName=comp.getAttribute(SENSOR_NAME_ATTR);
 				var itemName=comp.getAttribute(ITEM_NAME_ATTR);
 				error=true;
@@ -455,14 +442,14 @@ function validateFieldValuesUnique(validClassName,errorMessage1,errorMessage2, n
 	for (var i in fieldIdComponents) {
 		var comp=fieldIdComponents[i];
 		if(comp!=undefined && comp.classList!=undefined){
-			comp.classList.remove('w3-border-red');
+			markComponentAs_Valid(comp);
 		}
 	}
 	
 	for (var i in fieldIdComponents2) {
 		var comp=fieldIdComponents2[i];
 		if(comp!=undefined && comp.classList!=undefined){
-			comp.classList.remove('w3-border-red');
+			markComponentAs_Valid(comp);
 		}
 	}
 	
@@ -479,7 +466,7 @@ function validateFieldValuesUnique(validClassName,errorMessage1,errorMessage2, n
 					var sensorName=comp.getAttribute(SENSOR_NAME_ATTR);
 					var itemName=comp.getAttribute(ITEM_NAME_ATTR);
 					
-					comp.classList.add('w3-border-red');
+					markComponentAs_InValid(comp);
 					error=true;
 					result=errorMessage1;
 				}
@@ -499,8 +486,8 @@ function validateFieldValuesUnique(validClassName,errorMessage1,errorMessage2, n
 								var sensorName2=comp2.getAttribute(SENSOR_NAME_ATTR);
 								var itemName2=comp2.getAttribute(ITEM_NAME_ATTR);
 								
-								comp.classList.add('w3-border-red');
-								comp2.classList.add('w3-border-red');
+								markComponentAs_InValid(comp);
+								markComponentAs_InValid(comp2);
 								
 								error=true;
 								result=errorMessage2;
@@ -515,4 +502,92 @@ function validateFieldValuesUnique(validClassName,errorMessage1,errorMessage2, n
 	}
 	
 	return result;
+}
+//--------------------------GUI creation part-----------------------------
+function createDivComponent(className,innerHtml){
+	var div=document.createElement('div');
+		div.setAttribute('class',className);
+		if(innerHtml!=undefined && innerHtml!=''){
+			div.innerHTML=innerHtml;
+		}
+		
+	return div;
+}
+
+function createInputComponent(id1,id2,fieldIntId,suffixName,fieldVal,sensorName,itemName){
+	var input1=document.createElement("Input");
+		input1.setAttribute("id",getInputCompName(id1,id2,fieldIntId));
+		input1.setAttribute("name",getInputCompName(id1,id2,fieldIntId));
+		input1.setAttribute("class","w3-input w3-border "+suffixName);
+		input1.setAttribute("style",'width: 90%;');
+		input1.setAttribute("value",fieldVal);
+		input1.setAttribute(SENSOR_NAME_ATTR,sensorName);
+		if(itemName!=undefined)
+			input1.setAttribute(ITEM_NAME_ATTR,itemName);	
+		
+	return input1; 
+}
+
+function createHeaderElement(elType,elStyle,elText){
+	var sensorHeader = document.createElement(elType);
+	if(elStyle!=undefined && elStyle!='')
+		sensorHeader.setAttribute('style',elStyle);
+	var textNode = document.createTextNode(elText);
+	sensorHeader.appendChild(textNode);
+	
+	return sensorHeader;
+}
+
+function getInputCompName(sensorName,itemName,suffix){
+	return SENSORS_SHORT+sensorName+"_"+itemName+"_"+suffix;
+}
+
+//--------------------generic form submit
+function submitCurrentForm(){
+	console.log('submitting form');
+	
+	var f = document.forms[currentFormName];
+	var isValidForm = f.checkValidity();
+	
+	var errorMessage='';
+	
+	if(isValidForm){
+		if(validateValuesHandler!=undefined){
+			errorMessage=validateValuesHandler();
+		}
+		
+		if(errorMessage!=''){
+			isValidForm=false;
+		}
+	}
+	
+	if(isValidForm){
+		
+		var formData = new FormData(f);
+		formData.append("currentTab", currentTab);
+		
+		showMessage('Сохраняю данные...','w3-yellow');
+		
+		var request = new XMLHttpRequest();
+		request.open("POST", submitValuesUrl, true);
+		request.onreadystatechange  = 
+			function(){
+				if(this.readyState == 4){
+					if (this.status == 200){
+						
+						var json = JSON.parse(this.responseText);
+						getValuesHandler(json);
+						
+						showMessage('Данные сохранены!','w3-green');
+						
+					} else {
+						showMessage('Ошибка на стророне сервера!','w3-red');
+					};
+				};
+			};
+		request.send(formData);
+	}else{
+		errorMessage='Некоторые значения неверны:  '+errorMessage;
+		showMessage(errorMessage,'w3-red');
+	}
 }

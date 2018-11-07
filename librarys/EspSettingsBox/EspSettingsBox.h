@@ -43,9 +43,7 @@ public:
 	boolean isTrue(String str);
 
 	String getJson();
-	String getSimpleJson(){
-		return getJson();
-	}
+	String getSimpleJson();
 
 	void saveAbstractItemsToFile(AbstractItem** items,uint8_t size){
 		for(uint8_t i=0;i<size;i++){
@@ -66,6 +64,9 @@ public:
 	String getName(){
 		return "espSettingsBox";
 	}
+	String getSimpleJsonPublishUrl(){
+			return "/"+getName()+"/getSimpleJson";
+		}
 	String getJsonPublishUrl(){
 		return "/"+getName()+"/getJson";
 	}
@@ -87,13 +88,14 @@ public:
 
 	boolean displayAlvaysOn=false;
 	uint8_t displayAutochange=15;
-	uint8_t pageAutochange=60;
 
-	String settingsUser = "balabas";
-	String settingsPass = "balabas";
+	uint16_t refreshInterval=60;
 
 	String accessUser = "";
 	String accessPass = "";
+
+	String settingsUser = "balabas";
+	String settingsPass = "balabas";
 
 	boolean isAccesPoint=false;
 	String ssidAP="SENS_"+String(ESP.getChipId());;
@@ -111,10 +113,15 @@ public:
 	IPAddress subnetIp=IPAddress(255, 255, 255, 0);
 	IPAddress dnsIp=IPAddress(192, 168, 0, 1);
 	IPAddress dnsIp2=IPAddress(192, 168, 0, 1);
+	IPAddress serverIp=IPAddress(192, 168, 0, 2);
 
-	uint8_t refreshInterval=60;
 	boolean beepOnAlert=false;
+	boolean alarmSendNotifAlertStart=true;
+	boolean alarmSendNotifAlertStop=true;
+	boolean alarmPlaySound=true;
+	uint16_t alamSoundInterval=30;
 
+	boolean isThingSpeakEnabled=false;
 	uint8_t postDataToTSInterval=241;
 	String thSkUsrKey="YV1SA7H87PS8RFMU";
 	String thSkWKey="V8V5G1W2CACCQOMV";
@@ -122,22 +129,22 @@ public:
 	int thSkChId=612324;
 	String thSkTKey="ZSFBN9V1K2QMB9M1";
 
-	boolean alarmSendNotifAlertStart=true;
-	boolean alarmSendNotifAlertStop=true;
-	boolean alarmPlaySound=true;
-	uint16_t alamSoundInterval=30;
 	//uint16_t alamNotificationInterval=60;
 
 	boolean isMqttEnabled=false;
 	String mqtt_server = "m23.cloudmqtt.com";
-	int mqtt_port = 10186;
 	String mqtt_user = "tpheglmk";
 	String mqtt_pass = "QgYRfVzDhQ31";
 	String mqtt_topic="topic/basePublish";
+	int mqtt_port = 10186;
 
+	boolean isHttpPostEnabled=false;
+	IPAddress httpPostIp=IPAddress(192, 168, 0, 2);
+
+	boolean ntpEnabled=false;
 	String NTP_poolServerName="europe.pool.ntp.org";
 	int NTP_timeOffset=7200;
-	int NTP_updateInterval=120000;
+	int NTP_updateInterval=120;
 
 	ulong NTP_timeTriggerInterval=1000;
 

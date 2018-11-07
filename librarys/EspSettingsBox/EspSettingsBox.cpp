@@ -116,10 +116,11 @@ JsonObject& EspSettingsBox::getSettingsFromMemory(boolean doSave){
 	root["DeviceDescription"] =  DeviceDescription;
 	root["DeviceLocation"] =  DeviceLocation;
 	root["iAp"] = isAccesPoint;
+
 	root["rin"] = refreshInterval;
 	root["dao"] = displayAlvaysOn;
 	root["dac"] = displayAutochange;
-	root["pac"] = pageAutochange;
+
 	root["sur"] = settingsUser;
 	root["sps"] = settingsPass;
 	root["aur"] = accessUser;
@@ -136,19 +137,21 @@ JsonObject& EspSettingsBox::getSettingsFromMemory(boolean doSave){
 	root["sip"] = subnetIp.toString();
 	root["dip"] = dnsIp.toString();
 	root["dip2"] = dnsIp2.toString();
+	root["serverip"] = serverIp.toString();
 
 	root["bOnA"] = beepOnAlert;
+	root["AlSAs"]=alarmSendNotifAlertStart;
+	root["AlSn"]=alarmSendNotifAlertStop;
+	root["AlPs"]=alarmPlaySound;
+	root["AlSi"]=alamSoundInterval;
+
+	root["ptTsEnabled"]=isThingSpeakEnabled;
 	root["pdTs"] = postDataToTSInterval;
 	root["sPk"] = thSkUsrKey;
 	root["sWk"] = thSkWKey;
 	root["sRk"] = thSkRKey;
 	root["sCi"] = thSkChId;
 	root["sTk"] = thSkTKey;
-
-	root["AlSAs"]=alarmSendNotifAlertStart;
-	root["AlSn"]=alarmSendNotifAlertStop;
-	root["AlPs"]=alarmPlaySound;
-	root["AlSi"]=alamSoundInterval;
 	//root["AlNi"]=alamNotificationInterval;
 
 	root["isMqttEnabled"]=isMqttEnabled;
@@ -158,6 +161,10 @@ JsonObject& EspSettingsBox::getSettingsFromMemory(boolean doSave){
 	root["mqtt_pass"]=mqtt_pass;
 	root["mqtt_topic"]=mqtt_topic;
 
+	root["isHttpSendEnabled"]=isHttpPostEnabled;
+	root["httpPostIp"]=httpPostIp.toString();
+
+	root["ntpEnabled"]=ntpEnabled;
 	root["NTP_poolServerName"]=NTP_poolServerName;
 	root["NTP_timeOffset"]=NTP_timeOffset;
 	root["NTP_timeTriggerInterval"]=NTP_timeTriggerInterval;
@@ -199,7 +206,6 @@ boolean EspSettingsBox::putSettingsToMemory(JsonObject& root){
 	refreshInterval = root["rin"];
 	displayAlvaysOn = root["dao"];
 	displayAutochange = root["dac"];
-	pageAutochange = root["pac"];
 	settingsUser = root["sur"].as<char*>();
 	settingsPass = root["sps"].as<char*>();
 	accessUser = root["aur"].as<char*>();
@@ -216,20 +222,17 @@ boolean EspSettingsBox::putSettingsToMemory(JsonObject& root){
 	subnetIp=stringToIp(String(root["sip"].as<char*>()));
 	dnsIp=stringToIp(String(root["dip"].as<char*>()));
 	dnsIp2=stringToIp(String(root["dip2"].as<char*>()));
+	serverIp=stringToIp(String(root["serverip"].as<char*>()));
 
 	beepOnAlert=root["bOnA"];
+
+	isThingSpeakEnabled=root["ptTsEnabled"];
 	postDataToTSInterval = root["pdTs"];
 	thSkUsrKey=root["sPk"].as<char*>();
 	thSkWKey = root["sWk"].as<char*>();
 	thSkRKey = root["sRk"].as<char*>();
 	thSkTKey = root["sTk"].as<char*>();
 	thSkChId = root["sCi"];
-
-	alarmSendNotifAlertStart=isTrue(root["AlSAs"].as<char*>());
-	alarmSendNotifAlertStop=isTrue(root["AlSn"].as<char*>());
-	alarmPlaySound=isTrue(root["AlPs"].as<char*>());
-	alamSoundInterval=root["AlSi"];
-	//alamNotificationInterval=root["AlNi"];
 
 	isMqttEnabled=isTrue(root["isMqttEnabled"]);
 	mqtt_server=root["mqtt_server"].as<char*>();
@@ -238,6 +241,16 @@ boolean EspSettingsBox::putSettingsToMemory(JsonObject& root){
 	mqtt_pass=root["mqtt_pass"].as<char*>();
 	mqtt_topic=root["mqtt_topic"].as<char*>();
 
+	isHttpPostEnabled=isTrue(root["isHttpSendEnabled"]);
+	httpPostIp=stringToIp(String(root["httpPostIp"].as<char*>()));
+
+	alarmSendNotifAlertStart=isTrue(root["AlSAs"].as<char*>());
+	alarmSendNotifAlertStop=isTrue(root["AlSn"].as<char*>());
+	alarmPlaySound=isTrue(root["AlPs"].as<char*>());
+	alamSoundInterval=root["AlSi"];
+	//alamNotificationInterval=root["AlNi"];
+
+	ntpEnabled=isTrue(root["ntpEnabled"]);
 	NTP_poolServerName=root["NTP_poolServerName"].as<char*>();
 	NTP_timeOffset=root["NTP_timeOffset"];
 	NTP_timeTriggerInterval=root["NTP_timeTriggerInterval"];
@@ -470,15 +483,81 @@ boolean EspSettingsBox::isTrue(String str){
 	return (tmp.toInt()==1) ;
 }
 
+String EspSettingsBox::getSimpleJson(){
+	String result="{\"name\":\"espSettingsBox\",\"childCount\":\"8\",\"items\":[\
+						{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\",\
+						{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\",\"label\":\"ID устройства\"},\
+						{\"name\":\"DeviceKind\",\"val\":\""+DeviceKind+"\",\"label\":\"Тип устройства\"},\
+						{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\"},\
+						{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\"},\
+						\
+						{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
+						{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"}\
+						{\"name\":\"thinkSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}]}";
+		return result;
+
+
+return result;
+}
+
 String EspSettingsBox::getJson(){
 
-	String result="{\"name\":\"espSettingsBox\",\"val\":\"3\",\"fieldId\":\"0\",\"queueName\":\"\",\"items\":[\
-					{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\",\"label\":\"Прошивка\",\"type\":\"label\",\"disabled\":\"1\",\"page\":\"device\"},\
-					{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\",\"label\":\"ID устройства\",\"type\":\"label\",\"disabled\":\"1\",\"page\":\"device\"},\
-					{\"name\":\"DeviceKind\",\"val\":\""+DeviceKind+"\",\"label\":\"Тип устройства\",\"type\":\"text\",\"disabled\":\"1\",\"page\":\"device\"},\
-					{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\",\"label\":\"Описание устройства\",\"type\":\"text\",\"disabled\":\"0\",\"page\":\"device\"},\		
-					{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\",\"label\":\"Размещение устройства\",\"type\":\"text\",\"disabled\":\"0\",\"page\":\"device\"},\
+	String result="{\"name\":\"espSettingsBox\",\"val\":\"48\",\"items\":[\
+					{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\"},\
+					{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\"},\
+					{\"name\":\"DeviceKind\",\"val\":\""+DeviceKind+"\"},\
+					{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\"},\
+					{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\"},\
+					\
+					{\"name\":\"displayAlvaysOn\",\"val\":\""+String(displayAlvaysOn)+"\"},\
+					{\"name\":\"displayAutochange\",\"val\":\""+String(displayAutochange)+"\"},\
+					{\"name\":\"refreshInterval\",\"val\":\""+String(refreshInterval)+"\"},\
+					\
+					{\"name\":\"accessUser\",\"val\":\""+String(accessUser)+"\"},\
+					{\"name\":\"accessPass\",\"val\":\"******\"},\
+					{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\"},\
+					{\"name\":\"settingsPass\",\"val\":\"******\"},\
+					\
+					{\"name\":\"isAccesPoint\",\"val\":\""+String(isAccesPoint)+"\"},\
+					{\"name\":\"ssidAP\",\"val\":\""+ssidAP+"\"},\
+					{\"name\":\"ssid\",\"val\":\""+ssid+"\"},\
+					{\"name\":\"password\",\"val\":\"*****\"},\
+					{\"name\":\"serverPort\",\"val\":\""+String(serverPort)+"\"},\
+					{\"name\":\"staticIp\",\"val\":\""+String(staticIp)+"\"},\
+					{\"name\":\"localIp\",\"val\":\""+String(localIp)+"\"},\
+					{\"name\":\"apIp\",\"val\":\""+String(apIp)+"\"},\
+					{\"name\":\"gateIp\",\"val\":\""+String(gateIp)+"\"},\
+					{\"name\":\"subnetIp\",\"val\":\""+String(subnetIp)+"\"},\
+					{\"name\":\"dnsIp\",\"val\":\""+String(dnsIp)+"\"},\
+					{\"name\":\"dnsIp2\",\"val\":\""+String(dnsIp2)+"\"},\
+					{\"name\":\"serverIp\",\"val\":\""+String(serverIp)+"\"},\
+					\
+					{\"name\":\"isThingSpeakEnabled\",\"val\":\""+String(isThingSpeakEnabled)+"\"},\
+					{\"name\":\"postDataToTSInterval\",\"val\":\""+String(postDataToTSInterval)+"\"},\
+					{\"name\":\"thSkUsrKey\",\"val\":\""+thSkUsrKey+"\"},\
+					{\"name\":\"thSkWKey\",\"val\":\""+thSkWKey+"\"},\
+					{\"name\":\"thSkRKey\",\"val\":\""+thSkRKey+"\"},\
+					{\"name\":\"thSkChId\",\"val\":\""+String(thSkChId)+"\"},\
+					{\"name\":\"thSkTKey\",\"val\":\""+thSkTKey+"\"},\
+					\
+					{\"name\":\"isMqttEnabled\",\"val\":\""+String(isMqttEnabled)+"\"},\
+					{\"name\":\"mqtt_server\",\"val\":\""+mqtt_server+"\"},\
+					{\"name\":\"mqtt_user\",\"val\":\""+mqtt_user+"\"},\
+					{\"name\":\"mqtt_pass\",\"val\":\"*****\"},\
+					{\"name\":\"mqtt_topic\",\"val\":\""+mqtt_topic+"\"},\
+					{\"name\":\"mqtt_port\",\"val\":\""+String(mqtt_port)+"\"},\
+					\
+					{\"name\":\"isHttpPostEnabled\",\"val\":\""+String(isHttpPostEnabled)+"\"},\
+					{\"name\":\"httpPostIp\",\"val\":\""+String(httpPostIp)+"\"},\
+					\
+					{\"name\":\"ntpEnabled\",\"val\":\""+String(ntpEnabled)+"\"},\
+					{\"name\":\"NTP_poolServerName\",\"val\":\""+String(NTP_poolServerName)+"\"},\
+					{\"name\":\"NTP_timeOffset\",\"val\":\""+NTP_timeOffset+"\"},\
+					{\"name\":\"NTP_updateInterval\",\"val\":\""+NTP_updateInterval+"\"},\
+					{\"name\":\"NTP_timeTriggerInterval\",\"val\":\""+NTP_timeTriggerInterval+"\"},\
+					\
 					{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
+					{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"}\
 					{\"name\":\"thinkSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}]}";
 	return result;
 }

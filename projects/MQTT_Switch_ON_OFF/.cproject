@@ -51,9 +51,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/SensorsLib}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WebSockets/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WiFiManager}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DallasTemperature}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DHT_sensor_library}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1640988995" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -91,9 +91,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/SensorsLib}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WebSockets/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WiFiManager}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DallasTemperature}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DHT_sensor_library}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1095845800" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -131,9 +131,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/SensorsLib}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WebSockets/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WiFiManager}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DallasTemperature}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DHT_sensor_library}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.2135749945" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>

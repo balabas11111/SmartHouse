@@ -1,3 +1,4 @@
+//-----------------------------------------------------------------------------------
 function hideComponent(componentId){
 	document.getElementById(componentId).style.display = "none";
 };
@@ -6,37 +7,60 @@ function showComponent(componentId){
 	document.getElementById(componentId).style.display = "block";
 };
 
-function processLampJson(data){
+function markComponentAs_Valid(comp){
+	if(comp!=undefined){
+		if(comp.classList!=undefined){
+			comp.classList.remove('w3-border-red');
+		}
+	}
+}
 	
-	var compId_Q=data.name+'_Q';
-	var compId_On=data.name+'_On';
-	var compId_Off=data.name+'_Off';
-	
-	var onOff=data.val;
-	
-	hideComponent(compId_Q);
-	
-	if(onOff=='1.00' || onOff=='1'){
-		hideComponent(compId_Off);
-		showComponent(compId_On);
-	}else{
-		hideComponent(compId_On);
-		showComponent(compId_Off);
+function markComponentAs_InValid(comp){
+	if(comp!=undefined){
+		if(comp.classList!=undefined){
+			comp.classList.add('w3-border-red');
+		}
 	}
 }
 
+//-----------------------------------------------------------------
+
+function showMessage(message,className){
+	var msgComp=document.getElementById(currentMessageCompName);
+	
+	if(className!=undefined && className!=''){
+		msgComp.setAttribute('class',className);
+	}
+	
+	if(message!=undefined && message!=''){
+		msgComp.style.display = "block";
+		msgComp.innerHTML = message;
+	}else{
+		msgComp.style.display = "none"; 
+	}
+}
+
+//-----------------------------------process Json answers from device----------------
 function processSimpleJson(data){
+	processSimpleJsonResponse(data,'');	
+}
+
+function processSimpleJsonResponse(data,idPreffix){
 	var items=data.items;
 	for(var i in items){
 		var name=items[i].name;
 		var val=items[i].val;
+		
+		if(idPreffix!=undefined && idPreffix!='' && 0!=idPreffix.length){
+			name=idPreffix+name;
+		}
 		
 		var component=document.getElementById(name);
 		
 		if(component!=undefined){
 			var tagName = component.tagName.toLowerCase();
 			
-			if (tagName == 'h2' || tagName == 'h4'){
+			if (tagName == 'h1' || tagName == 'h2' || tagName == 'h3' || tagName == 'h4' || tagName == 'h5'){
 				component.innerHTML=val;
 			};
 			
@@ -95,67 +119,6 @@ function processSettingsJson(data){
 		pageHeader='Устройство !!!SmartHouse - '+devId+' '+devLocation;
 		document.title=pageHeader;
 	}
-}
-
-//------------------------------DS18D20--------------------------------
-function processDS18D20Json(data){
-	var items=data.items;
-	var parentId=data.name;
-	var childCount=data.childCount;
-	
-	var countCompId="Count_"+parentId;
-	var countComponent=document.getElementById(countCompId);
-	
-	if(countComponent!=undefined){
-		countComponent.innerHTML=childCount;
-	}
-		
-	for(var i in items){
-		var inputId=items[i].name;
-		var labelVal=items[i].descr;
-		var inputVal=items[i].val;
-		
-		addDS18D20Component(parentId,inputId,labelVal,inputVal);
-	}
-}
-
-function addDS18D20Component(parentId,inputId,labelVal,inputVal){
-		
-	var newLabelId="Label_"+inputId;
-	var newInputId="Input_"+inputId;
-	var newLabelHtml="<b>"+labelVal+"</b>"
-	//<label style="max-width: 240px;" for="Temperature"><b id="temp1"></b></label>		
-	//<input id="Temperature"	class="" ="" type="text" value="��������" disabled>	
-	var inputComponent=document.getElementById(newInputId);
-	var labelComponent=document.getElementById(newLabelId);
-	
-	if(inputComponent!=undefined && labelComponent!=undefined){
-		inputComponent.value=inputVal;
-		labelComponent.innerHTML=newLabelHtml;
-		return;
-	}
-	
-	var container=document.getElementById(parentId);
-	
-	if(container!=undefined){
-		
-		var newLabel = document.createElement("Label");
-		newLabel.setAttribute("id",newLabelId);
-		newLabel.setAttribute("for",newInputId);
-		newLabel.setAttribute("style","max-width: 240px;");
-		newLabel.innerHTML = newLabelHtml ;
-		
-		var newInput=document.createElement("Input");
-		newInput.setAttribute("id",newInputId);
-		newInput.setAttribute("class","w3-input w3-border");
-		newInput.setAttribute("style","width:30%");
-		newInput.setAttribute("disabled","disabled");
-		newInput.setAttribute("value",inputVal);
-		
-		container.appendChild(newLabel);
-		container.appendChild(newInput);
-	}
-	
 }
 
 function updateComponentsByAjaxCall(requestmethod, url, handler, val, timeout){
