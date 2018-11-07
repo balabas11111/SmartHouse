@@ -86,9 +86,6 @@ function processSimpleJsonResponse(data,idPreffix){
 				}else{
 					component.value=val;
 				}
-				
-				
-				
 			};
 			
 			if (tagName == 'a'){

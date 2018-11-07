@@ -581,6 +581,31 @@ function submitCurrentForm(){
 	if(isValidForm){
 		
 		var formData = new FormData(f);
+		
+		var childNodes = f.getElementsByClassName('w3-check');
+		
+		for(var i=0;i<childNodes.length;i++){
+			var child=childNodes[i];
+			//
+			if(child!=undefined && child.tagName!=undefined){
+				var tagName = child.tagName.toLowerCase();
+				
+				if (tagName == 'input'){
+					if(child.type!=undefined){
+						var type=child.type.toLowerCase();
+						
+						if(type=='checkbox'){
+							var chbVal=child.checked;
+							
+							if(chbVal!=true){
+								formData.append(child.id, false);
+							}
+						}
+					};
+				}
+			}
+		}
+		
 		formData.append("currentTab", currentTab);
 		
 		showMessage('Сохраняю данные...','w3-yellow');
