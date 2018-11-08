@@ -100,7 +100,7 @@ void setup() {
   deviceHelper.startDevice(espSettingsBox.DeviceId);
 
   espSettingsBox.printSettingsFile();
-  espSettingsBox.printSpiffsInfo();
+  //espSettingsBox.printSpiffsInfo();
 
   deviceHelper.init(initializeArray, ARRAY_SIZE(initializeArray));
   deviceHelper.printDeviceDiagnostic();
