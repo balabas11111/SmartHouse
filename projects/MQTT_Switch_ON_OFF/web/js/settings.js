@@ -24,10 +24,9 @@ const SENSORS_SHORT="s_";
 
 var currentTab='';
 var currentHeaderName='';
-var currentContainerName='';
-var currentMessageCompName='';
 
-var currentFormName='';
+var currentMessageComp=undefined;
+var currentForm=undefined;
 
 var getValuesHandler=undefined;
 var validateValuesHandler=undefined;
@@ -55,9 +54,9 @@ function openTab(tabName,headerName) {
 
 	var containerComponent=document.getElementById(tabName);
 	
-	//currentContainerName=tabName+'_content';
-	currentMessageCompName=tabName+'_msg';
-	currentFormName=tabName+'_form';
+	currentMessageComp=getComponentById(getComponentIdWithSuffix(tabName,MSG_SUFFIX));
+	currentForm=getComponentById(getComponentIdWithSuffix(tabName,FORM_SUFFIX));
+	
 	//submitValuesUrl='/submitForm_'+tabName;
 	//getValuesUrl='/getJson_'+tabName;
 	
@@ -67,7 +66,7 @@ function openTab(tabName,headerName) {
 	if(containerComponent.classList.contains('reloadableSettingsContainer')){
 				
 		
-		showMessage('Загружаю данные...','w3-yellow');
+		showMessage(currentMessageComp,'Загружаю данные...','w3-yellow');
 		
 		var handler=undefined;
 		
@@ -86,7 +85,7 @@ function openTab(tabName,headerName) {
 		}
 		
 		if(tabName=='sensors'){
-			document.getElementById(currentFormName).innerHTML="";
+			currentForm.innerHTML="";
 			getValuesHandler=processSensorsJsonGet;
 			validateValuesHandler=validateSensorsPage;
 			submitValuesUrl='/submitForm_'+'sensors';
@@ -101,8 +100,7 @@ function openTab(tabName,headerName) {
 		}
 
 		if(getValuesHandler!=undefined){
-			var f = document.forms[currentFormName];
-			f.addEventListener('submit', 
+			currentForm.addEventListener('submit', 
 								function(evt){
 									evt.preventDefault();
 								},false);
@@ -116,8 +114,8 @@ function openTab(tabName,headerName) {
 
 //---------------------------------device settings tab----------------------
 function processDeviceSettingsGet(data){
-	showMessage('Загружено '+currentHeaderName,'w3-green');
-	processSimpleJsonResponse(data,'set_');
+	showMessage(currentMessageComp,'Загружено '+currentHeaderName,'w3-green');
+	processSimpleJsonResponse(data,'set');
 }
 
 function validateDeviceSettingsForm(){
@@ -166,7 +164,7 @@ function ValidateIPaddress(ipaddress) {
 
 //-------------------------------------------------------
 function processSensorsJsonGet(data){
-	var container=document.getElementById(currentFormName);
+	var container=currentForm;
 
 	container.innerHTML='';
 	var sensors=data.sensors;
@@ -559,77 +557,7 @@ function getInputCompName(sensorName,itemName,suffix){
 	return SENSORS_SHORT+sensorName+"_"+itemName+"_"+suffix;
 }
 
-//--------------------generic form submit
+//--------------------form submit
 function submitCurrentForm(){
-	console.log('submitting form');
-	
-	var f = document.forms[currentFormName];
-	var isValidForm = f.checkValidity();
-	
-	var errorMessage='';
-	
-	if(isValidForm){
-		if(validateValuesHandler!=undefined){
-			errorMessage=validateValuesHandler();
-		}
-		
-		if(!(0===errorMessage.length)){
-			isValidForm=false;
-		}
-	}
-	
-	if(isValidForm){
-		
-		var formData = new FormData(f);
-		
-		var childNodes = f.getElementsByClassName('w3-check');
-		
-		for(var i=0;i<childNodes.length;i++){
-			var child=childNodes[i];
-			//
-			if(child!=undefined && child.tagName!=undefined){
-				var tagName = child.tagName.toLowerCase();
-				
-				if (tagName == 'input'){
-					if(child.type!=undefined){
-						var type=child.type.toLowerCase();
-						
-						if(type=='checkbox'){
-							var chbVal=child.checked;
-							
-							if(chbVal!=true){
-								formData.append(child.id, false);
-							}
-						}
-					};
-				}
-			}
-		}
-		
-		formData.append("currentTab", currentTab);
-		
-		showMessage('Сохраняю данные...','w3-yellow');
-		
-		var request = new XMLHttpRequest();
-		request.open("POST", submitValuesUrl, true);
-		request.onreadystatechange  = 
-			function(){
-				if(this.readyState == 4){
-					if (this.status == 200){
-						
-						var json = JSON.parse(this.responseText);
-						getValuesHandler(json);
-						
-						showMessage('Данные сохранены!','w3-green');
-						
-					} else {
-						showMessage('Ошибка на стророне сервера!','w3-red');
-					};
-				};
-			};
-		request.send(formData);
-	}else{
-		errorMessage='Некоторые значения неверны:  '+errorMessage;
-		showMessage(errorMessage,'w3-red');
-	}
+	postForm(currentForm,submitValuesUrl,validateValuesHandler,getValuesHandler);
 }

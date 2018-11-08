@@ -45,13 +45,13 @@ typedef struct childRecords SensorValue;
 
 public:
 
-	AbstractItem(uint8_t id,String name,String type,String size,String descr, uint8_t childCount){
+	AbstractItem(uint8_t id,String name,String type,String size,String descr, uint8_t itemCount){
 		this->id=id;
 		this->name=name;
 		this->type=type;
 		this->size=size;
 		this->descr=descr;
-		this->childCount=childCount;
+		this->itemCount=itemCount;
 
 		initializeChildren();
 
@@ -63,6 +63,12 @@ public:
 		return items;
 	}
 
+	SensorValue getItem(uint8_t index){
+		return items[index];
+	}
+
+
+
 	virtual void update(){};
 
 	virtual boolean loop(){return false;};
@@ -70,9 +76,9 @@ public:
 	virtual String getJson(){
 		String result="{"+getItemJson()+",\"items\":[";
 
-			for(uint8_t i=0;i<childCount;i++){
+			for(uint8_t i=0;i<itemCount;i++){
 				result+=getSensorValueJson(items[i]);
-				if(i!=childCount-1){
+				if(i!=itemCount-1){
 					result+=",";
 				}
 			}
@@ -85,9 +91,9 @@ public:
 	virtual String getSimpleJson(){
 		String result="{"+getItemJson()+",\"items\":[";
 
-					for(uint8_t i=0;i<childCount;i++){
+					for(uint8_t i=0;i<itemCount;i++){
 						result+=getSensorValueSimpleJson(items[i]);
-						if(i!=childCount-1){
+						if(i!=itemCount-1){
 							result+=",";
 						}
 					}
@@ -109,11 +115,11 @@ public:
 		return this->name;
 	}
 
-	uint8_t getChildCount(){
-		return childCount;
+	uint8_t getItemCount(){
+		return itemCount;
 	}
 	uint8_t getChildItemIndexByName(String name){
-		for(uint8_t i=0;i<childCount;i++){
+		for(uint8_t i=0;i<itemCount;i++){
 			if(items[i].name==name){
 				return i;
 			}
@@ -125,41 +131,77 @@ public:
 		this->descr=descr;
 	}
 	void setDescr(uint8_t child,String descr){
-		if(childCount>child){
+		if(itemCount>child){
 			this->items[child].descr=descr;
 		}
 	}
 
 	void setMinVal(uint8_t child,float minVal){
-		if(childCount>child){
+		if(itemCount>child){
 			this->items[child].minVal=minVal;
 		}
 	}
 
 
 	void setMaxVal(uint8_t child,float maxVal){
-		if(childCount>child){
+		if(itemCount>child){
 			this->items[child].maxVal=maxVal;
 		}
 	}
 
 	void setFieldId(uint8_t child,int8_t fieldId){
-		if(childCount>child){
+		if(itemCount>child){
 			this->items[child].fieldId=fieldId;
 		}
 	}
 
+	uint8_t getFieldId(uint8_t index){
+		return 	this->items[index].fieldId;
+	}
+
+	String getFieldIdStr(uint8_t index){
+		return 	String(this->items[index].fieldId);
+	}
+
+	String getValStr(uint8_t index){
+		return 	String(this->items[index].val);
+	}
+
 	void setQueue(uint8_t child,String queue){
-		if(childCount>child){
+		if(itemCount>child){
 			this->items[child].queue=queue;
 		}
+	}
+
+	boolean getPeriodicSend(){
+		return periodicSend;
+	}
+
+	String constructGetUrl(String baseUrl,String paramVal){
+		if(!this->periodicSend){
+				return "";
+			}
+			String result="";
+
+			for(uint8_t i=0;i<this->itemCount;i++){
+				uint8_t fieldId=this->getFieldId(i);
+				if(fieldId!=0){
+					result+=paramVal+this->getFieldIdStr(i)+"="+this->getValStr(i);
+				}
+			}
+
+			if(result!=""){
+				return baseUrl+result;
+			}
+
+			return "";
 	}
 
 	void printValues(){
 		Serial.print("NAME=");
 		Serial.print(name);
 		Serial.print("; ");
-		for(uint8_t i=0;i<childCount;i++){
+		for(uint8_t i=0;i<itemCount;i++){
 			Serial.print(items[i].name);
 			Serial.print("=");
 			Serial.print(items[i].val);
@@ -181,7 +223,7 @@ public:
 		if(this->id!=req.deviceId || !req.valid){
 			return false;
 		}
-		if(req.itemId!=255 && req.itemId>childCount){
+		if(req.itemId!=255 && req.itemId>itemCount){
 			return false;
 		}
 
@@ -272,7 +314,8 @@ protected:
 	String type;
 	String size;
 	String descr;
-	uint8_t childCount;
+	uint8_t itemCount;
+	boolean periodicSend=false;
 
 	SensorValue* items;
 
@@ -282,7 +325,7 @@ protected:
 				+"\"type\":\""+type+"\","
 				+"\"size\":\""+size+"\","
 				+"\"descr\":\""+descr+"\","
-				+"\"childCount\":\""+String(childCount)+"\"";
+				+"\"itemCount\":\""+String(itemCount)+"\"";
 	}
 
 	String getSensorValueJson(SensorValue m){
@@ -305,8 +348,8 @@ protected:
 	}
 
 	void initializeChildren(){
-		if(childCount>0)
-			items=new SensorValue[childCount];
+		if(itemCount>0)
+			items=new SensorValue[itemCount];
 	}
 
 };

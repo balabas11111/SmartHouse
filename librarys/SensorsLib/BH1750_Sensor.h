@@ -55,6 +55,7 @@ public:
 	void initSensor(){
 		lightMeter.begin();
 		items[0]={0,FPSTR(LIGHT),FPSTR(MEASURE_LIGHT),FPSTR(MEASURE_LIGHT_RU),FPSTR(LIGHT_RU),-127,0,-512,512,""};
+		periodicSend=true;
 	}
 	//----------------------------------------------
 

@@ -259,8 +259,17 @@ const PROGMEM char MESSAGE_WIFIHELPER_BASE_URL_EQ[]="Base URL ";
 const PROGMEM char MESSAGE_WIFIHELPER_ADDED_FILE[]="Added file ";
 const PROGMEM char MESSAGE_WIFIHELPER_SIZE_EQ[]=" size=";
 const PROGMEM char MESSAGE_WIFIHELPER_EXT_EQ[]=" ext=";
-const PROGMEM char MESSAGE_WIFIHELPER_URL_EQ[]="   URL=";
+const PROGMEM char MESSAGE_WIFIHELPER_URL_EQ[]=" URL=";
+const PROGMEM char MESSAGE_WIFIHELPER_RESPONSE_EQ[]=" response=";
+const PROGMEM char MESSAGE_WIFIHELPER_HTTP_STATUS_EQ[]=" http status=";
+const PROGMEM char MESSAGE_WIFIHELPER_HTTP_BODY_EQ[]=" body=";
 
+const PROGMEM char MESSAGE_WIFIHELPER_GET[]=" GET ";
+const PROGMEM char MESSAGE_WIFIHELPER_POST[]=" POST ";
+//Thingspeak constants
+const PROGMEM char MESSAGE_THINGSPEAK_SEND_STARTED[]="----------------Send data to thing speak---------------";
+const PROGMEM char MESSAGE_THINGSPEAK_BASE_URL[]="http://api.thingspeak.com/update?api_key=";
+const PROGMEM char MESSAGE_THINGSPEAK_FIELD_VAL_FOR_REQUEST[]="&field";
 //Ntp clock client
 const PROGMEM char MESSAGE_TIME_CLIENT_JSON_BEFORE_TIME[]="{\"wsId\":\"clock\",\"wsClass\":\"wsItem\",\"wsValue\":\"";
 const PROGMEM char MESSAGE_TIME_CLIENT_JSON_AFTER_TIME[]="\"}";

@@ -24,45 +24,37 @@ public:
 
 	virtual boolean initialize(boolean _init) override;
 
-	void loadExternalFile();
-
-	IPAddress stringToIp(String str);
-	boolean validateIP(String str);
-
-	boolean stringToBoolean(String str);
-	void saveSettingsJson();
-	String getSettingsAsJsonString();
 	void loadSettingsJson();
+	void saveSettingsJson();
 
-	void getSettingsFromMemory(){
-		getSettingsFromMemory(false);
-	}
-	JsonObject& getSettingsFromMemory(boolean doSave);
+	boolean setSettingsValue(String fieldName,String fieldValue);
 
-	String clearNlFromString(String str);
-
-	boolean isTrue(String str);
-
-	String getJson();
-	String getSimpleJson();
-
-	void saveAbstractItemsToFile(AbstractItem** items,uint8_t size){
-		for(uint8_t i=0;i<size;i++){
-			saveAbstractItemToFile(items[i]);
-		}
-	}
 	void loadAbstractItemsFromFile(AbstractItem** items,uint8_t size){
 		for(uint8_t i=0;i<size;i++){
 			loadAbstractItemFromFile(items[i]);
 		}
 	}
+	void saveAbstractItemsToFile(AbstractItem** items,uint8_t size){
+		for(uint8_t i=0;i<size;i++){
+			saveAbstractItemToFile(items[i]);
+		}
+	}
 
-	void saveAbstractItemToFile(AbstractItem* item);
 	void loadAbstractItemFromFile(AbstractItem* item);
+	void saveAbstractItemToFile(AbstractItem* item);
+
+	boolean stringToBoolean(String str);
+	IPAddress stringToIp(String str);
+
+	boolean validateIP(String str);
+	String clearNlFromString(String str);
+
+	String getThingSpeakChannelUrl();
+
+	String getSimpleJson();
+	String getJson();
 
 	String getFileName(AbstractItem* item);
-
-	boolean setSettingsValue(String fieldName,String fieldValue);
 
 	String getName(){
 		return "espSettingsBox";

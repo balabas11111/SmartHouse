@@ -50,21 +50,6 @@ boolean EspSettingsBox::isSpiffInitialized(){
 	return spiffInitialized;
 }
 
-void EspSettingsBox::saveSettingsJson(){
-	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVE_DEVICE_SETTINGS_TO_FILE));
-
-	File settFile = SPIFFS.open(_fileName, "w");
-
-	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
-	getSettingsFromMemory(true);//.printTo(settFile);
-	settFile.close();
-
-	delay(1);
-
-	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SAVED));
-	Serial.println(FPSTR(MESSAGE_DONE));
-}
-
 void EspSettingsBox::loadSettingsJson(){
 
 	File file = SPIFFS.open(_fileName, "r");
@@ -98,7 +83,7 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	DeviceKind = root["DeviceKind"].as<char*>();
 	    	  	DeviceDescription =root["DeviceDescription"].as<char*>();
 	    	  	DeviceLocation=root["DeviceLocation"].as<char*>();
-	    	  	isAccesPoint = isTrue(root["iAp"].as<char*>()) ;
+	    	  	isAccesPoint = stringToBoolean(root["iAp"].as<char*>()) ;
 	    	  	Serial.print("isAccesPoint=");
 	    	  	Serial.println(isAccesPoint);
 	    	  	refreshInterval = root["rin"];
@@ -113,7 +98,7 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	ssid = root["sid"].as<char*>();
 	    	  	password = root["pas"].as<char*>();
 
-	    	  	staticIp=isTrue(root["staticIp"].as<char*>());
+	    	  	staticIp=stringToBoolean(root["staticIp"].as<char*>());
 	    	  	localIp=stringToIp(String(root["lip"].as<char*>()));
 	    	  	apIp=stringToIp(String(root["aip"].as<char*>()));
 	    	  	gateIp=stringToIp(String(root["gip"].as<char*>()));
@@ -132,23 +117,23 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	thSkTKey = root["sTk"].as<char*>();
 	    	  	thSkChId = root["sCi"];
 
-	    	  	isMqttEnabled=isTrue(root["isMqttEnabled"]);
+	    	  	isMqttEnabled=stringToBoolean(root["isMqttEnabled"]);
 	    	  	mqtt_server=root["mqtt_server"].as<char*>();
 	    	  	mqtt_port=root["mqtt_port"];
 	    	  	mqtt_user=root["mqtt_user"].as<char*>();
 	    	  	mqtt_pass=root["mqtt_pass"].as<char*>();
 	    	  	mqtt_topic=root["mqtt_topic"].as<char*>();
 
-	    	  	isHttpPostEnabled=isTrue(root["isHttpSendEnabled"]);
+	    	  	isHttpPostEnabled=stringToBoolean(root["isHttpSendEnabled"]);
 	    	  	httpPostIp=stringToIp(String(root["httpPostIp"].as<char*>()));
 
-	    	  	alarmSendNotifAlertStart=isTrue(root["AlSAs"].as<char*>());
-	    	  	alarmSendNotifAlertStop=isTrue(root["AlSn"].as<char*>());
-	    	  	alarmPlaySound=isTrue(root["AlPs"].as<char*>());
+	    	  	alarmSendNotifAlertStart=stringToBoolean(root["AlSAs"].as<char*>());
+	    	  	alarmSendNotifAlertStop=stringToBoolean(root["AlSn"].as<char*>());
+	    	  	alarmPlaySound=stringToBoolean(root["AlPs"].as<char*>());
 	    	  	alamSoundInterval=root["AlSi"];
 	    	  	//alamNotificationInterval=root["AlNi"];
 
-	    	  	ntpEnabled=isTrue(root["ntpEnabled"]);
+	    	  	ntpEnabled=stringToBoolean(root["ntpEnabled"]);
 	    	  	NTP_poolServerName=root["NTP_poolServerName"].as<char*>();
 	    	  	NTP_timeOffset=root["NTP_timeOffset"];
 	    	  	NTP_timeTriggerInterval=root["NTP_timeTriggerInterval"];
@@ -170,81 +155,83 @@ void EspSettingsBox::loadSettingsJson(){
 	  }
 }
 
+void EspSettingsBox::saveSettingsJson(){
+	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVE_DEVICE_SETTINGS_TO_FILE));
 
-JsonObject& EspSettingsBox::getSettingsFromMemory(boolean doSave){
-	DynamicJsonBuffer jsonBuffer;
-	//StaticJsonBuffer<1024> jsonBuffer;
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
 
-	JsonObject& root = jsonBuffer.createObject();
+		DynamicJsonBuffer jsonBuffer;
+		//StaticJsonBuffer<1024> jsonBuffer;
 
-	root["dId"] = DeviceId;
+		JsonObject& root = jsonBuffer.createObject();
 
-	root["DeviceKind"] = DeviceKind;
-	root["DeviceDescription"] =  DeviceDescription;
-	root["DeviceLocation"] =  DeviceLocation;
-	root["iAp"] = isAccesPoint;
+		root["dId"] = DeviceId;
 
-	root["rin"] = refreshInterval;
-	root["dao"] = displayAlvaysOn;
-	root["dac"] = displayAutochange;
+		root["DeviceKind"] = DeviceKind;
+		root["DeviceDescription"] =  DeviceDescription;
+		root["DeviceLocation"] =  DeviceLocation;
+		root["iAp"] = isAccesPoint;
 
-	root["sur"] = settingsUser;
-	root["sps"] = settingsPass;
-	root["aur"] = accessUser;
-	root["aps"] = accessPass;
-	root["sap"] = ssidAP;
-	//root["pap"] = passwordAP;
-	root["sid"] = ssid;
-	root["pas"] = password;
+		root["rin"] = refreshInterval;
+		root["dao"] = displayAlvaysOn;
+		root["dac"] = displayAutochange;
 
-	root["staticIp"] = staticIp;
-	root["lip"] = localIp.toString();
-	root["aip"] = apIp.toString();
-	root["gip"] = gateIp.toString();
-	root["sip"] = subnetIp.toString();
-	root["dip"] = dnsIp.toString();
-	root["dip2"] = dnsIp2.toString();
-	root["serverip"] = serverIp.toString();
+		root["sur"] = settingsUser;
+		root["sps"] = settingsPass;
+		root["aur"] = accessUser;
+		root["aps"] = accessPass;
+		root["sap"] = ssidAP;
+		//root["pap"] = passwordAP;
+		root["sid"] = ssid;
+		root["pas"] = password;
 
-	root["bOnA"] = beepOnAlert;
-	root["AlSAs"]=alarmSendNotifAlertStart;
-	root["AlSn"]=alarmSendNotifAlertStop;
-	root["AlPs"]=alarmPlaySound;
-	root["AlSi"]=alamSoundInterval;
+		root["staticIp"] = staticIp;
+		root["lip"] = localIp.toString();
+		root["aip"] = apIp.toString();
+		root["gip"] = gateIp.toString();
+		root["sip"] = subnetIp.toString();
+		root["dip"] = dnsIp.toString();
+		root["dip2"] = dnsIp2.toString();
+		root["serverip"] = serverIp.toString();
 
-	root["ptTsEnabled"]=isThingSpeakEnabled;
-	root["pdTs"] = postDataToTSInterval;
-	root["sPk"] = thSkUsrKey;
-	root["sWk"] = thSkWKey;
-	root["sRk"] = thSkRKey;
-	root["sCi"] = thSkChId;
-	root["sTk"] = thSkTKey;
-	//root["AlNi"]=alamNotificationInterval;
+		root["bOnA"] = beepOnAlert;
+		root["AlSAs"]=alarmSendNotifAlertStart;
+		root["AlSn"]=alarmSendNotifAlertStop;
+		root["AlPs"]=alarmPlaySound;
+		root["AlSi"]=alamSoundInterval;
 
-	root["isMqttEnabled"]=isMqttEnabled;
-	root["mqtt_server"]=mqtt_server;
-	root["mqtt_port"]=mqtt_port;
-	root["mqtt_user"]=mqtt_user;
-	root["mqtt_pass"]=mqtt_pass;
-	root["mqtt_topic"]=mqtt_topic;
+		root["ptTsEnabled"]=isThingSpeakEnabled;
+		root["pdTs"] = postDataToTSInterval;
+		root["sPk"] = thSkUsrKey;
+		root["sWk"] = thSkWKey;
+		root["sRk"] = thSkRKey;
+		root["sCi"] = thSkChId;
+		root["sTk"] = thSkTKey;
+		//root["AlNi"]=alamNotificationInterval;
 
-	root["isHttpSendEnabled"]=isHttpPostEnabled;
-	root["httpPostIp"]=httpPostIp.toString();
+		root["isMqttEnabled"]=isMqttEnabled;
+		root["mqtt_server"]=mqtt_server;
+		root["mqtt_port"]=mqtt_port;
+		root["mqtt_user"]=mqtt_user;
+		root["mqtt_pass"]=mqtt_pass;
+		root["mqtt_topic"]=mqtt_topic;
 
-	root["ntpEnabled"]=ntpEnabled;
-	root["NTP_poolServerName"]=NTP_poolServerName;
-	root["NTP_timeOffset"]=NTP_timeOffset;
-	root["NTP_timeTriggerInterval"]=NTP_timeTriggerInterval;
-	root["NTP_updateInterval"]=NTP_updateInterval;
+		root["isHttpSendEnabled"]=isHttpPostEnabled;
+		root["httpPostIp"]=httpPostIp.toString();
+
+		root["ntpEnabled"]=ntpEnabled;
+		root["NTP_poolServerName"]=NTP_poolServerName;
+		root["NTP_timeOffset"]=NTP_timeOffset;
+		root["NTP_timeTriggerInterval"]=NTP_timeTriggerInterval;
+		root["NTP_updateInterval"]=NTP_updateInterval;
 
 
-	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_FROM_MEMORY));
-	String vals="";
-	root.printTo(vals);
-	Serial.println(vals);
-	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_FROM_MEMORY));
+		String vals="";
+		root.printTo(vals);
+		Serial.println(vals);
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
-	if(doSave){
 		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVE_DEVICE_SETTINGS_TO_FILE));
 
 		File settFile = SPIFFS.open(_fileName, "w");
@@ -257,16 +244,113 @@ JsonObject& EspSettingsBox::getSettingsFromMemory(boolean doSave){
 		delay(1);
 
 		Serial.println(FPSTR(MESSAGE_DONE));
+	settFile.close();
+
+	delay(1);
+
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SAVED));
+	Serial.println(FPSTR(MESSAGE_DONE));
+}
+
+void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
+
+	String fileName=getFileName(item);
+
+	File file = SPIFFS.open(fileName, "r");
+
+	if(!file){
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED));
+		saveAbstractItemToFile(item);
+		file = SPIFFS.open(fileName, "r");
 	}
 
-	return root;
+	  if (!file){
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS));
+	  } else {
+		size_t size = file.size();
+		if ( size == 0 ) {
+		  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_EMPTY));
+		} else {
+
+			StaticJsonBuffer<1024> jsonBuffer;
+			delay(1);
+
+			std::unique_ptr<char[]> buf (new char[size]);
+			file.readBytes(buf.get(), size);
+
+			JsonObject& root = jsonBuffer.parseObject(buf.get());
+
+			if (!root.success()) {
+				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
+			} else {
+				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
+				root.printTo(Serial);
+
+				item->setDescr(root["descr"].as<char*>());
+
+				uint8_t itemCountJson=root["itemCount"];
+
+				if(item->getItemCount()>0 && itemCountJson>0){
+					//JsonArray& arrayJson=root["items"].asArray();
+					Serial.print("totalChilds=");
+					Serial.println(itemCountJson);
+
+					for(uint8_t i=0;i<itemCountJson;i++){
+
+						String name=root["items"][i]["name"];
+						String descr=root["items"][i]["descr"];
+						uint8_t fieldId=root["items"][i]["fieldId"];
+						float minVal=root["items"][i]["minVal"];
+						float maxVal=root["items"][i]["maxVal"];
+						String queue=root["items"][i]["queue"];
+
+						Serial.println("name="+name+" descr="+descr
+								+" fieldId="+String(fieldId)
+								+" minVal="+String(minVal)
+								+" maxVal="+String(maxVal)
+								+" queue="+queue);
+
+						uint8_t child=item->getChildItemIndexByName(name);
+
+						item->setDescr(child, descr);
+						item->setFieldId(child, fieldId);
+						item->setMinVal(child, minVal);
+						item->setMaxVal(child, maxVal);
+						item->setQueue(child, queue);
+
+						Serial.println(item->getJson(child));
+					}
+				}
+				//-----------------------------------------
+			}
+		}
+	  }
+
+	  Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+}
+
+void EspSettingsBox::saveAbstractItemToFile(AbstractItem* item){
+
+	//String itemStr=item->getJson();
+	String fileName=getFileName(item);
+
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN));
+	Serial.print(fileName);
+
+	File file = SPIFFS.open(fileName, "w");
+
+	file.println(item->getJson());
+
+	file.close();
+	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVED));
+
+	delay(1);
 }
 
 void EspSettingsBox::printSettingsFile(){
 		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_PRINT_SETTINGS_FILE));
 		//loadExternalFile();
 		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_CURRENT_MEMORY_STATE));
-		getSettingsFromMemory();
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 		File file = SPIFFS.open(_fileName, "r");
 
@@ -301,6 +385,12 @@ void EspSettingsBox::printSettingsFile(){
 
 		    //printVariablesToSerial();
 		    Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+}
+
+void EspSettingsBox::initSpiff(){
+	spiffInitialized=SPIFFS.begin();
+
+	Serial.println("File system status"+String(spiffInitialized));
 }
 
 void EspSettingsBox::printSpiffsInfo(){
@@ -357,12 +447,6 @@ void EspSettingsBox::construct(String extValuesFileName,boolean forceLoad,boolea
 	initialized=true;
 }
 
-void EspSettingsBox::initSpiff(){
-	spiffInitialized=SPIFFS.begin();
-
-	Serial.println("File system status"+String(spiffInitialized));
-}
-
 boolean EspSettingsBox::validateIP(String str){
 	IPAddress ip=stringToIp(str);
 	boolean result=str==ip.toString();
@@ -405,137 +489,6 @@ String EspSettingsBox::clearNlFromString(String str){
 	return result;
 }
 
-void EspSettingsBox::loadExternalFile(){
-	File file = SPIFFS.open(_fileName, "r");
-
-		if(!file){
-			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED));
-			saveSettingsJson();
-			file = SPIFFS.open(_fileName, "r");
-		}
-
-		  if (!file){
-			  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS));
-		  } else {
-		    size_t size = file.size();
-		    if ( size == 0 ) {
-		    	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_EMPTY));
-		    } else {
-
-					StaticJsonBuffer<1024> jsonBuffer;
-					delay(1);
-
-				  std::unique_ptr<char[]> buf (new char[size]);
-				  file.readBytes(buf.get(), size);
-				  //JsonObject& root = jsonBuffer.parseObject(buf.get());
-
-				  //extRoot=&jsonBuffer.parseObject(buf.get());
-
-				  if (!extRoot->success()) {
-					  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
-				  } else {
-					  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
-					extRoot->printTo(Serial);
-				  }
-		    }
-		  }
-}
-
-String EspSettingsBox::getSettingsAsJsonString(){
-	/*String result="";
-
-	getSettingsFromMemory().prettyPrintTo(result);
-
-	return result;
-	*/
-	return "";
-}
-
-boolean EspSettingsBox::isTrue(String str){
-	String tmp=String(str);
-
-	return (tmp.toInt()==1) ;
-}
-
-String EspSettingsBox::getSimpleJson(){
-	String result="{\"name\":\"espSettingsBox\",\"childCount\":\"8\",\"items\":[\
-						{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\"},\
-						{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\",\"label\":\"ID устройства\"},\
-						{\"name\":\"DeviceKind\",\"val\":\""+DeviceKind+"\",\"label\":\"Тип устройства\"},\
-						{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\"},\
-						{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\"},\
-						\
-						{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
-						{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
-						{\"name\":\"thinkSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}]}";
-		return result;
-
-
-return result;
-}
-
-String EspSettingsBox::getJson(){
-
-	String result="{\"name\":\"espSettingsBox\",\"val\":\"48\",\"items\":[\
-					{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\"},\
-					{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\"},\
-					{\"name\":\"DeviceKind\",\"val\":\""+DeviceKind+"\"},\
-					{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\"},\
-					{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\"},\
-					\
-					{\"name\":\"displayAlvaysOn\",\"val\":\""+String(displayAlvaysOn)+"\"},\
-					{\"name\":\"displayAutochange\",\"val\":\""+String(displayAutochange)+"\"},\
-					{\"name\":\"refreshInterval\",\"val\":\""+String(refreshInterval)+"\"},\
-					\
-					{\"name\":\"accessUser\",\"val\":\""+String(accessUser)+"\"},\
-					{\"name\":\"accessPass\",\"val\":\"*****\"},\
-					{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\"},\
-					{\"name\":\"settingsPass\",\"val\":\"*****\"},\
-					\
-					{\"name\":\"isAccesPoint\",\"val\":\""+String(isAccesPoint)+"\"},\
-					{\"name\":\"ssidAP\",\"val\":\""+ssidAP+"\"},\
-					{\"name\":\"ssid\",\"val\":\""+ssid+"\"},\
-					{\"name\":\"password\",\"val\":\"*****\"},\
-					{\"name\":\"serverPort\",\"val\":\""+String(serverPort)+"\"},\
-					{\"name\":\"staticIp\",\"val\":\""+String(staticIp)+"\"},\
-					{\"name\":\"localIp\",\"val\":\""+localIp.toString()+"\"},\
-					{\"name\":\"apIp\",\"val\":\""+apIp.toString()+"\"},\
-					{\"name\":\"gateIp\",\"val\":\""+gateIp.toString()+"\"},\
-					{\"name\":\"subnetIp\",\"val\":\""+subnetIp.toString()+"\"},\
-					{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\"},\
-					{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\"},\
-					{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\"},\
-					\
-					{\"name\":\"isThingSpeakEnabled\",\"val\":\""+String(isThingSpeakEnabled)+"\"},\
-					{\"name\":\"postDataToTSInterval\",\"val\":\""+String(postDataToTSInterval)+"\"},\
-					{\"name\":\"thSkUsrKey\",\"val\":\""+thSkUsrKey+"\"},\
-					{\"name\":\"thSkWKey\",\"val\":\""+thSkWKey+"\"},\
-					{\"name\":\"thSkRKey\",\"val\":\""+thSkRKey+"\"},\
-					{\"name\":\"thSkChId\",\"val\":\""+String(thSkChId)+"\"},\
-					{\"name\":\"thSkTKey\",\"val\":\""+thSkTKey+"\"},\
-					\
-					{\"name\":\"isMqttEnabled\",\"val\":\""+String(isMqttEnabled)+"\"},\
-					{\"name\":\"mqtt_server\",\"val\":\""+mqtt_server+"\"},\
-					{\"name\":\"mqtt_user\",\"val\":\""+mqtt_user+"\"},\
-					{\"name\":\"mqtt_pass\",\"val\":\"*****\"},\
-					{\"name\":\"mqtt_topic\",\"val\":\""+mqtt_topic+"\"},\
-					{\"name\":\"mqtt_port\",\"val\":\""+String(mqtt_port)+"\"},\
-					\
-					{\"name\":\"isHttpPostEnabled\",\"val\":\""+String(isHttpPostEnabled)+"\"},\
-					{\"name\":\"httpPostIp\",\"val\":\""+httpPostIp.toString()+"\"},\
-					\
-					{\"name\":\"ntpEnabled\",\"val\":\""+String(ntpEnabled)+"\"},\
-					{\"name\":\"NTP_poolServerName\",\"val\":\""+String(NTP_poolServerName)+"\"},\
-					{\"name\":\"NTP_timeOffset\",\"val\":\""+NTP_timeOffset+"\"},\
-					{\"name\":\"NTP_updateInterval\",\"val\":\""+NTP_updateInterval+"\"},\
-					{\"name\":\"NTP_timeTriggerInterval\",\"val\":\""+NTP_timeTriggerInterval+"\"},\
-					\
-					{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
-					{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
-					{\"name\":\"thinkSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}]}";
-	return result;
-}
-
 String EspSettingsBox::getFileName(AbstractItem* item){
 	String result=FPSTR(ESPSETTINGSBOX_SETTINGS_PATH);
 		   result+=item->getName();
@@ -544,101 +497,88 @@ String EspSettingsBox::getFileName(AbstractItem* item){
 	return result;
 }
 
-
-
-void EspSettingsBox::saveAbstractItemToFile(AbstractItem* item){
-
-	//String itemStr=item->getJson();
-	String fileName=getFileName(item);
-
-	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN));
-	Serial.print(fileName);
-
-	File file = SPIFFS.open(fileName, "w");
-
-	file.println(item->getJson());
-
-	file.close();
-	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVED));
-
-	delay(1);
+String EspSettingsBox::getThingSpeakChannelUrl(){
+	return "https://thingspeak.com/channels/"+String(thSkChId)+"/private_show";
 }
 
-void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
+String EspSettingsBox::getSimpleJson(){
+	String result="{\"name\":\"espSettingsBox\",\"itemCount\":\"8\",\"items\":[\
+						{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\",\"descr\":\"Версия прошивки\"},\
+						{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\",\"descr\":\"ID устройства\"},\
+						{\"name\":\"DeviceKind\",\"val\":\""+DeviceKind+"\",\"descr\":\"Тип устройства\"},\
+						{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\",\"descr\":\"Описание устройства\"},\
+						{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\",\"descr\":\"Размещение устройства\"},\
+						\
+						{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
+						{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
+						{\"name\":\"thinkSpeakChannelUrl\",\"val\":\""+getThingSpeakChannelUrl()+"\"}],\
+						\"DeviceId\":\""+DeviceId+"\",\
+						\"DeviceDescription\":\""+DeviceDescription+"\",\
+						\"DeviceLocation\":\""+DeviceLocation+"\",\
+						\"thingSpeakChannelUrl\":\""+getThingSpeakChannelUrl()+"\",\
+						}";
+return result;
+}
 
-	String fileName=getFileName(item);
+String EspSettingsBox::getJson(){
 
-	File file = SPIFFS.open(fileName, "r");
-
-	if(!file){
-		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED));
-		saveAbstractItemToFile(item);
-		file = SPIFFS.open(fileName, "r");
-	}
-
-	  if (!file){
-		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS));
-	  } else {
-		size_t size = file.size();
-		if ( size == 0 ) {
-		  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_EMPTY));
-		} else {
-
-			StaticJsonBuffer<1024> jsonBuffer;
-			delay(1);
-
-			std::unique_ptr<char[]> buf (new char[size]);
-			file.readBytes(buf.get(), size);
-
-			JsonObject& root = jsonBuffer.parseObject(buf.get());
-
-			if (!root.success()) {
-				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
-			} else {
-				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
-				root.printTo(Serial);
-
-				item->setDescr(root["descr"].as<char*>());
-
-				uint8_t childCountJson=root["childCount"];
-
-				if(item->getChildCount()>0 && childCountJson>0){
-					//JsonArray& arrayJson=root["items"].asArray();
-					Serial.print("totalChilds=");
-					Serial.println(childCountJson);
-
-					for(uint8_t i=0;i<childCountJson;i++){
-
-						String name=root["items"][i]["name"];
-						String descr=root["items"][i]["descr"];
-						uint8_t fieldId=root["items"][i]["fieldId"];
-						float minVal=root["items"][i]["minVal"];
-						float maxVal=root["items"][i]["maxVal"];
-						String queue=root["items"][i]["queue"];
-
-						Serial.println("name="+name+" descr="+descr
-								+" fieldId="+String(fieldId)
-								+" minVal="+String(minVal)
-								+" maxVal="+String(maxVal)
-								+" queue="+queue);
-
-						uint8_t child=item->getChildItemIndexByName(name);
-
-						item->setDescr(child, descr);
-						item->setFieldId(child, fieldId);
-						item->setMinVal(child, minVal);
-						item->setMaxVal(child, maxVal);
-						item->setQueue(child, queue);
-
-						Serial.println(item->getJson(child));
-					}
-				}
-				//-----------------------------------------
-			}
-		}
-	  }
-
-	  Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+	String result="{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"items\":[\
+					{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\",\"descr\":\"Версия прошивки\"},\
+					{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\",\"descr\":\"ID устройства\"},\
+					{\"name\":\"DeviceKind\",\"val\":\""+DeviceKind+"\",\"descr\":\"Тип устройства\"},\
+					{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\",\"descr\":\"Описание устройства\"},\
+					{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\",\"descr\":\"Размещение устройства\"},\
+					\
+					{\"name\":\"displayAlvaysOn\",\"val\":\""+String(displayAlvaysOn)+"\",\"descr\":\"Дисплей всегда включен\"},\
+					{\"name\":\"displayAutochange\",\"val\":\""+String(displayAutochange)+"\",\"descr\":\"Интервал смены страниц дисплея\"},\
+					{\"name\":\"refreshInterval\",\"val\":\""+String(refreshInterval)+"\",\"descr\":\"Интервал обновления датчиков\"},\
+					\
+					{\"name\":\"accessUser\",\"val\":\""+String(accessUser)+"\",\"descr\":\"Пользователь главной страницы\"},\
+					{\"name\":\"accessPass\",\"val\":\"*****\",\"descr\":\"Пароль главной страницы\"},\
+					{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\",\"descr\":\"Пользователь страницы настроек\"},\
+					{\"name\":\"settingsPass\",\"val\":\"*****\",\"descr\":\"Пароль страницы настроек\"},\
+					\
+					{\"name\":\"isAccesPoint\",\"val\":\""+String(isAccesPoint)+"\",\"descr\":\"Устройство точка доступа\"},\
+					{\"name\":\"ssidAP\",\"val\":\""+ssidAP+"\",\"descr\":\"SSID точки доступа\"},\
+					{\"name\":\"ssid\",\"val\":\""+ssid+"\",\"descr\":\"SSID WiFi сети\"},\
+					{\"name\":\"password\",\"val\":\"*****\",\"descr\":\"Пароль к WiFi\"},\
+					{\"name\":\"serverPort\",\"val\":\""+String(serverPort)+"\",\"descr\":\"Порт Http сервера\"},\
+					{\"name\":\"staticIp\",\"val\":\""+String(staticIp)+"\",\"descr\":\"Использовать статический IP\"},\
+					{\"name\":\"localIp\",\"val\":\""+localIp.toString()+"\",\"descr\":\"Локальный IP устройства\"},\
+					{\"name\":\"apIp\",\"val\":\""+apIp.toString()+"\",\"descr\":\"IP точки доступа\"},\
+					{\"name\":\"gateIp\",\"val\":\""+gateIp.toString()+"\",\"descr\":\"IP шлюза\"},\
+					{\"name\":\"subnetIp\",\"val\":\""+subnetIp.toString()+"\",\"descr\":\"IP подсети\"},\
+					{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\",\"descr\":\"IP DNS\"},\
+					{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\",\"descr\":\"IP DNS\"},\
+					{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\",\"descr\":\"IP сервера !!!SmartHouse\"},\
+					\
+					{\"name\":\"isThingSpeakEnabled\",\"val\":\""+String(isThingSpeakEnabled)+"\",\"descr\":\"Отправка в ThingSpeak разрешена\"},\
+					{\"name\":\"postDataToTSInterval\",\"val\":\""+String(postDataToTSInterval)+"\",\"descr\":\"Интервал отправки в ThingSpeak (сек)\"},\
+					{\"name\":\"thSkUsrKey\",\"val\":\""+thSkUsrKey+"\",\"descr\":\"Ключ пользователя ThingSpeak\"},\
+					{\"name\":\"thSkWKey\",\"val\":\""+thSkWKey+"\",\"descr\":\"Ключ записи в ThingSpeak\"},\
+					{\"name\":\"thSkRKey\",\"val\":\""+thSkRKey+"\",\"descr\":\"Ключ чтения в ThingSpeak\"},\
+					{\"name\":\"thSkChId\",\"val\":\""+String(thSkChId)+"\",\"descr\":\"Идентификатор канала ThingSpeak\"},\
+					{\"name\":\"thSkTKey\",\"val\":\""+thSkTKey+"\",\"descr\":\"Идентификатор твиттер ThingSpeak\"},\
+					\
+					{\"name\":\"isMqttEnabled\",\"val\":\""+String(isMqttEnabled)+"\",\"descr\":\"Отправка в MQTT разрешена\"},\
+					{\"name\":\"mqtt_server\",\"val\":\""+mqtt_server+"\",\"descr\":\"Сервер MQTT\"},\
+					{\"name\":\"mqtt_user\",\"val\":\""+mqtt_user+"\",\"descr\":\"Пользователь MQTT\"},\
+					{\"name\":\"mqtt_pass\",\"val\":\"*****\",\"descr\":\"Пароль MQTT\"},\
+					{\"name\":\"mqtt_topic\",\"val\":\""+mqtt_topic+"\",\"descr\":\"Основная очередь MQTT\"},\
+					{\"name\":\"mqtt_port\",\"val\":\""+String(mqtt_port)+"\",\"descr\":\"Порт MQTT\"},\
+					\
+					{\"name\":\"isHttpPostEnabled\",\"val\":\""+String(isHttpPostEnabled)+"\",\"descr\":\"Отправка по Http разрешена\"},\
+					{\"name\":\"httpPostIp\",\"val\":\""+httpPostIp.toString()+"\",\"descr\":\"ІР сервиса приемника Http\"},\
+					\
+					{\"name\":\"ntpEnabled\",\"val\":\""+String(ntpEnabled)+"\",\"descr\":\"Синхронизация NTP разрешена\"},\
+					{\"name\":\"NTP_poolServerName\",\"val\":\""+String(NTP_poolServerName)+"\",\"descr\":\"Сервер NTP\"},\
+					{\"name\":\"NTP_timeOffset\",\"val\":\""+NTP_timeOffset+"\",\"descr\":\"Смещение по времени NTP (сек)\"},\
+					{\"name\":\"NTP_updateInterval\",\"val\":\""+NTP_updateInterval+"\",\"descr\":\"Интервал обновления NTP (сек)\"},\
+					{\"name\":\"NTP_timeTriggerInterval\",\"val\":\""+NTP_timeTriggerInterval+"\",\"descr\":\"Интервал рассылки клиентам времени NTP (сек)\"},\
+					\
+					{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\",\"descr\":\"Поточный IP устройства\"},\
+					{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\",\"descr\":\"Адресс канала ThingSpeak\"}]}";
+	return result;
 }
 
 boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {

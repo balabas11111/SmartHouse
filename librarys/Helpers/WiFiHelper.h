@@ -347,7 +347,75 @@ public:
 		return displayHelper->addStringToDisplay(str, row, col, name);
 	}
 	//-------------------------------
+	String executeGetRequest(String url){
 
+		if(url==""){
+			return "";
+		}
+
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_GET));
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_URL_EQ));
+		Serial.println(url);
+
+		http.begin(url);
+		yield();
+
+		int httpCode = http.GET();                                                                  //Send the request
+		yield();
+
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_EQ));
+		Serial.println(httpCode);
+
+		if (httpCode > 0) { //Check the returning code
+
+		  String payload = http.getString();
+
+		  Serial.print(FPSTR(MESSAGE_WIFIHELPER_RESPONSE_EQ));
+		  Serial.println(payload);
+		  Serial.print(FPSTR(MESSAGE_HORIZONTAL_LINE));
+
+		  return payload;
+		}
+
+		Serial.print(FPSTR(MESSAGE_HORIZONTAL_LINE));
+
+		return "";
+	}
+
+	String executePostRequest(String url,String body){
+
+			Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+			Serial.print(FPSTR(MESSAGE_WIFIHELPER_POST));
+			Serial.print(FPSTR(MESSAGE_WIFIHELPER_URL_EQ));
+			Serial.println(url);
+			Serial.print(FPSTR(MESSAGE_WIFIHELPER_HTTP_BODY_EQ));
+			Serial.println(body);
+
+			http.begin(url);
+			yield();
+
+			int httpCode = http.POST(body);
+			yield();
+
+			Serial.print(FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_EQ));
+			Serial.println(httpCode);
+
+			if (httpCode > 0) {
+
+			  String payload = http.getString();
+
+			  Serial.print(FPSTR(MESSAGE_WIFIHELPER_RESPONSE_EQ));
+			  Serial.println(payload);
+			  Serial.print(FPSTR(MESSAGE_HORIZONTAL_LINE));
+
+			  return payload;
+			}
+
+			Serial.print(FPSTR(MESSAGE_HORIZONTAL_LINE));
+
+			return "";
+		}
 	//---------------------------------------------------------------------
 		//fileManager section
 		void initFileManager(){
@@ -627,6 +695,7 @@ private:
 	boolean initFilesManager;
 
 	File fsUploadFile;
+	HTTPClient http;
 
 };
 

@@ -57,22 +57,25 @@ public:
 		dallasTemperature->begin();
 		//dallasTemperature->setDescription(getName());
 
-		childCount=dallasTemperature->getDeviceCount();
+		itemCount=dallasTemperature->getDeviceCount();
 
 		initializeChildren();
 
 		Serial.print("Sensors count=");
-		Serial.println(childCount);
+		Serial.println(itemCount);
 
-		for(uint8_t i=0;i<childCount;i++){
+		for(uint8_t i=0;i<itemCount;i++){
 
 			String devAddressStr=getDeviceAddress(i);
 			String name=String(FPSTR(TEMPERATURE))+devAddressStr;
 
 			//uint8_t field=i+1;
-			items[i]={i,name,FPSTR(MEASURE_CELSIUS_DEGREES),FPSTR(MEASURE_CELSIUS_DEGREES_RU),devAddressStr,-127,0,-512,512};
+			items[i]={i,name,FPSTR(MEASURE_CELSIUS_DEGREES),FPSTR(MEASURE_CELSIUS_DEGREES_RU),devAddressStr,-127,0,-512,512,""};
 		}
 
+		if(itemCount>0){
+			periodicSend=true;
+		}
 		Serial.println("complete init bus");
 
 	}
@@ -80,7 +83,7 @@ public:
 	void update(){
 		dallasTemperature->requestTemperatures();
 
-		for(uint8_t i=0;i<childCount;i++){
+		for(uint8_t i=0;i<itemCount;i++){
 			items[i].val=dallasTemperature->getTempCByIndex(i);
 		}
 	}

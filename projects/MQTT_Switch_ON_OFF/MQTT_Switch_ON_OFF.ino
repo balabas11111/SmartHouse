@@ -53,8 +53,6 @@
 #define HUMAN_PRESENTED LOW
 #define HUMAN_NOT_PRESENTED HIGH
 
-const int sensorsInterval=60000;
-
 EspSettingsBox espSettingsBox("",true,true);
 
 WiFiClient wclient;
@@ -66,7 +64,8 @@ DisplayHelper displayHelper(true);
 
 String subscribeTopics[]={"topic/ESP8266Topic","topic/SwitchLeft","topic/SwitchRight"};
 
-TimeTrigger sensorsTrigger(0,sensorsInterval,true,measureSensors);
+TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,measureSensors);
+TimeTrigger thingSpeakTrigger(espSettingsBox.isThingSpeakEnabled,(espSettingsBox.postDataToTSInterval*1000),true,processThingSpeakPost);
 
 PinDigital buttonLeft(VAR_NAME(buttonLeft),D7,onLeftButtonChanged);
 PinDigital buttonRight(VAR_NAME(buttonRight),D6,onRightButtonChanged);
@@ -293,8 +292,29 @@ String setEspSettingsBoxValues(){
 		espSettingsBox.saveSettingsJson();
 	}
 
-
 	return espSettingsBox.getJson();
+}
+
+void processThingSpeakPost(){
+	if(espSettingsBox.isThingSpeakEnabled){
+		Serial.println(FPSTR(MESSAGE_THINGSPEAK_SEND_STARTED));
+
+		String baseUrl=FPSTR(MESSAGE_THINGSPEAK_BASE_URL)+espSettingsBox.thSkWKey;
+
+		uint8_t count=0;
+
+		for(uint8_t i=0;i<ARRAY_SIZE(minMaxValues);i++){
+			String url=minMaxValues[i]->constructGetUrl(baseUrl, FPSTR(MESSAGE_THINGSPEAK_FIELD_VAL_FOR_REQUEST));
+			wifiHelper.executeGetRequest(url);
+			count++;
+		}
+
+		thingSpeakTrigger.saveTime();
+
+		Serial.print(count);
+		Serial.println(FPSTR(MESSAGE_DONE));
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+	}
 }
 
 void measureSensors(){
