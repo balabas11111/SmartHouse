@@ -28,8 +28,16 @@ var validateValuesHandler=undefined;
 var getValuesUrl='';
 var submitValuesUrl='';
 
+var currentJson='';
+
 
 function openTab(tabName,headerName) {
+	var loadMessagePreffix="Загружаю";
+	
+	if(currentTab==tabName){
+		loadMessagePreffix="Обновляю";
+	}
+	
 	currentTab=tabName;
 	currentHeaderName=headerName;
 	
@@ -60,7 +68,7 @@ function openTab(tabName,headerName) {
 	if(containerComponent.classList.contains('reloadableSettingsContainer')){
 				
 		
-		showMessage(currentMessageComp,'Загружаю данные...','w3-yellow');
+		showMessage(currentMessageComp,loadMessagePreffix+' информацию о датчиках...','w3-yellow');
 		
 		var handler=undefined;
 		
@@ -162,172 +170,254 @@ function processSensorsJsonGet(data){
 
 	container.innerHTML='';
 	var sensors=data.sensors;
+	
+	currentJson=sensors;
 			
 	for(var s in sensors){
-		var sensorId=sensors[s].id;
-		var sensorName=sensors[s].name;
-		var sensorType=sensors[s].type;
-		var sensorSize=sensors[s].size;
-		var sensorDescr=sensors[s].descr;
-			
-		var hr = document.createElement('hr');
-		container.appendChild(hr);
-		container.appendChild(hr);
-		//sensor header 
-		var divh=document.createElement('div');
-		divh.setAttribute('class','w3-row w3-green');
-		divh.setAttribute('style','margin-top: 15px; height: 50px;');
+		var sensor=sensors[s];
 		
-		var div1h=createDivComponent('w3-quarter','Название устройства');
-		var div2h=createDivComponent('w3-quarter','Тип устр.');
-		var div3h=createDivComponent('w3-quarter','Измеряемые величины');
-		var div4h=createDivComponent('w3-quarter','Описание устройства');
-		
-		divh.appendChild(div1h);
-		divh.appendChild(div2h);
-		divh.appendChild(div3h);
-		divh.appendChild(div4h);
-		
-		container.appendChild(divh);
-		//sensor own values
-		var divhv=document.createElement('div');
-		divhv.setAttribute('class','w3-row');
-		divhv.setAttribute('style','margin-top: 1px; height: 44px;');
-		
-		var col1h=createDivComponent('w3-quarter','');
-		var col2h=createDivComponent('w3-quarter','');
-		var col3h=createDivComponent('w3-quarter','');
-		var col4h=createDivComponent('w3-quarter','');
-				
-		var sName=createHeaderElement('H4','margin-left: 20px;',sensorName)
-		var sType=createHeaderElement('H4','margin-left: 20px;',sensorType)
-		var sSize=createHeaderElement('H4','margin-left: 20px;',sensorSize)
-		var sDescr=createInputComponent(sensorId,255,FIELD_DESCR_ID,DESCR_SUFFIX,sensorDescr,sensorName,itemName);
-		
-		col1h.appendChild(sName);
-		col2h.appendChild(sType);
-		col3h.appendChild(sSize);
-		col4h.appendChild(sDescr);
-						
-		divhv.appendChild(col1h);
-		divhv.appendChild(col2h);
-		divhv.appendChild(col3h);
-		divhv.appendChild(col4h);
-		
-		container.appendChild(divhv);
-		
-		//sensor children header
-		container.appendChild(hr);
-		
-		var div=document.createElement('div');
-		div.setAttribute('id',sensorName+'_div');
-		div.setAttribute('class','w3-row w3-black');
-		div.setAttribute('style','margin-top: 2px;');
-		
-		var div1=createDivComponent('w3-threequarter');
-		var div2=createDivComponent('w3-quarter');
-		
-		var col0=createDivComponent('w3-third',' Датчики устройства');
-		var col1=createDivComponent('w3-third','Описание');
-		var col2=createDivComponent('w3-third','Очередь');
-		
-		var col3=createDivComponent('w3-third','Миним. значение');
-		var col4=createDivComponent('w3-third','Макс значение');
-		var col5=createDivComponent('w3-third','Поле ThingSpeak');
-		
-		col0.setAttribute('style','height: 50px;');
-		col1.setAttribute('style','height: 50px;');
-		col2.setAttribute('style','height: 50px;');
-		col3.setAttribute('style','height: 50px;');
-		col4.setAttribute('style','height: 50px;');
-		col5.setAttribute('style','height: 50px;');
-		
-		div1.appendChild(col0);
-		div1.appendChild(col1);
-		div1.appendChild(col2);
-		div2.appendChild(col3);
-		div2.appendChild(col4);
-		div2.appendChild(col5);
-		
-		div.appendChild(div1);
-		div.appendChild(div2);
-		container.appendChild(div);
-		//sensor children values
-		var items=sensors[s].items;
-		
-		for(var i in items){
-			var itemId=items[i].id;
-			var itemName=items[i].name;
-			var descr=items[i].descr;
-			var minVal=items[i].minVal;
-			var maxVal=items[i].maxVal;
-			var fieldId=items[i].fieldId;
-			var queue=items[i].queue;
-			
-				var div=document.createElement('div');
-				div.setAttribute('class','w3-row');
-				div.setAttribute('style','margin-top: 5px;');
-				
-				var div1=createDivComponent('w3-threequarter','');
-				var div2=createDivComponent('w3-quarter','');
-				
-				var col0=createDivComponent('w3-third','');
-				var col1=createDivComponent('w3-third','');
-				var col2=createDivComponent('w3-third','');
-									
-				var col3=createDivComponent('w3-third','');
-				var col4=createDivComponent('w3-third','');
-				var col5=createDivComponent('w3-third','');
-				
-				var text0=document.createElement('div');
-				text0.setAttribute('class','w3-half');
-				text0.setAttribute('style','margin-left: 20px; width: 90%;');
-				text0.innerHTML="<b>"+itemName+"</b>";
-
-				var input1=createInputComponent(sensorId,itemId,FIELD_DESCR_ID,DESCR_SUFFIX,descr,sensorName,itemName);
-				var input2=createInputComponent(sensorId,itemId,FIELD_QUEUE_ID,QUEUE_SUFFIX,queue,sensorName,itemName);
-				var input3=createInputComponent(sensorId,itemId,FIELD_MIN_ID,MIN_VAL_SUFFIX,minVal,sensorName,itemName);
-				var input4=createInputComponent(sensorId,itemId,FIELD_MAX_ID,MAX_VAL_SUFFIX,maxVal,sensorName,itemName);
-				var input5=createInputComponent(sensorId,itemId,FIELD_FIELDID_ID,FIELD_ID_SUFFIX,fieldId,sensorName,itemName);
-				
-				input5.setAttribute('type','number');
-				input5.setAttribute('min','0');
-				input5.setAttribute('max','');
-				input5.setAttribute('step','1');
-				
-				col0.appendChild(text0);
-				col1.appendChild(input1);
-				col2.appendChild(input2);
-				col3.appendChild(input3);
-				col4.appendChild(input4);
-				col5.appendChild(input5);
-									
-				div1.appendChild(col0);
-				div1.appendChild(col1);
-				div1.appendChild(col2);
-				
-				div2.appendChild(col3);
-				div2.appendChild(col4);
-				div2.appendChild(col5);
-				
-				div.appendChild(div1);
-				div.appendChild(div2);
-				
-				container.appendChild(div);
-			
-			//end of items loop
-		}
-		
-		var divb=document.createElement('div');
-		divb.setAttribute('class','w3-row w3-black');
-		divb.setAttribute('style','margin-top: 1px; margin-bottom: 5px; height: 5px;');
-				
-		container.appendChild(divb);
-		container.appendChild(hr);
-		//end of sensors loop
+		putSensorContentToContainer(container,sensor,false,false);
 	}
 	
 	showMessage(currentMessageComp,'Загружено '+currentHeaderName,'w3-green');
+}
+
+function putSensorContentToContainer(container,sensor,noId,editable){
+	var sensorId=sensor.id;
+	var sensorName=sensor.name;
+	var sensorType=sensor.type;
+	var sensorSize=sensor.size;
+	var sensorDescr=sensor.descr;
+		
+	var hr = document.createElement('hr');
+	container.appendChild(hr);
+	container.appendChild(hr);
+	//sensor header 
+	var divh=document.createElement('div');
+	divh.setAttribute('class','w3-row w3-teal');
+	divh.setAttribute('style','margin-top: 15px; height: 50px;');
+	
+	var div1h=createDivComponent('w3-quarter','Название устройства');
+	var div2h=createDivComponent('w3-quarter','Тип устр.');
+	var div3h=createDivComponent('w3-quarter','Измеряемые величины');
+	var div4h=createDivComponent('w3-quarter','Описание устройства');
+	
+	divh.appendChild(div1h);
+	divh.appendChild(div2h);
+	divh.appendChild(div3h);
+	divh.appendChild(div4h);
+	
+	container.appendChild(divh);
+	//sensor own values
+	var divhv=document.createElement('div');
+	divhv.setAttribute('class','w3-row');
+	divhv.setAttribute('style','margin-top: 1px; height: 44px;');
+	
+	var col1h=createDivComponent('w3-quarter','');
+	var col2h=createDivComponent('w3-quarter','');
+	var col3h=createDivComponent('w3-quarter','');
+	var col4h=createDivComponent('w3-quarter','');
+	
+	var editButton=createSensorEditButton(sensorName,sensorDescr);
+	var sName=createHeaderElement('H4','margin-left: 20px;',sensorName)
+	var sType=createHeaderElement('H4','margin-left: 20px;',sensorType)
+	var sSize=createHeaderElement('H4','margin-left: 20px;',sensorSize)
+	var sDescr=createInputComponent(sensorId,255,FIELD_DESCR_ID,DESCR_SUFFIX,sensorDescr,sensorName,itemName,noId,editable);
+	
+	col1h.appendChild(sName);
+	col2h.appendChild(sType);
+	col3h.appendChild(sSize);
+	col4h.appendChild(sDescr);
+					
+	divhv.appendChild(col1h);
+	divhv.appendChild(col2h);
+	divhv.appendChild(col3h);
+	divhv.appendChild(col4h);
+	
+	container.appendChild(divhv);
+	
+	//sensor children header
+	container.appendChild(hr);
+	
+	var div=document.createElement('div');
+	div.setAttribute('id',sensorName+'_div');
+	div.setAttribute('class','w3-row w3-teal');
+	div.setAttribute('style','margin-top: 2px;');
+	
+	var div1=createDivComponent('w3-threequarter');
+	var div2=createDivComponent('w3-quarter');
+	
+	var col0=createDivComponent('w3-third',' Датчики устройства');
+	var col1=createDivComponent('w3-third','Описание');
+	var col2=createDivComponent('w3-third','Очередь');
+	
+	var col3=createDivComponent('w3-third','Миним. значение');
+	var col4=createDivComponent('w3-third','Макс значение');
+	var col5=createDivComponent('w3-third','Поле ThingSpeak');
+	
+	col0.setAttribute('style','height: 50px;');
+	col1.setAttribute('style','height: 50px;');
+	col2.setAttribute('style','height: 50px;');
+	col3.setAttribute('style','height: 50px;');
+	col4.setAttribute('style','height: 50px;');
+	col5.setAttribute('style','height: 50px;');
+	
+	div1.appendChild(col0);
+	div1.appendChild(col1);
+	div1.appendChild(col2);
+	div2.appendChild(col3);
+	div2.appendChild(col4);
+	div2.appendChild(col5);
+	
+	div.appendChild(div1);
+	div.appendChild(div2);
+	container.appendChild(div);
+	//sensor children values
+	var items=sensor.items;
+	
+	for(var i in items){
+		var itemId=items[i].id;
+		var itemName=items[i].name;
+		var descr=items[i].descr;
+		var minVal=items[i].minVal;
+		var maxVal=items[i].maxVal;
+		var fieldId=items[i].fieldId;
+		var queue=items[i].queue;
+		
+			var div=document.createElement('div');
+			div.setAttribute('class','w3-row');
+			div.setAttribute('style','margin-top: 5px;');
+			
+			var div1=createDivComponent('w3-threequarter','');
+			var div2=createDivComponent('w3-quarter','');
+			
+			var col0=createDivComponent('w3-third','');
+			var col1=createDivComponent('w3-third','');
+			var col2=createDivComponent('w3-third','');
+								
+			var col3=createDivComponent('w3-third','');
+			var col4=createDivComponent('w3-third','');
+			var col5=createDivComponent('w3-third','');
+			
+			var text0=document.createElement('div');
+			text0.setAttribute('class','w3-half');
+			text0.setAttribute('style','margin-left: 20px; width: 90%;');
+			text0.innerHTML="<b>"+itemName+"</b>";
+
+			var input1=createInputComponent(sensorId,itemId,FIELD_DESCR_ID,DESCR_SUFFIX,descr,sensorName,itemName,noId,editable);
+			var input2=createInputComponent(sensorId,itemId,FIELD_QUEUE_ID,QUEUE_SUFFIX,queue,sensorName,itemName,noId,editable);
+			var input3=createInputComponent(sensorId,itemId,FIELD_MIN_ID,MIN_VAL_SUFFIX,minVal,sensorName,itemName,noId,editable);
+			var input4=createInputComponent(sensorId,itemId,FIELD_MAX_ID,MAX_VAL_SUFFIX,maxVal,sensorName,itemName,noId,editable);
+			var input5=createInputComponent(sensorId,itemId,FIELD_FIELDID_ID,FIELD_ID_SUFFIX,fieldId,sensorName,itemName,noId,editable);
+			
+			input5.setAttribute('type','number');
+			input5.setAttribute('min','0');
+			input5.setAttribute('max','');
+			input5.setAttribute('step','1');
+			
+			col0.appendChild(text0);
+			col1.appendChild(input1);
+			col2.appendChild(input2);
+			col3.appendChild(input3);
+			col4.appendChild(input4);
+			col5.appendChild(input5);
+								
+			div1.appendChild(col0);
+			div1.appendChild(col1);
+			div1.appendChild(col2);
+			
+			div2.appendChild(col3);
+			div2.appendChild(col4);
+			div2.appendChild(col5);
+			
+			div.appendChild(div1);
+			div.appendChild(div2);
+			
+			container.appendChild(div);
+		
+		//end of items loop
+	}
+	
+	var divb=document.createElement('div');
+	divb.setAttribute('class','w3-row w3-black');
+	divb.setAttribute('style','margin-top: 1px; margin-bottom: 5px; height: 5px;');
+			
+	container.appendChild(divb);
+	container.appendChild(hr);
+}
+
+function validateCurrentSensorForm(){
+	
+}
+
+function getCurrentSensorFromCurrentJson(sensorName){
+	for(var i in currentJson){
+		if(currentJson[i].name==sensorName){
+			return currentJson[i];
+		}
+	}
+	
+	return undefined;
+}
+
+function openSensorsPopup(sensorName){
+	var sensor=getCurrentSensorFromCurrentJson(sensorName);
+	currentMessageComp=getComponentById('currentSensor_msg');
+	
+	if(sensor!=undefined){
+		var sensorNameContainer=getComponentById('currentSensor_name');
+		var sensorNameHeader=getComponentById('currentSensor_header');
+		var container=getComponentById('currentSensor_content');
+		
+		sensorNameContainer.value=sensorName;
+		sensorNameHeader.innerHTML=sensorName;
+		container.innerHTML='';
+		
+		putSensorContentToContainer(container,sensor,true,true);
+		showComponent('currentSensor_modal');
+	}
+}
+
+function closeSensorsPopup(){
+	hideComponent('currentSensor_modal');
+	currentMessageComp=getComponentById('sensors_msg');
+}
+
+function submitCurrentSensorForm(){
+	var form=getComponentById('currentSensor_form');
+	
+	showMessage(currentMessageComp,'Сохраняю настройки датчика...','w3-yellow');
+	
+	postForm(form,submitValuesUrl,validateCurrentSensorForm,getCurrentSensorHandler);
+}
+
+function getCurrentSensorHandler(data){
+	if(data.status=='Ok'){
+		hideComponent('currentSensor_modal');
+		openTab(currentTab,currentHeaderName);
+	}else{
+		
+	}
+}
+
+function createSensorEditButton(sensorName,sensorDescr){
+	
+	var html=`<div class="w3-tooltip">
+					<span style="position:absolute;left:0;bottom:40px" class="w3-text w3-tag w3-gray w3-round">
+						<i class="material-icons">help_outline</i>
+	  						Редактировать <sensorDescr>
+						</span>
+					<button class="w3-button w3-white w3-border w3-border-red w3-round-large" onclick="openSensorsPopup('<sensorName>')">
+	  	 				<i class="fa fa-edit"></i>
+					</button>
+			</div>`;
+	  
+	html.replaceAll('<sensorName>',sensorName);
+	html.replaceAll('<sensorDescr>',sensorDescr);
+	
+	var div=createDivComponent('w3-third',html);
+	  
+	return div;
 }
 
 function validateSensorsPage(){
@@ -524,14 +614,19 @@ function createDivComponent(className,innerHtml){
 	return div;
 }
 
-function createInputComponent(id1,id2,fieldIntId,suffixName,fieldVal,sensorName,itemName){
+function createInputComponent(id1,id2,fieldIntId,suffixName,fieldVal,sensorName,itemName,noId,editable){
+	var compId=getInputCompName(id1,id2,fieldIntId);
+	
 	var input1=document.createElement("Input");
-		input1.setAttribute("id",getInputCompName(id1,id2,fieldIntId));
-		input1.setAttribute("name",getInputCompName(id1,id2,fieldIntId));
+		if(noId!=undefined || !noId)
+			input1.setAttribute("id",compId);
+		input1.setAttribute("name",compId);
 		input1.setAttribute("class","w3-input w3-border "+suffixName);
 		input1.setAttribute("style",'width: 90%;');
 		input1.setAttribute("value",fieldVal);
 		input1.setAttribute(SENSOR_NAME_ATTR,sensorName);
+		if(editable!=undefined || !editable)
+			input1..setAttribute("disabled","disabled");
 		if(itemName!=undefined)
 			input1.setAttribute(ITEM_NAME_ATTR,itemName);	
 		

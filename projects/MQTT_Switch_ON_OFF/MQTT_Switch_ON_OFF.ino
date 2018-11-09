@@ -234,37 +234,39 @@ void saveSensors(){
 	espSettingsBox.saveAbstractItemsToFile(minMaxValues, ARRAY_SIZE(minMaxValues));
 }
 //-----------------------------------------------------
-String setAllSensorsJson(){
+String setSensorJson(){
 	Serial.println("begin settings parsing");
 
 	Serial.print("args count =");
 	Serial.println(server.args());
 
 	uint8_t argsProcessed=0;
-	uint8_t lastDevice=0;
+
+	String sensorName=server.arg("currentSensor_name");
+
+	AbstractItem* item;
+
+	for(uint8_t i=0;i<ARRAY_SIZE(minMaxValues);i++){
+		if(minMaxValues[i]->getName()==sensorName){
+				item=minMaxValues[i];
+				break;
+		}
+	}
 
 	for(int i=0;i<server.args();i++){
 		AbstractItemRequest req=AbstractItem::createitemRequest(server.argName(i),server.arg(i));
 
 		if(req.valid){
-
-			for(uint8_t i=lastDevice;i<ARRAY_SIZE(minMaxValues);i++){
-				if(minMaxValues[i]->setFieldFromRequest(req)){
-						argsProcessed++;
-						lastDevice=i;
-						break;
-				}
-			}
-
+			argsProcessed++;
+			minMaxValues[i]->setFieldFromRequest(req);
 		}
 	}
 
-	Serial.println("settings save processed");
+	espSettingsBox.saveAbstractItemToFile(item);
 
-	saveSensors();
-
-	return getAllSensorsJson();
+	return "{\"status\":\"Ok\",\"sensor\":\""+item->getName()+"\"}";
 }
+
 
 String getAllSensorsJson(){
 	delay(1);

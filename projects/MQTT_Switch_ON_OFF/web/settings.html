@@ -8,6 +8,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="./css/w3.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 <script src="./js/DeviceLib.js"></script>
 <script src="./js/settings.js"></script>
 <script src="./js/menu.js"></script>
@@ -441,15 +445,48 @@
 					</form>  
 				</div>
 				  
-				  <p>
+				  <!--  <p>
 				  	<button id="saveSensorSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
 							onclick="submitCurrentForm();">Сохранить</button>
 				  </p>
+			  		-->
 			  
-			  
-				<div id="sensors_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
+				<div id="sensors_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px; display:none;"></div>
 				
 				<div style="height:20px;"></div>
+		</div>
+		
+		 <div id="currentSensor_modal" class="w3-modal">
+		    <div class="w3-modal-content w3-animate-top w3-card-4">
+		      	
+		      	<header class="w3-container w3-teal"> 
+			      <span onclick="closeSensorsPopup();" class="w3-button w3-display-topright">&times;</span>
+			      <h3 id="currentSensor_header">Поточный датчик</h3>
+			    </header>
+		      	
+		      	<div class="w3-container">
+   
+		        	<form id="currentSensor_form" class="w3-container">
+		        		<input id="currentSensor_name" name="currentSensor_name" type="hidden">
+		        		
+		        		<div id=currentSensor_content>
+		        		
+						</div>						
+						
+						<div id="currentSensor_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
+				
+						<div style="height:20px;"></div>
+						
+					</form>
+				
+				 </div>
+				 
+				 <footer class="w3-container w3-teal w3-display-container">
+				      <button id="currentSensor_saveBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;  display:none;"
+							onclick="submitCurrentSensorForm();">Сохранить</button>
+    			</footer>
+	        
+		  </div>
 		</div>
 		
 		<div id="publish" class="settingsTab reloadableSettingsContainer" style="display:none">
@@ -644,7 +681,7 @@
 				  </div>
 				  
 				  <p>
-			  		<button id="savePublishSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
+			  		<button id="savePublishSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;  display:none;"
 							onclick="submitCurrentForm();">Сохранить</button>
 				  </p>
 				
