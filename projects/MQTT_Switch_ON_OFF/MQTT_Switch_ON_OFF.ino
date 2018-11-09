@@ -99,14 +99,16 @@ void setup() {
   deviceHelper.startDevice(espSettingsBox.DeviceId);
 
   espSettingsBox.printSettingsFile();
+  deviceHelper.printDeviceDiagnostic();
   //espSettingsBox.printSpiffsInfo();
 
   deviceHelper.init(initializeArray, ARRAY_SIZE(initializeArray));
   deviceHelper.printDeviceDiagnostic();
   deviceHelper.displayDetails();
-
+  deviceHelper.printDeviceDiagnostic();
   loadSensors();
   measureSensors();
+  deviceHelper.printDeviceDiagnostic();
   Serial.println("=========================Device Started=========================");
 }
 
