@@ -11,8 +11,8 @@ function onLoadPageComplete(){
 	 //updateComponentsByAjaxCall('GET', '/dhtMeasurer/getJson', processSimpleJson,"", 120000);
 	 updateComponentsByAjaxCall('GET', '/ds18d20Measurer/getJson', processSimpleJsonRecreateChildren,"", 120000);
 	 
-	 updateComponentsByAjaxCall('GET', '/lampLeft/getJson', processJsonOnImageComponent,"", 5000);
-	 updateComponentsByAjaxCall('GET', '/lampRight/getJson', processJsonOnImageComponent,"", 5000);
+	 updateComponentsByAjaxCall('GET', '/lampLeft/getJson', processJsonOnImageComponent,"", 15000);
+	 updateComponentsByAjaxCall('GET', '/lampRight/getJson', processJsonOnImageComponent,"", 15000);
 	 
 	 //updateComponentsByAjaxCall('GET', '/pirDetector/getJson', processLampJson,"", 5000);
 }

@@ -49,6 +49,10 @@ boolean TimeTrigger::checkTrigger(){
 		return false;
 	}
 
+	if(getInterval()==0){
+		return false;
+	}
+
 	boolean result=false;
 
 	unsigned long now=millis();

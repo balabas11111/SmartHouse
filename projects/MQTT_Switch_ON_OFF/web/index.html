@@ -30,11 +30,11 @@
 			<button id="openNavBtn" class="w3-button w3-teal w3-xlarge" onclick="w3_open()" title="Открыть меню">☰</button>
 		</div>
 		<div class="w3-quarter w3-container w3-animate-opacity"	style="width: 150px;" >
-			<h4 id="DeviceId" style="margin-top: 20px;" 
+			<h4 id="espSettingsBox_DeviceId" style="margin-top: 20px;" 
 				title="Идентификатор устройства">Устройство</h4>	
 		</div>
 		<div class="w3-third w3-container w3-animate-opacity">
-			<h2 id="DeviceLocation" style="margin-left: 20px;" 
+			<h2 id="espSettingsBox_DeviceLocation" style="margin-left: 20px;" 
 				title="Наименование/размещение устройства">Загрузка</h2>
 		</div>
 	</div>					
@@ -43,7 +43,7 @@
 		
 		<!--BME280 BH1750 starts-->
 		<div>
-			<div class="w3-card-4" style="width:30%;  float:left; min-width: 440px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+			<div class="w3-card-4" style="width: 400px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 					<div class="w3-container w3-teal">
 						 <div><h3 id="bmeMeasurer_descr">bmeMeasurer</h3></div>
 					</div>
@@ -55,10 +55,10 @@
 								<img src="./img/Temperature.png"/>
 							</div>
 							<div class="w3-third">
+								<label for="bmeMeasurer_Temperature" style="max-width: 240px;">
+									<b>Температура °C</b>
+								</label>
 								<input id="bmeMeasurer_Temperature"	class="w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
-							</div>
-							<div>
-								<b>Температура °C</b>
 							</div>
 						</div>	
 
@@ -67,10 +67,10 @@
 								<img src="./img/Pressure.png"/>
 							</div>
 							<div class="w3-third">
-								<input id="Pressure" class="w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
-							</div>
-							<div>
-								<b>Давление (Паскаль)</b>
+								<label for="bmeMeasurer_Pressure" style="max-width: 240px;">
+									<b>Давление (Паскаль)</b>
+								</label>
+								<input id="bmeMeasurer_Pressure" class="w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
 							</div>
 						</div>			
 				   					   		
@@ -79,10 +79,10 @@
 								<img src="./img/Humidity.png"/>
 							</div>
 							<div class="w3-third">
-								<input id="bmeMeasurer_Humidity" class="w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
-							</div>
-							<div>
-								<b>Влажность (%)</b>
+								<label for="bmeMeasurer_Humidity" style="max-width: 240px;">
+									<b>Влажность (%)</b>
+								</label>
+								<input id="bmeMeasurer_Humidity" class="w3-input w3-border" style="width: 90%; margin-bottom: 10px;" type="text" value="обновляю" disabled>
 							</div>
 						</div>	
 									   		
@@ -99,10 +99,10 @@
 								<img src="./img/LightLevel.png"/>
 							</div>
 							<div class="w3-third">
-								<input id="luxMeasurer_Light" class="w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
-							</div>
-							<div>
-								<b>Освещение (Люкс)</b>
+								<label for="luxMeasurer_Light" style="max-width: 240px;">
+									<b>Освещение (Люкс)</b>
+								</label>
+								<input id="luxMeasurer_Light" class="w3-input w3-border" style="width: 90%; margin-bottom: 10px;" type="text" value="обновляю" disabled>
 							</div>
 						</div>	
 												
@@ -113,7 +113,7 @@
 		
 		<!--DHT22 starts-->
 	<!--	<div>
-			<div class="w3-card-4" style="width:30%;  float:left; min-width: 440px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+			<div class="w3-card-4" style="width:30%;  float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 					<div class="w3-container w3-teal">
 						  <div><h3 id="dhtMeasurer_descr">dhtMeasurer</h3></div>
 					</div>
@@ -151,7 +151,7 @@
 		
 		<!--DS18D20 starts-->
 		<div>
-			<div class="w3-card-4" style="width:30%;  float:left; min-width: 440px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+			<div class="w3-card-4" style="width: 400px; float:left; min-width: 340px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 					<div class="w3-container w3-teal">
 						  <div><h3 id="ds18d20Measurer_descr">ds18d20Measurer</h3></div>
 					</div>
@@ -164,7 +164,7 @@
 						<div class="w3-quarter">
 							<img src="./img/Temperature.png"/>
 						</div>
-						<div class="w3-third">
+						<div class="w3-rest">
 							<b id="ds18d20Measurer_itemCount">Обновляю</b> - датчик/а/ов
 						</div>
 					</div>
@@ -174,7 +174,7 @@
 		
 		<!--left lamp info starts-->
 		<div>
-			<div class="w3-card-4" style="width:270px;  float:left; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+			<div class="w3-card-4" style="width:170px;  float:left; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 					<div class="w3-container w3-teal">
 						  <div><h3 id="lampLeft_descr">lampLeft</h3></div>
 					</div>
@@ -183,15 +183,15 @@
 											
 						<div id="lampImagesBody" class="w3-row">
 							<div class="w3-half w3-card-4 w3-center" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; width: 92px; height: 120px;">
-								<img id="lampLeft_lampLeft_" class="w3-center lampLeft_Image" 
+								<img id="lampLeft_" class="w3-center lampLeft_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; "
 									title="Левая лампочка"
 									src="./img/question.png" alt="Загружаю"/>
-								<img id="lampLeft_lampLeft_1" class="w3-center lampLeft_Image" 
+								<img id="lampLeft_1" class="w3-center lampLeft_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Левая лампочка"
 									onclick="lampWidgetClick(this);" src="./img/OnLamp.png" alt="Загружаю"/>
-								<img id="lampLeft_lampLeft_0" class="w3-center lampLeft_Image" 
+								<img id="lampLeft_0" class="w3-center lampLeft_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Левая лампочка"
 									onclick="lampWidgetClick(this);" src="./img/OffLamp.png" alt="Загружаю"/>
@@ -204,7 +204,7 @@
 		
 		<!--right lamp info starts-->
 		<div>
-			<div class="w3-card-4" style="width:270px;  float:left; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+			<div class="w3-card-4" style="width:170px;  float:left; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 					<div class="w3-container w3-teal">
 						  <div><h3 id="lampRight_descr">lampRight</h3></div>
 					</div>
@@ -213,15 +213,15 @@
 											
 						<div id="lampImagesBody" class="w3-row">
 							<div class="w3-half w3-card-4 w3-center" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; width: 92px; height: 120px;">
-								<img id="lampRight_lampRight_" class="w3-center lampRight_Image" 
+								<img id="lampRight_" class="w3-center lampRight_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; "
 									title="Правая лампочка"
 									src="./img/question.png" alt="Загружаю"/>
-								<img id="lampRight_lampRight_1" class="w3-center lampRight_Image" 
+								<img id="lampRight_1" class="w3-center lampRight_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Правая лампочка"
 									onclick="lampWidgetClick(this);" src="./img/OnLamp.png" alt="Загружаю"/>
-								<img id="lampRight_lampRight_0" class="w3-center lampRight_Image" 
+								<img id="lampRight_0" class="w3-center lampRight_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Правая лампочка"
 									onclick="lampWidgetClick(this);" src="./img/OffLamp.png" alt="Загружаю"/>

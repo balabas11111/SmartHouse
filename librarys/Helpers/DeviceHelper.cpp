@@ -102,6 +102,7 @@ String DeviceHelper::getJson(AbstractItem** sensors, uint8_t size) {
 		String result="{\"sensors\":[";
 
 			for(uint8_t i=0;i<size;i++){
+				delay(1);
 				result+=sensors[i]->getJson();
 				if(i!=size-1){
 					result+=",";

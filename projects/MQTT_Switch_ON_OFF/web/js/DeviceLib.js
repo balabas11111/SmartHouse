@@ -1,9 +1,14 @@
 
 const MSG_SUFFIX="msg";
 const FORM_SUFFIX="form";
-const DESCR_SUFFIX="descr";
 const VAL_SUFFIX="";
 const ITEM_COUNT_SUFFIX="itemCount";
+
+const DESCR_SUFFIX="descr";
+const MIN_VAL_SUFFIX="minVal";
+const MAX_VAL_SUFFIX="maxVal";
+const FIELD_ID_SUFFIX="fieldId";
+const QUEUE_SUFFIX="queue";
 
 const CLASS_AUTO_CREATED_CHILD="autoCreatedChild"
 const LABEL_PREFFIX="Label";
@@ -147,7 +152,8 @@ function setComponentValue(component,val){
 	if(component!=undefined){
 		var tagName = component.tagName.toLowerCase();
 		
-		if (tagName == 'h1' || tagName == 'h2' || tagName == 'h3' || tagName == 'h4' || tagName == 'h5'){
+		if (tagName == 'h1' || tagName == 'h2' || tagName == 'h3' || tagName == 'h4' || tagName == 'h5'
+			|| tagName == 'b'){
 			component.innerHTML=val;
 		};
 		
@@ -168,6 +174,7 @@ function setComponentValue(component,val){
 				component.value=val;
 			}
 		};
+			
 		
 		if (tagName == 'a'){
 			component.href=val;
@@ -192,7 +199,7 @@ function processSimpleJsonResponse(data,preffix){
 	var descr=data.descr;
 	
 	updateComponentValue(preffix,name,DESCR_SUFFIX,descr);
-	updateComponentValue(preffix,name,ITEM_COUNT_SUFFIX,descr);
+	updateComponentValue(preffix,name,ITEM_COUNT_SUFFIX,itemCount);
 		
 	//process children
 	var items=data.items;
@@ -223,8 +230,12 @@ function processSimpleJsonRecreateChildren(data){
 	var items=data.items;
 	var id=data.name;
 	var itemCount=data.itemCount;
+	var descr=data.descr;
 	
 	var comp=getComponentById(id);
+	
+	updateComponentValue("",id,DESCR_SUFFIX,descr);
+	updateComponentValue("",id,ITEM_COUNT_SUFFIX,itemCount);
 	
 	var childNodes=getComponentChildrenByClass(comp,CLASS_AUTO_CREATED_CHILD);
 	
@@ -252,8 +263,15 @@ function processSimpleJsonRecreateChildren(data){
 
 function processJsonOnImageComponent(data){
 	
-	var comp=document.getElementById(data.name);
+	var id=data.name;
+	var descr=data.descr;
+	var itemCount=data.itemCount;
+	
+	var comp=document.getElementById(id);
 	var lookUpClassName=data.name+"_Image";
+	
+	updateComponentValue("",id,DESCR_SUFFIX,descr);
+	updateComponentValue("",id,ITEM_COUNT_SUFFIX,itemCount);
 	
 	if(comp!=undefined){
 		var childNodes = comp.getElementsByClassName(lookUpClassName);

@@ -26,7 +26,8 @@ public:
 	boolean isConnected();
 	boolean connectIfNotConnected();
 	void subscribe(String topicName);
-	boolean publish(char* topicName,String message);
+	boolean publish(String message);
+	boolean publish(String topicName,String message);
 
 	String getName();
 	String displayDetails();
@@ -41,7 +42,7 @@ private:
 	std::function<void(String topic,String message)> externalCallbackFunction;
 	PubSubClient client;
 
-	EspSettingsBox *settingsBox;
+	EspSettingsBox *espSettingsBox;
 /*
 	char* mqtt_server;
 	uint16_t mqtt_port;
@@ -54,7 +55,6 @@ private:
 	Client* wiFiClient;
 
 	void connect();
-	boolean publish(String message);
 };
 
 

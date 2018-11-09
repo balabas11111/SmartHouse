@@ -118,6 +118,8 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	thSkChId = root["sCi"];
 
 	    	  	isMqttEnabled=stringToBoolean(root["isMqttEnabled"]);
+	    	  	postDataToMqttInterval=root["postDataToMqttInterval"];
+	    	  	sendItemsToBaseQUeue=stringToBoolean(root["sitbqm"]);;
 	    	  	mqtt_server=root["mqtt_server"].as<char*>();
 	    	  	mqtt_port=root["mqtt_port"];
 	    	  	mqtt_user=root["mqtt_user"].as<char*>();
@@ -125,6 +127,7 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	mqtt_topic=root["mqtt_topic"].as<char*>();
 
 	    	  	isHttpPostEnabled=stringToBoolean(root["isHttpSendEnabled"]);
+	    	  	postDataToHttpInterval=root["postDataToHttpInterval"];
 	    	  	httpPostIp=stringToIp(String(root["httpPostIp"].as<char*>()));
 
 	    	  	alarmSendNotifAlertStart=stringToBoolean(root["AlSAs"].as<char*>());
@@ -210,6 +213,8 @@ void EspSettingsBox::saveSettingsJson(){
 		//root["AlNi"]=alamNotificationInterval;
 
 		root["isMqttEnabled"]=isMqttEnabled;
+		root["sitbqm"]=sendItemsToBaseQUeue;
+		root["postDataToMqttInterval"]=postDataToMqttInterval;
 		root["mqtt_server"]=mqtt_server;
 		root["mqtt_port"]=mqtt_port;
 		root["mqtt_user"]=mqtt_user;
@@ -217,6 +222,7 @@ void EspSettingsBox::saveSettingsJson(){
 		root["mqtt_topic"]=mqtt_topic;
 
 		root["isHttpSendEnabled"]=isHttpPostEnabled;
+		root["postDataToHttpInterval"]=postDataToHttpInterval;
 		root["httpPostIp"]=httpPostIp.toString();
 
 		root["ntpEnabled"]=ntpEnabled;
@@ -515,84 +521,96 @@ String EspSettingsBox::getSimpleJson(){
 						\"DeviceId\":\""+DeviceId+"\",\
 						\"DeviceDescription\":\""+DeviceDescription+"\",\
 						\"DeviceLocation\":\""+DeviceLocation+"\",\
-						\"thingSpeakChannelUrl\":\""+getThingSpeakChannelUrl()+"\",\
+						\"thingSpeakChannelUrl\":\""+getThingSpeakChannelUrl()+"\"\
 						}";
 return result;
 }
 
-String EspSettingsBox::getJson(){
+String EspSettingsBox::getJson(String page){
 
-	String result="{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"items\":[\
-					{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\",\"descr\":\"Версия прошивки\"},\
-					{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\",\"descr\":\"ID устройства\"},\
-					{\"name\":\"DeviceKind\",\"val\":\""+DeviceKind+"\",\"descr\":\"Тип устройства\"},\
-					{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\",\"descr\":\"Описание устройства\"},\
-					{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\",\"descr\":\"Размещение устройства\"},\
-					\
-					{\"name\":\"displayAlvaysOn\",\"val\":\""+String(displayAlvaysOn)+"\",\"descr\":\"Дисплей всегда включен\"},\
-					{\"name\":\"displayAutochange\",\"val\":\""+String(displayAutochange)+"\",\"descr\":\"Интервал смены страниц дисплея\"},\
-					{\"name\":\"refreshInterval\",\"val\":\""+String(refreshInterval)+"\",\"descr\":\"Интервал обновления датчиков\"},\
-					\
-					{\"name\":\"accessUser\",\"val\":\""+String(accessUser)+"\",\"descr\":\"Пользователь главной страницы\"},\
-					{\"name\":\"accessPass\",\"val\":\"*****\",\"descr\":\"Пароль главной страницы\"},\
-					{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\",\"descr\":\"Пользователь страницы настроек\"},\
-					{\"name\":\"settingsPass\",\"val\":\"*****\",\"descr\":\"Пароль страницы настроек\"},\
-					\
-					{\"name\":\"isAccesPoint\",\"val\":\""+String(isAccesPoint)+"\",\"descr\":\"Устройство точка доступа\"},\
-					{\"name\":\"ssidAP\",\"val\":\""+ssidAP+"\",\"descr\":\"SSID точки доступа\"},\
-					{\"name\":\"ssid\",\"val\":\""+ssid+"\",\"descr\":\"SSID WiFi сети\"},\
-					{\"name\":\"password\",\"val\":\"*****\",\"descr\":\"Пароль к WiFi\"},\
-					{\"name\":\"serverPort\",\"val\":\""+String(serverPort)+"\",\"descr\":\"Порт Http сервера\"},\
-					{\"name\":\"staticIp\",\"val\":\""+String(staticIp)+"\",\"descr\":\"Использовать статический IP\"},\
-					{\"name\":\"localIp\",\"val\":\""+localIp.toString()+"\",\"descr\":\"Локальный IP устройства\"},\
-					{\"name\":\"apIp\",\"val\":\""+apIp.toString()+"\",\"descr\":\"IP точки доступа\"},\
-					{\"name\":\"gateIp\",\"val\":\""+gateIp.toString()+"\",\"descr\":\"IP шлюза\"},\
-					{\"name\":\"subnetIp\",\"val\":\""+subnetIp.toString()+"\",\"descr\":\"IP подсети\"},\
-					{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\",\"descr\":\"IP DNS\"},\
-					{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\",\"descr\":\"IP DNS\"},\
-					{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\",\"descr\":\"IP сервера !!!SmartHouse\"},\
-					\
-					{\"name\":\"isThingSpeakEnabled\",\"val\":\""+String(isThingSpeakEnabled)+"\",\"descr\":\"Отправка в ThingSpeak разрешена\"},\
-					{\"name\":\"postDataToTSInterval\",\"val\":\""+String(postDataToTSInterval)+"\",\"descr\":\"Интервал отправки в ThingSpeak (сек)\"},\
-					{\"name\":\"thSkUsrKey\",\"val\":\""+thSkUsrKey+"\",\"descr\":\"Ключ пользователя ThingSpeak\"},\
-					{\"name\":\"thSkWKey\",\"val\":\""+thSkWKey+"\",\"descr\":\"Ключ записи в ThingSpeak\"},\
-					{\"name\":\"thSkRKey\",\"val\":\""+thSkRKey+"\",\"descr\":\"Ключ чтения в ThingSpeak\"},\
-					{\"name\":\"thSkChId\",\"val\":\""+String(thSkChId)+"\",\"descr\":\"Идентификатор канала ThingSpeak\"},\
-					{\"name\":\"thSkTKey\",\"val\":\""+thSkTKey+"\",\"descr\":\"Идентификатор твиттер ThingSpeak\"},\
-					\
-					{\"name\":\"isMqttEnabled\",\"val\":\""+String(isMqttEnabled)+"\",\"descr\":\"Отправка в MQTT разрешена\"},\
-					{\"name\":\"mqtt_server\",\"val\":\""+mqtt_server+"\",\"descr\":\"Сервер MQTT\"},\
-					{\"name\":\"mqtt_user\",\"val\":\""+mqtt_user+"\",\"descr\":\"Пользователь MQTT\"},\
-					{\"name\":\"mqtt_pass\",\"val\":\"*****\",\"descr\":\"Пароль MQTT\"},\
-					{\"name\":\"mqtt_topic\",\"val\":\""+mqtt_topic+"\",\"descr\":\"Основная очередь MQTT\"},\
-					{\"name\":\"mqtt_port\",\"val\":\""+String(mqtt_port)+"\",\"descr\":\"Порт MQTT\"},\
-					\
-					{\"name\":\"isHttpPostEnabled\",\"val\":\""+String(isHttpPostEnabled)+"\",\"descr\":\"Отправка по Http разрешена\"},\
-					{\"name\":\"httpPostIp\",\"val\":\""+httpPostIp.toString()+"\",\"descr\":\"ІР сервиса приемника Http\"},\
-					\
-					{\"name\":\"ntpEnabled\",\"val\":\""+String(ntpEnabled)+"\",\"descr\":\"Синхронизация NTP разрешена\"},\
-					{\"name\":\"NTP_poolServerName\",\"val\":\""+String(NTP_poolServerName)+"\",\"descr\":\"Сервер NTP\"},\
-					{\"name\":\"NTP_timeOffset\",\"val\":\""+NTP_timeOffset+"\",\"descr\":\"Смещение по времени NTP (сек)\"},\
-					{\"name\":\"NTP_updateInterval\",\"val\":\""+NTP_updateInterval+"\",\"descr\":\"Интервал обновления NTP (сек)\"},\
-					{\"name\":\"NTP_timeTriggerInterval\",\"val\":\""+NTP_timeTriggerInterval+"\",\"descr\":\"Интервал рассылки клиентам времени NTP (сек)\"},\
-					\
-					{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\",\"descr\":\"Поточный IP устройства\"},\
-					{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\",\"descr\":\"Адресс канала ThingSpeak\"}]}";
+	String result="{}";
+
+	if(page=="device"){
+			result="{\"name\":\"espSettingsBox\",\"itemCount\":\"17\",\"items\":[\
+						{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\"},\
+						{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\"},\
+						{\"name\":\"DeviceKind\",\"val\":\""+DeviceKind+"\"},\
+						{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\"},\
+						{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\"},\
+						{\"name\":\"displayAlvaysOn\",\"val\":\""+String(displayAlvaysOn)+"\"},\
+						{\"name\":\"displayAutochange\",\"val\":\""+String(displayAutochange)+"\"},\
+						{\"name\":\"refreshInterval\",\"val\":\""+String(refreshInterval)+"\"},\
+						{\"name\":\"accessUser\",\"val\":\""+String(accessUser)+"\"},\
+						{\"name\":\"accessPass\",\"val\":\"*****\"},\
+						{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\"},\
+						{\"name\":\"settingsPass\",\"val\":\"*****\"},\
+						{\"name\":\"ntpEnabled\",\"val\":\""+String(ntpEnabled)+"\"},\
+						{\"name\":\"NTP_poolServerName\",\"val\":\""+String(NTP_poolServerName)+"\"},\
+						{\"name\":\"NTP_timeOffset\",\"val\":\""+NTP_timeOffset+"\"},\
+						{\"name\":\"NTP_updateInterval\",\"val\":\""+NTP_updateInterval+"\"},\
+						{\"name\":\"NTP_timeTriggerInterval\",\"val\":\""+NTP_timeTriggerInterval+"\"}]}";
+	}
+	if(page=="net"){
+			result="{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"items\":[\
+						{\"name\":\"isAccesPoint\",\"val\":\""+String(isAccesPoint)+"\"},\
+						{\"name\":\"ssidAP\",\"val\":\""+ssidAP+"\"},\
+						{\"name\":\"ssid\",\"val\":\""+ssid+"\"},\
+						{\"name\":\"password\",\"val\":\"*****\"},\
+						{\"name\":\"serverPort\",\"val\":\""+String(serverPort)+"\"},\
+						{\"name\":\"staticIp\",\"val\":\""+String(staticIp)+"\"},\
+						{\"name\":\"localIp\",\"val\":\""+localIp.toString()+"\"},\
+						{\"name\":\"apIp\",\"val\":\""+apIp.toString()+"\"},\
+						{\"name\":\"gateIp\",\"val\":\""+gateIp.toString()+"\"},\
+						{\"name\":\"subnetIp\",\"val\":\""+subnetIp.toString()+"\"},\
+						{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\"},\
+						{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\"},\
+						{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\"}]}";
+	}
+	if(page=="publish"){
+			result="{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"items\":[\
+					{\"name\":\"isThingSpeakEnabled\",\"val\":\""+String(isThingSpeakEnabled)+"\"},\
+					{\"name\":\"postDataToTSInterval\",\"val\":\""+String(postDataToTSInterval)+"\"},\
+					{\"name\":\"thSkUsrKey\",\"val\":\""+thSkUsrKey+"\"},\
+					{\"name\":\"thSkWKey\",\"val\":\""+thSkWKey+"\"},\
+					{\"name\":\"thSkRKey\",\"val\":\""+thSkRKey+"\"},\
+					{\"name\":\"thSkChId\",\"val\":\""+String(thSkChId)+"\"},\
+					{\"name\":\"thSkTKey\",\"val\":\""+thSkTKey+"\"},\
+					{\"name\":\"isMqttEnabled\",\"val\":\""+String(isMqttEnabled)+"\"},\
+					{\"name\":\"sendItemsToBaseQUeue\",\"val\":\""+String(sendItemsToBaseQUeue)+"\"},\
+					{\"name\":\"postDataToMqttInterval\",\"val\":\""+String(postDataToMqttInterval)+"\"},\
+					{\"name\":\"mqtt_server\",\"val\":\""+mqtt_server+"\"},\
+					{\"name\":\"mqtt_user\",\"val\":\""+mqtt_user+"\"},\
+					{\"name\":\"mqtt_pass\",\"val\":\"*****\"},\
+					{\"name\":\"mqtt_topic\",\"val\":\""+mqtt_topic+"\"},\
+					{\"name\":\"mqtt_port\",\"val\":\""+String(mqtt_port)+"\"},\
+					{\"name\":\"isHttpPostEnabled\",\"val\":\""+String(isHttpPostEnabled)+"\"},\
+					{\"name\":\"postDataToHttpInterval\",\"val\":\""+String(postDataToHttpInterval)+"\"},\
+					{\"name\":\"httpPostIp\",\"val\":\""+httpPostIp.toString()+"\"},\
+					{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
+					{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}]}";
+	}
+
+	Serial.print("page json=");
+	Serial.println(result);
+
 	return result;
 }
 
 boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
+	String startTag="espSettingsBox_";
+	int startIndex=startTag.length();
+
 	Serial.print(fieldName);
 	Serial.print("=");
 	Serial.print(fieldValue);
 	Serial.print(" (");
-	Serial.print(fieldName.substring(4));
+	Serial.print(fieldName.substring(startIndex));
 	Serial.println(")");
 
-	if(!fieldName.startsWith("set_")){
+	if(!fieldName.startsWith(startTag)){
 		return false;
 	}else{
-		fieldName=fieldName.substring(4);
+		fieldName=fieldName.substring(startIndex);
 	}
 
 	if(fieldName=="deviceFirmWareVersion"){
@@ -631,7 +649,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		accessUser=fieldValue;
 		return true;
 	}
-	if(fieldName=="accessPass"){
+	if(fieldName=="accessPass" && fieldValue!="*****"){
 		accessPass=fieldValue;
 		return true;
 	}
@@ -639,7 +657,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		settingsUser=fieldValue;
 		return true;
 	}
-	if(fieldName=="settingsPass"){
+	if(fieldName=="settingsPass" && fieldValue!="*****"){
 		settingsPass=fieldValue;
 		return true;
 	}
@@ -655,7 +673,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		ssid=fieldValue;
 		return true;
 	}
-	if(fieldName=="password"){
+	if(fieldName=="password" && fieldValue!="*****"){
 		password=fieldValue;
 		return true;
 	}
@@ -664,7 +682,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 	if(fieldName=="staticIp"){
-		staticIp=stringToBoolean(fieldValue);
+		staticIp=stringToIp(fieldValue);
 		return true;
 	}
 	if(fieldName=="localIp"){
@@ -715,6 +733,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		alamSoundInterval=fieldValue.toInt();
 		return true;
 	}
+
 	if(fieldName=="isThingSpeakEnabled"){
 		isThingSpeakEnabled=stringToBoolean(fieldValue);
 		return true;
@@ -747,6 +766,14 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		isMqttEnabled=stringToBoolean(fieldValue);
 		return true;
 	}
+	if(fieldName=="sendItemsToBaseQUeue"){
+		sendItemsToBaseQUeue=stringToBoolean(fieldValue);
+		return true;
+	}
+	if(fieldName=="postDataToMqttInterval"){
+		postDataToMqttInterval=fieldValue.toInt();
+		return true;
+	}
 	if(fieldName=="mqtt_server"){
 		mqtt_server=fieldValue;
 		return true;
@@ -755,7 +782,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		mqtt_user=fieldValue;
 		return true;
 	}
-	if(fieldName=="mqtt_pass"){
+	if(fieldName=="mqtt_pass" && fieldValue!="*****"){
 		mqtt_pass=fieldValue;
 		return true;
 	}
@@ -769,6 +796,10 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	}
 	if(fieldName=="isHttpPostEnabled"){
 		isHttpPostEnabled=stringToBoolean(fieldValue);
+		return true;
+	}
+	if(fieldName=="postDataToHttpInterval"){
+		postDataToHttpInterval=fieldValue.toInt();
 		return true;
 	}
 	if(fieldName=="httpPostIp"){

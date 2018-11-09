@@ -180,7 +180,7 @@ public:
 	String constructGetUrl(String baseUrl,String paramVal){
 		if(!this->periodicSend){
 				return "";
-			}
+		}
 			String result="";
 
 			for(uint8_t i=0;i<this->itemCount;i++){

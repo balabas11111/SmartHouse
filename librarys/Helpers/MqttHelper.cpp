@@ -15,7 +15,7 @@ MqttHelper::MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,uin
 	topicCount=_topicCount;
 	subscribeTopics=_subscribeTopics;
 
-	settingsBox=_settingsBox;
+	espSettingsBox=_settingsBox;
 
 	client=PubSubClient((char*)_settingsBox->mqtt_server.c_str(), _settingsBox->mqtt_port, [this](char* topic, uint8_t* payload, unsigned int length){callback(topic,payload,length);}, _client);
 
@@ -46,7 +46,7 @@ boolean MqttHelper::initialize(boolean _init){
 String MqttHelper::displayDetails(){
 	String wfConnected=String(client.connected());
 
-	String res="MqttHelper mqtt_user="+String((char*)(settingsBox->mqtt_user).c_str())+" mqtt_pass="+String((char*)(settingsBox->mqtt_pass).c_str())+" mqtt_topic="+settingsBox->mqtt_topic+" mqtt_startMessage="+(settingsBox->DeviceId)+" topicCount="+String(topicCount)+" connected="+String(wfConnected);
+	String res="MqttHelper mqtt_user="+String((char*)(espSettingsBox->mqtt_user).c_str())+" mqtt_pass="+String((char*)(espSettingsBox->mqtt_pass).c_str())+" mqtt_topic="+espSettingsBox->mqtt_topic+" mqtt_startMessage="+(espSettingsBox->DeviceId)+" topicCount="+String(topicCount)+" connected="+String(wfConnected);
 	Serial.println(res);
 
 	for(int i=0;i<topicCount;i++){
@@ -61,13 +61,13 @@ void MqttHelper::connect(){
 	if (!client.connected()) {
 	  Serial.println("Start connect mqttClient");
 	  String clientName;
-	  clientName += String(settingsBox->DeviceId)+millis();
+	  clientName += String(espSettingsBox->DeviceId)+millis();
 
-	if (client.connect((char*) clientName.c_str(),(char*)settingsBox->mqtt_user.c_str(),(char*)settingsBox->mqtt_pass.c_str())) {
+	if (client.connect((char*) clientName.c_str(),(char*)espSettingsBox->mqtt_user.c_str(),(char*)espSettingsBox->mqtt_pass.c_str())) {
 		Serial.println("Connected to MQTT broker");
 		Serial.print("Publish Topic is: ");
 
-		if (publish((char*)settingsBox->mqtt_topic.c_str(), settingsBox->DeviceId)) {
+		if (publish((char*)espSettingsBox->mqtt_topic.c_str(), espSettingsBox->DeviceId)) {
 		  Serial.println("Publish ok");
 		}
 		else {
@@ -111,12 +111,12 @@ void MqttHelper::subscribe(String topicName){
 	Serial.println(" ..."+resStr);
 }
 
-boolean MqttHelper::publish(char* topicName,String message){
+boolean MqttHelper::publish(String topicName,String message){
 	if(!connectIfNotConnected()){
 		return false;
 	}
 
-	boolean result=client.publish( topicName,(char*) message.c_str());
+	boolean result=client.publish( (char*)topicName.c_str(),(char*) message.c_str());
 	return result;
 }
 
@@ -126,7 +126,7 @@ boolean MqttHelper::publish(String message){
 			return false;
 		}
 
-		boolean result=client.publish( (char*)settingsBox->mqtt_topic.c_str(),(char*) message.c_str());
+		boolean result=client.publish( (char*)espSettingsBox->mqtt_topic.c_str(),(char*) message.c_str());
 		if(result){
 			Serial.println(" sent");
 		}else{
@@ -141,7 +141,7 @@ boolean MqttHelper::publish(String message){
 }
 
 String MqttHelper::getName(){
-	return settingsBox->DeviceId;
+	return espSettingsBox->DeviceId;
 }
 
 boolean MqttHelper::loop(){

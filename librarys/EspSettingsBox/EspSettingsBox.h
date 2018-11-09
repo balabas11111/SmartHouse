@@ -52,7 +52,7 @@ public:
 	String getThingSpeakChannelUrl();
 
 	String getSimpleJson();
-	String getJson();
+	String getJson(String page);
 
 	String getFileName(AbstractItem* item);
 
@@ -117,7 +117,7 @@ public:
 	uint16_t alamSoundInterval=30;
 
 	boolean isThingSpeakEnabled=false;
-	uint8_t postDataToTSInterval=241;
+	uint16_t postDataToTSInterval=241;
 	String thSkUsrKey="YV1SA7H87PS8RFMU";
 	String thSkWKey="V8V5G1W2CACCQOMV";
 	String thSkRKey="SPH0UG4JJZC7GDDH";
@@ -127,13 +127,17 @@ public:
 	//uint16_t alamNotificationInterval=60;
 
 	boolean isMqttEnabled=false;
+	boolean sendItemsToBaseQUeue=false;
+	uint16_t postDataToMqttInterval=241;
 	String mqtt_server = "m23.cloudmqtt.com";
 	String mqtt_user = "tpheglmk";
 	String mqtt_pass = "QgYRfVzDhQ31";
 	String mqtt_topic="topic/basePublish";
 	int mqtt_port = 10186;
 
+
 	boolean isHttpPostEnabled=false;
+	uint16_t postDataToHttpInterval=241;
 	IPAddress httpPostIp=IPAddress(192, 168, 0, 2);
 
 	boolean ntpEnabled=false;

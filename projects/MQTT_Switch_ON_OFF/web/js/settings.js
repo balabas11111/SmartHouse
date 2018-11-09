@@ -4,12 +4,6 @@ function onLoadPageComplete(){
 	w3_close();
 }
 //----------------------------------------------------------------------
-const DESCR_SUFFIX="descr";
-const MIN_VAL_SUFFIX="minVal";
-const MAX_VAL_SUFFIX="maxVal";
-const FIELD_ID_SUFFIX="fieldId";
-const QUEUE_SUFFIX="queue";
-
 const FIELD_DESCR_ID   = 1;
 const FIELD_MIN_ID     = 2;
 const FIELD_MAX_ID     = 3;
@@ -74,14 +68,14 @@ function openTab(tabName,headerName) {
 			getValuesHandler=processDeviceSettingsGet;
 			validateValuesHandler=validateDeviceSettingsForm;
 			submitValuesUrl='/submitForm_'+'settings';
-			getValuesUrl='/getJson_'+'settings';
+			getValuesUrl='/getJson_'+'settings?page='+tabName;
 		}
 		
 		if(tabName=='net'){
 			getValuesHandler=processDeviceSettingsGet;
 			validateValuesHandler=undefined;
 			submitValuesUrl='/submitForm_'+'settings';
-			getValuesUrl='/getJson_'+'settings';
+			getValuesUrl='/getJson_'+'settings?page='+tabName;
 		}
 		
 		if(tabName=='sensors'){
@@ -96,7 +90,7 @@ function openTab(tabName,headerName) {
 			getValuesHandler=processDeviceSettingsGet;
 			validateValuesHandler=undefined;
 			submitValuesUrl='/submitForm_'+'settings';
-			getValuesUrl='/getJson_'+'settings';
+			getValuesUrl='/getJson_'+'settings?page='+tabName;
 		}
 
 		if(getValuesHandler!=undefined){
@@ -114,20 +108,20 @@ function openTab(tabName,headerName) {
 
 //---------------------------------device settings tab----------------------
 function processDeviceSettingsGet(data){
+	processSimpleJsonResponse(data,'');
 	showMessage(currentMessageComp,'Загружено '+currentHeaderName,'w3-green');
-	processSimpleJsonResponse(data,'set');
 }
 
 function validateDeviceSettingsForm(){
 	var errorMessage='';
 	
-	var pass=document.getElementById('set_accessPass');
-	var conf=document.getElementById('set_accessPassConfirm');
+	var pass=document.getElementById('espSettingsBox_accessPass');
+	var conf=document.getElementById('espSettingsBox_accessPassConfirm');
 	
 	errorMessage=processPassConfirmPath(pass,conf);
 	
-	pass=document.getElementById('set_settingsPass');
-	conf=document.getElementById('set_settingsPass');
+	pass=document.getElementById('espSettingsBox_settingsPass');
+	conf=document.getElementById('espSettingsBox_settingsPass');
 	
 	errorMessage=errorMessage+processPassConfirmPath(pass,conf);
 	
@@ -331,8 +325,9 @@ function processSensorsJsonGet(data){
 		container.appendChild(divb);
 		container.appendChild(hr);
 		//end of sensors loop
-	}	
+	}
 	
+	showMessage(currentMessageComp,'Загружено '+currentHeaderName,'w3-green');
 }
 
 function validateSensorsPage(){

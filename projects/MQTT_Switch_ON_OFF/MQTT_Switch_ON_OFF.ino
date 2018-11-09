@@ -65,7 +65,7 @@ DisplayHelper displayHelper(true);
 String subscribeTopics[]={"topic/ESP8266Topic","topic/SwitchLeft","topic/SwitchRight"};
 
 TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,measureSensors);
-TimeTrigger thingSpeakTrigger(espSettingsBox.isThingSpeakEnabled,(espSettingsBox.postDataToTSInterval*1000),true,processThingSpeakPost);
+TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSettingsBox.isThingSpeakEnabled,processThingSpeakPost);
 
 PinDigital buttonLeft(VAR_NAME(buttonLeft),D7,onLeftButtonChanged);
 PinDigital buttonRight(VAR_NAME(buttonRight),D6,onRightButtonChanged);
@@ -81,15 +81,14 @@ BME280_Sensor bmeMeasurer(20,VAR_NAME(bmeMeasurer));
 BH1750_Sensor luxMeasurer(21,VAR_NAME(luxMeasurer));
 
 DHT22_Sensor dhtMeasurer(VAR_NAME(dhtSensor), D0, 22);
-
 DS18D20_Sensor ds18d20Measurer(VAR_NAME(ds18d20Measurer), D3);
 
 WiFiHelper wifiHelper("WiFiHelper",&espSettingsBox, &displayHelper, /*nullptr,*/&server,postInitWebServer,false);
 
 MqttHelper mqttHelper(&espSettingsBox,subscribeTopics,ARRAY_SIZE(subscribeTopics),wclient,processMqttEvent);
 
-Loopable* loopArray[]={&wifiHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&pirDetector};
-Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
+Loopable* loopArray[]={&wifiHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&pirDetector,&thingSpeakTrigger};
+Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer,& dhtMeasurer,&ds18d20Measurer};
 
 Measurable* measurableArray[]={&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
 AbstractItem* minMaxValues[]={&lampLeft,&lampRight,&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
@@ -124,7 +123,8 @@ void postInitWebServer(){
 	});
 	server.on("/getJson_settings", HTTP_GET, [](){
 		wifiHelper.checkAuthentication();
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getJson());
+		String page=server.arg("page");
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getJson(page));
 	});
 	server.on("/submitForm_sensors", HTTP_POST, [](){
 		wifiHelper.checkAuthentication();
@@ -261,15 +261,14 @@ String setAllSensorsJson(){
 
 	saveSensors();
 
-	Serial.println("return settings Json");
-
 	return getAllSensorsJson();
 }
 
 String getAllSensorsJson(){
-	wifiHelper.checkAuthentication();
+	delay(1);
 	String result=deviceHelper.getJson(minMaxValues, ARRAY_SIZE(minMaxValues));
 
+	Serial.print("AllSensors json=");
 	Serial.println(result);
 
 	return result;
@@ -279,41 +278,83 @@ String getAllSensorsJson(){
 String setEspSettingsBoxValues(){
 	wifiHelper.checkAuthentication();
 	boolean result=false;
+	String page=server.arg("page");
 
 	for(uint8_t i=0;i<server.args();i++){
 		String argName=server.argName(i);
 		String argVal=server.arg(i);
 
 		result=espSettingsBox.setSettingsValue(argName,argVal) || result;
-
 	}
 
 	if(result){
 		espSettingsBox.saveSettingsJson();
 	}
 
-	return espSettingsBox.getJson();
+	return espSettingsBox.getJson(page);
 }
 
 void processThingSpeakPost(){
 	if(espSettingsBox.isThingSpeakEnabled){
 		Serial.println(FPSTR(MESSAGE_THINGSPEAK_SEND_STARTED));
 
-		String baseUrl=FPSTR(MESSAGE_THINGSPEAK_BASE_URL)+espSettingsBox.thSkWKey;
-
 		uint8_t count=0;
 
+		String baseUrl=FPSTR(MESSAGE_THINGSPEAK_BASE_URL);
+		String params="";
+
 		for(uint8_t i=0;i<ARRAY_SIZE(minMaxValues);i++){
-			String url=minMaxValues[i]->constructGetUrl(baseUrl, FPSTR(MESSAGE_THINGSPEAK_FIELD_VAL_FOR_REQUEST));
-			wifiHelper.executeGetRequest(url);
+			params+=constructThingSpeakParameters(minMaxValues[i]);
 			count++;
 		}
 
-		thingSpeakTrigger.saveTime();
+		if(params!=""){
+
+			wifiHelper.executeGetRequest(baseUrl+espSettingsBox.thSkWKey+params);
+		}
 
 		Serial.print(count);
 		Serial.println(FPSTR(MESSAGE_DONE));
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+		deviceHelper.printDeviceDiagnostic();
+	}
+}
+
+void sendAbstractItemToThingSpeak(AbstractItem* item){
+	String baseUrl=FPSTR(MESSAGE_THINGSPEAK_BASE_URL);
+		baseUrl+=espSettingsBox.thSkWKey;
+	String url=item->constructGetUrl(baseUrl, FPSTR(MESSAGE_THINGSPEAK_FIELD_VAL_FOR_REQUEST));
+	wifiHelper.executeGetRequest(url);
+}
+
+String constructThingSpeakParameters(AbstractItem* item){
+	return item->constructGetUrl("", FPSTR(MESSAGE_THINGSPEAK_FIELD_VAL_FOR_REQUEST));
+}
+
+void senDAbstractItemToMqtt(AbstractItem* item){
+	if(!item->getPeriodicSend()){
+		return;
+	}
+	for(uint8_t i=0;i<item->getItemCount();i++){
+		String queue=item->getItem(i).queue;
+
+		if(queue.length()!=0){
+			String val=item->getValStr(i);
+
+			if(espSettingsBox.isMqttEnabled){
+				mqttHelper.publish((char*)queue.c_str(), val);
+			}
+
+			if(espSettingsBox.sendItemsToBaseQUeue){
+				mqttHelper.publish(item->getJson());
+			}
+		}
+	}
+}
+
+void sendAbstractItemToHttp(AbstractItem* item){
+	if(espSettingsBox.isHttpPostEnabled){
+		wifiHelper.executePostRequest(espSettingsBox.httpPostIp.toString(), item->getJson());
 	}
 }
 
