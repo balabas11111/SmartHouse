@@ -67,6 +67,8 @@ String subscribeTopics[]={"topic/ESP8266Topic","topic/SwitchLeft","topic/SwitchR
 TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,measureSensors);
 TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSettingsBox.isThingSpeakEnabled,processThingSpeakPost);
 
+TimeTrigger postPonedCommandTrigger(0,10000,false,nullptr);
+
 PinDigital buttonLeft(VAR_NAME(buttonLeft),D7,onLeftButtonChanged);
 PinDigital buttonRight(VAR_NAME(buttonRight),D6,onRightButtonChanged);
 
@@ -87,7 +89,7 @@ WiFiHelper wifiHelper("WiFiHelper",&espSettingsBox, &displayHelper, /*nullptr,*/
 
 MqttHelper mqttHelper(&espSettingsBox,subscribeTopics,ARRAY_SIZE(subscribeTopics),wclient,processMqttEvent);
 
-Loopable* loopArray[]={&wifiHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&pirDetector,&thingSpeakTrigger};
+Loopable* loopArray[]={&wifiHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&pirDetector,&thingSpeakTrigger,&postPonedCommandTrigger};
 Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer,& dhtMeasurer,&ds18d20Measurer};
 
 Measurable* measurableArray[]={&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
@@ -117,6 +119,9 @@ void loop() {
 }
 
 void postInitWebServer(){
+	server.on("/submitForm_commands", HTTP_POST, [](){
+			server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), executeCommand());
+		});
 	server.on(espSettingsBox.getSimpleJsonPublishUrl(), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getSimpleJson());
 	});
@@ -130,7 +135,7 @@ void postInitWebServer(){
 	});
 	server.on("/submitForm_sensors", HTTP_POST, [](){
 		wifiHelper.checkAuthentication();
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), setAllSensorsJson());
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), setSensorJson());
 	});
 	server.on("/getJson_sensors", HTTP_GET, [](){
 		wifiHelper.checkAuthentication();
@@ -243,28 +248,31 @@ String setSensorJson(){
 	uint8_t argsProcessed=0;
 
 	String sensorName=server.arg("currentSensor_name");
+	String status="NotFound";
 
-	AbstractItem* item;
+	AbstractItem* aitem;
 
 	for(uint8_t i=0;i<ARRAY_SIZE(minMaxValues);i++){
 		if(minMaxValues[i]->getName()==sensorName){
-				item=minMaxValues[i];
-				break;
+			aitem=minMaxValues[i];
+			break;
 		}
 	}
 
-	for(int i=0;i<server.args();i++){
-		AbstractItemRequest req=AbstractItem::createitemRequest(server.argName(i),server.arg(i));
+	if(aitem!=nullptr){
+		for(int i=0;i<server.args();i++){
+			AbstractItemRequest req=AbstractItem::createitemRequest(server.argName(i),server.arg(i));
 
-		if(req.valid){
-			argsProcessed++;
-			minMaxValues[i]->setFieldFromRequest(req);
+			if(req.valid){
+				argsProcessed++;
+				aitem->setFieldFromRequest(req);
+			}
 		}
+
+		espSettingsBox.saveAbstractItemToFile(aitem);
 	}
 
-	espSettingsBox.saveAbstractItemToFile(item);
-
-	return "{\"status\":\"Ok\",\"sensor\":\""+item->getName()+"\"}";
+	return "{\"status\":\"Ok\",\"sensor\":\""+sensorName+"\"}";
 }
 
 
@@ -276,6 +284,23 @@ String getAllSensorsJson(){
 	Serial.println(result);
 
 	return result;
+}
+
+String executeCommand(){
+	wifiHelper.checkAuthentication();
+
+	String command=server.arg("command");
+
+	if(command=="restart"){
+		postPonedCommandTrigger.setHandler(executePostPonedCommand);
+		postPonedCommandTrigger.setActive(true);
+	}
+
+	return "{\"status\":\"Ok\"}";
+}
+
+void executePostPonedCommand(){
+	ESP.reset();
 }
 
 //----------espSettings save-------------------------------------------

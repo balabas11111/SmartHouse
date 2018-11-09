@@ -163,7 +163,12 @@ function ValidateIPaddress(ipaddress) {
 	  alert("You have entered an invalid IP address!")  
 	  return (false)  
 	}
-
+//-------------------------------------------------------
+function openConfirmPopup(message,action){
+	getComponentById('confirm_content').innerHTML=message;
+	getComponentById('confirm_content').setAttribute('onclick',action);
+	showComponent();
+}
 //-------------------------------------------------------
 function processSensorsJsonGet(data){
 	var container=currentForm;
@@ -626,7 +631,7 @@ function createInputComponent(id1,id2,fieldIntId,suffixName,fieldVal,sensorName,
 		input1.setAttribute("value",fieldVal);
 		input1.setAttribute(SENSOR_NAME_ATTR,sensorName);
 		if(editable!=undefined || !editable)
-			input1..setAttribute("disabled","disabled");
+			input1.setAttribute("disabled","disabled");
 		if(itemName!=undefined)
 			input1.setAttribute(ITEM_NAME_ATTR,itemName);	
 		

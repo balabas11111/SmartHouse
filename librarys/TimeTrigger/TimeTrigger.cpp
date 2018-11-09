@@ -114,4 +114,8 @@ unsigned long TimeTrigger::setLastTriggerTime(unsigned long lastTriggerTime){
 	_lastTriggerTime=lastTriggerTime;
 }
 
+void TimeTrigger::setHandler(std::function<void(void)> funcEvent){
+	_funcEvent=funcEvent;
+}
+
 

@@ -698,8 +698,45 @@
 			
 			  <p>Общее управление устройством</p>
 			   <div id="manage_content">
-			  
+			  		<button class="w3-button w3-white w3-border w3-border-red w3-round-large" onclick="openConfirmPopup('Подтвердите рестарт устройства','confirmRestartDevice();')">
+	  	 				Перезапустить устройство
+					</button>
 			  </div>
+		</div>
+		
+		<div id="confirm_modal" class="w3-modal">
+		    <div class="w3-modal-content w3-animate-top w3-card-4">
+		      	
+		      	<header class="w3-container w3-teal"> 
+			      <span onclick="hideComponent('confirm_modal');" class="w3-button w3-display-topright">&times;</span>
+			      <h3 id="currentSensor_header">Подтвердите действие</h3>
+			    </header>
+		      	
+		      	<div class="w3-container">
+   
+		        	<form id="confirm_form" class="w3-container">
+		        		<input id="command" name="command" type="hidden">
+		        		
+		        		<div id=confirm_content>
+		        		
+						</div>						
+						
+						<div id="confirm_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
+				
+						<div style="height:20px;"></div>
+						
+					</form>
+				
+				 </div>
+				 
+				 <footer class="w3-container w3-teal w3-display-container">
+				      <button id="confirm_okBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;  display:none;"
+							onclick="">Подтвердить</button>
+					  <button id="confirm_cancelBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;  display:none;"
+							onclick="hideComponent('confirm_modal');">Отменить</button>
+    			</footer>
+	        
+		  </div>
 		</div>
 		
 		

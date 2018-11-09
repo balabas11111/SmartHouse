@@ -27,6 +27,7 @@ public:
 	unsigned long setInterval(unsigned long interval);
 	unsigned long getLastTriggerTime();
 	unsigned long setLastTriggerTime(unsigned long lastTriggerTime);
+	void setHandler(std::function<void(void)> funcEvent);
 
 	String getName();
 	String displayDetails();
