@@ -67,7 +67,7 @@ String subscribeTopics[]={"topic/ESP8266Topic","topic/SwitchLeft","topic/SwitchR
 TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,measureSensors);
 TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSettingsBox.isThingSpeakEnabled,processThingSpeakPost);
 
-TimeTrigger postPonedCommandTrigger(0,10000,false,nullptr);
+TimeTrigger postPonedCommandTrigger(0,5000,false,nullptr);
 
 PinDigital buttonLeft(VAR_NAME(buttonLeft),D7,onLeftButtonChanged);
 PinDigital buttonRight(VAR_NAME(buttonRight),D6,onRightButtonChanged);
@@ -265,14 +265,16 @@ String setSensorJson(){
 
 			if(req.valid){
 				argsProcessed++;
-				aitem->setFieldFromRequest(req);
+				if(aitem->setFieldFromRequest(req)){
+					status="Ok";
+				}
 			}
 		}
 
 		espSettingsBox.saveAbstractItemToFile(aitem);
 	}
 
-	return "{\"status\":\"Ok\",\"sensor\":\""+sensorName+"\"}";
+	return "{\"status\":\""+status+"\",\"sensor\":\""+sensorName+"\"}";
 }
 
 
@@ -286,21 +288,53 @@ String getAllSensorsJson(){
 	return result;
 }
 
+String postPonedCommand="";
+
 String executeCommand(){
 	wifiHelper.checkAuthentication();
+	Serial.println("Executing command");
 
-	String command=server.arg("command");
+	String command=server.arg("confirm_command");
+
+	String status="Error";
+	String message="Команда не распознана";
 
 	if(command=="restart"){
+		Serial.println("Device will be restarted");
 		postPonedCommandTrigger.setHandler(executePostPonedCommand);
+		postPonedCommandTrigger.saveTime();
 		postPonedCommandTrigger.setActive(true);
+		postPonedCommand=command;
+
+		status="Ok";
+		message="Устройство будет перезапущено. Дождитесь перезагрузки страницы";
+	}
+	if(command=="recreateThingSpeak"){
+		if(!espSettingsBox.isThingSpeakEnabled){
+			status="Failed";
+			message="Публикация ThingSpeak не разрешена";
+		}else
+		if(espSettingsBox.thSkUsrKey=="" || espSettingsBox.thSkUsrKey=="EmptyKey"){
+			status="Failed";
+			message="Не задан пользователь ThingSpeak";
+		}else{
+			status="Ok";
+			message=recreateThingSpeak();
+		}
+	}
+	if(command=="deleteSettings"){
+		status="Ok";
+		message="Удалено файлов :"+String(espSettingsBox.deleteSettingsFiles());
 	}
 
-	return "{\"status\":\"Ok\"}";
+	return "{\"status\":\""+status+"\",\"message\":\""+message+"\"}";
 }
 
 void executePostPonedCommand(){
-	ESP.reset();
+	if(postPonedCommand=="restart"){
+		Serial.print("Executing restart");
+		ESP.restart();
+	}
 }
 
 //----------espSettings save-------------------------------------------
@@ -322,6 +356,96 @@ String setEspSettingsBoxValues(){
 
 	return espSettingsBox.getJson(page);
 }
+//-------------------------Thing speak functions---------------------
+String recreateThingSpeak(){
+	Serial.println(FPSTR(MESSAGE_THINGSPEAK_CHANNEL_CREATE_STARTED));
+	String result="";
+
+	String commandGet="api_key="+espSettingsBox.thSkUsrKey;
+	String commandSet="api_key="+espSettingsBox.thSkUsrKey;
+
+	uint8_t countGet=0;
+	uint8_t countSet=0;
+
+	for(uint8_t i=0;i<ARRAY_SIZE(minMaxValues);i++){
+		AbstractItem* item=minMaxValues[i];
+
+		if(item->getAutoCreateChannel()){
+			for(uint8_t j=0;j<item->getItemCount();j++){
+				if(item->getFieldId(j)!=0){
+					countGet++;
+					commandGet+="&field"+item->getFieldIdStr(j)+"="+item->getDescr(j);
+
+					//Serial.println(item->getName()+" "+item->getFIeld);
+
+					if(item->getSetAllowed(j)){
+						countSet++;
+						commandSet+="&field"+item->getFieldIdStr(j)+"="+item->getDescr(j);
+					}
+				}
+			}
+		}
+	}
+
+	if(countGet!=0){
+
+		commandGet+="&name=";
+		commandGet+=espSettingsBox.DeviceLocation+" "+espSettingsBox.DeviceId;
+		commandGet+="&description=";
+		commandGet+=espSettingsBox.DeviceDescription+" "+espSettingsBox.DeviceKind;
+
+		String getResult=wifiHelper.executeFormPostRequest(FPSTR(MESSAGE_THINGSPEAK_CREATE_CHANNEL_URL),commandGet);
+		boolean res=espSettingsBox.saveThingSpeakChannelCreation(getResult,false);
+		delay(10);
+		deviceHelper.printDeviceDiagnostic();
+		//Serial.println(getResult);
+		/*
+		if(res){
+			String url="http://api.thingspeak.com/channels/"+String(espSettingsBox.thSkChId)+"/charts/";
+
+			for(uint8_t i=0;i<ARRAY_SIZE(minMaxValues);i++){
+					AbstractItem* item=minMaxValues[i];
+
+					if(item->getAutoCreateChannel()){
+						for(uint8_t j=0;j<item->getItemCount();j++){
+							if(item->getFieldId(j)!=0){
+								String chartUrl=url+item->getFieldIdStr(j)+"?title="+item->getDescr(j)+
+										"&results=100&api_key"+espSettingsBox.thSkUsrKey;
+
+
+								wifiHelper.executeGetRequest(chartUrl);
+								deviceHelper.printDeviceDiagnostic();
+								delay(10);
+							}
+						}
+					}
+				}
+		}
+		*/
+	}
+
+
+	if(countSet!=0){
+		commandSet+="&name=";
+		commandSet+="(Управление) "+espSettingsBox.DeviceLocation+" "+espSettingsBox.DeviceId;
+		commandSet+="&description=";
+		commandSet+=espSettingsBox.DeviceDescription+" "+espSettingsBox.DeviceKind;
+		String setResult=wifiHelper.executeFormPostRequest(FPSTR(MESSAGE_THINGSPEAK_CREATE_CHANNEL_URL),commandSet);
+		espSettingsBox.saveThingSpeakChannelCreation(setResult,true);
+		delay(10);
+		deviceHelper.printDeviceDiagnostic();
+		//Serial.println(setResult);
+	}
+
+	result+=String(countGet)+" каналов записи;";
+	result+=" "+String(countSet)+" каналов управления;";
+
+	Serial.println(result);
+
+	return result;
+}
+
+
 
 void processThingSpeakPost(){
 	if(espSettingsBox.isThingSpeakEnabled){
@@ -359,7 +483,7 @@ void sendAbstractItemToThingSpeak(AbstractItem* item){
 String constructThingSpeakParameters(AbstractItem* item){
 	return item->constructGetUrl("", FPSTR(MESSAGE_THINGSPEAK_FIELD_VAL_FOR_REQUEST));
 }
-
+//------------------------------------------------------------------------------------------------
 void senDAbstractItemToMqtt(AbstractItem* item){
 	if(!item->getPeriodicSend()){
 		return;
@@ -383,7 +507,7 @@ void senDAbstractItemToMqtt(AbstractItem* item){
 
 void sendAbstractItemToHttp(AbstractItem* item){
 	if(espSettingsBox.isHttpPostEnabled){
-		wifiHelper.executePostRequest(espSettingsBox.httpPostIp.toString(), item->getJson());
+		wifiHelper.executeFormPostRequest(espSettingsBox.httpPostIp.toString(), item->getJson());
 	}
 }
 

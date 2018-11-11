@@ -180,7 +180,7 @@ const PROGMEM char MESSAGE_DEVICE_FLASH_CHIP_SIZE[]="FlashChipSize";
 const PROGMEM char MESSAGE_DEVICE_FREE_SCETCH_SPACE[]="FreeSketchSpace";
 const PROGMEM char MESSAGE_DEVICE_RESET_REASON[]="ResetReason";
 
-const PROGMEM char MESSAGE_DEVICE_HELPER_UPDATE_EXECUTION[]="----------Device helper UpdateExecution----";
+const PROGMEM char MESSAGE_DEVICE_HELPER_UPDATE_EXECUTION[]="----------Device helper Update Sensor values----";
 const PROGMEM char MESSAGE_DEVICE_HELPER_STARTED[]="----------Device helper----------";
 const PROGMEM char MESSAGE_DEVICE_HELPER_INITIALIZING[]="----------Device helper init----------";
 const PROGMEM char MESSAGE_DEVICE_HELPER_LOOPERS[]="----------Device helper loopers----------";
@@ -236,6 +236,16 @@ const PROGMEM char ESPSETTINGSBOX_SETTINGS_PATH[]="/settings/";
 const PROGMEM char ESPSETTINGSBOX_SETTINGS_DEFAULT_FILE[]="settings.txt";
 const PROGMEM char ESPSETTINGSBOX_SETTINGS_TXT_EXT[]=".txt";
 
+//ThingSpeak parsing
+const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_PARSE_CHCREATION[]="-----------------Parse CHannel creation----------";
+const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_CHANNEL_JSON[]="Channel_JSON=";
+const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_CHANNELID[]="Channel=";
+const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_WRITEKEY[]="WriteKey=";
+const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_READKEY[]="ReadKey=";
+
+const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_UPDATE_MANAGECHANNEL[]="Update Manage channel";
+const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_UPDATE_CHANNEL[]="Update channel";
+
 //WiFi deploy folder
 const PROGMEM char ESPSETTINGSBOX_DEFAULT_PAGE[]="/web/index.htm";
 const PROGMEM char ESPSETTINGSBOX_DEFAULT_WEB_FOLDER[]="/web/";
@@ -263,13 +273,18 @@ const PROGMEM char MESSAGE_WIFIHELPER_URL_EQ[]=" URL=";
 const PROGMEM char MESSAGE_WIFIHELPER_RESPONSE_EQ[]=" response=";
 const PROGMEM char MESSAGE_WIFIHELPER_HTTP_STATUS_EQ[]=" http status=";
 const PROGMEM char MESSAGE_WIFIHELPER_HTTP_BODY_EQ[]=" body=";
+const PROGMEM char MESSAGE_WIFIHELPER_HTTP_BEGIN_EQ[]=" begin=";
+const PROGMEM char MESSAGE_WIFIHELPER_HTTP_HEADER_EQ[]=" header=";
 
 const PROGMEM char MESSAGE_WIFIHELPER_GET[]=" GET ";
 const PROGMEM char MESSAGE_WIFIHELPER_POST[]=" POST ";
 //Thingspeak constants
 const PROGMEM char MESSAGE_THINGSPEAK_SEND_STARTED[]="----------------Send data to thing speak---------------";
+const PROGMEM char MESSAGE_THINGSPEAK_CHANNEL_CREATE_STARTED[]="----------------Create channel on thing speak---------------";
 const PROGMEM char MESSAGE_THINGSPEAK_BASE_URL[]="http://api.thingspeak.com/update?api_key=";
+const PROGMEM char MESSAGE_THINGSPEAK_CREATE_CHANNEL_URL[]="http://api.thingspeak.com/channels.json";
 const PROGMEM char MESSAGE_THINGSPEAK_FIELD_VAL_FOR_REQUEST[]="&field";
+const PROGMEM char MESSAGE_THINGSPEAK_FIELD_VAL_EQ[]="&field=";
 //Ntp clock client
 const PROGMEM char MESSAGE_TIME_CLIENT_JSON_BEFORE_TIME[]="{\"wsId\":\"clock\",\"wsClass\":\"wsItem\",\"wsValue\":\"";
 const PROGMEM char MESSAGE_TIME_CLIENT_JSON_AFTER_TIME[]="\"}";

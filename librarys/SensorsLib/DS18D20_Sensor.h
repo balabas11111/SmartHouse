@@ -70,11 +70,13 @@ public:
 			String name=String(FPSTR(TEMPERATURE))+devAddressStr;
 
 			//uint8_t field=i+1;
-			items[i]={i,name,FPSTR(MEASURE_CELSIUS_DEGREES),FPSTR(MEASURE_CELSIUS_DEGREES_RU),devAddressStr,-127,0,-512,512,""};
+			items[i]={i,name,FPSTR(MEASURE_CELSIUS_DEGREES),FPSTR(MEASURE_CELSIUS_DEGREES_RU),devAddressStr,-127,0,-512,512,"",0};
 		}
 
 		if(itemCount>0){
 			periodicSend=true;
+		}else{
+			periodicSend=false;
 		}
 		Serial.println("complete init bus");
 

@@ -23,6 +23,7 @@
 <div id="leftSidebar" class="w3-sidebar w3-bar-block w3-light-grey w3-border-right w3-animate-left" style="display: none;">
 	<button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Свернуть</button>
 	<a href="index.htm" class="w3-bar-item w3-button w3-hover-green">Главная</a>
+	<a href="edit" class="w3-bar-item w3-button w3-hover-green">Редактировать файлы</a>
 </div>
 <!-- Page Content -->
 <div id="mainContent">
@@ -445,11 +446,6 @@
 					</form>  
 				</div>
 				  
-				  <!--  <p>
-				  	<button id="saveSensorSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
-							onclick="submitCurrentForm();">Сохранить</button>
-				  </p>
-			  		-->
 			  
 				<div id="sensors_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px; display:none;"></div>
 				
@@ -457,7 +453,7 @@
 		</div>
 		
 		 <div id="currentSensor_modal" class="w3-modal">
-		    <div class="w3-modal-content w3-animate-top w3-card-4">
+		    <div class="w3-modal-content w3-animate-top w3-card-4" style="width: 90%;">
 		      	
 		      	<header class="w3-container w3-teal"> 
 			      <span onclick="closeSensorsPopup();" class="w3-button w3-display-topright">&times;</span>
@@ -473,16 +469,14 @@
 		        		
 						</div>						
 						
-						<div id="currentSensor_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
-				
-						<div style="height:20px;"></div>
-						
 					</form>
 				
 				 </div>
 				 
 				 <footer class="w3-container w3-teal w3-display-container">
-				      <button id="currentSensor_saveBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;  display:none;"
+				 	  <div id="currentSensor_msg" class="w3-card-4" style="margin-left:2px; margin-right:20x; margin-bottom:2px;"></div>
+				 
+				      <button id="currentSensor_saveBtn" class="w3-btn w3-white w3-border w3-border-red w3-round-large" style="margin-top: 2px; margin-bottom: 2px;"
 							onclick="submitCurrentSensorForm();">Сохранить</button>
     			</footer>
 	        
@@ -570,6 +564,37 @@
 					  	</div>
 			
 						<div class="w3-row w3-green" style="height: 50px;">
+							<h3>Настройки каналов управления ThingSpeak</h3>
+						</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">		
+								<label for="espSettingsBox_thSkWManageKey">Ключ записи</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_thSkWManageKey" name="espSettingsBox_thSkWManageKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">		
+								<label for="espSettingsBox_thSkRManageKey">Ключ чтения</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_thSkRManageKey" name="espSettingsBox_thSkRManageKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">		
+								<label for="espSettingsBox_thSkManageChId">Канал</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_thSkManageChId" name="espSettingsBox_thSkManageChId" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
+							</div>
+					  	</div>	
+			
+						<div class="w3-row w3-green" style="height: 50px;">
 							<h3>Отправка в очередь MQTT</h3>
 						</div>	
 						
@@ -644,6 +669,15 @@
 								<input id="espSettingsBox_mqtt_port" name="espSettingsBox_mqtt_port" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
 							</div>
 					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">			
+								<label for="espSettingsBox_mqtt_TStopic">Очередь получения данных из ThingSpeak</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_mqtt_TStopic" name="espSettingsBox_mqtt_TStopic" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
+							</div>
+					  	</div>
 						
 						<div class="w3-row w3-green" style="height: 50px;">
 							<h3>Отправка на сервер !!!SmartHouse</h3>
@@ -681,7 +715,7 @@
 				  </div>
 				  
 				  <p>
-			  		<button id="savePublishSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;  display:none;"
+			  		<button id="savePublishSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
 							onclick="submitCurrentForm();">Сохранить</button>
 				  </p>
 				
@@ -698,8 +732,19 @@
 			
 			  <p>Общее управление устройством</p>
 			   <div id="manage_content">
-			  		<button class="w3-button w3-white w3-border w3-border-red w3-round-large" onclick="openConfirmPopup('Подтвердите рестарт устройства','confirmRestartDevice();')">
+			  		<button class="w3-button w3-white w3-border w3-border-red w3-round-large" onclick="openConfirmPopup('Подтвердите рестарт устройства','restart');"
+			  			style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px;">
 	  	 				Перезапустить устройство
+					</button>
+					
+					<button class="w3-button w3-white w3-border w3-border-red w3-round-large" onclick="openConfirmPopup('Подтвердите пересоздание каналов ThingSpeak. Внимание очереди датчиков также будут обновлены','recreateThingSpeak');"
+			  			style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px;">
+	  	 				Пересоздать каналы ThingSpeak
+					</button>
+					
+					<button class="w3-button w3-white w3-border w3-border-red w3-round-large" onclick="openConfirmPopup('Внимание. Все файлы настроек будут удалены. Устройство загрузится с настройками по умолчанию.','deleteSettings');"
+			  			style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px;">
+	  	 				Удалить файлы настроек
 					</button>
 			  </div>
 		</div>
@@ -708,32 +753,44 @@
 		    <div class="w3-modal-content w3-animate-top w3-card-4">
 		      	
 		      	<header class="w3-container w3-teal"> 
-			      <span onclick="hideComponent('confirm_modal');" class="w3-button w3-display-topright">&times;</span>
-			      <h3 id="currentSensor_header">Подтвердите действие</h3>
+			      <span id="confirm_headerCloseBtn" onclick="hideComponent('confirm_modal');" class="w3-button w3-display-topright">&times;</span>
+			      <form>
+			      	<h3 id="confirm_header">Подтвердите действие</h3>
+			      </form>
 			    </header>
 		      	
 		      	<div class="w3-container">
    
-		        	<form id="confirm_form" class="w3-container">
-		        		<input id="command" name="command" type="hidden">
+		        	<form id="confirm_form" class="w3-container" style="margin: 10px;">
+		        		<input id="confirm_command" name="confirm_command" type="hidden">
 		        		
 		        		<div id=confirm_content>
 		        		
 						</div>						
 						
-						<div id="confirm_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
+						<div id="confirm_msg" class="w3-card-4" style="margin-top: 2px; margin-bottom: 2px;"></div>
 				
-						<div style="height:20px;"></div>
+						<div style="height:2px;"></div>
 						
 					</form>
 				
 				 </div>
 				 
 				 <footer class="w3-container w3-teal w3-display-container">
-				      <button id="confirm_okBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;  display:none;"
-							onclick="">Подтвердить</button>
-					  <button id="confirm_cancelBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;  display:none;"
-							onclick="hideComponent('confirm_modal');">Отменить</button>
+				 		<div class="w3-row w3-half">
+				 			<div class="w3-half">
+							      <button id="confirm_okBtn" class="w3-btn w3-white w3-border w3-border-green w3-round-large" style="margin-top: 2px; margin-bottom: 2px;"
+										onclick="">Подтвердить</button>
+							</div>
+							<div class="w3-half">
+								  <button id="confirm_cancelBtn" class="w3-btn w3-white w3-border w3-border-red w3-round-large" style="margin-top: 2px; margin-bottom: 2px;"
+										onclick="hideComponent('confirm_modal');">Отменить</button>
+							</div>
+							<div class="w3-half">
+								  <button id="confirm_closeBtn" class="w3-btn w3-white w3-border w3-border-red w3-round-large" style="margin-top: 2px; margin-bottom: 2px;"
+										onclick="hideComponent('confirm_modal');">Закрыть</button>
+							</div>
+						</div>
     			</footer>
 	        
 		  </div>

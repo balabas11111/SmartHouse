@@ -35,7 +35,10 @@ void PinDigital::construct(uint8_t pin,std::function<void(void)> onChanged,uint8
 	this->turnOffLevel=turnOffLevel;
 	float val=pinVal;
 
-	items[0]={0,name,type,size,descr,val,0,-2,2,""};
+	items[0]={0,name,type,size,descr,val,0,-2,2,"",1};
+
+	postValueOnChanged=true;
+	processValueFromMqtt=true;
 }
 
 uint16_t PinDigital::getVal(){

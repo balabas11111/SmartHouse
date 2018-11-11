@@ -359,10 +359,10 @@ public:
 		Serial.println(url);
 
 		http.begin(url);
-		yield();
+		delay(1);
 
 		int httpCode = http.GET();                                                                  //Send the request
-		yield();
+		delay(1);
 
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_EQ));
 		Serial.println(httpCode);
@@ -370,20 +370,23 @@ public:
 		if (httpCode > 0) { //Check the returning code
 
 		  String payload = http.getString();
-
+		  delay(1);
+		  /*
 		  Serial.print(FPSTR(MESSAGE_WIFIHELPER_RESPONSE_EQ));
 		  Serial.println(payload);
 		  Serial.print(FPSTR(MESSAGE_HORIZONTAL_LINE));
-
+*/
 		  return payload;
 		}
 
 		Serial.print(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
+		http.end();
+
 		return "";
 	}
 
-	String executePostRequest(String url,String body){
+	String executeFormPostRequest(String url,String body){
 
 			Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 			Serial.print(FPSTR(MESSAGE_WIFIHELPER_POST));
@@ -392,8 +395,14 @@ public:
 			Serial.print(FPSTR(MESSAGE_WIFIHELPER_HTTP_BODY_EQ));
 			Serial.println(body);
 
-			http.begin(url);
+			boolean begin=http.begin(url);
+
+			Serial.print(FPSTR(MESSAGE_WIFIHELPER_HTTP_BEGIN_EQ));
+			Serial.println(begin);
+
 			yield();
+
+			http.addHeader("Content-Type","application/x-www-form-urlencoded");
 
 			int httpCode = http.POST(body);
 			yield();
@@ -407,12 +416,14 @@ public:
 
 			  Serial.print(FPSTR(MESSAGE_WIFIHELPER_RESPONSE_EQ));
 			  Serial.println(payload);
-			  Serial.print(FPSTR(MESSAGE_HORIZONTAL_LINE));
+			  Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
 			  return payload;
 			}
 
-			Serial.print(FPSTR(MESSAGE_HORIZONTAL_LINE));
+			Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+
+			http.end();
 
 			return "";
 		}
@@ -420,15 +431,6 @@ public:
 		//fileManager section
 		void initFileManager(){
 
-			/*
-			 * Uploading html, css, javascript, etc.
-			 * Use curl to upload the files from the SPIFFS data directory.
-			 *  cd data/
-			 *  curl -X POST -F "data=@index.htm"     http://<ESP32 IP address>/edit >/dev/null
-			 *  curl -X POST -F "data=@graphs.js.gz"  http://<ESP32 IP address>/edit >/dev/null
-			 *  curl -X POST -F "data=@favicon.ico"   http://<ESP32 IP address>/edit >/dev/null
-			 *  curl -X POST -F "data=@edit.htm.gz"   http://<ESP32 IP address>/edit >/dev/null
-			 */
 			Serial.println("Deploying Filemanager /edit");
 			Serial.println("-----------------------------------");
 			#ifdef ESP8266
@@ -445,7 +447,7 @@ public:
 			server->on("/list", HTTP_GET, [this](){handleFileList();});
 			//load editor
 			server->on("/edit", HTTP_GET, [this](){
-			if(!handleFileRead("/edit.htm")) server->send(404, "text/plain", "FileNotFound");
+			if(!handleFileRead("/web/edit.htm")) server->send(404, "text/plain", "FileNotFound");
 			});
 			//create file
 			server->on("/edit", HTTP_PUT, [this](){handleFileCreate();});
@@ -519,7 +521,9 @@ public:
 
 		void handleFileUpload(){
 		  if(server->uri() != "/edit") return;
+
 		  HTTPUpload& upload = server->upload();
+
 		  if(upload.status == UPLOAD_FILE_START){
 		    String filename = upload.filename;
 		    if(!filename.startsWith("/")) filename = "/"+filename;

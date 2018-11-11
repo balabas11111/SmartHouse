@@ -165,10 +165,117 @@ function ValidateIPaddress(ipaddress) {
 	}
 //-------------------------------------------------------
 function openConfirmPopup(message,action){
+	
+	var actionCommand="submitCommand('"+action+"')";
+	showComponent('confirm_headerCloseBtn');
+	showComponent('confirm_okBtn');
+	showComponent('confirm_cancelBtn');
+	hideComponent('confirm_closeBtn');
+	
+	getComponentById('confirm_header').innerHTML='Подтвердите действие';
+	
 	getComponentById('confirm_content').innerHTML=message;
-	getComponentById('confirm_content').setAttribute('onclick',action);
-	showComponent();
+	getComponentById('confirm_okBtn').setAttribute('onclick',actionCommand);
+	showComponent('confirm_modal');
 }
+
+function submitCommand(command){
+	getComponentById('confirm_command').value=command;
+	currentMessageComp=undefined;
+	
+	var form=getComponentById('confirm_form');
+	var msg=getComponentById('confirm_msg');
+	
+	showMessage(msg,'Отправляю команду '+command+' на устройство...','w3-yellow');
+	
+	postForm(form,'/submitForm_commands',undefined,getCurrentCommandHandler);
+}
+
+function getCurrentCommandHandler(data){
+	var status=data.status;
+	var message=data.message;
+	var messageColorClass='w3-yellow';
+	
+	
+	if(status=='Ok'){
+		messageColorClass='w3-green';
+	}
+	if(status=='Error' || status=='NotFound'){
+		messageColorClass='w3-red';
+	}
+	
+	var msg=getComponentById('confirm_msg');
+	showMessage(msg,' Сообщение '+message,messageColorClass);
+	
+	var command=getComponentById('confirm_command').value;
+	
+	if(command=='restart'){
+		getComponentById('confirm_header').innerHTML='Перезагрузка устройства';
+		
+		hideComponent('confirm_headerCloseBtn');
+		hideComponent('confirm_okBtn');
+		hideComponent('confirm_cancelBtn');
+		hideComponent('confirm_closeBtn');
+		
+		setTimeout(function(){tickRestart();}, 1000);
+	}
+	if(command=='recreateThingSpeak'){
+		var headMess=getComponentById('confirm_header').innerHTML='Сообщение системы';
+		
+		var result='Каналы и очереди ThingSpeak были пересозданы.<br> Перезапустите устройство для применения новых настроек.<br> Все предыдущие данные каналов находятся в старых каналах и могут быть просмотрены<br>'+
+					'Создано : '+message;
+		
+		getComponentById('confirm_closeBtn').setAttribute('onclick',"displayRestartDialog();");
+		getComponentById('confirm_closeBtn').innerHTML="Закрыть и перезапустить";
+		
+		hideComponent('confirm_headerCloseBtn');
+		hideComponent('confirm_okBtn');
+		hideComponent('confirm_cancelBtn');
+		showComponent('confirm_closeBtn');
+						
+		hideComponent('confirm_msg');
+		getComponentById('confirm_content').innerHTML=result;
+	}
+	
+	if(command=='deleteSettings'){
+		var headMess=getComponentById('confirm_header').innerHTML='Сообщение системы';
+		
+		var result='Все настройки системы были удалены<br> Перезапустите устройство для применения настроек по умолчанию. <br>'+message+'<br>';
+		
+		getComponentById('confirm_closeBtn').setAttribute('onclick',"displayRestartDialog();");
+		getComponentById('confirm_closeBtn').innerHTML="Закрыть и перезапустить";
+		
+		hideComponent('confirm_headerCloseBtn');
+		hideComponent('confirm_okBtn');
+		hideComponent('confirm_cancelBtn');
+		showComponent('confirm_closeBtn');
+		
+		hideComponent('confirm_msg');
+		getComponentById('confirm_content').innerHTML=result;
+	}
+}
+
+function displayRestartDialog(){
+	openConfirmPopup('Подтвердите рестарт устройства','restart');
+}
+
+var restartTimer=30;
+
+function tickRestart(){
+	restartTimer--;
+	
+	if(restartTimer<=0){
+		location.reload();
+	}
+		
+	var result='Устройство перезапустится через '+restartTimer+' сек';
+	
+	hideComponent('confirm_msg');
+	getComponentById('confirm_content').innerHTML=result;
+	
+	setTimeout(function(){tickRestart();}, 1000);
+}
+
 //-------------------------------------------------------
 function processSensorsJsonGet(data){
 	var container=currentForm;
@@ -229,6 +336,9 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 	var sSize=createHeaderElement('H4','margin-left: 20px;',sensorSize)
 	var sDescr=createInputComponent(sensorId,255,FIELD_DESCR_ID,DESCR_SUFFIX,sensorDescr,sensorName,itemName,noId,editable);
 	
+	if(editable==undefined || !editable){
+		col1h.appendChild(editButton);
+	}
 	col1h.appendChild(sName);
 	col2h.appendChild(sType);
 	col3h.appendChild(sSize);
@@ -352,13 +462,31 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 }
 
 function validateCurrentSensorForm(){
+	var errorMessage='';
+	var validateForm=getComponentById('currentSensor_form');
+		
+	errorMessage=errorMessage+validateFieldValuesUnique(validateForm,QUEUE_SUFFIX,"Неверное значение 'Очередь'; <br>","Поле 'Очередь' не уникальное; <br>",false);
+	errorMessage=errorMessage+validateFieldValuesUnique(validateForm,FIELD_ID_SUFFIX,"Неверное значение 'Поле ThingSpeak'; <br>","'Поле ThingSpeak' не уникальное; <br>",true);
+	errorMessage=errorMessage+validateMinMaxValues();
+	errorMessage=errorMessage+validateDescrValues();
 	
+	return errorMessage;
 }
 
 function getCurrentSensorFromCurrentJson(sensorName){
 	for(var i in currentJson){
 		if(currentJson[i].name==sensorName){
 			return currentJson[i];
+		}
+	}
+	
+	return undefined;
+}
+
+function getCurrentItemFromSensor(sensor,itemName){
+	for(var i in sensor.items){
+		if(sensor.items[i].name==itemName){
+			return sensor.items[i];
 		}
 	}
 	
@@ -379,6 +507,7 @@ function openSensorsPopup(sensorName){
 		container.innerHTML='';
 		
 		putSensorContentToContainer(container,sensor,true,true);
+		hideComponent('currentSensor_msg');
 		showComponent('currentSensor_modal');
 	}
 }
@@ -401,7 +530,7 @@ function getCurrentSensorHandler(data){
 		hideComponent('currentSensor_modal');
 		openTab(currentTab,currentHeaderName);
 	}else{
-		
+		showMessage(currentMessageComp,'Ошибка '+data.message,'w3-red');
 	}
 }
 
@@ -417,8 +546,8 @@ function createSensorEditButton(sensorName,sensorDescr){
 					</button>
 			</div>`;
 	  
-	html.replaceAll('<sensorName>',sensorName);
-	html.replaceAll('<sensorDescr>',sensorDescr);
+	html=html.replace('<sensorName>',sensorName);
+	html=html.replace('<sensorDescr>',sensorDescr);
 	
 	var div=createDivComponent('w3-third',html);
 	  
@@ -428,10 +557,6 @@ function createSensorEditButton(sensorName,sensorDescr){
 function validateSensorsPage(){
 	var errorMessage='';
 	
-	errorMessage=errorMessage+validateFieldValuesUnique(QUEUE_SUFFIX,"Неверное значение 'Очередь'; <br>","Поле 'Очередь' не уникальное; <br>",false);
-	errorMessage=errorMessage+validateFieldValuesUnique(FIELD_ID_SUFFIX,"Неверное значение 'Поле ThingSpeak'; <br>","'Поле ThingSpeak' не уникальное; <br>",true);
-	errorMessage=errorMessage+validateMinMaxValues();
-	errorMessage=errorMessage+validateDescrValues();
 	
 	return errorMessage;
 }
@@ -538,10 +663,10 @@ function validateDescrValues(){
 	return result;
 }
 
-function validateFieldValuesUnique(validClassName,errorMessage1,errorMessage2, notAllowEmpty){
+function validateFieldValuesUnique(validateComnponent,validClassName,errorMessage1,errorMessage2, notAllowEmpty){
 	var result='';
 	var error=false;
-	var fieldIdComponents=document.getElementsByClassName(validClassName);
+	var fieldIdComponents=validateComnponent.getElementsByClassName(validClassName);
 	var fieldIdComponents2=document.getElementsByClassName(validClassName);
 	
 	for (var i in fieldIdComponents) {
@@ -564,13 +689,14 @@ function validateFieldValuesUnique(validClassName,errorMessage1,errorMessage2, n
 		
 		if(compId!=undefined){
 			var compVal=comp.value;
+			
+			var sensorName=comp.getAttribute(SENSOR_NAME_ATTR);
+			var itemName=comp.getAttribute(ITEM_NAME_ATTR);
 					
 			if((!compVal || 0 === compVal.length) || compVal<0){
 				
 				if(notAllowEmpty){
-					var sensorName=comp.getAttribute(SENSOR_NAME_ATTR);
-					var itemName=comp.getAttribute(ITEM_NAME_ATTR);
-					
+									
 					markComponentAs_InValid(comp);
 					error=true;
 					result=errorMessage1;
@@ -584,18 +710,23 @@ function validateFieldValuesUnique(validClassName,errorMessage1,errorMessage2, n
 						if(compId!=undefined && compId2!=undefined){
 							var compVal2=comp2.value;
 							
-							if(compId!=compId2 && compVal==compVal2){
-								var sensorName=comp.getAttribute(SENSOR_NAME_ATTR);
-								var itemName=comp.getAttribute(ITEM_NAME_ATTR);
+							var sensorName2=comp2.getAttribute(SENSOR_NAME_ATTR);
+							var itemName2=comp2.getAttribute(ITEM_NAME_ATTR);
+							
+							if(compId!=compId2 && sensorName!=sensorName2 && itemName!=itemName2 && compVal==compVal2){
 								
-								var sensorName2=comp2.getAttribute(SENSOR_NAME_ATTR);
-								var itemName2=comp2.getAttribute(ITEM_NAME_ATTR);
+								var sensor=getCurrentSensorFromCurrentJson(sensorName2);
+								var item=getCurrentItemFromSensor(sensor,itemName2);
 								
+								if(sensor!=undefined && item!=undefined){
+									result+=' Значение ="'+compVal2+'" уже используется: '+' Устройство "'+sensor.descr+'"'+'Датчик "'+item.descr+'";';
+								}
+																
 								markComponentAs_InValid(comp);
 								markComponentAs_InValid(comp2);
 								
 								error=true;
-								result=errorMessage2;
+								
 							}
 						
 						}
@@ -606,8 +737,13 @@ function validateFieldValuesUnique(validClassName,errorMessage1,errorMessage2, n
 		}
 	}
 	
+	if(error){
+		result=errorMessage2+result;
+	}
+	
 	return result;
 }
+
 //--------------------------GUI creation part-----------------------------
 function createDivComponent(className,innerHtml){
 	var div=document.createElement('div');
@@ -623,14 +759,14 @@ function createInputComponent(id1,id2,fieldIntId,suffixName,fieldVal,sensorName,
 	var compId=getInputCompName(id1,id2,fieldIntId);
 	
 	var input1=document.createElement("Input");
-		if(noId!=undefined || !noId)
-			input1.setAttribute("id",compId);
+		
+		input1.setAttribute("id",compId+"_"+noId);
 		input1.setAttribute("name",compId);
 		input1.setAttribute("class","w3-input w3-border "+suffixName);
 		input1.setAttribute("style",'width: 90%;');
 		input1.setAttribute("value",fieldVal);
 		input1.setAttribute(SENSOR_NAME_ATTR,sensorName);
-		if(editable!=undefined || !editable)
+		if(editable==undefined || !editable)
 			input1.setAttribute("disabled","disabled");
 		if(itemName!=undefined)
 			input1.setAttribute(ITEM_NAME_ATTR,itemName);	

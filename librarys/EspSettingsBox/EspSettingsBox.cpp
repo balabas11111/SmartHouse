@@ -117,6 +117,10 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	thSkTKey = root["sTk"].as<char*>();
 	    	  	thSkChId = root["sCi"];
 
+	    	  	thSkWManageKey=root["thSkWM"].as<char*>();
+				thSkRManageKey=root["thSkRM"].as<char*>();
+				thSkManageChId=root["thSkM"];
+
 	    	  	isMqttEnabled=stringToBoolean(root["isMqttEnabled"]);
 	    	  	postDataToMqttInterval=root["postDataToMqttInterval"];
 	    	  	sendItemsToBaseQUeue=stringToBoolean(root["sitbqm"]);;
@@ -125,6 +129,7 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	mqtt_user=root["mqtt_user"].as<char*>();
 	    	  	mqtt_pass=root["mqtt_pass"].as<char*>();
 	    	  	mqtt_topic=root["mqtt_topic"].as<char*>();
+	    	  	mqtt_TStopic=root["mqtt_TStopic"].as<char*>();
 
 	    	  	isHttpPostEnabled=stringToBoolean(root["isHttpSendEnabled"]);
 	    	  	postDataToHttpInterval=root["postDataToHttpInterval"];
@@ -210,6 +215,15 @@ void EspSettingsBox::saveSettingsJson(){
 		root["sRk"] = thSkRKey;
 		root["sCi"] = thSkChId;
 		root["sTk"] = thSkTKey;
+
+		root["thSkWM"] = thSkWManageKey;
+		root["thSkRM"] = thSkRManageKey;
+		root["thSkM"] = thSkManageChId;
+		/*
+				String thSkWManageKey="V8V5G1W2CACCQOMV";
+				String thSkRManageKey="SPH0UG4JJZC7GDDH";
+				int thSkManageChId=612324;
+			 */
 		//root["AlNi"]=alamNotificationInterval;
 
 		root["isMqttEnabled"]=isMqttEnabled;
@@ -220,6 +234,7 @@ void EspSettingsBox::saveSettingsJson(){
 		root["mqtt_user"]=mqtt_user;
 		root["mqtt_pass"]=mqtt_pass;
 		root["mqtt_topic"]=mqtt_topic;
+		root["mqtt_TStopic"]=mqtt_TStopic;
 
 		root["isHttpSendEnabled"]=isHttpPostEnabled;
 		root["postDataToHttpInterval"]=postDataToHttpInterval;
@@ -517,7 +532,7 @@ String EspSettingsBox::getSimpleJson(){
 						\
 						{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
 						{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
-						{\"name\":\"thinkSpeakChannelUrl\",\"val\":\""+getThingSpeakChannelUrl()+"\"}],\
+						{\"name\":\"thingSpeakChannelUrl\",\"val\":\""+getThingSpeakChannelUrl()+"\"}],\
 						\"DeviceId\":\""+DeviceId+"\",\
 						\"DeviceDescription\":\""+DeviceDescription+"\",\
 						\"DeviceLocation\":\""+DeviceLocation+"\",\
@@ -575,6 +590,9 @@ String EspSettingsBox::getJson(String page){
 					{\"name\":\"thSkRKey\",\"val\":\""+thSkRKey+"\"},\
 					{\"name\":\"thSkChId\",\"val\":\""+String(thSkChId)+"\"},\
 					{\"name\":\"thSkTKey\",\"val\":\""+thSkTKey+"\"},\
+					{\"name\":\"thSkWManageKey\",\"val\":\""+thSkWManageKey+"\"},\
+					{\"name\":\"thSkRManageKey\",\"val\":\""+thSkRManageKey+"\"},\
+					{\"name\":\"thSkManageChId\",\"val\":\""+thSkManageChId+"\"},\
 					{\"name\":\"isMqttEnabled\",\"val\":\""+String(isMqttEnabled)+"\"},\
 					{\"name\":\"sendItemsToBaseQUeue\",\"val\":\""+String(sendItemsToBaseQUeue)+"\"},\
 					{\"name\":\"postDataToMqttInterval\",\"val\":\""+String(postDataToMqttInterval)+"\"},\
@@ -582,6 +600,7 @@ String EspSettingsBox::getJson(String page){
 					{\"name\":\"mqtt_user\",\"val\":\""+mqtt_user+"\"},\
 					{\"name\":\"mqtt_pass\",\"val\":\"*****\"},\
 					{\"name\":\"mqtt_topic\",\"val\":\""+mqtt_topic+"\"},\
+					{\"name\":\"mqtt_TStopic\",\"val\":\""+mqtt_TStopic+"\"},\
 					{\"name\":\"mqtt_port\",\"val\":\""+String(mqtt_port)+"\"},\
 					{\"name\":\"isHttpPostEnabled\",\"val\":\""+String(isHttpPostEnabled)+"\"},\
 					{\"name\":\"postDataToHttpInterval\",\"val\":\""+String(postDataToHttpInterval)+"\"},\
@@ -762,6 +781,20 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		thSkTKey=fieldValue;
 		return true;
 	}
+
+	if(fieldName=="thSkWManageKey"){
+		thSkWManageKey=fieldValue;
+		return true;
+	}
+	if(fieldName=="thSkRManageKey"){
+		thSkRManageKey=fieldValue;
+		return true;
+	}
+	if(fieldName=="thSkManageChId"){
+		thSkManageChId=fieldValue.toInt();
+		return true;
+	}
+
 	if(fieldName=="isMqttEnabled"){
 		isMqttEnabled=stringToBoolean(fieldValue);
 		return true;
@@ -788,6 +821,10 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	}
 	if(fieldName=="mqtt_topic"){
 		mqtt_topic=fieldValue;
+		return true;
+	}
+	if(fieldName=="mqtt_TStopic"){
+		mqtt_TStopic=fieldValue;
 		return true;
 	}
 	if(fieldName=="mqtt_port"){
@@ -828,4 +865,87 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	}
 
 	return false;
+}
+
+int EspSettingsBox::deleteSettingsFiles() {
+	Dir dir = SPIFFS.openDir("/");
+	int count=0;
+	while (dir.next()) {
+		String fileName=dir.fileName();
+
+		if(fileName.startsWith(FPSTR(ESPSETTINGSBOX_SETTINGS_PATH))){
+			SPIFFS.remove(fileName);
+			count++;
+
+			Serial.print("removed ");
+			Serial.println(fileName);
+		}
+
+
+	}
+
+	return count;
+}
+
+boolean EspSettingsBox::saveThingSpeakChannelCreation(String response,
+		boolean manageChannel) {
+
+		Serial.println(FPSTR(ESPSETTINGSBOX_THINGSPEAK_PARSE_CHCREATION));
+		Serial.print(FPSTR(ESPSETTINGSBOX_THINGSPEAK_CHANNEL_JSON));
+		Serial.println(response);
+
+		DynamicJsonBuffer jsonBuffer;
+
+		JsonObject& root = jsonBuffer.parseObject(response);
+
+		if (!root.success()) {
+			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
+			return false;
+		} else {
+			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
+			root.printTo(Serial);
+
+			int channelId=root["id"];
+			String flag1=root["api_keys"][0]["write_flag"];
+
+			flag1.toLowerCase();
+			uint8_t writeKeyFlag=0;
+			uint8_t readKeyFlag=1;
+
+			if(flag1!="true"){
+				writeKeyFlag=1;
+				readKeyFlag=0;
+			}
+			String writeKey=root["api_keys"][writeKeyFlag]["api_key"];
+			String readKey=root["api_keys"][readKeyFlag]["api_key"];
+
+			Serial.print(FPSTR(ESPSETTINGSBOX_THINGSPEAK_CHANNELID));
+			Serial.println(channelId);
+			Serial.print(FPSTR(ESPSETTINGSBOX_THINGSPEAK_WRITEKEY));
+			Serial.println(writeKey);
+			Serial.print(FPSTR(ESPSETTINGSBOX_THINGSPEAK_READKEY));
+			Serial.println(readKey);
+
+				if(channelId>0 && writeKey!="" && readKey!=""){
+					if(manageChannel){
+						Serial.println(FPSTR(ESPSETTINGSBOX_THINGSPEAK_UPDATE_MANAGECHANNEL));
+						thSkManageChId=channelId;
+						thSkWManageKey=writeKey;
+						thSkRManageKey=readKey;
+					}else{
+						Serial.println(FPSTR(ESPSETTINGSBOX_THINGSPEAK_UPDATE_CHANNEL));
+						thSkChId=channelId;
+						thSkWKey=writeKey;
+						thSkRKey=readKey;
+					}
+
+					mqtt_TStopic="channels/"+String(thSkManageChId)+"/subscribe/json/"+thSkRManageKey;
+
+					saveSettingsJson();
+				}
+			}
+
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+
+		return true;
 }

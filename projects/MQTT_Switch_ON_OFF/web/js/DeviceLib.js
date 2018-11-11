@@ -47,15 +47,17 @@ function markComponentAs_InValid(comp){
 //-----------------------------------------------------------------
 
 function showMessage(msgComp,message,className){
-	if(className!=undefined && className!=''){
-		msgComp.setAttribute('class',className);
-	}
-	
-	if(message!=undefined && message!=''){
-		msgComp.style.display = "block";
-		msgComp.innerHTML = message;
-	}else{
-		msgComp.style.display = "none"; 
+	if(msgComp!=undefined){
+		if(className!=undefined && className!=''){
+			msgComp.setAttribute('class',className);
+		}
+		
+		if(message!=undefined && message!=''){
+			msgComp.style.display = "block";
+			msgComp.innerHTML = message;
+		}else{
+			msgComp.style.display = "none"; 
+		}
 	}
 }
 
@@ -122,8 +124,8 @@ function addChildComponentIfNotExists(comp,item){
 	var inputComponent=getComponentById(newInputId);
 		
 	if(inputComponent!=undefined && labelComponent!=undefined){
-		inputComponent.value=itemVal;
-		labelComponent.innerHTML=newLabelHtml;
+		setComponentValue(inputComponent,itemVal);
+		setComponentValue(labelComponent,newLabelHtml);
 		return;
 	}
 	
@@ -174,10 +176,10 @@ function setComponentValue(component,val){
 				component.value=val;
 			}
 		};
-			
 		
 		if (tagName == 'a'){
 			component.href=val;
+			showComponent(component.id);
 		};
 	}
 }
@@ -197,6 +199,8 @@ function processSimpleJsonResponse(data,preffix){
 	var name=data.name
 	var itemCount=data.itemCount;
 	var descr=data.descr;
+	
+	console.log('Process name='+name+' itemCOunt='+itemCount+' descr='+descr);
 	
 	updateComponentValue(preffix,name,DESCR_SUFFIX,descr);
 	updateComponentValue(preffix,name,ITEM_COUNT_SUFFIX,itemCount);
@@ -232,6 +236,8 @@ function processSimpleJsonRecreateChildren(data){
 	var itemCount=data.itemCount;
 	var descr=data.descr;
 	
+	console.log('Process name='+name+' itemCOunt='+itemCount+' descr='+descr);
+	
 	var comp=getComponentById(id);
 	
 	updateComponentValue("",id,DESCR_SUFFIX,descr);
@@ -244,14 +250,16 @@ function processSimpleJsonRecreateChildren(data){
 		var child=childNodes[n];
 		
 		if(!isChildInItems(child.id,id,items)){
-			console.log('child removed '+child.id);
-						
-			var labelId=getComponentIdWithPreffix(LABEL_PREFFIX,child.id);
-			var label=getComponentById(labelId);
-			
-			if(label!=undefined && child!=undefined){
-				child.remove();
-				label.remove();
+			if(child!=undefined && child.id!=undefined){
+				console.log('child removed '+child.id);
+							
+				var labelId=getComponentIdWithPreffix(LABEL_PREFFIX,child.id);
+				var label=getComponentById(labelId);
+				
+				if(label!=undefined && child!=undefined){
+					child.remove();
+					label.remove();
+				}
 			}
 		}
 	}
@@ -344,7 +352,7 @@ function postForm(form,url,validateHandler,resultProcessHandler){
 	var errorMessage='';
 	
 	if(isValidForm){
-		if(validateValuesHandler!=undefined){
+		if(validateHandler!=undefined){
 			errorMessage=validateHandler();
 		}
 		

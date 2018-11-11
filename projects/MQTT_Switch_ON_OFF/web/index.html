@@ -12,7 +12,7 @@
 <script src="./js/menu.js"></script>
 <script src="./js/DeviceLib.js"></script>
 <script src="./js/index.js"></script>
-<script src="./js/Lamp.js"></script>
+<script src="./js/lamp.js"></script>
 
 </head>
 <body onload="onLoadPageComplete()">
@@ -20,7 +20,7 @@
 <div id="leftSidebar" class="w3-sidebar w3-bar-block w3-light-grey w3-border-right w3-animate-left" style="display: none;">
 	<button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Свернуть</button>
 	<a href="settings.htm" class="w3-bar-item w3-button w3-hover-green">Настройки</a>
-	<a id="thinkSpeakChannelUrl" class="w3-bar-item w3-button w3-hover-green" style="display: none;" href="https://thingspeak.com/channels/<channelId>/private_show" >ThingSpeak.com</a>
+	<a id="espSettingsBox_thingSpeakChannelUrl" class="w3-bar-item w3-button w3-hover-green" style="display: none;" href="https://thingspeak.com/channels/<channelId>/private_show" >ThingSpeak.com</a>
 </div>
 
 <div id="main">
@@ -190,11 +190,11 @@
 								<img id="lampLeft_1" class="w3-center lampLeft_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Левая лампочка"
-									onclick="lampWidgetClick(this);" src="./img/OnLamp.png" alt="Загружаю"/>
+									onclick="lampWidgetClick(this);" src="./img/OnLamp_64.png" alt="Загружаю"/>
 								<img id="lampLeft_0" class="w3-center lampLeft_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Левая лампочка"
-									onclick="lampWidgetClick(this);" src="./img/OffLamp.png" alt="Загружаю"/>
+									onclick="lampWidgetClick(this);" src="./img/OffLamp_64.png" alt="Загружаю"/>
 							</div>
 						</div>
 					</form>
@@ -220,11 +220,11 @@
 								<img id="lampRight_1" class="w3-center lampRight_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Правая лампочка"
-									onclick="lampWidgetClick(this);" src="./img/OnLamp.png" alt="Загружаю"/>
+									onclick="lampWidgetClick(this);" src="./img/OnLamp_64.png" alt="Загружаю"/>
 								<img id="lampRight_0" class="w3-center lampRight_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Правая лампочка"
-									onclick="lampWidgetClick(this);" src="./img/OffLamp.png" alt="Загружаю"/>
+									onclick="lampWidgetClick(this);" src="./img/OffLamp_64.png" alt="Загружаю"/>
 							</div>
 						</div>
 					</form>
@@ -253,11 +253,11 @@
 								<img id="pirDetector_On" class="w3-center" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Движение определено"
-									src="./img/redhat64.png" alt="Загружаю"/>
+									src="./img/redhat.png" alt="Загружаю"/>
 								<img id="pirDetector_Off" class="w3-center" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Нет движения"
-									src="./img/emptyWalk64.png" alt="Загружаю"/>
+									src="./img/emptyWalk.png" alt="Загружаю"/>
 							</div>
 							
 						</div>

@@ -39,6 +39,7 @@ struct childRecords{
 	float minVal;
 	float maxVal;
 	String queue;
+	boolean setAllowed;
 };
 
 typedef struct childRecords SensorValue;
@@ -155,6 +156,10 @@ public:
 		}
 	}
 
+	String getName(uint8_t index){
+		return this->items[index].name;
+	}
+
 	uint8_t getFieldId(uint8_t index){
 		return 	this->items[index].fieldId;
 	}
@@ -163,8 +168,16 @@ public:
 		return 	String(this->items[index].fieldId);
 	}
 
+	String getDescr(uint8_t index){
+		return 	String(this->items[index].descr);
+	}
+
 	String getValStr(uint8_t index){
 		return 	String(this->items[index].val);
+	}
+
+	boolean getSetAllowed(uint8_t index){
+		return 	this->items[index].setAllowed;
 	}
 
 	void setQueue(uint8_t child,String queue){
@@ -176,6 +189,23 @@ public:
 	boolean getPeriodicSend(){
 		return periodicSend;
 	}
+
+	boolean getPostValueOnChanged(){
+		return postValueOnChanged;
+	}
+
+	boolean getPostValueToMqHttp(){
+		return postValueToMqHttp;
+	}
+
+	boolean getProcessValueFromMqtt(){
+		return processValueFromMqtt;
+	}
+
+	boolean getAutoCreateChannel(){
+		return autoCreateChannel;
+	}
+
 
 	String constructGetUrl(String baseUrl,String paramVal){
 		if(!this->periodicSend){
@@ -315,9 +345,23 @@ protected:
 	String size;
 	String descr;
 	uint8_t itemCount;
-	boolean periodicSend=false;
+
+	//allows periodic send of value into channel
+	boolean periodicSend=true;
+	//post values only when val was updated (marking PinDigital only)
+	boolean postValueOnChanged=false;
+	//allows to post item vals to MQ
+	boolean postValueToMqHttp=false;
+	//allows to process values from bind mqtt
+	boolean processValueFromMqtt=false;
+	//auto create chanels and update queue names
+	boolean autoCreateChannel=true;
 
 	SensorValue* items;
+
+	void setSetAllowed(uint8_t index,boolean val){
+		items[index].setAllowed=val;
+	}
 
 	String getItemJson(){
 		return "\"id\":\""+String(id)+"\","

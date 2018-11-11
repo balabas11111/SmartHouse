@@ -22,6 +22,8 @@ public:
 		//pirPin=_pin;
 		//signalLed=_signalLed;
 		externalFunction=onChangeFunction;
+
+		setSetAllowed(0, false);
 	}
 	virtual ~Pir_Sensor(){};
 
