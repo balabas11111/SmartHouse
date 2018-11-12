@@ -14,14 +14,16 @@
 #include "Loopable.h"
 #include "Initializable.h"
 
-class MqttHelper: public Loopable,public Initializable{
+class MqttHelper: public Loopable{
 
 public:
-	MqttHelper(EspSettingsBox *_settingsBox,String* _subscribeTopics,uint8_t _topicCount,Client& _client,std::function<void(String topic,String message)> _externalCallbackFunction);
+	MqttHelper(EspSettingsBox *_settingsBox,Client& _client,std::function<void(String topic,String message)> _externalCallbackFunction);
 
 	virtual ~MqttHelper();
 
-	virtual boolean initialize(boolean _init) override;
+	boolean begin(AbstractItem** items,uint8_t count);
+
+	virtual boolean initialize();
 
 	boolean isConnected();
 	boolean connectIfNotConnected();
@@ -36,7 +38,10 @@ public:
 	void callback(char* topic, uint8_t* payload, unsigned int length);
 	PubSubClient getClient();
 
+	void printMqttDiagnostic();
+
 private:
+	boolean initialized;
 	uint8_t topicCount;
 	String* subscribeTopics;
 	std::function<void(String topic,String message)> externalCallbackFunction;
@@ -55,6 +60,8 @@ private:
 	Client* wiFiClient;
 
 	void connect();
+	void printCurrentQueues();
+
 };
 
 

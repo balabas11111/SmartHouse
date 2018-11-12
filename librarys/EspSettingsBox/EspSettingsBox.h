@@ -140,11 +140,11 @@ public:
 	boolean isMqttEnabled=false;
 	boolean sendItemsToBaseQUeue=false;
 	uint16_t postDataToMqttInterval=241;
-	String mqtt_server = "m23.cloudmqtt.com";
-	String mqtt_user = "tpheglmk";
-	String mqtt_pass = "QgYRfVzDhQ31";
+	String mqtt_server = "m23.cloudmqtt.com";   //mqtt.thingspeak.com
+	String mqtt_user = "tpheglmk";              //user
+	String mqtt_pass = "QgYRfVzDhQ31";          //HM4A48J6A926FL81
 	String mqtt_topic="topic/basePublish";
-	int mqtt_port = 10186;
+	int mqtt_port = 10186;                      //1883
 
 	String mqtt_TStopic="null";
 

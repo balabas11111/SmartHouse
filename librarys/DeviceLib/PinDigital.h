@@ -47,6 +47,21 @@ public:
 		return getJson();
 	}
 
+	virtual boolean processVal(uint8_t index,String value){
+		if(index==0){
+			Serial.print("name=");
+			Serial.print(name);
+			Serial.print(" Val='");
+			Serial.print(value);
+			Serial.print("';");
+			setVal(value.toInt());
+			Serial.println("...done");
+			return true;
+		}
+
+		return false;
+	}
+
 	//PinAbstract functions
 	uint16_t getVal();
 	bool setVal(uint16_t _val);

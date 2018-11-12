@@ -186,6 +186,13 @@ public:
 		}
 	}
 
+	String getQueue(uint8_t index){
+		if(itemCount>index){
+			return this->items[index].queue;
+		}
+		return "";
+	}
+
 	boolean getPeriodicSend(){
 		return periodicSend;
 	}
@@ -225,6 +232,17 @@ public:
 			}
 
 			return "";
+	}
+
+	boolean processMqValue(String topic,String message){
+		for(int i=0;i<itemCount;i++){
+			if(items[i].queue==topic){
+
+				return processVal(i,message);
+			}
+		}
+
+		return false;
 	}
 
 	void printValues(){
@@ -358,6 +376,11 @@ protected:
 	boolean autoCreateChannel=true;
 
 	SensorValue* items;
+
+	virtual boolean processVal(uint8_t index,String value){
+
+		return true;
+	}
 
 	void setSetAllowed(uint8_t index,boolean val){
 		items[index].setAllowed=val;

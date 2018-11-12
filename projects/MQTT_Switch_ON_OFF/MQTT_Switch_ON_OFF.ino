@@ -62,8 +62,6 @@ ESP8266WebServer server ( 80 );
 I2Chelper i2cHelper(D1,D2,false);
 DisplayHelper displayHelper(true);
 
-String subscribeTopics[]={"topic/ESP8266Topic","topic/SwitchLeft","topic/SwitchRight"};
-
 TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,measureSensors);
 TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSettingsBox.isThingSpeakEnabled,processThingSpeakPost);
 
@@ -87,13 +85,13 @@ DS18D20_Sensor ds18d20Measurer(VAR_NAME(ds18d20Measurer), D3);
 
 WiFiHelper wifiHelper("WiFiHelper",&espSettingsBox, &displayHelper, /*nullptr,*/&server,postInitWebServer,false);
 
-MqttHelper mqttHelper(&espSettingsBox,subscribeTopics,ARRAY_SIZE(subscribeTopics),wclient,processMqttEvent);
+MqttHelper mqttHelper(&espSettingsBox,wclient,processMqttEvent);
 
-Loopable* loopArray[]={&wifiHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&pirDetector,&thingSpeakTrigger,&postPonedCommandTrigger};
+Loopable* loopArray[]={&wifiHelper,&mqttHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&pirDetector,&thingSpeakTrigger,&postPonedCommandTrigger};
 Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer,& dhtMeasurer,&ds18d20Measurer};
 
 Measurable* measurableArray[]={&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
-AbstractItem* minMaxValues[]={&lampLeft,&lampRight,&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
+AbstractItem* abstractItems[]={&lampLeft,&lampRight,&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray));
 
@@ -107,9 +105,16 @@ void setup() {
   deviceHelper.init(initializeArray, ARRAY_SIZE(initializeArray));
   deviceHelper.printDeviceDiagnostic();
   deviceHelper.displayDetails();
+
   deviceHelper.printDeviceDiagnostic();
   loadSensors();
+
+  deviceHelper.printDeviceDiagnostic();
+
   measureSensors();
+  deviceHelper.printDeviceDiagnostic();
+
+  mqttHelper.begin(abstractItems, ARRAY_SIZE(abstractItems));
   deviceHelper.printDeviceDiagnostic();
   Serial.println("=========================Device Started=========================");
 }
@@ -187,17 +192,17 @@ void postInitWebServer(){
 //---------------------------------------------------------------------
 //button handling
 void onLeftButtonChanged(){
-	bool isOn=buttonLeft.isOn();
-	lampLeft.setVal(isOn);
+	int8_t on=buttonLeft.isOn();
 
-	buttonLeft.printValues();
+	setLampValue(&lampLeft, on);
+	//buttonLeft.printValues();
 }
 
 void onRightButtonChanged(){
-	bool isOn=buttonRight.isOn();
-	lampRight.setVal(isOn);
+	int8_t on=buttonRight.isOn();
 
-	buttonRight.printValues();
+	setLampValue(&lampRight, on);
+	//buttonRight.printValues();
 }
 //---------------------------------------------------------------------
 //handle lamp events
@@ -205,15 +210,20 @@ void handleLampChange(PinDigital* lamp){
 	wifiHelper.checkAuthentication();
 	int8_t on=server.arg("val").toInt();
 
+	setLampValue(lamp, on);
+
+	server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lamp->getSimpleJson());
+}
+
+void setLampValue(PinDigital* lamp,int8_t on){
 	if(on==-1){
 		lamp->change();
 	}
 	lamp->setVal(on);
 
-	Serial.print("HTTP ");
 	lamp->printValues();
 
-	server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lamp->getSimpleJson());
+	senDAbstractItemToMqtt(lamp);
 }
 
 void onLeftLampChanged(){
@@ -232,11 +242,11 @@ void onPirDetectorChanged(){
 
 //---------------------------------------------------------------------
 void loadSensors(){
-	espSettingsBox.loadAbstractItemsFromFile(minMaxValues, ARRAY_SIZE(minMaxValues));
+	espSettingsBox.loadAbstractItemsFromFile(abstractItems, ARRAY_SIZE(abstractItems));
 }
 
 void saveSensors(){
-	espSettingsBox.saveAbstractItemsToFile(minMaxValues, ARRAY_SIZE(minMaxValues));
+	espSettingsBox.saveAbstractItemsToFile(abstractItems, ARRAY_SIZE(abstractItems));
 }
 //-----------------------------------------------------
 String setSensorJson(){
@@ -252,9 +262,9 @@ String setSensorJson(){
 
 	AbstractItem* aitem;
 
-	for(uint8_t i=0;i<ARRAY_SIZE(minMaxValues);i++){
-		if(minMaxValues[i]->getName()==sensorName){
-			aitem=minMaxValues[i];
+	for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
+		if(abstractItems[i]->getName()==sensorName){
+			aitem=abstractItems[i];
 			break;
 		}
 	}
@@ -280,7 +290,7 @@ String setSensorJson(){
 
 String getAllSensorsJson(){
 	delay(1);
-	String result=deviceHelper.getJson(minMaxValues, ARRAY_SIZE(minMaxValues));
+	String result=deviceHelper.getJson(abstractItems, ARRAY_SIZE(abstractItems));
 
 	Serial.print("AllSensors json=");
 	Serial.println(result);
@@ -367,8 +377,8 @@ String recreateThingSpeak(){
 	uint8_t countGet=0;
 	uint8_t countSet=0;
 
-	for(uint8_t i=0;i<ARRAY_SIZE(minMaxValues);i++){
-		AbstractItem* item=minMaxValues[i];
+	for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
+		AbstractItem* item=abstractItems[i];
 
 		if(item->getAutoCreateChannel()){
 			for(uint8_t j=0;j<item->getItemCount();j++){
@@ -395,33 +405,10 @@ String recreateThingSpeak(){
 		commandGet+=espSettingsBox.DeviceDescription+" "+espSettingsBox.DeviceKind;
 
 		String getResult=wifiHelper.executeFormPostRequest(FPSTR(MESSAGE_THINGSPEAK_CREATE_CHANNEL_URL),commandGet);
-		boolean res=espSettingsBox.saveThingSpeakChannelCreation(getResult,false);
+		espSettingsBox.saveThingSpeakChannelCreation(getResult,false);
 		delay(10);
 		deviceHelper.printDeviceDiagnostic();
 		//Serial.println(getResult);
-		/*
-		if(res){
-			String url="http://api.thingspeak.com/channels/"+String(espSettingsBox.thSkChId)+"/charts/";
-
-			for(uint8_t i=0;i<ARRAY_SIZE(minMaxValues);i++){
-					AbstractItem* item=minMaxValues[i];
-
-					if(item->getAutoCreateChannel()){
-						for(uint8_t j=0;j<item->getItemCount();j++){
-							if(item->getFieldId(j)!=0){
-								String chartUrl=url+item->getFieldIdStr(j)+"?title="+item->getDescr(j)+
-										"&results=100&api_key"+espSettingsBox.thSkUsrKey;
-
-
-								wifiHelper.executeGetRequest(chartUrl);
-								deviceHelper.printDeviceDiagnostic();
-								delay(10);
-							}
-						}
-					}
-				}
-		}
-		*/
 	}
 
 
@@ -431,10 +418,46 @@ String recreateThingSpeak(){
 		commandSet+="&description=";
 		commandSet+=espSettingsBox.DeviceDescription+" "+espSettingsBox.DeviceKind;
 		String setResult=wifiHelper.executeFormPostRequest(FPSTR(MESSAGE_THINGSPEAK_CREATE_CHANNEL_URL),commandSet);
-		espSettingsBox.saveThingSpeakChannelCreation(setResult,true);
+		boolean res=espSettingsBox.saveThingSpeakChannelCreation(setResult,true);
 		delay(10);
+
+		if(res){
+			//---------------------------------------------------------------------------
+			for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
+				AbstractItem* item=abstractItems[i];
+				boolean doSave=false;
+
+				if(item->getAutoCreateChannel()){
+					for(uint8_t j=0;j<item->getItemCount();j++){
+						if(item->getFieldId(j)!=0){
+							String channel="channels/"+String(espSettingsBox.thSkManageChId)
+									+"/subscribe/fields/field"+item->getFieldIdStr(j)
+									+"/"+espSettingsBox.thSkRManageKey;
+
+							//Subscribes
+							//channels/623698/subscribe/fields/field1/XQ4QSQQKEKMRJ4DK
+							//channels/623698/subscribe/fields/field2/XQ4QSQQKEKMRJ4DK
+							//publish
+							//channels/623698/publish/fields/field1/N9EQ8RTYQ7ZXYR8T
+							//channels/623698/publish/fields/field2/N9EQ8RTYQ7ZXYR8T
+
+							item->setQueue(j, channel);
+							doSave=true;
+							delay(10);
+						}
+					}
+
+					if(doSave){
+						espSettingsBox.saveAbstractItemToFile(item);
+					}
+				}
+
+				deviceHelper.printDeviceDiagnostic();
+			}
+			//---------------------------------------------------------------------------
+		}
+
 		deviceHelper.printDeviceDiagnostic();
-		//Serial.println(setResult);
 	}
 
 	result+=String(countGet)+" каналов записи;";
@@ -445,8 +468,6 @@ String recreateThingSpeak(){
 	return result;
 }
 
-
-
 void processThingSpeakPost(){
 	if(espSettingsBox.isThingSpeakEnabled){
 		Serial.println(FPSTR(MESSAGE_THINGSPEAK_SEND_STARTED));
@@ -456,8 +477,8 @@ void processThingSpeakPost(){
 		String baseUrl=FPSTR(MESSAGE_THINGSPEAK_BASE_URL);
 		String params="";
 
-		for(uint8_t i=0;i<ARRAY_SIZE(minMaxValues);i++){
-			params+=constructThingSpeakParameters(minMaxValues[i]);
+		for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
+			params+=constructThingSpeakParameters(abstractItems[i]);
 			count++;
 		}
 
@@ -483,26 +504,47 @@ void sendAbstractItemToThingSpeak(AbstractItem* item){
 String constructThingSpeakParameters(AbstractItem* item){
 	return item->constructGetUrl("", FPSTR(MESSAGE_THINGSPEAK_FIELD_VAL_FOR_REQUEST));
 }
-//------------------------------------------------------------------------------------------------
+//------------------------------MQTT functions-----------------------------------------------------
+
 void senDAbstractItemToMqtt(AbstractItem* item){
-	if(!item->getPeriodicSend()){
-		return;
-	}
+	Serial.println("----------Sending message---------");
 	for(uint8_t i=0;i<item->getItemCount();i++){
 		String queue=item->getItem(i).queue;
 
 		if(queue.length()!=0){
 			String val=item->getValStr(i);
 
-			if(espSettingsBox.isMqttEnabled){
-				mqttHelper.publish((char*)queue.c_str(), val);
-			}
+			Serial.print("queue=");
+			Serial.println(queue);
 
+			queue.replace(espSettingsBox.thSkRManageKey, espSettingsBox.thSkWManageKey);
+			queue.replace("subscribe", "publish");
+
+			//channels/623698/subscribe/fields/field2/N9EQ8RTYQ7ZXYR8T
+			//channels/<channelID>/publish/fields/field<fieldnumber>/<apikey>
+
+
+			Serial.print("target queue=");
+			Serial.print(queue);
+
+			Serial.print(" val=");
+			Serial.println(val);
+
+			if(espSettingsBox.isMqttEnabled){
+				boolean res=mqttHelper.publish(queue, val);
+				Serial.print("res=");
+				Serial.println(res);
+			}else{
+				Serial.println("Mqtt is not enabled");
+			}
+			/*
 			if(espSettingsBox.sendItemsToBaseQUeue){
 				mqttHelper.publish(item->getJson());
 			}
+			*/
 		}
 	}
+	Serial.println("---------------------------");
 }
 
 void sendAbstractItemToHttp(AbstractItem* item){
@@ -516,5 +558,26 @@ void measureSensors(){
 }
 
 void processMqttEvent(String topic,String message){
-	Serial.println("Base process processMqttEvent topic="+topic+" message="+message);
+	Serial.println("----------Message received---------");
+	Serial.print("topic=");
+	Serial.print(topic);
+	Serial.print("; message='");
+	Serial.print(message);
+	Serial.println("';");
+
+	boolean result=false;
+
+	for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
+		result=abstractItems[i]->processMqValue(topic, message);
+		if(result){
+			break;
+		}
+	}
+
+	Serial.print("result=");
+	Serial.println(result);
+
+	Serial.println("---------------------------");
+
+	deviceHelper.printDeviceDiagnostic();
 }
