@@ -32,28 +32,24 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/TimeTrigger}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/EspSettingsBox}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/SPI}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_BME280}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DNSServer/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DNSServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Helpers}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ConfigStorage}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DeviceLib}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Hash}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Hash/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/NTPClient}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WebSockets}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ArduinoJson}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ArduinoJson/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinEvent}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/SensorsLib}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WebSockets/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WiFiManager}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DallasTemperature}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Loopable}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/base64}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/base64/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_Sensor}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1640988995" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -72,28 +68,24 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/TimeTrigger}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/EspSettingsBox}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/SPI}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_BME280}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DNSServer/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DNSServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Helpers}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ConfigStorage}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DeviceLib}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Hash}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Hash/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/NTPClient}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WebSockets}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ArduinoJson}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ArduinoJson/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinEvent}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/SensorsLib}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WebSockets/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WiFiManager}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DallasTemperature}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Loopable}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/base64}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/base64/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_Sensor}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1095845800" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -112,28 +104,24 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/TimeTrigger}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/EspSettingsBox}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/SPI}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_BME280}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DNSServer/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DNSServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Helpers}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ConfigStorage}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DeviceLib}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Hash}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Hash/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/NTPClient}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WebSockets}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ArduinoJson}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/ArduinoJson/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/PinEvent}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/SensorsLib}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WebSockets/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/WiFiManager}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/DallasTemperature}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Loopable}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/base64}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/base64/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/MQTT_Switch_ON_OFF/libraries/Adafruit_Sensor}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.2135749945" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>

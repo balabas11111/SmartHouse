@@ -252,6 +252,7 @@ const PROGMEM char ESPSETTINGSBOX_DEFAULT_WEB_FOLDER[]="/web/";
 const PROGMEM char ESPSETTINGSBOX_DEPLOY_EXT[]="html,htm,js,css,jpeg,png,jpg,gif,ttf,woff,woff2,tpl,txt";
 
 //MQTT helper messages
+const PROGMEM char MESSAGE_MQTTHELPER_SEND_IS_DISABLED[]="===MQTT Helper is disabled in settings box===";
 const PROGMEM char MESSAGE_MQTTHELPER_CREATE_STARTED[]="--------------------Create MQTT Helper----------------------";
 const PROGMEM char MESSAGE_MQTTHELPER_BEGIN[]="--------------------Begin MQTT Helper----------------------";
 const PROGMEM char MESSAGE_MQTTHELPER_INIT_STARTED[]="--------------------Init MQTT Helper----------------------";

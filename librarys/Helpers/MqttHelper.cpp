@@ -32,6 +32,10 @@ MqttHelper::~MqttHelper(){
 boolean MqttHelper::begin(AbstractItem** items,uint8_t count){
 	topicCount=0;
 
+	if(!espSettingsBox->isMqttEnabled){
+		Serial.println(FPSTR(MESSAGE_MQTTHELPER_SEND_IS_DISABLED));
+		return false;
+	}
 	Serial.println(FPSTR(MESSAGE_MQTTHELPER_BEGIN));
 
 	for(uint8_t i=0;i<count;i++){
