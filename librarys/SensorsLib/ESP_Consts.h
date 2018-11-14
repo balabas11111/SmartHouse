@@ -251,6 +251,34 @@ const PROGMEM char ESPSETTINGSBOX_DEFAULT_PAGE[]="/web/index.htm";
 const PROGMEM char ESPSETTINGSBOX_DEFAULT_WEB_FOLDER[]="/web/";
 const PROGMEM char ESPSETTINGSBOX_DEPLOY_EXT[]="html,htm,js,css,jpeg,png,jpg,gif,ttf,woff,woff2,tpl,txt";
 
+//MQTT helper messages
+const PROGMEM char MESSAGE_MQTTHELPER_CREATE_STARTED[]="--------------------Create MQTT Helper----------------------";
+const PROGMEM char MESSAGE_MQTTHELPER_BEGIN[]="--------------------Begin MQTT Helper----------------------";
+const PROGMEM char MESSAGE_MQTTHELPER_INIT_STARTED[]="--------------------Init MQTT Helper----------------------";
+const PROGMEM char MESSAGE_MQTTHELPER_INIT_COMPLETE[]="==Init MQTT complete===";
+const PROGMEM char MESSAGE_MQTTHELPER_TOPIC_COUNT[]="topicCount=";
+const PROGMEM char MESSAGE_MQTTHELPER_TOPIC_ADDED_TO_SUBSCRIBED[]="added  TOPIC=";
+const PROGMEM char MESSAGE_MQTTHELPER_TOPIC_SUBSCRIBED[]="subscribed  TOPIC=";
+const PROGMEM char MESSAGE_MQTTHELPER_TOPIC_SUBSCRIBED_RES_EQ[]=" subsc result=";
+
+const PROGMEM char MESSAGE_MQTTHELPER_ERR_NOT_INITIALIZED[]="Mqtt not initialized";
+const PROGMEM char MESSAGE_MQTTHELPER_ERR_NOT_CONNECTED[]="Mqtt not connected";
+
+const PROGMEM char MESSAGE_MQTTHELPER_SENT[]="Mqtt sent";
+const PROGMEM char MESSAGE_MQTTHELPER_SEND_FAILED[]="Mqtt send FAILED";
+
+const PROGMEM char MESSAGE_MQTTHELPER_NAME[]="MqttHelper";
+const PROGMEM char MESSAGE_MQTTHELPER_MQTT_USER_EQ[]="mqtt_user=";
+const PROGMEM char MESSAGE_MQTTHELPER_MQTT_PASS_EQ[]="mqtt_pass=";
+const PROGMEM char MESSAGE_MQTTHELPER_MQTT_CONNECTED_EQ[]="connected=";
+
+const PROGMEM char MESSAGE_MQTTHELPER_MQTT_START_CONNECT_EQ[]="==============Start connect mqttClient================";
+const PROGMEM char MESSAGE_MQTTHELPER_MQTT_TEST_PUBLISH_OK[]="Test publish OK ";
+const PROGMEM char MESSAGE_MQTTHELPER_MQTT_TEST_PUBLISH_FAILED[]="Test publish FAILED ";
+
+const PROGMEM char MESSAGE_MQTTHELPER_MQTT_CONNECT_FAILED[]="Connect to MQTT FAILED ";
+const PROGMEM char MESSAGE_MQTTHELPER_MQTT_WIFI_CONNECT_FAILED[]="MQTT failed No WiFi connection ";
+
 //Wifi helper messages-----------------------------
 const PROGMEM char MESSAGE_WIFIHELPER_INIT_CONNECTION[]="------------------Init WiFi connection------------------";
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_DISCONNECTING[]="WiFi disconnecting";

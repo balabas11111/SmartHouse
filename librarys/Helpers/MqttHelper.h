@@ -38,8 +38,6 @@ public:
 	void callback(char* topic, uint8_t* payload, unsigned int length);
 	PubSubClient getClient();
 
-	void printMqttDiagnostic();
-
 private:
 	boolean initialized;
 	uint8_t topicCount;

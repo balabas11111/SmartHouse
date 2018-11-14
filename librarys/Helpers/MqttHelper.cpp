@@ -2,6 +2,7 @@
 #include "MqttHelper.h"
 #include <PubSubClient.h>
 #include "AbstractItem.h"
+#include "ESP_Consts.h"
 
 #include <ESP8266WiFi.h>
 
@@ -9,8 +10,7 @@
 #define BUFFER_SIZE 100
 
 MqttHelper::MqttHelper(EspSettingsBox *_settingsBox,Client& _client,std::function<void(String topic,String message)> _externalCallbackFunction){
-	Serial.println("-------------------------------");
-	Serial.println("Initialize MqttHelper");
+	Serial.println(FPSTR(MESSAGE_MQTTHELPER_CREATE_STARTED));
 	externalCallbackFunction=_externalCallbackFunction;
 
 	topicCount=0;
@@ -23,17 +23,16 @@ MqttHelper::MqttHelper(EspSettingsBox *_settingsBox,Client& _client,std::functio
 	initialized=false;
 	displayDetails();
 
-	Serial.println("-------------------------------");
+	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
 
 MqttHelper::~MqttHelper(){
-	Serial.println("MqttHelper destructed");
 }
 
 boolean MqttHelper::begin(AbstractItem** items,uint8_t count){
 	topicCount=0;
 
-	Serial.println("------Mqtt BEGIN--------");
+	Serial.println(FPSTR(MESSAGE_MQTTHELPER_BEGIN));
 
 	for(uint8_t i=0;i<count;i++){
 		if(items[i]->getAutoCreateChannel()){
@@ -45,7 +44,7 @@ boolean MqttHelper::begin(AbstractItem** items,uint8_t count){
 		}
 	}
 
-	Serial.print("Subscribes count=");
+	Serial.print(FPSTR(MESSAGE_MQTTHELPER_TOPIC_COUNT));
 	Serial.println(topicCount);
 
 	if(topicCount>0){
@@ -58,16 +57,14 @@ boolean MqttHelper::begin(AbstractItem** items,uint8_t count){
 				for(uint8_t j=0;j<items[i]->getItemCount();j++){
 					if(items[i]->getQueue(j)!=""){
 						subscribeTopics[index]=items[i]->getQueue(j);
-						Serial.print("added topic=");
+						Serial.print(FPSTR(MESSAGE_MQTTHELPER_TOPIC_ADDED_TO_SUBSCRIBED));
 						Serial.println(subscribeTopics[index]);
 						index++;
 					}
 				}
 			}
 		}
-		Serial.println("Topics added");
 	}
-	Serial.println("-----------------------------------------");
 
 	initialize();
 
@@ -77,50 +74,36 @@ boolean MqttHelper::begin(AbstractItem** items,uint8_t count){
 boolean MqttHelper::initialize(){
 	if(topicCount>0){
 		initialized=true;
-		Serial.println("------Mqtt client init--------");
+		Serial.println(FPSTR(MESSAGE_MQTTHELPER_INIT_STARTED));
 		//displayDetails();
 
 		connectIfNotConnected();
-		Serial.println("Init completed");
+		Serial.println(FPSTR(MESSAGE_MQTTHELPER_INIT_COMPLETE));
 		displayDetails();
-		Serial.println("-------------------------------");
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 	}
 	return initialized;
 }
 
 String MqttHelper::displayDetails(){
-	String wfConnected=String(client.connected());
 
-	Serial.print("MqttHelper ");
+	Serial.print(FPSTR(MESSAGE_MQTTHELPER_NAME));
 
-	Serial.print("mqtt_user=");
-	Serial.print("'");
+	Serial.print(FPSTR(MESSAGE_MQTTHELPER_MQTT_USER_EQ));
 	Serial.print(espSettingsBox->mqtt_user);
-	Serial.print("'; (");
-	Serial.print((espSettingsBox->mqtt_user).c_str());
-	Serial.print("); ");
+	Serial.print(FPSTR(MESSAGE_SPACE));
 
-	Serial.print("mqtt_pass=");
-	Serial.print("'");
+	Serial.print(FPSTR(MESSAGE_MQTTHELPER_MQTT_PASS_EQ));
 	Serial.print(espSettingsBox->mqtt_pass);
-	Serial.print("'; (");
-	Serial.print((espSettingsBox->mqtt_pass).c_str());
-	Serial.print("); ");
+	Serial.print(FPSTR(MESSAGE_SPACE));
 
-	Serial.print("topicCount=");
-	Serial.print("'");
-	Serial.print(topicCount);
-	Serial.print("'; ");
+	Serial.print(FPSTR(MESSAGE_MQTTHELPER_TOPIC_COUNT));
+	Serial.println(topicCount);
+	Serial.print(FPSTR(MESSAGE_SPACE));
 
-	Serial.print("mqtt_topic=");
-	Serial.print("'");
-	Serial.print(espSettingsBox->mqtt_topic);
-	Serial.print("'; ");
-
-	Serial.println("connected=");
-	Serial.print("'");
-	Serial.print(wfConnected);
-	Serial.print("'; ");
+	Serial.println(FPSTR(MESSAGE_MQTTHELPER_MQTT_CONNECTED_EQ));
+	Serial.print(client.connected());
+	Serial.print(FPSTR(MESSAGE_SPACE));
 
 	Serial.println();
 	printCurrentQueues();
@@ -132,21 +115,20 @@ String MqttHelper::displayDetails(){
 
 void MqttHelper::connect(){
 	if (!client.connected()) {
-	  Serial.println("==============Start connect mqttClient================");
+	  Serial.println(FPSTR(MESSAGE_MQTTHELPER_MQTT_START_CONNECT_EQ));
 	  String clientName;
 	  clientName += String(espSettingsBox->DeviceId)+millis();
 
 	if (client.connect((char*) clientName.c_str(),(char*)espSettingsBox->mqtt_user.c_str(),(char*)espSettingsBox->mqtt_pass.c_str())) {
-		Serial.println("Connected to MQTT broker");
-		Serial.print("Publish Topic is: ");
-		Serial.println(espSettingsBox->mqtt_topic);
+		Serial.println(FPSTR(MESSAGE_MQTTHELPER_MQTT_CONNECTED_EQ));
+		Serial.print(client.connected());
 
 		if(espSettingsBox->mqtt_topic!="" && espSettingsBox->mqtt_topic!="none"){
 			if (publish((char*)espSettingsBox->mqtt_topic.c_str(), espSettingsBox->DeviceId)) {
-			  Serial.println("Publish ok");
+			  Serial.println(FPSTR(MESSAGE_MQTTHELPER_MQTT_TEST_PUBLISH_OK));
 			}
 			else {
-			  Serial.println("Publish failed");
+				Serial.println(FPSTR(MESSAGE_MQTTHELPER_MQTT_TEST_PUBLISH_FAILED));
 			}
 		}
 
@@ -156,19 +138,12 @@ void MqttHelper::connect(){
 
 	  }
 	  else {
-		Serial.println("MQTT connect failed");
-		Serial.println("Will reset and try again...");
+		  Serial.println(FPSTR(MESSAGE_MQTTHELPER_MQTT_CONNECT_FAILED));
 		delay(5000);
 		//abort();
 	  }
-	Serial.println("================================");
+	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
-}
-
-void MqttHelper::printMqttDiagnostic(){
-	Serial.println("-----------------Mqtt Status----------------");
-	Serial.print("server=");
-	Serial.println("server=");
 }
 
 void MqttHelper::printCurrentQueues(){
@@ -184,8 +159,9 @@ boolean MqttHelper::isConnected(){
 
 boolean MqttHelper::connectIfNotConnected(){
 	if(WiFi.status()!=WL_CONNECTED){
-		Serial.println("No wiFi connection");
-		Serial.println("WiFi.status="+WiFi.status());
+		Serial.print(FPSTR(MESSAGE_MQTTHELPER_MQTT_WIFI_CONNECT_FAILED));
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
+		Serial.println(WiFi.status());
 		return false;
 	}
 
@@ -195,20 +171,21 @@ boolean MqttHelper::connectIfNotConnected(){
 }
 
 void MqttHelper::subscribe(String topicName){
-	Serial.print("subscribe to "+(topicName));
 	boolean res=client.subscribe((char*) topicName.c_str());
-	String resStr=res?" OK":" FAILED";
 
-	Serial.println(" ..."+resStr);
+	Serial.print(FPSTR(MESSAGE_MQTTHELPER_TOPIC_SUBSCRIBED));
+	Serial.print(topicName);
+	Serial.print(FPSTR(MESSAGE_MQTTHELPER_TOPIC_SUBSCRIBED_RES_EQ));
+	Serial.println(res);
 }
 
 boolean MqttHelper::publish(String topicName,String message){
 	if(!initialized){
-		Serial.println("Not initialized");
+		Serial.println(FPSTR(MESSAGE_MQTTHELPER_ERR_NOT_INITIALIZED));
 		return false;
 	}
 	if(!connectIfNotConnected()){
-		Serial.println("Not connected");
+		Serial.println(FPSTR(MESSAGE_MQTTHELPER_ERR_NOT_CONNECTED));
 		return false;
 	}
 
@@ -224,13 +201,13 @@ boolean MqttHelper::publish(String message){
 
 		boolean result=client.publish( (char*)espSettingsBox->mqtt_topic.c_str(),(char*) message.c_str());
 		if(result){
-			Serial.println(" sent");
+			Serial.println(FPSTR(MESSAGE_MQTTHELPER_SENT));
 		}else{
-			Serial.println(" mq FAILED");
+			Serial.println(FPSTR(MESSAGE_MQTTHELPER_SEND_FAILED));
 		}
 		return result;
 	}
-	Serial.println(" MqttHelper is not initialized");
+	Serial.println(FPSTR(MESSAGE_MQTTHELPER_ERR_NOT_INITIALIZED));
 
 	return false;
 

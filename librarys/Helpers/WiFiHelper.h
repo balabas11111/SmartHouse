@@ -66,6 +66,7 @@ public:
 
 	boolean loop(){
 		if(initialized){
+			connectToWiFiIfNotConnected();
 			server->handleClient();
 		}
 		return initialized;

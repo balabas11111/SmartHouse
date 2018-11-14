@@ -91,7 +91,7 @@ void DeviceHelper::update(Measurable** sensors, uint8_t sensorsSize) {
 
 	for(uint8_t i=0;i<sensorsSize;i++){
 		sensors[i]->update();
-		sensors[i]->print();
+		//sensors[i]->print();
 	}
 
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));

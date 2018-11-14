@@ -223,7 +223,7 @@ void setLampValue(PinDigital* lamp,int8_t on){
 
 	lamp->printValues();
 
-	senDAbstractItemToMqtt(lamp);
+	//senDAbstractItemToMqtt(lamp);
 }
 
 void onLeftLampChanged(){
@@ -411,7 +411,7 @@ String recreateThingSpeak(){
 		//Serial.println(getResult);
 	}
 
-
+	/*
 	if(countSet!=0){
 		commandSet+="&name=";
 		commandSet+="(Управление) "+espSettingsBox.DeviceLocation+" "+espSettingsBox.DeviceId;
@@ -459,11 +459,11 @@ String recreateThingSpeak(){
 
 		deviceHelper.printDeviceDiagnostic();
 	}
-
+*/
 	result+=String(countGet)+" каналов записи;";
-	result+=" "+String(countSet)+" каналов управления;";
+	//result+=" "+String(countSet)+" каналов управления;";
 
-	Serial.println(result);
+	//Serial.println(result);
 
 	return result;
 }

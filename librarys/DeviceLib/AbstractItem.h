@@ -372,7 +372,7 @@ protected:
 	boolean postValueToMqHttp=false;
 	//allows to process values from bind mqtt
 	boolean processValueFromMqtt=false;
-	//auto create chanels and update queue names
+	//channel could be used as management for current item
 	boolean autoCreateChannel=true;
 
 	SensorValue* items;

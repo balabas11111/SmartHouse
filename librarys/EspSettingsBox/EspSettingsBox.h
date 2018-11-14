@@ -69,6 +69,11 @@ public:
 		return "/"+getName()+"/setValue";
 	}
 
+	String getDeviceNameDescriptionAsRequestparams(){
+		return "&name="+DeviceLocation+" "+DeviceId
+				+"&description="+DeviceDescription+" "+DeviceKind;
+	}
+
 	void printSettingsFile();
 
 	boolean isSpiffInitialized();
