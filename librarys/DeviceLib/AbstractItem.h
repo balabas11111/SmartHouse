@@ -334,28 +334,43 @@ public:
 			uint8_t itemId=argName.substring(ind1,ind2).toInt();
 			uint8_t fieldId=argName.substring(ind2+1).toInt();
 
-			/*
-			Serial.print("argName=");
-			Serial.print(argName);
-			Serial.print(" argVal=");
-			Serial.print(argVal);
-			Serial.print(" deviceId=");
-			Serial.print(deviceId);
-			Serial.print(" sensorId=");
-			Serial.print(sensorId);
-			Serial.print(" type=");
-			Serial.print(type);
-			Serial.print(" ind1=");
-			Serial.print(ind1);
-			Serial.print(" ind2=");
-			Serial.print(ind2);
-			Serial.println(";");
-			*/
-
 			return {1,deviceId,itemId,fieldId,argValue};
 		}
 
 		return {0,0,0,0,""};
+	}
+
+	boolean checkForAlarm(){
+		boolean result=false;
+
+		for(uint8_t i=0;i<itemCount;i++){
+			result=checkItemForAlarm(i) || result;
+		}
+
+		alarmMode=result;
+
+		return result;
+	}
+
+	String generateAlarmText(){
+		checkForAlarm();
+
+		if(!alarmMode){
+			return "";
+		}
+
+		String result="";
+
+		for(uint8_t i=0;i<itemCount;i++){
+			if(items[i].val>=items[i].maxVal){
+				result+=constructAlarmMessage(" "+items[i].descr," поточное значение =",items[i].val," максимально заданое =",items[i].maxVal);
+			}
+			if(items[i].val<=items[i].minVal){
+				result+=constructAlarmMessage(" "+items[i].descr," поточное значение =",items[i].val," минимальное заданое =",items[i].maxVal);
+			}
+		}
+
+		return result;
 	}
 
 protected:
@@ -378,11 +393,25 @@ protected:
 	//channel could be used as management for current item
 	boolean autoCreateChannel=true;
 
+	boolean alarmMode=false;
+
 	SensorValue* items;
 
 	virtual boolean processMqVal(uint8_t index,String value){
 
 		return true;
+	}
+
+	String constructAlarmMessage(String preffix,String currValueStr,float val,String overValueStr,float overVal){
+		return " "+preffix+currValueStr+String(val)+overValueStr+String(overVal)+"<br>";
+	}
+
+	boolean checkItemForAlarm(uint8_t index){
+		if(items[index].val>=items[index].maxVal
+				|| items[index].val<=items[index].minVal){
+			return true;
+		}
+		return false;
 	}
 
 	void setSetAllowed(uint8_t index,boolean val){

@@ -9,12 +9,15 @@
 #include "ESP_Consts.h"
 #include "ESP8266WebServer.h"
 
-DeviceHelper::DeviceHelper(Loopable** _loopItems,uint8_t _loopItemsSize){
-	loopItems=_loopItems;
-	loopItemsSize=_loopItemsSize;
+DeviceHelper::DeviceHelper(Loopable** _loopItems,uint8_t _loopItemsSize,long minAlarmInterval){
+	this->loopItems=_loopItems;
+	this->loopItemsSize=_loopItemsSize;
 
 	displayDetails();
 	Serial.println();
+
+	this->minAlarmInterval=minAlarmInterval;
+	this->lastAlarmTime=0;
 }
 
 String DeviceHelper::displayDetails(){
@@ -86,16 +89,34 @@ void DeviceHelper::printDeviceDiagnostic(){
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
 
-void DeviceHelper::update(Measurable** sensors, uint8_t sensorsSize) {
+void DeviceHelper::update(AbstractItem** sensors, uint8_t sensorsSize){
 	Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_UPDATE_EXECUTION));
 
 	for(uint8_t i=0;i<sensorsSize;i++){
 		sensors[i]->update();
-		//sensors[i]->print();
+		boolean alarm=sensors[i]->checkForAlarm();
 	}
 
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 	printDeviceDiagnostic();
+}
+
+String DeviceHelper::processAlarm(AbstractItem** sensors, uint8_t sensorsSize){
+	boolean alarmPossible=lastAlarmTime+minAlarmInterval<millis();
+	String alarmMessage="";
+
+	for(uint8_t i=0;i<sensorsSize;i++){
+		sensors[i]->update();
+		boolean alarm=sensors[i]->checkForAlarm();
+
+		if(alarm && alarmPossible){
+			alarmMessage+=sensors[i]->generateAlarmText();
+		}
+	}
+
+	lastAlarmTime=millis();
+
+	return alarmMessage;
 }
 
 String DeviceHelper::getJson(AbstractItem** sensors, uint8_t size) {

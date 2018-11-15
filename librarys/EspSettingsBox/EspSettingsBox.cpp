@@ -139,6 +139,7 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	alarmSendNotifAlertStop=stringToBoolean(root["AlSn"].as<char*>());
 	    	  	alarmPlaySound=stringToBoolean(root["AlPs"].as<char*>());
 	    	  	alamSoundInterval=root["AlSi"];
+	    	  	alamSendInterval=root["AlSendi"];
 	    	  	//alamNotificationInterval=root["AlNi"];
 
 	    	  	ntpEnabled=stringToBoolean(root["ntpEnabled"]);
@@ -207,6 +208,7 @@ void EspSettingsBox::saveSettingsJson(){
 		root["AlSn"]=alarmSendNotifAlertStop;
 		root["AlPs"]=alarmPlaySound;
 		root["AlSi"]=alamSoundInterval;
+		root["AlSendi"]=alamSendInterval;
 
 		root["ptTsEnabled"]=isThingSpeakEnabled;
 		root["pdTs"] = postDataToTSInterval;
@@ -560,6 +562,7 @@ String EspSettingsBox::getJson(String page){
 						{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\"},\
 						{\"name\":\"settingsPass\",\"val\":\"*****\"},\
 						{\"name\":\"ntpEnabled\",\"val\":\""+String(ntpEnabled)+"\"},\
+						{\"name\":\"alamSendInterval\",\"val\":\""+String(alamSendInterval)+"\"},\
 						{\"name\":\"NTP_poolServerName\",\"val\":\""+String(NTP_poolServerName)+"\"},\
 						{\"name\":\"NTP_timeOffset\",\"val\":\""+NTP_timeOffset+"\"},\
 						{\"name\":\"NTP_updateInterval\",\"val\":\""+NTP_updateInterval+"\"},\
@@ -750,6 +753,10 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	}
 	if(fieldName=="alamSoundInterval"){
 		alamSoundInterval=fieldValue.toInt();
+		return true;
+	}
+	if(fieldName=="alamSendInterval"){
+		alamSendInterval=fieldValue.toInt();
 		return true;
 	}
 

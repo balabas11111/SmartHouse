@@ -18,20 +18,25 @@
 class DeviceHelper:public Loopable{
 
 public:
-	DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize);
+	DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,long minAlarmInterval);
 	String displayDetails();
 	boolean loop();
 
 	void startDevice(String deviceId);
 	boolean init(Initializable** initItems,uint8_t initItemsSize);
-	void update(Measurable** sensors,uint8_t sensorsSize);
+	void update(AbstractItem** sensors,uint8_t sensorsSize);
 
 	String getJson(AbstractItem** sensors,uint8_t size);
 
 	void printDeviceDiagnostic();
+
+	String processAlarm(AbstractItem** sensors, uint8_t sensorsSize);
 private:
 	Loopable** loopItems;
 	uint8_t loopItemsSize;
+
+	long minAlarmInterval;
+	long lastAlarmTime;
 };
 
 #endif /* LIBRARIES_PINDIGITAL_DeviceHelper_H_ */

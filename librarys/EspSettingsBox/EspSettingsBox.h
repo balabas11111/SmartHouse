@@ -124,6 +124,7 @@ public:
 	boolean alarmSendNotifAlertStop=true;
 	boolean alarmPlaySound=true;
 	uint16_t alamSoundInterval=30;
+	uint16_t alamSendInterval=120;
 
 	//thingspeak settings
 	boolean isThingSpeakEnabled=false;

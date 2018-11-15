@@ -26,7 +26,7 @@ const char SENSOR_BME280_DESCRIPTION_RU[] PROGMEM ="Климат BME280";
 const char HEADER_BME280[] PROGMEM ="-------BME280_SENSOR initialize------------";
 const char INIT_STR_BME280[] PROGMEM ="Init BME-280";
 
-class BME280_Sensor: public AbstractItem, public Initializable,public Measurable{
+class BME280_Sensor: public AbstractItem, public Initializable{
 
 public:
 

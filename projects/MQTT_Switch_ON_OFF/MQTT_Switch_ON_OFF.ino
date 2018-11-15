@@ -90,10 +90,9 @@ MqttHelper mqttHelper(&espSettingsBox,wclient,processMqttEvent);
 Loopable* loopArray[]={&wifiHelper,&mqttHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&pirDetector,&thingSpeakTrigger,&postPonedCommandTrigger};
 Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer,& dhtMeasurer,&ds18d20Measurer};
 
-Measurable* measurableArray[]={&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
 AbstractItem* abstractItems[]={&lampLeft,&lampRight,&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
 
-DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray));
+DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),espSettingsBox.alamSendInterval);
 
 void setup() {
   deviceHelper.startDevice(espSettingsBox.DeviceId);
@@ -554,7 +553,7 @@ void sendAbstractItemToHttp(AbstractItem* item){
 }
 
 void measureSensors(){
-	deviceHelper.update(measurableArray, ARRAY_SIZE(measurableArray));
+	deviceHelper.update(abstractItems, ARRAY_SIZE(abstractItems));
 }
 
 void processMqttEvent(String topic,String message){

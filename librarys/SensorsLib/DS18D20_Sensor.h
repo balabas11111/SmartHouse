@@ -27,7 +27,7 @@ const char SENSOR_DS18D20_DESCRIPTION_RU[] PROGMEM ="Температура DS18
 const char HEADER_DS18D20[] PROGMEM ="-------DS18D20 initialize------------";
 const char INIT_STR_DS18D20[] PROGMEM ="Init DS18D20";
 
-class DS18D20_Sensor: public AbstractItem, public Initializable, public Measurable {
+class DS18D20_Sensor: public AbstractItem, public Initializable {
 public:
 	DS18D20_Sensor(String name, uint8_t pin)
 				: AbstractItem(pin,name,FPSTR(SENSOR_DS18D20_DESCRIPTION),FPSTR(SENSOR_DS18D20_SIZE),FPSTR(SENSOR_DS18D20_DESCRIPTION_RU),0){

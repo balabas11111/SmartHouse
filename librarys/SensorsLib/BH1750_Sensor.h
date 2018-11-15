@@ -25,7 +25,7 @@ const char SENSOR_BH1750_DESCRIPTION_RU[] PROGMEM ="Освещенность BH1
 const char HEADER_BH1750[] PROGMEM ="-------BH1750_SENSOR initialize------------";
 const char INIT_STR_BH1750[] PROGMEM ="Init luxmeter";
 
-class BH1750_Sensor: public AbstractItem, public Initializable, public Measurable{
+class BH1750_Sensor: public AbstractItem, public Initializable{
 
 public:
 

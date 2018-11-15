@@ -25,7 +25,7 @@ const char SENSOR_DHT22_DESCRIPTION_RU[] PROGMEM ="Климат DHT 22";
 const char HEADER_DHT22[] PROGMEM ="-------DHT_SENSOR initialize------------";
 const char INIT_STR_DHT22[] PROGMEM ="Init DHT22";
 
-class DHT22_Sensor: public AbstractItem, public Initializable,public Measurable {
+class DHT22_Sensor: public AbstractItem, public Initializable{
 public:
 	DHT22_Sensor(String name, uint8_t pin, uint8_t type)
 				:AbstractItem(pin,name,FPSTR(SENSOR_DHT22_DESCRIPTION),FPSTR(SENSOR_DHT22_SIZE),FPSTR(SENSOR_DHT22_DESCRIPTION_RU),2){
