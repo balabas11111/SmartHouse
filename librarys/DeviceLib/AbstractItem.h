@@ -196,7 +196,7 @@ public:
 	boolean getPeriodicSend(){
 		return periodicSend;
 	}
-
+/*
 	boolean getPostValueOnChanged(){
 		return postValueOnChanged;
 	}
@@ -204,7 +204,7 @@ public:
 	boolean getPostValueToMqHttp(){
 		return postValueToMqHttp;
 	}
-
+*/
 	boolean getProcessValueFromMqtt(){
 		return processValueFromMqtt;
 	}
@@ -237,8 +237,11 @@ public:
 	boolean processMqValue(String topic,String message){
 		for(int i=0;i<itemCount;i++){
 			if(items[i].queue==topic){
-
-				return processVal(i,message);
+				if(items[i].setAllowed){
+					return processMqVal(i,message);
+				}else{
+					return false;
+				}
 			}
 		}
 
@@ -367,9 +370,9 @@ protected:
 	//allows periodic send of value into channel
 	boolean periodicSend=true;
 	//post values only when val was updated (marking PinDigital only)
-	boolean postValueOnChanged=false;
+	//boolean postValueOnChanged=false;
 	//allows to post item vals to MQ
-	boolean postValueToMqHttp=false;
+	//boolean postValueToMqHttp=false;
 	//allows to process values from bind mqtt
 	boolean processValueFromMqtt=false;
 	//channel could be used as management for current item
@@ -377,7 +380,7 @@ protected:
 
 	SensorValue* items;
 
-	virtual boolean processVal(uint8_t index,String value){
+	virtual boolean processMqVal(uint8_t index,String value){
 
 		return true;
 	}

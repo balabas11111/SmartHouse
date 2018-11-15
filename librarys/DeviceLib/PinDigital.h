@@ -47,7 +47,7 @@ public:
 		return getJson();
 	}
 
-	virtual boolean processVal(uint8_t index,String value){
+	virtual boolean processMqVal(uint8_t index,String value){
 		if(index==0){
 			Serial.print("name=");
 			Serial.print(name);
