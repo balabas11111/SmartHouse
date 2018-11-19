@@ -138,7 +138,8 @@ String DeviceHelper::processAlarm(AbstractItem** sensors, uint8_t sensorsSize){
 		Serial.println(alarmMessage);
 		lastAlarmTime=now;
 	}else{
-		//Serial.println("No alarm identified");
+		Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_ALARM_MODE_NOT_IDENTIFIED));
+
 		if(alarmMode){
 			Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED));
 			alarmMode=false;

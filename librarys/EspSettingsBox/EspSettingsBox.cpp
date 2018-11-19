@@ -933,7 +933,6 @@ boolean EspSettingsBox::saveThingSpeakChannelCreation(String response/*,
 						thSkWKey=writeKey;
 						thSkRKey=readKey;
 					//}
-
 					//mqtt_TStopic="channels/"+String(thSkChId)+"/subscribe/json/"+thSkRKey;
 
 					saveSettingsJson();
