@@ -14,5 +14,6 @@ function onLoadPageComplete(){
 	 updateComponentsByAjaxCall('GET', '/lampLeft/getJson', processJsonOnImageComponent,"", 15000);
 	 updateComponentsByAjaxCall('GET', '/lampRight/getJson', processJsonOnImageComponent,"", 15000);
 	 
+	 updateComponentsByAjaxCall('GET', '/acMeter/getJson', processJsonOnImageComponent,"", 5000);
 	 //updateComponentsByAjaxCall('GET', '/pirDetector/getJson', processLampJson,"", 5000);
 }

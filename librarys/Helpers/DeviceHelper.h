@@ -35,8 +35,9 @@ private:
 	Loopable** loopItems;
 	uint8_t loopItemsSize;
 
-	long minAlarmInterval;
-	long lastAlarmTime;
+	boolean alarmMode;
+	unsigned long minAlarmInterval;
+	unsigned long lastAlarmTime;
 };
 
 #endif /* LIBRARIES_PINDIGITAL_DeviceHelper_H_ */

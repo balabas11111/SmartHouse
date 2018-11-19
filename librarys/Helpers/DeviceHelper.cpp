@@ -16,7 +16,8 @@ DeviceHelper::DeviceHelper(Loopable** _loopItems,uint8_t _loopItemsSize,long min
 	displayDetails();
 	Serial.println();
 
-	this->minAlarmInterval=minAlarmInterval;
+	this->alarmMode=false;
+	this->minAlarmInterval=minAlarmInterval*1000;
 	this->lastAlarmTime=0;
 }
 
@@ -94,7 +95,7 @@ void DeviceHelper::update(AbstractItem** sensors, uint8_t sensorsSize){
 
 	for(uint8_t i=0;i<sensorsSize;i++){
 		sensors[i]->update();
-		boolean alarm=sensors[i]->checkForAlarm();
+		sensors[i]->checkForAlarm();
 	}
 
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
@@ -102,19 +103,52 @@ void DeviceHelper::update(AbstractItem** sensors, uint8_t sensorsSize){
 }
 
 String DeviceHelper::processAlarm(AbstractItem** sensors, uint8_t sensorsSize){
-	boolean alarmPossible=lastAlarmTime+minAlarmInterval<millis();
+	unsigned long now=millis();
+	//Serial.println("lastAlarmTime="+String(lastAlarmTime)+" minAlarmInterval="+String(minAlarmInterval)+" now="+String(now)+" alarmMode="+String(alarmMode));
+
+	if(minAlarmInterval==0){
+		return "";
+	}
+
+	if(alarmMode && (lastAlarmTime+minAlarmInterval>now)){
+		return "";
+	}
+
 	String alarmMessage="";
+	boolean alarmStarted=alarmMode;
 
 	for(uint8_t i=0;i<sensorsSize;i++){
-		sensors[i]->update();
 		boolean alarm=sensors[i]->checkForAlarm();
 
-		if(alarm && alarmPossible){
+		if(alarm){
+			if(!alarmStarted){
+				alarmStarted=true;
+			}
+			alarmMode=true;
 			alarmMessage+=sensors[i]->generateAlarmText();
 		}
 	}
 
-	lastAlarmTime=millis();
+	if(alarmMessage!=""){
+		if(alarmStarted){
+			Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_ALARM_MODE_STARTED));
+		}else{
+			Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_ALARM_MODE_IDENTIFIED));
+		}
+		Serial.println(alarmMessage);
+		lastAlarmTime=now;
+	}else{
+		//Serial.println("No alarm identified");
+		if(alarmMode){
+			Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED));
+			alarmMode=false;
+			alarmMessage=FPSTR(MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED_RESULT);
+			lastAlarmTime=now;
+		}
+	}
+	if(alarmMessage!=""){
+		Serial.println(alarmMessage);
+	}
 
 	return alarmMessage;
 }

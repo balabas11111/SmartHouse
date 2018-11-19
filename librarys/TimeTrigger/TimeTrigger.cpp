@@ -94,6 +94,40 @@ boolean TimeTrigger::loop(){
 	return false;
 }
 
+void TimeTrigger::start(){
+	saveTime();
+	setActive(true);
+}
+
+void TimeTrigger::stop(){
+	setActive(false);
+}
+
+boolean TimeTrigger::isActive(){
+	return _active;
+}
+
+boolean TimeTrigger::checkIsBeforeTrigger(){
+	if(!_active){
+		return false;
+	}
+
+	if(getInterval()==0){
+		return false;
+	}
+
+	boolean result=false;
+
+	unsigned long now=millis();
+	unsigned long expected=getLastTriggerTime()+getInterval();
+
+	if(expected>=now){
+		result=true;
+	}
+
+	return result;
+}
+
 void TimeTrigger::saveTime(){
 	_lastTriggerTime=millis();
 }

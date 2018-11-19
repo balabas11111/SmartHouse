@@ -9,6 +9,7 @@
 #define LIBRARIES_PINEVENT_PINDIGITAL_H_
 
 #include "Arduino.h"
+#include "TimeTrigger.h"
 #include <FunctionalInterrupt.h>
 #include <AbstractItem.h>
 #include <Loopable.h>
@@ -19,13 +20,22 @@ public:
 
 	PinDigital(String _name,uint8_t _pin,std::function<void(void)> onChanged)
 		:AbstractItem(_pin,_name,"PinDigital","HIGH/LOW",_name,1){
-		construct(_pin, onChanged, INPUT, CHANGE, LOW, LOW);
+		construct(_pin, onChanged, INPUT, CHANGE, LOW, LOW,0);
 	}
 
+	PinDigital(String _name,uint8_t _pin,std::function<void(void)> onChanged,long clickMaxTime)
+		:AbstractItem(_pin,_name,"PinDigital","HIGH/LOW",_name,1){
+		construct(_pin, onChanged, INPUT, CHANGE, LOW, LOW,clickMaxTime);
+	}
 
 	PinDigital(String _name,uint8_t _pin,std::function<void(void)> _onChanged,uint8_t _pinMode,uint8_t _changeMode,uint8_t _pinVal,uint8_t _turnOffLevel)
 		:AbstractItem(_pin,_name,"PinDigital","HIGH/LOW",_name,1){
-		construct(_pin, _onChanged, _pinMode, _changeMode, _pinVal, _turnOffLevel);
+		construct(_pin, _onChanged, _pinMode, _changeMode, _pinVal, _turnOffLevel,0);
+	}
+
+	PinDigital(String _name,uint8_t _pin,std::function<void(void)> _onChanged,uint8_t _pinMode,uint8_t _changeMode,uint8_t _pinVal,uint8_t _turnOffLevel,long clickMaxTime)
+		:AbstractItem(_pin,_name,"PinDigital","HIGH/LOW",_name,1){
+		construct(_pin, _onChanged, _pinMode, _changeMode, _pinVal, _turnOffLevel,clickMaxTime);
 	}
 
 	~PinDigital();
@@ -65,11 +75,12 @@ public:
 	//PinAbstract functions
 	uint16_t getVal();
 	bool setVal(uint16_t _val);
+	void processClick(boolean fromTimer);
 	void processInterrupt();
 
 private:
 
-	void construct(uint8_t pin,std::function<void(void)> onChanged,uint8_t pinMode,uint8_t changeMode,uint8_t pinVal,uint8_t turnOffLevel);
+	void construct(uint8_t pin,std::function<void(void)> onChanged,uint8_t pinMode,uint8_t changeMode,uint8_t pinVal,uint8_t turnOffLevel,long clickMaxTime);
 	uint8_t getOpposite(uint8_t _val);
 
 	//PinAbstract functions
@@ -84,6 +95,9 @@ protected:
 	uint8_t changeMode;
 	uint8_t pinVal;
 	uint8_t turnOffLevel;
+	boolean isClick;
+
+	TimeTrigger* clickTrigger;
 
 	boolean handleLoop();
 };

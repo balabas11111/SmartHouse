@@ -347,15 +347,13 @@ public:
 			result=checkItemForAlarm(i) || result;
 		}
 
-		alarmMode=result;
+		//alarmMode=result;
 
 		return result;
 	}
 
 	String generateAlarmText(){
-		checkForAlarm();
-
-		if(!alarmMode){
+		if(!checkForAlarm()){
 			return "";
 		}
 
@@ -393,7 +391,7 @@ protected:
 	//channel could be used as management for current item
 	boolean autoCreateChannel=true;
 
-	boolean alarmMode=false;
+	//boolean alarmMode=false;
 
 	SensorValue* items;
 

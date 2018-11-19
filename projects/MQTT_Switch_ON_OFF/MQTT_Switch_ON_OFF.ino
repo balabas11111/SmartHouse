@@ -68,29 +68,31 @@ TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSe
 TimeTrigger postPonedCommandTrigger(0,5000,false,nullptr);
 
 PinDigital buttonLeft(VAR_NAME(buttonLeft),D7,onLeftButtonChanged);
-PinDigital buttonRight(VAR_NAME(buttonRight),D6,onRightButtonChanged);
+PinDigital buttonRight(VAR_NAME(buttonRight),D6,onRightButtonChanged,1000);
 
-PinDigital lampLeft(VAR_NAME(lampLeft),D5,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW);
-PinDigital lampRight(VAR_NAME(lampRight),D8,onRightLampChanged,OUTPUT,CHANGE,HIGH,LOW);
+PinDigital lampLeft(VAR_NAME(lampLeft),D8,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW);
+PinDigital lampRight(VAR_NAME(lampRight),D0,onRightLampChanged,OUTPUT,CHANGE,HIGH,LOW);
 
-Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged);
+PinDigital acMeter(VAR_NAME(acMeter),D5,onAcMeterChanged,INPUT,CHANGE,HIGH,HIGH);
+
+//Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged);
 
 //NtpTimeClientService timeClient(&espSettingsBox,processTimeClientEvent,60000);
 
 BME280_Sensor bmeMeasurer(20,VAR_NAME(bmeMeasurer));
 BH1750_Sensor luxMeasurer(21,VAR_NAME(luxMeasurer));
 
-DHT22_Sensor dhtMeasurer(VAR_NAME(dhtSensor), D0, 22);
+//DHT22_Sensor dhtMeasurer(VAR_NAME(dhtSensor), D0, 22);
 DS18D20_Sensor ds18d20Measurer(VAR_NAME(ds18d20Measurer), D3);
 
 WiFiHelper wifiHelper("WiFiHelper",&espSettingsBox, &displayHelper, /*nullptr,*/&server,postInitWebServer,false);
 
 MqttHelper mqttHelper(&espSettingsBox,wclient,processMqttEvent);
 
-Loopable* loopArray[]={&wifiHelper,&mqttHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&pirDetector,&thingSpeakTrigger,&postPonedCommandTrigger};
-Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer,& dhtMeasurer,&ds18d20Measurer};
+Loopable* loopArray[]={&wifiHelper,&mqttHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&acMeter,&thingSpeakTrigger,&postPonedCommandTrigger};
+Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer,&ds18d20Measurer};
 
-AbstractItem* abstractItems[]={&lampLeft,&lampRight,&bmeMeasurer,&luxMeasurer,&dhtMeasurer,&ds18d20Measurer};
+AbstractItem* abstractItems[]={&lampLeft,&lampRight,&bmeMeasurer,&luxMeasurer,&acMeter,&ds18d20Measurer};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),espSettingsBox.alamSendInterval);
 
@@ -165,20 +167,23 @@ void postInitWebServer(){
 	server.on(lampRight.getSetValueUrl(), HTTP_ANY, [](){
 		handleLampChange(&lampRight);
 	});
-
+	server.on(acMeter.getJsonPublishUrl(), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), acMeter.getJson());
+	});
+/*
 	server.on(pirDetector.getJsonPublishUrl(), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), pirDetector.getJson());
 	});
-
+*/
 	server.on(bmeMeasurer.getJsonPublishUrl(), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), bmeMeasurer.getJson());
 	});
 	server.on(luxMeasurer.getJsonPublishUrl(), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), luxMeasurer.getJson());
 	});
-	server.on(dhtMeasurer.getJsonPublishUrl(), HTTP_GET, [](){
+	/*server.on(dhtMeasurer.getJsonPublishUrl(), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), dhtMeasurer.getJson());
-	});
+	});*/
 	server.on(ds18d20Measurer.getJsonPublishUrl(), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), ds18d20Measurer.getJson());
 	});
@@ -197,11 +202,21 @@ void onLeftButtonChanged(){
 	//buttonLeft.printValues();
 }
 
-void onRightButtonChanged(){
-	int8_t on=buttonRight.isOn();
+TimeTrigger rightButtonClickTrigger(0,1000,true,clickTriggerFinished);
 
-	setLampValue(&lampRight, on);
+void clickTriggerFinished(){
+	rightButtonClickTrigger.stop();
+	Serial.println("CLick timed out");
+}
+
+void onRightButtonChanged(){
+	setLampValue(&lampRight, !(lampRight.isOn()));
 	//buttonRight.printValues();
+}
+
+void onAcMeterChanged(){
+	Serial.print("AcMeter=");
+	Serial.println(acMeter.isOn());
 }
 //---------------------------------------------------------------------
 //handle lamp events
@@ -371,7 +386,7 @@ String recreateThingSpeak(){
 	String result="";
 
 	String commandGet="api_key="+espSettingsBox.thSkUsrKey;
-	String commandSet="api_key="+espSettingsBox.thSkUsrKey;
+	//String commandSet="api_key="+espSettingsBox.thSkUsrKey;
 
 	uint8_t countGet=0;
 	uint8_t countSet=0;
@@ -382,6 +397,7 @@ String recreateThingSpeak(){
 		if(item->getAutoCreateChannel()){
 			for(uint8_t j=0;j<item->getItemCount();j++){
 				if(item->getFieldId(j)!=0){
+
 					countGet++;
 					commandGet+="&field"+item->getFieldIdStr(j)+"="+item->getDescr(j);
 
@@ -389,7 +405,7 @@ String recreateThingSpeak(){
 
 					if(item->getSetAllowed(j)){
 						countSet++;
-						commandSet+="&field"+item->getFieldIdStr(j)+"="+item->getDescr(j);
+						//commandSet+="&field"+item->getFieldIdStr(j)+"="+item->getDescr(j);
 					}
 				}
 			}
@@ -404,23 +420,14 @@ String recreateThingSpeak(){
 		commandGet+=espSettingsBox.DeviceDescription+" "+espSettingsBox.DeviceKind;
 
 		String getResult=wifiHelper.executeFormPostRequest(FPSTR(MESSAGE_THINGSPEAK_CREATE_CHANNEL_URL),commandGet);
-		espSettingsBox.saveThingSpeakChannelCreation(getResult,false);
+		espSettingsBox.saveThingSpeakChannelCreation(getResult);
 		delay(10);
 		deviceHelper.printDeviceDiagnostic();
 		//Serial.println(getResult);
 	}
 
-	/*
-	if(countSet!=0){
-		commandSet+="&name=";
-		commandSet+="(Управление) "+espSettingsBox.DeviceLocation+" "+espSettingsBox.DeviceId;
-		commandSet+="&description=";
-		commandSet+=espSettingsBox.DeviceDescription+" "+espSettingsBox.DeviceKind;
-		String setResult=wifiHelper.executeFormPostRequest(FPSTR(MESSAGE_THINGSPEAK_CREATE_CHANNEL_URL),commandSet);
-		boolean res=espSettingsBox.saveThingSpeakChannelCreation(setResult,true);
-		delay(10);
 
-		if(res){
+	if(countSet!=0){
 			//---------------------------------------------------------------------------
 			for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
 				AbstractItem* item=abstractItems[i];
@@ -428,10 +435,10 @@ String recreateThingSpeak(){
 
 				if(item->getAutoCreateChannel()){
 					for(uint8_t j=0;j<item->getItemCount();j++){
-						if(item->getFieldId(j)!=0){
-							String channel="channels/"+String(espSettingsBox.thSkManageChId)
+						if(item->getFieldId(j)!=0 && item->getSetAllowed(j)){
+							String channel="channels/"+String(espSettingsBox.thSkChId)
 									+"/subscribe/fields/field"+item->getFieldIdStr(j)
-									+"/"+espSettingsBox.thSkRManageKey;
+									+"/"+espSettingsBox.thSkRKey;
 
 							//Subscribes
 							//channels/623698/subscribe/fields/field1/XQ4QSQQKEKMRJ4DK
@@ -454,15 +461,11 @@ String recreateThingSpeak(){
 				deviceHelper.printDeviceDiagnostic();
 			}
 			//---------------------------------------------------------------------------
-		}
-
 		deviceHelper.printDeviceDiagnostic();
 	}
-*/
-	result+=String(countGet)+" каналов записи;";
-	//result+=" "+String(countSet)+" каналов управления;";
 
-	//Serial.println(result);
+	result+=String(countGet)+" каналов записи;";
+	result+=" "+String(countSet)+" каналов управления;";
 
 	return result;
 }
@@ -554,6 +557,7 @@ void sendAbstractItemToHttp(AbstractItem* item){
 
 void measureSensors(){
 	deviceHelper.update(abstractItems, ARRAY_SIZE(abstractItems));
+	deviceHelper.processAlarm(abstractItems, ARRAY_SIZE(abstractItems));
 }
 
 void processMqttEvent(String topic,String message){

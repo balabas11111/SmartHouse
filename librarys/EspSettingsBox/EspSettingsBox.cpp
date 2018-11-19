@@ -306,7 +306,7 @@ void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 			if (!root.success()) {
 				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
 			} else {
-				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
+				Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
 				root.printTo(Serial);
 
 				item->setDescr(root["descr"].as<char*>());
@@ -320,28 +320,16 @@ void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 
 					for(uint8_t i=0;i<itemCountJson;i++){
 
-						String name=root["items"][i]["name"];
-						String descr=root["items"][i]["descr"];
-						uint8_t fieldId=root["items"][i]["fieldId"];
-						float minVal=root["items"][i]["minVal"];
-						float maxVal=root["items"][i]["maxVal"];
-						String queue=root["items"][i]["queue"];
+						uint8_t index=item->getChildItemIndexByName(root["items"][i]["name"]);
 
-						Serial.println("name="+name+" descr="+descr
-								+" fieldId="+String(fieldId)
-								+" minVal="+String(minVal)
-								+" maxVal="+String(maxVal)
-								+" queue="+queue);
+						item->setDescr(index, root["items"][i]["descr"]);
+						item->setFieldId(index, root["items"][i]["fieldId"]);
+						item->setMinVal(index, root["items"][i]["minVal"]);
+						item->setMaxVal(index, root["items"][i]["maxVal"]);
+						item->setQueue(index, root["items"][i]["queue"]);
 
-						uint8_t child=item->getChildItemIndexByName(name);
-
-						item->setDescr(child, descr);
-						item->setFieldId(child, fieldId);
-						item->setMinVal(child, minVal);
-						item->setMaxVal(child, maxVal);
-						item->setQueue(child, queue);
-
-						Serial.println(item->getJson(child));
+						Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_ITEM_SETTINGS_LOADED));
+						Serial.println(item->getJson(index));
 					}
 				}
 				//-----------------------------------------
@@ -894,8 +882,8 @@ int EspSettingsBox::deleteSettingsFiles() {
 	return count;
 }
 
-boolean EspSettingsBox::saveThingSpeakChannelCreation(String response,
-		boolean manageChannel) {
+boolean EspSettingsBox::saveThingSpeakChannelCreation(String response/*,
+		boolean manageChannel*/) {
 
 		Serial.println(FPSTR(ESPSETTINGSBOX_THINGSPEAK_PARSE_CHCREATION));
 		Serial.print(FPSTR(ESPSETTINGSBOX_THINGSPEAK_CHANNEL_JSON));
@@ -934,19 +922,19 @@ boolean EspSettingsBox::saveThingSpeakChannelCreation(String response,
 			Serial.println(readKey);
 
 				if(channelId>0 && writeKey!="" && readKey!=""){
-					if(manageChannel){
+					/*if(manageChannel){
 						Serial.println(FPSTR(ESPSETTINGSBOX_THINGSPEAK_UPDATE_MANAGECHANNEL));
 						thSkManageChId=channelId;
 						thSkWManageKey=writeKey;
 						thSkRManageKey=readKey;
-					}else{
+					}else{*/
 						Serial.println(FPSTR(ESPSETTINGSBOX_THINGSPEAK_UPDATE_CHANNEL));
 						thSkChId=channelId;
 						thSkWKey=writeKey;
 						thSkRKey=readKey;
-					}
+					//}
 
-					mqtt_TStopic="channels/"+String(thSkManageChId)+"/subscribe/json/"+thSkRManageKey;
+					//mqtt_TStopic="channels/"+String(thSkChId)+"/subscribe/json/"+thSkRKey;
 
 					saveSettingsJson();
 				}

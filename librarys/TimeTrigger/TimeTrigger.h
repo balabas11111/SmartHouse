@@ -33,6 +33,13 @@ public:
 	String displayDetails();
 	boolean loop();
 
+	void start();
+	void stop();
+
+	boolean isActive();
+
+	boolean checkIsBeforeTrigger();
+
 private:
 
 	void construct(unsigned long lastTriggerTime,unsigned long interval,boolean active,std::function<void(void)> funcEvent);

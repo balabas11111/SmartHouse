@@ -1,4 +1,4 @@
-SET ip=192.168.0.100
+SET ip=192.168.0.102
 
 rem #cssFiles
 curl -i -X POST -H "Expect:" -F "uploadfile=@css/w3.css;filename=web/css/w3.css;" -F submit=upload http://%ip%/edit
@@ -13,6 +13,8 @@ curl -i -X POST -H "Expect:" -F "uploadfile=@img/connected.png;filename=web/img/
 curl -i -X POST -H "Expect:" -F "uploadfile=@img/connecting.png;filename=web/img/connecting.png;" -F submit=upload http://%ip%/edit
 curl -i -X POST -H "Expect:" -F "uploadfile=@img/emptyWalk.png;filename=web/img/emptyWalk.png;" -F submit=upload http://%ip%/edit
 curl -i -X POST -H "Expect:" -F "uploadfile=@img/Humidity.png;filename=web/img/Humidity.png;" -F submit=upload http://%ip%/edit
+curl -i -X POST -H "Expect:" -F "uploadfile=@img/hv_on.png;filename=web/img/hv_on.png;" -F submit=upload http://%ip%/edit
+curl -i -X POST -H "Expect:" -F "uploadfile=@img/hv_off.png;filename=web/img/hv_off.png;" -F submit=upload http://%ip%/edit
 curl -i -X POST -H "Expect:" -F "uploadfile=@img/LightLevel.png;filename=web/img/LightLevel.png;" -F submit=upload http://%ip%/edit
 curl -i -X POST -H "Expect:" -F "uploadfile=@img/OffLamp_64.png;filename=web/img/OffLamp_64.png;" -F submit=upload http://%ip%/edit
 curl -i -X POST -H "Expect:" -F "uploadfile=@img/OnLamp_64.png;filename=web/img/OnLamp_64.png;" -F submit=upload http://%ip%/edit

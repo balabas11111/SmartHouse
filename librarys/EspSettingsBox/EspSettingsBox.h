@@ -82,7 +82,7 @@ public:
 
 	int deleteSettingsFiles();
 
-	boolean saveThingSpeakChannelCreation(String response,boolean manageChannel);
+	boolean saveThingSpeakChannelCreation(String response/*,boolean manageChannel*/);
 
 	String deviceFirmWareVersion = "v.1.0";
 	String DeviceId = "SENS_"+String(ESP.getChipId());
