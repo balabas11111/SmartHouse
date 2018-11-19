@@ -196,22 +196,11 @@ void postInitWebServer(){
 //---------------------------------------------------------------------
 //button handling
 void onLeftButtonChanged(){
-	int8_t on=buttonLeft.isOn();
-
-	setLampValue(&lampLeft, on);
-	//buttonLeft.printValues();
-}
-
-TimeTrigger rightButtonClickTrigger(0,1000,true,clickTriggerFinished);
-
-void clickTriggerFinished(){
-	rightButtonClickTrigger.stop();
-	Serial.println("CLick timed out");
+	setLampValue(&lampLeft, buttonLeft.isOn());
 }
 
 void onRightButtonChanged(){
 	setLampValue(&lampRight, !(lampRight.isOn()));
-	//buttonRight.printValues();
 }
 
 void onAcMeterChanged(){
