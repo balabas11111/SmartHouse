@@ -13,6 +13,7 @@
 #include "ArduinoJson.h"
 #include "Initializable.h"
 #include "AbstractItem.h"
+#include "ESP_Consts.h"
 
 class EspSettingsBox: public Initializable{
 
@@ -56,22 +57,41 @@ public:
 
 	String getFileName(AbstractItem* item);
 
-	String getName(){
-		return "espSettingsBox";
-	}
 	String getSimpleJsonPublishUrl(){
-			return "/"+getName()+"/getSimpleJson";
-		}
+		return FPSTR(ESPSETTINGSBOX_GET_SIMPLE_JSON_PUBLISH_URL);
+	}
 	String getJsonPublishUrl(){
-		return "/"+getName()+"/getJson";
+		return FPSTR(ESPSETTINGSBOX_GET_JSON_PUBLISH_URL);
 	}
 	String getSetValueUrl(){
-		return "/"+getName()+"/setValue";
+		return FPSTR(ESPSETTINGSBOX_SET_JSON_PUBLISH_URL);
 	}
 
-	String getDeviceNameDescriptionAsRequestparams(){
-		return "&name="+DeviceLocation+" "+DeviceId
-				+"&description="+DeviceDescription+" "+DeviceKind;
+	String getDeviceNameFull(){
+		String result=FPSTR(MESSAGE_THINGSPEAK_NAME_FOR_REQUEST_EQ);
+		result+=DeviceLocation;
+		result+=FPSTR(MESSAGE_SPACE);
+		result+=DeviceId;
+
+		return result;
+	}
+
+	String getDeviceDescriptionFull(){
+		String result= FPSTR(MESSAGE_THINGSPEAK_DESCRIPTION_FOR_REQUEST_EQ);
+				result+=DeviceDescription;
+				result+=FPSTR(MESSAGE_SPACE);
+				result+=DeviceKind;
+		return result;
+	}
+
+	String getThingSpeakReadChannelName(String fieldId){
+		String result=FPSTR(MESSAGE_THINGSPEAK_CHANNELS_PREF);
+				result+=String(thSkChId);
+				result+=FPSTR(MESSAGE_THINGSPEAK_SUBSCRIBE_FIELDS_FIELD);
+				result+=fieldId;
+				result+=FPSTR(MESSAGE_DIVIDE);
+				result+=thSkRKey;
+		return  result;
 	}
 
 	void printSettingsFile();

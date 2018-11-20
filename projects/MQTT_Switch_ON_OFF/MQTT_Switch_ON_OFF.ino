@@ -16,13 +16,15 @@
 #include "TimeTrigger.h"
 
 #include <DeviceHelper.h>
+#include <ThingSpeakHelper.h>
 #include <PinDigital.h>
 #include <Pir_Sensor.h>
-#include "ConfigStorage.h"
+
 #include "BH1750_Sensor.h"
 #include "BME280_Sensor.h"
 #include "DHT22_Sensor.h"
 #include "DS18D20_Sensor.h"
+#include "StatusMessage.h"
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
@@ -86,8 +88,9 @@ BH1750_Sensor luxMeasurer(21,VAR_NAME(luxMeasurer));
 DS18D20_Sensor ds18d20Measurer(VAR_NAME(ds18d20Measurer), D3);
 
 WiFiHelper wifiHelper("WiFiHelper",&espSettingsBox, &displayHelper, /*nullptr,*/&server,postInitWebServer,false);
-
+ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 MqttHelper mqttHelper(&espSettingsBox,wclient,processMqttEvent);
+
 
 Loopable* loopArray[]={&wifiHelper,&mqttHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&acMeter,&thingSpeakTrigger,&postPonedCommandTrigger};
 Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer,&ds18d20Measurer};
@@ -309,14 +312,15 @@ String executeCommand(){
 
 	String command=server.arg("confirm_command");
 
+	StatusMessage sm={"Error","Команда не распознана"};
+
 	String status="Error";
 	String message="Команда не распознана";
 
 	if(command=="restart"){
 		Serial.println("Device will be restarted");
 		postPonedCommandTrigger.setHandler(executePostPonedCommand);
-		postPonedCommandTrigger.saveTime();
-		postPonedCommandTrigger.setActive(true);
+		postPonedCommandTrigger.start();
 		postPonedCommand=command;
 
 		status="Ok";
@@ -332,7 +336,7 @@ String executeCommand(){
 			message="Не задан пользователь ThingSpeak";
 		}else{
 			status="Ok";
-			message=recreateThingSpeak();
+			message=thingSpeakHelper.recreateThingSpeak(abstractItems,ARRAY_SIZE(abstractItems));
 		}
 	}
 	if(command=="deleteSettings"){
@@ -370,131 +374,10 @@ String setEspSettingsBoxValues(){
 	return espSettingsBox.getJson(page);
 }
 //-------------------------Thing speak functions---------------------
-String recreateThingSpeak(){
-	Serial.println(FPSTR(MESSAGE_THINGSPEAK_CHANNEL_CREATE_STARTED));
-	String result="";
-
-	String commandGet="api_key="+espSettingsBox.thSkUsrKey;
-	//String commandSet="api_key="+espSettingsBox.thSkUsrKey;
-
-	uint8_t countGet=0;
-	uint8_t countSet=0;
-
-	for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
-		AbstractItem* item=abstractItems[i];
-
-		if(item->getAutoCreateChannel()){
-			for(uint8_t j=0;j<item->getItemCount();j++){
-				if(item->getFieldId(j)!=0){
-
-					countGet++;
-					commandGet+="&field"+item->getFieldIdStr(j)+"="+item->getDescr(j);
-
-					//Serial.println(item->getName()+" "+item->getFIeld);
-
-					if(item->getSetAllowed(j)){
-						countSet++;
-						//commandSet+="&field"+item->getFieldIdStr(j)+"="+item->getDescr(j);
-					}
-				}
-			}
-		}
-	}
-
-	if(countGet!=0){
-
-		commandGet+="&name=";
-		commandGet+=espSettingsBox.DeviceLocation+" "+espSettingsBox.DeviceId;
-		commandGet+="&description=";
-		commandGet+=espSettingsBox.DeviceDescription+" "+espSettingsBox.DeviceKind;
-
-		String getResult=wifiHelper.executeFormPostRequest(FPSTR(MESSAGE_THINGSPEAK_CREATE_CHANNEL_URL),commandGet);
-		espSettingsBox.saveThingSpeakChannelCreation(getResult);
-		delay(10);
-		deviceHelper.printDeviceDiagnostic();
-		//Serial.println(getResult);
-	}
-
-
-	if(countSet!=0){
-			//---------------------------------------------------------------------------
-			for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
-				AbstractItem* item=abstractItems[i];
-				boolean doSave=false;
-
-				if(item->getAutoCreateChannel()){
-					for(uint8_t j=0;j<item->getItemCount();j++){
-						if(item->getFieldId(j)!=0 && item->getSetAllowed(j)){
-							String channel="channels/"+String(espSettingsBox.thSkChId)
-									+"/subscribe/fields/field"+item->getFieldIdStr(j)
-									+"/"+espSettingsBox.thSkRKey;
-
-							//Subscribes
-							//channels/623698/subscribe/fields/field1/XQ4QSQQKEKMRJ4DK
-							//channels/623698/subscribe/fields/field2/XQ4QSQQKEKMRJ4DK
-							//publish
-							//channels/623698/publish/fields/field1/N9EQ8RTYQ7ZXYR8T
-							//channels/623698/publish/fields/field2/N9EQ8RTYQ7ZXYR8T
-
-							item->setQueue(j, channel);
-							doSave=true;
-							delay(10);
-						}
-					}
-
-					if(doSave){
-						espSettingsBox.saveAbstractItemToFile(item);
-					}
-				}
-
-				deviceHelper.printDeviceDiagnostic();
-			}
-			//---------------------------------------------------------------------------
-		deviceHelper.printDeviceDiagnostic();
-	}
-
-	result+=String(countGet)+" каналов записи;";
-	result+=" "+String(countSet)+" каналов управления;";
-
-	return result;
-}
-
 void processThingSpeakPost(){
-	if(espSettingsBox.isThingSpeakEnabled){
-		Serial.println(FPSTR(MESSAGE_THINGSPEAK_SEND_STARTED));
-
-		uint8_t count=0;
-
-		String baseUrl=FPSTR(MESSAGE_THINGSPEAK_BASE_URL);
-		String params="";
-
-		for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
-			params+=constructThingSpeakParameters(abstractItems[i]);
-			count++;
-		}
-
-		if(params!=""){
-
-			wifiHelper.executeGetRequest(baseUrl+espSettingsBox.thSkWKey+params);
-		}
-
-		Serial.print(count);
-		Serial.println(FPSTR(MESSAGE_DONE));
-		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-		deviceHelper.printDeviceDiagnostic();
-	}
+	thingSpeakHelper.sendItemsToThingSpeak(abstractItems, ARRAY_SIZE(abstractItems));
 }
 
-void sendAbstractItemToThingSpeak(AbstractItem* item){
-	String baseUrl=FPSTR(MESSAGE_THINGSPEAK_BASE_URL);
-		baseUrl+=espSettingsBox.thSkWKey;
-	String url=item->constructGetUrl(baseUrl, FPSTR(MESSAGE_THINGSPEAK_FIELD_VAL_FOR_REQUEST));
-	wifiHelper.executeGetRequest(url);
-}
-
-String constructThingSpeakParameters(AbstractItem* item){
-	return item->constructGetUrl("", FPSTR(MESSAGE_THINGSPEAK_FIELD_VAL_FOR_REQUEST));
-}
 //------------------------------MQTT functions-----------------------------------------------------
 
 void senDAbstractItemToMqtt(AbstractItem* item){

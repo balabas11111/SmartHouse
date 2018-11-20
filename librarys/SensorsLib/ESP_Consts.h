@@ -165,6 +165,7 @@ const PROGMEM char MESSAGE_EMPTY_STRING[]="";
 const PROGMEM char MESSAGE_SPACE[]=" ";
 const PROGMEM char MESSAGE_EQUALS[]="=";
 const PROGMEM char MESSAGE_DOT_COMMA[]=";";
+const PROGMEM char MESSAGE_DIVIDE[]="/";
 const PROGMEM char MESSAGE_DONE[]="...done";
 const PROGMEM char MESSAGE_HORIZONTAL_LINE[]="------------------------------";
 
@@ -246,6 +247,11 @@ const PROGMEM char MESSAGE_ESPSETTINGSBOX_MAX_VAL_EQ[]="maxVal=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_QUEUE_EQ[]="queue=";
 
 //ESPSettings box defaults
+const PROGMEM char ESPSETTINGSBOX_NAME[]="espSettingsBox";
+const PROGMEM char ESPSETTINGSBOX_GET_SIMPLE_JSON_PUBLISH_URL[]="/espSettingsBox/getSimpleJson";
+const PROGMEM char ESPSETTINGSBOX_GET_JSON_PUBLISH_URL[]="/espSettingsBox/getJson";
+const PROGMEM char ESPSETTINGSBOX_SET_JSON_PUBLISH_URL[]="/espSettingsBox/setValue";
+
 const PROGMEM char ESPSETTINGSBOX_SETTINGS_DEPLOY_PATH[]="/settings";
 const PROGMEM char ESPSETTINGSBOX_SETTINGS_PATH[]="/settings/";
 const PROGMEM char ESPSETTINGSBOX_SETTINGS_DEFAULT_FILE[]="settings.txt";
@@ -330,8 +336,20 @@ const PROGMEM char MESSAGE_THINGSPEAK_SEND_STARTED[]="----------------Send data 
 const PROGMEM char MESSAGE_THINGSPEAK_CHANNEL_CREATE_STARTED[]="----------------Create channel on thing speak---------------";
 const PROGMEM char MESSAGE_THINGSPEAK_BASE_URL[]="http://api.thingspeak.com/update?api_key=";
 const PROGMEM char MESSAGE_THINGSPEAK_CREATE_CHANNEL_URL[]="http://api.thingspeak.com/channels.json";
-const PROGMEM char MESSAGE_THINGSPEAK_FIELD_VAL_FOR_REQUEST[]="&field";
-const PROGMEM char MESSAGE_THINGSPEAK_FIELD_VAL_EQ[]="&field=";
+const PROGMEM char MESSAGE_THINGSPEAK_API_KEY_EQ[]="api_key=";
+const PROGMEM char MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST[]="&field";
+const PROGMEM char MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST_EQ[]="&field=";
+const PROGMEM char MESSAGE_THINGSPEAK_NAME_FOR_REQUEST[]="&name";
+const PROGMEM char MESSAGE_THINGSPEAK_NAME_FOR_REQUEST_EQ[]="&name=";
+const PROGMEM char MESSAGE_THINGSPEAK_DESCRIPTION_FOR_REQUEST[]="&description";
+const PROGMEM char MESSAGE_THINGSPEAK_DESCRIPTION_FOR_REQUEST_EQ[]="&description=";
+
+const PROGMEM char MESSAGE_THINGSPEAK_GET_CHANNELS[]=" каналов записи данных;";
+const PROGMEM char MESSAGE_THINGSPEAK_SET_CHANNELS[]=" каналов управления;";
+
+const PROGMEM char MESSAGE_THINGSPEAK_CHANNELS_PREF[]="channels/";
+const PROGMEM char MESSAGE_THINGSPEAK_SUBSCRIBE_FIELDS_FIELD[]="/subscribe/fields/field";
+
 //Ntp clock client
 const PROGMEM char MESSAGE_TIME_CLIENT_JSON_BEFORE_TIME[]="{\"wsId\":\"clock\",\"wsClass\":\"wsItem\",\"wsValue\":\"";
 const PROGMEM char MESSAGE_TIME_CLIENT_JSON_AFTER_TIME[]="\"}";
