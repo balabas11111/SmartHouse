@@ -26,9 +26,8 @@
 class WiFiHelper:public Initializable,public Loopable {
 
 public:
-	WiFiHelper(String _name,EspSettingsBox *_settingsBox, DisplayHelper *_displayHelper/*, PinDigital *_signalPin*/,
+	WiFiHelper(EspSettingsBox *_settingsBox, DisplayHelper *_displayHelper/*, PinDigital *_signalPin*/,
 			ESP8266WebServer *_server,std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
-		name=_name;
 		espSettingsBox=_settingsBox;
 		displayHelper=_displayHelper;
 		//signalPin=_signalPin;
@@ -347,7 +346,7 @@ public:
 	}
 
 	boolean displayLine(String str,int row,int col){
-		return displayHelper->addStringToDisplay(str, row, col, name);
+		return displayHelper->addStringToDisplay(str, row, col, FPSTR(MESSAGE_WIFIHELPER_NAME));
 	}
 	//-------------------------------
 	String executeGetRequest(String url){
@@ -688,7 +687,7 @@ public:
 
 private:
 	ESP8266WebServer *server;
-	String name;
+	//String name;
 	EspSettingsBox *espSettingsBox;
 	DisplayHelper *displayHelper;
 	//PinDigital *signalPin;

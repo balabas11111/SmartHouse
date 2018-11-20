@@ -9,8 +9,8 @@
 #define LIBRARIES_DEVICELIB_AbstractItem_H_
 
 #include "Arduino.h"
-#include "AbstractConstants.h"
 #include "AbstractitemReq.h"
+#include "ESP_Consts.h"
 
 const char FIELD_DESCR[] PROGMEM ="descr";
 const char FIELD_MIN_VAL[] PROGMEM ="minVal";
@@ -56,7 +56,7 @@ public:
 
 		initializeChildren();
 
-		Serial.println("AbstractItem ="+name+" count="+sizeof(items));
+		//Serial.println("AbstractItem ="+name+" count="+sizeof(items));
 	}
 	virtual ~AbstractItem(){};
 
@@ -249,14 +249,14 @@ public:
 	}
 
 	void printValues(){
-		Serial.print("NAME=");
+		Serial.print(FPSTR(MESSAGE_ABSTRACT_ITEM_NAME_EQ));
 		Serial.print(name);
-		Serial.print("; ");
+		Serial.print(FPSTR(MESSAGE_DOT_COMMA_SPACE));
 		for(uint8_t i=0;i<itemCount;i++){
 			Serial.print(items[i].name);
-			Serial.print("=");
+			Serial.print(FPSTR(MESSAGE_EQUALS));
 			Serial.print(items[i].val);
-			Serial.print("; ");
+			Serial.print(FPSTR(MESSAGE_DOT_COMMA_SPACE));
 		}
 		Serial.println();
 	}
@@ -361,10 +361,10 @@ public:
 
 		for(uint8_t i=0;i<itemCount;i++){
 			if(items[i].val>=items[i].maxVal){
-				result+=constructAlarmMessage(" "+items[i].descr," поточное значение =",items[i].val," максимально заданое =",items[i].maxVal);
+				result+=constructAlarmMessage(" "+items[i].descr,FPSTR(MESSAGE_ABSTRACT_ITEM_CURRENT_VAL_EQ),items[i].val,FPSTR(MESSAGE_ABSTRACT_ITEM_MAX_SPECIFIED_VAL_EQ),items[i].maxVal);
 			}
 			if(items[i].val<=items[i].minVal){
-				result+=constructAlarmMessage(" "+items[i].descr," поточное значение =",items[i].val," минимальное заданое =",items[i].maxVal);
+				result+=constructAlarmMessage(" "+items[i].descr,FPSTR(MESSAGE_ABSTRACT_ITEM_CURRENT_VAL_EQ),items[i].val,FPSTR(MESSAGE_ABSTRACT_ITEM_MIN_SPECIFIED_VAL_EQ),items[i].maxVal);
 			}
 		}
 
@@ -396,7 +396,11 @@ protected:
 	SensorValue* items;
 
 	virtual boolean processMqVal(uint8_t index,String value){
-
+		Serial.print(FPSTR(MESSAGE_ABSTRACT_ITEM_INDEX_EQ));
+		Serial.print(index);
+		Serial.print(FPSTR(MESSAGE_ABSTRACT_ITEM_VAL_EQ));
+		Serial.print(value);
+		Serial.println(FPSTR(MESSAGE_ABSTRACT_ITEM_METHOD_NOT_IMPLEMENTED));
 		return true;
 	}
 

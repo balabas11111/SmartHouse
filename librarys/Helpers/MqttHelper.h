@@ -38,6 +38,10 @@ public:
 	void callback(char* topic, uint8_t* payload, unsigned int length);
 	PubSubClient getClient();
 
+	void senDAbstractItemToMqtt(AbstractItem* item);
+
+	void processMqttEvent(String topic,String message,AbstractItem** items,uint8_t count);
+
 private:
 	boolean initialized;
 	uint8_t topicCount;

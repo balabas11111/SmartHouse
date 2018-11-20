@@ -165,6 +165,9 @@ const PROGMEM char MESSAGE_EMPTY_STRING[]="";
 const PROGMEM char MESSAGE_SPACE[]=" ";
 const PROGMEM char MESSAGE_EQUALS[]="=";
 const PROGMEM char MESSAGE_DOT_COMMA[]=";";
+const PROGMEM char MESSAGE_DOT_COMMA_SPACE[]="; ";
+const PROGMEM char MESSAGE_OPEN_BRACE[]="(";
+const PROGMEM char MESSAGE_CLOSE_BRACE[]=")";
 const PROGMEM char MESSAGE_DIVIDE[]="/";
 const PROGMEM char MESSAGE_DONE[]="...done";
 const PROGMEM char MESSAGE_HORIZONTAL_LINE[]="------------------------------";
@@ -190,6 +193,9 @@ const PROGMEM char MESSAGE_DEVICE_START_DEVICE_ID[]="Start DeviceId=";
 const PROGMEM char MESSAGE_DEVICE_INIT_STARTED_COUNT[]="Init started count=";
 const PROGMEM char MESSAGE_DEVICE_INIT_COUNT[]="Initialized count=";
 
+
+const PROGMEM char MESSAGE_DEVICE_STARTED[]="=========================Device Started=========================";
+//alarm constants
 const PROGMEM char MESSAGE_DEVICE_HELPER_CHECK_FOR_ALARM[]="----------Check for alarm----";
 const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_IDENTIFIED[]="Alarm identified";
 const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_NOT_IDENTIFIED[]="No Alarm";
@@ -208,6 +214,9 @@ const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON[]="Error parse JSON f
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_VALUE_PARSED[]="val read=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ITEM_SETTINGS_LOADED[]="val put=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_NO_SETTINGS_FILE_EXISTS[]="No settings file exists";
+
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_TOTAL_CHILDS_EQ[]="Total childs=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_FILE_SYSTEM_STATUS[]="File system status ";
 
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_PRINT_SETTINGS_FILE[]="-----------Print settings file----------------";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_CURRENT_MEMORY_STATE[]="Current memory state";
@@ -257,6 +266,8 @@ const PROGMEM char ESPSETTINGSBOX_SETTINGS_PATH[]="/settings/";
 const PROGMEM char ESPSETTINGSBOX_SETTINGS_DEFAULT_FILE[]="settings.txt";
 const PROGMEM char ESPSETTINGSBOX_SETTINGS_TXT_EXT[]=".txt";
 
+const PROGMEM char ESPSETTINGSBOX_SETTINGS_REMOVED[]="Removed ";
+
 //ThingSpeak parsing
 const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_PARSE_CHCREATION[]="-----------------Parse CHannel creation----------";
 const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_CHANNEL_JSON[]="Channel_JSON=";
@@ -280,6 +291,7 @@ const PROGMEM char MESSAGE_MQTTHELPER_SEND_IS_DISABLED[]="===MQTT Helper is disa
 const PROGMEM char MESSAGE_MQTTHELPER_CREATE_STARTED[]="--------------------Create MQTT Helper----------------------";
 const PROGMEM char MESSAGE_MQTTHELPER_BEGIN[]="--------------------Begin MQTT Helper----------------------";
 const PROGMEM char MESSAGE_MQTTHELPER_INIT_STARTED[]="--------------------Init MQTT Helper----------------------";
+const PROGMEM char MESSAGE_MQTTHELPER_SENDING_MESSAGE[]="----------Sending message---------";
 const PROGMEM char MESSAGE_MQTTHELPER_INIT_COMPLETE[]="==Init MQTT complete===";
 const PROGMEM char MESSAGE_MQTTHELPER_TOPIC_COUNT[]="topicCount=";
 const PROGMEM char MESSAGE_MQTTHELPER_TOPIC_ADDED_TO_SUBSCRIBED[]="added  TOPIC=";
@@ -288,6 +300,7 @@ const PROGMEM char MESSAGE_MQTTHELPER_TOPIC_SUBSCRIBED_RES_EQ[]=" subsc result="
 
 const PROGMEM char MESSAGE_MQTTHELPER_ERR_NOT_INITIALIZED[]="Mqtt not initialized";
 const PROGMEM char MESSAGE_MQTTHELPER_ERR_NOT_CONNECTED[]="Mqtt not connected";
+const PROGMEM char MESSAGE_MQTTHELPER_ERR_NOT_ENABLED[]="Mqtt not enabled";
 
 const PROGMEM char MESSAGE_MQTTHELPER_SENT[]="Mqtt sent";
 const PROGMEM char MESSAGE_MQTTHELPER_SEND_FAILED[]="Mqtt send FAILED";
@@ -304,7 +317,16 @@ const PROGMEM char MESSAGE_MQTTHELPER_MQTT_TEST_PUBLISH_FAILED[]="Test publish F
 const PROGMEM char MESSAGE_MQTTHELPER_MQTT_CONNECT_FAILED[]="Connect to MQTT FAILED ";
 const PROGMEM char MESSAGE_MQTTHELPER_MQTT_WIFI_CONNECT_FAILED[]="MQTT failed No WiFi connection ";
 
+const PROGMEM char MESSAGE_MQTTHELPER_PROCESS_ABSTRACT_ITEM_MESSAGE_RECEIVED[]="----------Abstract item Message received---------";
+const PROGMEM char MESSAGE_MQTTHELPER_TOPIC_EQ[]="topic=";
+const PROGMEM char MESSAGE_MQTTHELPER_MESSAGE_EQ[]="; message='";
+const PROGMEM char MESSAGE_MQTTHELPER_MESSAGE_END[]="';";
+const PROGMEM char MESSAGE_MQTTHELPER_RESULT_EQ[]="result=";
+const PROGMEM char MESSAGE_MQTTHELPER_TARGET_QUEUE_EQ[]="target queue=";
+const PROGMEM char MESSAGE_MQTTHELPER_VAL_EQ[]=" val=";
+
 //Wifi helper messages-----------------------------
+const PROGMEM char MESSAGE_WIFIHELPER_NAME[]="WiFiHelper";
 const PROGMEM char MESSAGE_WIFIHELPER_INIT_CONNECTION[]="------------------Init WiFi connection------------------";
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_DISCONNECTING[]="WiFi disconnecting";
 const PROGMEM char MESSAGE_WIFIHELPER_SETUP_SERVER[]="SetupServer";
@@ -336,6 +358,10 @@ const PROGMEM char MESSAGE_THINGSPEAK_SEND_STARTED[]="----------------Send data 
 const PROGMEM char MESSAGE_THINGSPEAK_CHANNEL_CREATE_STARTED[]="----------------Create channel on thing speak---------------";
 const PROGMEM char MESSAGE_THINGSPEAK_BASE_URL[]="http://api.thingspeak.com/update?api_key=";
 const PROGMEM char MESSAGE_THINGSPEAK_CREATE_CHANNEL_URL[]="http://api.thingspeak.com/channels.json";
+
+const PROGMEM char MESSAGE_THINGSPEAK_CURRENT_CHANNEL_URL[]="https://thingspeak.com/channels/";
+const PROGMEM char MESSAGE_THINGSPEAK_PRIVATE_SHOW[]="/private_show";
+
 const PROGMEM char MESSAGE_THINGSPEAK_API_KEY_EQ[]="api_key=";
 const PROGMEM char MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST[]="&field";
 const PROGMEM char MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST_EQ[]="&field=";
@@ -356,6 +382,34 @@ const PROGMEM char MESSAGE_TIME_CLIENT_JSON_AFTER_TIME[]="\"}";
 
 //device widgets snapshot TODO: add this
 const PROGMEM char DEVICE_WIDGETS_SNAPSHOT[]="----------Device helper----------";
+
+//commands constants
+const PROGMEM char MESSAGE_COMMANDS_EXECUTE_COMMAND[]="----------Execute command----------";
+const PROGMEM char MESSAGE_COMMANDS_CONFIRM_COMMAND_PARAM[]="confirm_command";
+const PROGMEM char MESSAGE_COMMANDS_ERROR[]="Error";
+const PROGMEM char MESSAGE_COMMANDS_OK[]="Ok";
+const PROGMEM char MESSAGE_COMMANDS_COMMAND_NOT_RECOGNIZED[]="Команда не распознана";
+const PROGMEM char MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED[]="Device will be restarted";
+const PROGMEM char MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED_MSG[]="Устройство будет перезапущено. Дождитесь перезагрузки страницы";
+
+const PROGMEM char MESSAGE_COMMANDS_FILES_DELETED[]="Удалено файлов :";
+
+//abstract item message
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_NAME_EQ[]="NAME=";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_INDEX_EQ[]="index=";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_VAL_EQ[]=" val=";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_METHOD_NOT_IMPLEMENTED[]=" Method not implemented";
+
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_CURRENT_VAL_EQ[]=" поточное значение =";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_MAX_SPECIFIED_VAL_EQ[]=" максимально заданое =";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_MIN_SPECIFIED_VAL_EQ[]=" минимально заданое =";
+
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_SETTING_BEGIN[]="------------Saving sensors settings------------";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_NAME_EQ[]=" Set sensor value NAME=";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_STATUS_EQ[]=" status=";
+
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_NOT_FOUND[]="NotFound";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_OK[]="Ok";
 
 //--------------------------------------------------------
 

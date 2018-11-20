@@ -315,7 +315,7 @@ void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 
 				if(item->getItemCount()>0 && itemCountJson>0){
 					//JsonArray& arrayJson=root["items"].asArray();
-					Serial.print("totalChilds=");
+					Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_TOTAL_CHILDS_EQ));
 					Serial.println(itemCountJson);
 
 					for(uint8_t i=0;i<itemCountJson;i++){
@@ -400,8 +400,8 @@ void EspSettingsBox::printSettingsFile(){
 
 void EspSettingsBox::initSpiff(){
 	spiffInitialized=SPIFFS.begin();
-
-	Serial.println("File system status"+String(spiffInitialized));
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SYSTEM_STATUS));
+	Serial.println(spiffInitialized);
 }
 
 void EspSettingsBox::printSpiffsInfo(){
@@ -509,7 +509,10 @@ String EspSettingsBox::getFileName(AbstractItem* item){
 }
 
 String EspSettingsBox::getThingSpeakChannelUrl(){
-	return "https://thingspeak.com/channels/"+String(thSkChId)+"/private_show";
+	String result=FPSTR(MESSAGE_THINGSPEAK_CURRENT_CHANNEL_URL);
+			result+=String(thSkChId);
+			result+=FPSTR(MESSAGE_THINGSPEAK_PRIVATE_SHOW);
+	return result;
 }
 
 String EspSettingsBox::getSimpleJson(){
@@ -600,9 +603,6 @@ String EspSettingsBox::getJson(String page){
 					{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}]}";
 	}
 
-	Serial.print("page json=");
-	Serial.println(result);
-
 	return result;
 }
 
@@ -611,11 +611,11 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	int startIndex=startTag.length();
 
 	Serial.print(fieldName);
-	Serial.print("=");
+	Serial.print(FPSTR(MESSAGE_EQUALS));
 	Serial.print(fieldValue);
-	Serial.print(" (");
+	Serial.print(FPSTR(MESSAGE_OPEN_BRACE));
 	Serial.print(fieldName.substring(startIndex));
-	Serial.println(")");
+	Serial.println(FPSTR(MESSAGE_CLOSE_BRACE));
 
 	if(!fieldName.startsWith(startTag)){
 		return false;
@@ -872,7 +872,7 @@ int EspSettingsBox::deleteSettingsFiles() {
 			SPIFFS.remove(fileName);
 			count++;
 
-			Serial.print("removed ");
+			Serial.print(FPSTR(ESPSETTINGSBOX_SETTINGS_REMOVED));
 			Serial.println(fileName);
 		}
 

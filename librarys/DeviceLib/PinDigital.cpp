@@ -7,6 +7,7 @@
 
 #include "Arduino.h"
 #include "PinDigital.h"
+#include "TimeTrigger.h"
 
 PinDigital::~PinDigital(){
 	Serial.println("destructed");

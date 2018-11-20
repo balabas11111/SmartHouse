@@ -67,8 +67,6 @@ DisplayHelper displayHelper(true);
 TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,measureSensors);
 TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSettingsBox.isThingSpeakEnabled,processThingSpeakPost);
 
-TimeTrigger postPonedCommandTrigger(0,5000,false,nullptr);
-
 PinDigital buttonLeft(VAR_NAME(buttonLeft),D7,onLeftButtonChanged);
 PinDigital buttonRight(VAR_NAME(buttonRight),D6,onRightButtonChanged,1000);
 
@@ -78,7 +76,6 @@ PinDigital lampRight(VAR_NAME(lampRight),D0,onRightLampChanged,OUTPUT,CHANGE,HIG
 PinDigital acMeter(VAR_NAME(acMeter),D5,onAcMeterChanged,INPUT,CHANGE,HIGH,HIGH);
 
 //Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged);
-
 //NtpTimeClientService timeClient(&espSettingsBox,processTimeClientEvent,60000);
 
 BME280_Sensor bmeMeasurer(20,VAR_NAME(bmeMeasurer));
@@ -87,12 +84,12 @@ BH1750_Sensor luxMeasurer(21,VAR_NAME(luxMeasurer));
 //DHT22_Sensor dhtMeasurer(VAR_NAME(dhtSensor), D0, 22);
 DS18D20_Sensor ds18d20Measurer(VAR_NAME(ds18d20Measurer), D3);
 
-WiFiHelper wifiHelper("WiFiHelper",&espSettingsBox, &displayHelper, /*nullptr,*/&server,postInitWebServer,false);
+WiFiHelper wifiHelper(&espSettingsBox, &displayHelper, /*nullptr,*/&server,postInitWebServer,false);
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 MqttHelper mqttHelper(&espSettingsBox,wclient,processMqttEvent);
 
 
-Loopable* loopArray[]={&wifiHelper,&mqttHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&acMeter,&thingSpeakTrigger,&postPonedCommandTrigger};
+Loopable* loopArray[]={&wifiHelper,&mqttHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&acMeter,&thingSpeakTrigger};
 Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer,&ds18d20Measurer};
 
 AbstractItem* abstractItems[]={&lampLeft,&lampRight,&bmeMeasurer,&luxMeasurer,&acMeter,&ds18d20Measurer};
@@ -103,24 +100,15 @@ void setup() {
   deviceHelper.startDevice(espSettingsBox.DeviceId);
 
   espSettingsBox.printSettingsFile();
-  deviceHelper.printDeviceDiagnostic();
-  //espSettingsBox.printSpiffsInfo();
-
   deviceHelper.init(initializeArray, ARRAY_SIZE(initializeArray));
-  deviceHelper.printDeviceDiagnostic();
   deviceHelper.displayDetails();
 
-  deviceHelper.printDeviceDiagnostic();
   loadSensors();
-
-  deviceHelper.printDeviceDiagnostic();
-
   measureSensors();
-  deviceHelper.printDeviceDiagnostic();
 
   mqttHelper.begin(abstractItems, ARRAY_SIZE(abstractItems));
   deviceHelper.printDeviceDiagnostic();
-  Serial.println("=========================Device Started=========================");
+  Serial.println(FPSTR(MESSAGE_DEVICE_STARTED));
 }
 
 void loop() {
@@ -195,6 +183,12 @@ void postInitWebServer(){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), i2cHelper.scan());
 	});
 }
+//base functions
+void measureSensors(){
+	deviceHelper.update(abstractItems, ARRAY_SIZE(abstractItems));
+	deviceHelper.processAlarm(abstractItems, ARRAY_SIZE(abstractItems));
+	deviceHelper.printDeviceDiagnostic();
+}
 
 //---------------------------------------------------------------------
 //button handling
@@ -207,8 +201,7 @@ void onRightButtonChanged(){
 }
 
 void onAcMeterChanged(){
-	Serial.print("AcMeter=");
-	Serial.println(acMeter.isOn());
+	acMeter.printValues();
 }
 //---------------------------------------------------------------------
 //handle lamp events
@@ -226,10 +219,7 @@ void setLampValue(PinDigital* lamp,int8_t on){
 		lamp->change();
 	}
 	lamp->setVal(on);
-
 	lamp->printValues();
-
-	//senDAbstractItemToMqtt(lamp);
 }
 
 void onLeftLampChanged(){
@@ -256,15 +246,15 @@ void saveSensors(){
 }
 //-----------------------------------------------------
 String setSensorJson(){
-	Serial.println("begin settings parsing");
-
-	Serial.print("args count =");
-	Serial.println(server.args());
+	Serial.println(FPSTR(MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_SETTING_BEGIN));
 
 	uint8_t argsProcessed=0;
 
 	String sensorName=server.arg("currentSensor_name");
-	String status="NotFound";
+	String status=FPSTR(MESSAGE_ABSTRACT_ITEM_NOT_FOUND);
+
+	Serial.print(FPSTR(MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_NAME_EQ));
+	Serial.println(sensorName);
 
 	AbstractItem* aitem;
 
@@ -282,76 +272,55 @@ String setSensorJson(){
 			if(req.valid){
 				argsProcessed++;
 				if(aitem->setFieldFromRequest(req)){
-					status="Ok";
+					status=FPSTR(MESSAGE_ABSTRACT_ITEM_OK);
 				}
 			}
 		}
 
+		Serial.print(FPSTR(MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_STATUS_EQ));
+		Serial.println(status);
+
 		espSettingsBox.saveAbstractItemToFile(aitem);
 	}
+
+	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
 	return "{\"status\":\""+status+"\",\"sensor\":\""+sensorName+"\"}";
 }
 
 
 String getAllSensorsJson(){
-	delay(1);
-	String result=deviceHelper.getJson(abstractItems, ARRAY_SIZE(abstractItems));
-
-	Serial.print("AllSensors json=");
-	Serial.println(result);
-
-	return result;
+	return deviceHelper.getJson(abstractItems, ARRAY_SIZE(abstractItems));
 }
-
-String postPonedCommand="";
 
 String executeCommand(){
 	wifiHelper.checkAuthentication();
-	Serial.println("Executing command");
+	Serial.println(FPSTR(MESSAGE_COMMANDS_EXECUTE_COMMAND));
 
-	String command=server.arg("confirm_command");
+	String command=server.arg(FPSTR(MESSAGE_COMMANDS_CONFIRM_COMMAND_PARAM));
 
-	StatusMessage sm={"Error","Команда не распознана"};
-
-	String status="Error";
-	String message="Команда не распознана";
+	StatusMessage sm={FPSTR(MESSAGE_COMMANDS_ERROR),FPSTR(MESSAGE_COMMANDS_COMMAND_NOT_RECOGNIZED)};
 
 	if(command=="restart"){
-		Serial.println("Device will be restarted");
-		postPonedCommandTrigger.setHandler(executePostPonedCommand);
-		postPonedCommandTrigger.start();
-		postPonedCommand=command;
+		Serial.println(FPSTR(MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED));
+		deviceHelper.createPostponedCommand(command);
 
-		status="Ok";
-		message="Устройство будет перезапущено. Дождитесь перезагрузки страницы";
+		sm.setVals(FPSTR(MESSAGE_COMMANDS_OK),FPSTR(MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED_MSG));
 	}
 	if(command=="recreateThingSpeak"){
-		if(!espSettingsBox.isThingSpeakEnabled){
-			status="Failed";
-			message="Публикация ThingSpeak не разрешена";
-		}else
-		if(espSettingsBox.thSkUsrKey=="" || espSettingsBox.thSkUsrKey=="EmptyKey"){
-			status="Failed";
-			message="Не задан пользователь ThingSpeak";
-		}else{
-			status="Ok";
-			message=thingSpeakHelper.recreateThingSpeak(abstractItems,ARRAY_SIZE(abstractItems));
-		}
+		sm=thingSpeakHelper.recreateThingSpeaChannelskWithCheck(abstractItems,ARRAY_SIZE(abstractItems));
 	}
 	if(command=="deleteSettings"){
-		status="Ok";
-		message="Удалено файлов :"+String(espSettingsBox.deleteSettingsFiles());
+		String msg=FPSTR(MESSAGE_COMMANDS_FILES_DELETED);
+			   msg+=String(espSettingsBox.deleteSettingsFiles());
+		sm.setVals(FPSTR(MESSAGE_COMMANDS_OK),msg);
 	}
 
-	return "{\"status\":\""+status+"\",\"message\":\""+message+"\"}";
+	return "{\"status\":\""+sm.status+"\",\"message\":\""+sm.message+"\"}";
 }
 
 void executePostPonedCommand(){
-	if(postPonedCommand=="restart"){
-		Serial.print("Executing restart");
-		ESP.restart();
-	}
+	deviceHelper.executePostponedCommand();
 }
 
 //----------espSettings save-------------------------------------------
@@ -380,79 +349,13 @@ void processThingSpeakPost(){
 
 //------------------------------MQTT functions-----------------------------------------------------
 
-void senDAbstractItemToMqtt(AbstractItem* item){
-	Serial.println("----------Sending message---------");
-	for(uint8_t i=0;i<item->getItemCount();i++){
-		String queue=item->getItem(i).queue;
-
-		if(queue.length()!=0){
-			String val=item->getValStr(i);
-
-			Serial.print("queue=");
-			Serial.println(queue);
-
-			queue.replace(espSettingsBox.thSkRManageKey, espSettingsBox.thSkWManageKey);
-			queue.replace("subscribe", "publish");
-
-			//channels/623698/subscribe/fields/field2/N9EQ8RTYQ7ZXYR8T
-			//channels/<channelID>/publish/fields/field<fieldnumber>/<apikey>
-
-
-			Serial.print("target queue=");
-			Serial.print(queue);
-
-			Serial.print(" val=");
-			Serial.println(val);
-
-			if(espSettingsBox.isMqttEnabled){
-				boolean res=mqttHelper.publish(queue, val);
-				Serial.print("res=");
-				Serial.println(res);
-			}else{
-				Serial.println("Mqtt is not enabled");
-			}
-			/*
-			if(espSettingsBox.sendItemsToBaseQUeue){
-				mqttHelper.publish(item->getJson());
-			}
-			*/
-		}
-	}
-	Serial.println("---------------------------");
-}
-
 void sendAbstractItemToHttp(AbstractItem* item){
 	if(espSettingsBox.isHttpPostEnabled){
 		wifiHelper.executeFormPostRequest(espSettingsBox.httpPostIp.toString(), item->getJson());
 	}
 }
 
-void measureSensors(){
-	deviceHelper.update(abstractItems, ARRAY_SIZE(abstractItems));
-	deviceHelper.processAlarm(abstractItems, ARRAY_SIZE(abstractItems));
-}
-
 void processMqttEvent(String topic,String message){
-	Serial.println("----------Message received---------");
-	Serial.print("topic=");
-	Serial.print(topic);
-	Serial.print("; message='");
-	Serial.print(message);
-	Serial.println("';");
-
-	boolean result=false;
-
-	for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
-		result=abstractItems[i]->processMqValue(topic, message);
-		if(result){
-			break;
-		}
-	}
-
-	Serial.print("result=");
-	Serial.println(result);
-
-	Serial.println("---------------------------");
-
+	mqttHelper.processMqttEvent(topic, message, abstractItems, ARRAY_SIZE(abstractItems));
 	deviceHelper.printDeviceDiagnostic();
 }

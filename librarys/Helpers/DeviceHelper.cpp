@@ -19,6 +19,8 @@ DeviceHelper::DeviceHelper(Loopable** _loopItems,uint8_t _loopItemsSize,long min
 	this->alarmMode=false;
 	this->minAlarmInterval=minAlarmInterval*1000;
 	this->lastAlarmTime=0;
+
+	triggerInitiated=false;
 }
 
 String DeviceHelper::displayDetails(){
@@ -43,6 +45,10 @@ boolean DeviceHelper::loop(){
 	for(uint8_t i=0;i<loopItemsSize;i++){
 		bool currentLoop=loopItems[i]->loop();
 		result=result | currentLoop;
+	}
+
+	if(triggerInitiated){
+		postPonedTrigger->loop();
 	}
 	#ifdef DISPLAY_LOOPS
 		Serial.println("DeviceHelper loop="+String(result));
@@ -99,7 +105,6 @@ void DeviceHelper::update(AbstractItem** sensors, uint8_t sensorsSize){
 	}
 
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-	printDeviceDiagnostic();
 }
 
 String DeviceHelper::processAlarm(AbstractItem** sensors, uint8_t sensorsSize){
@@ -155,6 +160,7 @@ String DeviceHelper::processAlarm(AbstractItem** sensors, uint8_t sensorsSize){
 }
 
 String DeviceHelper::getJson(AbstractItem** sensors, uint8_t size) {
+	yield();
 		String result="{\"sensors\":[";
 
 			for(uint8_t i=0;i<size;i++){
@@ -169,3 +175,25 @@ String DeviceHelper::getJson(AbstractItem** sensors, uint8_t size) {
 		return result;
 }
 
+void DeviceHelper::createPostponedCommand(String command) {
+	postponedCommand=command;
+	postPonedTrigger->start();
+}
+
+void DeviceHelper::prepareTrigger() {
+	if(!triggerInitiated){
+		postPonedTrigger=new TimeTrigger(0,5000,false,[this](){executePostponedCommand();});
+		triggerInitiated=true;
+	}
+}
+
+void DeviceHelper::executePostponedCommand() {
+	if(triggerInitiated){
+		postPonedTrigger->stop();
+	}
+
+	if(postponedCommand=="restart"){
+		Serial.print("Executing restart");
+		ESP.restart();
+	}
+}

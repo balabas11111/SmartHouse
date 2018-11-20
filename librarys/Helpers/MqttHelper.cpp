@@ -241,7 +241,7 @@ void MqttHelper::callback(char* topic, uint8_t* payload, unsigned int _length) {
 	String topicIn=String(topic);
 
 	String msg;
-		for(int i=0;i<_length;i++){
+		for(unsigned int i=0;i<_length;i++){
 			msg+=(char)payload[i];
 		}
 
@@ -256,4 +256,70 @@ void MqttHelper::callback(char* topic, uint8_t* payload, unsigned int _length) {
 
 PubSubClient MqttHelper::getClient(){
 	return getClient();
+}
+
+void MqttHelper::senDAbstractItemToMqtt(AbstractItem* item){
+	Serial.println(FPSTR(MESSAGE_MQTTHELPER_SENDING_MESSAGE));
+	for(uint8_t i=0;i<item->getItemCount();i++){
+		String queue=item->getItem(i).queue;
+
+		if(queue.length()!=0){
+			String val=item->getValStr(i);
+
+			Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_QUEUE_EQ));
+			Serial.println(queue);
+
+			queue.replace(espSettingsBox->thSkRManageKey, espSettingsBox->thSkWManageKey);
+			queue.replace("subscribe", "publish");
+
+			//channels/623698/subscribe/fields/field2/N9EQ8RTYQ7ZXYR8T
+			//channels/<channelID>/publish/fields/field<fieldnumber>/<apikey>
+
+
+			Serial.print(FPSTR(MESSAGE_MQTTHELPER_TARGET_QUEUE_EQ));
+			Serial.print(queue);
+
+			Serial.print(FPSTR(MESSAGE_MQTTHELPER_VAL_EQ));
+			Serial.println(val);
+
+			if(espSettingsBox->isMqttEnabled){
+				boolean res=publish(queue, val);
+				Serial.print(FPSTR(MESSAGE_MQTTHELPER_RESULT_EQ));
+				Serial.println(res);
+			}else{
+				Serial.println(FPSTR(MESSAGE_MQTTHELPER_ERR_NOT_ENABLED));
+			}
+			/*
+			if(espSettingsBox.sendItemsToBaseQUeue){
+				mqttHelper.publish(item->getJson());
+			}
+			*/
+		}
+	}
+	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+}
+
+void MqttHelper::processMqttEvent(String topic, String message,
+		AbstractItem** items, uint8_t count) {
+
+	Serial.println(FPSTR(MESSAGE_MQTTHELPER_PROCESS_ABSTRACT_ITEM_MESSAGE_RECEIVED));
+	Serial.print(FPSTR(MESSAGE_MQTTHELPER_TOPIC_EQ));
+	Serial.print(topic);
+	Serial.print(FPSTR(MESSAGE_MQTTHELPER_MESSAGE_EQ));
+	Serial.print(message);
+	Serial.println(FPSTR(MESSAGE_MQTTHELPER_MESSAGE_END));
+
+	boolean result=false;
+
+	for(uint8_t i=0;i<count;i++){
+		result=items[i]->processMqValue(topic, message);
+		if(result){
+			break;
+		}
+	}
+
+	Serial.print(FPSTR(MESSAGE_MQTTHELPER_RESULT_EQ));
+	Serial.println(result);
+
+	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }

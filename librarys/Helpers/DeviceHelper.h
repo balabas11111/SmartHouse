@@ -14,6 +14,7 @@
 #include "Measurable.h"
 #include "AbstractItem.h"
 #include "ESP8266WebServer.h"
+#include "TimeTrigger.h"
 
 class DeviceHelper:public Loopable{
 
@@ -31,6 +32,11 @@ public:
 	void printDeviceDiagnostic();
 
 	String processAlarm(AbstractItem** sensors, uint8_t sensorsSize);
+
+	void createPostponedCommand(String command);
+	void prepareTrigger();
+	void executePostponedCommand();
+
 private:
 	Loopable** loopItems;
 	uint8_t loopItemsSize;
@@ -38,6 +44,11 @@ private:
 	boolean alarmMode;
 	unsigned long minAlarmInterval;
 	unsigned long lastAlarmTime;
+
+	boolean triggerInitiated;
+	String postponedCommand;
+	TimeTrigger* postPonedTrigger;
+	//void executePostPonedCommand();
 };
 
 #endif /* LIBRARIES_PINDIGITAL_DeviceHelper_H_ */

@@ -12,6 +12,7 @@
 #include "EspSettingsBox.h"
 #include "WiFiHelper.h"
 #include "AbstractItem.h"
+#include "StatusMessage.h"
 #include "ESP_Consts.h"
 
 class ThingSpeakHelper {
@@ -55,6 +56,18 @@ public:
 
 	String constructThingSpeakParameters(AbstractItem* item){
 		return item->constructGetUrl("", FPSTR(MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST_EQ));
+	}
+
+	StatusMessage recreateThingSpeaChannelskWithCheck(AbstractItem** items,uint8_t size){
+		if(!espSettingsBox->isThingSpeakEnabled){
+			return {"Failed","Публикация ThingSpeak не разрешена"};
+		}else
+		if(espSettingsBox->thSkUsrKey=="" || espSettingsBox->thSkUsrKey=="EmptyKey"){
+			return {"Failed","Не задан пользователь ThingSpeak"};
+		}else{
+			return {"Ok",recreateThingSpeak(items,size)};
+		}
+
 	}
 
 	String recreateThingSpeak(AbstractItem** items,uint8_t size){
