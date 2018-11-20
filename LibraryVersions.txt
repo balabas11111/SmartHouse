@@ -15,6 +15,8 @@ https://arduinojson.org/v5/api/jsonobject/createnestedobject/
 https://github.com/jpswensen/ESP8266_WebGen
 https://github.com/balabas11111/WebServer/
 
+https://developers.viber.com/blog/2017/05/22/tracking-motion-bot
+
 
 
 workspace
