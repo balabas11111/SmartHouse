@@ -359,3 +359,74 @@ void processMqttEvent(String topic,String message){
 	mqttHelper.processMqttEvent(topic, message, abstractItems, ARRAY_SIZE(abstractItems));
 	deviceHelper.printDeviceDiagnostic();
 }
+//-----------------------------Viber functions-----------------------------------
+void send_message(String message) {
+
+	if(espSettingsBox.viberApiKey=="none" || espSettingsBox.viberApiKey==""){
+		return;
+	}
+
+        // start connection and send HTTP header
+    int ind=espSettingsBox.viberReceivers.indexOf(";");
+    uint8_t count=0;
+
+    while (ind!=-1){
+    	count++;
+    	ind=espSettingsBox.viberReceivers.indexOf(";",ind+1);
+    }
+
+    if(count==0){
+    	return;
+    }
+
+    String adresses[count];
+
+    uint8_t startIndex=0;
+    uint8_t endIndex=espSettingsBox.viberReceivers.indexOf(";");
+    count=0;
+
+    while(endIndex!=-1){
+    	adresses[count]=espSettingsBox.viberReceivers.substring(startIndex,endIndex);
+    	count++;
+    	startIndex=endIndex+1;
+    	endIndex=espSettingsBox.viberReceivers.indexOf(";",startIndex);
+    	if(endIndex==-1){
+    		adresses[count]=espSettingsBox.viberReceivers.substring(startIndex);
+    	}
+    }
+
+    Serial.println(espSettingsBox.viberReceivers);
+
+    for(uint8_t i=0;i<sizeof(adresses);i++){
+    	Serial.println(adresses[i]);
+    }
+
+    return;
+
+    HTTPClient http;
+
+	Serial.print("[HTTP] begin...\n");
+	http.begin("https://chatapi.viber.com/pa/send_message");
+	http.addHeader("Content-Type", "application/application/json");
+	http.addHeader("X-Viber-Auth-Token", espSettingsBox.viberApiKey); // TODO: Use your auto token
+
+	Serial.print("[HTTP] POST...\n");
+
+
+
+    int httpCode;
+    httpCode = http.POST("{ \"receiver\": \"VDlniOGrBkfWYbRqhuf3mw==\", \"min_api_version\": 1, \"sender\": { \"name\": \"Wills IoT Gateway\", \"avatar\": \"http://powereyesonline.com/avatar.jpg\" }, \"tracking_data\": \"tracking data\", \"type\": \"text\",  \"text\": \""+message+"\" }");
+
+    if (httpCode) {
+      // HTTP header has been send and Server response header has been handled
+      Serial.printf("[HTTP] POST... code: %d\n", httpCode);
+
+      // file found at server
+      if (httpCode == 200) {
+        String payload = http.getString();
+        Serial.println(payload);
+      }
+    } else {
+      Serial.print("[HTTP] POST... failed, no connection or no HTTP server\n");
+    }
+}

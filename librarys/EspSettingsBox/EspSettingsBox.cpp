@@ -116,20 +116,20 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	thSkRKey = root["sRk"].as<char*>();
 	    	  	thSkTKey = root["sTk"].as<char*>();
 	    	  	thSkChId = root["sCi"];
-
+/*
 	    	  	thSkWManageKey=root["thSkWM"].as<char*>();
 				thSkRManageKey=root["thSkRM"].as<char*>();
 				thSkManageChId=root["thSkM"];
-
+*/
 	    	  	isMqttEnabled=stringToBoolean(root["isMqttEnabled"]);
 	    	  	postDataToMqttInterval=root["postDataToMqttInterval"];
-	    	  	sendItemsToBaseQUeue=stringToBoolean(root["sitbqm"]);;
+	//    	  	sendItemsToBaseQUeue=stringToBoolean(root["sitbqm"]);;
 	    	  	mqtt_server=root["mqtt_server"].as<char*>();
 	    	  	mqtt_port=root["mqtt_port"];
 	    	  	mqtt_user=root["mqtt_user"].as<char*>();
 	    	  	mqtt_pass=root["mqtt_pass"].as<char*>();
 	    	  	mqtt_topic=root["mqtt_topic"].as<char*>();
-	    	  	mqtt_TStopic=root["mqtt_TStopic"].as<char*>();
+	  //  	  	mqtt_TStopic=root["mqtt_TStopic"].as<char*>();
 
 	    	  	isHttpPostEnabled=stringToBoolean(root["isHttpSendEnabled"]);
 	    	  	postDataToHttpInterval=root["postDataToHttpInterval"];
@@ -147,6 +147,9 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	NTP_timeOffset=root["NTP_timeOffset"];
 	    	  	NTP_timeTriggerInterval=root["NTP_timeTriggerInterval"];
 	    	  	NTP_updateInterval=root["NTP_updateInterval"];
+
+	    	  	viberApiKey=root["viberApiKey"].as<char*>();
+				viberReceivers=root["viberReceivers"].as<char*>();
 
 	    	  	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_MEMORY));
 	    	  	String vals="";
@@ -217,11 +220,11 @@ void EspSettingsBox::saveSettingsJson(){
 		root["sRk"] = thSkRKey;
 		root["sCi"] = thSkChId;
 		root["sTk"] = thSkTKey;
-
+		/*
 		root["thSkWM"] = thSkWManageKey;
 		root["thSkRM"] = thSkRManageKey;
 		root["thSkM"] = thSkManageChId;
-		/*
+
 				String thSkWManageKey="V8V5G1W2CACCQOMV";
 				String thSkRManageKey="SPH0UG4JJZC7GDDH";
 				int thSkManageChId=612324;
@@ -229,14 +232,14 @@ void EspSettingsBox::saveSettingsJson(){
 		//root["AlNi"]=alamNotificationInterval;
 
 		root["isMqttEnabled"]=isMqttEnabled;
-		root["sitbqm"]=sendItemsToBaseQUeue;
+		//root["sitbqm"]=sendItemsToBaseQUeue;
 		root["postDataToMqttInterval"]=postDataToMqttInterval;
 		root["mqtt_server"]=mqtt_server;
 		root["mqtt_port"]=mqtt_port;
 		root["mqtt_user"]=mqtt_user;
 		root["mqtt_pass"]=mqtt_pass;
 		root["mqtt_topic"]=mqtt_topic;
-		root["mqtt_TStopic"]=mqtt_TStopic;
+		//root["mqtt_TStopic"]=mqtt_TStopic;
 
 		root["isHttpSendEnabled"]=isHttpPostEnabled;
 		root["postDataToHttpInterval"]=postDataToHttpInterval;
@@ -247,6 +250,9 @@ void EspSettingsBox::saveSettingsJson(){
 		root["NTP_timeOffset"]=NTP_timeOffset;
 		root["NTP_timeTriggerInterval"]=NTP_timeTriggerInterval;
 		root["NTP_updateInterval"]=NTP_updateInterval;
+
+		root["viberApiKey"]=viberApiKey;
+		root["viberReceivers"]=viberReceivers;
 
 
 		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_FROM_MEMORY));
@@ -573,7 +579,9 @@ String EspSettingsBox::getJson(String page){
 						{\"name\":\"subnetIp\",\"val\":\""+subnetIp.toString()+"\"},\
 						{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\"},\
 						{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\"},\
-						{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\"}]}";
+						{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\"},\
+						{\"name\":\"viberApiKey\",\"val\":\""+viberApiKey+"\"},\
+						{\"name\":\"viberReceivers\",\"val\":\""+viberReceivers+"\"}]}";
 	}
 	if(page=="publish"){
 			result="{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"items\":[\
@@ -584,23 +592,26 @@ String EspSettingsBox::getJson(String page){
 					{\"name\":\"thSkRKey\",\"val\":\""+thSkRKey+"\"},\
 					{\"name\":\"thSkChId\",\"val\":\""+String(thSkChId)+"\"},\
 					{\"name\":\"thSkTKey\",\"val\":\""+thSkTKey+"\"},\
-					{\"name\":\"thSkWManageKey\",\"val\":\""+thSkWManageKey+"\"},\
-					{\"name\":\"thSkRManageKey\",\"val\":\""+thSkRManageKey+"\"},\
-					{\"name\":\"thSkManageChId\",\"val\":\""+thSkManageChId+"\"},\
 					{\"name\":\"isMqttEnabled\",\"val\":\""+String(isMqttEnabled)+"\"},\
-					{\"name\":\"sendItemsToBaseQUeue\",\"val\":\""+String(sendItemsToBaseQUeue)+"\"},\
 					{\"name\":\"postDataToMqttInterval\",\"val\":\""+String(postDataToMqttInterval)+"\"},\
 					{\"name\":\"mqtt_server\",\"val\":\""+mqtt_server+"\"},\
 					{\"name\":\"mqtt_user\",\"val\":\""+mqtt_user+"\"},\
 					{\"name\":\"mqtt_pass\",\"val\":\"*****\"},\
 					{\"name\":\"mqtt_topic\",\"val\":\""+mqtt_topic+"\"},\
-					{\"name\":\"mqtt_TStopic\",\"val\":\""+mqtt_TStopic+"\"},\
 					{\"name\":\"mqtt_port\",\"val\":\""+String(mqtt_port)+"\"},\
 					{\"name\":\"isHttpPostEnabled\",\"val\":\""+String(isHttpPostEnabled)+"\"},\
 					{\"name\":\"postDataToHttpInterval\",\"val\":\""+String(postDataToHttpInterval)+"\"},\
 					{\"name\":\"httpPostIp\",\"val\":\""+httpPostIp.toString()+"\"},\
 					{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
 					{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}]}";
+
+			/*
+			 	 	{\"name\":\"thSkWManageKey\",\"val\":\""+thSkWManageKey+"\"},\
+					{\"name\":\"thSkRManageKey\",\"val\":\""+thSkRManageKey+"\"},\
+					{\"name\":\"thSkManageChId\",\"val\":\""+thSkManageChId+"\"},\
+					{\"name\":\"sendItemsToBaseQUeue\",\"val\":\""+String(sendItemsToBaseQUeue)+"\"},\
+					{\"name\":\"mqtt_TStopic\",\"val\":\""+mqtt_TStopic+"\"},\
+			 */
 	}
 
 	return result;
@@ -776,7 +787,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		thSkTKey=fieldValue;
 		return true;
 	}
-
+/*
 	if(fieldName=="thSkWManageKey"){
 		thSkWManageKey=fieldValue;
 		return true;
@@ -789,15 +800,17 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		thSkManageChId=fieldValue.toInt();
 		return true;
 	}
-
+*/
 	if(fieldName=="isMqttEnabled"){
 		isMqttEnabled=stringToBoolean(fieldValue);
 		return true;
 	}
+	/*
 	if(fieldName=="sendItemsToBaseQUeue"){
 		sendItemsToBaseQUeue=stringToBoolean(fieldValue);
 		return true;
 	}
+	*/
 	if(fieldName=="postDataToMqttInterval"){
 		postDataToMqttInterval=fieldValue.toInt();
 		return true;
@@ -817,11 +830,11 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	if(fieldName=="mqtt_topic"){
 		mqtt_topic=fieldValue;
 		return true;
-	}
+	}/*
 	if(fieldName=="mqtt_TStopic"){
 		mqtt_TStopic=fieldValue;
 		return true;
-	}
+	}*/
 	if(fieldName=="mqtt_port"){
 		mqtt_port=fieldValue.toInt();
 		return true;
@@ -856,6 +869,15 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	}
 	if(fieldName=="NTP_timeTriggerInterval"){
 		NTP_timeTriggerInterval=fieldValue.toInt();
+		return true;
+	}
+
+	if(fieldName=="viberApiKey"){
+		viberApiKey=fieldValue;
+		return true;
+	}
+	if(fieldName=="viberReceivers"){
+		viberReceivers=fieldValue;
 		return true;
 	}
 

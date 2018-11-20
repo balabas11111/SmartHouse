@@ -269,7 +269,7 @@ void MqttHelper::senDAbstractItemToMqtt(AbstractItem* item){
 			Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_QUEUE_EQ));
 			Serial.println(queue);
 
-			queue.replace(espSettingsBox->thSkRManageKey, espSettingsBox->thSkWManageKey);
+			queue.replace(espSettingsBox->thSkRKey, espSettingsBox->thSkWKey);
 			queue.replace("subscribe", "publish");
 
 			//channels/623698/subscribe/fields/field2/N9EQ8RTYQ7ZXYR8T

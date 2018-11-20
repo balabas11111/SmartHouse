@@ -299,6 +299,10 @@
 				<form id="net_form" class="w3-container">
 			  
 			  		<input name="page" type="hidden" value="net"/>
+			  		
+			  		<div class="w3-row w3-green" style="height: 50px;">
+						<h3>Настройки WiFi</h3>
+					</div>	
 			  
 			  		<div class="w3-row">
 						<div class="w3-half">
@@ -384,54 +388,76 @@
 					  	</div>
 	
 					<div class="w3-row">
-							<div class="w3-half">
-								<label id="lbl_gateIp" for="espSettingsBox_gateIp">IP адресс шлюза (GateWay)</label>
-							</div>
-					  		<div class="w3-half">
-								<input id="espSettingsBox_gateIp" name="espSettingsBox_gateIp" class="w3-input w3-border" style="width:50%" type="text" 
-										value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
-							</div>
-					  	</div>
-	
-					<div class="w3-row">
-							<div class="w3-half">
-								<label id="lbl_subnetIp" for="espSettingsBox_subnetIp">IP адресс подсети (Subnet)</label>
-							</div>
-					  		<div class="w3-half">
-								<input id="espSettingsBox_subnetIp" name="espSettingsBox_subnetIp" class="w3-input w3-border" style="width:50%" type="text" 
+						<div class="w3-half">
+							<label id="lbl_gateIp" for="espSettingsBox_gateIp">IP адресс шлюза (GateWay)</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_gateIp" name="espSettingsBox_gateIp" class="w3-input w3-border" style="width:50%" type="text" 
 									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
-							</div>
-					  	</div>
+						</div>
+				  	</div>
 	
 					<div class="w3-row">
-							<div class="w3-half">
-								<label id="lbl_dnsIp" for="espSettingsBox_dnsIp">IP адресс DNS</label>
-							</div>
-					  		<div class="w3-half">
-								<input id="espSettingsBox_dnsIp" name="espSettingsBox_dnsIp" class="w3-input w3-border" style="width:50%" type="text" 
+						<div class="w3-half">
+							<label id="lbl_subnetIp" for="espSettingsBox_subnetIp">IP адресс подсети (Subnet)</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_subnetIp" name="espSettingsBox_subnetIp" class="w3-input w3-border" style="width:50%" type="text" 
+								value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+						</div>
+				  	</div>
+	
+					<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_dnsIp" for="espSettingsBox_dnsIp">IP адресс DNS</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_dnsIp" name="espSettingsBox_dnsIp" class="w3-input w3-border" style="width:50%" type="text" 
+								value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+						</div>
+				  	</div>
+	
+					<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_dnsIp2" for="espSettingsBox_dnsIp2">IP адресс DNS2</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_dnsIp2" name="espSettingsBox_dnsIp2" class="w3-input w3-border" style="width:50%" type="text" 
 									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
-							</div>
-					  	</div>
+						</div>
+				  	</div>
 	
 					<div class="w3-row">
-							<div class="w3-half">
-								<label id="lbl_dnsIp2" for="espSettingsBox_dnsIp2">IP адресс DNS2</label>
-							</div>
-					  		<div class="w3-half">
-								<input id="espSettingsBox_dnsIp2" name="espSettingsBox_dnsIp2" class="w3-input w3-border" style="width:50%" type="text" 
-										value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
-							</div>
-					  	</div>
-	
+						<div class="w3-half">
+							<label id="lbl_serverIp" for="espSettingsBox_serverIp">IP адресс Сервера !!!SmartHouse</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_serverIp" name="espSettingsBox_serverIp" class="w3-input w3-border" style="width:50%" type="text" 
+									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+						</div>
+				  	</div>
+				  	
+				  	<div class="w3-row w3-green" style="height: 50px;">
+						<h3>Настройки Viber</h3>
+					</div>
+					
 					<div class="w3-row">
-							<div class="w3-half">
-								<label id="lbl_serverIp" for="espSettingsBox_serverIp">IP адресс Сервера !!!SmartHouse</label>
-							</div>
-					  		<div class="w3-half">
-								<input id="espSettingsBox_serverIp" name="espSettingsBox_serverIp" class="w3-input w3-border" style="width:50%" type="text" 
-										value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
-							</div>
-					  	</div>
+						<div class="w3-half">			
+							<label for="espSettingsBox_viberApiKey">Viber API ID</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_viberApiKey" name="espSettingsBox_viberApiKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+						</div>
+				  	</div>
+				  	
+				  	<div class="w3-row">
+						<div class="w3-half">			
+							<label for="espSettingsBox_viberReceivers">Viber получатель</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_viberReceivers" name="espSettingsBox_viberReceiversc" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+						</div>
+				  	</div>
 			
 				</form>	  	
 			  </div>
@@ -576,7 +602,7 @@
 								<input id="espSettingsBox_thSkTKey" name="espSettingsBox_thSkTKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
 							</div>
 					  	</div>
-			
+			<!-- 
 						<div class="w3-row w3-green" style="height: 50px;">
 							<h3>Настройки каналов управления ThingSpeak</h3>
 						</div>
@@ -607,7 +633,7 @@
 								<input id="espSettingsBox_thSkManageChId" name="espSettingsBox_thSkManageChId" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
 							</div>
 					  	</div>	
-			
+			 -->
 						<div class="w3-row w3-green" style="height: 50px;">
 							<h3>Отправка в очередь MQTT</h3>
 						</div>	
@@ -620,7 +646,7 @@
 								<input id="espSettingsBox_isMqttEnabled" name="espSettingsBox_isMqttEnabled" class="w3-check" type="checkbox">
 							</div>
 					  	</div>
-					  	
+					  	<!-- 
 					  	<div class="w3-row">
 							<div class="w3-half">			
 								<label for="espSettingsBox_sendItemsToBaseQUeue">Отправка всех значений в главную очередь</label>
@@ -638,7 +664,7 @@
 								<input id="espSettingsBox_postDataToMqttInterval" name="espSettingsBox_postDataToMqttInterval" class="w3-input w3-border" style="width:50%" type="number" min="240" step="1">
 							</div>
 					  	</div>
-						
+						 -->
 						<div class="w3-row">
 							<div class="w3-half">			
 								<label for="espSettingsBox_mqtt_server">Сервер</label>
@@ -683,7 +709,7 @@
 								<input id="espSettingsBox_mqtt_port" name="espSettingsBox_mqtt_port" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
 							</div>
 					  	</div>
-					  	
+					  	<!-- 
 					  	<div class="w3-row">
 							<div class="w3-half">			
 								<label for="espSettingsBox_mqtt_TStopic">Очередь получения данных из ThingSpeak</label>
@@ -692,7 +718,7 @@
 								<input id="espSettingsBox_mqtt_TStopic" name="espSettingsBox_mqtt_TStopic" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
 							</div>
 					  	</div>
-						
+						 -->
 						<div class="w3-row w3-green" style="height: 50px;">
 							<h3>Отправка на сервер !!!SmartHouse</h3>
 						</div>	

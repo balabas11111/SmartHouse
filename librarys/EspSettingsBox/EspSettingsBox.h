@@ -154,25 +154,25 @@ public:
 	int thSkChId=612324;
 	String thSkWKey="V8V5G1W2CACCQOMV";
 	String thSkRKey="SPH0UG4JJZC7GDDH";
-
+/*
 	int thSkManageChId=612324;
 	String thSkWManageKey="V8V5G1W2CACCQOMV";
 	String thSkRManageKey="SPH0UG4JJZC7GDDH";
-
+*/
 
 	String thSkTKey="ZSFBN9V1K2QMB9M1";
 	//uint16_t alamNotificationInterval=60;
 
 	boolean isMqttEnabled=false;
-	boolean sendItemsToBaseQUeue=false;
+	//boolean sendItemsToBaseQUeue=false;
 	uint16_t postDataToMqttInterval=241;
-	String mqtt_server = "m23.cloudmqtt.com";   //mqtt.thingspeak.com
-	String mqtt_user = "tpheglmk";              //user
-	String mqtt_pass = "QgYRfVzDhQ31";          //HM4A48J6A926FL81
+	String mqtt_server = "mqtt.thingspeak.com";
+	String mqtt_user = "user";
+	String mqtt_pass = "HM4A48J6A926FL81";
 	String mqtt_topic="topic/basePublish";
-	int mqtt_port = 10186;                      //1883
+	int mqtt_port = 1883;
 
-	String mqtt_TStopic="null";
+	//String mqtt_TStopic="null";
 
 	boolean isHttpPostEnabled=false;
 	uint16_t postDataToHttpInterval=241;
@@ -185,6 +185,9 @@ public:
 
 	ulong NTP_timeTriggerInterval=1000;
 
+	//viber settings
+	String viberApiKey;
+	String viberReceivers;
 
 private:
 	boolean loaded=false;
