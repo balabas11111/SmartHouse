@@ -185,9 +185,15 @@ public:
 
 	ulong NTP_timeTriggerInterval=1000;
 
+	/*
 	//viber settings
 	String viberApiKey;
 	String viberReceivers;
+	*/
+	//telegram settings
+	//default bot  t.me/SmartHouse_balabas_bot   default chat   https://t.me/joinchat/JPhZDxJ7MBZV9HPkR0YE6A
+	String telegramApiKey="737840576:AAH_9-PM8knquJ3x1GN-sOTX4NGPNdU50iE";
+	String telegramReceivers="JPhZDxJ7MBZV9HPkR0YE6A";
 
 private:
 	boolean loaded=false;

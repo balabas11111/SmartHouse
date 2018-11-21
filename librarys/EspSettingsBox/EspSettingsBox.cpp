@@ -148,8 +148,8 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	NTP_timeTriggerInterval=root["NTP_timeTriggerInterval"];
 	    	  	NTP_updateInterval=root["NTP_updateInterval"];
 
-	    	  	viberApiKey=root["viberApiKey"].as<char*>();
-				viberReceivers=root["viberReceivers"].as<char*>();
+	    	  	telegramApiKey=root["telegramApiKey"].as<char*>();
+	    	  	telegramReceivers=root["telegramReceivers"].as<char*>();
 
 	    	  	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_MEMORY));
 	    	  	String vals="";
@@ -251,9 +251,8 @@ void EspSettingsBox::saveSettingsJson(){
 		root["NTP_timeTriggerInterval"]=NTP_timeTriggerInterval;
 		root["NTP_updateInterval"]=NTP_updateInterval;
 
-		root["viberApiKey"]=viberApiKey;
-		root["viberReceivers"]=viberReceivers;
-
+		root["telegramApiKey"]=telegramApiKey;
+		root["telegramReceivers"]=telegramReceivers;
 
 		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_FROM_MEMORY));
 		String vals="";
@@ -580,8 +579,8 @@ String EspSettingsBox::getJson(String page){
 						{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\"},\
 						{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\"},\
 						{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\"},\
-						{\"name\":\"viberApiKey\",\"val\":\""+viberApiKey+"\"},\
-						{\"name\":\"viberReceivers\",\"val\":\""+viberReceivers+"\"}]}";
+						{\"name\":\"telegramApiKey\",\"val\":\""+telegramApiKey+"\"},\
+						{\"name\":\"telegramReceivers\",\"val\":\""+telegramReceivers+"\"}]}";
 	}
 	if(page=="publish"){
 			result="{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"items\":[\
@@ -871,7 +870,15 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		NTP_timeTriggerInterval=fieldValue.toInt();
 		return true;
 	}
-
+	if(fieldName==telegramApiKey){
+		telegramApiKey=fieldValue;
+		return true;
+	}
+	if(fieldName==telegramReceivers){
+		telegramReceivers=fieldValue;
+		return true;
+	}
+	/*
 	if(fieldName=="viberApiKey"){
 		viberApiKey=fieldValue;
 		return true;
@@ -880,7 +887,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		viberReceivers=fieldValue;
 		return true;
 	}
-
+*/
 	return false;
 }
 

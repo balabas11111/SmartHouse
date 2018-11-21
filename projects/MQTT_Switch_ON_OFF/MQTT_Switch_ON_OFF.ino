@@ -26,6 +26,8 @@
 #include "DS18D20_Sensor.h"
 #include "StatusMessage.h"
 
+#include "MessageSenderTelegram.h"
+
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
 
@@ -95,6 +97,8 @@ Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMea
 AbstractItem* abstractItems[]={&lampLeft,&lampRight,&bmeMeasurer,&luxMeasurer,&acMeter,&ds18d20Measurer};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),espSettingsBox.alamSendInterval);
+
+MessageSenderTelegram messageSenderTelegram(&espSettingsBox);
 
 void setup() {
   deviceHelper.startDevice(espSettingsBox.DeviceId);
@@ -361,7 +365,7 @@ void processMqttEvent(String topic,String message){
 }
 //-----------------------------Viber functions-----------------------------------
 void send_message(String message) {
-
+/*
 	if(espSettingsBox.viberApiKey=="none" || espSettingsBox.viberApiKey==""){
 		return;
 	}
@@ -412,8 +416,6 @@ void send_message(String message) {
 
 	Serial.print("[HTTP] POST...\n");
 
-
-
     int httpCode;
     httpCode = http.POST("{ \"receiver\": \"VDlniOGrBkfWYbRqhuf3mw==\", \"min_api_version\": 1, \"sender\": { \"name\": \"Wills IoT Gateway\", \"avatar\": \"http://powereyesonline.com/avatar.jpg\" }, \"tracking_data\": \"tracking data\", \"type\": \"text\",  \"text\": \""+message+"\" }");
 
@@ -429,4 +431,5 @@ void send_message(String message) {
     } else {
       Serial.print("[HTTP] POST... failed, no connection or no HTTP server\n");
     }
+    */
 }
