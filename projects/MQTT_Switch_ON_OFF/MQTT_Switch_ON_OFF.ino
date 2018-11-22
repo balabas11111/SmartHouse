@@ -90,6 +90,7 @@ WiFiHelper wifiHelper(&espSettingsBox, &displayHelper, /*nullptr,*/&server,postI
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 MqttHelper mqttHelper(&espSettingsBox,wclient,processMqttEvent);
 
+MessageSenderTelegram messageSenderTelegram(&espSettingsBox);
 
 Loopable* loopArray[]={&wifiHelper,&mqttHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&acMeter,&thingSpeakTrigger};
 Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer,&ds18d20Measurer};
@@ -98,7 +99,7 @@ AbstractItem* abstractItems[]={&lampLeft,&lampRight,&bmeMeasurer,&luxMeasurer,&a
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),espSettingsBox.alamSendInterval);
 
-MessageSenderTelegram messageSenderTelegram(&espSettingsBox);
+
 
 void setup() {
   deviceHelper.startDevice(espSettingsBox.DeviceId);
