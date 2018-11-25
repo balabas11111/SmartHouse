@@ -41,6 +41,11 @@ public:
 		}
 	}
 
+	void printHeap(){
+		Serial.print(FPSTR("heap="));
+		Serial.println(ESP.getFreeHeap());
+	}
+
 	void loadAbstractItemFromFile(AbstractItem* item);
 	void saveAbstractItemToFile(AbstractItem* item);
 
@@ -56,7 +61,7 @@ public:
 	String getJson(String page);
 
 	String getFileName(AbstractItem* item);
-
+/*
 	String getSimpleJsonPublishUrl(){
 		return FPSTR(ESPSETTINGSBOX_GET_SIMPLE_JSON_PUBLISH_URL);
 	}
@@ -66,7 +71,7 @@ public:
 	String getSetValueUrl(){
 		return FPSTR(ESPSETTINGSBOX_SET_JSON_PUBLISH_URL);
 	}
-
+*/
 	String getDeviceNameFull(){
 		String result=FPSTR(MESSAGE_THINGSPEAK_NAME_FOR_REQUEST_EQ);
 		result+=DeviceLocation;
@@ -94,7 +99,7 @@ public:
 		return  result;
 	}
 
-	void printSettingsFile();
+	//void printSettingsFile();
 
 	boolean isSpiffInitialized();
 
@@ -128,7 +133,6 @@ public:
 	String ssid = "balabasKiev5";//balabasKiev5
 	String password = "wuWylKegayg2wu22";//wuWylKegayg2wu22
 
-	int serverPort=80;
 	boolean staticIp=false;
 
 	IPAddress localIp=IPAddress(192, 168, 0, 70);
@@ -143,8 +147,6 @@ public:
 	boolean alarmSendNotifAlertStart=true;
 	boolean alarmSendNotifAlertStop=true;
 	boolean alarmPlaySound=true;
-	uint16_t alamSoundInterval=30;
-	uint16_t alamSendInterval=120;
 
 	//thingspeak settings
 	boolean isThingSpeakEnabled=false;
@@ -154,25 +156,15 @@ public:
 	int thSkChId=612324;
 	String thSkWKey="V8V5G1W2CACCQOMV";
 	String thSkRKey="SPH0UG4JJZC7GDDH";
-/*
-	int thSkManageChId=612324;
-	String thSkWManageKey="V8V5G1W2CACCQOMV";
-	String thSkRManageKey="SPH0UG4JJZC7GDDH";
-*/
 
 	String thSkTKey="ZSFBN9V1K2QMB9M1";
-	//uint16_t alamNotificationInterval=60;
 
 	boolean isMqttEnabled=false;
-	//boolean sendItemsToBaseQUeue=false;
 	uint16_t postDataToMqttInterval=241;
 	String mqtt_server = "mqtt.thingspeak.com";
 	String mqtt_user = "user";
 	String mqtt_pass = "HM4A48J6A926FL81";
-	String mqtt_topic="topic/basePublish";
 	int mqtt_port = 1883;
-
-	//String mqtt_TStopic="null";
 
 	boolean isHttpPostEnabled=false;
 	uint16_t postDataToHttpInterval=241;
@@ -185,15 +177,11 @@ public:
 
 	ulong NTP_timeTriggerInterval=1000;
 
-	/*
-	//viber settings
-	String viberApiKey;
-	String viberReceivers;
-	*/
 	//telegram settings
 	//default bot  t.me/SmartHouse_balabas_bot   default chat   https://t.me/joinchat/JPhZDxJ7MBZV9HPkR0YE6A
 	String telegramApiKey="737840576:AAH_9-PM8knquJ3x1GN-sOTX4NGPNdU50iE";
 	String telegramReceivers="JPhZDxJ7MBZV9HPkR0YE6A";
+	String telegramSenders;
 
 private:
 	boolean loaded=false;
@@ -201,7 +189,6 @@ private:
 	boolean spiffInitialized;
 	String _fileName;
 	String _extFileName;
-	JsonObject* extRoot;
 
 	void construct(String extValuesFileName,boolean forceLoad,boolean initSpiff);
 	void initSpiff();

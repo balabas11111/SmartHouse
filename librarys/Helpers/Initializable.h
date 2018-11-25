@@ -16,7 +16,6 @@ public:
 	virtual ~Initializable(){};
 
 	boolean init(){
-		//Serial.println("Initializer called");
 		return initialize(true);
 	}
 

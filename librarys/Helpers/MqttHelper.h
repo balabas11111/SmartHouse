@@ -28,11 +28,10 @@ public:
 	boolean isConnected();
 	boolean connectIfNotConnected();
 	void subscribe(String topicName);
-	boolean publish(String message);
 	boolean publish(String topicName,String message);
 
 	String getName();
-	String displayDetails();
+	void displayDetails();
 	boolean loop();
 
 	void callback(char* topic, uint8_t* payload, unsigned int length);

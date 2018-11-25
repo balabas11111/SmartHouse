@@ -196,15 +196,7 @@ public:
 	boolean getPeriodicSend(){
 		return periodicSend;
 	}
-/*
-	boolean getPostValueOnChanged(){
-		return postValueOnChanged;
-	}
 
-	boolean getPostValueToMqHttp(){
-		return postValueToMqHttp;
-	}
-*/
 	boolean getProcessValueFromMqtt(){
 		return processValueFromMqtt;
 	}
@@ -212,7 +204,6 @@ public:
 	boolean getAutoCreateChannel(){
 		return autoCreateChannel;
 	}
-
 
 	String constructGetUrl(String baseUrl,String paramVal){
 		if(!this->periodicSend){
@@ -260,7 +251,7 @@ public:
 		}
 		Serial.println();
 	}
-
+/*
 	String getJsonPublishUrl(){
 		return "/"+getName()+"/getJson";
 	}
@@ -268,7 +259,7 @@ public:
 	String getSetValueUrl(){
 		return "/"+getName()+"/setValue";
 	}
-
+*/
 	boolean setFieldFromRequest(AbstractItemRequest req){
 
 		if(this->id!=req.deviceId || !req.valid){

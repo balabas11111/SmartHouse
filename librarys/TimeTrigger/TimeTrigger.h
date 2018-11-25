@@ -30,7 +30,6 @@ public:
 	void setHandler(std::function<void(void)> funcEvent);
 
 	String getName();
-	String displayDetails();
 	boolean loop();
 
 	void start();

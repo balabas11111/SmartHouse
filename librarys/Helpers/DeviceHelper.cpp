@@ -23,7 +23,7 @@ DeviceHelper::DeviceHelper(Loopable** _loopItems,uint8_t _loopItemsSize,long min
 	triggerInitiated=false;
 }
 
-String DeviceHelper::displayDetails(){
+void DeviceHelper::displayDetails(){
 	Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_LOOPERS));
 
 	Serial.print(FPSTR(MESSAGE_DEVICE_HELPER_LOOP_SIZE));
@@ -34,8 +34,6 @@ String DeviceHelper::displayDetails(){
 	}
 
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-
-	return "";
 }
 
 
@@ -72,6 +70,9 @@ boolean DeviceHelper::init(Initializable** initItems,uint8_t initItemsSize){
 	uint8_t initOk=0;
 
 	for(uint8_t i=0;i<initItemsSize;i++){
+		Serial.print("init ");
+		Serial.println(i);
+		Serial.println(ESP.getFreeHeap());
 		boolean init=initItems[i]->init();
 		if(init){
 			initOk++;

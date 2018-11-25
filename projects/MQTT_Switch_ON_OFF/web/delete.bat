@@ -1,4 +1,4 @@
-SET ip=192.168.0.100
+SET ip=192.168.0.105
 
 rem #cssFiles
 curl -i -X DELETE -H "Expect:" -F "filename=/web/css/w3.css" http://%ip%/edit
@@ -13,6 +13,8 @@ curl -i -X DELETE -H "Expect:" -F "filename=/web/img/connected.png" http://%ip%/
 curl -i -X DELETE -H "Expect:" -F "filename=/web/img/connecting.png" http://%ip%/edit
 curl -i -X DELETE -H "Expect:" -F "filename=/web/img/emptyWalk.png" http://%ip%/edit
 curl -i -X DELETE -H "Expect:" -F "filename=/web/img/Humidity.png" http://%ip%/edit
+curl -i -X DELETE -H "Expect:" -F "filename=/web/img/hv_on.png" http://%ip%/edit
+curl -i -X DELETE -H "Expect:" -F "filename=/web/img/hv_off.png" http://%ip%/edit
 curl -i -X DELETE -H "Expect:" -F "filename=/web/img/LightLevel.png" http://%ip%/edit
 curl -i -X DELETE -H "Expect:" -F "filename=/web/img/OffLamp_64.png" http://%ip%/edit
 curl -i -X DELETE -H "Expect:" -F "filename=/web/img/OnLamp_64.png" http://%ip%/edit
@@ -27,8 +29,17 @@ curl -i -X DELETE -H "Expect:" -F "filename=/web/js/index.js" http://%ip%/edit
 curl -i -X DELETE -H "Expect:" -F "filename=/web/js/lamp.js" http://%ip%/edit
 curl -i -X DELETE -H "Expect:" -F "filename=/web/js/menu.js" http://%ip%/edit
 curl -i -X DELETE -H "Expect:" -F "filename=/web/js/settings.js" http://%ip%/edit
+curl -i -X DELETE -H "Expect:" -F "filename=/web/js/websocket.js" http://%ip%/edit
 
 rem #html
-curl -i -X DELETE -H "Expect:" -F "filename=/web/edit.htm.gz" http://%ip%/edit
-curl -i -X DELETE -H "Expect:" -F "filename=/web/index.htm" http://%ip%/edit
+
+
+curl -i -X DELETE -H "Expect:" -F "filename=/web/fileManager/edit.htm.gz" http://%ip%/edit
+curl -i -X DELETE -H "Expect:" -F "filename=/web/fileManager/edit2.html" http://%ip%/edit
 curl -i -X DELETE -H "Expect:" -F "filename=/web/settings.htm" http://%ip%/edit
+curl -i -X DELETE -H "Expect:" -F "filename=/web/index.htm" http://%ip%/edit
+curl -i -X DELETE -H "Expect:" -F "filename=/web/settings.htm.gz" http://%ip%/edit
+curl -i -X DELETE -H "Expect:" -F "filename=/web/index.htm.gz" http://%ip%/edit
+
+
+pause

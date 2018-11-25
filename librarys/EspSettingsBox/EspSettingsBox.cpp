@@ -34,14 +34,11 @@ EspSettingsBox::EspSettingsBox(String extValuesFileName,boolean forceLoad,boolea
 		if(!initialized && _init){
 			loadSettingsJson();
 			initialized=_init;
-		}else{
-			if(initialized)
-				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ALREADY_INITIALIZE));
 		}
 
 		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_LOADED));
 		Serial.println(loaded);
-		Serial.print(FPSTR(MESSAGE_HORIZONTAL_LINE));
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
 		return initialized;
 	}
@@ -79,7 +76,7 @@ void EspSettingsBox::loadSettingsJson(){
 	      } else {
 	    	  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
 
-	    	  DeviceId = root["dId"].as<char*>();
+	    	    DeviceId = root["dId"].as<char*>();
 	    	  	DeviceKind = root["DeviceKind"].as<char*>();
 	    	  	DeviceDescription =root["DeviceDescription"].as<char*>();
 	    	  	DeviceLocation=root["DeviceLocation"].as<char*>();
@@ -116,20 +113,13 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	thSkRKey = root["sRk"].as<char*>();
 	    	  	thSkTKey = root["sTk"].as<char*>();
 	    	  	thSkChId = root["sCi"];
-/*
-	    	  	thSkWManageKey=root["thSkWM"].as<char*>();
-				thSkRManageKey=root["thSkRM"].as<char*>();
-				thSkManageChId=root["thSkM"];
-*/
+
 	    	  	isMqttEnabled=stringToBoolean(root["isMqttEnabled"]);
 	    	  	postDataToMqttInterval=root["postDataToMqttInterval"];
-	//    	  	sendItemsToBaseQUeue=stringToBoolean(root["sitbqm"]);;
 	    	  	mqtt_server=root["mqtt_server"].as<char*>();
 	    	  	mqtt_port=root["mqtt_port"];
 	    	  	mqtt_user=root["mqtt_user"].as<char*>();
 	    	  	mqtt_pass=root["mqtt_pass"].as<char*>();
-	    	  	mqtt_topic=root["mqtt_topic"].as<char*>();
-	  //  	  	mqtt_TStopic=root["mqtt_TStopic"].as<char*>();
 
 	    	  	isHttpPostEnabled=stringToBoolean(root["isHttpSendEnabled"]);
 	    	  	postDataToHttpInterval=root["postDataToHttpInterval"];
@@ -138,8 +128,6 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	alarmSendNotifAlertStart=stringToBoolean(root["AlSAs"].as<char*>());
 	    	  	alarmSendNotifAlertStop=stringToBoolean(root["AlSn"].as<char*>());
 	    	  	alarmPlaySound=stringToBoolean(root["AlPs"].as<char*>());
-	    	  	alamSoundInterval=root["AlSi"];
-	    	  	alamSendInterval=root["AlSendi"];
 	    	  	//alamNotificationInterval=root["AlNi"];
 
 	    	  	ntpEnabled=stringToBoolean(root["ntpEnabled"]);
@@ -150,6 +138,7 @@ void EspSettingsBox::loadSettingsJson(){
 
 	    	  	telegramApiKey=root["telegramApiKey"].as<char*>();
 	    	  	telegramReceivers=root["telegramReceivers"].as<char*>();
+	    	  	telegramSenders=root["telegramSenders"].as<char*>();
 
 	    	  	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_MEMORY));
 	    	  	String vals="";
@@ -210,8 +199,6 @@ void EspSettingsBox::saveSettingsJson(){
 		root["AlSAs"]=alarmSendNotifAlertStart;
 		root["AlSn"]=alarmSendNotifAlertStop;
 		root["AlPs"]=alarmPlaySound;
-		root["AlSi"]=alamSoundInterval;
-		root["AlSendi"]=alamSendInterval;
 
 		root["ptTsEnabled"]=isThingSpeakEnabled;
 		root["pdTs"] = postDataToTSInterval;
@@ -220,26 +207,13 @@ void EspSettingsBox::saveSettingsJson(){
 		root["sRk"] = thSkRKey;
 		root["sCi"] = thSkChId;
 		root["sTk"] = thSkTKey;
-		/*
-		root["thSkWM"] = thSkWManageKey;
-		root["thSkRM"] = thSkRManageKey;
-		root["thSkM"] = thSkManageChId;
-
-				String thSkWManageKey="V8V5G1W2CACCQOMV";
-				String thSkRManageKey="SPH0UG4JJZC7GDDH";
-				int thSkManageChId=612324;
-			 */
-		//root["AlNi"]=alamNotificationInterval;
 
 		root["isMqttEnabled"]=isMqttEnabled;
-		//root["sitbqm"]=sendItemsToBaseQUeue;
 		root["postDataToMqttInterval"]=postDataToMqttInterval;
 		root["mqtt_server"]=mqtt_server;
 		root["mqtt_port"]=mqtt_port;
 		root["mqtt_user"]=mqtt_user;
 		root["mqtt_pass"]=mqtt_pass;
-		root["mqtt_topic"]=mqtt_topic;
-		//root["mqtt_TStopic"]=mqtt_TStopic;
 
 		root["isHttpSendEnabled"]=isHttpPostEnabled;
 		root["postDataToHttpInterval"]=postDataToHttpInterval;
@@ -253,6 +227,7 @@ void EspSettingsBox::saveSettingsJson(){
 
 		root["telegramApiKey"]=telegramApiKey;
 		root["telegramReceivers"]=telegramReceivers;
+		root["telegramSenders"]=telegramSenders;
 
 		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_FROM_MEMORY));
 		String vals="";
@@ -311,8 +286,8 @@ void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 			if (!root.success()) {
 				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
 			} else {
-				Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
-				root.printTo(Serial);
+				//Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
+				//root.printTo(Serial);
 
 				item->setDescr(root["descr"].as<char*>());
 
@@ -320,8 +295,8 @@ void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 
 				if(item->getItemCount()>0 && itemCountJson>0){
 					//JsonArray& arrayJson=root["items"].asArray();
-					Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_TOTAL_CHILDS_EQ));
-					Serial.println(itemCountJson);
+					//Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_TOTAL_CHILDS_EQ));
+					//Serial.println(itemCountJson);
 
 					for(uint8_t i=0;i<itemCountJson;i++){
 
@@ -333,8 +308,8 @@ void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 						item->setMaxVal(index, root["items"][i]["maxVal"]);
 						item->setQueue(index, root["items"][i]["queue"]);
 
-						Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_ITEM_SETTINGS_LOADED));
-						Serial.println(item->getJson(index));
+						//Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_ITEM_SETTINGS_LOADED));
+						//Serial.println(item->getJson(index));
 					}
 				}
 				//-----------------------------------------
@@ -342,7 +317,7 @@ void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 		}
 	  }
 
-	  Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+	  //Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
 
 void EspSettingsBox::saveAbstractItemToFile(AbstractItem* item){
@@ -362,12 +337,10 @@ void EspSettingsBox::saveAbstractItemToFile(AbstractItem* item){
 
 	delay(1);
 }
-
+/*
 void EspSettingsBox::printSettingsFile(){
-		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_PRINT_SETTINGS_FILE));
-		//loadExternalFile();
-		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_CURRENT_MEMORY_STATE));
-		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+		//Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_PRINT_SETTINGS_FILE));
+		//Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 		File file = SPIFFS.open(_fileName, "r");
 
 		if(!file){
@@ -384,10 +357,8 @@ void EspSettingsBox::printSettingsFile(){
 
 		    		 while(fileSet.available()){
 		    			 i++;
-		    			 //Serial.print(i);
 		    			 str=fileSet.readStringUntil('\n');
 		    			 Serial.println(str);
-		    			 //Serial.println("---");
 		    		 }
 		    		 file.close();
 
@@ -402,7 +373,7 @@ void EspSettingsBox::printSettingsFile(){
 		    //printVariablesToSerial();
 		    Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
-
+*/
 void EspSettingsBox::initSpiff(){
 	spiffInitialized=SPIFFS.begin();
 	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SYSTEM_STATUS));
@@ -558,7 +529,6 @@ String EspSettingsBox::getJson(String page){
 						{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\"},\
 						{\"name\":\"settingsPass\",\"val\":\"*****\"},\
 						{\"name\":\"ntpEnabled\",\"val\":\""+String(ntpEnabled)+"\"},\
-						{\"name\":\"alamSendInterval\",\"val\":\""+String(alamSendInterval)+"\"},\
 						{\"name\":\"NTP_poolServerName\",\"val\":\""+String(NTP_poolServerName)+"\"},\
 						{\"name\":\"NTP_timeOffset\",\"val\":\""+NTP_timeOffset+"\"},\
 						{\"name\":\"NTP_updateInterval\",\"val\":\""+NTP_updateInterval+"\"},\
@@ -570,7 +540,6 @@ String EspSettingsBox::getJson(String page){
 						{\"name\":\"ssidAP\",\"val\":\""+ssidAP+"\"},\
 						{\"name\":\"ssid\",\"val\":\""+ssid+"\"},\
 						{\"name\":\"password\",\"val\":\"*****\"},\
-						{\"name\":\"serverPort\",\"val\":\""+String(serverPort)+"\"},\
 						{\"name\":\"staticIp\",\"val\":\""+String(staticIp)+"\"},\
 						{\"name\":\"localIp\",\"val\":\""+localIp.toString()+"\"},\
 						{\"name\":\"apIp\",\"val\":\""+apIp.toString()+"\"},\
@@ -596,7 +565,6 @@ String EspSettingsBox::getJson(String page){
 					{\"name\":\"mqtt_server\",\"val\":\""+mqtt_server+"\"},\
 					{\"name\":\"mqtt_user\",\"val\":\""+mqtt_user+"\"},\
 					{\"name\":\"mqtt_pass\",\"val\":\"*****\"},\
-					{\"name\":\"mqtt_topic\",\"val\":\""+mqtt_topic+"\"},\
 					{\"name\":\"mqtt_port\",\"val\":\""+String(mqtt_port)+"\"},\
 					{\"name\":\"isHttpPostEnabled\",\"val\":\""+String(isHttpPostEnabled)+"\"},\
 					{\"name\":\"postDataToHttpInterval\",\"val\":\""+String(postDataToHttpInterval)+"\"},\
@@ -617,7 +585,7 @@ String EspSettingsBox::getJson(String page){
 }
 
 boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
-	String startTag="espSettingsBox_";
+	String startTag=FPSTR(ESPSETTINGSBOX_START_TAG);
 	int startIndex=startTag.length();
 
 	Serial.print(fieldName);
@@ -633,261 +601,216 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		fieldName=fieldName.substring(startIndex);
 	}
 
-	if(fieldName=="deviceFirmWareVersion"){
+	if(fieldName==FPSTR(ESBOX_deviceFirmWareVersion)){
 		deviceFirmWareVersion=fieldValue;
 		return true;
 	}
-	if(fieldName=="DeviceId"){
+	if(fieldName==FPSTR(ESBOX_DeviceId)){
 		DeviceId=fieldValue;
 		return true;
 	}
-	if(fieldName=="DeviceKind"){
+	if(fieldName==FPSTR(ESBOX_DeviceKind)){
 		DeviceKind=fieldValue;
 		return true;
 	}
-	if(fieldName=="DeviceDescription"){
+	if(fieldName==FPSTR(ESBOX_DeviceDescription)){
 		DeviceDescription=fieldValue;
 		return true;
 	}
-	if(fieldName=="DeviceLocation"){
+	if(fieldName==FPSTR(ESBOX_DeviceLocation)){
 		DeviceLocation=fieldValue;
 		return true;
 	}
-	if(fieldName=="displayAlvaysOn"){
+	if(fieldName==FPSTR(ESBOX_displayAlvaysOn)){
 		displayAlvaysOn=stringToBoolean(fieldValue);
 		return true;
 	}
-	if(fieldName=="displayAutochange"){
+	if(fieldName==FPSTR(ESBOX_displayAutochange)){
 		displayAutochange=fieldValue.toInt();
 		return true;
 	}
-	if(fieldName=="refreshInterval"){
+	if(fieldName==FPSTR(ESBOX_refreshInterval)){
 		refreshInterval=fieldValue.toInt();
 		return true;
 	}
-	if(fieldName=="accessUser"){
+	if(fieldName==FPSTR(ESBOX_accessUser)){
 		accessUser=fieldValue;
 		return true;
 	}
-	if(fieldName=="accessPass" && fieldValue!="*****"){
+	if(fieldName==FPSTR(ESBOX_accessPass) && fieldValue!=FPSTR(ESBOX_STARS)){
 		accessPass=fieldValue;
 		return true;
 	}
-	if(fieldName=="settingsUser"){
+	if(fieldName==FPSTR(ESBOX_settingsUser)){
 		settingsUser=fieldValue;
 		return true;
 	}
-	if(fieldName=="settingsPass" && fieldValue!="*****"){
+	if(fieldName==FPSTR(ESBOX_settingsPass) && fieldValue!=FPSTR(ESBOX_STARS)){
 		settingsPass=fieldValue;
 		return true;
 	}
-	if(fieldName=="isAccesPoint"){
+	if(fieldName==FPSTR(ESBOX_isAccesPoint)){
 		isAccesPoint=stringToBoolean(fieldValue);
 		return true;
 	}
-	if(fieldName=="ssidAP"){
+	if(fieldName==FPSTR(ESBOX_ssidAP)){
 		ssidAP=fieldValue;
 		return true;
 	}
-	if(fieldName=="ssid"){
+	if(fieldName==FPSTR(ESBOX_ssid)){
 		ssid=fieldValue;
 		return true;
 	}
-	if(fieldName=="password" && fieldValue!="*****"){
+	if(fieldName==FPSTR(ESBOX_password) && fieldValue!=FPSTR(ESBOX_STARS)){
 		password=fieldValue;
 		return true;
 	}
-	if(fieldName=="serverPort"){
-		serverPort=fieldValue.toInt();
-		return true;
-	}
-	if(fieldName=="staticIp"){
+	if(fieldName==FPSTR(ESBOX_staticIp)){
 		staticIp=stringToIp(fieldValue);
 		return true;
 	}
-	if(fieldName=="localIp"){
+	if(fieldName==FPSTR(ESBOX_localIp)){
 		localIp=stringToIp(fieldValue);
 		return true;
 	}
-	if(fieldName=="apIp"){
+	if(fieldName==FPSTR(ESBOX_apIp)){
 		apIp=stringToIp(fieldValue);
 		return true;
 	}
-	if(fieldName=="gateIp"){
+	if(fieldName==FPSTR(ESBOX_gateIp)){
 		gateIp=stringToIp(fieldValue);
 		return true;
 	}
-	if(fieldName=="subnetIp"){
+	if(fieldName==FPSTR(ESBOX_subnetIp)){
 		subnetIp=stringToIp(fieldValue);
 		return true;
 	}
-	if(fieldName=="dnsIp"){
+	if(fieldName==FPSTR(ESBOX_dnsIp)){
 		dnsIp=stringToIp(fieldValue);
 		return true;
 	}
-	if(fieldName=="dnsIp2"){
+	if(fieldName==FPSTR(ESBOX_dnsIp2)){
 		dnsIp2=stringToIp(fieldValue);
 		return true;
 	}
-	if(fieldName=="serverIp"){
+	if(fieldName==FPSTR(ESBOX_serverIp)){
 		serverIp=stringToIp(fieldValue);
 		return true;
 	}
-	if(fieldName=="beepOnAlert"){
+	if(fieldName==FPSTR(ESBOX_beepOnAlert)){
 		beepOnAlert=stringToBoolean(fieldValue);
 		return true;
 	}
-	if(fieldName=="alarmSendNotifAlertStart"){
+	if(fieldName==FPSTR(ESBOX_alarmSendNotifAlertStart)){
 		alarmSendNotifAlertStart=stringToBoolean(fieldValue);
 		return true;
 	}
-	if(fieldName=="alarmSendNotifAlertStop"){
+	if(fieldName==FPSTR(ESBOX_alarmSendNotifAlertStop)){
 		alarmSendNotifAlertStop=stringToBoolean(fieldValue);
 		return true;
 	}
-	if(fieldName=="alarmPlaySound"){
+	if(fieldName==FPSTR(ESBOX_alarmPlaySound)){
 		alarmPlaySound=stringToBoolean(fieldValue);
 		return true;
 	}
-	if(fieldName=="alamSoundInterval"){
-		alamSoundInterval=fieldValue.toInt();
-		return true;
-	}
-	if(fieldName=="alamSendInterval"){
-		alamSendInterval=fieldValue.toInt();
-		return true;
-	}
 
-	if(fieldName=="isThingSpeakEnabled"){
+	if(fieldName==FPSTR(ESBOX_isThingSpeakEnabled)){
 		isThingSpeakEnabled=stringToBoolean(fieldValue);
 		return true;
 	}
-	if(fieldName=="postDataToTSInterval"){
+	if(fieldName==FPSTR(ESBOX_postDataToTSInterval)){
 		postDataToTSInterval=fieldValue.toInt();
 		return true;
 	}
-	if(fieldName=="thSkUsrKey"){
+	if(fieldName==FPSTR(ESBOX_thSkUsrKey)){
 		thSkUsrKey=fieldValue;
 		return true;
 	}
-	if(fieldName=="thSkWKey"){
+	if(fieldName==FPSTR(ESBOX_thSkWKey)){
 		thSkWKey=fieldValue;
 		return true;
 	}
-	if(fieldName=="thSkRKey"){
+	if(fieldName==FPSTR(ESBOX_thSkRKey)){
 		thSkRKey=fieldValue;
 		return true;
 	}
-	if(fieldName=="thSkChId"){
+	if(fieldName==FPSTR(ESBOX_thSkChId)){
 		thSkChId=fieldValue.toInt();
 		return true;
 	}
-	if(fieldName=="thSkTKey"){
+	if(fieldName==FPSTR(ESBOX_thSkTKey)){
 		thSkTKey=fieldValue;
 		return true;
 	}
-/*
-	if(fieldName=="thSkWManageKey"){
-		thSkWManageKey=fieldValue;
-		return true;
-	}
-	if(fieldName=="thSkRManageKey"){
-		thSkRManageKey=fieldValue;
-		return true;
-	}
-	if(fieldName=="thSkManageChId"){
-		thSkManageChId=fieldValue.toInt();
-		return true;
-	}
-*/
-	if(fieldName=="isMqttEnabled"){
+
+	if(fieldName==FPSTR(ESBOX_isMqttEnabled)){
 		isMqttEnabled=stringToBoolean(fieldValue);
 		return true;
 	}
-	/*
-	if(fieldName=="sendItemsToBaseQUeue"){
-		sendItemsToBaseQUeue=stringToBoolean(fieldValue);
-		return true;
-	}
-	*/
-	if(fieldName=="postDataToMqttInterval"){
+	if(fieldName==FPSTR(ESBOX_postDataToMqttInterval)){
 		postDataToMqttInterval=fieldValue.toInt();
 		return true;
 	}
-	if(fieldName=="mqtt_server"){
+	if(fieldName==FPSTR(ESBOX_mqtt_server)){
 		mqtt_server=fieldValue;
 		return true;
 	}
-	if(fieldName=="mqtt_user"){
+	if(fieldName==FPSTR(ESBOX_mqtt_user)){
 		mqtt_user=fieldValue;
 		return true;
 	}
-	if(fieldName=="mqtt_pass" && fieldValue!="*****"){
+	if(fieldName==FPSTR(ESBOX_mqtt_pass) && fieldValue!=FPSTR(ESBOX_STARS)){
 		mqtt_pass=fieldValue;
 		return true;
 	}
-	if(fieldName=="mqtt_topic"){
-		mqtt_topic=fieldValue;
-		return true;
-	}/*
-	if(fieldName=="mqtt_TStopic"){
-		mqtt_TStopic=fieldValue;
-		return true;
-	}*/
-	if(fieldName=="mqtt_port"){
+	if(fieldName==FPSTR(ESBOX_mqtt_port)){
 		mqtt_port=fieldValue.toInt();
 		return true;
 	}
-	if(fieldName=="isHttpPostEnabled"){
+	if(fieldName==FPSTR(ESBOX_isHttpPostEnabled)){
 		isHttpPostEnabled=stringToBoolean(fieldValue);
 		return true;
 	}
-	if(fieldName=="postDataToHttpInterval"){
+	if(fieldName==FPSTR(ESBOX_postDataToHttpInterval)){
 		postDataToHttpInterval=fieldValue.toInt();
 		return true;
 	}
-	if(fieldName=="httpPostIp"){
+	if(fieldName==FPSTR(ESBOX_httpPostIp)){
 		httpPostIp=stringToIp(fieldValue);
 		return true;
 	}
-	if(fieldName=="ntpEnabled"){
+	if(fieldName==FPSTR(ESBOX_ntpEnabled)){
 		ntpEnabled=stringToBoolean(fieldValue);
 		return true;
 	}
-	if(fieldName=="NTP_poolServerName"){
+	if(fieldName==FPSTR(ESBOX_NTP_poolServerName)){
 		NTP_poolServerName=fieldValue;
 		return true;
 	}
-	if(fieldName=="NTP_timeOffset"){
+	if(fieldName==FPSTR(ESBOX_NTP_timeOffset)){
 		NTP_timeOffset=fieldValue.toInt();
 		return true;
 	}
-	if(fieldName=="NTP_updateInterval"){
+	if(fieldName==FPSTR(ESBOX_NTP_updateInterval)){
 		NTP_updateInterval=fieldValue.toInt();
 		return true;
 	}
-	if(fieldName=="NTP_timeTriggerInterval"){
+	if(fieldName==FPSTR(ESBOX_NTP_timeTriggerInterval)){
 		NTP_timeTriggerInterval=fieldValue.toInt();
 		return true;
 	}
-	if(fieldName==telegramApiKey){
+	if(fieldName==FPSTR(ESBOX_telegramApiKey)){
 		telegramApiKey=fieldValue;
 		return true;
 	}
-	if(fieldName==telegramReceivers){
+	if(fieldName==FPSTR(ESBOX_telegramReceivers)){
 		telegramReceivers=fieldValue;
 		return true;
 	}
-	/*
-	if(fieldName=="viberApiKey"){
-		viberApiKey=fieldValue;
+	if(fieldName==FPSTR(ESBOX_telegramSenders)){
+		telegramSenders=fieldValue;
 		return true;
 	}
-	if(fieldName=="viberReceivers"){
-		viberReceivers=fieldValue;
-		return true;
-	}
-*/
 	return false;
 }
 

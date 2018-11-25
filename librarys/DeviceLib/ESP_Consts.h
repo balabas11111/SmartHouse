@@ -155,8 +155,23 @@ const PROGMEM char MESSAGE_STATUS_JSON_PARAMETERS_MISSING[]="{\"status\":\"One o
 const PROGMEM char MESSAGE_STATUS_JSON_EMPTY_REQUIRED_PARAM[]="{\"status\":\"One of req params empty actionName,widgetName\"}";
 
 //content types
+const PROGMEM char CONTENT_TYPE[]="Content-Type";
 const PROGMEM char CONTENT_TYPE_TEXT_HTML[]="text/html";
 const PROGMEM char CONTENT_TYPE_JSON[]="application/json";
+const PROGMEM char CONTENT_TYPE_FORM_URL_ENCODED[]="application/x-www-form-urlencoded";
+const PROGMEM char CONTENT_TYPE_TEXT_PLAIN[]="text/plain";
+
+const PROGMEM char CONTENT_TYPE_APPLICATION_OCTED_STREAM[]="application/octet-stream";
+const PROGMEM char CONTENT_TYPE_TEXT_CSS[]="text/css";
+const PROGMEM char CONTENT_TYPE_APPLICATION_JAVASCRIPT[]="application/javascript";
+const PROGMEM char CONTENT_TYPE_IMAGE_PNG[]="image/png";
+const PROGMEM char CONTENT_TYPE_IMAGE_GIF[]="image/gif";
+const PROGMEM char CONTENT_TYPE_IMAGE_JPEG[]="image/jpeg";
+const PROGMEM char CONTENT_TYPE_IMAGE_XICON[]="image/x-icon";
+const PROGMEM char CONTENT_TYPE_TEXT_XML[]="text/xml";
+const PROGMEM char CONTENT_TYPE_APPLICATION_XPDF[]="application/x-pdf";
+const PROGMEM char CONTENT_TYPE_APPLICATION_XZIP[]="application/x-zip";
+const PROGMEM char CONTENT_TYPE_APPLICATION_XGZIP[]="application/x-gzip";
 
 //serial println constants
 
@@ -278,13 +293,69 @@ const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_READKEY[]="ReadKey=";
 const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_UPDATE_MANAGECHANNEL[]="Update Manage channel";
 const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_UPDATE_CHANNEL[]="Update channel";
 
+//----------------------------------------------------------------------------
+const PROGMEM char ESPSETTINGSBOX_START_TAG[]="espSettingsBox_";
+const PROGMEM char ESBOX_deviceFirmWareVersion[]="deviceFirmWareVersion";
+const PROGMEM char ESBOX_DeviceId[]="DeviceId";
+const PROGMEM char ESBOX_DeviceKind[]="DeviceKind";
+const PROGMEM char ESBOX_DeviceDescription[]="DeviceDescription";
+const PROGMEM char ESBOX_DeviceLocation[]="DeviceLocation";
+const PROGMEM char ESBOX_displayAlvaysOn[]="displayAlvaysOn";
+const PROGMEM char ESBOX_displayAutochange[]="displayAutochange";
+const PROGMEM char ESBOX_refreshInterval[]="refreshInterval";
+const PROGMEM char ESBOX_accessUser[]="accessUser";
+const PROGMEM char ESBOX_accessPass[]="accessPass";
+const PROGMEM char ESBOX_STARS[]="*****";
+const PROGMEM char ESBOX_settingsUser[]="settingsUser";
+const PROGMEM char ESBOX_settingsPass[]="settingsPass";
+const PROGMEM char ESBOX_isAccesPoint[]="isAccesPoint";
+const PROGMEM char ESBOX_ssidAP[]="ssidAP";
+const PROGMEM char ESBOX_ssid[]="ssid";
+const PROGMEM char ESBOX_password[]="password";
+const PROGMEM char ESBOX_staticIp[]="staticIp";
+const PROGMEM char ESBOX_localIp[]="localIp";
+const PROGMEM char ESBOX_apIp[]="apIp";
+const PROGMEM char ESBOX_gateIp[]="gateIp";
+const PROGMEM char ESBOX_subnetIp[]="subnetIp";
+const PROGMEM char ESBOX_dnsIp[]="dnsIp";
+const PROGMEM char ESBOX_dnsIp2[]="dnsIp2";
+const PROGMEM char ESBOX_serverIp[]="serverIp";
+const PROGMEM char ESBOX_beepOnAlert[]="beepOnAlert";
+const PROGMEM char ESBOX_alarmSendNotifAlertStart[]="alarmSendNotifAlertStart";
+const PROGMEM char ESBOX_alarmSendNotifAlertStop[]="alarmSendNotifAlertStop";
+const PROGMEM char ESBOX_alarmPlaySound[]="alarmPlaySound";
+const PROGMEM char ESBOX_isThingSpeakEnabled[]="isThingSpeakEnabled";
+const PROGMEM char ESBOX_postDataToTSInterval[]="postDataToTSInterval";
+const PROGMEM char ESBOX_thSkUsrKey[]="thSkUsrKey";
+const PROGMEM char ESBOX_thSkWKey[]="thSkWKey";
+const PROGMEM char ESBOX_thSkRKey[]="thSkRKey";
+const PROGMEM char ESBOX_thSkChId[]="thSkChId";
+const PROGMEM char ESBOX_thSkTKey[]="thSkTKey";
+const PROGMEM char ESBOX_isMqttEnabled[]="isMqttEnabled";
+const PROGMEM char ESBOX_postDataToMqttInterval[]="postDataToMqttInterval";
+const PROGMEM char ESBOX_mqtt_server[]="mqtt_server";
+const PROGMEM char ESBOX_mqtt_user[]="mqtt_user";
+const PROGMEM char ESBOX_mqtt_pass[]="mqtt_pass";
+const PROGMEM char ESBOX_mqtt_port[]="mqtt_port";
+const PROGMEM char ESBOX_isHttpPostEnabled[]="isHttpPostEnabled";
+const PROGMEM char ESBOX_postDataToHttpInterval[]="postDataToHttpInterval";
+const PROGMEM char ESBOX_httpPostIp[]="httpPostIp";
+const PROGMEM char ESBOX_ntpEnabled[]="ntpEnabled";
+const PROGMEM char ESBOX_NTP_poolServerName[]="NTP_poolServerName";
+const PROGMEM char ESBOX_NTP_timeOffset[]="NTP_timeOffset";
+const PROGMEM char ESBOX_NTP_updateInterval[]="NTP_updateInterval";
+const PROGMEM char ESBOX_NTP_timeTriggerInterval[]="NTP_timeTriggerInterval";
+const PROGMEM char ESBOX_telegramApiKey[]="telegramApiKey";
+const PROGMEM char ESBOX_telegramReceivers[]="telegramReceivers";
+const PROGMEM char ESBOX_telegramSenders[]="telegramSenders";
+
 //const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_MQ_SERVER[]="user";
 //const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_MQ_USERNAME[]="user";
 
 //WiFi deploy folder
 const PROGMEM char ESPSETTINGSBOX_DEFAULT_PAGE[]="/web/index.htm";
 const PROGMEM char ESPSETTINGSBOX_DEFAULT_WEB_FOLDER[]="/web/";
-const PROGMEM char ESPSETTINGSBOX_DEPLOY_EXT[]="html,htm,js,css,jpeg,png,jpg,gif,ttf,woff,woff2,tpl,txt";
+const PROGMEM char ESPSETTINGSBOX_DEPLOY_EXT[]="gz,js,css";
 
 //MQTT helper messages
 const PROGMEM char MESSAGE_MQTTHELPER_SEND_IS_DISABLED[]="===MQTT Helper is disabled in settings box===";
@@ -335,11 +406,12 @@ const PROGMEM char MESSAGE_WIFIHELPER_GET_AUTO_CONNECT[]=" WiFi.getAutoConnect="
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_EQ[]=" WiFi.status=";
 const PROGMEM char MESSAGE_WIFIHELPER_POST_INIT_WEB_SERV_HANDLERS[]="--------------------PostInit Web server handlers---------";
 const PROGMEM char MESSAGE_WIFIHELPER_SERVER_SETUP_COMPLETED[]="Server setup completed";
+const PROGMEM char MESSAGE_WIFIHELPER_HTTP_SERVER_STARTED[]="HTTP server started";
 
 const PROGMEM char MESSAGE_WIFIHELPER_DEPLOYING_PATH[]="Deploying Path=";
 const PROGMEM char MESSAGE_WIFIHELPER_AS_WEB_FILES[]=" as web files";
 const PROGMEM char MESSAGE_WIFIHELPER_EXTENSIONS[]="Extensions ";
-const PROGMEM char MESSAGE_WIFIHELPER_TO_BE_DEPLOYED[]=" to be deployed";
+const PROGMEM char MESSAGE_WIFIHELPER_TO_BE_DEPLOYED[]=" to be deployed ";
 const PROGMEM char MESSAGE_WIFIHELPER_BASE_URL_EQ[]="Base URL ";
 const PROGMEM char MESSAGE_WIFIHELPER_ADDED_FILE[]="Added file ";
 const PROGMEM char MESSAGE_WIFIHELPER_SIZE_EQ[]=" size=";
@@ -351,8 +423,50 @@ const PROGMEM char MESSAGE_WIFIHELPER_HTTP_BODY_EQ[]=" body=";
 const PROGMEM char MESSAGE_WIFIHELPER_HTTP_BEGIN_EQ[]=" begin=";
 const PROGMEM char MESSAGE_WIFIHELPER_HTTP_HEADER_EQ[]=" header=";
 
+const PROGMEM char MESSAGE_WIFIHELPER_DEPLOY_FILEMANAGER_EDIT[]="Deploying Filemanager /edit";
+
 const PROGMEM char MESSAGE_WIFIHELPER_GET[]=" GET ";
 const PROGMEM char MESSAGE_WIFIHELPER_POST[]=" POST ";
+
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_DIAGNOSTIC[]="-----------wiFi diagnostic-------------------";
+
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_UNKNOWN[]="UNKNOWN";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECTED[]="WL_CONNECTED";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_NO_SSID_AVAIL[]="WL_NO_SSID_AVAIL";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECT_FAILED[]="WL_CONNECT_FAILED";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_IDLE_STATUS[]="WL_IDLE_STATUS";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_SCAN_COMPLETED[]="WL_SCAN_COMPLETED";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_DISCONNECTED[]="WL_DISCONNECTED";
+
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_SSSID_EQ[]="SSID: ";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_IP_TYPE_EQ[]="IP Type: ";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATIC_IP_TYPE[]=" STATIC IP ";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_DNS_IP_TYPE[]=" DNS IP ";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_IP[]=" IP ";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_MAC[]=" MAC ";
+
+const PROGMEM char MESSAGE_WIFIHELPER_START_AP[]="Start AP";
+const PROGMEM char MESSAGE_WIFIHELPER_ACCESS_POINT[]="       AccessPoint";
+const PROGMEM char MESSAGE_WIFIHELPER_STARTING_ACCESS_POINT[]="STarting as access point";
+const PROGMEM char MESSAGE_WIFIHELPER_SOFT_AP[]="SoftAP ";
+const PROGMEM char MESSAGE_WIFIHELPER_CONNECT_TO[]="connect to";
+
+const PROGMEM char MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_SSID[]="espSettingsBox.ssid=";
+const PROGMEM char MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_PASSWORD[]="espSettingsBox.password=";
+const PROGMEM char MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_NOT_FOUND[]="Not Found";
+const PROGMEM char MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND[]="File Not Found";
+const PROGMEM char MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_I_M_HERE[]="I'm here";
+const PROGMEM char MESSAGE_WIFIHELPER_EDIT_HTML_PAGE[]="/web/edit.htm";
+
+//
+const PROGMEM char MESSAGE_I2CHELPER_BEGIN_INIT[]="-----Begin initialize of I2CHelper-----";
+const PROGMEM char MESSAGE_I2CHELPER_SETUP_I2C_BUS[]="Setup i2c bus";
+const PROGMEM char MESSAGE_I2CHELPER_SCANNING[]="Scanning I2C...";
+const PROGMEM char MESSAGE_I2CHELPER_DEVICE_FOUND[]="I2C device found at address 0x";
+const PROGMEM char MESSAGE_I2CHELPER_UNKNOWN_ERROR[]="Unknow error at address 0x";
+const PROGMEM char MESSAGE_I2CHELPER_NO_DEVICES_FOUND[]="No I2C devices found\n";
+
+
 //Thingspeak constants
 const PROGMEM char MESSAGE_THINGSPEAK_SEND_STARTED[]="----------------Send data to thing speak---------------";
 const PROGMEM char MESSAGE_THINGSPEAK_CHANNEL_CREATE_STARTED[]="----------------Create channel on thing speak---------------";
@@ -385,12 +499,23 @@ const PROGMEM char DEVICE_WIDGETS_SNAPSHOT[]="----------Device helper----------"
 
 //commands constants
 const PROGMEM char MESSAGE_COMMANDS_EXECUTE_COMMAND[]="----------Execute command----------";
-const PROGMEM char MESSAGE_COMMANDS_CONFIRM_COMMAND_PARAM[]="confirm_command";
 const PROGMEM char MESSAGE_COMMANDS_ERROR[]="Error";
 const PROGMEM char MESSAGE_COMMANDS_OK[]="Ok";
 const PROGMEM char MESSAGE_COMMANDS_COMMAND_NOT_RECOGNIZED[]="Команда не распознана";
 const PROGMEM char MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED[]="Device will be restarted";
 const PROGMEM char MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED_MSG[]="Устройство будет перезапущено. Дождитесь перезагрузки страницы";
+
+const PROGMEM char MESSAGE_SERVER_ARG_CONFIRM_COMMAND[]="confirm_command";
+const PROGMEM char MESSAGE_SERVER_ARG_PAGE[]="page";
+const PROGMEM char MESSAGE_SERVER_ARG_SENSOR[]="sensor";
+const PROGMEM char MESSAGE_SERVER_ARG_VAL[]="val";
+const PROGMEM char MESSAGE_SERVER_ARG_CURRENT_SENSOR_NAME[]="currentSensor_name";
+
+const PROGMEM char MESSAGE_SERVER_ARG_VAL_ALL[]="all";
+const PROGMEM char MESSAGE_SERVER_ARG_VAL_restart[]="restart";
+const PROGMEM char MESSAGE_SERVER_ARG_VAL_recreateThingSpeak[]="recreateThingSpeak";
+const PROGMEM char MESSAGE_SERVER_ARG_VAL_deleteSettings[]="deleteSettings";
+const PROGMEM char MESSAGE_SERVER_ARG_VAL_RESTART[]="restart";
 
 const PROGMEM char MESSAGE_COMMANDS_FILES_DELETED[]="Удалено файлов :";
 
@@ -413,37 +538,43 @@ const PROGMEM char MESSAGE_ABSTRACT_ITEM_OK[]="Ok";
 
 //--------------------------------------------------------
 
-const PROGMEM char HTML_BME280[]=
-		"<div class=\"w3-card-4\" style=\"width:25%;  float:left; min-width: 250px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;\">\
-			<div class=\"w3-container w3-teal\">\
-				  <h1><div>Климат</div></h1>\
-			</div>\
-			<form id=\"bmeMeasurer\" remoteId=\"bmeMeasurer\" reloadInterval=\"120000\" class=\"MeasurerWidgetESPJson ReloadableWidget w3-container\">\
-				<label style=\"max-width: 240px;\"><b>Температура °C</b></label>\
-				<input id=\"Temperature\" remoteId=\"Temperature\" targetTag=\"value\" class=\"refreshableChild w3-input w3-border\" style=\"width:95%\" type=\"text\" value=\"\" disabled>\
-				<label style=\"max-width: 240px;\"><b>Давление (Паскаль)</b></label>\
-				<input id=\"Pressure\" remoteId=\"Pressure\"  targetTag=\"value\" class=\"refreshableChild w3-input w3-border\" style=\"width:95%\" type=\"text\" value=\"\" disabled>\
-				<label style=\"max-width: 240px;\"><b>Влажность (%)</b></label>\
-				<input id=\"Humidity\" remoteId=\"Humidity\" targetTag=\"value\" class=\"refreshableChild w3-input w3-border\" style=\"width:95%\" type=\"text\" value=\"\" disabled>\
-				<label style=\"max-width: 240px;\"><b>Высота над морем (метров)</b></label>\
-				<input id=\"Altitude\" remoteId=\"Altitude\" targetTag=\"value\" class=\"refreshableChild w3-input w3-border\" style=\"width:95%\" type=\"text\" value=\"\" disabled>\
-				<p></p>\
-				<div id=\"bmeMeasurer_status\" class=\"w3-panel w3-green w3-card-4\"><p>Загружаю</p></div>\
-			</form>\
-		</div>";
+//server urls
+const PROGMEM char URL_EDIT[]="/edit";
 
-const PROGMEM char HTML_BH1750[]=
-		"<div class=\"w3-card-4\" style=\"width:25%;  float:left; min-width: 250px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;\">\
-			<div class=\"w3-container w3-teal\">\
-				  <h2>Освещение</h2>\
-			</div>\
-			<form id=\"luxMeasurer\" remoteId=\"luxMeasurer\" reloadInterval=\"120000\" class=\"MeasurerWidgetESPJson ReloadableWidget w3-container\">\
-				<label style=\"max-width: 240px;\"><b>Освещение (Люкс)</b></label>\
-				<input id=\"light\" remoteId=\"light\" targetTag=\"value\" class=\"refreshableChild w3-input w3-border\" style=\"width:95%\" type=\"text\" value=\"\" disabled>\
-				<p></p>\
-				<div id=\"luxMeasurer_status\" class=\"MeasurerWidgetESPJsonStatus w3-panel w3-green w3-card-4\"><p>Загружаю</p></div>\
-			</form>\
-		</div>";
+const PROGMEM char URL_SUBMIT_FORM_COMMANDS[]="/submitForm_commands";
+const PROGMEM char URL_SUBMIT_FORM_SETTINGS[]="/submitForm_settings";
+const PROGMEM char URL_GET_JSON_SETTINGS[]="/getJson_settings";
+const PROGMEM char URL_GET_JSON_SENSORS[]="/getJson_sensors";
+const PROGMEM char URL_SUBMIT_FORM_SENSORS[]="/submitForm_sensors";
+
+const PROGMEM char URL_GET_SENSORS_CURRNT_VALUES[]="/gscv";
+const PROGMEM char URL_SET_SENSOR_CURRENT_VALUE[]="/sscv";
+
+const PROGMEM char URL_SET_DIGITAL_PIN_CURRENT_VALUE[]="/sdpcv";
+/*
+const PROGMEM char URL_GET_BUTTON_LEFT[]="/buttonLeft/getJson";
+const PROGMEM char URL_GET_BUTTON_RIGHT[]="/buttonRight/getJson";
+
+const PROGMEM char URL_GET_LAMP_LEFT[]="/lampLeft/getJson";
+const PROGMEM char URL_GET_LAMP_RIGHT[]="/lampRight/getJson";
+const PROGMEM char URL_GET_ACMETER[]="/acMeter/getJson";
+const PROGMEM char URL_GET_BME_MEASURER[]="/bmeMeasurer/getJson";
+const PROGMEM char URL_GET_LUX_MEASURER[]="/luxMeasurer/getJson";
+const PROGMEM char URL_GET_DS18D20_MEASURER[]="/ds18d20Measurer/getJson";
+
+const PROGMEM char URL_SET_LAMP_LEFT[]="/lampLeft/setValue";
+const PROGMEM char URL_SET_LAMP_RIGHT[]="/lampRight/setValue";
+*/
+//sensorsNames
+const PROGMEM char SENSOR_buttonLeft[]="buttonLeft";
+const PROGMEM char SENSOR_buttonRight[]="buttonRight";
+const PROGMEM char SENSOR_lampLeft[]="lampLeft";
+const PROGMEM char SENSOR_lampRight[]="lampRight";
+const PROGMEM char SENSOR_acMeter[]="acMeter";
+const PROGMEM char SENSOR_bmeMeasurer[]="bmeMeasurer";
+const PROGMEM char SENSOR_luxMeasurer[]="luxMeasurer";
+const PROGMEM char SENSOR_ds18d20Measurer[]="ds18d20Measurer";
+
 
 
 #endif /* LIBRARIES_MEASURER_MEASURERCONSTS_H_ */

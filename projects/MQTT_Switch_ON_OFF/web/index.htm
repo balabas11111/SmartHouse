@@ -8,11 +8,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="./css/w3.css">
-<link rel="stylesheet" href="./css/digitalClock.css">
-<script src="./js/menu.js"></script>
 <script src="./js/DeviceLib.js"></script>
 <script src="./js/index.js"></script>
-<script src="./js/lamp.js"></script>
 
 </head>
 <body onload="onLoadPageComplete()">
@@ -52,7 +49,7 @@
 								
 						<div id="temperatureDiv" class="w3-row" style="margin-top: 15px;">
 							<div class="w3-quarter">
-								<img src="./img/Temperature.png"/>
+								<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJ/SURBVGhD7Zk/aBRBFMafIgGFGPQuEBAVVAzYKFwT7vYS0FjYpLPQMuZEG2tLC0HBwk4UbLSTtCHExCSHJzbZeHcYby/3x1SCrYUI/tnx22E2rPI4b6p9TvKDj4Xbmcf37czs7O7RLjuBWqN7uhp0nr1rtrdw7OD4pLq5ecSc/j9YDzo5mP9SbXZUUgjzea3VOmmayQem/b9DbCtoz5tmsln/8PE4GyBW0P7p+58OmOZy8RutMTZAQv5G95hpLpdas+tx5pOKg4QePQyLtJTQeV1EAlZBilRRRVKxwnG6qotIwCrIOE0pj67HCifolC4iAZsgorGcWjcwpe5vK0/ndBEJ7Mw14sqIiMZqRFy5a7mzRlzZ2UUTLM/l67V6o5feLywcjdpmppdHszMruVgHr709rItIQBXIS857VgXSI5KdKVeGS2UVK1Mqy1kjNkGGS6svsqXVbiwEmdJFJGATRDQ2QTLTbwaHblYOxaLLGwO6iARsgjizRpwJ4szUEo1NEGduvw6tEUceUcSiiPbgneIBaz4hPL7fMl3koc7QAN4nZjnjnBDmcRTcdJcDjD3lDPcSgt813WWA6XSRM/ovIcgvUV9OYOiPd28bRdPRlEkXNUEj+soyJvsR+n4Nx2i/KZceyqNJzqCNwgKdNeXSA4v8CmfOSrgYplx64GpeYs3ZyKOcKZceMHGCNdensEa+h3kaNOXSBWbqnMl+hKm5aMqkT/SpkzPZjxDkgimTPnjU2AtDLzmjvYSRfG5KyEFN0hCMrXGGOaHtK5Ujmf+3RxsbDD7C6PzgzEfCuW/QPWyk+0w3ueAuNArTd2D4NbQFtaEV/HYbQfV3313ch+g3dpTZj2wLjMMAAAAASUVORK5CYII="/>
 							</div>
 							<div class="w3-third">
 								<label for="bmeMeasurer_Temperature" style="max-width: 240px;">
@@ -64,7 +61,7 @@
 
 						<div id="pressureDiv" class="w3-row" style="margin-top: 15px;">
 							<div class="w3-quarter">
-								<img src="./img/Pressure.png"/>
+								<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAVXSURBVGhD7ZlpaJxFGMdHvC+KiheeaLwKSrAekCatFsQzpeC3VBGJBIOiIuItQkEpUTyoKIpQP0TQqNlEQ5rszLtbu5st0qDJO7MJiFIrtPRQ64nVNrs+M/PfTXZn3zd7vPkg7A8eSP77Z2eed65n3mVNmjRp0uT/hZCdFJxx9QwUl/Gpk41Hh/47CCGfg68TiiG3knXmOhhfENspdlG8B0sECPUQRZ4a/xCKC59cZj0UAwNHQ3URasR44rIXiiHXznrzHSxfHqT7sEQAV0/XlEgYhUSEfACKgTq8PN/OegpBI9S3lIl8AMUlqc6pKZG46oJSkfxK1r6Eiai3obhwdSE84YlwORqWSL6NtVICG3OrWH/0iQjVZxrn6nUoLmP+lfD8AqUyXH5lfCK7DkoJlECXTqAQEY+I3Gwbl89CceHyJni+hVIZLn8wPk+2QSlhqUckYxoPm9dc9RgPV3EoLpnMieQ5Ynzim/OgViT6NTI5eSw9xd9N4+OqFaoLV+8gkTeguAh1AzwHoTjkVrOWpdm1uGovNh52PnD1nfXJu6G4cPWC8Qj1BRSHpVsjQr2JDg5AcREz11qP+tecJ0FwNW18ZYfhQugkX6NP9kO3Ltuxt7tt356eVUP4qAHMnJY/m8Y9tRaqi96WbSKDUFwK00rIf9jo12dCDWQwmWofSkzkh7x0BCMi1MNofA9LJo+BWorwzybPX8bH5V1QXYT6DJ7gkSU+HsucHkukVlB0R5PI55Mn0RPei0SehOrC5SZ4JM3qo6CWkvBXkC9nfTQyIcS8TJdJoBANJyLUU6ZhfcAl1SlQS/GyF1ECh+BbD9VFyC02Cap6F4E6vpYS+D6WmNjdeCKmAMTa0AkFwdX7NgmpAnc0ke2AJ8cS2RuhLko0a0TIDUjiR7PgK8FnLqdEDqOTwWuDyy/xXZ9Cqcjo6OjxI6nUaYUY3Jq6vbFE+MwZlMhvtnHZDdVFyH54UlBchH+LTZQS1rVYCINeutd0vDzqT0S9hCc4G7hTxeVVlMCc7STVWEFwNYFkg8t/EG0iA+o4anif7WDo4n0NSWyD4iL8a5DEHG0WLVADiXZq6dLadvCASaoStvY6YDvp3wPVpVARCCmg1ERji11PAZvIJiguxXJd/Rm4EWgK5TpX90GpCup4BNuvkLvR+G1QXIR8GYmMQHHRO5rx0LQanzoLalU0fiCOyQuQxGFzqgfBpYdOPgbFxZP34rumoFRN4yWKeXelG5dZKJUR8if4wnarV+DZDKVm6l8jwn8QTzG4grU3PD2t8mzLzLlQXXRhaH3BVUEAw97EmpiX5jEvtaPORNSLtnH5LhQXU1sZz1z4JQvTz1P3Q6maxtcIl2+hkxuguHB5vfXQWROGnp4mkewdUKpmOJlpoR2rh6Kv3kTsdOD+I1Bc9G5mPIutI7Xf+OL+dVBqpoE1UvmdbAlx/07jCauvNEL9ar9r+mooVRNLplup8xtpjfRXn4geenvv0DFrGucyVtQ8eSlLTp9f/H/+/dbOeQ+uwHazgE/9bXw8+6r1yCdYcucJxrcI9a0Re3bYaVAeXA6bG58OoT5yPjcedbBYR9mHgndWju9x46mC+kZEE/dXU0P2XjEfsyVvQ+y1d6rMc4S00gqAy+fLPBQhb/BDqG+NCPlosWGe/YN501fgk3m4fwn57Nw3vgo/+tjRsy8ZbPihVcIChsS25ditClHnrqULRn0dDX3tYy5KNBLyk8AXDenZU+lzRb79LDl7MdRFie4+op9cWFleQN9Twn5a08Szl9GDuRn/VUVMpDrtiV6M7UOJ9C4amQh/emvSpEmTJnXD2H+krWJvTOcvkgAAAABJRU5ErkJggg=="/>
 							</div>
 							<div class="w3-third">
 								<label for="bmeMeasurer_Pressure" style="max-width: 240px;">
@@ -76,7 +73,7 @@
 				   					   		
 						<div id="humidityDiv" class="w3-row" style="margin-top: 15px;">
 							<div class="w3-quarter">
-								<img src="./img/Humidity.png"/>
+								<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAARMSURBVGhD7ZldaBxVGIZHqLWIF/YiF+JVK2gbUYO9SIlJUxtQtNZIW7FshMa0rqQoiBe22IIKIr3zRlJaI7UxpmxYMtPtssn+Du5PBTHSYPyrmU0FQWrthZ0fZ2fSOX5nOWtD8m12d+bMhTgPvITszJzvfffMd85MIgQEBAT8P8ko9n55ntzDfv1vkrz696ZU2VLTZftj9pEnnG7hgNMjpP9VtzDr7BDK8PMjdgp/CCF3pMtWBkKQlGI5EKiXHXIN6RGOgchKQagCO4U/ECJMQ9SUKtsL8iLZwA67gnQJHaRbCNcEszHqa5DEFactrVg3lgdh+oCdwgUIEvI1CNxK55AQIMucWTS3sNNc4zwhbIcAJyFAzLcgtBdoT+BBqKws7R92uiuguYdpgJq4B5mcJ+vTiv0DHuC2ksrSy+wSV/g+IzAT72DGV8u6Fv+VbGSXucaXHqF7BjS4jhtHpNin2KUtA7dWu2+rFsyGiBquJ8W6lblaeZxd3hK+9QhtcNRsQ1kZNkRLQI/sAfPpWzvXzdm77vpde/7+CXbIPXQFgs3ua9xoE1Ls59hQLSNmL4WkXIlI2ZL3GUktLIVQg00qpdjfyzJZx4Zrikg+3ybmCtukXPE4lyDUAHyji5jBlqRUhtiQTTGVLQ5XA9TkNUhqofJKUrHJyGyFnPjSJEdzJnmvYJLRyxaZgc9R04iqz2EtzArMxAAEUODnNc9Btn1D7nw9aVx/5BONbBpRV2nrGY0MXjTI2TkLNb9SiSutb5JceiQkmSNYAEx9Ezp5H2ZK/Gl1KPFnqzqTPWO60dtgVmRZ3hAvFDbWJMnFVz0H6TqnGpjpRur8TCPPRvSqusY08sCp28cOxvQP2fAoYPhY1fhKuQ0yIGqHl5vjpZ3j2h+sBAr3IM9E9B8xI161GWZncLr+bs/11jooknsfOq06mBEe2jelTrNSDfHU7IfixnHMAC/1jms3Wam6cFl+90aNrzADvESb/42808bKoXDZEJ8+r/2GGeCp16b1flYOhcsjyq4vtD+x4jw1lNCaemTx1CO7I/ovWHGeGp6xulg5FDFT2CNmi2kpW/zOdZC9Ub2EFeclugQfkdf+EyuXHhlKmEcxA7y0Y1z7i5Wqi5TJt4u5UngqWxp1HeTdGLl7q4/7yEuSEWOlGuL5ofGFSf1bzIRXbTmtksPJSgcrU5cLcmE79MdJCBDzFOSttPmgH7OyP6rnWYk14fpiNSDpY5gZt+o8q5lvTmv3seHXhNuM1Oif1OcwU63q4TOqE06ofWzYpuHyYkV5cZ6s9xrmsU9vLoXjRlNvh6Jc7KCrVU2eVi0Mepu1w7eKGV1LT45rN4YTlUfZMA0Bw3zfRzDoAtAf1WcbBdoM6v5cUwdjxgl2adNIcukA3dGXaRZUhmcu/v96o/vMoYvG2/uiemF3RF3om9CuPwUPmnALXg5d0M8fiVud7NSAgICAgBUIwj/1oWMyLCcBQQAAAABJRU5ErkJggg=="/>
 							</div>
 							<div class="w3-third">
 								<label for="bmeMeasurer_Humidity" style="max-width: 240px;">
@@ -96,7 +93,7 @@
 						
 						<div id="lightDiv" class="w3-row" style="margin-top: 15px;">
 							<div class="w3-quarter">
-								<img src="./img/LightLevel.png"/>
+								<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQYSURBVGhD7ZdbSFRRFIZPRXNGM+xOFzLJblpaJlFZFIFd3qJ0KiPFwrQixyJRZizHggqy6K2negh6iF6KIumiHkctBZOadFCZtIsaZXQ3JMi1WmNrSmVnM6Nz5gTzwf8ys/da/79nn332SAECBPAci8UyMvGg2ZhkNJeRLAaDYRR/9f9gyMgLJfN3SehSotF8gb/+f0jMMl3uG8KlrVmmExuSMxas37VrDA/VNklZZtvAENsOFThSzKdhx5FC3JSyDxN2pr9PSE7fyFO0SZLRlPsnRD4k5xS0ph07g2nHinqVSoG2H84v5OGaZkSi0XQlKSu/KzXP8sUVwKXdBWfw0oVtjdgg6Xi8djFYLLrUvKPdA0NkFp7E2mtxiFYZoVy+rvkwzuN2y/6cnr4hck+ZsO32rN4QLoFVvqnpMAkpGWEbUzIpwK9no+h8JnaVjO8Xok+YYiiWZJ6qLdbv3LOGTqX67OP5tqsXN2NPeZAwhEtQrrsDD6Ugnq4d1m3fG7HWcCAk+7xlHFh1DpH5gaJx9/CRFMwltAco8l6RcZHolynVbBjnliGDr0XGRaKxVlSkEJ6uLcicWWT6b6JtVglV0lierh1ohelZkb+KTP9NFP4B3pdCuYR2oCBnRYYHE4Wp0VwYsOpn0tv8u8jwYKIFqMVKaTyX0Qa09y+LzP5LtAB1dGhM4DL+Byp0UWQKRGb/JfplHqMSMolL+R8Kcktk1B3RXBs8GDOFS/kXelbWiEy6KwpjRyV4KpfzL/SsVItMuisK0wQlQTO4nP+gIJtFBj0R1XBgpT6MS/oHRGkkPbyNIoOeiN4zrajI4VzWP1CQdJE5T0VhXkKpHMFl1cf5z5BMuH2ZHEy0zdqhSjefS6sPBckVGfNGzkUhRXJpdXFeJsnEp4GmvBUFeQvlo6O5vLrQUVokMuWtaJu9ozCxXF49wBo8jcJ4fJkcTFTvA1aOjuMW6kGreElkaIj6BErQCm6hDnyZ7BGYGZKo5mdU9Ku5jTpQ0xsiM0MVva+6oEK/ltv4HrpMxouM9FOFHrFmHGLdFETbdMSGMER7+B/Vz0R8Qp/XTkSsHvt7Hi3SN7oBJHAr30PHZ1U/407VTUZsnoPYHovYGY/4bpX7erMc8UV0b0ioCe0GRd7ErXxLv8ukbQZixzKxQS8FL2J64GmYkdv5DrpMjqBtYEfHfKGRYdHbeITmuWZu6TugekK20MAwCtqWfOR2vgOfS3roiOsWGRguQUukwu18CzTNi4GXMW9EJoakzpUUIqrE+X+IW6kDNs5Og9ZFDfB62Q+hMXfU6dxKS7soQDHYIxZyaf8B9RHroHnOOXgWWQat0Y3wanEHtMV+7DXZFvvtl5Z8oJOpHVoWPYGWBTfAMTcH7OGzuESAAAG8RpJ+Apfn2Zxo1YIOAAAAAElFTkSuQmCC"/>
 							</div>
 							<div class="w3-third">
 								<label for="luxMeasurer_Light" style="max-width: 240px;">
@@ -111,43 +108,7 @@
 		</div>
 		<!--BME280 BH1750 ends-->
 		
-		<!--DHT22 starts-->
-	<!--	<div>
-			<div class="w3-card-4" style="width:30%;  float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
-					<div class="w3-container w3-teal">
-						  <div><h3 id="dhtMeasurer_descr">dhtMeasurer</h3></div>
-					</div>
-					
-					<form id="dhtMeasurer" class="w3-container">
-								
-						<div id="temperatureDiv" class="w3-row" style="margin-top: 15px;">
-							<div class="w3-quarter">
-								<img src="./img/Temperature.png"/>
-							</div>
-							<div class="w3-third">
-								<input id="dhtMeasurer_Temperature_DHT22" class="w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
-							</div>
-							<div>
-								<b>Температура °C</b>
-							</div>
-						</div>	
-				   					   		
-						<div id="humidityDiv" class="w3-row" style="margin-top: 15px;">
-							<div class="w3-quarter">
-								<img src="./img/Humidity.png"/>
-							</div>
-							<div class="w3-third">
-								<input id="dhtMeasurer_Humidity_DHT22" class="w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
-							</div>
-							<div>
-								<b>Влажность (%)</b>
-							</div>
-						</div>	
-									   		
-				   	</form>
-			</div>
-		</div>   -->
-		<!--DHT22 ends-->
+	
 		
 		<!--DS18D20 starts-->
 		<div>
@@ -162,7 +123,7 @@
 					
 					<div id="ds18D20Image header" class="w3-row" style="margin-top: 15px; margin-bottom: 10px;">
 						<div class="w3-quarter">
-							<img src="./img/Temperature.png"/>
+							<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJ/SURBVGhD7Zk/aBRBFMafIgGFGPQuEBAVVAzYKFwT7vYS0FjYpLPQMuZEG2tLC0HBwk4UbLSTtCHExCSHJzbZeHcYby/3x1SCrYUI/tnx22E2rPI4b6p9TvKDj4Xbmcf37czs7O7RLjuBWqN7uhp0nr1rtrdw7OD4pLq5ecSc/j9YDzo5mP9SbXZUUgjzea3VOmmayQem/b9DbCtoz5tmsln/8PE4GyBW0P7p+58OmOZy8RutMTZAQv5G95hpLpdas+tx5pOKg4QePQyLtJTQeV1EAlZBilRRRVKxwnG6qotIwCrIOE0pj67HCifolC4iAZsgorGcWjcwpe5vK0/ndBEJ7Mw14sqIiMZqRFy5a7mzRlzZ2UUTLM/l67V6o5feLywcjdpmppdHszMruVgHr709rItIQBXIS857VgXSI5KdKVeGS2UVK1Mqy1kjNkGGS6svsqXVbiwEmdJFJGATRDQ2QTLTbwaHblYOxaLLGwO6iARsgjizRpwJ4szUEo1NEGduvw6tEUceUcSiiPbgneIBaz4hPL7fMl3koc7QAN4nZjnjnBDmcRTcdJcDjD3lDPcSgt813WWA6XSRM/ovIcgvUV9OYOiPd28bRdPRlEkXNUEj+soyJvsR+n4Nx2i/KZceyqNJzqCNwgKdNeXSA4v8CmfOSrgYplx64GpeYs3ZyKOcKZceMHGCNdensEa+h3kaNOXSBWbqnMl+hKm5aMqkT/SpkzPZjxDkgimTPnjU2AtDLzmjvYSRfG5KyEFN0hCMrXGGOaHtK5Ujmf+3RxsbDD7C6PzgzEfCuW/QPWyk+0w3ueAuNArTd2D4NbQFtaEV/HYbQfV3313ch+g3dpTZj2wLjMMAAAAASUVORK5CYII="/>
 						</div>
 						<div class="w3-rest">
 							<b id="ds18d20Measurer_itemCount">Обновляю</b> - датчик/а/ов
@@ -186,15 +147,17 @@
 								<img id="lampLeft_" class="w3-center lampLeft_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; "
 									title="Левая лампочка"
-									src="./img/question.png" alt="Загружаю"/>
+									src="data:image/png;base64,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" alt="Загружаю"/>
 								<img id="lampLeft_1" class="w3-center lampLeft_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Левая лампочка"
-									onclick="lampWidgetClick(this);" src="./img/OnLamp_64.png" alt="Загружаю"/>
+									onclick="lampWidgetClick(this);" 
+									src="data:image/png;base64,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" alt="Загружаю"/>
 								<img id="lampLeft_0" class="w3-center lampLeft_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Левая лампочка"
-									onclick="lampWidgetClick(this);" src="./img/OffLamp_64.png" alt="Загружаю"/>
+									onclick="lampWidgetClick(this);" 
+									src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAFgUlEQVR42u2aWUhcVxjHj/u+b4xbBPvgWBFFUUZQa2tFGR9cHn1MiRgakpeWFAuhJaWhfUloSLCkj/ZVkBEGRQkqcZmIFSUgVkFFxX3BHXX6/W/nDMeTGZ3rXB0L/eDjXOfOvfP/ne87y3evXuw/bl6eFnCrAFpaWgzUGMm/JI8m/8R26m/yDfIu8o7GxsaBWwVAwh9T06TT6VLv3LnDEhMTWUBAAAsLC1PO7+zssMPDQ7awsMDm5ubY8vLyHH38mkCeeRSAhN+DcL1en5OXl8eCg4Pt546OjtjJyQmzWq3M19eXBQYG2s/t7u4yi8XCpqam/rKB/H7jACT+aURERHNlZSWjVvkMvXx2dqaIhqGV3cfHxx6Z9fV11tXVhQj9RBDf3xgAif8tLS3t67KyMubn56cI56K5iaI5FHcYogIQRKqnp4fNz8+/JIgH1w6Ank9OTm6uqqpS/oYA5UZe528lCpdbbt7e3iw8PFw57ujoYIuLi6ojoQqAxN+ldHlTV1enpAJ6HiIgHq2z3hddjAI3pCDGS1tbG9LpK4L447oA3tfX1+dFR0ez/f19u3DuPAqOhMsQouHayMhItra2BogRAsjXHIDEP0xPT3+OvD84OLAPSPw4WjEKsuDT01N7y+Fkw5hAOmE8zMzMPCKIF5oBkHgfEnhSU1OjhJunDoRzCO4igCj8MgAYBvXW1hZrb2/H93wJ4lQrgM8TEhK6y8vLlVzlvS2K51GQIwDRHEB0R4Z7+Pv7s+7ubix2XxBAj1YAv2RlZX2TnZ2tzDpi6ogQ8hhQGwFYUFAQGx8fZxMTE78SwLdaAbwrLi42JCUlsePj4496XkwfDiBCyBGQB7FoWLFpOmV9fX0DBFCkFcAKrbhxISEhihieLnLvixEQZyIRwNE0KhoGM2Y4s9m8SgDxWgEcVVdX+0MwTBy0jtYBmLh4udr7iiC6F4BNJtMxAQRoBmA0Gv25SFG02IrmbCV2xfA9Wpk1BVipqKiIwwzBTUwb0bl42V0VD8M46+zs1DSF3hUVFRmioqLOXywJFwFkEDW2sbHBBgYG+gmgWCuAVzSNNqWmpjq+iQTAzdEO1RWbnp5mk5OTzwjgO60AjHFxcab8/Mu3KJfBuAIxODjINjc3iwmgXysAZStRWlp6rrK6SDx3OZ0ug0C11t/f/4HEf+qKNjWbuWZKoaeZmZkXipfXBG5yPeAMYnR0FNuIBwTwUmsAJQoGg8FeEsoA8tQqindUnclGacOGh4ddGryqAWwQ90JDQ1sKCgqUFdOReDECOHYk3hEEpk6aebDXaiCAP68FwAbxMxU0j3Nzc+29LIrn2wtHY0De1PFz+GxkZARb6R9J/BM1eq5a1D+njd1DvV7/Ue9ftjvl4nkLm5qaYrOzsy9I/CO1Wtx5rGLKycnB9HquPuDurEKTd6eYdYaGhgATRgC7NwlgpL27CYMa40EGcFTgcPEixNjYGGrh+yT+9VV0uPtk7k1GRsZd1AmAwDMiZwAQjGqOi8cxHjlaLBZVRbzWAHm0sL0vLCy0l4NwwPCxABN7HRUdZhwYep/2Paoeo2gN8IqaJnfuwf59NnrfUwDWhoYGhkrtKra3t8daW1sZAVxZhyYRwEwUH3/p1v2crayssNXVVRx6NAIKAN4H6HQ6VdcuLS0pxbunAay1tbXu3EJ5HurxFIqNjWUxMTGqrsW7ATwLZf+nkHsAVryhccfMZrPnUwjHKPjlot+ZYd8Pt5nnIiCC0FTalJKSoqy2FxlW6Pn5eUyhbgnXGsBaUlKi6pre3l63UkdrAHsq4f0Bf2sp2/b2tuI2uz0RkGA+owb+hEcFvU32A/lbEv1Wy9+7tv+VQFphlwpDwaJFutw0gLhT1SRdbhTgpuwfCYpCbZTDm4UAAAAASUVORK5CYII=" alt="Загружаю"/>
 							</div>
 						</div>
 					</form>
@@ -216,15 +179,17 @@
 								<img id="lampRight_" class="w3-center lampRight_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; "
 									title="Правая лампочка"
-									src="./img/question.png" alt="Загружаю"/>
+									src="data:image/png;base64,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" alt="Загружаю"/>
 								<img id="lampRight_1" class="w3-center lampRight_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Правая лампочка"
-									onclick="lampWidgetClick(this);" src="./img/OnLamp_64.png" alt="Загружаю"/>
+									onclick="lampWidgetClick(this);" 
+									src="data:image/png;base64,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" alt="Загружаю"/>
 								<img id="lampRight_0" class="w3-center lampRight_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Правая лампочка"
-									onclick="lampWidgetClick(this);" src="./img/OffLamp_64.png" alt="Загружаю"/>
+									onclick="lampWidgetClick(this);" 
+									src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAFgUlEQVR42u2aWUhcVxjHj/u+b4xbBPvgWBFFUUZQa2tFGR9cHn1MiRgakpeWFAuhJaWhfUloSLCkj/ZVkBEGRQkqcZmIFSUgVkFFxX3BHXX6/W/nDMeTGZ3rXB0L/eDjXOfOvfP/ne87y3evXuw/bl6eFnCrAFpaWgzUGMm/JI8m/8R26m/yDfIu8o7GxsaBWwVAwh9T06TT6VLv3LnDEhMTWUBAAAsLC1PO7+zssMPDQ7awsMDm5ubY8vLyHH38mkCeeRSAhN+DcL1en5OXl8eCg4Pt546OjtjJyQmzWq3M19eXBQYG2s/t7u4yi8XCpqam/rKB/H7jACT+aURERHNlZSWjVvkMvXx2dqaIhqGV3cfHxx6Z9fV11tXVhQj9RBDf3xgAif8tLS3t67KyMubn56cI56K5iaI5FHcYogIQRKqnp4fNz8+/JIgH1w6Ank9OTm6uqqpS/oYA5UZe528lCpdbbt7e3iw8PFw57ujoYIuLi6ojoQqAxN+ldHlTV1enpAJ6HiIgHq2z3hddjAI3pCDGS1tbG9LpK4L447oA3tfX1+dFR0ez/f19u3DuPAqOhMsQouHayMhItra2BogRAsjXHIDEP0xPT3+OvD84OLAPSPw4WjEKsuDT01N7y+Fkw5hAOmE8zMzMPCKIF5oBkHgfEnhSU1OjhJunDoRzCO4igCj8MgAYBvXW1hZrb2/H93wJ4lQrgM8TEhK6y8vLlVzlvS2K51GQIwDRHEB0R4Z7+Pv7s+7ubix2XxBAj1YAv2RlZX2TnZ2tzDpi6ogQ8hhQGwFYUFAQGx8fZxMTE78SwLdaAbwrLi42JCUlsePj4496XkwfDiBCyBGQB7FoWLFpOmV9fX0DBFCkFcAKrbhxISEhihieLnLvixEQZyIRwNE0KhoGM2Y4s9m8SgDxWgEcVVdX+0MwTBy0jtYBmLh4udr7iiC6F4BNJtMxAQRoBmA0Gv25SFG02IrmbCV2xfA9Wpk1BVipqKiIwwzBTUwb0bl42V0VD8M46+zs1DSF3hUVFRmioqLOXywJFwFkEDW2sbHBBgYG+gmgWCuAVzSNNqWmpjq+iQTAzdEO1RWbnp5mk5OTzwjgO60AjHFxcab8/Mu3KJfBuAIxODjINjc3iwmgXysAZStRWlp6rrK6SDx3OZ0ug0C11t/f/4HEf+qKNjWbuWZKoaeZmZkXipfXBG5yPeAMYnR0FNuIBwTwUmsAJQoGg8FeEsoA8tQqindUnclGacOGh4ddGryqAWwQ90JDQ1sKCgqUFdOReDECOHYk3hEEpk6aebDXaiCAP68FwAbxMxU0j3Nzc+29LIrn2wtHY0De1PFz+GxkZARb6R9J/BM1eq5a1D+njd1DvV7/Ue9ftjvl4nkLm5qaYrOzsy9I/CO1Wtx5rGLKycnB9HquPuDurEKTd6eYdYaGhgATRgC7NwlgpL27CYMa40EGcFTgcPEixNjYGGrh+yT+9VV0uPtk7k1GRsZd1AmAwDMiZwAQjGqOi8cxHjlaLBZVRbzWAHm0sL0vLCy0l4NwwPCxABN7HRUdZhwYep/2Paoeo2gN8IqaJnfuwf59NnrfUwDWhoYGhkrtKra3t8daW1sZAVxZhyYRwEwUH3/p1v2crayssNXVVRx6NAIKAN4H6HQ6VdcuLS0pxbunAay1tbXu3EJ5HurxFIqNjWUxMTGqrsW7ATwLZf+nkHsAVryhccfMZrPnUwjHKPjlot+ZYd8Pt5nnIiCC0FTalJKSoqy2FxlW6Pn5eUyhbgnXGsBaUlKi6pre3l63UkdrAHsq4f0Bf2sp2/b2tuI2uz0RkGA+owb+hEcFvU32A/lbEv1Wy9+7tv+VQFphlwpDwaJFutw0gLhT1SRdbhTgpuwfCYpCbZTDm4UAAAAASUVORK5CYII=" alt="Загружаю"/>
 							</div>
 						</div>
 					</form>
@@ -246,55 +211,22 @@
 								<img id="acMeter_" class="w3-center acMeter_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; "
 									title="Нагрузка"
-									src="./img/question.png" alt="Загружаю"/>
+									src="data:image/png;base64,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" 
+									alt="Загружаю"/>
 								<img id="acMeter_1" class="w3-center acMeter_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Нагрузка"
-									src="./img/hv_on.png" alt="Загружаю"/>
+									src="data:image/png;base64,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" alt="Загружаю"/>
 								<img id="acMeter_0" class="w3-center acMeter_Image" 
 									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 									title="Нагрузка"
-									src="./img/hv_off.png" alt="Загружаю"/>
+									src="data:image/png;base64,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" alt="Загружаю"/>
 							</div>
 						</div>
 					</form>
 			</div>
 		</div>
 		<!--acMeter info ends-->
-		
-		<!--pir info starts-->
-	<!--<div>
-			<div class="w3-card-4" style="width:270px;  float:left; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
-					<div class="w3-container w3-teal">
-						  <h2>Детектор</h2>
-					</div>
-					 
-					<form id="pirForm" class="w3-container">
-											
-						<div id="pirBody" class="w3-row">
-							<div class="w3-half w3-card-4 w3-center" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; width: 92px; height: 120px;">
-								<div style="width: 90%">
-									<b>Движение</b>
-								</div>
-								<img id="pirDetector_Q" class="w3-center" 
-									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; "
-									title=""
-									src="./img/question.png" alt="Загружаю"/>
-								<img id="pirDetector_On" class="w3-center" 
-									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
-									title="Движение определено"
-									src="./img/redhat.png" alt="Загружаю"/>
-								<img id="pirDetector_Off" class="w3-center" 
-									style="cursor: pointer; width: 64px; height: 64px; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
-									title="Нет движения"
-									src="./img/emptyWalk.png" alt="Загружаю"/>
-							</div>
-							
-						</div>
-					</form>
-			</div>
-		</div>-->
-		<!--pir info ends-->
 	
 	<!--Main content ends here-->
 	</div>

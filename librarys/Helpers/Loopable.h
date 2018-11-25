@@ -15,9 +15,7 @@ class Loopable{
 public:
 	virtual boolean loop()=0;
 	//virtual String getName()=0;
-	virtual String displayDetails(){
-		return "";
-	}
+	virtual void displayDetails(){};
 	virtual ~Loopable(){};
 };
 

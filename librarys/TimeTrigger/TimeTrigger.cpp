@@ -69,13 +69,6 @@ String TimeTrigger::getName(){
 	return "TimeTrigger(_interval="+String(_interval)+" _active="+String(_active)+")";
 }
 
-String TimeTrigger::displayDetails(){
-	String res=getName();
-	Serial.println(res);
-
-	return res;
-}
-
 boolean TimeTrigger::loop(){
 	if(_active){
 		boolean result=checkTrigger();

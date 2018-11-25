@@ -29,13 +29,11 @@ class BH1750_Sensor: public AbstractItem, public Initializable{
 
 public:
 
-	BH1750_Sensor(uint8_t id,String name)
+	BH1750_Sensor(String name,uint8_t id)
 	: AbstractItem(id,name,FPSTR(SENSOR_BH1750_DESCRIPTION),FPSTR(SENSOR_BH1750_SIZE),FPSTR(SENSOR_BH1750_DESCRIPTION_RU),1){
 	}
 
-	~BH1750_Sensor(){
-		Serial.println("destructed");
-	}
+	~BH1750_Sensor(){}
 
 	boolean initialize(boolean _init){
 		if(_init){

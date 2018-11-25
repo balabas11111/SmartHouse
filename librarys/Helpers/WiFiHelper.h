@@ -58,9 +58,15 @@ public:
 			}
 
 			setupServer();
+
 		}
 		initialized=_init;
 		return true;
+	}
+
+	void printHeap(){
+		Serial.print(FPSTR("heap="));
+		Serial.println(ESP.getFreeHeap());
 	}
 
 	boolean loop(){
@@ -75,7 +81,7 @@ public:
 
 	//---------------------------------------------------------------------------------------
 	void setupServer(){
-
+		//printHeap();
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_SETUP_SERVER));
 
@@ -85,26 +91,25 @@ public:
 		Serial.print(WiFi.getAutoConnect());
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
 		Serial.println(WiFi.status());
-
+		//printHeap();
 		server->onNotFound([this](){handleNotFound();});
-
+		//printHeap();
 		server->serveStatic("/", SPIFFS, String(FPSTR(ESPSETTINGSBOX_DEFAULT_PAGE)).c_str());
-
+		//printHeap();
 		if(initStaticPages){
 			initStaticPagesInWebFolder();
 		}
-
+		//printHeap();
 		if(initFilesManager){
 			initFileManager();
 		}
-
+		//printHeap();
 		if(serverPostInitFunc!=nullptr){
 			Serial.println(FPSTR(MESSAGE_WIFIHELPER_POST_INIT_WEB_SERV_HANDLERS));
 			serverPostInitFunc();
+			printHeap();
 		}
-
 		server->begin();
-
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_SERVER_SETUP_COMPLETED));
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
@@ -114,18 +119,19 @@ public:
 	void initStaticPagesInWebFolder(){
 		deployStaticFolder(FPSTR(ESPSETTINGSBOX_DEFAULT_WEB_FOLDER),
 							FPSTR(ESPSETTINGSBOX_DEPLOY_EXT),
-							"");
-		deployStaticFolder(FPSTR(ESPSETTINGSBOX_SETTINGS_PATH),
+							"",5);
+		/*deployStaticFolder(FPSTR(ESPSETTINGSBOX_SETTINGS_PATH),
 									FPSTR(ESPSETTINGSBOX_DEPLOY_EXT),
 									FPSTR(ESPSETTINGSBOX_SETTINGS_DEPLOY_PATH));
+									*/
 	}
 
-	void deployStaticFolder(String basePath,String extensions,String baseUrl){
+	void deployStaticFolder(String basePath,String extensions,String baseUrl,uint8_t start){
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_DEPLOYING_PATH));
-		Serial.print(basePath);
+		Serial.println(basePath);
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_AS_WEB_FILES));
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_EXTENSIONS));
-		Serial.print(extensions);
+		Serial.println(extensions);
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_TO_BE_DEPLOYED));
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_BASE_URL_EQ));
 		Serial.println(baseUrl);
@@ -140,6 +146,15 @@ public:
 
 			String url=fileNameStr.substring(basePath.length());
 
+			server->serveStatic(String(file.name()).substring(start-1).c_str(), SPIFFS, file.name());
+/*
+			Serial.print("deploy file url=");
+			Serial.println(String(file.name()).substring(start-1).c_str());
+			Serial.print(" file=");
+			Serial.println(file.name());
+*/
+			//file.close();
+			/*
 			if(!url.startsWith("/")){
 				url="/"+url;
 			}else{
@@ -165,10 +180,12 @@ public:
 				Serial.print(extension);
 				Serial.print(FPSTR(MESSAGE_WIFIHELPER_URL_EQ));
 				Serial.println(url);
-				server->serveStatic(url.c_str(), SPIFFS, fileNameStr.c_str());
+
+				server->serveStatic(url.c_str(), SPIFFS, file.name());
 			}
+			*/
 		}
-		Serial.println("-----------------------------------");
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 		//addFileHandlersForDir(base,basePath,baseUrl);
 	}
 	//-----------------------------------------------------------------------
@@ -177,19 +194,21 @@ public:
 		/*if(!handleFileRead(server->uri()))
 			  server->send(404, "text/plain", "FileNotFound");
 */
-		server->send(404,"text/html", "notFound");
+		Serial.println(FPSTR("Handle not found"));
+		Serial.println(server->uri());
+		server->send(404,FPSTR(CONTENT_TYPE_TEXT_HTML), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_NOT_FOUND));
 	}
 
 	void handleTest(){
-		server->send ( 200, "text/html", "I'm here" );
+		server->send ( 200, FPSTR(CONTENT_TYPE_TEXT_HTML), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_I_M_HERE));
 	}
 	//-----------------------------------------------------------------------
 
 	boolean startAsAccessPoint(){
 		WiFi.mode(WIFI_AP);
-		displayLine("Start",3,0);
-		displayLine("       AccessPoint",5,0);
-		Serial.println("STarting as access point");
+		displayLine(FPSTR(MESSAGE_WIFIHELPER_START_AP),3,0);
+		displayLine(FPSTR(MESSAGE_WIFIHELPER_ACCESS_POINT),5,0);
+		Serial.println(FPSTR(MESSAGE_WIFIHELPER_STARTING_ACCESS_POINT));
 		/*
 		 WiFi.softAPConfig(espSettingsBox.apIp,espSettingsBox.gateIp,
 				espSettingsBox.subnetIp);
@@ -199,26 +218,24 @@ public:
 		//String apName="ESP "+ESP.getChipId();
 		//WiFi.softAP(espSettingsBox.ssidAP);
 
-		Serial.println ( "-----------" );
-		Serial.print ( "SoftAP " );
+		Serial.print (FPSTR(MESSAGE_WIFIHELPER_SOFT_AP));
 		Serial.println ( espSettingsBox->ssidAP);
-		Serial.print ( "IP address: " );
+		Serial.print ( FPSTR(MESSAGE_WIFIHELPER_WIFI_IP));
 		Serial.println ( WiFi.softAPIP() );
-		Serial.println ( "-----------" );
 
-		Serial.print("ViFi status");
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
 		Serial.println(WiFi.status());
-		Serial.println ( "-----------------------------" );
+		Serial.println ( FPSTR(MESSAGE_HORIZONTAL_LINE));
 
 		return true;
 	}
 
 	boolean startAsClient(){
-		displayLine("connect to",2,0);
+		displayLine(FPSTR(MESSAGE_WIFIHELPER_CONNECT_TO),2,0);
 		displayLine(espSettingsBox->ssid,5,0);
-		Serial.print("espSettingsBox.ssid=");
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_SSID));
 		Serial.println(espSettingsBox->ssid);
-		Serial.print("espSettingsBox.password=");
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_PASSWORD));
 		Serial.println(espSettingsBox->password);
 
 		WiFi.disconnect(0);
@@ -270,73 +287,71 @@ public:
 		displayDetails();
 	}
 
-	String displayDetails(){
+	void displayDetails(){
 		delay(1);
-		Serial.println("-----------wiFi diagnostic-------------------");
+		Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_DIAGNOSTIC));
+		printHeap();
 		WiFi.printDiag(Serial);
 
 		wl_status_t status=WiFi.status();
-		String statusStr="UNKNOWN";
 
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
 		switch(status) {
 		        case WL_CONNECTED:
-		        	statusStr="WL_CONNECTED";
+		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECTED));
 		        	break;
 		        case WL_NO_SSID_AVAIL:
-		        	statusStr="WL_NO_SSID_AVAIL";
+		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECTED));
 		        	break;
 		        case WL_CONNECT_FAILED:
-		        	statusStr="WL_CONNECT_FAILED";
+		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECT_FAILED));
 		        	break;
 		        case WL_IDLE_STATUS:
-		        	statusStr="WL_IDLE_STATUS";
+		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_IDLE_STATUS));
 		        	break;
 		        case WL_SCAN_COMPLETED:
-					statusStr="WL_SCAN_COMPLETED";
+		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_SCAN_COMPLETED));
 					break;
 				default:
-		        	statusStr="WL_DISCONNECTED";
+					Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_DISCONNECTED));
 		}
-		Serial.print("Status=");
-		Serial.println(statusStr);
-		Serial.println ( "" );
-		Serial.print ( "SSID: " );
+
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_SSSID_EQ));
 		Serial.println ( WiFi.SSID() );
 
-		Serial.print(" IP Type: " );
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_IP_TYPE_EQ));
 
 		if(espSettingsBox->staticIp){
-			Serial.println ( " STATIC IP ");
+			Serial.println ( FPSTR(MESSAGE_WIFIHELPER_WIFI_STATIC_IP_TYPE));
 		}else{
-			Serial.println ( " DNS IP ");
+			Serial.println ( FPSTR(MESSAGE_WIFIHELPER_WIFI_DNS_IP_TYPE));
 		}
 
-		Serial.print ( " IP : " );
+		Serial.print (FPSTR(MESSAGE_WIFIHELPER_WIFI_IP));
 		if(espSettingsBox->isAccesPoint){
 			Serial.println ( WiFi.softAPIP() );
 		}else{
 			Serial.println ( WiFi.localIP() );
 		}
 
-		Serial.print(" Mac:");
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_MAC));
 		Serial.println(WiFi.macAddress());
 
-		Serial.println("------------------------------");
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
-		return statusStr;
 	}
 
 	void checkAuthentication(){
 		if(espSettingsBox->settingsUser.length()!=0 && espSettingsBox->settingsPass.length()!=0){
-			Serial.println("Authentication is REQUIRED for setupPage");
+			//Serial.println("Authentication is REQUIRED for setupPage");
 			if(!server->authenticate(const_cast<char*>(espSettingsBox->settingsUser.c_str()),
 				const_cast<char*>(espSettingsBox->settingsPass.c_str()))){
 				return server->requestAuthentication();
 			}else{
-				Serial.println("User entered correct User/pass");
+				//Serial.println("User entered correct User/pass");
 			}
 		}else{
-			Serial.println("Authentication is not required for setupPage");
+			//Serial.println("Authentication is not required for setupPage");
 		}
 	}
 	//------------------------------
@@ -359,7 +374,6 @@ public:
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_GET));
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_URL_EQ));
 		Serial.println(url);
-
 		http.begin(url);
 		delay(1);
 
@@ -404,7 +418,7 @@ public:
 
 			yield();
 
-			http.addHeader("Content-Type","application/x-www-form-urlencoded");
+			http.addHeader(FPSTR(CONTENT_TYPE),FPSTR(CONTENT_TYPE_FORM_URL_ENCODED));
 
 			int httpCode = http.POST(body);
 			yield();
@@ -433,34 +447,33 @@ public:
 		//fileManager section
 		void initFileManager(){
 
-			Serial.println("Deploying Filemanager /edit");
-			Serial.println("-----------------------------------");
-			#ifdef ESP8266
+			Serial.println(FPSTR(MESSAGE_WIFIHELPER_DEPLOY_FILEMANAGER_EDIT));
+			/*#ifdef ESP8266
 				Dir dir = SPIFFS.openDir("/");
 				while (dir.next()) {
 				  String fileName = dir.fileName();
 				  size_t fileSize = dir.fileSize();
-				  Serial.printf("FS File: %s, size: %s\n", fileName.c_str(), formatBytes(fileSize).c_str());
+				  //Serial.printf("FS File: %s, size: %s\n", fileName.c_str(), formatBytes(fileSize).c_str());
 				}
 			#else
 				listDir(SPIFFS, "/", 0);
 			#endif
-
-			server->on("/list", HTTP_GET, [this](){handleFileList();});
+*/
+			//server->on("/list", HTTP_GET, [this](){handleFileList();});
 			//load editor
-			server->on("/edit", HTTP_GET, [this](){
-			if(!handleFileRead("/web/edit.htm")) server->send(404, "text/plain", "FileNotFound");
+			server->on(FPSTR(URL_EDIT), HTTP_GET, [this](){
+				if(!handleFileRead(FPSTR(MESSAGE_WIFIHELPER_EDIT_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
 			});
 			//create file
-			server->on("/edit", HTTP_PUT, [this](){handleFileCreate();});
+			//server->on("/edit", HTTP_PUT, [this](){handleFileCreate();});
 			//delete file
-			server->on("/edit", HTTP_DELETE, [this](){handleFileDelete();});
+			server->on(FPSTR(URL_EDIT), HTTP_DELETE, [this](){handleFileDelete();});
 			//first callback is called after the request has ended with all parsed arguments
 			//second callback handles file uploads at that location
-			server->on("/edit", HTTP_POST, [this](){ server->send(200, "text/plain", ""); }, [this](){handleFileUpload();});
+			server->on(FPSTR(URL_EDIT), HTTP_POST, [this](){ server->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), ""); }, [this](){handleFileUpload();});
 
 			  //get heap status, analog input value and all GPIO statuses in one json call
-			  server->on("/all", HTTP_GET, [this](){
+			/*  server->on("/all", HTTP_GET, [this](){
 			    String json = "{";
 			    json += "\"heap\":"+String(ESP.getFreeHeap());
 			    json += ", \"analog\":"+String(analogRead(A0));
@@ -471,8 +484,8 @@ public:
 			    server->send(200, "text/json", json);
 			    json = String();
 			  });
-
-			  Serial.println("HTTP server started");
+				*/
+			  Serial.println(FPSTR(MESSAGE_WIFIHELPER_HTTP_SERVER_STARTED));
 		}
 
 		String formatBytes(size_t bytes){
@@ -488,20 +501,20 @@ public:
 		}
 
 		String getContentType(String filename){
-		  if(server->hasArg("download")) return "application/octet-stream";
-		  else if(filename.endsWith(".htm")) return "text/html";
-		  else if(filename.endsWith(".html")) return "text/html";
-		  else if(filename.endsWith(".css")) return "text/css";
-		  else if(filename.endsWith(".js")) return "application/javascript";
-		  else if(filename.endsWith(".png")) return "image/png";
-		  else if(filename.endsWith(".gif")) return "image/gif";
-		  else if(filename.endsWith(".jpg")) return "image/jpeg";
-		  else if(filename.endsWith(".ico")) return "image/x-icon";
-		  else if(filename.endsWith(".xml")) return "text/xml";
-		  else if(filename.endsWith(".pdf")) return "application/x-pdf";
-		  else if(filename.endsWith(".zip")) return "application/x-zip";
-		  else if(filename.endsWith(".gz")) return "application/x-gzip";
-		  return "text/plain";
+		  if(server->hasArg("download")) return FPSTR(CONTENT_TYPE_APPLICATION_OCTED_STREAM);
+		  else if(filename.endsWith(".htm")) return FPSTR(CONTENT_TYPE_TEXT_HTML);
+		  else if(filename.endsWith(".html")) return FPSTR(CONTENT_TYPE_TEXT_HTML);
+		  else if(filename.endsWith(".css")) return FPSTR(CONTENT_TYPE_TEXT_CSS);
+		  else if(filename.endsWith(".js")) return FPSTR(CONTENT_TYPE_APPLICATION_JAVASCRIPT);
+		  else if(filename.endsWith(".png")) return FPSTR(CONTENT_TYPE_IMAGE_PNG);
+		  else if(filename.endsWith(".gif")) return FPSTR(CONTENT_TYPE_IMAGE_GIF);
+		  else if(filename.endsWith(".jpg")) return FPSTR(CONTENT_TYPE_IMAGE_JPEG);
+		  else if(filename.endsWith(".ico")) return FPSTR(CONTENT_TYPE_IMAGE_XICON);
+		  else if(filename.endsWith(".xml")) return FPSTR(CONTENT_TYPE_TEXT_XML);
+		  else if(filename.endsWith(".pdf")) return FPSTR(CONTENT_TYPE_APPLICATION_XPDF);
+		  else if(filename.endsWith(".zip")) return FPSTR(CONTENT_TYPE_APPLICATION_XZIP);
+		  else if(filename.endsWith(".gz")) return FPSTR(CONTENT_TYPE_APPLICATION_XGZIP);
+		  return FPSTR(CONTENT_TYPE_TEXT_PLAIN);
 		}
 
 		bool handleFileRead(String path){
@@ -522,7 +535,7 @@ public:
 		}
 
 		void handleFileUpload(){
-		  if(server->uri() != "/edit") return;
+		  if(server->uri() != FPSTR(URL_EDIT)) return;
 
 		  HTTPUpload& upload = server->upload();
 

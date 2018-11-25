@@ -16,7 +16,6 @@ class I2Chelper: public Initializable{
 
 public:
 	I2Chelper(uint8_t _clockPin,uint8_t _dataPin,boolean _active){
-		Serial.println("Create I2C Helper");
 
 		devCount=0;
 		sda=_dataPin;
@@ -32,7 +31,7 @@ public:
 	}
 
 	virtual boolean initialize(boolean init){
-		Serial.println("Begin initialize of I2CHelper");
+		Serial.println(FPSTR(MESSAGE_I2CHELPER_BEGIN_INIT));
 		if(init){
 			initWire();
 			scan();
@@ -43,59 +42,46 @@ public:
 		return init;
 	}
 
-	String scan(){
-			Serial.println("---------------");
-			Serial.println("Setup I2C bus...");
-			  byte error, address;
-			  int nDevices;
-			  String result="";
+	void scan(){
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+		Serial.println(FPSTR(MESSAGE_I2CHELPER_SETUP_I2C_BUS));
+		  byte error, address;
+		  int nDevices;
 
-			  Serial.println("Scanning I2C...");
+		  Serial.println(FPSTR(MESSAGE_I2CHELPER_SCANNING));
 
-			  nDevices = 0;
-			  for(address = 1; address < 127; address++ )
-			  {
+		  nDevices = 0;
+		  for(address = 1; address < 127; address++ )
+		  {
 
-				Wire.beginTransmission(address);
-				error = Wire.endTransmission();
+			Wire.beginTransmission(address);
+			error = Wire.endTransmission();
 
-				if (error == 0)
-				{
-				  Serial.print("I2C device found at address 0x");
-				  if (address<16){
-					Serial.print("0");
-					result.concat("0");
-				  }
-				  Serial.print(address,HEX);
-
-				  result.concat(String(address));
-				  result.concat(";");
-
-				  Serial.println("  !");
-
-				  nDevices++;
-				}
-				else if (error==4)
-				{
-				  Serial.print("Unknow error at address 0x");
-				  if (address<16)
-					Serial.print("0");
-				  Serial.println(address,HEX);
-				}
+			if (error == 0)
+			{
+			  Serial.print(FPSTR(MESSAGE_I2CHELPER_DEVICE_FOUND));
+			  if (address<16){
+				Serial.print(0);
 			  }
+			  Serial.println(address,HEX);
 
-			  result.concat(" count="+String(nDevices));
+			  nDevices++;
+			}
+			else if (error==4)
+			{
+			  Serial.print(FPSTR(MESSAGE_I2CHELPER_UNKNOWN_ERROR));
+			  if (address<16)
+				Serial.print(0);
+			  Serial.println(address,HEX);
+			}
+		  }
 
-			  if (nDevices == 0)
-				Serial.println("No I2C devices found\n");
-			  else
-				Serial.println("done\n");
-			  Serial.println("---------------");
+		  if (nDevices == 0)
+			Serial.println(FPSTR(MESSAGE_I2CHELPER_NO_DEVICES_FOUND));
+		  Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
-			  devCount=nDevices;
-
-			  return result;
-		}
+		  devCount=nDevices;
+	}
 
 private:
 	uint8_t sda;
@@ -103,8 +89,6 @@ private:
 	uint8_t devCount;
 
 	void initWire(){
-		Serial.println("---------------");
-		Serial.println("Setup I2C bus Wire lib...");
 		Wire.begin(sda, scl);
 	}
 };

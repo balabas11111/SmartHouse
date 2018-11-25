@@ -107,7 +107,7 @@ function openTab(tabName,headerName) {
 									evt.preventDefault();
 								},false);
 			
-			updateComponentsByAjaxCall('GET', getValuesUrl, getValuesHandler,"", 0);
+			updateComponentsByAjaxCall('GET', getValuesUrl, getValuesHandler,"",undefined, 0);
 		}else{
 			alert('Error on page!');
 		}

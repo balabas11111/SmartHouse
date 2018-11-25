@@ -53,9 +53,6 @@ public:
 	virtual boolean loop() override{
 		return handleLoop();
 	}
-	virtual String displayDetails(){
-		return getJson();
-	}
 
 	virtual boolean processMqVal(uint8_t index,String value){
 		if(index==0){
@@ -74,7 +71,7 @@ public:
 
 	//PinAbstract functions
 	uint16_t getVal();
-	bool setVal(uint16_t _val);
+	bool setVal(uint8_t _val);
 	void processClick(boolean fromTimer);
 	void processInterrupt();
 

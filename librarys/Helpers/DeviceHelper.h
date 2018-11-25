@@ -20,7 +20,7 @@ class DeviceHelper:public Loopable{
 
 public:
 	DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,long minAlarmInterval);
-	String displayDetails();
+	void displayDetails();
 	boolean loop();
 
 	void startDevice(String deviceId);

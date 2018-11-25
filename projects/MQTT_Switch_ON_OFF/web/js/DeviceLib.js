@@ -13,6 +13,14 @@ const QUEUE_SUFFIX="queue";
 const CLASS_AUTO_CREATED_CHILD="autoCreatedChild"
 const LABEL_PREFFIX="Label";
 
+//--------------------------Menu functions-----------------------------
+function w3_open(){
+	document.getElementById("leftSidebar").style.display = "block";
+};
+					
+function w3_close(){
+	document.getElementById("leftSidebar").style.display = "none";
+};
 //-----------------------------------------------------------------------------------
 function hideComponent(componentId){
 	var comp=document.getElementById(componentId);
@@ -304,12 +312,15 @@ function processJsonOnImageComponent(data){
 	}
 }
 //---------------------------AJAX functions------------------------------------
-function updateComponentsByAjaxCall(requestmethod, url, handler, val, timeout){
+function updateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout){
 	
 	var request = new XMLHttpRequest();
 	
 	var formData = new FormData();
 	formData.append('val', val);
+	if(sensor!=undefined){
+		formData.append('sensor', sensor);
+	}
 	
 	request.open(requestmethod, url, true);
 	request.onreadystatechange  = 
@@ -323,21 +334,21 @@ function updateComponentsByAjaxCall(requestmethod, url, handler, val, timeout){
 					handler(json);
 									
 					if(timeout>0){
-						addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val, timeout);
+						addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout);
 					}
 					
 				}else{
 					//
-					addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val, timeout);
+					addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val,sensor,timeout);
 				}
 			};
 		};
 	request.send(formData);
 };
 
-function addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val, timeout){
+function addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout){
 	if(timeout!='' && timeout!=0 && timeout>2000){
-		setTimeout(function(){updateComponentsByAjaxCall(requestmethod, url, handler, val, timeout);}, timeout);
+		setTimeout(function(){updateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout);}, timeout);
 	}
 };
 

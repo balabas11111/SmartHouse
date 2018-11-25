@@ -26,7 +26,9 @@
 #include "DS18D20_Sensor.h"
 #include "StatusMessage.h"
 
-#include "MessageSenderTelegram.h"
+//#include "MessageSenderTelegram.h"
+#include "WiFiClientSecure.h"
+#include <TelegramBot.h>
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
@@ -59,7 +61,7 @@
 
 EspSettingsBox espSettingsBox("",true,true);
 
-WiFiClient wclient;
+//WiFiClient wclient;
 ESP8266WebServer server ( 80 );
 //WebSocketsServer webSocket = WebSocketsServer(8081);
 
@@ -69,49 +71,58 @@ DisplayHelper displayHelper(true);
 TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,measureSensors);
 TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSettingsBox.isThingSpeakEnabled,processThingSpeakPost);
 
-PinDigital buttonLeft(VAR_NAME(buttonLeft),D7,onLeftButtonChanged);
-PinDigital buttonRight(VAR_NAME(buttonRight),D6,onRightButtonChanged,1000);
+PinDigital buttonLeft(FPSTR(SENSOR_buttonLeft),D7,onLeftButtonChanged);
+PinDigital buttonRight(FPSTR(SENSOR_buttonRight),D6,onRightButtonChanged,1000);
 
-PinDigital lampLeft(VAR_NAME(lampLeft),D8,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW);
-PinDigital lampRight(VAR_NAME(lampRight),D0,onRightLampChanged,OUTPUT,CHANGE,HIGH,LOW);
+PinDigital lampLeft(FPSTR(SENSOR_lampLeft),D8,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW);
+PinDigital lampRight(FPSTR(SENSOR_lampRight),D0,onRightLampChanged,OUTPUT,CHANGE,HIGH,LOW);
 
-PinDigital acMeter(VAR_NAME(acMeter),D5,onAcMeterChanged,INPUT,CHANGE,HIGH,HIGH);
+PinDigital acMeter(FPSTR(SENSOR_acMeter),D5,onAcMeterChanged,INPUT,CHANGE,HIGH,HIGH);
 
 //Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged);
 //NtpTimeClientService timeClient(&espSettingsBox,processTimeClientEvent,60000);
 
-BME280_Sensor bmeMeasurer(20,VAR_NAME(bmeMeasurer));
-BH1750_Sensor luxMeasurer(21,VAR_NAME(luxMeasurer));
+BME280_Sensor bmeMeasurer(FPSTR(SENSOR_bmeMeasurer),20);
+BH1750_Sensor luxMeasurer(FPSTR(SENSOR_luxMeasurer),21);
 
 //DHT22_Sensor dhtMeasurer(VAR_NAME(dhtSensor), D0, 22);
-DS18D20_Sensor ds18d20Measurer(VAR_NAME(ds18d20Measurer), D3);
+DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), D3);
 
-WiFiHelper wifiHelper(&espSettingsBox, &displayHelper, /*nullptr,*/&server,postInitWebServer,false);
+WiFiHelper wifiHelper(&espSettingsBox, &displayHelper, &server,postInitWebServer,false);
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
-MqttHelper mqttHelper(&espSettingsBox,wclient,processMqttEvent);
+//MqttHelper mqttHelper(&espSettingsBox,wclient,processMqttEvent);
 
-MessageSenderTelegram messageSenderTelegram(&espSettingsBox);
+const char BotToken[] = "737840576:AAH_9-PM8knquJ3x1GN-sOTX4NGPNdU50iE";
 
-Loopable* loopArray[]={&wifiHelper,&mqttHelper,&sensorsTrigger,&buttonLeft,&buttonRight,&acMeter,&thingSpeakTrigger};
-Initializable* initializeArray[]={&espSettingsBox,&wifiHelper,&i2cHelper,&bmeMeasurer,&luxMeasurer,&ds18d20Measurer};
+//WiFiClientSecure net_ssl;
+//TelegramBot bot (BotToken, net_ssl);
+//UniversalTelegramBot bot(espSettingsBox.telegramApiKey,client);
+//MessageSenderTelegram messageSenderTelegram(&bot);
+
+Loopable* loopArray[]={&wifiHelper,&buttonLeft,&buttonRight,&acMeter,&sensorsTrigger,&thingSpeakTrigger};
 
 AbstractItem* abstractItems[]={&lampLeft,&lampRight,&bmeMeasurer,&luxMeasurer,&acMeter,&ds18d20Measurer};
 
-DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),espSettingsBox.alamSendInterval);
+DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),120000);
 
 
 
 void setup() {
   deviceHelper.startDevice(espSettingsBox.DeviceId);
 
-  espSettingsBox.printSettingsFile();
-  deviceHelper.init(initializeArray, ARRAY_SIZE(initializeArray));
-  deviceHelper.displayDetails();
+  espSettingsBox.init();
+  wifiHelper.init();
+  i2cHelper.init();
+  bmeMeasurer.init();
+  luxMeasurer.init();
+  ds18d20Measurer.init();
+
+  //deviceHelper.displayDetails();
 
   loadSensors();
   measureSensors();
 
-  mqttHelper.begin(abstractItems, ARRAY_SIZE(abstractItems));
+  //mqttHelper.begin(abstractItems, ARRAY_SIZE(abstractItems));
   deviceHelper.printDeviceDiagnostic();
   Serial.println(FPSTR(MESSAGE_DEVICE_STARTED));
 }
@@ -121,77 +132,118 @@ void loop() {
 }
 
 void postInitWebServer(){
-	server.on("/submitForm_commands", HTTP_POST, [](){
-			server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), executeCommand());
-		});
-	server.on(espSettingsBox.getSimpleJsonPublishUrl(), HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getSimpleJson());
+	server.on(FPSTR(URL_SUBMIT_FORM_COMMANDS), HTTP_POST, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), executeCommand());
 	});
-	server.on("/submitForm_settings", HTTP_POST, [](){
+	server.on(FPSTR(URL_SUBMIT_FORM_SETTINGS), HTTP_POST, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), setEspSettingsBoxValues());
 	});
-	server.on("/getJson_settings", HTTP_GET, [](){
+	server.on(FPSTR(ESPSETTINGSBOX_GET_SIMPLE_JSON_PUBLISH_URL), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getSimpleJson());
+	});
+	server.on(FPSTR(URL_GET_JSON_SETTINGS), HTTP_GET, [](){
 		wifiHelper.checkAuthentication();
-		String page=server.arg("page");
+		String page=server.arg(FPSTR(MESSAGE_SERVER_ARG_PAGE));
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getJson(page));
 	});
-	server.on("/submitForm_sensors", HTTP_POST, [](){
-		wifiHelper.checkAuthentication();
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), setSensorJson());
-	});
-	server.on("/getJson_sensors", HTTP_GET, [](){
+	server.on(FPSTR(URL_GET_JSON_SENSORS), HTTP_GET, [](){
 		wifiHelper.checkAuthentication();
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), getAllSensorsJson());
 	});
+	server.on(FPSTR(URL_SUBMIT_FORM_SENSORS), HTTP_POST, [](){
+		wifiHelper.checkAuthentication();
+		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), setSensorJson());
+	});
 
-	server.on(buttonLeft.getJsonPublishUrl(), HTTP_GET, [](){
+	server.on(FPSTR(URL_GET_SENSORS_CURRNT_VALUES), HTTP_GET, [](){
+		if(server.hasArg(FPSTR(MESSAGE_SERVER_ARG_SENSOR))){
+			String arg=server.arg(FPSTR(MESSAGE_SERVER_ARG_SENSOR));
+
+			if(arg==FPSTR(MESSAGE_SERVER_ARG_VAL_ALL)){
+				wifiHelper.checkAuthentication();
+				server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), getAllSensorsJson());
+			}
+
+			for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
+				if(arg==abstractItems[i]->getName()){
+					server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), abstractItems[i]->getJson());
+					break;
+				}
+			}
+		}
+
+		server.send(404, FPSTR(CONTENT_TYPE_JSON), FPSTR(MESSAGE_STATUS_JSON_WIDGET_NOT_FOUND));
+	});
+
+	server.on(FPSTR(URL_SET_DIGITAL_PIN_CURRENT_VALUE), HTTP_ANY, [](){
+
+		wifiHelper.checkAuthentication();
+
+		if(server.hasArg(FPSTR(MESSAGE_SERVER_ARG_SENSOR)) && server.hasArg(FPSTR(MESSAGE_SERVER_ARG_VAL))){
+			String arg=server.arg(FPSTR(MESSAGE_SERVER_ARG_SENSOR));
+			PinDigital* lamp=NULL;
+
+			if(arg==lampLeft.getName()){
+				lamp=&lampLeft;
+			}else
+			if(arg==lampRight.getName()){
+				lamp=&lampRight;
+			}
+
+			if(lamp!=NULL){
+				int8_t on=server.arg(FPSTR(MESSAGE_SERVER_ARG_VAL)).toInt();
+				setLampValue(lamp, on);
+
+				server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lamp->getSimpleJson());
+			}
+		}
+
+		server.send(404, FPSTR(CONTENT_TYPE_JSON), FPSTR(MESSAGE_STATUS_JSON_WIDGET_NOT_FOUND));
+	});
+	/*
+    server.on(FPSTR(URL_JSON_SENSORS), HTTP_GET, [](){
+
+	});
+	server.on(FPSTR(URL_SET_LAMP_LEFT), HTTP_ANY, [](){
+		handleLampChange(&lampLeft);
+	});
+	server.on(FPSTR(URL_SET_LAMP_RIGHT), HTTP_ANY, [](){
+		handleLampChange(&lampRight);
+	});
+
+	server.on(FPSTR(URL_GET_BUTTON_LEFT), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), buttonLeft.getJson());
 	});
-	server.on(buttonRight.getJsonPublishUrl(), HTTP_GET, [](){
+	server.on(FPSTR(URL_GET_BUTTON_RIGHT), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), buttonRight.getJson());
 	});
 
-	server.on(lampLeft.getJsonPublishUrl(), HTTP_GET, [](){
+	server.on(FPSTR(URL_GET_LAMP_LEFT), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lampLeft.getJson());
 	});
-	server.on(lampRight.getJsonPublishUrl(), HTTP_GET, [](){
+	server.on(FPSTR(URL_GET_LAMP_RIGHT), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lampRight.getJson());
 	});
-	server.on(lampLeft.getSetValueUrl(), HTTP_ANY, [](){
-		handleLampChange(&lampLeft);
-	});
-	server.on(lampRight.getSetValueUrl(), HTTP_ANY, [](){
-		handleLampChange(&lampRight);
-	});
-	server.on(acMeter.getJsonPublishUrl(), HTTP_GET, [](){
+	server.on(FPSTR(URL_GET_ACMETER), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), acMeter.getJson());
 	});
-/*
-	server.on(pirDetector.getJsonPublishUrl(), HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), pirDetector.getJson());
-	});
-*/
-	server.on(bmeMeasurer.getJsonPublishUrl(), HTTP_GET, [](){
+	server.on(FPSTR(URL_GET_BME_MEASURER), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), bmeMeasurer.getJson());
 	});
-	server.on(luxMeasurer.getJsonPublishUrl(), HTTP_GET, [](){
+	server.on(FPSTR(URL_GET_LUX_MEASURER), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), luxMeasurer.getJson());
 	});
-	/*server.on(dhtMeasurer.getJsonPublishUrl(), HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), dhtMeasurer.getJson());
-	});*/
-	server.on(ds18d20Measurer.getJsonPublishUrl(), HTTP_GET, [](){
+	server.on(FPSTR(URL_GET_DS18D20_MEASURER), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), ds18d20Measurer.getJson());
 	});
+	*/
 
-	server.on("/getI2C", [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), i2cHelper.scan());
-	});
 }
 //base functions
 void measureSensors(){
 	deviceHelper.update(abstractItems, ARRAY_SIZE(abstractItems));
-	deviceHelper.processAlarm(abstractItems, ARRAY_SIZE(abstractItems));
+	String result=deviceHelper.processAlarm(abstractItems, ARRAY_SIZE(abstractItems));
+
 	deviceHelper.printDeviceDiagnostic();
 }
 
@@ -210,35 +262,23 @@ void onAcMeterChanged(){
 }
 //---------------------------------------------------------------------
 //handle lamp events
-void handleLampChange(PinDigital* lamp){
-	wifiHelper.checkAuthentication();
-	int8_t on=server.arg("val").toInt();
-
-	setLampValue(lamp, on);
-
-	server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lamp->getSimpleJson());
-}
-
-void setLampValue(PinDigital* lamp,int8_t on){
-	if(on==-1){
-		lamp->change();
-	}
+void setLampValue(PinDigital* lamp,uint8_t on){
 	lamp->setVal(on);
-	lamp->printValues();
+	//lamp->printValues();
 }
 
 void onLeftLampChanged(){
-	Serial.println("* Left lamp changed");
+	//Serial.println("* Left lamp changed");
 }
 
 void onRightLampChanged(){
-	Serial.println("* Right lamp changed");
+	//Serial.println("* Right lamp changed");
 }
 
 //---------------------------------------------------------------------
 //handle pirDetector events
 void onPirDetectorChanged(){
-	Serial.println("* Pir changed");
+	//Serial.println("* Pir changed");
 }
 
 //---------------------------------------------------------------------
@@ -255,13 +295,13 @@ String setSensorJson(){
 
 	uint8_t argsProcessed=0;
 
-	String sensorName=server.arg("currentSensor_name");
+	String sensorName=server.arg(FPSTR(MESSAGE_SERVER_ARG_CURRENT_SENSOR_NAME));
 	String status=FPSTR(MESSAGE_ABSTRACT_ITEM_NOT_FOUND);
 
 	Serial.print(FPSTR(MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_NAME_EQ));
 	Serial.println(sensorName);
 
-	AbstractItem* aitem;
+	AbstractItem* aitem=NULL;
 
 	for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
 		if(abstractItems[i]->getName()==sensorName){
@@ -270,7 +310,7 @@ String setSensorJson(){
 		}
 	}
 
-	if(aitem!=nullptr){
+	if(aitem!=nullptr && aitem!=NULL){
 		for(int i=0;i<server.args();i++){
 			AbstractItemRequest req=AbstractItem::createitemRequest(server.argName(i),server.arg(i));
 
@@ -302,20 +342,20 @@ String executeCommand(){
 	wifiHelper.checkAuthentication();
 	Serial.println(FPSTR(MESSAGE_COMMANDS_EXECUTE_COMMAND));
 
-	String command=server.arg(FPSTR(MESSAGE_COMMANDS_CONFIRM_COMMAND_PARAM));
+	String command=server.arg(FPSTR(MESSAGE_SERVER_ARG_CONFIRM_COMMAND));
 
 	StatusMessage sm={FPSTR(MESSAGE_COMMANDS_ERROR),FPSTR(MESSAGE_COMMANDS_COMMAND_NOT_RECOGNIZED)};
 
-	if(command=="restart"){
+	if(command==FPSTR(MESSAGE_SERVER_ARG_VAL_restart)){
 		Serial.println(FPSTR(MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED));
 		deviceHelper.createPostponedCommand(command);
 
 		sm.setVals(FPSTR(MESSAGE_COMMANDS_OK),FPSTR(MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED_MSG));
 	}
-	if(command=="recreateThingSpeak"){
+	if(command==FPSTR(MESSAGE_SERVER_ARG_VAL_recreateThingSpeak)){
 		sm=thingSpeakHelper.recreateThingSpeaChannelskWithCheck(abstractItems,ARRAY_SIZE(abstractItems));
 	}
-	if(command=="deleteSettings"){
+	if(command==FPSTR(MESSAGE_SERVER_ARG_VAL_deleteSettings)){
 		String msg=FPSTR(MESSAGE_COMMANDS_FILES_DELETED);
 			   msg+=String(espSettingsBox.deleteSettingsFiles());
 		sm.setVals(FPSTR(MESSAGE_COMMANDS_OK),msg);
@@ -332,7 +372,7 @@ void executePostPonedCommand(){
 String setEspSettingsBoxValues(){
 	wifiHelper.checkAuthentication();
 	boolean result=false;
-	String page=server.arg("page");
+	String page=server.arg(FPSTR(MESSAGE_SERVER_ARG_PAGE));
 
 	for(uint8_t i=0;i<server.args();i++){
 		String argName=server.argName(i);
@@ -351,7 +391,6 @@ String setEspSettingsBoxValues(){
 void processThingSpeakPost(){
 	thingSpeakHelper.sendItemsToThingSpeak(abstractItems, ARRAY_SIZE(abstractItems));
 }
-
 //------------------------------MQTT functions-----------------------------------------------------
 
 void sendAbstractItemToHttp(AbstractItem* item){
@@ -359,78 +398,24 @@ void sendAbstractItemToHttp(AbstractItem* item){
 		wifiHelper.executeFormPostRequest(espSettingsBox.httpPostIp.toString(), item->getJson());
 	}
 }
+//-----------------------------Telegram functions-----------------------------------
+void send_message(String message) {
+	Serial.println(message);
+}
 
+/*
 void processMqttEvent(String topic,String message){
 	mqttHelper.processMqttEvent(topic, message, abstractItems, ARRAY_SIZE(abstractItems));
 	deviceHelper.printDeviceDiagnostic();
 }
-//-----------------------------Viber functions-----------------------------------
-void send_message(String message) {
-/*
-	if(espSettingsBox.viberApiKey=="none" || espSettingsBox.viberApiKey==""){
-		return;
-	}
 
-        // start connection and send HTTP header
-    int ind=espSettingsBox.viberReceivers.indexOf(";");
-    uint8_t count=0;
+void handleLampChange(PinDigital* lamp){
+	wifiHelper.checkAuthentication();
+	int8_t on=server.arg("val").toInt();
 
-    while (ind!=-1){
-    	count++;
-    	ind=espSettingsBox.viberReceivers.indexOf(";",ind+1);
-    }
+	setLampValue(lamp, on);
 
-    if(count==0){
-    	return;
-    }
-
-    String adresses[count];
-
-    uint8_t startIndex=0;
-    uint8_t endIndex=espSettingsBox.viberReceivers.indexOf(";");
-    count=0;
-
-    while(endIndex!=-1){
-    	adresses[count]=espSettingsBox.viberReceivers.substring(startIndex,endIndex);
-    	count++;
-    	startIndex=endIndex+1;
-    	endIndex=espSettingsBox.viberReceivers.indexOf(";",startIndex);
-    	if(endIndex==-1){
-    		adresses[count]=espSettingsBox.viberReceivers.substring(startIndex);
-    	}
-    }
-
-    Serial.println(espSettingsBox.viberReceivers);
-
-    for(uint8_t i=0;i<sizeof(adresses);i++){
-    	Serial.println(adresses[i]);
-    }
-
-    return;
-
-    HTTPClient http;
-
-	Serial.print("[HTTP] begin...\n");
-	http.begin("https://chatapi.viber.com/pa/send_message");
-	http.addHeader("Content-Type", "application/application/json");
-	http.addHeader("X-Viber-Auth-Token", espSettingsBox.viberApiKey); // TODO: Use your auto token
-
-	Serial.print("[HTTP] POST...\n");
-
-    int httpCode;
-    httpCode = http.POST("{ \"receiver\": \"VDlniOGrBkfWYbRqhuf3mw==\", \"min_api_version\": 1, \"sender\": { \"name\": \"Wills IoT Gateway\", \"avatar\": \"http://powereyesonline.com/avatar.jpg\" }, \"tracking_data\": \"tracking data\", \"type\": \"text\",  \"text\": \""+message+"\" }");
-
-    if (httpCode) {
-      // HTTP header has been send and Server response header has been handled
-      Serial.printf("[HTTP] POST... code: %d\n", httpCode);
-
-      // file found at server
-      if (httpCode == 200) {
-        String payload = http.getString();
-        Serial.println(payload);
-      }
-    } else {
-      Serial.print("[HTTP] POST... failed, no connection or no HTTP server\n");
-    }
-    */
+	server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lamp->getSimpleJson());
 }
+*/
+

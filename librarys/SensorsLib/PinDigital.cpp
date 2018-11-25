@@ -51,7 +51,7 @@ uint16_t PinDigital::getVal(){
 	return digitalRead(pin);
 }
 
-bool PinDigital::setVal(uint16_t _val){
+bool PinDigital::setVal(uint8_t _val){
 	if(pinModeInOut==OUTPUT){
 
 		if(_val!=getVal()){
