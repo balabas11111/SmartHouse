@@ -34,16 +34,19 @@ public:
 
 			for(uint8_t i=0;i<size;i++){
 				params+=constructThingSpeakParameters(items[i]);
-				count++;
+				if(params!=""){
+					count++;
+				}
 			}
 
 			if(params!=""){
 				wifiHelper->executeGetRequest(baseUrl+espSettingsBox->thSkWKey+params);
+				Serial.print(count);
+				Serial.println(FPSTR(MESSAGE_DONE));
+				Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 			}
 
-			Serial.print(count);
-			Serial.println(FPSTR(MESSAGE_DONE));
-			Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+
 		}
 	}
 
@@ -55,7 +58,7 @@ public:
 	}
 
 	String constructThingSpeakParameters(AbstractItem* item){
-		return item->constructGetUrl("", FPSTR(MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST_EQ));
+		return item->constructGetUrl("", FPSTR(MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST));
 	}
 
 	StatusMessage recreateThingSpeaChannelskWithCheck(AbstractItem** items,uint8_t size){
