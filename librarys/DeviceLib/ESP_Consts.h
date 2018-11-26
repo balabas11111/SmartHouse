@@ -12,6 +12,25 @@
 
 #include "Arduino.h"
 
+//Robot Dyn//vem  // 12E
+/*
+#define A0_PIN 17
+#define D0_PIN 16 //GPIO016 ////beeper
+#define D1_PIN 5  //GPIO05  //DallasTemp           PIN_WIRE_SCL
+#define D2_PIN 4  //GPIO04  //OLED //SDA //blue    PIN_WIRE_SDA
+#define D3_PIN 0  //GPIO00  //OLED //SCL //green
+#define D4_PIN 2  //GPIO02  //RedLed               INTERNAL_LED_PIN
+#define D5_PIN 14 //GPIO14  //DHT
+#define D6_PIN 12 //GPIO12  //DallasTemp red led2
+#define D7_PIN 13 //GPIO13  //GreenLed
+#define D8_PIN 15 //GPIO15  //button
+#define SD3_PIN 10
+#define SD2_PIN 9
+
+#define RX_PIN 3
+#define TX_PIN 1
+*/
+
 //sensors constants
 const char TEMPERATURE_RU[] PROGMEM ="Температура";
 const char HUMIDITY_RU[] PROGMEM ="Влажность";
@@ -40,7 +59,6 @@ const char MEASURE_PASCAL[] PROGMEM ="Pa";
 const char MEASURE_METER[] PROGMEM ="m";
 const char MEASURE_LIGHT[] PROGMEM ="Lux";
 
-//const PROGMEM char HTML_BH1750_MEASURER[] = ""
 //widget actions
 const PROGMEM char ACTION_GET_STATIC_SETTINGS_DATA[]="getStSettData";       //returns static data from espSettings
 const PROGMEM char ACTION_GET_WIDGET_HTML_OR_VAL[]="getWidgetHtml";       //returns all components text
@@ -173,6 +191,7 @@ const PROGMEM char CONTENT_TYPE_APPLICATION_XPDF[]="application/x-pdf";
 const PROGMEM char CONTENT_TYPE_APPLICATION_XZIP[]="application/x-zip";
 const PROGMEM char CONTENT_TYPE_APPLICATION_XGZIP[]="application/x-gzip";
 
+const PROGMEM char CONTENT_TYPE_JSON_UTF8[]="application/json; charset=UTF-8";
 //serial println constants
 
 const PROGMEM char MESSAGE_STATUS_EQUAL[]="Status=";
@@ -466,6 +485,8 @@ const PROGMEM char MESSAGE_I2CHELPER_DEVICE_FOUND[]="I2C device found at address
 const PROGMEM char MESSAGE_I2CHELPER_UNKNOWN_ERROR[]="Unknow error at address 0x";
 const PROGMEM char MESSAGE_I2CHELPER_NO_DEVICES_FOUND[]="No I2C devices found\n";
 
+//
+const PROGMEM char MESSAGE_PCF8574HELPER_BEGIN_INIT[]="-----Begin initialize of PCF8574_CHelper-----";
 
 //Thingspeak constants
 const PROGMEM char MESSAGE_THINGSPEAK_SEND_STARTED[]="----------------Send data to thing speak---------------";
@@ -489,6 +510,12 @@ const PROGMEM char MESSAGE_THINGSPEAK_SET_CHANNELS[]=" каналов управ
 
 const PROGMEM char MESSAGE_THINGSPEAK_CHANNELS_PREF[]="channels/";
 const PROGMEM char MESSAGE_THINGSPEAK_SUBSCRIBE_FIELDS_FIELD[]="/subscribe/fields/field";
+
+const PROGMEM char MESSAGE_THINGSPEAK_FAILED_STATUS[]="Failed";
+const PROGMEM char MESSAGE_THINGSPEAK_OK_STATUS[]="Ok";
+const PROGMEM char MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED[]="Публикация ThingSpeak не разрешена";
+const PROGMEM char MESSAGE_THINGSPEAK_NO_USER_SPECIFIED[]="Не задан пользователь ThingSpeak";
+const PROGMEM char MESSAGE_THINGSPEAK_EMPTY_KEY[]="EmptyKey";
 
 //Ntp clock client
 const PROGMEM char MESSAGE_TIME_CLIENT_JSON_BEFORE_TIME[]="{\"wsId\":\"clock\",\"wsClass\":\"wsItem\",\"wsValue\":\"";
@@ -536,6 +563,11 @@ const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_STATUS_EQ[]=" status=";
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_NOT_FOUND[]="NotFound";
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_OK[]="Ok";
 
+//Virtual pin
+const PROGMEM char MESSAGE_VIRTUAL_PIN_START_INIT[]="init VirtualPin =";
+const PROGMEM char MESSAGE_VIRTUAL_PIN_Mode[]=" In(0)Out(1)=";
+const PROGMEM char MESSAGE_VIRTUAL_PIN_ID[]=" vPinId=";
+
 //--------------------------------------------------------
 
 //server urls
@@ -570,6 +602,8 @@ const PROGMEM char SENSOR_buttonLeft[]="buttonLeft";
 const PROGMEM char SENSOR_buttonRight[]="buttonRight";
 const PROGMEM char SENSOR_lampLeft[]="lampLeft";
 const PROGMEM char SENSOR_lampRight[]="lampRight";
+const PROGMEM char SENSOR_lamp2[]="lamp2";
+const PROGMEM char SENSOR_lamp3[]="lamp3";
 const PROGMEM char SENSOR_acMeter[]="acMeter";
 const PROGMEM char SENSOR_bmeMeasurer[]="bmeMeasurer";
 const PROGMEM char SENSOR_luxMeasurer[]="luxMeasurer";

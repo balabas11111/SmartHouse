@@ -45,8 +45,6 @@ public:
 				Serial.println(FPSTR(MESSAGE_DONE));
 				Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 			}
-
-
 		}
 	}
 
@@ -63,12 +61,12 @@ public:
 
 	StatusMessage recreateThingSpeaChannelskWithCheck(AbstractItem** items,uint8_t size){
 		if(!espSettingsBox->isThingSpeakEnabled){
-			return {"Failed","Публикация ThingSpeak не разрешена"};
+			return {FPSTR(MESSAGE_THINGSPEAK_FAILED_STATUS),FPSTR(MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED)};
 		}else
-		if(espSettingsBox->thSkUsrKey=="" || espSettingsBox->thSkUsrKey=="EmptyKey"){
-			return {"Failed","Не задан пользователь ThingSpeak"};
+		if(espSettingsBox->thSkUsrKey=="" || espSettingsBox->thSkUsrKey==FPSTR(MESSAGE_THINGSPEAK_EMPTY_KEY)){
+			return {FPSTR(MESSAGE_THINGSPEAK_FAILED_STATUS),FPSTR(MESSAGE_THINGSPEAK_NO_USER_SPECIFIED)};
 		}else{
-			return {"Ok",recreateThingSpeak(items,size)};
+			return {FPSTR(MESSAGE_THINGSPEAK_OK_STATUS),recreateThingSpeak(items,size)};
 		}
 
 	}

@@ -15,6 +15,12 @@
 class I2Chelper: public Initializable{
 
 public:
+	/*
+	I2C device found at address 0x23  BH1750
+	I2C device found at address 0x76  BME280
+	I2C device found at address 0x27  PCF8574_for_LCD
+	*/
+
 	I2Chelper(uint8_t _clockPin,uint8_t _dataPin,boolean _active){
 
 		devCount=0;

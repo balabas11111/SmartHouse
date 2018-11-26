@@ -251,15 +251,6 @@ public:
 		}
 		Serial.println();
 	}
-/*
-	String getJsonPublishUrl(){
-		return "/"+getName()+"/getJson";
-	}
-
-	String getSetValueUrl(){
-		return "/"+getName()+"/setValue";
-	}
-*/
 	boolean setFieldFromRequest(AbstractItemRequest req){
 
 		if(this->id!=req.deviceId || !req.valid){

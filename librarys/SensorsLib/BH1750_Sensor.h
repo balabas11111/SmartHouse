@@ -17,6 +17,8 @@
 
 #include "BH1750.h"
 
+#define BH1750_ID 201
+
 const char SENSOR_BH1750_NAME[] PROGMEM ="BH1750_Sensor";
 const char SENSOR_BH1750_DESCRIPTION[] PROGMEM ="LuxMeter";
 const char SENSOR_BH1750_SIZE[] PROGMEM ="Lux";
@@ -29,8 +31,8 @@ class BH1750_Sensor: public AbstractItem, public Initializable{
 
 public:
 
-	BH1750_Sensor(String name,uint8_t id)
-	: AbstractItem(id,name,FPSTR(SENSOR_BH1750_DESCRIPTION),FPSTR(SENSOR_BH1750_SIZE),FPSTR(SENSOR_BH1750_DESCRIPTION_RU),1){
+	BH1750_Sensor(String name)
+	: AbstractItem(BH1750_ID,name,FPSTR(SENSOR_BH1750_DESCRIPTION),FPSTR(SENSOR_BH1750_SIZE),FPSTR(SENSOR_BH1750_DESCRIPTION_RU),1){
 	}
 
 	~BH1750_Sensor(){}

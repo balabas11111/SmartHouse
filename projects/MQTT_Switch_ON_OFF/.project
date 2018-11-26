@@ -89,14 +89,14 @@
 			<location>D:/projects/!!!SmartHouse/librarys/DeviceLib</location>
 		</link>
 		<link>
-			<name>libraries/DisplayHelper</name>
-			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/DisplayHelper</location>
-		</link>
-		<link>
 			<name>libraries/ESP8266HTTPClient</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266HTTPClient</locationURI>
+		</link>
+		<link>
+			<name>libraries/ESP8266HTTPUpdateServer</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266HTTPUpdateServer</locationURI>
 		</link>
 		<link>
 			<name>libraries/ESP8266WebServer</name>
@@ -139,6 +139,11 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire/2.3.3</locationURI>
 		</link>
 		<link>
+			<name>libraries/PCF8574</name>
+			<type>2</type>
+			<location>D:/projects/!!!SmartHouse/librarys/PCF8574</location>
+		</link>
+		<link>
 			<name>libraries/PubSubClient</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/PubSubClient/2.6.0</locationURI>
@@ -154,24 +159,9 @@
 			<location>D:/projects/!!!SmartHouse/librarys/SensorsLib</location>
 		</link>
 		<link>
-			<name>libraries/TelegramBot</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/TelegramBot/1.2.2</locationURI>
-		</link>
-		<link>
 			<name>libraries/TimeTrigger</name>
 			<type>2</type>
 			<location>D:/projects/!!!SmartHouse/librarys/TimeTrigger</location>
-		</link>
-		<link>
-			<name>libraries/UniversalTelegramBot</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/UniversalTelegramBot/1.0.0</locationURI>
-		</link>
-		<link>
-			<name>libraries/WebSockets</name>
-			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/WebSockets</location>
 		</link>
 		<link>
 			<name>libraries/Wire</name>

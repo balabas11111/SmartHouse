@@ -4,7 +4,7 @@
 #include <Hash.h>
 #include <ESP8266WiFi.h>
 #include "EspSettingsBox.h"
-#include "MqttHelper.h"
+//#include "MqttHelper.h"
 #include "Loopable.h"
 #include "FS.h"
 #include "I2Chelper.h"
@@ -13,6 +13,7 @@
 #include <Wire.h>
 
 #include <ESP8266WebServer.h>
+#include <ESP8266HTTPUpdateServer.h>
 #include "TimeTrigger.h"
 
 #include <DeviceHelper.h>
@@ -26,9 +27,8 @@
 #include "DS18D20_Sensor.h"
 #include "StatusMessage.h"
 
-//#include "MessageSenderTelegram.h"
-#include "WiFiClientSecure.h"
-#include <TelegramBot.h>
+#include "PinDigitalVirtual.h"
+#include "PCF8574Helper.h"
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
@@ -37,87 +37,69 @@
 
 #define FIRMVARE_VERSION "b@l@bas-soft ONOFF v0.0.5"
 
-//Robot Dyn//vem  // 12E
-/*
-#define A0_PIN 17
-#define D0_PIN 16 //GPIO016 ////beeper
-#define D1_PIN 5  //GPIO05  //DallasTemp           PIN_WIRE_SCL
-#define D2_PIN 4  //GPIO04  //OLED //SDA //blue    PIN_WIRE_SDA
-#define D3_PIN 0  //GPIO00  //OLED //SCL //green
-#define D4_PIN 2  //GPIO02  //RedLed               INTERNAL_LED_PIN
-#define D5_PIN 14 //GPIO14  //DHT
-#define D6_PIN 12 //GPIO12  //DallasTemp red led2
-#define D7_PIN 13 //GPIO13  //GreenLed
-#define D8_PIN 15 //GPIO15  //button
-#define SD3_PIN 10
-#define SD2_PIN 9
-*/
-#define RX_PIN 3
-#define TX_PIN 1
-
-
 #define HUMAN_PRESENTED LOW
 #define HUMAN_NOT_PRESENTED HIGH
 
 EspSettingsBox espSettingsBox("",true,true);
 
-//WiFiClient wclient;
 ESP8266WebServer server ( 80 );
-//WebSocketsServer webSocket = WebSocketsServer(8081);
+ESP8266HTTPUpdateServer httpUpdater(true);
 
 I2Chelper i2cHelper(D1,D2,false);
 DisplayHelper displayHelper(true);
 
-TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,measureSensors);
-TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSettingsBox.isThingSpeakEnabled,processThingSpeakPost);
+//TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,measureSensors);
+//TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSettingsBox.isThingSpeakEnabled,processThingSpeakPost);
 
 PinDigital buttonLeft(FPSTR(SENSOR_buttonLeft),D7,onLeftButtonChanged);
 PinDigital buttonRight(FPSTR(SENSOR_buttonRight),D6,onRightButtonChanged,1000);
 
-PinDigital lampLeft(FPSTR(SENSOR_lampLeft),D8,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW);
-PinDigital lampRight(FPSTR(SENSOR_lampRight),D0,onRightLampChanged,OUTPUT,CHANGE,HIGH,LOW);
+//PinDigital lampLeft(FPSTR(SENSOR_lampLeft),D8,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW);
+//PinDigital lampRight(FPSTR(SENSOR_lampRight),D0,onRightLampChanged,OUTPUT,CHANGE,HIGH,LOW);
+//PinDigital acMeter(FPSTR(SENSOR_acMeter),D5,onAcMeterChanged,INPUT,CHANGE,HIGH,HIGH);
 
-PinDigital acMeter(FPSTR(SENSOR_acMeter),D5,onAcMeterChanged,INPUT,CHANGE,HIGH,HIGH);
+PinDigitalVirtual lampLeft(FPSTR(SENSOR_lampLeft));
+PinDigitalVirtual lampRight(FPSTR(SENSOR_lampRight));
+PinDigitalVirtual lamp2(FPSTR(SENSOR_lamp2));
+PinDigitalVirtual lamp3(FPSTR(SENSOR_lamp3));
+PinDigitalVirtual acMeter(FPSTR(SENSOR_acMeter),onAcMeterChanged);
+
+PinDigitalVirtual* virtualItems[]={&lampLeft,&lampRight,&lamp2,&lamp3,&acMeter};
 
 //Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged);
 //NtpTimeClientService timeClient(&espSettingsBox,processTimeClientEvent,60000);
 
-BME280_Sensor bmeMeasurer(FPSTR(SENSOR_bmeMeasurer),20);
-BH1750_Sensor luxMeasurer(FPSTR(SENSOR_luxMeasurer),21);
+BME280_Sensor bmeMeasurer(FPSTR(SENSOR_bmeMeasurer));
+BH1750_Sensor luxMeasurer(FPSTR(SENSOR_luxMeasurer));
 
 //DHT22_Sensor dhtMeasurer(VAR_NAME(dhtSensor), D0, 22);
 DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), D3);
 
 WiFiHelper wifiHelper(&espSettingsBox, &displayHelper, &server,postInitWebServer,false);
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
-//MqttHelper mqttHelper(&espSettingsBox,wclient,processMqttEvent);
 
-const char BotToken[] = "737840576:AAH_9-PM8knquJ3x1GN-sOTX4NGPNdU50iE";
+PCF8574Helper extender(D8,virtualItems,ARRAY_SIZE(virtualItems));
 
-//WiFiClientSecure net_ssl;
-//TelegramBot bot (BotToken, net_ssl);
-//UniversalTelegramBot bot(espSettingsBox.telegramApiKey,client);
-//MessageSenderTelegram messageSenderTelegram(&bot);
+Loopable* loopArray[]={&extender,&wifiHelper,&buttonLeft,&buttonRight,&acMeter/*,&sensorsTrigger,&thingSpeakTrigger*/};
 
-Loopable* loopArray[]={&wifiHelper,&buttonLeft,&buttonRight,&acMeter,&sensorsTrigger,&thingSpeakTrigger};
-
-AbstractItem* abstractItems[]={&lampLeft,&lampRight,&bmeMeasurer,&luxMeasurer,&acMeter,&ds18d20Measurer};
+AbstractItem* abstractItems[]={&lampLeft,&lampRight,&lamp2,&lamp3,&bmeMeasurer,&luxMeasurer,&acMeter,&ds18d20Measurer};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),120000);
-
 
 
 void setup() {
   deviceHelper.startDevice(espSettingsBox.DeviceId);
 
   espSettingsBox.init();
-  wifiHelper.init();
+
   i2cHelper.init();
+
+  extender.init();
+  httpUpdater.setup(&server);
+  wifiHelper.init();
   bmeMeasurer.init();
   luxMeasurer.init();
   ds18d20Measurer.init();
-
-  //deviceHelper.displayDetails();
 
   loadSensors();
   measureSensors();
@@ -133,26 +115,26 @@ void loop() {
 
 void postInitWebServer(){
 	server.on(FPSTR(URL_SUBMIT_FORM_COMMANDS), HTTP_POST, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), executeCommand());
+		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), executeCommand());
 	});
 	server.on(FPSTR(URL_SUBMIT_FORM_SETTINGS), HTTP_POST, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), setEspSettingsBoxValues());
+		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), setEspSettingsBoxValues());
 	});
 	server.on(FPSTR(ESPSETTINGSBOX_GET_SIMPLE_JSON_PUBLISH_URL), HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getSimpleJson());
+		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), espSettingsBox.getSimpleJson());
 	});
 	server.on(FPSTR(URL_GET_JSON_SETTINGS), HTTP_GET, [](){
 		wifiHelper.checkAuthentication();
 		String page=server.arg(FPSTR(MESSAGE_SERVER_ARG_PAGE));
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), espSettingsBox.getJson(page));
+		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), espSettingsBox.getJson(page));
 	});
 	server.on(FPSTR(URL_GET_JSON_SENSORS), HTTP_GET, [](){
 		wifiHelper.checkAuthentication();
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), getAllSensorsJson());
+		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), getAllSensorsJson());
 	});
 	server.on(FPSTR(URL_SUBMIT_FORM_SENSORS), HTTP_POST, [](){
 		wifiHelper.checkAuthentication();
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), setSensorJson());
+		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), setSensorJson());
 	});
 
 	server.on(FPSTR(URL_GET_SENSORS_CURRNT_VALUES), HTTP_GET, [](){
@@ -161,18 +143,18 @@ void postInitWebServer(){
 
 			if(arg==FPSTR(MESSAGE_SERVER_ARG_VAL_ALL)){
 				wifiHelper.checkAuthentication();
-				server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), getAllSensorsJson());
+				server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), getAllSensorsJson());
 			}
 
 			for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
 				if(arg==abstractItems[i]->getName()){
-					server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), abstractItems[i]->getJson());
+					server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), abstractItems[i]->getJson());
 					break;
 				}
 			}
 		}
 
-		server.send(404, FPSTR(CONTENT_TYPE_JSON), FPSTR(MESSAGE_STATUS_JSON_WIDGET_NOT_FOUND));
+		server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), FPSTR(MESSAGE_STATUS_JSON_WIDGET_NOT_FOUND));
 	});
 
 	server.on(FPSTR(URL_SET_DIGITAL_PIN_CURRENT_VALUE), HTTP_ANY, [](){
@@ -194,50 +176,12 @@ void postInitWebServer(){
 				int8_t on=server.arg(FPSTR(MESSAGE_SERVER_ARG_VAL)).toInt();
 				setLampValue(lamp, on);
 
-				server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lamp->getSimpleJson());
+				server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), lamp->getSimpleJson());
 			}
 		}
 
-		server.send(404, FPSTR(CONTENT_TYPE_JSON), FPSTR(MESSAGE_STATUS_JSON_WIDGET_NOT_FOUND));
+		server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), FPSTR(MESSAGE_STATUS_JSON_WIDGET_NOT_FOUND));
 	});
-	/*
-    server.on(FPSTR(URL_JSON_SENSORS), HTTP_GET, [](){
-
-	});
-	server.on(FPSTR(URL_SET_LAMP_LEFT), HTTP_ANY, [](){
-		handleLampChange(&lampLeft);
-	});
-	server.on(FPSTR(URL_SET_LAMP_RIGHT), HTTP_ANY, [](){
-		handleLampChange(&lampRight);
-	});
-
-	server.on(FPSTR(URL_GET_BUTTON_LEFT), HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), buttonLeft.getJson());
-	});
-	server.on(FPSTR(URL_GET_BUTTON_RIGHT), HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), buttonRight.getJson());
-	});
-
-	server.on(FPSTR(URL_GET_LAMP_LEFT), HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lampLeft.getJson());
-	});
-	server.on(FPSTR(URL_GET_LAMP_RIGHT), HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), lampRight.getJson());
-	});
-	server.on(FPSTR(URL_GET_ACMETER), HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), acMeter.getJson());
-	});
-	server.on(FPSTR(URL_GET_BME_MEASURER), HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), bmeMeasurer.getJson());
-	});
-	server.on(FPSTR(URL_GET_LUX_MEASURER), HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), luxMeasurer.getJson());
-	});
-	server.on(FPSTR(URL_GET_DS18D20_MEASURER), HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_TEXT_HTML), ds18d20Measurer.getJson());
-	});
-	*/
-
 }
 //base functions
 void measureSensors(){
@@ -264,16 +208,11 @@ void onAcMeterChanged(){
 //handle lamp events
 void setLampValue(PinDigital* lamp,uint8_t on){
 	lamp->setVal(on);
-	//lamp->printValues();
 }
 
-void onLeftLampChanged(){
-	//Serial.println("* Left lamp changed");
-}
+void onLeftLampChanged(){}
 
-void onRightLampChanged(){
-	//Serial.println("* Right lamp changed");
-}
+void onRightLampChanged(){}
 
 //---------------------------------------------------------------------
 //handle pirDetector events
@@ -332,7 +271,6 @@ String setSensorJson(){
 
 	return "{\"status\":\""+status+"\",\"sensor\":\""+sensorName+"\"}";
 }
-
 
 String getAllSensorsJson(){
 	return deviceHelper.getJson(abstractItems, ARRAY_SIZE(abstractItems));
@@ -398,12 +336,12 @@ void sendAbstractItemToHttp(AbstractItem* item){
 		wifiHelper.executeFormPostRequest(espSettingsBox.httpPostIp.toString(), item->getJson());
 	}
 }
+/*
 //-----------------------------Telegram functions-----------------------------------
 void send_message(String message) {
 	Serial.println(message);
 }
 
-/*
 void processMqttEvent(String topic,String message){
 	mqttHelper.processMqttEvent(topic, message, abstractItems, ARRAY_SIZE(abstractItems));
 	deviceHelper.printDeviceDiagnostic();

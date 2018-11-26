@@ -18,6 +18,8 @@
 #include "Adafruit_Sensor.h"
 #include "ESP_Consts.h"
 
+#define BME280_ID 200
+
 const char SENSOR_BME280_NAME[] PROGMEM ="Bme280Sensor";
 const char SENSOR_BME280_DESCRIPTION[] PROGMEM ="Bme280Sensor";
 const char SENSOR_BME280_SIZE[] PROGMEM ="C/%/Pa/m";
@@ -30,8 +32,8 @@ class BME280_Sensor: public AbstractItem, public Initializable{
 
 public:
 
-	BME280_Sensor(String name,uint8_t id)
-		: AbstractItem(id,name,FPSTR(SENSOR_BME280_DESCRIPTION),FPSTR(SENSOR_BME280_SIZE),FPSTR(SENSOR_BME280_DESCRIPTION_RU),4){
+	BME280_Sensor(String name)
+		: AbstractItem(BME280_ID,name,FPSTR(SENSOR_BME280_DESCRIPTION),FPSTR(SENSOR_BME280_SIZE),FPSTR(SENSOR_BME280_DESCRIPTION_RU),4){
 	}
 
 	~BME280_Sensor(){}
