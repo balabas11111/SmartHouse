@@ -8,6 +8,8 @@ d:\projects\!!!SmartHouse
 
 Links
 
+https://dl.espressif.com/dl/package_esp32_index.json
+
 https://github.com/tzapu/WiFiManager
 https://tttapa.github.io/ESP8266/Chap13%20-%20OTA.html
 https://www.w3schools.com/howto/howto_html_include.asp
