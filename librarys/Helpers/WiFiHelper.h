@@ -13,7 +13,6 @@
 #include "Loopable.h"
 #include "Initializable.h"
 #include "EspSettingsBox.h"
-#include "DisplayHelper.h"
 #include "FS.h"
 
 #include <ESP8266WiFi.h>
@@ -22,6 +21,7 @@
 #include <PinDigital.h>
 
 #include <AbstractItem.h>
+#include <DisplayHelperAbstract.h>
 
 class WiFiHelper:public Initializable,public Loopable {
 

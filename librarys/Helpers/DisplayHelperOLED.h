@@ -8,22 +8,22 @@
 #ifndef LIBRARIES_DISPLAYHELPER_DISPLAYHELPER_OLED_H_
 #define LIBRARIES_DISPLAYHELPER_DISPLAYHELPER_OLED_H_
 
+#include <DisplayHelperAbstract.h>
 #include "Arduino.h"
 #include "OLED.h"
 #include "EspSettingsBox.h"
 #include "AbstractItem.h"
-#include <DisplayHelper.h>
 
 #define TURN_OFF_SECS 15
 
-class DisplayHelper_OLED: public DisplayHelper {
+class DisplayHelperOLED: public DisplayHelperAbstract {
 
 public:
-	DisplayHelper_OLED(AbstractItem** abstractItems,uint8_t itemsCount,EspSettingsBox* espSettingsBox)
-				:DisplayHelper(abstractItems,itemsCount,espSettingsBox){
+	DisplayHelperOLED(EspSettingsBox* espSettingsBox)
+				:DisplayHelperAbstract(espSettingsBox){
 	}
 
-	virtual ~DisplayHelper_OLED(){};
+	virtual ~DisplayHelperOLED(){};
 
 protected:
 //--------------------------------------------

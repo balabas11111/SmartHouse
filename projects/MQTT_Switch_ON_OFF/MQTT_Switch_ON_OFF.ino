@@ -8,7 +8,6 @@
 #include "Loopable.h"
 #include "FS.h"
 #include "I2Chelper.h"
-#include "DisplayHelper.h"
 #include "WiFiHelper.h"
 #include <Wire.h>
 
@@ -17,6 +16,7 @@
 #include "TimeTrigger.h"
 
 #include <DeviceHelper.h>
+#include <DisplayHelperAbstract.h>
 #include <ThingSpeakHelper.h>
 #include <PinDigital.h>
 #include <Pir_Sensor.h>
