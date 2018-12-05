@@ -9,7 +9,7 @@
 #define LIBRARIES_DISPLAYHELPER_DISPLAYHELPERBASE_H_
 
 #include <DisplayHelper.h>
-#include <DisplayHelperPageAbstractItem.h>
+#include <DisplayHelperPage.h>
 #include "Arduino.h"
 #include "EspSettingsBox.h"
 #include <Initializable.h>
