@@ -51,6 +51,9 @@ public:
 	}
 
 	virtual boolean turnOnOffDisplay(boolean on){
+		if(!initialized){
+			return false;
+		}
 		preprocessDisplayPower(on);
 
 		if(!displayOn){
@@ -61,6 +64,9 @@ public:
 	}
 
 	virtual boolean loop(){
+		if(!initialized){
+			return false;
+		}
 		boolean result=false;
 
 		if(turnOffTrigger!=nullptr){
@@ -75,21 +81,32 @@ public:
 	}
 
 	virtual boolean clearDisplay(){
+		if(!initialized){
+			return false;
+		}
 		return handleDisplayClear();
 	}
 
 	virtual boolean addStringToDisplay(String str,int row,int col,String sender){
-
+		if(!initialized){
+			return false;
+		}
 		return handleDisplayLine(str,row,col,sender);
 	}
 
 	virtual void printCurrentPage(){
+		if(!initialized){
+			return;
+		}
 		clearDisplay();
 
 		displayPage(currentpage-1);
 	}
 
 	virtual boolean displayLine(String str,int row,int col){
+		if(!initialized){
+			return false;
+		}
 		return handleDisplayLine(str,row,col,"");
 	}
 
