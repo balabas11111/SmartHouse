@@ -479,6 +479,8 @@ const PROGMEM char MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_NOT_FOUND[]="Not Found";
 const PROGMEM char MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND[]="File Not Found";
 const PROGMEM char MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_I_M_HERE[]="I'm here";
 const PROGMEM char MESSAGE_WIFIHELPER_EDIT_HTML_PAGE[]="/web/edit.htm";
+const PROGMEM char MESSAGE_WIFIHELPER_INDEX_HTML_PAGE[]="/web/index.htm";
+const PROGMEM char MESSAGE_WIFIHELPER_SETTINGS_HTML_PAGE[]="/web/settings.htm";
 
 //
 const PROGMEM char MESSAGE_I2CHELPER_BEGIN_INIT[]="-----Begin initialize of I2CHelper-----";
@@ -575,6 +577,8 @@ const PROGMEM char MESSAGE_VIRTUAL_PIN_ID[]=" vPinId=";
 
 //server urls
 const PROGMEM char URL_EDIT[]="/edit";
+const PROGMEM char URL_INDEX[]="/index.htm";
+const PROGMEM char URL_SETTINGS[]="/settings.htm";
 
 const PROGMEM char URL_SUBMIT_FORM_COMMANDS[]="/submitForm_commands";
 const PROGMEM char URL_SUBMIT_FORM_SETTINGS[]="/submitForm_settings";

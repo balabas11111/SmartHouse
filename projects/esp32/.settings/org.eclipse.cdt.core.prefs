@@ -34,7 +34,7 @@ environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.EXTRA_F
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.EXTRA_FLAGS/value=-DESP32 -DCORE_DEBUG_LEVEL\=${A.BUILD.CODE_DEBUG} ${A.BUILD.DEFINES}
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.FLASH_FREQ/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.FLASH_FREQ/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.FLASH_FREQ/value=40m
+environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.FLASH_FREQ/value=80m
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.FLASH_MODE/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.FLASH_MODE/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.FLASH_MODE/value=dio
@@ -49,7 +49,7 @@ environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.MCU/ope
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.MCU/value=esp32
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.PARTITIONS/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.PARTITIONS/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.PARTITIONS/value=min_spiffs
+environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.PARTITIONS/value=default
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.PATH/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.PATH/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.BUILD.PATH/value=${ProjDirPath}/${ConfigName}
@@ -157,10 +157,10 @@ environment/project/io.sloeber.core.toolChain.release.1594600135/A.EXTRA.TIME.DT
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.EXTRA.TIME.DTS/value=0
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.EXTRA.TIME.LOCAL/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.EXTRA.TIME.LOCAL/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1594600135/A.EXTRA.TIME.LOCAL/value=1543706093
+environment/project/io.sloeber.core.toolChain.release.1594600135/A.EXTRA.TIME.LOCAL/value=1544057300
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.EXTRA.TIME.UTC/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.EXTRA.TIME.UTC/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1594600135/A.EXTRA.TIME.UTC/value=1543698893
+environment/project/io.sloeber.core.toolChain.release.1594600135/A.EXTRA.TIME.UTC/value=1544050100
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.EXTRA.TIME.ZONE/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.EXTRA.TIME.ZONE/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.EXTRA.TIME.ZONE/value=7200
@@ -223,13 +223,13 @@ environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.CPP.O.
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.CPP.O.PATTERN/value="${A.COMPILER.PATH}${A.COMPILER.CPP.CMD}" ${A.COMPILER.CPREPROCESSOR.FLAGS} ${A.COMPILER.CPP.FLAGS} -DF_CPU\=${A.BUILD.F_CPU} -DARDUINO\=${A.RUNTIME.IDE.VERSION} -DARDUINO_${A.BUILD.BOARD} -DARDUINO_ARCH_${A.BUILD.ARCH} "-DARDUINO_BOARD\=\\"${A.BUILD.BOARD}\\"" "-DARDUINO_VARIANT\=\\"${A.BUILD.VARIANT}\\"" ${A.COMPILER.CPP.EXTRA_FLAGS} ${A.BUILD.EXTRA_FLAGS} ${A.INCLUDES} "${A.SOURCE_FILE}" -o "${A.OBJECT_FILE}"
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.OBJCOPY.EEP.PATTERN.1/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.OBJCOPY.EEP.PATTERN.1/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.OBJCOPY.EEP.PATTERN.1/value="D\:\\projects\\sloeber\\/arduinoPlugin/packages/esp320/tools/gen_esp32part.exe" -q "D\:\\projects\\sloeber\\/arduinoPlugin/packages/esp320/tools/partitions/min_spiffs.csv" "D\:\\projects\\\!\!\!SmartHouse\\projects\\esp32/Release/esp32.partitions.bin"
+environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.OBJCOPY.EEP.PATTERN.1/value="D\:\\projects\\sloeber\\/arduinoPlugin/packages/esp320/tools/gen_esp32part.exe" -q "D\:\\projects\\sloeber\\/arduinoPlugin/packages/esp320/tools/partitions/default.csv" "D\:\\projects\\\!\!\!SmartHouse\\projects\\esp32/Release/esp32.partitions.bin"
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.OBJCOPY.EEP.PATTERN/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.OBJCOPY.EEP.PATTERN/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.OBJCOPY.EEP.PATTERN/value=${A.TOOLS.GEN_ESP32PART.CMD} -q "${A.RUNTIME.PLATFORM.PATH}/tools/partitions/${A.BUILD.PARTITIONS}.csv" "${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.partitions.bin"
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.OBJCOPY.HEX.PATTERN.1/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.OBJCOPY.HEX.PATTERN.1/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.OBJCOPY.HEX.PATTERN.1/value="D\:\\projects\\sloeber\\/arduinoPlugin/packages/esp320/tools/esptool/esptool.exe" --chip esp32 elf2image --flash_mode "dio" --flash_freq "40m" --flash_size "4MB" -o "D\:\\projects\\\!\!\!SmartHouse\\projects\\esp32/Release/esp32.bin" "D\:\\projects\\\!\!\!SmartHouse\\projects\\esp32/Release/esp32.elf"
+environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.OBJCOPY.HEX.PATTERN.1/value="D\:\\projects\\sloeber\\/arduinoPlugin/packages/esp320/tools/esptool/esptool.exe" --chip esp32 elf2image --flash_mode "dio" --flash_freq "80m" --flash_size "4MB" -o "D\:\\projects\\\!\!\!SmartHouse\\projects\\esp32/Release/esp32.bin" "D\:\\projects\\\!\!\!SmartHouse\\projects\\esp32/Release/esp32.elf"
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.OBJCOPY.HEX.PATTERN.LINUX/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.OBJCOPY.HEX.PATTERN.LINUX/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.RECIPE.OBJCOPY.HEX.PATTERN.LINUX/value=python "${A.TOOLS.ESPTOOL.PATH}/${A.TOOLS.ESPTOOL.CMD}" --chip esp32 elf2image --flash_mode "${A.BUILD.FLASH_MODE}" --flash_freq "${A.BUILD.FLASH_FREQ}" --flash_size "${A.BUILD.FLASH_SIZE}" -o "${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.bin" "${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.elf"
@@ -421,7 +421,7 @@ environment/project/io.sloeber.core.toolChain.release.1594600135/A.UPLOAD.MAXIMU
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.UPLOAD.MAXIMUM_DATA_SIZE/value=327680
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.UPLOAD.MAXIMUM_SIZE/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.UPLOAD.MAXIMUM_SIZE/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1594600135/A.UPLOAD.MAXIMUM_SIZE/value=1966080
+environment/project/io.sloeber.core.toolChain.release.1594600135/A.UPLOAD.MAXIMUM_SIZE/value=1310720
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.UPLOAD.PROTOCOL/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.UPLOAD.PROTOCOL/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1594600135/A.UPLOAD.PROTOCOL/value=stk500v1
@@ -484,7 +484,7 @@ environment/project/io.sloeber.core.toolChain.release.1594600135/JANTJE.MAKE_LOC
 environment/project/io.sloeber.core.toolChain.release.1594600135/JANTJE.MAKE_LOCATION/value=${eclipse_home}/arduinoPlugin/tools/make/
 environment/project/io.sloeber.core.toolChain.release.1594600135/JANTJE.MENU/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/JANTJE.MENU/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1594600135/JANTJE.MENU/value=FlashFreq\=40\nPartitionScheme\=min_spiffs\nUploadSpeed\=115200
+environment/project/io.sloeber.core.toolChain.release.1594600135/JANTJE.MENU/value=FlashFreq\=80\nPartitionScheme\=default\nUploadSpeed\=115200
 environment/project/io.sloeber.core.toolChain.release.1594600135/JANTJE.OBJCOPY/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.1594600135/JANTJE.OBJCOPY/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1594600135/JANTJE.OBJCOPY/value=${A.RECIPE.OBJCOPY.EEP.PATTERN}\n\t${A.RECIPE.OBJCOPY.HEX.PATTERN}

@@ -1,0 +1,2088 @@
+<!DOCTYPE html>
+<!-- saved from url=(0025)http://192.168.0.50/setup -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Настройки устройства</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<link rel="stylesheet" href="./css/w3.css">
+
+<script language="javascript">
+
+const MSG_SUFFIX="msg";
+const FORM_SUFFIX="form";
+const VAL_SUFFIX="";
+const ITEM_COUNT_SUFFIX="itemCount";
+
+const DESCR_SUFFIX="descr";
+const MIN_VAL_SUFFIX="minVal";
+const MAX_VAL_SUFFIX="maxVal";
+const FIELD_ID_SUFFIX="fieldId";
+const QUEUE_SUFFIX="queue";
+
+const CLASS_AUTO_CREATED_CHILD="autoCreatedChild"
+const LABEL_PREFFIX="Label";
+
+//--------------------------Menu functions-----------------------------
+function w3_open(){
+	document.getElementById("leftSidebar").style.display = "block";
+};
+					
+function w3_close(){
+	document.getElementById("leftSidebar").style.display = "none";
+};
+//-----------------------------------------------------------------------------------
+function hideComponent(componentId){
+	var comp=document.getElementById(componentId);
+	if(comp!=undefined){
+		comp.style.display = "none";
+	}
+};
+
+function showComponent(componentId){
+	var comp=document.getElementById(componentId);
+	if(comp!=undefined){
+		comp.style.display = "block";
+	}
+};
+
+function markComponentAs_Valid(comp){
+	if(comp!=undefined){
+		if(comp.classList!=undefined){
+			comp.classList.remove('w3-border-red');
+		}
+	}
+}
+	
+function markComponentAs_InValid(comp){
+	if(comp!=undefined){
+		if(comp.classList!=undefined){
+			comp.classList.add('w3-border-red');
+		}
+	}
+}
+
+//-----------------------------------------------------------------
+
+function showMessage(msgComp,message,className){
+	if(msgComp!=undefined){
+		if(className!=undefined && className!=''){
+			msgComp.setAttribute('class',className);
+		}
+		
+		if(message!=undefined && message!=''){
+			msgComp.style.display = "block";
+			msgComp.innerHTML = message;
+		}else{
+			msgComp.style.display = "none"; 
+		}
+	}
+}
+
+//-----------------------------------item name functions----------------
+function getComponentIdWithPreffix(preffix,id){
+	if(preffix!=undefined && preffix!='' && 0!=preffix.length){
+		id=preffix+"_"+id;
+	}
+	return id;
+}
+
+function getComponentIdWithSuffix(id,suffix){
+	if(suffix!=undefined && suffix!='' && 0!=suffix.length){
+		id=id+"_"+suffix;
+	}
+	return id;
+}
+//------------------------------------------------------------------------------
+function getComponentChildrenByClass(comp,clazz){
+	var childNodes = comp.getElementsByClassName(clazz);
+	
+	return childNodes;
+}
+
+function getComponentById(id){
+	return document.getElementById(id);
+}
+
+function getComponent(preffix,id,suffix){
+	id=getComponentIdWithPreffix(preffix,id);
+	id=getComponentIdWithSuffix(id,suffix);
+	
+	var comp=getComponentById(id);
+	
+	return comp;
+}
+
+function isChildInItems(childId,parentId,items){
+
+	for(var j in items){
+		var itemName=items[j].name;
+		var candidateName=getComponentIdWithPreffix(parentId,itemName);
+		
+		if(candidateName==childId){
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+function addChildComponentIfNotExists(comp,item){
+	
+	var parentId=comp.id;
+	var itemName=item.name;
+	var itemVal=item.val;
+	var itemDescr=item.descr;
+	
+	var newLabelId=getComponentIdWithPreffix(LABEL_PREFFIX,itemName);
+	var newInputId=getComponentIdWithPreffix(parentId,itemName);
+	var newLabelHtml="<b>"+itemDescr+"</b>"
+
+	var labelComponent=getComponentById(newLabelId);
+	var inputComponent=getComponentById(newInputId);
+		
+	if(inputComponent!=undefined && labelComponent!=undefined){
+		setComponentValue(inputComponent,itemVal);
+		setComponentValue(labelComponent,newLabelHtml);
+		return;
+	}
+	
+	if(comp!=undefined){
+		
+		var newLabel = document.createElement("Label");
+		newLabel.setAttribute("id",newLabelId);
+		newLabel.setAttribute("for",newInputId);
+		newLabel.setAttribute("style","max-width: 240px;");
+		newLabel.innerHTML = newLabelHtml ;
+		
+		var newInput=document.createElement("Input");
+		newInput.setAttribute("id",newInputId);
+		newInput.setAttribute("class","w3-input w3-border "+CLASS_AUTO_CREATED_CHILD);
+		newInput.setAttribute("style","width:30%");
+		newInput.setAttribute("disabled","disabled");
+		newInput.setAttribute("value",itemVal);
+		
+		comp.appendChild(newLabel);
+		comp.appendChild(newInput);
+	}
+	
+}
+//----------------------------component values setters---------------------------
+function setComponentValue(component,val){
+	if(component!=undefined){
+		var tagName = component.tagName.toLowerCase();
+		
+		if (tagName == 'h1' || tagName == 'h2' || tagName == 'h3' || tagName == 'h4' || tagName == 'h5'
+			|| tagName == 'b'){
+			component.innerHTML=val;
+		};
+		
+		if (tagName == 'input'){
+			if(component.type!=undefined){
+				var type=component.type.toLowerCase();
+				
+				if(type=='checkbox'){
+					var chbVal=false;
+					if(val==1 || val=='1'){
+						chbVal=true;
+					}
+					component.checked=chbVal;
+				}else{
+					component.value=val;
+				}
+			}else{
+				component.value=val;
+			}
+		};
+		
+		if (tagName == 'a'){
+			component.href=val;
+			showComponent(component.id);
+		};
+	}
+}
+
+function updateComponentValue(preffix,id,suffix,value){
+	
+	var comp=getComponent(preffix,id,suffix);
+	setComponentValue(comp,value);
+}
+
+//-----------------------------------process Json answers from device----------------
+function processSimpleJson(data){
+	processSimpleJsonResponse(data,'');	
+}
+
+function processSimpleJsonResponse(data,preffix){
+	var name=data.name
+	var itemCount=data.itemCount;
+	var descr=data.descr;
+	
+	console.log('Process name='+name+' itemCOunt='+itemCount+' descr='+descr);
+	
+	updateComponentValue(preffix,name,DESCR_SUFFIX,descr);
+	updateComponentValue(preffix,name,ITEM_COUNT_SUFFIX,itemCount);
+		
+	//process children
+	var items=data.items;
+	for(var i in items){
+		var itemName=name+"_"+items[i].name;
+		var itemVal=items[i].val;
+		var itemDescr=items[i].descr;
+				
+		updateComponentValue(preffix,itemName,VAL_SUFFIX,itemVal);
+		updateComponentValue(preffix,itemName,DESCR_SUFFIX,itemDescr);
+	}
+}
+
+function processSettingsJson(data){
+	
+	processSimpleJson(data);
+	
+	var devId=data.DeviceId;
+	var devLocation=data.DeviceLocation;
+	
+	if(devId!=undefined && devId!='' && devLocation!=undefined && devLocation!=''){
+		pageHeader='Устройство !!!SmartHouse - '+devId+' '+devLocation;
+		document.title=pageHeader;
+	}
+}
+
+function processSimpleJsonRecreateChildren(data){
+	var items=data.items;
+	var id=data.name;
+	var itemCount=data.itemCount;
+	var descr=data.descr;
+	
+	console.log('Process name='+name+' itemCOunt='+itemCount+' descr='+descr);
+	
+	var comp=getComponentById(id);
+	
+	updateComponentValue("",id,DESCR_SUFFIX,descr);
+	updateComponentValue("",id,ITEM_COUNT_SUFFIX,itemCount);
+	
+	var childNodes=getComponentChildrenByClass(comp,CLASS_AUTO_CREATED_CHILD);
+	
+	for(var n in childNodes){
+		//check if unknown element is displayed by no data received from device. Just remove it
+		var child=childNodes[n];
+		
+		if(!isChildInItems(child.id,id,items)){
+			if(child!=undefined && child.id!=undefined){
+				console.log('child removed '+child.id);
+							
+				var labelId=getComponentIdWithPreffix(LABEL_PREFFIX,child.id);
+				var label=getComponentById(labelId);
+				
+				if(label!=undefined && child!=undefined){
+					child.remove();
+					label.remove();
+				}
+			}
+		}
+	}
+		
+	for(var i in items){
+		addChildComponentIfNotExists(comp,items[i]);
+	}
+}
+
+function processJsonOnImageComponent(data){
+	
+	var id=data.name;
+	var descr=data.descr;
+	var itemCount=data.itemCount;
+	
+	var comp=document.getElementById(id);
+	var lookUpClassName=data.name+"_Image";
+	
+	updateComponentValue("",id,DESCR_SUFFIX,descr);
+	updateComponentValue("",id,ITEM_COUNT_SUFFIX,itemCount);
+	
+	if(comp!=undefined){
+		var childNodes = comp.getElementsByClassName(lookUpClassName);
+		
+		for(i in childNodes){
+			hideComponent(childNodes[i].id);
+		}
+		var items=data.items;
+		
+		for(var i in items){
+			var val=items[i].val;
+			
+			var ind=val.indexOf('.');
+			
+			if(ind!=-1){
+				val=val.substr(0,ind);
+			}
+			
+			var imageName=data.name+"_"+val;
+			showComponent(imageName);
+		}
+	}
+}
+//---------------------------AJAX functions------------------------------------
+function updateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout){
+	
+	var request = new XMLHttpRequest();
+	
+	var formData = new FormData();
+	formData.append('val', val);
+	if(sensor!=undefined){
+		formData.append('sensor', sensor);
+	}
+	
+	request.open(requestmethod, url, true);
+	request.onreadystatechange  = 
+		function() {
+			if(this.readyState == 4){
+								
+				if (this.status == 200){
+					
+					var json = JSON.parse(this.responseText);
+							
+					handler(json);
+									
+					if(timeout>0){
+						addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout);
+					}
+					
+				}else{
+					//
+					addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val,sensor,timeout);
+				}
+			};
+		};
+	request.send(formData);
+};
+
+function addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout){
+	if(timeout!='' && timeout!=0 && timeout>2000){
+		setTimeout(function(){updateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout);}, timeout);
+	}
+};
+
+
+//-------------------------------form submission---------------------
+
+function postForm(form,url,validateHandler,resultProcessHandler){
+	console.log('submitting form');
+	
+	var isValidForm = form.checkValidity();
+	
+	var errorMessage='';
+	
+	if(isValidForm){
+		if(validateHandler!=undefined){
+			errorMessage=validateHandler();
+		}
+		
+		if(!(0===errorMessage.length)){
+			isValidForm=false;
+		}
+	}
+	
+	if(isValidForm){
+		
+		var formData = new FormData(form);
+		
+		var childNodes = getComponentChildrenByClass(form,'w3-check');
+		
+		for(var i=0;i<childNodes.length;i++){
+			var child=childNodes[i];
+			//
+			if(child!=undefined && child.tagName!=undefined){
+				var tagName = child.tagName.toLowerCase();
+				
+				if (tagName == 'input'){
+					if(child.type!=undefined){
+						var type=child.type.toLowerCase();
+						
+						if(type=='checkbox'){
+							var chbVal=child.checked;
+							
+							if(chbVal!=true){
+								formData.append(child.id, false);
+							}
+						}
+					};
+				}
+			}
+		}
+		
+		showMessage(currentMessageComp,'Сохраняю данные...','w3-yellow');
+		
+		var request = new XMLHttpRequest();
+		request.open("POST", url, true);
+		request.onreadystatechange  = 
+			function(){
+				if(this.readyState == 4){
+					if (this.status == 200){
+						
+						var json = JSON.parse(this.responseText);
+						resultProcessHandler(json);
+						
+						showMessage(currentMessageComp,'Данные сохранены!','w3-green');
+						
+					} else {
+						showMessage(currentMessageComp,'Ошибка на стророне сервера!','w3-red');
+					};
+				};
+			};
+		request.send(formData);
+	}else{
+		errorMessage='Некоторые значения неверны:  '+errorMessage;
+		showMessage(currentMessageComp,errorMessage,'w3-red');
+	}
+}
+
+//------------------------------Base logic----------------------------
+function onLoadPageComplete(){
+	document.title='Настройки устройства';
+	w3_close();
+}
+//----------------------------------------------------------------------
+const FIELD_DESCR_ID   = 1;
+const FIELD_MIN_ID     = 2;
+const FIELD_MAX_ID     = 3;
+const FIELD_FIELDID_ID = 4;
+const FIELD_QUEUE_ID   = 5;
+
+const SENSOR_NAME_ATTR='sensorname';
+const ITEM_NAME_ATTR='itemname';
+
+const SENSORS="sensors_";
+const SENSORS_SHORT="s_";
+
+var currentTab='';
+var currentHeaderName='';
+
+var currentMessageComp=undefined;
+var currentForm=undefined;
+
+var getValuesHandler=undefined;
+var validateValuesHandler=undefined;
+
+var getValuesUrl='';
+var submitValuesUrl='';
+
+var currentJson='';
+
+
+function openTab(tabName,headerName) {
+	var loadMessagePreffix="Загружаю";
+	
+	if(currentTab==tabName){
+		loadMessagePreffix="Обновляю";
+	}
+	
+	currentTab=tabName;
+	currentHeaderName=headerName;
+	
+	var headerComponent=document.getElementById('settingsHeaderName');
+	
+	if(headerComponent!=undefined){
+		headerComponent.innerHTML=currentHeaderName;
+	}
+	
+    var i;
+    var x = document.getElementsByClassName("settingsTab");
+    for (i = 0; i < x.length; i++) {
+       x[i].style.display = "none";  
+    }
+   	var containerComponent=document.getElementById(tabName);
+	
+	if(containerComponent!=undefined){
+		containerComponent.style.display = "block"; 
+	}
+	
+	currentMessageComp=getComponentById(getComponentIdWithSuffix(tabName,MSG_SUFFIX));
+	currentForm=getComponentById(getComponentIdWithSuffix(tabName,FORM_SUFFIX));
+	
+	//submitValuesUrl='/submitForm_'+tabName;
+	//getValuesUrl='/getJson_'+tabName;
+	
+	document.title='Настройки устройства - '+currentHeaderName;
+	
+	
+	if(containerComponent.classList.contains('reloadableSettingsContainer')){
+				
+		
+		showMessage(currentMessageComp,loadMessagePreffix+' информацию о датчиках...','w3-yellow');
+		
+		var handler=undefined;
+		
+		if(tabName=='device'){
+			getValuesHandler=processDeviceSettingsGet;
+			validateValuesHandler=validateDeviceSettingsForm;
+			submitValuesUrl='/submitForm_'+'settings';
+			getValuesUrl='/getJson_'+'settings?page='+tabName;
+		}
+		
+		if(tabName=='net'){
+			getValuesHandler=processDeviceSettingsGet;
+			validateValuesHandler=undefined;
+			submitValuesUrl='/submitForm_'+'settings';
+			getValuesUrl='/getJson_'+'settings?page='+tabName;
+		}
+		
+		if(tabName=='sensors'){
+			currentForm.innerHTML="";
+			getValuesHandler=processSensorsJsonGet;
+			validateValuesHandler=validateSensorsPage;
+			submitValuesUrl='/submitForm_'+'sensors';
+			getValuesUrl='/getJson_'+'sensors';
+		}
+		
+		if(tabName=='publish'){
+			getValuesHandler=processDeviceSettingsGet;
+			validateValuesHandler=undefined;
+			submitValuesUrl='/submitForm_'+'settings';
+			getValuesUrl='/getJson_'+'settings?page='+tabName;
+		}
+
+		if(getValuesHandler!=undefined){
+			currentForm.addEventListener('submit', 
+								function(evt){
+									evt.preventDefault();
+								},false);
+			
+			updateComponentsByAjaxCall('GET', getValuesUrl, getValuesHandler,"",undefined, 0);
+		}else{
+			alert('Error on page!');
+		}
+	}
+}
+
+//---------------------------------device settings tab----------------------
+function processDeviceSettingsGet(data){
+	processSimpleJsonResponse(data,'');
+	showMessage(currentMessageComp,'Загружено '+currentHeaderName,'w3-green');
+}
+
+function validateDeviceSettingsForm(){
+	var errorMessage='';
+	
+	var pass=document.getElementById('espSettingsBox_accessPass');
+	var conf=document.getElementById('espSettingsBox_accessPassConfirm');
+	
+	errorMessage=processPassConfirmPath(pass,conf);
+	
+	pass=document.getElementById('espSettingsBox_settingsPass');
+	conf=document.getElementById('espSettingsBox_settingsPass');
+	
+	errorMessage=errorMessage+processPassConfirmPath(pass,conf);
+	
+	if(!pass || pass.value==undefined || 0===pass.length){
+		errorMessage='Доступ на страницу пароля возможен только по паролю!';
+	}
+			
+	return errorMessage;
+}
+
+function processPassConfirmPath(pass,conf){
+	var message="";
+	
+	markComponentAs_Valid(pass);
+	markComponentAs_Valid(conf);
+	
+	if(pass.value!=conf.value){
+		markComponentAs_InValid(pass);
+		markComponentAs_InValid(conf);
+		
+		message="Пароль и подьверждение пароля не равны";
+	}
+	
+	return message;
+}
+
+function ValidateIPaddress(ipaddress) {  
+	  if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {  
+	    return (true)  
+	  }  
+	  alert("You have entered an invalid IP address!")  
+	  return (false)  
+	}
+//-------------------------------------------------------
+function openConfirmPopup(message,action){
+	
+	var actionCommand="submitCommand('"+action+"')";
+	showComponent('confirm_headerCloseBtn');
+	showComponent('confirm_okBtn');
+	showComponent('confirm_cancelBtn');
+	hideComponent('confirm_closeBtn');
+	
+	getComponentById('confirm_header').innerHTML='Подтвердите действие';
+	
+	getComponentById('confirm_content').innerHTML=message;
+	getComponentById('confirm_okBtn').setAttribute('onclick',actionCommand);
+	showComponent('confirm_modal');
+}
+
+function submitCommand(command){
+	getComponentById('confirm_command').value=command;
+	currentMessageComp=undefined;
+	
+	var form=getComponentById('confirm_form');
+	var msg=getComponentById('confirm_msg');
+	
+	showMessage(msg,'Отправляю команду '+command+' на устройство...','w3-yellow');
+	
+	postForm(form,'/submitForm_commands',undefined,getCurrentCommandHandler);
+}
+
+function getCurrentCommandHandler(data){
+	var status=data.status;
+	var message=data.message;
+	var messageColorClass='w3-yellow';
+	
+	
+	if(status=='Ok'){
+		messageColorClass='w3-green';
+	}
+	if(status=='Error' || status=='NotFound'){
+		messageColorClass='w3-red';
+	}
+	
+	var msg=getComponentById('confirm_msg');
+	showMessage(msg,' Сообщение '+message,messageColorClass);
+	
+	var command=getComponentById('confirm_command').value;
+	
+	if(command=='restart'){
+		getComponentById('confirm_header').innerHTML='Перезагрузка устройства';
+		
+		hideComponent('confirm_headerCloseBtn');
+		hideComponent('confirm_okBtn');
+		hideComponent('confirm_cancelBtn');
+		hideComponent('confirm_closeBtn');
+		
+		setTimeout(function(){tickRestart();}, 1000);
+	}
+	if(command=='recreateThingSpeak'){
+		var headMess=getComponentById('confirm_header').innerHTML='Сообщение системы';
+		
+		var result='Каналы и очереди ThingSpeak были пересозданы.<br> Перезапустите устройство для применения новых настроек.<br> Все предыдущие данные каналов находятся в старых каналах и могут быть просмотрены<br>'+
+					'Создано : '+message;
+		
+		getComponentById('confirm_closeBtn').setAttribute('onclick',"displayRestartDialog();");
+		getComponentById('confirm_closeBtn').innerHTML="Закрыть и перезапустить";
+		
+		hideComponent('confirm_headerCloseBtn');
+		hideComponent('confirm_okBtn');
+		hideComponent('confirm_cancelBtn');
+		showComponent('confirm_closeBtn');
+						
+		hideComponent('confirm_msg');
+		getComponentById('confirm_content').innerHTML=result;
+	}
+	
+	if(command=='deleteSettings'){
+		var headMess=getComponentById('confirm_header').innerHTML='Сообщение системы';
+		
+		var result='Все настройки системы были удалены<br> Перезапустите устройство для применения настроек по умолчанию. <br>'+message+'<br>';
+		
+		getComponentById('confirm_closeBtn').setAttribute('onclick',"displayRestartDialog();");
+		getComponentById('confirm_closeBtn').innerHTML="Закрыть и перезапустить";
+		
+		hideComponent('confirm_headerCloseBtn');
+		hideComponent('confirm_okBtn');
+		hideComponent('confirm_cancelBtn');
+		showComponent('confirm_closeBtn');
+		
+		hideComponent('confirm_msg');
+		getComponentById('confirm_content').innerHTML=result;
+	}
+}
+
+function displayRestartDialog(){
+	openConfirmPopup('Подтвердите рестарт устройства','restart');
+}
+
+var restartTimer=30;
+
+function tickRestart(){
+	restartTimer--;
+	
+	if(restartTimer<=0){
+		location.reload();
+	}
+		
+	var result='Устройство перезапустится через '+restartTimer+' сек';
+	
+	hideComponent('confirm_msg');
+	getComponentById('confirm_content').innerHTML=result;
+	
+	setTimeout(function(){tickRestart();}, 1000);
+}
+
+//-------------------------------------------------------
+function processSensorsJsonGet(data){
+	var container=currentForm;
+
+	container.innerHTML='';
+	var sensors=data.sensors;
+	
+	currentJson=sensors;
+			
+	for(var s in sensors){
+		var sensor=sensors[s];
+		
+		putSensorContentToContainer(container,sensor,false,false);
+	}
+	
+	showMessage(currentMessageComp,'Загружено '+currentHeaderName,'w3-green');
+}
+
+function putSensorContentToContainer(container,sensor,noId,editable){
+	var sensorId=sensor.id;
+	var sensorName=sensor.name;
+	var sensorType=sensor.type;
+	var sensorSize=sensor.size;
+	var sensorDescr=sensor.descr;
+		
+	var hr = document.createElement('hr');
+	container.appendChild(hr);
+	container.appendChild(hr);
+	//sensor header 
+	var divh=document.createElement('div');
+	divh.setAttribute('class','w3-row w3-teal');
+	divh.setAttribute('style','margin-top: 15px; height: 50px;');
+	
+	var div1h=createDivComponent('w3-quarter','Название устройства');
+	var div2h=createDivComponent('w3-quarter','Тип устр.');
+	var div3h=createDivComponent('w3-quarter','Измеряемые величины');
+	var div4h=createDivComponent('w3-quarter','Описание устройства');
+	
+	divh.appendChild(div1h);
+	divh.appendChild(div2h);
+	divh.appendChild(div3h);
+	divh.appendChild(div4h);
+	
+	container.appendChild(divh);
+	//sensor own values
+	var divhv=document.createElement('div');
+	divhv.setAttribute('class','w3-row');
+	divhv.setAttribute('style','margin-top: 1px; height: 44px;');
+	
+	var col1h=createDivComponent('w3-quarter','');
+	var col2h=createDivComponent('w3-quarter','');
+	var col3h=createDivComponent('w3-quarter','');
+	var col4h=createDivComponent('w3-quarter','');
+	
+	var editButton=createSensorEditButton(sensorName,sensorDescr);
+	var sName=createHeaderElement('H4','margin-left: 20px;',sensorName)
+	var sType=createHeaderElement('H4','margin-left: 20px;',sensorType)
+	var sSize=createHeaderElement('H4','margin-left: 20px;',sensorSize)
+	var sDescr=createInputComponent(sensorId,255,FIELD_DESCR_ID,DESCR_SUFFIX,sensorDescr,sensorName,itemName,noId,editable);
+	
+	if(editable==undefined || !editable){
+		col1h.appendChild(editButton);
+	}
+	col1h.appendChild(sName);
+	col2h.appendChild(sType);
+	col3h.appendChild(sSize);
+	col4h.appendChild(sDescr);
+					
+	divhv.appendChild(col1h);
+	divhv.appendChild(col2h);
+	divhv.appendChild(col3h);
+	divhv.appendChild(col4h);
+	
+	container.appendChild(divhv);
+	
+	//sensor children header
+	container.appendChild(hr);
+	
+	var div=document.createElement('div');
+	div.setAttribute('id',sensorName+'_div');
+	div.setAttribute('class','w3-row w3-teal');
+	div.setAttribute('style','margin-top: 2px;');
+	
+	var div1=createDivComponent('w3-threequarter');
+	var div2=createDivComponent('w3-quarter');
+	
+	var col0=createDivComponent('w3-third',' Датчики устройства');
+	var col1=createDivComponent('w3-third','Описание');
+	var col2=createDivComponent('w3-third','Очередь');
+	
+	var col3=createDivComponent('w3-third','Миним. значение');
+	var col4=createDivComponent('w3-third','Макс значение');
+	var col5=createDivComponent('w3-third','Поле ThingSpeak');
+	
+	col0.setAttribute('style','height: 50px;');
+	col1.setAttribute('style','height: 50px;');
+	col2.setAttribute('style','height: 50px;');
+	col3.setAttribute('style','height: 50px;');
+	col4.setAttribute('style','height: 50px;');
+	col5.setAttribute('style','height: 50px;');
+	
+	div1.appendChild(col0);
+	div1.appendChild(col1);
+	div1.appendChild(col2);
+	div2.appendChild(col3);
+	div2.appendChild(col4);
+	div2.appendChild(col5);
+	
+	div.appendChild(div1);
+	div.appendChild(div2);
+	container.appendChild(div);
+	//sensor children values
+	var items=sensor.items;
+	
+	for(var i in items){
+		var itemId=items[i].id;
+		var itemName=items[i].name;
+		var descr=items[i].descr;
+		var minVal=items[i].minVal;
+		var maxVal=items[i].maxVal;
+		var fieldId=items[i].fieldId;
+		var queue=items[i].queue;
+		
+			var div=document.createElement('div');
+			div.setAttribute('class','w3-row');
+			div.setAttribute('style','margin-top: 5px;');
+			
+			var div1=createDivComponent('w3-threequarter','');
+			var div2=createDivComponent('w3-quarter','');
+			
+			var col0=createDivComponent('w3-third','');
+			var col1=createDivComponent('w3-third','');
+			var col2=createDivComponent('w3-third','');
+								
+			var col3=createDivComponent('w3-third','');
+			var col4=createDivComponent('w3-third','');
+			var col5=createDivComponent('w3-third','');
+			
+			var text0=document.createElement('div');
+			text0.setAttribute('class','w3-half');
+			text0.setAttribute('style','margin-left: 20px; width: 90%;');
+			text0.innerHTML="<b>"+itemName+"</b>";
+
+			var input1=createInputComponent(sensorId,itemId,FIELD_DESCR_ID,DESCR_SUFFIX,descr,sensorName,itemName,noId,editable);
+			var input2=createInputComponent(sensorId,itemId,FIELD_QUEUE_ID,QUEUE_SUFFIX,queue,sensorName,itemName,noId,editable);
+			var input3=createInputComponent(sensorId,itemId,FIELD_MIN_ID,MIN_VAL_SUFFIX,minVal,sensorName,itemName,noId,editable);
+			var input4=createInputComponent(sensorId,itemId,FIELD_MAX_ID,MAX_VAL_SUFFIX,maxVal,sensorName,itemName,noId,editable);
+			var input5=createInputComponent(sensorId,itemId,FIELD_FIELDID_ID,FIELD_ID_SUFFIX,fieldId,sensorName,itemName,noId,editable);
+			
+			input5.setAttribute('type','number');
+			input5.setAttribute('min','0');
+			input5.setAttribute('max','');
+			input5.setAttribute('step','1');
+			
+			col0.appendChild(text0);
+			col1.appendChild(input1);
+			col2.appendChild(input2);
+			col3.appendChild(input3);
+			col4.appendChild(input4);
+			col5.appendChild(input5);
+								
+			div1.appendChild(col0);
+			div1.appendChild(col1);
+			div1.appendChild(col2);
+			
+			div2.appendChild(col3);
+			div2.appendChild(col4);
+			div2.appendChild(col5);
+			
+			div.appendChild(div1);
+			div.appendChild(div2);
+			
+			container.appendChild(div);
+		
+		//end of items loop
+	}
+	
+	var divb=document.createElement('div');
+	divb.setAttribute('class','w3-row w3-black');
+	divb.setAttribute('style','margin-top: 1px; margin-bottom: 5px; height: 5px;');
+			
+	container.appendChild(divb);
+	container.appendChild(hr);
+}
+
+function validateCurrentSensorForm(){
+	var errorMessage='';
+	var validateForm=getComponentById('currentSensor_form');
+		
+	errorMessage=errorMessage+validateFieldValuesUnique(validateForm,QUEUE_SUFFIX,"Неверное значение 'Очередь'; <br>","Поле 'Очередь' не уникальное; <br>",false);
+	errorMessage=errorMessage+validateFieldValuesUnique(validateForm,FIELD_ID_SUFFIX,"Неверное значение 'Поле ThingSpeak'; <br>","'Поле ThingSpeak' не уникальное; <br>",true);
+	errorMessage=errorMessage+validateMinMaxValues();
+	errorMessage=errorMessage+validateDescrValues();
+	
+	return errorMessage;
+}
+
+function getCurrentSensorFromCurrentJson(sensorName){
+	for(var i in currentJson){
+		if(currentJson[i].name==sensorName){
+			return currentJson[i];
+		}
+	}
+	
+	return undefined;
+}
+
+function getCurrentItemFromSensor(sensor,itemName){
+	for(var i in sensor.items){
+		if(sensor.items[i].name==itemName){
+			return sensor.items[i];
+		}
+	}
+	
+	return undefined;
+}
+
+function openSensorsPopup(sensorName){
+	var sensor=getCurrentSensorFromCurrentJson(sensorName);
+	currentMessageComp=getComponentById('currentSensor_msg');
+	
+	if(sensor!=undefined){
+		var sensorNameContainer=getComponentById('currentSensor_name');
+		var sensorNameHeader=getComponentById('currentSensor_header');
+		var container=getComponentById('currentSensor_content');
+		
+		sensorNameContainer.value=sensorName;
+		sensorNameHeader.innerHTML=sensorName;
+		container.innerHTML='';
+		
+		putSensorContentToContainer(container,sensor,true,true);
+		hideComponent('currentSensor_msg');
+		showComponent('currentSensor_modal');
+	}
+}
+
+function closeSensorsPopup(){
+	hideComponent('currentSensor_modal');
+	currentMessageComp=getComponentById('sensors_msg');
+}
+
+function submitCurrentSensorForm(){
+	var form=getComponentById('currentSensor_form');
+	
+	showMessage(currentMessageComp,'Сохраняю настройки датчика...','w3-yellow');
+	
+	postForm(form,submitValuesUrl,validateCurrentSensorForm,getCurrentSensorHandler);
+}
+
+function getCurrentSensorHandler(data){
+	if(data.status=='Ok'){
+		hideComponent('currentSensor_modal');
+		openTab(currentTab,currentHeaderName);
+	}else{
+		showMessage(currentMessageComp,'Ошибка '+data.message,'w3-red');
+	}
+}
+
+function createSensorEditButton(sensorName,sensorDescr){
+	
+	var div=document.createElement('div');
+		div.setAttribute('class','w3-third');
+		
+	var div2=document.createElement('div');
+		div2.setAttribute('class','w3-tooltip');
+		
+	var span=document.createElement('span');
+		span.setAttribute('class','w3-text w3-tag w3-gray w3-round');
+		span.setAttribute('style','position:absolute;left:0;bottom:40px');
+	div2.appendChild(span);	
+	
+	var iel=document.createElement('i');
+		iel.setAttribute('class','material-icons');
+		iel.innerHTML='help_outline';
+	
+	var text='Редактировать '+sensorDescr;
+	var content = document.createTextNode(text);
+	div2.appendChild(content);
+	
+	var onClickText="openSensorsPopup('"+sensorName+"')";
+	
+	var button=document.createElement('button');
+		span.setAttribute('class','w3-button w3-white w3-border w3-border-red w3-round-large');
+		span.setAttribute('onclick',onClickText);
+	div2.appendChild(button);		
+	
+	div.appendChild(div2);
+	  
+	return div;
+}
+
+function validateSensorsPage(){
+	var errorMessage='';
+	
+	
+	return errorMessage;
+}
+
+//------------------------validators------------------------------------
+function validateMinMaxValues(){
+	var minValComponents=document.getElementsByClassName(MIN_VAL_SUFFIX);
+	var maxValComponents=document.getElementsByClassName(MAX_VAL_SUFFIX);
+	var result='';
+	var error=false;
+	
+	for (var i in minValComponents) {
+		var comp=minValComponents[i];
+		if(comp!=undefined && comp.classList!=undefined){
+			markComponentAs_Valid(comp);
+		}
+	}
+	
+	for (var i in maxValComponents) {
+		var comp=maxValComponents[i];
+		if(comp!=undefined && comp.classList!=undefined){
+			markComponentAs_Valid(comp);
+		}
+	}
+		
+	for (var i in minValComponents) {
+		var comp=minValComponents[i];
+		var compId=comp.id;
+		if(compId!=undefined){
+			var compVal=comp.value;
+			
+			var sensorName=comp.getAttribute(SENSOR_NAME_ATTR);
+			var itemName=comp.getAttribute(ITEM_NAME_ATTR);
+			
+			var maxComp=getMaxComponent(sensorName,itemName);
+			var maxCompVal=maxComp.value;
+				
+			if(compVal>=maxCompVal){
+				markComponentAs_InValid(comp);
+				markComponentAs_InValid(maxComp);
+				
+				error=true;
+				
+			}
+		}
+	}
+	
+	if(error){
+		result="Неверное значение 'Мин/Макс' мин должно быть меньше макс; <br>";
+	}
+
+	return result;
+}
+
+function getMaxComponent(sensorName,itemName){
+	var components=document.getElementsByClassName(MAX_VAL_SUFFIX);
+	
+	for (var i in components) {
+		var comp=components[i];
+		var compId=comp.id;
+		var compVal=comp.value;
+		
+		var sensorName2=comp.getAttribute(SENSOR_NAME_ATTR);
+		var itemName2=comp.getAttribute(ITEM_NAME_ATTR);
+				
+		if(sensorName2==sensorName2 && itemName==itemName2){
+			
+			return comp;
+		}
+	}
+}
+
+function validateDescrValues(){
+	var descrComponents=document.getElementsByClassName(DESCR_SUFFIX);
+	var result='';
+	var error=false;
+	
+	for (var i in descrComponents) {
+		var comp=descrComponents[i];
+		if(comp!=undefined && comp.classList!=undefined){
+			markComponentAs_Valid(comp);
+		}
+	}
+	
+	for (var i in descrComponents) {
+		var comp=descrComponents[i];
+		var compId=comp.id;
+		if(compId!=undefined){
+			var compVal=comp.value;
+			
+			if(compVal==''){
+				markComponentAs_InValid(comp);
+				var sensorName=comp.getAttribute(SENSOR_NAME_ATTR);
+				var itemName=comp.getAttribute(ITEM_NAME_ATTR);
+				error=true;
+			}
+		}
+	}
+	
+	if(error){
+		result="Пустое значение поля'Описание'; <br>";
+	}
+
+	return result;
+}
+
+function validateFieldValuesUnique(validateComnponent,validClassName,errorMessage1,errorMessage2, notAllowEmpty){
+	var result='';
+	var error=false;
+	var fieldIdComponents=validateComnponent.getElementsByClassName(validClassName);
+	var fieldIdComponents2=document.getElementsByClassName(validClassName);
+	
+	for (var i in fieldIdComponents) {
+		var comp=fieldIdComponents[i];
+		if(comp!=undefined && comp.classList!=undefined){
+			markComponentAs_Valid(comp);
+		}
+	}
+	
+	for (var i in fieldIdComponents2) {
+		var comp=fieldIdComponents2[i];
+		if(comp!=undefined && comp.classList!=undefined){
+			markComponentAs_Valid(comp);
+		}
+	}
+	
+	for (var i in fieldIdComponents) {
+		var comp=fieldIdComponents[i];
+		var compId=comp.id;
+		
+		if(compId!=undefined){
+			var compVal=comp.value;
+			
+			var sensorName=comp.getAttribute(SENSOR_NAME_ATTR);
+			var itemName=comp.getAttribute(ITEM_NAME_ATTR);
+					
+			if((!compVal || 0 === compVal.length) || compVal<0){
+				
+				if(notAllowEmpty){
+									
+					markComponentAs_InValid(comp);
+					error=true;
+					result=errorMessage1;
+				}
+			}else{
+				if(compVal!='0'){	
+					for (var j in fieldIdComponents2) {
+						var comp2=fieldIdComponents2[j];
+						var compId2=comp2.id;
+						
+						if(compId!=undefined && compId2!=undefined){
+							var compVal2=comp2.value;
+							
+							var sensorName2=comp2.getAttribute(SENSOR_NAME_ATTR);
+							var itemName2=comp2.getAttribute(ITEM_NAME_ATTR);
+							
+							if(compId!=compId2 && sensorName!=sensorName2 && itemName!=itemName2 && compVal==compVal2){
+								
+								var sensor=getCurrentSensorFromCurrentJson(sensorName2);
+								var item=getCurrentItemFromSensor(sensor,itemName2);
+								
+								if(sensor!=undefined && item!=undefined){
+									result+=' Значение ="'+compVal2+'" уже используется: '+' Устройство "'+sensor.descr+'"'+'Датчик "'+item.descr+'";';
+								}
+																
+								markComponentAs_InValid(comp);
+								markComponentAs_InValid(comp2);
+								
+								error=true;
+								
+							}
+						
+						}
+						
+					}
+				}
+			}
+		}
+	}
+	
+	if(error){
+		result=errorMessage2+result;
+	}
+	
+	return result;
+}
+
+//--------------------------GUI creation part-----------------------------
+function createDivComponent(className,innerHtml){
+	var div=document.createElement('div');
+		div.setAttribute('class',className);
+		if(innerHtml!=undefined && innerHtml!=''){
+			div.innerHTML=innerHtml;
+		}
+		
+	return div;
+}
+
+function createInputComponent(id1,id2,fieldIntId,suffixName,fieldVal,sensorName,itemName,noId,editable){
+	var compId=getInputCompName(id1,id2,fieldIntId);
+	
+	var input1=document.createElement("Input");
+		
+		input1.setAttribute("id",compId+"_"+noId);
+		input1.setAttribute("name",compId);
+		input1.setAttribute("class","w3-input w3-border "+suffixName);
+		input1.setAttribute("style",'width: 90%;');
+		input1.setAttribute("value",fieldVal);
+		input1.setAttribute(SENSOR_NAME_ATTR,sensorName);
+		if(editable==undefined || !editable)
+			input1.setAttribute("disabled","disabled");
+		if(itemName!=undefined)
+			input1.setAttribute(ITEM_NAME_ATTR,itemName);	
+		
+	return input1; 
+}
+
+function createHeaderElement(elType,elStyle,elText){
+	var sensorHeader = document.createElement(elType);
+	if(elStyle!=undefined && elStyle!='')
+		sensorHeader.setAttribute('style',elStyle);
+	var textNode = document.createTextNode(elText);
+	sensorHeader.appendChild(textNode);
+	
+	return sensorHeader;
+}
+
+function getInputCompName(sensorName,itemName,suffix){
+	return SENSORS_SHORT+sensorName+"_"+itemName+"_"+suffix;
+}
+
+//--------------------form submit
+function submitCurrentForm(){
+	postForm(currentForm,submitValuesUrl,validateValuesHandler,getValuesHandler);
+}
+
+
+</script>
+
+</head>
+
+<body onload="onLoadPageComplete()">
+				
+<div id="leftSidebar" class="w3-sidebar w3-bar-block w3-light-grey w3-border-right w3-animate-left" style="display: none;">
+	<button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Свернуть</button>
+	<a href="index.htm" class="w3-bar-item w3-button w3-hover-green">Главная</a>
+	<a href="edit" class="w3-bar-item w3-button w3-hover-green">Редактировать файлы</a>
+</div>
+<!-- Page Content -->
+<div id="mainContent">
+
+	<div class="w3-container w3-teal w3-animate-opacity">
+		<div class="w3-quarter w3-container w3-animate-opacity" style="width: 70px; height: 70px;">
+			<button id="openNavBtn" class="w3-button w3-teal w3-xlarge" onclick="w3_open()" title="Открыть меню">☰</button>
+		</div>
+		<h1>Настройки устройства</h1>
+	</div>
+	
+	<div class="w3-bar w3-teal">
+	  <button class="w3-bar-item w3-button" onclick="openTab('device','Устройство')">Устройство</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('net','Сеть')">Сеть</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('sensors','Датчики')">Датчики</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('publish','Публикация')">Публикация</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('manage','Управление')">Управление</button>
+	</div>
+
+	<div id="mainContent" class="w3-card-4" style="width:90%; min-width: 600px; margin-top:10px; margin-left:10px;  margin-bottom:30px;">
+	
+		<div id="device" class="settingsTab reloadableSettingsContainer w3-container" style="display:none">
+			<div class="w3-container w3-teal">
+				<h2>Устройство</h2>
+			</div>
+		  
+		  	<div id="device_content">
+				<form id="device_form" class="w3-container">
+				
+						<div class="w3-row w3-green" style="height: 50px;">
+							<h2>Общие настройки устройства</h2>
+						</div>
+						
+						<input name="page" type="hidden" value="device"/>
+						
+						<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_deviceFirmWareVersion" for="espSettingsBox_deviceFirmWareVersion">Версия прошивки</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<h3 id=espSettingsBox_deviceFirmWareVersion>Загружаю</h3>
+					  		</div>
+					  	</div>
+	
+						<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_DeviceId" for="espSettingsBox_DeviceId">ID устройства</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<h3 id=espSettingsBox_DeviceId>Загружаю</h3>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_DeviceKind" for="espSettingsBox_DeviceKind">Тип устройства</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<h3 id=espSettingsBox_DeviceKind>Загружаю</h3>	
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_DeviceDescription" for="espSettingsBox_DeviceDescription">Описание устройства</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_DeviceDescription" name="espSettingsBox_DeviceDescription" class="w3-input w3-border" type="text" value="обновляю"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_DeviceLocation" for="espSettingsBox_DeviceLocation">размещение устройства</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_DeviceLocation" name="espSettingsBox_DeviceLocation" class="w3-input w3-border" type="text" value="обновляю"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row w3-green" style="height: 50px;">
+							<h2>Настройки экрана</h2>
+						</div>
+						
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_displayAlvaysOn" for="espSettingsBox_displayAlvaysOn">Экран всегда включен</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_displayAlvaysOn" name="espSettingsBox_displayAlvaysOn" class="w3-check" type="checkbox">
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_displayAutochange" for="espSettingsBox_displayAutochange">Автопереключение страниц экрана</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_displayAutochange" name="espSettingsBox_displayAutochange" class="w3-input w3-border" style="width:50%" 
+					  				type="number" min="10" max="255" step="1" value="11"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row w3-green" style="height: 50px;">
+							<h2>Настройки обновления датчиков</h2>
+						</div>
+						
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_refreshInterval" for="espSettingsBox_refreshInterval">Обновление значений датчиков</label>
+					  		</div>
+					  		<div class="w3-half">	
+					  			<input id="espSettingsBox_refreshInterval" name="espSettingsBox_refreshInterval" class="w3-input w3-border" style="width:50%" 
+					  				type="number" min="60" max="1024" step="1" value="61"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row w3-green" style="height: 50px;">
+					  		<h2>Настройки доступа</h2>
+					  	</div>
+					  	
+					  	<div class="w3-row" style="height: 50px;">
+					  		<h2>Главная страница</h2>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_accessUser" for="espSettingsBox_accessUser">Пользователь главной страницы</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_accessUser" name="espSettingsBox_accessUser" class="w3-input w3-border" style="width:50%" 
+					  				type="text" value="обновляю"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_accessPass" for="espSettingsBox_accessPass">Пароль главной страницы</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_accessPass" name="espSettingsBox_accessPass" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_accessPassConfirm" for="espSettingsBox_accessPassConfirm">Подтверждение пароля</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_accessPassConfirm" name="espSettingsBox_accessPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row" style="height: 50px;">
+					  		<h2>Страница настроек</h2>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_settingsUser" for="espSettingsBox_settingsUser">Пользователь страницы настроек</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_settingsUser" name="espSettingsBox_settingsUser" class="w3-input w3-border" style="width:50%"
+					  				 type="text" value="обновляю" required="required" pattern="[A-Za-z0-9]{1,20}"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_settingsPass" for="espSettingsBox_settingsPass">Пароль страницы настроек</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_settingsPass" name="espSettingsBox_settingsPass" class="w3-input w3-border" style="width:50%"
+					  				type="password" value="*****"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_settingsPassConfirm" for="espSettingsBox_settingsPassConfirm">Подтверждение пароля</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_settingsPassConfirm" name="espSettingsBox_settingsPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row w3-green" style="height: 50px;">
+					  		<h2>Настройка режима тревоги</h2>
+					  	</div>
+					  	
+				  		<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_alamSendInterval" for="espSettingsBox_alamSendInterval">Интервал оповещения при режиме тревоги</label>
+					  		</div>
+					  		<div class="w3-half">	
+					  			<input id="espSettingsBox_alamSendInterval" name="espSettingsBox_alamSendInterval" class="w3-input w3-border" style="width:50%" 
+					  				type="number" min="60" max="1024" step="1" value="61"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row w3-green" style="height: 50px;">
+					  		<h2>Синхронизация времени NTP</h2>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_ntpEnabled" for="espSettingsBox_ntpEnabled">Синхронизация времени разрешена</label>
+					  		</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_ntpEnabled" name="espSettingsBox_ntpEnabled" class="w3-check" type="checkbox">
+							</div>
+					  	</div>
+
+						<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_NTP_poolServerName" for="espSettingsBox_NTP_poolServerName">Имя сервера NTP</label>
+							</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_NTP_poolServerName" name="espSettingsBox_NTP_poolServerName" class="w3-input w3-border" style="width:50%" 
+					  				type="text" value="обновляю"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">		
+					  			<label id="lbl_NTP_timeOffset" for="espSettingsBox_NTP_timeOffset">Разница времени с устройством (сек)</label>
+					  		</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_NTP_timeOffset" name="espSettingsBox_NTP_timeOffset" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_NTP_updateInterval" for="espSettingsBox_NTP_updateInterval">Интервал синхронизации времени (сек)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_NTP_updateInterval" name="espSettingsBox_NTP_updateInterval" class="w3-input w3-border" style="width:50%" type="number" min="120" step="10">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_NTP_timeTriggerInterval" for="espSettingsBox_NTP_timeTriggerInterval">Интервал отправки времени клиентам (мс)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_NTP_timeTriggerInterval" name="espSettingsBox_NTP_timeTriggerInterval" class="w3-input w3-border" style="width:50%" type="number" min="100" step="10">
+							</div>
+					  	</div>
+				</form>	
+			</div>
+			
+			
+			<p>
+		  		<button id="saveDeviceSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
+						onclick="submitCurrentForm();">Сохранить</button>
+			</p>
+			  
+			<div id="device_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
+				
+			<div style="height:20px;"></div>
+		</div>
+
+		<div id="net" class="settingsTab reloadableSettingsContainer" style="display:none">
+			<div class="w3-container w3-teal">
+				<h2>Сеть</h2>
+			</div>	
+			
+			<p>Устройство может работать как точка доступа или подключаться к существующей WiFi</p>
+			
+			<div id="net_content">
+				
+				<form id="net_form" class="w3-container">
+			  
+			  		<input name="page" type="hidden" value="net"/>
+			  		
+			  		<div class="w3-row w3-green" style="height: 50px;">
+						<h3>Настройки WiFi</h3>
+					</div>	
+			  
+			  		<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_isAccesPoint" for="espSettingsBox_isAccesPoint">Является точкой доступа</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_isAccesPoint" name="espSettingsBox_isAccesPoint" class="w3-check" type="checkbox">
+						</div>
+				  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_ssidAP" for="espSettingsBox_ssidAP">SSID если в режиме точки доступа</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_ssidAP" name="espSettingsBox_ssidAP" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_ssid" for="espSettingsBox_ssid">SSID если в режиме клиента</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_ssid" name="espSettingsBox_ssid" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_password" for="espSettingsBox_password">Пароль WiFi</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_password" name="espSettingsBox_password" class="w3-input w3-border" style="width:50%" type="password" value="*****" >
+							</div>
+					  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_passwordConfirm" for="espSettingsBox_passwordConfirm">Подтверждение Пароль WiFi</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_passwordConfirm" name="espSettingsBox_passwordConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****">
+							</div>
+					  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_staticIp" for="espSettingsBox_staticIp">Использовать статический IP</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_staticIp" name="espSettingsBox_staticIp" class="w3-check" type="checkbox">
+							</div>
+					  	</div>
+	
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_localIp" for="espSettingsBox_localIp">IP адресс в локальной сети (LocalIp)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_localIp" name="espSettingsBox_localIp" class="w3-input w3-border" style="width:50%" type="text" 
+									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+							</div>
+					  	</div>
+	
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_apIp" for="espSettingsBox_apIp">IP адресс Если точка доступа (Access point IP)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_apIp" name="espSettingsBox_apIp" class="w3-input w3-border" style="width:50%" type="text" 
+										value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+							</div>
+					  	</div>
+	
+					<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_gateIp" for="espSettingsBox_gateIp">IP адресс шлюза (GateWay)</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_gateIp" name="espSettingsBox_gateIp" class="w3-input w3-border" style="width:50%" type="text" 
+									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+						</div>
+				  	</div>
+	
+					<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_subnetIp" for="espSettingsBox_subnetIp">IP адресс подсети (Subnet)</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_subnetIp" name="espSettingsBox_subnetIp" class="w3-input w3-border" style="width:50%" type="text" 
+								value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+						</div>
+				  	</div>
+	
+					<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_dnsIp" for="espSettingsBox_dnsIp">IP адресс DNS</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_dnsIp" name="espSettingsBox_dnsIp" class="w3-input w3-border" style="width:50%" type="text" 
+								value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+						</div>
+				  	</div>
+	
+					<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_dnsIp2" for="espSettingsBox_dnsIp2">IP адресс DNS2</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_dnsIp2" name="espSettingsBox_dnsIp2" class="w3-input w3-border" style="width:50%" type="text" 
+									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+						</div>
+				  	</div>
+	
+					<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_serverIp" for="espSettingsBox_serverIp">IP адресс Сервера !!!SmartHouse</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_serverIp" name="espSettingsBox_serverIp" class="w3-input w3-border" style="width:50%" type="text" 
+									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+						</div>
+				  	</div>
+				  	
+				  	<div class="w3-row w3-green" style="height: 50px;">
+						<h3>Настройки Viber</h3>
+					</div>
+					
+					<div class="w3-row">
+						<div class="w3-half">			
+							<label for="espSettingsBox_telegramApiKey">Telegram bot ID</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_telegramApiKey" name="espSettingsBox_telegramApiKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+						</div>
+				  	</div>
+				  	
+				  	<div class="w3-row">
+						<div class="w3-half">			
+							<label for="espSettingsBox_telegramReceivers">Telegram получатель разделенные ;</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_telegramReceivers" name="espSettingsBox_telegramReceivers" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+						</div>
+				  	</div>
+			
+				</form>	  	
+			  </div>
+			  
+			  <p>
+		  		<button id="saveNetSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
+						onclick="submitCurrentForm();">Сохранить</button>
+			  </p>
+			
+			
+			<div id="net_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
+				
+			<div style="height:20px;"></div>
+		</div>
+
+		<div id="sensors" class="settingsTab reloadableSettingsContainer" style="display:none">
+			<div class="w3-container w3-teal">
+				<h2>Датчики</h2>
+			</div>
+			
+			  <p>Настройки датчиков. Описание. Режим тревоги. Очереди </p>
+			  
+				<div id="sensors_content">
+					<form id="sensors_form" class="w3-container">
+					
+					</form>  
+				</div>
+				  
+			  
+				<div id="sensors_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px; display:none;"></div>
+				
+				<div style="height:20px;"></div>
+		</div>
+		
+		 <div id="currentSensor_modal" class="w3-modal">
+		    <div class="w3-modal-content w3-animate-top w3-card-4" style="width: 90%;">
+		      	
+		      	<header class="w3-container w3-teal"> 
+			      <span onclick="closeSensorsPopup();" class="w3-button w3-display-topright">&times;</span>
+			      <h3 id="currentSensor_header">Поточный датчик</h3>
+			    </header>
+		      	
+		      	<div class="w3-container">
+   
+		        	<form id="currentSensor_form" class="w3-container">
+		        		<input id="currentSensor_name" name="currentSensor_name" type="hidden">
+		        		
+		        		<div id=currentSensor_content>
+		        		
+						</div>						
+						
+					</form>
+				
+				 </div>
+				 
+				 <footer class="w3-container w3-teal w3-display-container">
+				 	  <div id="currentSensor_msg" class="w3-card-4" style="margin-left:2px; margin-right:20x; margin-bottom:2px;"></div>
+				 
+				      <button id="currentSensor_saveBtn" class="w3-btn w3-white w3-border w3-border-red w3-round-large" style="margin-top: 2px; margin-bottom: 2px;"
+							onclick="submitCurrentSensorForm();">Сохранить</button>
+    			</footer>
+	        
+		  </div>
+		</div>
+		
+		<div id="publish" class="settingsTab reloadableSettingsContainer" style="display:none">
+			<div class="w3-container w3-teal">
+				<h2>Публикация данных</h2>
+			</div>
+			
+			  <p>Публикация значений сенсоров ThingSpeak, Mqtt, Http</p>
+			  
+				<div id="publish_content">
+				
+					<form id="publish_form" class="w3-container">
+				  
+					  	<div class="w3-row w3-green" style="height: 50px;">
+					  		<h3>Отправка в ThingSpeak</h3>
+					  	</div>
+					  	
+					  	<input name="page" type="hidden" value="publish"/>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label for="espSettingsBox_isThingSpeakEnabled">Отправка разрешена</label>
+					  		</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_isThingSpeakEnabled" name="espSettingsBox_isThingSpeakEnabled" class="w3-check" type="checkbox">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">
+								<label for="espSettingsBox_postDataToTSInterval">Интервал публикации значений (сек)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_postDataToTSInterval" name="espSettingsBox_postDataToTSInterval" class="w3-input w3-border" style="width:50%" type="number" min="241" step="1">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">		
+								<label for="espSettingsBox_thSkUsrKey">Ключ пользователя</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_thSkUsrKey" name="espSettingsBox_thSkUsrKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">		
+								<label for="espSettingsBox_thSkWKey">Ключ записи</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_thSkWKey" name="espSettingsBox_thSkWKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">		
+								<label for="espSettingsBox_thSkRKey">Ключ чтения</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_thSkRKey" name="espSettingsBox_thSkRKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">		
+								<label for="espSettingsBox_thSkChId">Канал</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_thSkChId" name="espSettingsBox_thSkChId" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
+							</div>
+					  	</div>
+								
+						<div class="w3-row">
+							<div class="w3-half">								
+								<label for="espSettingsBox_thSkTKey">Ключ твиттер</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_thSkTKey" name="espSettingsBox_thSkTKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+			<!-- 
+						<div class="w3-row w3-green" style="height: 50px;">
+							<h3>Настройки каналов управления ThingSpeak</h3>
+						</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">		
+								<label for="espSettingsBox_thSkWManageKey">Ключ записи</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_thSkWManageKey" name="espSettingsBox_thSkWManageKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">		
+								<label for="espSettingsBox_thSkRManageKey">Ключ чтения</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_thSkRManageKey" name="espSettingsBox_thSkRManageKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">		
+								<label for="espSettingsBox_thSkManageChId">Канал</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_thSkManageChId" name="espSettingsBox_thSkManageChId" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
+							</div>
+					  	</div>	
+			 -->
+						<div class="w3-row w3-green" style="height: 50px;">
+							<h3>Отправка в очередь MQTT</h3>
+						</div>	
+						
+						<div class="w3-row">
+							<div class="w3-half">			
+								<label for="espSettingsBox_isMqttEnabled">MQTT разрешено</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_isMqttEnabled" name="espSettingsBox_isMqttEnabled" class="w3-check" type="checkbox">
+							</div>
+					  	</div>
+					  	<!-- 
+					  	<div class="w3-row">
+							<div class="w3-half">			
+								<label for="espSettingsBox_sendItemsToBaseQUeue">Отправка всех значений в главную очередь</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_sendItemsToBaseQUeue" name="espSettingsBox_sendItemsToBaseQUeue" class="w3-check" type="checkbox">
+							</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">			
+								<label for="espSettingsBox_postDataToMqttInterval">Интервал отправки в Mqtt</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_postDataToMqttInterval" name="espSettingsBox_postDataToMqttInterval" class="w3-input w3-border" style="width:50%" type="number" min="240" step="1">
+							</div>
+					  	</div>
+						 -->
+						<div class="w3-row">
+							<div class="w3-half">			
+								<label for="espSettingsBox_mqtt_server">Сервер</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_mqtt_server" name="espSettingsBox_mqtt_server" class="w3-input w3-border" style="width:50%" type="text" min="241" step="1">
+							</div>
+					  	</div>
+								
+						<div class="w3-row">
+							<div class="w3-half">			
+								<label for="espSettingsBox_mqtt_user">Пользователь</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_mqtt_user" name="espSettingsBox_mqtt_user" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+								
+						<div class="w3-row">
+							<div class="w3-half">			
+								<label for="espSettingsBox_mqtt_pass">Пароль</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_mqtt_pass" name="espSettingsBox_mqtt_pass" class="w3-input w3-border" style="width:50%" type="password" value="*****">
+							</div>
+					  	</div>
+								
+						<div class="w3-row">
+							<div class="w3-half">			
+								<label for="espSettingsBox_mqtt_topic">Базовая очередь</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_mqtt_topic" name="espSettingsBox_mqtt_topic" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+								
+						<div class="w3-row">
+							<div class="w3-half">			
+								<label for="espSettingsBox_mqtt_port">Порт</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_mqtt_port" name="espSettingsBox_mqtt_port" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
+							</div>
+					  	</div>
+					  	<!-- 
+					  	<div class="w3-row">
+							<div class="w3-half">			
+								<label for="espSettingsBox_mqtt_TStopic">Очередь получения данных из ThingSpeak</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_mqtt_TStopic" name="espSettingsBox_mqtt_TStopic" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
+							</div>
+					  	</div>
+						 -->
+						<div class="w3-row w3-green" style="height: 50px;">
+							<h3>Отправка на сервер !!!SmartHouse</h3>
+						</div>	
+						
+						<div class="w3-row">
+							<div class="w3-half">	
+								<label for="espSettingsBox_isHttpPostEnabled">Отправка разрешена</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_isHttpPostEnabled" name="espSettingsBox_isHttpPostEnabled" class="w3-check" type="checkbox">
+							</div>
+					  	</div>
+					  	
+				  	  	<div class="w3-row">
+							<div class="w3-half">			
+								<label for="espSettingsBox_postDataToHttpInterval">Интервал отправки по Http</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_postDataToHttpInterval" name="espSettingsBox_postDataToHttpInterval" class="w3-input w3-border" style="width:50%" type="number" min="240" step="1">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_httpPostIp" for="espSettingsBox_httpPostIp">IP адресс отправки данных по Http</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_httpPostIp" name="espSettingsBox_httpPostIp" class="w3-input w3-border" style="width:50%" type="text" 
+									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+							</div>
+					  	</div>
+					  	
+					</form>  
+				  </div>
+				  
+				  <p>
+			  		<button id="savePublishSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
+							onclick="submitCurrentForm();">Сохранить</button>
+				  </p>
+				
+				
+				<div id="publish_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
+				
+				<div style="height:20px;"></div>
+		</div>
+		
+		<div id="manage" class="settingsTab" style="display:none">
+			<div class="w3-container w3-teal">
+				<h2>Управление</h2>
+			</div>
+			
+			  <p>Общее управление устройством</p>
+			   <div id="manage_content">
+			  		<button class="w3-button w3-white w3-border w3-border-red w3-round-large" onclick="openConfirmPopup('Подтвердите рестарт устройства','restart');"
+			  			style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px;">
+	  	 				Перезапустить устройство
+					</button>
+					
+					<button class="w3-button w3-white w3-border w3-border-red w3-round-large" onclick="openConfirmPopup('Подтвердите пересоздание каналов ThingSpeak. Внимание очереди датчиков также будут обновлены','recreateThingSpeak');"
+			  			style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px;">
+	  	 				Пересоздать каналы ThingSpeak
+					</button>
+					
+					<button class="w3-button w3-white w3-border w3-border-red w3-round-large" onclick="openConfirmPopup('Внимание. Все файлы настроек будут удалены. Устройство загрузится с настройками по умолчанию.','deleteSettings');"
+			  			style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px;">
+	  	 				Удалить файлы настроек
+					</button>
+			  </div>
+		</div>
+		
+		<div id="confirm_modal" class="w3-modal">
+		    <div class="w3-modal-content w3-animate-top w3-card-4">
+		      	
+		      	<header class="w3-container w3-teal"> 
+			      <span id="confirm_headerCloseBtn" onclick="hideComponent('confirm_modal');" class="w3-button w3-display-topright">&times;</span>
+			      <form>
+			      	<h3 id="confirm_header">Подтвердите действие</h3>
+			      </form>
+			    </header>
+		      	
+		      	<div class="w3-container">
+   
+		        	<form id="confirm_form" class="w3-container" style="margin: 10px;">
+		        		<input id="confirm_command" name="confirm_command" type="hidden">
+		        		
+		        		<div id=confirm_content>
+		        		
+						</div>						
+						
+						<div id="confirm_msg" class="w3-card-4" style="margin-top: 2px; margin-bottom: 2px;"></div>
+				
+						<div style="height:2px;"></div>
+						
+					</form>
+				
+				 </div>
+				 
+				 <footer class="w3-container w3-teal w3-display-container">
+				 		<div class="w3-row w3-half">
+				 			<div class="w3-half">
+							      <button id="confirm_okBtn" class="w3-btn w3-white w3-border w3-border-green w3-round-large" style="margin-top: 2px; margin-bottom: 2px;"
+										onclick="">Подтвердить</button>
+							</div>
+							<div class="w3-half">
+								  <button id="confirm_cancelBtn" class="w3-btn w3-white w3-border w3-border-red w3-round-large" style="margin-top: 2px; margin-bottom: 2px;"
+										onclick="hideComponent('confirm_modal');">Отменить</button>
+							</div>
+							<div class="w3-half">
+								  <button id="confirm_closeBtn" class="w3-btn w3-white w3-border w3-border-red w3-round-large" style="margin-top: 2px; margin-bottom: 2px;"
+										onclick="hideComponent('confirm_modal');">Закрыть</button>
+							</div>
+						</div>
+    			</footer>
+	        
+		  </div>
+		</div>
+		
+		
+		<!--
+		<form id="settingsForm" class="w3-container" action="/settings" method="POST">
+			
+			<div id="sensorsTable" class="w3-container">
+				
+			</div>
+			
+			<div id="msgContent" class="w3-card-4" style="margin-left:10px; margin-right:10px; margin-top:10px; margin-bottom:10px;">
+			</div>
+			
+			<p><button class="w3-btn w3-teal" onclick="submitForm(&#39;sensors&#39;,&#39;settForm&#39;,&#39;msgContent&#39;);">Сохранить</button>
+			</p><p></p>
+		</form>
+		-->
+		
+	</div>
+	
+</div>
+</body>
+</html>

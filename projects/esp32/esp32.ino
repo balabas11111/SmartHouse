@@ -9,13 +9,13 @@
 #include "DeviceHelper.h"
 #include "BME280_Sensor.h"
 #include "DS18D20_Sensor.h"
-#include "DisplayHelper.h"
+#include "DisplayHelperAbstract.h"
 #include "WiFiHelper.h"
 #include "HTTPClient.h"
 
 EspSettingsBox espSettingsBox;
 I2Chelper i2cHelper(SCL,SDA,false);
-DisplayHelper displayHelper(&espSettingsBox);
+DisplayHelperAbstract displayHelper(&espSettingsBox);
 
 HTTPClient http;
 WebServer server(80);
@@ -24,6 +24,7 @@ WiFiHelper wifiHelper(&espSettingsBox, &displayHelper, &server,postInitWebServer
 
 PinDigital buttonMenu(FPSTR(SENSOR_buttonMenu),33,onMenuButtonChanged);
 PinDigital lampLeft(FPSTR(SENSOR_lampLeft),32,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW);
+PinDigital lampRight(FPSTR(SENSOR_lampRight),35,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW);
 PinDigital acMeter(FPSTR(SENSOR_acMeter),34,onAcMeterChanged,INPUT,CHANGE,HIGH,HIGH);
 
 TimeTrigger sensorsTrigger(measureSensors);
@@ -33,7 +34,7 @@ DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), 0);
 
 Loopable* loopArray[]={&wifiHelper,&sensorsTrigger,&buttonMenu,&acMeter};
 
-AbstractItem* abstractItems[]={&lampLeft,&bmeMeasurer,&ds18d20Measurer,&acMeter};
+AbstractItem* abstractItems[]={&lampLeft,&lampRight,&bmeMeasurer,&ds18d20Measurer,&acMeter};
 
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),120000);
@@ -65,6 +66,8 @@ void setup()
 	Serial.println(FPSTR(MESSAGE_DEVICE_STARTED));
 
 	measureSensors();
+
+	deviceHelper.printDeviceDiagnostic();
 }
 
 // The loop function is called in an endless loop
@@ -102,6 +105,19 @@ void measureSensors(){
 void postInitWebServer(){
 	Serial.println(FPSTR("-------Start postInitWebServer-----"));
 
+	server.on(FPSTR(ESPSETTINGSBOX_GET_SIMPLE_JSON_PUBLISH_URL), HTTP_GET, [](){
+		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), espSettingsBox.getSimpleJson());
+	});
+	server.on(FPSTR(URL_GET_JSON_SETTINGS), HTTP_GET, [](){
+		wifiHelper.checkAuthentication();
+		String page=server.arg(FPSTR(MESSAGE_SERVER_ARG_PAGE));
+		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), espSettingsBox.getJson(page));
+	});
+	server.on(FPSTR(URL_GET_JSON_SENSORS), HTTP_GET, [](){
+		wifiHelper.checkAuthentication();
+		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), getAllSensorsJson());
+	});
+
 	server.on(FPSTR(URL_GET_SENSORS_CURRNT_VALUES), HTTP_GET, [](){
 		if(server.hasArg(FPSTR(MESSAGE_SERVER_ARG_SENSOR))){
 			String arg=server.arg(FPSTR(MESSAGE_SERVER_ARG_SENSOR));
@@ -124,4 +140,8 @@ void postInitWebServer(){
 	});
 
 	Serial.println(FPSTR("-------ENd postInitWebServer-----"));
+}
+
+String getAllSensorsJson(){
+	return deviceHelper.getJson(abstractItems, ARRAY_SIZE(abstractItems));
 }

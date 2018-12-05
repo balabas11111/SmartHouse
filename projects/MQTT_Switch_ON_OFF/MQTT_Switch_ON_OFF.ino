@@ -46,7 +46,7 @@ ESP8266WebServer server ( 80 );
 ESP8266HTTPUpdateServer httpUpdater(true);
 
 I2Chelper i2cHelper(D1,D2,false);
-DisplayHelper displayHelper(true);
+DisplayHelperAbstract displayHelper(&espSettingsBox);
 
 //TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,measureSensors);
 //TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSettingsBox.isThingSpeakEnabled,processThingSpeakPost);
@@ -121,6 +121,11 @@ void postInitWebServer(){
 	server.on(FPSTR(URL_SUBMIT_FORM_SETTINGS), HTTP_POST, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), setEspSettingsBoxValues());
 	});
+	server.on(FPSTR(URL_SUBMIT_FORM_SENSORS), HTTP_POST, [](){
+		wifiHelper.checkAuthentication();
+		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), setSensorJson());
+	});
+
 	server.on(FPSTR(ESPSETTINGSBOX_GET_SIMPLE_JSON_PUBLISH_URL), HTTP_GET, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), espSettingsBox.getSimpleJson());
 	});
@@ -132,10 +137,6 @@ void postInitWebServer(){
 	server.on(FPSTR(URL_GET_JSON_SENSORS), HTTP_GET, [](){
 		wifiHelper.checkAuthentication();
 		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), getAllSensorsJson());
-	});
-	server.on(FPSTR(URL_SUBMIT_FORM_SENSORS), HTTP_POST, [](){
-		wifiHelper.checkAuthentication();
-		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), setSensorJson());
 	});
 
 	server.on(FPSTR(URL_GET_SENSORS_CURRNT_VALUES), HTTP_GET, [](){

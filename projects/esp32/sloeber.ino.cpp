@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2018-12-05 22:37:06
+//This file has been generated on 2018-12-06 01:45:50
 
 #include "Arduino.h"
 #include "Arduino.h"
@@ -14,7 +14,7 @@
 #include "DeviceHelper.h"
 #include "BME280_Sensor.h"
 #include "DS18D20_Sensor.h"
-#include "DisplayHelper.h"
+#include "DisplayHelperAbstract.h"
 #include "WiFiHelper.h"
 #include "HTTPClient.h"
 
@@ -29,6 +29,7 @@ void onLeftLampChanged();
 void onAcMeterChanged();
 void measureSensors();
 void postInitWebServer();
+String getAllSensorsJson();
 
 #include "esp32.ino"
 

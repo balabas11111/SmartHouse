@@ -45,7 +45,7 @@ public:
 	}
 	#endif
 	#ifdef ESP32
-	WiFiHelper(EspSettingsBox *_settingsBox,DisplayHelper *_displayHelper,
+	WiFiHelper(EspSettingsBox *_settingsBox,DisplayHelperAbstract *_displayHelper,
 			WebServer *_server,std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
 
 		server=_server;
@@ -54,7 +54,7 @@ public:
 	#endif
 
 
-	void construct(EspSettingsBox *_settingsBox, DisplayHelper *_displayHelper/*, PinDigital *_signalPin*/,
+	void construct(EspSettingsBox *_settingsBox, DisplayHelperAbstract *_displayHelper/*, PinDigital *_signalPin*/,
 			std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
 		espSettingsBox=_settingsBox;
 		displayHelper=_displayHelper;
@@ -211,12 +211,14 @@ public:
 
 			Serial.print(FPSTR("FIle="));
 			Serial.print(fileNameStr);
-			Serial.print(FPSTR(" url="));
-			Serial.print(url);
+
+			Serial.print(FPSTR(" size="));
+			Serial.print(file.size());
 
 			if(fileNameStr.startsWith(basePath)){
 				Serial.print(FPSTR(" uri="));
 				Serial.print(String(file.name()).substring(start-1).c_str());
+
 
 				server->serveStatic(String(file.name()).substring(start-1).c_str(), SPIFFS, file.name());
 
@@ -591,6 +593,12 @@ public:
 			server->on(FPSTR(URL_EDIT), HTTP_GET, [this](){
 				if(!handleFileRead(FPSTR(MESSAGE_WIFIHELPER_EDIT_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
 			});
+			server->on(FPSTR(URL_INDEX), HTTP_GET, [this](){
+				if(!handleFileRead(FPSTR(MESSAGE_WIFIHELPER_INDEX_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
+			});
+			server->on(FPSTR(URL_SETTINGS), HTTP_GET, [this](){
+				if(!handleFileRead(FPSTR(MESSAGE_WIFIHELPER_SETTINGS_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
+			});
 			//create file
 			//server->on("/edit", HTTP_PUT, [this](){handleFileCreate();});
 			//delete file
@@ -834,7 +842,7 @@ private:
 #endif
 	//String name;
 	EspSettingsBox *espSettingsBox;
-	DisplayHelper *displayHelper;
+	DisplayHelperAbstract *displayHelper;
 	//PinDigital *signalPin;
 	std::function<void(void)> serverPostInitFunc;
 	boolean disconnectOnStartIfConnected;
