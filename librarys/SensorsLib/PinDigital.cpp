@@ -8,6 +8,7 @@
 #include "Arduino.h"
 #include "PinDigital.h"
 #include "TimeTrigger.h"
+#include <FunctionalInterrupt.h>
 
 PinDigital::~PinDigital(){}
 
@@ -30,9 +31,9 @@ void PinDigital::construct(uint8_t pin,std::function<void(void)> onChanged,uint8
 	float val=isOn();
 	items[0]={0,name,type,size,descr,val,0,-2,2,"",processValueFromMqtt};
 
-	if(pinModeInOut==INPUT && clickMaxTime!=0){
+	if((pinModeInOut==INPUT) && clickMaxTime!=0){
 		isClick=true;
-		clickTrigger=new TimeTrigger(0,clickMaxTime,false, [this](){processClick(true);});
+		clickTrigger=new TimeTrigger(0,clickMaxTime,false, [this](){clickTrigger->stop();});
 	}
 }
 
@@ -43,7 +44,9 @@ void PinDigital::setupModes(uint8_t pinVal) {
 		setVal(pinVal);
 	}else{
 		if(onChanged!=nullptr){
+#ifdef ESP8266
 			attachInterrupt(pin, [this](){processInterrupt();}, changeMode);
+#endif
 		}
 	}
 }
@@ -67,6 +70,7 @@ bool PinDigital::setVal(uint8_t _val){
 void PinDigital::processClick(boolean fromTimer){
 	if(!fromTimer){
 		int8_t on=isOn();
+		Serial.println(on);
 
 		if(!on && clickTrigger->checkIsBeforeTrigger()){
 			Serial.print(name);
@@ -78,43 +82,46 @@ void PinDigital::processClick(boolean fromTimer){
 		}
 
 		if(on && !clickTrigger->isActive()){
-			//Serial.println("CLick started");
+			Serial.println("CLick started");
 			clickTrigger->start();
 
 			return;
 		}
 	}
 
-	//Serial.println("Timer stopped");
+	Serial.println("Timer stopped");
 	clickTrigger->stop();
 }
 
 void PinDigital::processInterrupt(){
-
+	long interval=millis()-lastInterrupt;
 	uint16_t now=getVal();
-	items[0].val=isOn();
+	//Serial.println("interval="+String(interval)+" now="+String(now));
 
-	Serial.print("interrupted ");	Serial.print(name);
-	Serial.println(" old="+String(oldVal)+" now="+String(now));
+	if(interval!=0 || !isClick){
 
-	if(now!=oldVal){
-		if(isClick==false){
+		items[0].val=turnOffLevel!=now;
+		//Serial.print("interrupted ");	Serial.print(name);
+		//Serial.println(" old="+String(oldVal)+" now="+String(now));
+
+		//
+
+		if(now!=oldVal){
 			changed=true;
+			#ifdef DIGITAL_PIN_DISPLAY_CHANGE_EVENT
+				Serial.print(printState()+" now="+String(now));
+				Serial.println("...event dispatched");
+			#endif
 		}else{
-			processClick(false);
-		}
-		#ifdef DIGITAL_PIN_DISPLAY_CHANGE_EVENT
+			//Serial.println(" not changed");
+			#ifdef DIGITAL_PIN_DISPLAY_NO_CHANGE_EVENT
 			Serial.print(printState()+" now="+String(now));
-			Serial.println("...event dispatched");
-		#endif
-	}else{
-		//Serial.println(" not changed");
-		#ifdef DIGITAL_PIN_DISPLAY_NO_CHANGE_EVENT
-		Serial.print(printState()+" now="+String(now));
-		Serial.println("...no event");
-		#endif
+			Serial.println("...no event");
+			#endif
+		}
+		oldVal=now;
 	}
-	oldVal=now;
+	lastInterrupt=millis();
 }
 
 uint8_t PinDigital::getPin() {
@@ -130,19 +137,47 @@ uint8_t PinDigital::getPinModeInOut(){
 }
 
 boolean PinDigital::handleLoop(){
+	yield();
 	bool result=false;
 	#ifdef DISPLAY_LOOPS
 		Serial.println("Digital pin loop ");
 	#endif
 
 	if(changed){
-		if(onChanged!=nullptr){
-			onChanged();
-		}
+		if(!isClick ){
+			if(onChanged!=nullptr){
+				onChanged();
+			}
 
-		changed=false;
-		result=true;
+			changed=false;
+			result=true;
+		}else{
+			int8_t on=isOn();
+			if(!on && clickTrigger->checkIsBeforeTrigger()){
+				//Serial.print(name);Serial.println(" CLicked");
+				if(onChanged!=nullptr){
+					onChanged();
+				}
+				clickTrigger->stop();
+
+				return false;
+			}
+
+			if(on && !clickTrigger->isActive()){
+				//Serial.println("CLick started");
+				clickTrigger->start();
+
+				return true;
+			}
+
+			changed=false;
+		}
 	}
+
+	if(isClick){
+		clickTrigger->loop();
+	}
+	/*
 	if(dispatchState){
 		if(onChanged!=nullptr){
 			onChanged();
@@ -150,7 +185,7 @@ boolean PinDigital::handleLoop(){
 		dispatchState=false;
 		result=true;
 	}
-
+*/
 	return result;
 }
 

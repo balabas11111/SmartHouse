@@ -246,10 +246,12 @@ const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS[]="File not exis
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_FILE_EMPTY[]="File is empty";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON[]="Error parse JSON file";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_VALUE_PARSED[]="val read=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_READ_FROM_FILE_COMPLETE[]="read from file complete";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ITEM_SETTINGS_LOADED[]="val put=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_NO_SETTINGS_FILE_EXISTS[]="No settings file exists";
 
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_TOTAL_CHILDS_EQ[]="Total childs=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_FILE_SYSTEM_BEGIN_INIT[]="File system begin init";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_FILE_SYSTEM_STATUS[]="File system status ";
 
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_PRINT_SETTINGS_FILE[]="-----------Print settings file----------------";
@@ -374,6 +376,7 @@ const PROGMEM char ESBOX_telegramSenders[]="telegramSenders";
 //WiFi deploy folder
 const PROGMEM char ESPSETTINGSBOX_DEFAULT_PAGE[]="/web/index.htm";
 const PROGMEM char ESPSETTINGSBOX_DEFAULT_WEB_FOLDER[]="/web/";
+const PROGMEM char ESPSETTINGSBOX_DEFAULT_WEB_FOLDER_ESP32[]="web/";
 const PROGMEM char ESPSETTINGSBOX_DEPLOY_EXT[]="gz,js,css";
 
 //MQTT helper messages
@@ -598,6 +601,7 @@ const PROGMEM char URL_SET_LAMP_LEFT[]="/lampLeft/setValue";
 const PROGMEM char URL_SET_LAMP_RIGHT[]="/lampRight/setValue";
 */
 //sensorsNames
+const PROGMEM char SENSOR_buttonMenu[]="buttonMenu";
 const PROGMEM char SENSOR_buttonLeft[]="buttonLeft";
 const PROGMEM char SENSOR_buttonRight[]="buttonRight";
 const PROGMEM char SENSOR_lampLeft[]="lampLeft";

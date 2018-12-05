@@ -7,7 +7,16 @@
 
 #include "Arduino.h"
 #include "TimeTrigger.h"
-#include "FunctionalInterrupt.h"
+#ifdef ESP8266
+	#include "FunctionalInterrupt.h"
+#endif
+#ifdef ESP32
+	#include <functional>
+#endif
+
+TimeTrigger::TimeTrigger(std::function<void(void)> funcEvent) {
+	construct(0,0,false,funcEvent);
+}
 
 TimeTrigger::TimeTrigger(unsigned long lastTriggerTime,unsigned long interval,boolean active){
 	construct(lastTriggerTime, interval, active, nullptr);
@@ -33,7 +42,7 @@ void TimeTrigger::init(){
 	setActive(true);
 }
 void TimeTrigger::setActive(boolean b){
-	//Serial.println("TimeTrigger active="+String(b));
+	Serial.println("TimeTrigger active="+String(b)+" interval="+String(_interval));
 	_active=b;
 }
 
@@ -87,6 +96,11 @@ boolean TimeTrigger::loop(){
 	return false;
 }
 
+void TimeTrigger::start(long interval) {
+	setInterval(interval);
+	start();
+}
+
 void TimeTrigger::start(){
 	saveTime();
 	setActive(true);
@@ -129,7 +143,7 @@ unsigned long TimeTrigger::getInterval(){
 	return _interval;
 }
 
-unsigned long TimeTrigger::setInterval(unsigned long interval){
+void TimeTrigger::setInterval(unsigned long interval){
 	_interval=interval;
 }
 
@@ -137,7 +151,7 @@ unsigned long TimeTrigger::getLastTriggerTime(){
 	return _lastTriggerTime;
 }
 
-unsigned long TimeTrigger::setLastTriggerTime(unsigned long lastTriggerTime){
+void TimeTrigger::setLastTriggerTime(unsigned long lastTriggerTime){
 	_lastTriggerTime=lastTriggerTime;
 }
 

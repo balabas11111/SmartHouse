@@ -8,6 +8,7 @@
 #ifndef LIBRARIES_HELPERS_WEBSOCKETSHELPER_H_
 #define LIBRARIES_HELPERS_WEBSOCKETSHELPER_H_
 
+#ifdef ESP8266
 #include "WebSocketsServer.h"
 #include <Initializable.h>
 #include <Loopable.h>
@@ -75,5 +76,5 @@ private:
 
 };
 
-
+#endif
 #endif /* LIBRARIES_HELPERS_WEBSOCKETHELPER_H_ */

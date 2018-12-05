@@ -13,6 +13,7 @@
 #include <PubSubClient.h>
 #include "Loopable.h"
 #include "Initializable.h"
+#include <functional>
 
 class MqttHelper: public Loopable{
 

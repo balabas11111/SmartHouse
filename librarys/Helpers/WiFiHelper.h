@@ -5,8 +5,9 @@
  *      Author: Vitaliy
  */
 
-#ifndef LIBRARIES_TIMETRIGGER_WIFIHELPER_H_
-#define LIBRARIES_TIMETRIGGER_WIFIHELPER_H_
+#ifndef LIBRARIES_HELPERS_WIFIHELPER_H_
+#define LIBRARIES_HELPERS_WIFIHELPER_H_
+
 
 #include <ESP_Consts.h>
 #include "Arduino.h"
@@ -14,26 +15,52 @@
 #include "Initializable.h"
 #include "EspSettingsBox.h"
 #include "FS.h"
-
+#ifdef ESP8266
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
-#include <PinDigital.h>
+#endif
+#ifdef ESP32
+#include <WiFi.h>
+#include <WebServer.h>
+#include <HTTPClient.h>
+#include <SPIFFS.h>
+#endif
 
+
+
+#include <PinDigital.h>
 #include <AbstractItem.h>
 #include <DisplayHelperAbstract.h>
 
 class WiFiHelper:public Initializable,public Loopable {
 
 public:
+	#ifdef ESP8266
 	WiFiHelper(EspSettingsBox *_settingsBox, DisplayHelper *_displayHelper/*, PinDigital *_signalPin*/,
 			ESP8266WebServer *_server,std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
+
+		server=_server;
+		construct(_settingsBox, _displayHelper,_serverPostInitFunc,_disconnectOnStartIfConnected);
+	}
+	#endif
+	#ifdef ESP32
+	WiFiHelper(EspSettingsBox *_settingsBox,DisplayHelper *_displayHelper,
+			WebServer *_server,std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
+
+		server=_server;
+		construct(_settingsBox, _displayHelper,_serverPostInitFunc,_disconnectOnStartIfConnected);
+	}
+	#endif
+
+
+	void construct(EspSettingsBox *_settingsBox, DisplayHelper *_displayHelper/*, PinDigital *_signalPin*/,
+			std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
 		espSettingsBox=_settingsBox;
 		displayHelper=_displayHelper;
 		//signalPin=_signalPin;
 		serverPostInitFunc=_serverPostInitFunc;
 		disconnectOnStartIfConnected=_disconnectOnStartIfConnected;
-		server=_server;
 
 		initStaticPages=true;
 		initFilesManager=true;
@@ -46,9 +73,14 @@ public:
 			Serial.println(FPSTR(MESSAGE_WIFIHELPER_INIT_CONNECTION));
 
 			displayDetails();
-			if(WiFi.status()==WL_CONNECTED){
+			if(WiFi.status()==3){
 				Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_DISCONNECTING));
-				WiFi.disconnect(1);
+#ifdef ESP8266
+					WiFi.disconnect(1);
+#endif
+#ifdef ESP32
+					WiFi.disconnect();
+#endif
 			}
 
 			if(espSettingsBox->isAccesPoint){
@@ -85,10 +117,12 @@ public:
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_SETUP_SERVER));
 
+#ifdef ESP8266
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_MODE_EQ));
 		Serial.print(WiFi.getMode());
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_GET_AUTO_CONNECT));
 		Serial.print(WiFi.getAutoConnect());
+#endif
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
 		Serial.println(WiFi.status());
 		//printHeap();
@@ -117,9 +151,17 @@ public:
 
 	//-----------------------------------------------------------------------
 	void initStaticPagesInWebFolder(){
+#ifdef ESP8266
 		deployStaticFolder(FPSTR(ESPSETTINGSBOX_DEFAULT_WEB_FOLDER),
 							FPSTR(ESPSETTINGSBOX_DEPLOY_EXT),
 							"",5);
+#endif
+#ifdef ESP32
+		deployStaticFolder(FPSTR(ESPSETTINGSBOX_DEFAULT_WEB_FOLDER),
+							FPSTR(ESPSETTINGSBOX_DEPLOY_EXT),
+							"",5);
+#endif
+
 		/*deployStaticFolder(FPSTR(ESPSETTINGSBOX_SETTINGS_PATH),
 									FPSTR(ESPSETTINGSBOX_DEPLOY_EXT),
 									FPSTR(ESPSETTINGSBOX_SETTINGS_DEPLOY_PATH));
@@ -137,56 +179,99 @@ public:
 		Serial.println(baseUrl);
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 		//        /js   /css     /html
+#ifdef ESP8266
 		Dir dir=SPIFFS.openDir(basePath);
 
 		while(dir.next()){
 			File file=dir.openFile("r");
+#endif
+#ifdef ESP32
+		File dir =SPIFFS.open("/");
 
+		if(dir.isDirectory()){
+			Serial.println(FPSTR("Base dir found"));
+			dir.rewindDirectory();
+		}else{
+			Serial.println(FPSTR("NO base Base dir found"));
+		}
+		File file=dir.openNextFile();
+
+		if(file){
+			Serial.print(FPSTR("First file "));
+			Serial.println(file.name());
+		}else{
+			Serial.println("File is invalid");
+		}
+
+		while(file){
+#endif
 			String fileNameStr=String(file.name());
 
 			String url=fileNameStr.substring(basePath.length());
 
-			server->serveStatic(String(file.name()).substring(start-1).c_str(), SPIFFS, file.name());
-/*
-			Serial.print("deploy file url=");
-			Serial.println(String(file.name()).substring(start-1).c_str());
-			Serial.print(" file=");
-			Serial.println(file.name());
-*/
-			//file.close();
-			/*
-			if(!url.startsWith("/")){
-				url="/"+url;
-			}else{
+			Serial.print(FPSTR("FIle="));
+			Serial.print(fileNameStr);
+			Serial.print(FPSTR(" url="));
+			Serial.print(url);
+
+			if(fileNameStr.startsWith(basePath)){
+				Serial.print(FPSTR(" uri="));
+				Serial.print(String(file.name()).substring(start-1).c_str());
+
+				server->serveStatic(String(file.name()).substring(start-1).c_str(), SPIFFS, file.name());
+
+				Serial.print(FPSTR("...deployed"));
 			}
 
-			url=baseUrl+url;
+			Serial.println();
 
-			File f=dir.openFile("r");
-			size_t size=f.size();
-			f.close();
 
-			uint8_t extIndex=fileNameStr.lastIndexOf(".");
-			String extension=fileNameStr.substring(extIndex+1);
 
-			boolean add=extensions.indexOf(extension)!=-1;
 
-			if(add){
-				Serial.print(FPSTR(MESSAGE_WIFIHELPER_ADDED_FILE));
-				Serial.print(fileNameStr);
-				Serial.print(FPSTR(MESSAGE_WIFIHELPER_SIZE_EQ));
-				Serial.print(size);
-				Serial.print(FPSTR(MESSAGE_WIFIHELPER_EXT_EQ));
-				Serial.print(extension);
-				Serial.print(FPSTR(MESSAGE_WIFIHELPER_URL_EQ));
-				Serial.println(url);
+#ifdef ESP32
+		file=dir.openNextFile();
+#endif
 
-				server->serveStatic(url.c_str(), SPIFFS, file.name());
-			}
-			*/
 		}
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 		//addFileHandlersForDir(base,basePath,baseUrl);
+		/*
+					Serial.print("deploy file url=");
+					Serial.println(String(file.name()).substring(start-1).c_str());
+					Serial.print(" file=");
+					Serial.println(file.name());
+		*/
+					//file.close();
+					/*
+					if(!url.startsWith("/")){
+						url="/"+url;
+					}else{
+					}
+
+					url=baseUrl+url;
+
+					File f=dir.openFile("r");
+					size_t size=f.size();
+					f.close();
+
+					uint8_t extIndex=fileNameStr.lastIndexOf(".");
+					String extension=fileNameStr.substring(extIndex+1);
+
+					boolean add=extensions.indexOf(extension)!=-1;
+
+					if(add){
+						Serial.print(FPSTR(MESSAGE_WIFIHELPER_ADDED_FILE));
+						Serial.print(fileNameStr);
+						Serial.print(FPSTR(MESSAGE_WIFIHELPER_SIZE_EQ));
+						Serial.print(size);
+						Serial.print(FPSTR(MESSAGE_WIFIHELPER_EXT_EQ));
+						Serial.print(extension);
+						Serial.print(FPSTR(MESSAGE_WIFIHELPER_URL_EQ));
+						Serial.println(url);
+
+						server->serveStatic(url.c_str(), SPIFFS, file.name());
+					}
+					*/
 	}
 	//-----------------------------------------------------------------------
 
@@ -209,14 +294,7 @@ public:
 		displayLine(FPSTR(MESSAGE_WIFIHELPER_START_AP),3,0);
 		displayLine(FPSTR(MESSAGE_WIFIHELPER_ACCESS_POINT),5,0);
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_STARTING_ACCESS_POINT));
-		/*
-		 WiFi.softAPConfig(espSettingsBox.apIp,espSettingsBox.gateIp,
-				espSettingsBox.subnetIp);
-				*/
-		//WiFi.softAP(const_cast<char*>(espSettingsBox.ssidAP.c_str()),const_cast<char*>(espSettingsBox.passwordAP.c_str()));
 		WiFi.softAP(const_cast<char*>(espSettingsBox->ssidAP.c_str()));
-		//String apName="ESP "+ESP.getChipId();
-		//WiFi.softAP(espSettingsBox.ssidAP);
 
 		Serial.print (FPSTR(MESSAGE_WIFIHELPER_SOFT_AP));
 		Serial.println ( espSettingsBox->ssidAP);
@@ -260,9 +338,55 @@ public:
 
 		return true;
 	}
+	/*
+#ifdef ESP32
+	boolean startAsAccessPoint(){
+		displayLine(FPSTR(MESSAGE_WIFIHELPER_START_AP),3,0);
+		displayLine(FPSTR(MESSAGE_WIFIHELPER_ACCESS_POINT),5,0);
 
+		Serial.println(FPSTR(MESSAGE_WIFIHELPER_STARTING_ACCESS_POINT));
+		WiFi..beginAP(const_cast<char*>(espSettingsBox->ssidAP.c_str()));
+		WiFi.configAP(espSettingsBox->apIp);
+
+		Serial.print (FPSTR(MESSAGE_WIFIHELPER_SOFT_AP));
+		Serial.println ( espSettingsBox->ssidAP);
+		Serial.print ( FPSTR(MESSAGE_WIFIHELPER_WIFI_IP));
+		Serial.println ( WiFi.localIP());
+
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
+		Serial.println(WiFi.status());
+		Serial.println ( FPSTR(MESSAGE_HORIZONTAL_LINE));
+
+		return true;
+	}
+
+	boolean startAsClient(){
+		displayLine(FPSTR(MESSAGE_WIFIHELPER_CONNECT_TO),2,0);
+		displayLine(espSettingsBox->ssid,5,0);
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_SSID));
+		Serial.println(espSettingsBox->ssid);
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_PASSWORD));
+		Serial.println(espSettingsBox->password);
+
+		WiFi.disconnect();
+
+		if(espSettingsBox->staticIp){
+			WiFi.config(espSettingsBox->localIp);
+		}else{
+			//WiFi.config(0U,0U,0U,espSettingsBox->dnsIp,espSettingsBox->dnsIp2);
+		}
+
+		WiFi.begin ( const_cast<char*>(espSettingsBox->ssid.c_str()),
+				const_cast<char*>(espSettingsBox->password.c_str()) );
+
+		connectToWiFiIfNotConnected();
+
+		return true;
+	}
+#endif
+*/
 	boolean isWiFIConnected(){
-		return WiFi.status() == WL_CONNECTED;
+		return WiFi.status() == 3;
 	}
 
 	void connectToWiFiIfNotConnected(){
@@ -291,22 +415,24 @@ public:
 		delay(1);
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_DIAGNOSTIC));
 		printHeap();
+#ifdef ESP8266
 		WiFi.printDiag(Serial);
+#endif
 
 		wl_status_t status=WiFi.status();
 
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
 		switch(status) {
-		        case WL_CONNECTED:
+		        case 3:
 		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECTED));
 		        	break;
 		        case WL_NO_SSID_AVAIL:
 		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECTED));
 		        	break;
-		        case WL_CONNECT_FAILED:
+		        case 4:
 		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECT_FAILED));
 		        	break;
-		        case WL_IDLE_STATUS:
+		        case 0:
 		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_IDLE_STATUS));
 		        	break;
 		        case WL_SCAN_COMPLETED:
@@ -329,14 +455,21 @@ public:
 
 		Serial.print (FPSTR(MESSAGE_WIFIHELPER_WIFI_IP));
 		if(espSettingsBox->isAccesPoint){
+#ifdef ESP8266
 			Serial.println ( WiFi.softAPIP() );
+#endif
+#ifdef ESP32
+			Serial.println ( WiFi.localIP());
+#endif
+
 		}else{
 			Serial.println ( WiFi.localIP() );
 		}
 
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_MAC));
+#ifdef ESP8266
 		Serial.println(WiFi.macAddress());
-
+#endif
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
 	}
@@ -365,7 +498,6 @@ public:
 	}
 	//-------------------------------
 	String executeGetRequest(String url){
-
 		if(url==""){
 			return "";
 		}
@@ -387,62 +519,57 @@ public:
 
 		  String payload = http.getString();
 		  delay(1);
-		  /*
-		  Serial.print(FPSTR(MESSAGE_WIFIHELPER_RESPONSE_EQ));
-		  Serial.println(payload);
-		  Serial.print(FPSTR(MESSAGE_HORIZONTAL_LINE));
-*/
+		  http.end();
+
 		  return payload;
 		}
 
 		Serial.print(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
 		http.end();
-
 		return "";
 	}
 
 	String executeFormPostRequest(String url,String body){
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_POST));
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_URL_EQ));
+		Serial.println(url);
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_HTTP_BODY_EQ));
+		Serial.println(body);
 
-			Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-			Serial.print(FPSTR(MESSAGE_WIFIHELPER_POST));
-			Serial.print(FPSTR(MESSAGE_WIFIHELPER_URL_EQ));
-			Serial.println(url);
-			Serial.print(FPSTR(MESSAGE_WIFIHELPER_HTTP_BODY_EQ));
-			Serial.println(body);
+		boolean begin=http.begin(url);
 
-			boolean begin=http.begin(url);
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_HTTP_BEGIN_EQ));
+		Serial.println(begin);
 
-			Serial.print(FPSTR(MESSAGE_WIFIHELPER_HTTP_BEGIN_EQ));
-			Serial.println(begin);
+		yield();
 
-			yield();
+		http.addHeader(FPSTR(CONTENT_TYPE),FPSTR(CONTENT_TYPE_FORM_URL_ENCODED));
 
-			http.addHeader(FPSTR(CONTENT_TYPE),FPSTR(CONTENT_TYPE_FORM_URL_ENCODED));
+		int httpCode = http.POST(body);
+		yield();
 
-			int httpCode = http.POST(body);
-			yield();
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_EQ));
+		Serial.println(httpCode);
 
-			Serial.print(FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_EQ));
-			Serial.println(httpCode);
+		if (httpCode > 0) {
 
-			if (httpCode > 0) {
+		  String payload = http.getString();
 
-			  String payload = http.getString();
+		  Serial.print(FPSTR(MESSAGE_WIFIHELPER_RESPONSE_EQ));
+		  Serial.println(payload);
+		  Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+		  http.end();
 
-			  Serial.print(FPSTR(MESSAGE_WIFIHELPER_RESPONSE_EQ));
-			  Serial.println(payload);
-			  Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-
-			  return payload;
-			}
-
-			Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-
-			http.end();
-
-			return "";
+		  return payload;
 		}
+
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+
+		http.end();
+		return "";
+	}
 	//---------------------------------------------------------------------
 		//fileManager section
 		void initFileManager(){
@@ -459,7 +586,7 @@ public:
 				listDir(SPIFFS, "/", 0);
 			#endif
 */
-			//server->on("/list", HTTP_GET, [this](){handleFileList();});
+			server->on("/list", HTTP_GET, [this](){handleFileList();});
 			//load editor
 			server->on(FPSTR(URL_EDIT), HTTP_GET, [this](){
 				if(!handleFileRead(FPSTR(MESSAGE_WIFIHELPER_EDIT_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
@@ -621,11 +748,11 @@ public:
 		}
 		#else
 		void handleFileList() {
-		  if(!server.hasArg("dir")) {
+		  if(!server->hasArg("dir")) {
 		    returnFail("BAD ARGS");
 		    return;
 		  }
-		  String path = server.arg("dir");
+		  String path = server->arg("dir");
 		  if(path != "/" && !SPIFFS.exists((char *)path.c_str())) {
 		    returnFail("BAD PATH");
 		    return;
@@ -658,36 +785,36 @@ public:
 		    entry.close();
 		  }
 		  output += "]";
-		  server.send(200, "text/json", output);
+		  server->send(200, "text/json", output);
 		  dir.close();
 		}
 
 		void listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
-		  DBG_OUTPUT_PORT.printf("Listing directory: %s\n", dirname);
+		  Serial.printf("Listing directory: %s\n", dirname);
 
 		  File root = fs.open(dirname);
 		  if (!root) {
-		    DBG_OUTPUT_PORT.println("Failed to open directory");
+			  Serial.println("Failed to open directory");
 		    return;
 		  }
 		  if (!root.isDirectory()) {
-		    DBG_OUTPUT_PORT.println("Not a directory");
+			  Serial.println("Not a directory");
 		    return;
 		  }
 
 		  File file = root.openNextFile();
 		  while (file) {
 		    if (file.isDirectory()) {
-		      DBG_OUTPUT_PORT.print("  DIR : ");
-		      DBG_OUTPUT_PORT.println(file.name());
+		    	Serial.print("  DIR : ");
+		    	Serial.println(file.name());
 		      if (levels) {
 		        listDir(fs, file.name(), levels - 1);
 		      }
 		    } else {
-		      DBG_OUTPUT_PORT.print("  FILE: ");
-		      DBG_OUTPUT_PORT.print(file.name());
-		      DBG_OUTPUT_PORT.print("  SIZE: ");
-		      DBG_OUTPUT_PORT.println(file.size());
+		    	Serial.print("  FILE: ");
+		    	Serial.print(file.name());
+		    	Serial.print("  SIZE: ");
+		    	Serial.println(file.size());
 		    }
 		    file = root.openNextFile();
 		  }
@@ -699,7 +826,12 @@ public:
 
 
 private:
+#ifdef ESP8266
 	ESP8266WebServer *server;
+#endif
+#ifdef ESP32
+	WebServer *server;
+#endif
 	//String name;
 	EspSettingsBox *espSettingsBox;
 	DisplayHelper *displayHelper;

@@ -91,22 +91,22 @@
 		<link>
 			<name>libraries/ESP8266HTTPClient</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266HTTPClient</locationURI>
+			<location>D:/projects/sloeber431/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266HTTPClient</location>
 		</link>
 		<link>
 			<name>libraries/ESP8266HTTPUpdateServer</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266HTTPUpdateServer</locationURI>
+			<location>D:/projects/sloeber431/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266HTTPUpdateServer</location>
 		</link>
 		<link>
 			<name>libraries/ESP8266WebServer</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/ESP8266WebServer</location>
+			<location>D:/projects/sloeber431/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266WebServer</location>
 		</link>
 		<link>
 			<name>libraries/ESP8266WiFi</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266WiFi</locationURI>
+			<location>D:/projects/sloeber431/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266WiFi</location>
 		</link>
 		<link>
 			<name>libraries/EspSettingsBox</name>
@@ -116,17 +116,12 @@
 		<link>
 			<name>libraries/Hash</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Hash</locationURI>
+			<location>D:/projects/sloeber431/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Hash</location>
 		</link>
 		<link>
 			<name>libraries/Helpers</name>
 			<type>2</type>
 			<location>D:/projects/!!!SmartHouse/librarys/Helpers</location>
-		</link>
-		<link>
-			<name>libraries/MqttHelper</name>
-			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/MqttHelper</location>
 		</link>
 		<link>
 			<name>libraries/NTPClient</name>
@@ -151,7 +146,7 @@
 		<link>
 			<name>libraries/SPI</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/SPI</locationURI>
+			<location>D:/projects/sloeber431/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/SPI</location>
 		</link>
 		<link>
 			<name>libraries/SensorsLib</name>
@@ -164,9 +159,19 @@
 			<location>D:/projects/!!!SmartHouse/librarys/TimeTrigger</location>
 		</link>
 		<link>
+			<name>libraries/UniversalTelegramBot</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/UniversalTelegramBot/1.0.0</locationURI>
+		</link>
+		<link>
+			<name>libraries/WebSockets</name>
+			<type>2</type>
+			<location>D:/projects/!!!SmartHouse/librarys/WebSockets</location>
+		</link>
+		<link>
 			<name>libraries/Wire</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Wire</locationURI>
+			<location>D:/projects/sloeber431/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Wire</location>
 		</link>
 	</linkedResources>
 </projectDescription>

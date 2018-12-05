@@ -9,14 +9,21 @@
 #define TIMETRIGGER_H_
 
 #include "Arduino.h"
-#include "FunctionalInterrupt.h"
+#ifdef ESP8266
+	#include "FunctionalInterrupt.h"
+#endif
+#ifdef ESP32
+	#include <functional>
+#endif
 #include "Loopable.h"
 
 class TimeTrigger:public Loopable{
 
 public:
+	TimeTrigger(std::function<void(void)> funcEvent);
 	TimeTrigger(unsigned long lastTriggerTime,unsigned long interval,boolean active);
 	TimeTrigger(unsigned long lastTriggerTime,unsigned long interval,boolean active,std::function<void(void)> funcEvent);
+
 	virtual ~TimeTrigger();
 	void init();
 	boolean checkTriggerAndSaveTime();
@@ -24,14 +31,16 @@ public:
 	void saveTime();
 	void setActive(boolean b);
 	unsigned long getInterval();
-	unsigned long setInterval(unsigned long interval);
+	void setInterval(unsigned long interval);
 	unsigned long getLastTriggerTime();
-	unsigned long setLastTriggerTime(unsigned long lastTriggerTime);
+	void setLastTriggerTime(unsigned long lastTriggerTime);
+
 	void setHandler(std::function<void(void)> funcEvent);
 
 	String getName();
 	boolean loop();
 
+	void start(long interval);
 	void start();
 	void stop();
 
@@ -40,7 +49,6 @@ public:
 	boolean checkIsBeforeTrigger();
 
 private:
-
 	void construct(unsigned long lastTriggerTime,unsigned long interval,boolean active,std::function<void(void)> funcEvent);
 	std::function<void(void)> _funcEvent;
 	unsigned long _lastTriggerTime;

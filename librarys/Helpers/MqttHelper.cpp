@@ -3,8 +3,15 @@
 #include <PubSubClient.h>
 #include "AbstractItem.h"
 #include "ESP_Consts.h"
+#include <FunctionalInterrupt.h>
+#include <EspSettingsBox.h>
 
-#include <ESP8266WiFi.h>
+#ifdef ESP8266
+	#include <ESP8266WiFi.h>
+#endif
+#ifdef ESP32
+	#include <WiFi.h>
+#endif
 
 
 #define BUFFER_SIZE 100

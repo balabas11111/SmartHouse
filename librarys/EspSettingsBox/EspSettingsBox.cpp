@@ -5,26 +5,29 @@
  *      Author: Vitaliy
  */
 #include "EspSettingsBox.h"
+#ifdef ESP8266
 #include "ESP8266WiFi.h"
+#endif
+#ifdef ESP32
+#include "WiFi.h"
+#include "SPIFFS.h"
+#endif
+
 #include "ArduinoJson.h"
 #include "FS.h"
 #include "AbstractItem.h"
 #include "ESP_Consts.h"
 
 EspSettingsBox::EspSettingsBox(){
-	construct("",false,false);
+	construct(false,false);
 }
 
 EspSettingsBox::EspSettingsBox(boolean forceLoad){
-	construct("",forceLoad,false);
+	construct(forceLoad,false);
 }
 
-EspSettingsBox::EspSettingsBox(String extValuesFileName,boolean forceLoad){
-	construct(extValuesFileName,forceLoad,false);
-}
-
-EspSettingsBox::EspSettingsBox(String extValuesFileName,boolean forceLoad,boolean _initSpiff){
-	construct(extValuesFileName,forceLoad,_initSpiff);
+EspSettingsBox::EspSettingsBox(boolean forceLoad,boolean _initSpiff){
+	construct(forceLoad,_initSpiff);
 }
 
 //Initializable
@@ -32,6 +35,13 @@ EspSettingsBox::EspSettingsBox(String extValuesFileName,boolean forceLoad,boolea
 		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_INITIALIZE));
 
 		if(!initialized && _init){
+
+			if(!spiffInitialized){
+				initSpiff();
+			}else{
+				Serial.println(FPSTR("SPIFF already initialized"));
+			}
+
 			loadSettingsJson();
 			initialized=_init;
 		}
@@ -39,6 +49,8 @@ EspSettingsBox::EspSettingsBox(String extValuesFileName,boolean forceLoad,boolea
 		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_LOADED));
 		Serial.println(loaded);
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+
+		initialized=_init;
 
 		return initialized;
 	}
@@ -51,7 +63,7 @@ void EspSettingsBox::loadSettingsJson(){
 
 	File file = SPIFFS.open(_fileName, "r");
 
-	if(!file){
+	if(!file || file.size()==0){
 		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS));
 		saveSettingsJson();
 		file = SPIFFS.open(_fileName, "r");
@@ -75,6 +87,9 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
 	      } else {
 	    	  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
+	    	  root.printTo(Serial);
+	    	  Serial.println();
+	    	  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_READ_FROM_FILE_COMPLETE));
 
 	    	    DeviceId = root["dId"].as<char*>();
 	    	  	DeviceKind = root["DeviceKind"].as<char*>();
@@ -375,20 +390,30 @@ void EspSettingsBox::printSettingsFile(){
 }
 */
 void EspSettingsBox::initSpiff(){
+	Serial.println();
+	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SYSTEM_BEGIN_INIT));
+#ifdef ESP8266
 	spiffInitialized=SPIFFS.begin();
+#endif
+#ifdef ESP32
+	spiffInitialized=SPIFFS.begin(1, "/spiffs", 10);
+#endif
 	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SYSTEM_STATUS));
 	Serial.println(spiffInitialized);
 }
 
 void EspSettingsBox::printSpiffsInfo(){
+#ifdef ESP8266
 	FSInfo fs_info;
 	SPIFFS.info(fs_info);
+#endif
 
 	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SPIFFS_INFO));
 	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_INITIALIZED_EQ));
 	Serial.println(initialized);
 	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_SPIFF_INIT_EQ));
 	Serial.println(spiffInitialized);
+#ifdef ESP8266
 	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BLOCK_SIZE));
 	Serial.println(fs_info.blockSize);
 	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_MAX_OPEN_FILES));
@@ -402,7 +427,8 @@ void EspSettingsBox::printSpiffsInfo(){
 	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_USED_BYTES));
 	Serial.println(fs_info.usedBytes);
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-			#ifdef ESP8266
+#endif
+#ifdef ESP8266
 			Dir dir = SPIFFS.openDir("/");
 			while (dir.next()) {
 			  String fileName = dir.fileName();
@@ -412,16 +438,51 @@ void EspSettingsBox::printSpiffsInfo(){
 			  Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_SIZE_EQ));
 			  Serial.println(fileSize);
 			}
-		#else
-			listDir(SPIFFS, "/", 0);
-		#endif
+#endif
+#ifdef ESP32
+			listDir(SPIFFS, "/", 10);
+#endif
 	Serial.println("---------------------------------------");
 }
 
-void EspSettingsBox::construct(String extValuesFileName,boolean forceLoad,boolean _initSpiff){
+#ifdef ESP32
+void EspSettingsBox::listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
+		  Serial.print(FPSTR("Listing directory: "));
+		  Serial.println(dirname);
+
+		  File root = fs.open(dirname);
+		  if (!root) {
+			  Serial.println(FPSTR("Failed to open directory"));
+		    return;
+		  }
+		  if (!root.isDirectory()) {
+			  Serial.println(FPSTR("Not a directory"));
+		    return;
+		  }
+
+		  File file = root.openNextFile();
+		  while (file) {
+		    if (file.isDirectory()) {
+		      Serial.print(FPSTR("  DIR : "));
+		      Serial.println(file.name());
+		      if (levels) {
+		        listDir(fs, file.name(), levels - 1);
+		      }
+		    } else {
+		      Serial.print(FPSTR("  FILE: "));
+		      Serial.print(file.name());
+		      Serial.print(FPSTR("  SIZE: "));
+		      Serial.println(file.size());
+		    }
+		    file = root.openNextFile();
+		  }
+		}
+#endif
+
+void EspSettingsBox::construct(/*String extValuesFileName,*/boolean forceLoad,boolean _initSpiff){
 	_fileName=FPSTR(ESPSETTINGSBOX_SETTINGS_PATH);
 	_fileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_DEFAULT_FILE);
-	_extFileName=extValuesFileName;
+	//_extFileName=extValuesFileName;
 
 	if(_initSpiff){
 		initSpiff();
@@ -431,7 +492,6 @@ void EspSettingsBox::construct(String extValuesFileName,boolean forceLoad,boolea
 		init();
 	}
 
-	initialized=true;
 }
 
 boolean EspSettingsBox::validateIP(String str){
@@ -815,10 +875,30 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 }
 
 int EspSettingsBox::deleteSettingsFiles() {
-	Dir dir = SPIFFS.openDir("/");
 	int count=0;
+#ifdef ESP8266
+	Dir dir = SPIFFS.openDir("/");
+
 	while (dir.next()) {
 		String fileName=dir.fileName();
+#endif
+#ifdef ESP32
+	File dir = SPIFFS.open("/");
+	if(!dir.isDirectory()){
+		Serial.println(FPSTR("ROOT FOLDER IS NOT DIRECTORY"));
+		return count;
+	}
+
+	dir.rewindDirectory();
+
+	for (int cnt = 0; true; ++cnt) {
+		File entry = dir.openNextFile();
+
+		if (!entry)
+		break;
+
+		String fileName=entry.name();
+#endif
 
 		if(fileName.startsWith(FPSTR(ESPSETTINGSBOX_SETTINGS_PATH))){
 			SPIFFS.remove(fileName);

@@ -32,8 +32,7 @@ public:
 	DS18D20_Sensor(String name, uint8_t pin)
 				: AbstractItem(pin,name,FPSTR(SENSOR_DS18D20_DESCRIPTION),FPSTR(SENSOR_DS18D20_SIZE),FPSTR(SENSOR_DS18D20_DESCRIPTION_RU),0){
 
-		oneWire=new OneWire(pin);
-		dallasTemperature=new DallasTemperature(oneWire);
+		this->pin=pin;
 	};
 
 	virtual ~DS18D20_Sensor(){};
@@ -54,6 +53,10 @@ public:
 	}
 
 	void initSensor(){
+
+		oneWire=new OneWire(pin);
+		dallasTemperature=new DallasTemperature(oneWire);
+
 		dallasTemperature->begin();
 		//dallasTemperature->setDescription(getName());
 
@@ -83,10 +86,15 @@ public:
 	}
 
 	void update(){
-		dallasTemperature->requestTemperatures();
+		if(itemCount!=0){
+			dallasTemperature->requestTemperatures();
 
-		for(uint8_t i=0;i<itemCount;i++){
-			items[i].val=dallasTemperature->getTempCByIndex(i);
+			for(uint8_t i=0;i<itemCount;i++){
+				items[i].val=dallasTemperature->getTempCByIndex(i);
+			}
+		}else{
+			Serial.println(FPSTR("Reinitialize bus"));
+			initSensor();
 		}
 	}
 
@@ -95,6 +103,7 @@ public:
 	}
 
 private:
+	uint8_t pin;
 	OneWire* oneWire;
 	DallasTemperature* dallasTemperature;
 

@@ -13,7 +13,7 @@
 #include <Arduino.h>
 #include "Measurable.h"
 #include "AbstractItem.h"
-#include "ESP8266WebServer.h"
+//#include "ESP8266WebServer.h"
 #include "TimeTrigger.h"
 
 class DeviceHelper:public Loopable{

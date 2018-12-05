@@ -114,6 +114,8 @@ protected:
 
 	uint8_t getOpposite(uint8_t _val);
 
+	long lastInterrupt;
+
 };
 
 

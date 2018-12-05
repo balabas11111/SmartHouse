@@ -9,19 +9,20 @@
 #define LIBRARIES_TIMETRIGGER_ESPSETTINGSBOX_H_
 
 #include "Arduino.h"
-#include "ESP8266WiFi.h"
+//#include "ESP8266WiFi.h"
+#include "FS.h"
 #include "ArduinoJson.h"
 #include "Initializable.h"
 #include "AbstractItem.h"
 #include "ESP_Consts.h"
+#include "IPAddress.h"
 
 class EspSettingsBox: public Initializable{
 
 public:
 	EspSettingsBox();
 	EspSettingsBox(boolean forceLoad);
-	EspSettingsBox(String extValuesFileName,boolean forceLoad);
-	EspSettingsBox(String extValuesFileName,boolean forceLoad,boolean _initSpiff);
+	EspSettingsBox(boolean forceLoad,boolean _initSpiff);
 
 	virtual boolean initialize(boolean _init) override;
 
@@ -110,7 +111,12 @@ public:
 	boolean saveThingSpeakChannelCreation(String response/*,boolean manageChannel*/);
 
 	String deviceFirmWareVersion = "v.1.0";
-	String DeviceId = "SENS_"+String(ESP.getChipId());
+	#ifdef ESP8266
+		String DeviceId = "SENS_"+String(ESP.getChipId());
+	#endif
+	#ifdef ESP32
+		String DeviceId = "SENS_"+String(ESP.getChipRevision());
+	#endif
 	String DeviceKind = "Климат и управление выключателями";
 	String DeviceDescription = "_";
 	String DeviceLocation = "Кухня";
@@ -127,7 +133,12 @@ public:
 	String settingsPass = "balabas";
 
 	boolean isAccesPoint=false;
-	String ssidAP="SENS_"+String(ESP.getChipId());;
+	#ifdef ESP8266
+		String ssidAP="SENS_"+String(ESP.getChipId());;
+	#endif
+	#ifdef ESP32
+		String ssidAP="SENS_"+String(ESP.getChipRevision());;
+	#endif
 	//String passwordAP="";
 
 	String ssid = "balabasKiev5";//balabasKiev5
@@ -188,10 +199,11 @@ private:
 
 	boolean spiffInitialized;
 	String _fileName;
-	String _extFileName;
+	//String _extFileName;
 
-	void construct(String extValuesFileName,boolean forceLoad,boolean initSpiff);
+	void construct(/*String extValuesFileName,*/boolean forceLoad,boolean initSpiff);
 	void initSpiff();
+	void listDir(fs::FS &fs, const char * dirname, uint8_t levels);
 
 	size_t bufferLength=2048;
 };

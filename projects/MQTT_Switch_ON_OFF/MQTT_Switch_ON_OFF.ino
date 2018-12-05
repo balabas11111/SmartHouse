@@ -40,7 +40,7 @@
 #define HUMAN_PRESENTED LOW
 #define HUMAN_NOT_PRESENTED HIGH
 
-EspSettingsBox espSettingsBox("",true,true);
+EspSettingsBox espSettingsBox(true,true);
 
 ESP8266WebServer server ( 80 );
 ESP8266HTTPUpdateServer httpUpdater(true);
@@ -56,15 +56,15 @@ PinDigital buttonRight(FPSTR(SENSOR_buttonRight),D6,onRightButtonChanged,1000);
 
 //PinDigital lampLeft(FPSTR(SENSOR_lampLeft),D8,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW);
 //PinDigital lampRight(FPSTR(SENSOR_lampRight),D0,onRightLampChanged,OUTPUT,CHANGE,HIGH,LOW);
-//PinDigital acMeter(FPSTR(SENSOR_acMeter),D5,onAcMeterChanged,INPUT,CHANGE,HIGH,HIGH);
+PinDigital acMeter(FPSTR(SENSOR_acMeter),D5,onAcMeterChanged,INPUT,CHANGE,HIGH,HIGH);
 
 PinDigitalVirtual lampLeft(FPSTR(SENSOR_lampLeft));
 PinDigitalVirtual lampRight(FPSTR(SENSOR_lampRight));
 PinDigitalVirtual lamp2(FPSTR(SENSOR_lamp2));
 PinDigitalVirtual lamp3(FPSTR(SENSOR_lamp3));
-PinDigitalVirtual acMeter(FPSTR(SENSOR_acMeter),onAcMeterChanged);
+//PinDigitalVirtual acMeter(FPSTR(SENSOR_acMeter),onAcMeterChanged,HIGH,HIGH);
 
-PinDigitalVirtual* virtualItems[]={&lampLeft,&lampRight,&lamp2,&lamp3,&acMeter};
+PinDigitalVirtual* virtualItems[]={&lampLeft,&lampRight,&lamp2,&lamp3};
 
 //Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged);
 //NtpTimeClientService timeClient(&espSettingsBox,processTimeClientEvent,60000);
@@ -78,7 +78,7 @@ DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), D3);
 WiFiHelper wifiHelper(&espSettingsBox, &displayHelper, &server,postInitWebServer,false);
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 
-PCF8574Helper extender(D8,virtualItems,ARRAY_SIZE(virtualItems));
+PCF8574Helper extender(virtualItems,ARRAY_SIZE(virtualItems));
 
 Loopable* loopArray[]={&extender,&wifiHelper,&buttonLeft,&buttonRight,&acMeter/*,&sensorsTrigger,&thingSpeakTrigger*/};
 
@@ -88,6 +88,7 @@ DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),120000);
 
 
 void setup() {
+  Serial.begin(115200);
   deviceHelper.startDevice(espSettingsBox.DeviceId);
 
   espSettingsBox.init();
