@@ -43,7 +43,7 @@ void PinDigital::setupModes(uint8_t pinVal) {
 	if(pinModeInOut==OUTPUT){
 		setVal(pinVal);
 	}else{
-		if(onChanged!=nullptr){
+		if(onChanged!=nullptr && changeMode!=NULL){
 #ifdef ESP8266
 			attachInterrupt(pin, [this](){processInterrupt();}, changeMode);
 #endif
@@ -61,12 +61,12 @@ bool PinDigital::setVal(uint8_t _val){
 		if(_val!=getVal()){
 			digitalWrite(pin, _val);
 		}
-		items[0].val=isOn();
-		return _val==getVal();
 	}
-	return false;
-}
 
+	items[0].val=isOn();
+	return items[0].val;
+}
+/*
 void PinDigital::processClick(boolean fromTimer){
 	if(!fromTimer){
 		int8_t on=isOn();
@@ -92,7 +92,7 @@ void PinDigital::processClick(boolean fromTimer){
 	Serial.println("Timer stopped");
 	clickTrigger->stop();
 }
-
+*/
 void PinDigital::processInterrupt(){
 	long interval=millis()-lastInterrupt;
 	uint16_t now=getVal();
@@ -103,8 +103,6 @@ void PinDigital::processInterrupt(){
 		items[0].val=turnOffLevel!=now;
 		//Serial.print("interrupted ");	Serial.print(name);
 		//Serial.println(" old="+String(oldVal)+" now="+String(now));
-
-		//
 
 		if(now!=oldVal){
 			changed=true;
@@ -122,18 +120,6 @@ void PinDigital::processInterrupt(){
 		oldVal=now;
 	}
 	lastInterrupt=millis();
-}
-
-uint8_t PinDigital::getPin() {
-	return pin;
-}
-
-uint8_t PinDigital::getChangeMode() {
-	return changeMode;
-}
-
-uint8_t PinDigital::getPinModeInOut(){
-	return pinModeInOut;
 }
 
 boolean PinDigital::handleLoop(){
@@ -242,4 +228,17 @@ void PinDigital::setTurnOffLevel(uint8_t turnOffLevel) {
 
 uint8_t PinDigital::getOpposite(uint8_t _val){
 	return (_val==HIGH)?LOW:HIGH;
+}
+
+
+uint8_t PinDigital::getPin() {
+	return pin;
+}
+
+uint8_t PinDigital::getChangeMode() {
+	return changeMode;
+}
+
+uint8_t PinDigital::getPinModeInOut(){
+	return pinModeInOut;
 }
