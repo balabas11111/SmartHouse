@@ -91,6 +91,12 @@ public class SimpleUpdateHandler implements UpdateHandler {
 				if(messageText.contains("Vitalik")){
 					result="<b>Кросавчег и молодец)</b>";
 				}else
+				if(messageText.contains("Vika")){
+					result="<b>Нечемнa дівчинка</b>";
+				}else
+				if(messageText.contains("Lyuba")){
+					result="<b>Мама Люба)</b>";
+				}else
 				{
 					result="не знаю такого...";
 				}

@@ -25,6 +25,8 @@ public:
 	virtual uint8_t getTotalDetectedSensors()=0;
 
 	virtual uint8_t getTotalPages()=0;
+
+	virtual void lock(bool doLock)=0;
 };
 
 #endif /* LIBRARIES_DISPLAYHELPER_DISPLAYHELPER_H_ */

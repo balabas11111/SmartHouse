@@ -536,7 +536,7 @@ function getCurrentSensorHandler(data){
 
 function createSensorEditButton(sensorName,sensorDescr){
 	
-	var html=`<div class="w3-tooltip">
+	/*var html=`<div class="w3-tooltip">
 					<span style="position:absolute;left:0;bottom:40px" class="w3-text w3-tag w3-gray w3-round">
 						<i class="material-icons">help_outline</i>
 	  						Редактировать <sensorDescr>
@@ -550,6 +550,36 @@ function createSensorEditButton(sensorName,sensorDescr){
 	html=html.replace('<sensorDescr>',sensorDescr);
 	
 	var div=createDivComponent('w3-third',html);
+	  
+	return div;
+	*/
+	var div=document.createElement('div');
+	div.setAttribute('class','w3-third');
+	
+	var div2=document.createElement('div');
+		div2.setAttribute('class','w3-tooltip');
+		
+	var span=document.createElement('span');
+		span.setAttribute('class','w3-text w3-tag w3-gray w3-round');
+		span.setAttribute('style','position:absolute;left:0;bottom:40px');
+	div2.appendChild(span);	
+	
+	var iel=document.createElement('i');
+		iel.setAttribute('class','material-icons');
+		iel.innerHTML='help_outline';
+	
+	var text='Редактировать '+sensorDescr;
+	var content = document.createTextNode(text);
+	div2.appendChild(content);
+	
+	var onClickText="openSensorsPopup('"+sensorName+"')";
+	
+	var button=document.createElement('button');
+		span.setAttribute('class','w3-button w3-white w3-border w3-border-red w3-round-large');
+		span.setAttribute('onclick',onClickText);
+	div2.appendChild(button);		
+	
+	div.appendChild(div2);
 	  
 	return div;
 }

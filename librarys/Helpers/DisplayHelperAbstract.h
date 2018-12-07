@@ -91,22 +91,76 @@ public:
 		if(!initialized){
 			return false;
 		}
+
+		startTimeTriggers();
+
 		return handleDisplayLine(str,row,col,sender);
 	}
 
 	virtual void printCurrentPage(){
-		if(!initialized){
+		if(!initialized || locked){
 			return;
 		}
-		clearDisplay();
 
-		displayPage(currentpage-1);
+		Serial.print(FPSTR("--display currentpage="));Serial.println(currentpage);
+
+		clearDisplay();
+		displayPage(currentpage);
+	}
+
+	virtual void switchPageUp(){
+		if(!initialized || locked){
+			return;
+		}
+		if(currentpage>=totalPages-1){
+			currentpage=0;
+		}else{
+			currentpage++;
+		}
+
+		printCurrentPage();
+	}
+
+	virtual void switchPageDown(){
+		if(!initialized || locked){
+			return;
+		}
+
+		if(currentpage<=0){
+			currentpage=totalPages-1;
+		}else{
+			currentpage--;
+		}
+
+		printCurrentPage();
+	}
+
+	virtual void defaultAction(){
+		//turn on display if it is off. Else switch page to next. default behaviour for one btn systems
+		if(!initialized || locked){
+			return;
+		}
+
+		if(!displayOn){
+			turnOnOffDisplay(true);
+		}else{
+			switchPageUp();
+		}
+	}
+
+	virtual void lock(bool doLock){
+		locked=doLock;
+
+		if(!locked){
+			printCurrentPage();
+		}
 	}
 
 	virtual boolean displayLine(String str,int row,int col){
 		if(!initialized){
 			return false;
 		}
+
 		return handleDisplayLine(str,row,col,"");
 	}
 
@@ -140,6 +194,7 @@ private:
 	uint8_t totalDetectedSensors;
 	boolean displayOn;
 	boolean initialized;
+	boolean locked;
 
 	void construct(DisplayHelperPage** pages,uint8_t itemsCount,EspSettingsBox* espSettingsBox,
 				TimeTrigger* turnOffTrigger,TimeTrigger* switchPageTrigger,uint8_t totalPages,
@@ -201,6 +256,8 @@ protected:
 
 	virtual void displayPage(uint8_t index){
 		pages[index]->printPage(this);
+
+		startTimeTriggers();
 	}
 
 	virtual void preprocessDisplayPower(boolean on){
@@ -227,7 +284,7 @@ protected:
 				turnOffTrigger=new TimeTrigger(0,TURN_OFF_SECS*1000,false,[this](){turnOnOffDisplay(false);});
 			}
 			if(espSettingsBox->displayAlvaysOn && !espSettingsBox->displayAutochange!=0){
-				switchPageTrigger=new TimeTrigger(0,espSettingsBox->displayAutochange,false,[this](){switchPageUp();});
+				switchPageTrigger=new TimeTrigger(0,espSettingsBox->displayAutochange,false,[this](){defaultAction();});
 			}
 		}
 
@@ -251,15 +308,7 @@ protected:
 		}
 	}
 
-	virtual void switchPageUp(){
-		if(currentpage>=totalPages-1){
-			currentpage=0;
-		}else{
-			currentpage++;
-		}
 
-		Serial.print(FPSTR("--display currentpage="));Serial.println(currentpage);
-	}
 
 };
 
