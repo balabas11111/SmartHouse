@@ -41,6 +41,7 @@ public:
 		if(_init){
 			Serial.println(FPSTR(HEADER_DS18D20));
 			Serial.print(FPSTR(INIT_STR_DS18D20));
+			Serial.print(name);Serial.print(" ");Serial.println(pin);
 
 			initSensor();
 			update();

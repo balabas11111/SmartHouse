@@ -82,6 +82,11 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp320/libraries/FS</locationURI>
 		</link>
 		<link>
+			<name>libraries/FreeRTOS</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/FreeRTOS/10.0.0-7</locationURI>
+		</link>
+		<link>
 			<name>libraries/HTTPClient</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp320/libraries/HTTPClient</locationURI>

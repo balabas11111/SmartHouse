@@ -43,7 +43,7 @@ void PinDigital::setupModes(uint8_t pinVal) {
 	if(pinModeInOut==OUTPUT){
 		setVal(pinVal);
 	}else{
-		if(onChanged!=nullptr && changeMode!=NULL){
+		if(onChanged!=nullptr && changeMode!=254){
 #ifdef ESP8266
 			attachInterrupt(pin, [this](){processInterrupt();}, changeMode);
 #endif
@@ -66,7 +66,7 @@ bool PinDigital::setVal(uint8_t _val){
 	items[0].val=isOn();
 	return items[0].val;
 }
-/*
+
 void PinDigital::processClick(boolean fromTimer){
 	if(!fromTimer){
 		int8_t on=isOn();
@@ -92,7 +92,7 @@ void PinDigital::processClick(boolean fromTimer){
 	Serial.println("Timer stopped");
 	clickTrigger->stop();
 }
-*/
+
 void PinDigital::processInterrupt(){
 	long interval=millis()-lastInterrupt;
 	uint16_t now=getVal();
@@ -104,8 +104,14 @@ void PinDigital::processInterrupt(){
 		//Serial.print("interrupted ");	Serial.print(name);
 		//Serial.println(" old="+String(oldVal)+" now="+String(now));
 
+		//
+
 		if(now!=oldVal){
 			changed=true;
+			Serial.print(" name");Serial.print(name);
+			Serial.print(" old");Serial.print(oldVal);
+			Serial.print(" now");Serial.println(now);
+
 			#ifdef DIGITAL_PIN_DISPLAY_CHANGE_EVENT
 				Serial.print(printState()+" now="+String(now));
 				Serial.println("...event dispatched");
@@ -120,6 +126,34 @@ void PinDigital::processInterrupt(){
 		oldVal=now;
 	}
 	lastInterrupt=millis();
+}
+
+uint8_t PinDigital::getPin() {
+	return pin;
+}
+
+uint8_t PinDigital::getChangeMode() {
+	return changeMode;
+}
+
+uint8_t PinDigital::getPinModeInOut(){
+	return pinModeInOut;
+}
+
+uint8_t PinDigital::updateVal(){
+	uint8_t now=getVal();
+
+	items[0].val=turnOffLevel!=now;
+
+	if(oldVal!=now){
+		setVal(now);
+		if(onChanged!=nullptr){
+			onChanged();
+		}
+	}
+	oldVal=now;
+
+	return now;
 }
 
 boolean PinDigital::handleLoop(){
@@ -228,17 +262,4 @@ void PinDigital::setTurnOffLevel(uint8_t turnOffLevel) {
 
 uint8_t PinDigital::getOpposite(uint8_t _val){
 	return (_val==HIGH)?LOW:HIGH;
-}
-
-
-uint8_t PinDigital::getPin() {
-	return pin;
-}
-
-uint8_t PinDigital::getChangeMode() {
-	return changeMode;
-}
-
-uint8_t PinDigital::getPinModeInOut(){
-	return pinModeInOut;
 }

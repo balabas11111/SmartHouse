@@ -24,7 +24,12 @@ echo '------------------------------------'
 
 for %%f in (*.htm) do (
 	echo Upload %PREFFIX%%DELIM%%%f
-    curl -i -X POST -H "Expect:" -F "uploadfile=@%%f;filename=%PREFFIX%%DELIM%%%f;" -F submit=upload http://%ip%/edit
+	IF EXIST %%f.gz (
+		del %%f.gz
+	)
+	gzip %%f -k
+    curl -i -X POST -H "Expect:" -F "uploadfile=@%%f.gz;filename=%PREFFIX%%DELIM%%%f.gz;" -F submit=upload http://%ip%/edit
+	del %%f.gz
 )
 
 pause

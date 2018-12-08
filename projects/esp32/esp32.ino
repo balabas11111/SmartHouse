@@ -6,6 +6,7 @@
 #include "ESP_Consts.h"
 #include "I2Chelper.h"
 #include "PinDigital.h"
+#include "PinDigitalNoInt.h"
 #include "DeviceHelper.h"
 #include "BME280_Sensor.h"
 #include "DS18D20_Sensor.h"
@@ -22,19 +23,24 @@ WebServer server(80);
 
 WiFiHelper wifiHelper(&espSettingsBox, &displayHelper, &server,postInitWebServer,false);
 
-PinDigital buttonMenu(FPSTR(SENSOR_buttonMenu),33,onMenuButtonChanged);
-PinDigital lampLeft(FPSTR(SENSOR_lampLeft),32,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW);
-PinDigital lampRight(FPSTR(SENSOR_lampRight),35,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW);
-PinDigital acMeter(FPSTR(SENSOR_acMeter),34,onAcMeterChanged,INPUT,CHANGE,HIGH,HIGH);
+PinDigitalNoInt acMeter(FPSTR(SENSOR_acMeter),25,onAcMeterChanged,INPUT,CHANGE,HIGH,HIGH);
+PinDigitalNoInt acMeter2(FPSTR(SENSOR_acMeter2),26,onAcMeter2Changed,INPUT,CHANGE,HIGH,LOW);
+
+
+PinDigitalNoInt buttonMenu(FPSTR(SENSOR_buttonMenu),33,onMenuButtonChanged);
+PinDigital lampLeft(FPSTR(SENSOR_lampLeft),32,onLeftLampChanged,OUTPUT,CHANGE,acMeter.isOn(),LOW);
+PinDigital lampRight(FPSTR(SENSOR_lampRight),13,onLeftLampChanged,OUTPUT,CHANGE,HIGH,LOW);
+
 
 TimeTrigger sensorsTrigger(measureSensors);
 
 BME280_Sensor bmeMeasurer(FPSTR(SENSOR_bmeMeasurer));
-DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), 0);
+DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), 19);
+DS18D20_Sensor ds18d20Boiler(FPSTR(SENSOR_ds18d20Boiler), 23);
 
 Loopable* loopArray[]={&wifiHelper,&sensorsTrigger,&buttonMenu,&acMeter};
 
-AbstractItem* abstractItems[]={&lampLeft,&lampRight,&bmeMeasurer,&ds18d20Measurer,&acMeter};
+AbstractItem* abstractItems[]={&lampLeft,&lampRight,&bmeMeasurer,&ds18d20Measurer,&ds18d20Boiler,&acMeter,&acMeter2};
 
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),120000);
@@ -53,7 +59,7 @@ void setup()
 
 	deviceHelper.startDevice(espSettingsBox.DeviceId);
 
-	attachInterrupts();
+	//attachInterrupts();
 	espSettingsBox.init();
 	i2cHelper.init();
 
@@ -61,6 +67,8 @@ void setup()
 
 	bmeMeasurer.init();
 	ds18d20Measurer.init();
+	ds18d20Boiler.init();
+
 	sensorsTrigger.start(espSettingsBox.refreshInterval*1000);
 
 	Serial.println(FPSTR(MESSAGE_DEVICE_STARTED));
@@ -68,12 +76,15 @@ void setup()
 	measureSensors();
 
 	deviceHelper.printDeviceDiagnostic();
+
+	Serial.println(FPSTR("Device started3"));
 }
 
 // The loop function is called in an endless loop
 void loop()
 {
 	deviceHelper.loop();
+	measureAC();
 }
 
 void on_buttonMenuInterrupt(){buttonMenu.processInterrupt();}
@@ -82,7 +93,8 @@ void on_acMeterInterrupt(){acMeter.processInterrupt();}
 
 void onMenuButtonChanged(){
 	Serial.println("onMenuButtonChanged");
-	lampLeft.change();
+	//lampLeft.change();
+
 }
 
 void onLeftLampChanged(){
@@ -90,6 +102,13 @@ void onLeftLampChanged(){
 }
 
 void onAcMeterChanged(){
+	uint8_t val=acMeter.getValInt();
+
+	Serial.println("AcMeter on="+String(acMeter.isOn()));
+	//lampLeft.setVal(val);
+}
+
+void onAcMeter2Changed(){
 	Serial.println("onAcMeterChanged="+String(acMeter.isOn()));
 }
 
@@ -100,6 +119,10 @@ void measureSensors(){
 	bmeMeasurer.print();
 	ds18d20Measurer.print();
 	*/
+}
+
+void measureAC(){
+	lampLeft.turnOnOff(acMeter.isOn());
 }
 
 void postInitWebServer(){

@@ -30,7 +30,9 @@ public:
 		:AbstractItem(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
 		construct(_pin, onChanged, INPUT, CHANGE, LOW, LOW,clickMaxTime);
 	}
-
+/*
+ * String _name,uint8_t _pin,std::function<void(void)> _onChanged,uint8_t _pinMode,uint8_t _changeMode,uint8_t _pinVal,uint8_t _turnOffLevel
+ */
 	PinDigital(String _name,uint8_t _pin,std::function<void(void)> _onChanged,uint8_t _pinMode,uint8_t _changeMode,uint8_t _pinVal,uint8_t _turnOffLevel)
 		:AbstractItem(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
 		construct(_pin, _onChanged, _pinMode, _changeMode, _pinVal, _turnOffLevel,0);
@@ -77,6 +79,7 @@ public:
 		return false;
 	}
 
+
 	virtual int getVal();
 	virtual bool setVal(uint8_t _val);
 
@@ -88,11 +91,8 @@ public:
 	uint8_t getChangeMode();
 	uint8_t getPinModeInOut();
 
+	virtual uint8_t updateVal();
 private:
-
-	void construct(uint8_t pin,std::function<void(void)> onChanged,uint8_t pinMode,uint8_t changeMode,uint8_t pinVal,uint8_t turnOffLevel,long clickMaxTime);
-
-	//PinAbstract functions
 
 	bool changed;
 	bool dispatchState;
@@ -115,6 +115,8 @@ protected:
 	uint8_t getOpposite(uint8_t _val);
 
 	long lastInterrupt;
+
+	void construct(uint8_t pin,std::function<void(void)> onChanged,uint8_t pinMode,uint8_t changeMode,uint8_t pinVal,uint8_t turnOffLevel,long clickMaxTime);
 
 };
 

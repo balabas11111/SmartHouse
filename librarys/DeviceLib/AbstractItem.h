@@ -176,6 +176,14 @@ public:
 		return 	String(this->items[index].val);
 	}
 
+	uint8_t getValInt(){
+		return 	this->items[0].val;
+	}
+
+	uint8_t getValInt(uint8_t index){
+		return 	this->items[index].val;
+	}
+
 	boolean getSetAllowed(uint8_t index){
 		return 	this->items[index].setAllowed;
 	}

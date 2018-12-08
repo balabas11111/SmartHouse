@@ -283,6 +283,8 @@ const PROGMEM char MESSAGE_ESPSETTINGSBOX_PAGE_SIZE[]="pageSize=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_TOTAL_BYTES[]="totalBytes=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_USED_BYTES[]="usedBytes=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SIZE_EQ[]="size=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_spiffsUsed_EQ[]=" spiffsUsed=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_spiffsTotal_EQ[]=" spiffsTotal=";
 
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_NAME_EQ[]="name=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_DESCR_EQ[]="descr=";
@@ -613,9 +615,11 @@ const PROGMEM char SENSOR_lampRight[]="lampRight";
 const PROGMEM char SENSOR_lamp2[]="lamp2";
 const PROGMEM char SENSOR_lamp3[]="lamp3";
 const PROGMEM char SENSOR_acMeter[]="acMeter";
+const PROGMEM char SENSOR_acMeter2[]="acMeter2";
 const PROGMEM char SENSOR_bmeMeasurer[]="bmeMeasurer";
 const PROGMEM char SENSOR_luxMeasurer[]="luxMeasurer";
 const PROGMEM char SENSOR_ds18d20Measurer[]="ds18d20Measurer";
+const PROGMEM char SENSOR_ds18d20Boiler[]="ds18d20Boiler";
 
 
 
