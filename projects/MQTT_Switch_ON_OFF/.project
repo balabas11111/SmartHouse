@@ -91,12 +91,12 @@
 		<link>
 			<name>libraries/ESP8266HTTPClient</name>
 			<type>2</type>
-			<location>D:/projects/sloeber431/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266HTTPClient</location>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266HTTPClient</locationURI>
 		</link>
 		<link>
 			<name>libraries/ESP8266HTTPUpdateServer</name>
 			<type>2</type>
-			<location>D:/projects/sloeber431/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266HTTPUpdateServer</location>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266HTTPUpdateServer</locationURI>
 		</link>
 		<link>
 			<name>libraries/ESP8266WebServer</name>
@@ -106,7 +106,7 @@
 		<link>
 			<name>libraries/ESP8266WiFi</name>
 			<type>2</type>
-			<location>D:/projects/sloeber431/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266WiFi</location>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266WiFi</locationURI>
 		</link>
 		<link>
 			<name>libraries/EspSettingsBox</name>
@@ -116,7 +116,7 @@
 		<link>
 			<name>libraries/Hash</name>
 			<type>2</type>
-			<location>D:/projects/sloeber431/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Hash</location>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Hash</locationURI>
 		</link>
 		<link>
 			<name>libraries/Helpers</name>
@@ -146,7 +146,7 @@
 		<link>
 			<name>libraries/SPI</name>
 			<type>2</type>
-			<location>D:/projects/sloeber431/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/SPI</location>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/SPI</locationURI>
 		</link>
 		<link>
 			<name>libraries/SensorsLib</name>
@@ -166,7 +166,7 @@
 		<link>
 			<name>libraries/Wire</name>
 			<type>2</type>
-			<location>D:/projects/sloeber431/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Wire</location>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Wire</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

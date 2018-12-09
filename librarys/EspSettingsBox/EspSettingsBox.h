@@ -20,9 +20,9 @@
 class EspSettingsBox: public Initializable{
 
 public:
-	EspSettingsBox();
-	EspSettingsBox(boolean forceLoad);
-	EspSettingsBox(boolean forceLoad,boolean _initSpiff);
+	EspSettingsBox(String deviceKind);
+	//EspSettingsBox(String deviceKind,boolean forceLoad);
+	EspSettingsBox(String deviceKind,boolean forceLoad,boolean _initSpiff);
 
 	virtual boolean initialize(boolean _init) override;
 
@@ -201,7 +201,7 @@ private:
 	String _fileName;
 	//String _extFileName;
 
-	void construct(/*String extValuesFileName,*/boolean forceLoad,boolean initSpiff);
+	void construct(String deviceKind,boolean forceLoad,boolean initSpiff);
 	void initSpiff();
 	void listDir(fs::FS &fs, const char * dirname, uint8_t levels);
 

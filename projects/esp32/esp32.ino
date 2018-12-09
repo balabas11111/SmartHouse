@@ -14,7 +14,7 @@
 #include "WiFiHelper.h"
 #include "HTTPClient.h"
 
-EspSettingsBox espSettingsBox;
+EspSettingsBox espSettingsBox(FPSTR("Dev version boiler control"));
 I2Chelper i2cHelper(SCL,SDA,false);
 DisplayHelperAbstract displayHelper(&espSettingsBox);
 

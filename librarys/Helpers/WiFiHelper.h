@@ -54,7 +54,7 @@ public:
 	#endif
 
 
-	void construct(EspSettingsBox *_settingsBox, DisplayHelperAbstract *_displayHelper/*, PinDigital *_signalPin*/,
+	void construct(EspSettingsBox *_settingsBox, DisplayHelper *_displayHelper/*, PinDigital *_signalPin*/,
 			std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
 		espSettingsBox=_settingsBox;
 		displayHelper=_displayHelper;
@@ -842,7 +842,7 @@ private:
 #endif
 	//String name;
 	EspSettingsBox *espSettingsBox;
-	DisplayHelperAbstract *displayHelper;
+	DisplayHelper *displayHelper;
 	//PinDigital *signalPin;
 	std::function<void(void)> serverPostInitFunc;
 	boolean disconnectOnStartIfConnected;

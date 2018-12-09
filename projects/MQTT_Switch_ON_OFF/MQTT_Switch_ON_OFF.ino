@@ -40,7 +40,7 @@
 #define HUMAN_PRESENTED LOW
 #define HUMAN_NOT_PRESENTED HIGH
 
-EspSettingsBox espSettingsBox(true,true);
+EspSettingsBox espSettingsBox(FPSTR("Dev board on off switch"),true,true);
 
 ESP8266WebServer server ( 80 );
 ESP8266HTTPUpdateServer httpUpdater(true);

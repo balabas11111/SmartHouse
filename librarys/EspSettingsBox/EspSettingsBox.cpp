@@ -18,16 +18,16 @@
 #include "AbstractItem.h"
 #include "ESP_Consts.h"
 
-EspSettingsBox::EspSettingsBox(){
-	construct(false,false);
+EspSettingsBox::EspSettingsBox(String deviceKind){
+	construct(deviceKind,false,false);
 }
 
-EspSettingsBox::EspSettingsBox(boolean forceLoad){
+/*EspSettingsBox::EspSettingsBox(boolean forceLoad){
 	construct(forceLoad,false);
-}
+}*/
 
-EspSettingsBox::EspSettingsBox(boolean forceLoad,boolean _initSpiff){
-	construct(forceLoad,_initSpiff);
+EspSettingsBox::EspSettingsBox(String deviceKind,boolean forceLoad,boolean _initSpiff){
+	construct(deviceKind,forceLoad,_initSpiff);
 }
 
 //Initializable
@@ -479,10 +479,10 @@ void EspSettingsBox::listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
 		}
 #endif
 
-void EspSettingsBox::construct(/*String extValuesFileName,*/boolean forceLoad,boolean _initSpiff){
-	_fileName=FPSTR(ESPSETTINGSBOX_SETTINGS_PATH);
-	_fileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_DEFAULT_FILE);
-	//_extFileName=extValuesFileName;
+void EspSettingsBox::construct(String deviceKind,boolean forceLoad,boolean _initSpiff){
+	this->DeviceKind=deviceKind;
+	this->_fileName=FPSTR(ESPSETTINGSBOX_SETTINGS_PATH);
+	this->_fileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_DEFAULT_FILE);
 
 	if(_initSpiff){
 		initSpiff();
