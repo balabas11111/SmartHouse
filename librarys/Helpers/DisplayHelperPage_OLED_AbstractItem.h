@@ -5,8 +5,8 @@
  *      Author: Vitaliy_Vlasov
  */
 
-#ifndef LIBRARIES_HELPERS_DISPLAYHELPERAbstractItemPAGE_H_
-#define LIBRARIES_HELPERS_DISPLAYHELPERAbstractItemPAGE_H_
+#ifndef LIBRARIES_HELPERS_DisplayHelperPage_OLED_AbstractItem_H_
+#define LIBRARIES_HELPERS_DisplayHelperPage_OLED_AbstractItem_H_
 
 #include <DisplayHelper.h>
 #include "Arduino.h"
@@ -14,12 +14,12 @@
 #include "DisplayHelperPage.h"
 
 
-class DisplayHelperPageAbstractItem:public DisplayHelperPage {
+class DisplayHelperPage_OLED_AbstractItem:public DisplayHelperPage {
 public:
-	DisplayHelperPageAbstractItem(AbstractItem* item){
+	DisplayHelperPage_OLED_AbstractItem(AbstractItem* item){
 		this->item=item;
 	}
-	virtual ~DisplayHelperPageAbstractItem(){};
+	virtual ~DisplayHelperPage_OLED_AbstractItem(){};
 
 	String getName(){
 		return item->getName();
@@ -28,8 +28,8 @@ public:
 	uint8_t getItemCount(){
 		return item->getItemCount();
 	}
-
-	void printPage(DisplayHelper* helper){
+protected:
+	boolean displayCurrentView(DisplayHelper* helper){
 		String str=item->getName();
 		helper->displayLine(str,0,0);
 
@@ -61,6 +61,8 @@ public:
 			str=" (NO SENSORS)";
 		}
 		helper->displayLine(str,row,0);
+
+		return true;
 	}
 private:
 	AbstractItem* item;

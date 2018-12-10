@@ -67,7 +67,7 @@ public:
 		if(!initialized){
 			return false;
 		}
-		boolean result=false;
+		boolean result=getCurrentPage()->loop();
 
 		if(turnOffTrigger!=nullptr){
 			result= turnOffTrigger->loop() || result;
@@ -112,6 +112,11 @@ public:
 		if(!initialized || locked){
 			return;
 		}
+
+		if(swithPageViewUpIfExists()){
+			return;
+		}
+
 		if(currentpage>=totalPages-1){
 			currentpage=0;
 		}else{
@@ -126,6 +131,10 @@ public:
 			return;
 		}
 
+		if(swithPageViewDownIfExists()){
+			return;
+		}
+
 		if(currentpage<=0){
 			currentpage=totalPages-1;
 		}else{
@@ -133,6 +142,28 @@ public:
 		}
 
 		printCurrentPage();
+	}
+
+	virtual boolean swithPageViewUpIfExists(){
+		if(getCurrentPage()->switchViewDown(this)){
+			startTimeTriggers();
+			return true;
+		}
+
+		return false;
+	}
+
+	virtual boolean swithPageViewDownIfExists(){
+		if(getCurrentPage()->switchViewDown(this)){
+			startTimeTriggers();
+			return true;
+		}
+
+		return false;
+	}
+
+	virtual DisplayHelperPage* getCurrentPage(){
+		return pages[currentpage];
 	}
 
 	virtual void defaultAction(){

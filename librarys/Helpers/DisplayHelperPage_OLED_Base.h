@@ -5,8 +5,8 @@
  *      Author: Vitaliy_Vlasov
  */
 
-#ifndef LIBRARIES_HELPERS_DISPLAYHELPERPAGEBASE_H_
-#define LIBRARIES_HELPERS_DISPLAYHELPERPAGEBASE_H_
+#ifndef LIBRARIES_HELPERS_DisplayHelperPage_OLED_Base_H_
+#define LIBRARIES_HELPERS_DisplayHelperPage_OLED_Base_H_
 
 #include "Arduino.h"
 #include "EspSettingsBox.h"
@@ -14,12 +14,12 @@
 #include "DisplayHelperPage.h"
 
 
-class DisplayHelperPageBase:public DisplayHelperPage {
+class DisplayHelperPage_OLED_Base:public DisplayHelperPage {
 public:
-	DisplayHelperPageBase(EspSettingsBox* espSettingsBox){
+	DisplayHelperPage_OLED_Base(EspSettingsBox* espSettingsBox){
 		this->espSettingsBox=espSettingsBox;
 	}
-	virtual ~DisplayHelperPageBase(){};
+	virtual ~DisplayHelperPage_OLED_Base(){};
 
 	String getName(){
 		return FPSTR("espSettingsBox");
@@ -29,9 +29,9 @@ public:
 		return 0;
 	}
 
-	void printPage(DisplayHelper* helper){
+protected:
+	boolean displayCurrentView(DisplayHelper* helper){
 		if(!espSettingsBox->isAccesPoint){
-
 			String str="http://"+WiFi.localIP().toString();
 			helper->displayLine(str,0,0);
 
@@ -55,6 +55,8 @@ public:
 			helper->displayLine(ipLine,4,0);
 			helper->displayLine("PORT=80",6,0);
 		}
+
+		return true;
 	}
 private:
 	EspSettingsBox* espSettingsBox;
