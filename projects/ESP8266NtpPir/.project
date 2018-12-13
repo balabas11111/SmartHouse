@@ -102,6 +102,11 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/NTPClient/3.1.0</locationURI>
 		</link>
 		<link>
+			<name>libraries/OLED</name>
+			<type>2</type>
+			<location>D:/projects/!!!SmartHouse/librarys/OLED</location>
+		</link>
+		<link>
 			<name>libraries/OneWire</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire/2.3.3</locationURI>

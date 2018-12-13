@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2018-12-10 01:24:57
+//This file has been generated on 2018-12-13 23:56:46
 
 #include "Arduino.h"
 #include "Arduino.h"
@@ -30,6 +30,7 @@
 
 void setup() ;
 void loop() ;
+void refreshDisplay();
 void processTimeClientEvent(int8_t* time);
 void postInitWebServer();
 void measureSensors();

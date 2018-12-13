@@ -137,6 +137,10 @@ public:
 		return currentTime;
 	}
 
+	boolean isTimeReceived(){
+		return updated;
+	}
+
 private:
 	WiFiUDP ntpUDP;
 	int8_t currentTime[6] = {0x00,0x00,0x00,0x00,0x00,0x00};

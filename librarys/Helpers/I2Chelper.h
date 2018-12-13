@@ -75,15 +75,22 @@ public:
 			}
 			else if (error==4)
 			{
-			  Serial.print(FPSTR(MESSAGE_I2CHELPER_UNKNOWN_ERROR));
+
+
+			   Serial.print(FPSTR(MESSAGE_I2CHELPER_UNKNOWN_ERROR));
 			  if (address<16)
 				Serial.print(0);
 			  Serial.println(address,HEX);
+
 			}
 		  }
 
-		  if (nDevices == 0)
+		  if (nDevices == 0){
 			Serial.println(FPSTR(MESSAGE_I2CHELPER_NO_DEVICES_FOUND));
+		  }else{
+			  Serial.print(FPSTR("Total devices="));
+			  Serial.println(nDevices);
+		  }
 		  Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
 		  devCount=nDevices;

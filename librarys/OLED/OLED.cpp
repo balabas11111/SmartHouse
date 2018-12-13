@@ -210,7 +210,7 @@ void OLED::sendStr(unsigned char *string)
     }
     *string++;
   }
-  Serial.println(String(string));
+  //Serial.println(String(string));
 }
 
 //==========================================================//
@@ -228,7 +228,7 @@ void OLED::sendStrXY( const char *string, int X, int Y)
     }
     *string++;
   }
-  Serial.println(String(string));
+  //Serial.println(String(string));
 }
 
 boolean OLED::isOn(){

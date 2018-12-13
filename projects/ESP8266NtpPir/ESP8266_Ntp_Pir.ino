@@ -32,12 +32,13 @@
 
  Connection
 
-  I2C       D2, D1
-  	  	  	  	  TM1637 - Display
-  DS18D20   D3
-  PirSensor A0
-  Button    D6
-  Beeper    D8
+  I2C                D2, D1
+
+  TM1637 - Display   D6 D7
+  DS18D20            D3
+  PirSensor          A0
+  Button             D5
+  Beeper             D8
  */
 
 
@@ -46,7 +47,7 @@
 
 EspSettingsBox espSettingsBox(FPSTR("NTP clock with PIR sensor"));
 
-TM1637 timeDisplay(SCL,SDA);
+TM1637 timeDisplay(D6,D7);
 
 ESP8266WebServer server ( 80 );
 ESP8266HTTPUpdateServer httpUpdater(true);
@@ -55,8 +56,9 @@ I2Chelper i2cHelper(D1,D2,false);
 DisplayHelperAbstract displayHelper(&espSettingsBox);
 
 TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSettingsBox.isThingSpeakEnabled,processThingSpeakPost);
+TimeTrigger dotTrigger(0,1000,false,refreshDisplay);
 
-PinDigital buttonMenu(FPSTR(SENSOR_buttonLeft),D6,onMenuButtonChanged);
+PinDigital buttonMenu(FPSTR(SENSOR_buttonLeft),D5,onMenuButtonChanged);
 
 BeeperB beeper(D8,HIGH,LOW,true);
 
@@ -68,12 +70,11 @@ DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), D3);
 WiFiHelper wifiHelper(&espSettingsBox, &displayHelper, &server,postInitWebServer,false);
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 
-Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeClient};
+Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeClient,&dotTrigger};
 
 AbstractItem* abstractItems[]={&ds18d20Measurer,&pirDetector};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),120000);
-
 
 void setup() {
   Serial.begin(115200);
@@ -89,7 +90,24 @@ void setup() {
   timeClient.init();
   ds18d20Measurer.init();
 
-  timeDisplay.start();
+  timeDisplay.set(2);
+  timeDisplay.init();
+  //load
+  int8_t load[4]={1,0,10,13};
+  timeDisplay.display(load);
+/*
+  delay(5000);
+
+  //ph 0 -
+  int8_t load0[4]={46,47,60,99};
+  timeDisplay.display(load0);
+
+    delay(5000);
+
+
+  delay(5000);
+*/
+  dotTrigger.start();
 
   loadSensors();
   measureSensors();
@@ -108,16 +126,20 @@ void loop() {
 	deviceHelper.loop();
 }
 
-void processTimeClientEvent(int8_t* time){
-	Serial.println(FPSTR("Refresh time"));
-	for(uint8_t i=0;i<5;i++){
-		Serial.print(time[i]);
+boolean dotVal=false;
+
+void refreshDisplay(){
+	if(timeClient.isTimeReceived()){
+		dotVal=!dotVal;
+		timeDisplay.point(dotVal);
+
+		int8_t* time=timeClient.getCurrentTime();
+		timeDisplay.display(time);
 	}
+}
 
-	Serial.println();
-
+void processTimeClientEvent(int8_t* time){
 	Serial.println(timeClient.getCurrentTimeAsString('.'));
-
 	//timeDisplay.display(time);
 }
 
