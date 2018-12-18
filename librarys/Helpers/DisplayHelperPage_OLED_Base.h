@@ -12,6 +12,8 @@
 #include "EspSettingsBox.h"
 #include "DisplayHelper.h"
 #include "DisplayHelperPage.h"
+#include "ESP8266WiFi.h"
+
 
 
 class DisplayHelperPage_OLED_Base:public DisplayHelperPage {

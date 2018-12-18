@@ -58,6 +58,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/esp32/libraries/OLED}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/esp32/libraries/FreeRTOS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/esp32/libraries/FreeRTOS/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/esp32/libraries/Loopable}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1673902764" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -102,6 +103,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/esp32/libraries/OLED}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/esp32/libraries/FreeRTOS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/esp32/libraries/FreeRTOS/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/esp32/libraries/Loopable}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1539290486" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -146,6 +148,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/esp32/libraries/OLED}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/esp32/libraries/FreeRTOS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/esp32/libraries/FreeRTOS/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/esp32/libraries/Loopable}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.158593063" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>

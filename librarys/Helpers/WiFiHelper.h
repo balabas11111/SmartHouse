@@ -17,7 +17,7 @@
 #include "FS.h"
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+#include "ESP8266WebServer.h"
 #include <ESP8266HTTPClient.h>
 #endif
 #ifdef ESP32
@@ -135,7 +135,7 @@ public:
 		}
 		//printHeap();
 		if(initFilesManager){
-			initFileManager();
+			initDefaultFiles();
 		}
 		//printHeap();
 		if(serverPostInitFunc!=nullptr){
@@ -574,7 +574,7 @@ public:
 	}
 	//---------------------------------------------------------------------
 		//fileManager section
-		void initFileManager(){
+		void initDefaultFiles(){
 
 			Serial.println(FPSTR(MESSAGE_WIFIHELPER_DEPLOY_FILEMANAGER_EDIT));
 			/*#ifdef ESP8266

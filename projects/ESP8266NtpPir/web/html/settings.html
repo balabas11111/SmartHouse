@@ -1,0 +1,86 @@
+<div class="w3-row w3-green" style="height: 50px;">
+							<h2>Настройки экрана</h2>
+						</div>
+						
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_displayAlvaysOn" for="espSettingsBox_displayAlvaysOn">Экран всегда включен</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_displayAlvaysOn" name="espSettingsBox_displayAlvaysOn" class="w3-check" type="checkbox">
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_displayAutochange" for="espSettingsBox_displayAutochange">Автопереключение страниц экрана</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_displayAutochange" name="espSettingsBox_displayAutochange" class="w3-input w3-border" style="width:50%" 
+					  				type="number" min="10" max="255" step="1" value="11"/>
+					  		</div>
+					  	</div>
+						
+					  	<div class="w3-row w3-green" style="height: 50px;">
+					  		<h2>Настройка режима тревоги</h2>
+					  	</div>
+					  	
+				  		<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_alamSendInterval" for="espSettingsBox_alamSendInterval">Интервал оповещения при режиме тревоги</label>
+					  		</div>
+					  		<div class="w3-half">	
+					  			<input id="espSettingsBox_alamSendInterval" name="espSettingsBox_alamSendInterval" class="w3-input w3-border" style="width:50%" 
+					  				type="number" min="60" max="1024" step="1" value="61"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row w3-green" style="height: 50px;">
+					  		<h2>Синхронизация времени NTP</h2>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_ntpEnabled" for="espSettingsBox_ntpEnabled">Синхронизация времени разрешена</label>
+					  		</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_ntpEnabled" name="espSettingsBox_ntpEnabled" class="w3-check" type="checkbox">
+							</div>
+					  	</div>
+
+						<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_NTP_poolServerName" for="espSettingsBox_NTP_poolServerName">Имя сервера NTP</label>
+							</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_NTP_poolServerName" name="espSettingsBox_NTP_poolServerName" class="w3-input w3-border" style="width:50%" 
+					  				type="text" value="обновляю"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">		
+					  			<label id="lbl_NTP_timeOffset" for="espSettingsBox_NTP_timeOffset">Разница времени с устройством (сек)</label>
+					  		</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_NTP_timeOffset" name="espSettingsBox_NTP_timeOffset" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_NTP_updateInterval" for="espSettingsBox_NTP_updateInterval">Интервал синхронизации времени (сек)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_NTP_updateInterval" name="espSettingsBox_NTP_updateInterval" class="w3-input w3-border" style="width:50%" type="number" min="120" step="10">
+							</div>
+					  	</div>
+						
+						<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_NTP_timeTriggerInterval" for="espSettingsBox_NTP_timeTriggerInterval">Интервал отправки времени клиентам (мс)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_NTP_timeTriggerInterval" name="espSettingsBox_NTP_timeTriggerInterval" class="w3-input w3-border" style="width:50%" type="number" min="100" step="10">
+							</div>
+					  	</div>
