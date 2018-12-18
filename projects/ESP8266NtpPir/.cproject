@@ -47,6 +47,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Hash}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/OLED}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Adafruit_BME280}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/SPI}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.202221004" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -80,6 +82,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Hash}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/OLED}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Adafruit_BME280}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/SPI}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.729829356" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -113,6 +117,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Hash}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/OLED}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Adafruit_BME280}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/SPI}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1229660566" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -123,7 +129,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="libraries/OLED/example|libraries/ArduinoJson/scripts|libraries/ArduinoJson/fuzzing|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+						<entry excluding="libraries/Adafruit_BME280/.github|libraries/OLED/example|libraries/ArduinoJson/scripts|libraries/ArduinoJson/fuzzing|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

@@ -145,7 +145,7 @@ public:
 	}
 
 	virtual boolean swithPageViewUpIfExists(){
-		if(getCurrentPage()->switchViewDown(this)){
+		if(getCurrentPage()->switchViewUp(this)){
 			startTimeTriggers();
 			return true;
 		}

@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2018-12-13 23:56:46
+//This file has been generated on 2018-12-18 18:30:22
 
 #include "Arduino.h"
 #include "Arduino.h"
@@ -25,6 +25,7 @@
 #include <Pir_Sensor.h>
 #include <BeeperB.h>
 #include "DS18D20_Sensor.h"
+#include "BME280_Sensor.h"
 #include "StatusMessage.h"
 #include "TM1637.h"
 
@@ -34,7 +35,7 @@ void refreshDisplay();
 void processTimeClientEvent(int8_t* time);
 void postInitWebServer();
 void measureSensors();
-void onMenuButtonChanged();
+void onButtonMenuChanged();
 void onPirDetectorChanged();
 void loadSensors();
 void saveSensors();

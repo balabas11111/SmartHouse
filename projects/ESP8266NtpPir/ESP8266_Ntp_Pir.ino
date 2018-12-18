@@ -21,6 +21,7 @@
 #include <BeeperB.h>
 
 #include "DS18D20_Sensor.h"
+#include "BME280_Sensor.h"
 #include "StatusMessage.h"
 
 #include "TM1637.h"
@@ -55,13 +56,15 @@ ESP8266HTTPUpdateServer httpUpdater(true);
 I2Chelper i2cHelper(D1,D2,false);
 DisplayHelperAbstract displayHelper(&espSettingsBox);
 
+TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,measureSensors);
 TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSettingsBox.isThingSpeakEnabled,processThingSpeakPost);
 TimeTrigger dotTrigger(0,1000,false,refreshDisplay);
 
-PinDigital buttonMenu(FPSTR(SENSOR_buttonLeft),D5,onMenuButtonChanged);
+PinDigital buttonMenu(FPSTR(SENSOR_buttonLeft),D5,onButtonMenuChanged);
 
 BeeperB beeper(D8,HIGH,LOW,true);
 
+BME280_Sensor bmeMeasurer(FPSTR(SENSOR_bmeMeasurer));
 Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged);
 NtpTimeClientService timeClient(&espSettingsBox,processTimeClientEvent,60000);
 
@@ -70,9 +73,9 @@ DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), D3);
 WiFiHelper wifiHelper(&espSettingsBox, &displayHelper, &server,postInitWebServer,false);
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 
-Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeClient,&dotTrigger};
+Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeClient,&dotTrigger,&pirDetector};
 
-AbstractItem* abstractItems[]={&ds18d20Measurer,&pirDetector};
+AbstractItem* abstractItems[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),120000);
 
@@ -198,8 +201,10 @@ void measureSensors(){
 
 //---------------------------------------------------------------------
 //button handling
-void onMenuButtonChanged(){
-	Serial.println(FPSTR("Menu button changed"));
+void onButtonMenuChanged(){
+	if(!buttonMenu.isOn()){
+		Serial.println(FPSTR("Menu button released"));
+	}
 }
 
 //---------------------------------------------------------------------
