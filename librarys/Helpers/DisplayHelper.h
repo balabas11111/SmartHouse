@@ -20,6 +20,12 @@ public:
 
 	virtual boolean addStringToDisplay(String str,int row,int col,String sender)=0;
 
+	virtual boolean displayActivity(boolean val)=0;
+
+	virtual boolean displayLine(int8_t* numbers,uint8_t numCount)=0;
+
+	virtual boolean displayLine(String str)=0;
+
 	virtual boolean displayLine(String str,int row,int col)=0;
 
 	virtual uint8_t getStartRow()=0;

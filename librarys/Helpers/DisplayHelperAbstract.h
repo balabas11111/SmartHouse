@@ -37,7 +37,7 @@ public:
 		if(_init){
 			this->pages= pages;
 			this->itemsCount=itemsCount;
-			totalPages=itemsCount+1;
+			totalPages=itemsCount;
 
 			initialized=handleDisplayBegin();
 
@@ -63,11 +63,15 @@ public:
 		return handleDisplayPower();
 	}
 
+	virtual boolean displayActivity(boolean val){
+		return val;
+	};
+
 	virtual boolean loop(){
 		if(!initialized){
 			return false;
 		}
-		boolean result=getCurrentPage()->loop();
+		boolean result=getCurrentPage()->loop(this);
 
 		if(turnOffTrigger!=nullptr){
 			result= turnOffTrigger->loop() || result;
@@ -104,7 +108,9 @@ public:
 
 		Serial.print(FPSTR("--display currentpage="));Serial.println(currentpage);
 
-		clearDisplay();
+		if(clearDisplaybeforeCurrentpage){
+			clearDisplay();
+		}
 		displayPage(currentpage);
 	}
 
@@ -187,6 +193,20 @@ public:
 		}
 	}
 
+	virtual boolean displayLine(int8_t* numbers,uint8_t numCount){
+		String str="";
+
+		for(uint8_t i=0;i<numCount;i++){
+			str+=String(numbers[i]);
+		}
+
+		return displayLine(str);
+	}
+
+	virtual boolean displayLine(String str){
+		return displayLine(str,0,0);
+	}
+
 	virtual boolean displayLine(String str,int row,int col){
 		if(!initialized){
 			return false;
@@ -243,6 +263,7 @@ private:
 	}
 
 protected:
+	boolean clearDisplaybeforeCurrentpage=false;
 //--------------------------------------------
 //override this for specified display
 	virtual boolean handleDisplayBegin(){

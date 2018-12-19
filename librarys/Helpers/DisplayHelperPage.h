@@ -43,9 +43,14 @@ public:
 		}
 	}
 
-	virtual boolean loop(){
+	virtual boolean loop(DisplayHelper* helper){
 		return false;
 	};
+
+	virtual boolean setActive(boolean active){
+		this->active=active;
+		return active;
+	}
 protected:
 	virtual boolean displayCurrentView(DisplayHelper* helper){
 		helper->getTotalPages();
@@ -55,6 +60,7 @@ protected:
 private:
 	uint8_t currentView=0;
 	uint8_t totalViews=1;
+	boolean active=false;
 };
 
 

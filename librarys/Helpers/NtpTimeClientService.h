@@ -141,6 +141,51 @@ public:
 		return updated;
 	}
 
+	String getName(){
+		return FPSTR("NtpTimeClientService");
+	}
+
+	String getJson(){
+		String result="{\"id\":\"-1\","\
+				"\"name\":\"NtpTimeClientService\","\
+				"\"type\":\"NtpClock\","\
+				"\"size\":\"ms\","\
+				"\"descr\":\"NtpClock\","\
+				"\"val\":\"";
+				result+=String(getCurrentTimeAsLong());
+				result+="\","\
+				"\"itemCount\":\"1\",\"items\":[";
+
+		result+="{\"id\":\"0\","\
+				"\"name\":\"hourMinuteSec\","\
+				"\"type\":\"hourMinuteSec\","\
+				"\"size\":\"hourMinuteSec\","\
+				"\"descr\":\"hourMinuteSec\","\
+				"\"val\":\"";
+		result+=String(getCurrentTimeAsString(':'));
+		result+="\","\
+				"\"minVal\":\"\","\
+				"\"maxVal\":\"\","\
+				"\"fieldId\":\"\","\
+				"\"queue\":\"\"}";
+
+		result+="{\"id\":\"0\","\
+				"\"name\":\"hourMinute\","\
+				"\"type\":\"hourMinute\","\
+				"\"size\":\"hourMinute\","\
+				"\"descr\":\"hourMinute\","\
+				"\"val\":\"";
+		result+=getCurrentTimeNoSecondsAsString(':');
+		result+="\","\
+				"\"minVal\":\"\","\
+				"\"maxVal\":\"\","\
+				"\"fieldId\":\"\","\
+				"\"queue\":\"\"}";
+			result+="]}";
+
+		return result;
+	}
+
 private:
 	WiFiUDP ntpUDP;
 	int8_t currentTime[6] = {0x00,0x00,0x00,0x00,0x00,0x00};

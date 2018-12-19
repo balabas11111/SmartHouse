@@ -21,6 +21,7 @@ class DisplayHelperOLED: public DisplayHelperAbstract {
 public:
 	DisplayHelperOLED(EspSettingsBox* espSettingsBox)
 				:DisplayHelperAbstract(espSettingsBox){
+		clearDisplaybeforeCurrentpage=true;
 	}
 
 	virtual ~DisplayHelperOLED(){};
