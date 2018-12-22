@@ -23,6 +23,7 @@ const int defaultBeep=500;
 	void BeeperB::init(){
 		pinMode(_pin, OUTPUT);
 		digitalWrite(_pin, _NO_PLAY_FLAG);
+		shortBeep();
 	}
 	void BeeperB::shortBeep(){
 		doBeep(0);

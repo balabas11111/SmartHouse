@@ -307,6 +307,8 @@ public:
 		Serial.println(WiFi.status());
 		Serial.println ( FPSTR(MESSAGE_HORIZONTAL_LINE));
 
+		startedAsAP=true;
+
 		return true;
 	}
 
@@ -456,17 +458,7 @@ public:
 		}
 
 		Serial.print (FPSTR(MESSAGE_WIFIHELPER_WIFI_IP));
-		if(espSettingsBox->isAccesPoint){
-#ifdef ESP8266
-			Serial.println ( WiFi.softAPIP() );
-#endif
-#ifdef ESP32
-			Serial.println ( WiFi.localIP());
-#endif
-
-		}else{
-			Serial.println ( WiFi.localIP() );
-		}
+		Serial.println ( getIpStr() );
 
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_MAC));
 #ifdef ESP8266
@@ -492,10 +484,16 @@ public:
 	//------------------------------
 	//display helper functions
 	boolean cleanDisplay(){
+		if(displayHelper==nullptr){
+			return false;
+		}
 		return displayHelper->clearDisplay();
 	}
 
 	boolean displayLine(String str,int row,int col){
+		if(displayHelper==nullptr){
+			return false;
+		}
 		return displayHelper->addStringToDisplay(str, row, col, FPSTR(MESSAGE_WIFIHELPER_NAME));
 	}
 	//-------------------------------
@@ -831,7 +829,25 @@ public:
 
 		//end fileManager
 
+		boolean isAP(){
+			return startedAsAP;
+		}
 
+		IPAddress getIp(){
+			if(espSettingsBox->isAccesPoint){
+		#ifdef ESP8266
+					return  WiFi.softAPIP();
+		#endif
+		#ifdef ESP32
+					return WiFi.localIP();
+		#endif
+			}
+			return WiFi.localIP();
+		}
+
+		String getIpStr(){
+			return getIp().toString();
+		}
 
 private:
 #ifdef ESP8266
@@ -855,6 +871,8 @@ private:
 
 	File fsUploadFile;
 	HTTPClient http;
+
+	boolean startedAsAP=false;
 
 };
 

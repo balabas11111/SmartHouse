@@ -142,6 +142,16 @@
 			<location>D:/projects/!!!SmartHouse/librarys/TM1637</location>
 		</link>
 		<link>
+			<name>libraries/Time</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Time/1.5.0</locationURI>
+		</link>
+		<link>
+			<name>libraries/TimeAlarms</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/TimeAlarms/1.5.0</locationURI>
+		</link>
+		<link>
 			<name>libraries/TimeTrigger</name>
 			<type>2</type>
 			<location>D:/projects/!!!SmartHouse/librarys/TimeTrigger</location>
