@@ -1,7 +1,7 @@
 /*
  * Measurer.h
  *
- *  Created on: 14 Ã®ÃªÃ². 2018 Ã£.
+ *  Created on: 14 ГѓВ®ГѓВЄГѓВІ. 2018 ГѓВЈ.
  *      Author: Vitaliy
  */
 
@@ -32,17 +32,17 @@
 */
 
 //sensors constants
-const char TEMPERATURE_RU[] PROGMEM ="Температура";
-const char HUMIDITY_RU[] PROGMEM ="Влажность";
-const char PRESSURE_RU[] PROGMEM ="Давление";
-const char ALTITUDE_RU[] PROGMEM ="Высота";
-const char LIGHT_RU[] PROGMEM ="Освещение";
+const char TEMPERATURE_RU[] PROGMEM ="РўРµРјРїРµСЂР°С‚СѓСЂР°";
+const char HUMIDITY_RU[] PROGMEM ="Р’Р»Р°Р¶РЅРѕСЃС‚СЊ";
+const char PRESSURE_RU[] PROGMEM ="Р”Р°РІР»РµРЅРёРµ";
+const char ALTITUDE_RU[] PROGMEM ="Р’С‹СЃРѕС‚Р°";
+const char LIGHT_RU[] PROGMEM ="РћСЃРІРµС‰РµРЅРёРµ";
 
-const char MEASURE_CELSIUS_DEGREES_RU[] PROGMEM ="°C";
+const char MEASURE_CELSIUS_DEGREES_RU[] PROGMEM ="В°C";
 const char MEASURE_PERSENT_RU[] PROGMEM ="%";
-const char MEASURE_PASCAL_RU[] PROGMEM ="па";
-const char MEASURE_METER_RU[] PROGMEM ="м";
-const char MEASURE_LIGHT_RU[] PROGMEM ="Люкс";
+const char MEASURE_PASCAL_RU[] PROGMEM ="РїР°";
+const char MEASURE_METER_RU[] PROGMEM ="Рј";
+const char MEASURE_LIGHT_RU[] PROGMEM ="Р›СЋРєСЃ";
 
 const char TEMPERATURE[] PROGMEM ="Temperature";
 const char HUMIDITY[] PROGMEM ="Humidity";
@@ -53,7 +53,7 @@ const char LIGHT[] PROGMEM ="Light";
 const char TEMPERATURE_DHT22[] PROGMEM ="Temperature_DHT22";
 const char HUMIDITY_DHT22[] PROGMEM ="Humidity_DHT22";
 
-const char MEASURE_CELSIUS_DEGREES[] PROGMEM ="°C";
+const char MEASURE_CELSIUS_DEGREES[] PROGMEM ="В°C";
 const char MEASURE_PERSENT[] PROGMEM ="%";
 const char MEASURE_PASCAL[] PROGMEM ="Pa";
 const char MEASURE_METER[] PROGMEM ="m";
@@ -154,15 +154,15 @@ const PROGMEM char ID_STATUS_SUFFIX[]="_status";
 const PROGMEM char STATUS_OK_CLASS[]="w3-panel w3-green w3-card-4";
 const PROGMEM char STATUS_ERROR_CLASS[]="w3-panel w3-red w3-card-4";
 //Message constants
-const PROGMEM char MESSAGE_REFRESH[]="Обновляю";
-const PROGMEM char MESSAGE_NOT_FOUND[]="Не найдено";
-const PROGMEM char MESSAGE_ERROR[]="ОШИБКА";
-const PROGMEM char MESSAGE_REQUEST_ERROR[]="ОШИБКА запроса";
-const PROGMEM char MESSAGE_REMOTE_ERROR[]="Удаленная ошибка";
-const PROGMEM char MESSAGE_SERVER_UNAVAILABLE[]="Устройство недоступно";
-const PROGMEM char MESSAGE_SENSOR_NOT_FOUND[]="Датчик не найден";
-const PROGMEM char MESSAGE_SENSOR_BROKEN[]="Датчик неисправен";
-const PROGMEM char MESSAGE_DEVICE_BROKEN[]="Устройство неисправно";
+const PROGMEM char MESSAGE_REFRESH[]="РћР±РЅРѕРІР»СЏСЋ";
+const PROGMEM char MESSAGE_NOT_FOUND[]="РќРµ РЅР°Р№РґРµРЅРѕ";
+const PROGMEM char MESSAGE_ERROR[]="РћРЁР�Р‘РљРђ";
+const PROGMEM char MESSAGE_REQUEST_ERROR[]="РћРЁР�Р‘РљРђ Р·Р°РїСЂРѕСЃР°";
+const PROGMEM char MESSAGE_REMOTE_ERROR[]="РЈРґР°Р»РµРЅРЅР°СЏ РѕС€РёР±РєР°";
+const PROGMEM char MESSAGE_SERVER_UNAVAILABLE[]="РЈСЃС‚СЂРѕР№СЃС‚РІРѕ РЅРµРґРѕСЃС‚СѓРїРЅРѕ";
+const PROGMEM char MESSAGE_SENSOR_NOT_FOUND[]="Р”Р°С‚С‡РёРє РЅРµ РЅР°Р№РґРµРЅ";
+const PROGMEM char MESSAGE_SENSOR_BROKEN[]="Р”Р°С‚С‡РёРє РЅРµРёСЃРїСЂР°РІРµРЅ";
+const PROGMEM char MESSAGE_DEVICE_BROKEN[]="РЈСЃС‚СЂРѕР№СЃС‚РІРѕ РЅРµРёСЃРїСЂР°РІРЅРѕ";
 
 const PROGMEM char MIN_TIMEOUT_VALUE_SENSOR[]="2000";
 //--------------------------------------------------------
@@ -236,7 +236,7 @@ const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_NOT_IDENTIFIED[]="No Alarm";
 const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_STARTED[]="Alarm started";
 const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED[]="Alarm finished";
 
-const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED_RESULT[]="Режим тревоги прекращен. Все показатели в норме";
+const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED_RESULT[]="Р РµР¶РёРј С‚СЂРµРІРѕРіРё РїСЂРµРєСЂР°С‰РµРЅ. Р’СЃРµ РїРѕРєР°Р·Р°С‚РµР»Рё РІ РЅРѕСЂРјРµ";
 
 //----------EspSettingsBox Messages---------------
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN[]="Save AbstractItem to file=";
@@ -512,16 +512,16 @@ const PROGMEM char MESSAGE_THINGSPEAK_NAME_FOR_REQUEST_EQ[]="&name=";
 const PROGMEM char MESSAGE_THINGSPEAK_DESCRIPTION_FOR_REQUEST[]="&description";
 const PROGMEM char MESSAGE_THINGSPEAK_DESCRIPTION_FOR_REQUEST_EQ[]="&description=";
 
-const PROGMEM char MESSAGE_THINGSPEAK_GET_CHANNELS[]=" каналов записи данных;";
-const PROGMEM char MESSAGE_THINGSPEAK_SET_CHANNELS[]=" каналов управления;";
+const PROGMEM char MESSAGE_THINGSPEAK_GET_CHANNELS[]=" РєР°РЅР°Р»РѕРІ Р·Р°РїРёСЃРё РґР°РЅРЅС‹С…;";
+const PROGMEM char MESSAGE_THINGSPEAK_SET_CHANNELS[]=" РєР°РЅР°Р»РѕРІ СѓРїСЂР°РІР»РµРЅРёСЏ;";
 
 const PROGMEM char MESSAGE_THINGSPEAK_CHANNELS_PREF[]="channels/";
 const PROGMEM char MESSAGE_THINGSPEAK_SUBSCRIBE_FIELDS_FIELD[]="/subscribe/fields/field";
 
 const PROGMEM char MESSAGE_THINGSPEAK_FAILED_STATUS[]="Failed";
 const PROGMEM char MESSAGE_THINGSPEAK_OK_STATUS[]="Ok";
-const PROGMEM char MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED[]="Публикация ThingSpeak не разрешена";
-const PROGMEM char MESSAGE_THINGSPEAK_NO_USER_SPECIFIED[]="Не задан пользователь ThingSpeak";
+const PROGMEM char MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED[]="РџСѓР±Р»РёРєР°С†РёСЏ ThingSpeak РЅРµ СЂР°Р·СЂРµС€РµРЅР°";
+const PROGMEM char MESSAGE_THINGSPEAK_NO_USER_SPECIFIED[]="РќРµ Р·Р°РґР°РЅ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ ThingSpeak";
 const PROGMEM char MESSAGE_THINGSPEAK_EMPTY_KEY[]="EmptyKey";
 
 //Ntp clock client
@@ -535,9 +535,9 @@ const PROGMEM char DEVICE_WIDGETS_SNAPSHOT[]="----------Device helper----------"
 const PROGMEM char MESSAGE_COMMANDS_EXECUTE_COMMAND[]="----------Execute command----------";
 const PROGMEM char MESSAGE_COMMANDS_ERROR[]="Error";
 const PROGMEM char MESSAGE_COMMANDS_OK[]="Ok";
-const PROGMEM char MESSAGE_COMMANDS_COMMAND_NOT_RECOGNIZED[]="Команда не распознана";
+const PROGMEM char MESSAGE_COMMANDS_COMMAND_NOT_RECOGNIZED[]="РљРѕРјР°РЅРґР° РЅРµ СЂР°СЃРїРѕР·РЅР°РЅР°";
 const PROGMEM char MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED[]="Device will be restarted";
-const PROGMEM char MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED_MSG[]="Устройство будет перезапущено. Дождитесь перезагрузки страницы";
+const PROGMEM char MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED_MSG[]="РЈСЃС‚СЂРѕР№СЃС‚РІРѕ Р±СѓРґРµС‚ РїРµСЂРµР·Р°РїСѓС‰РµРЅРѕ. Р”РѕР¶РґРёС‚РµСЃСЊ РїРµСЂРµР·Р°РіСЂСѓР·РєРё СЃС‚СЂР°РЅРёС†С‹";
 
 const PROGMEM char MESSAGE_SERVER_ARG_CONFIRM_COMMAND[]="confirm_command";
 const PROGMEM char MESSAGE_SERVER_ARG_PAGE[]="page";
@@ -551,7 +551,7 @@ const PROGMEM char MESSAGE_SERVER_ARG_VAL_recreateThingSpeak[]="recreateThingSpe
 const PROGMEM char MESSAGE_SERVER_ARG_VAL_deleteSettings[]="deleteSettings";
 const PROGMEM char MESSAGE_SERVER_ARG_VAL_RESTART[]="restart";
 
-const PROGMEM char MESSAGE_COMMANDS_FILES_DELETED[]="Удалено файлов :";
+const PROGMEM char MESSAGE_COMMANDS_FILES_DELETED[]="РЈРґР°Р»РµРЅРѕ С„Р°Р№Р»РѕРІ :";
 
 //abstract item message
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_NAME_EQ[]="NAME=";
@@ -559,9 +559,9 @@ const PROGMEM char MESSAGE_ABSTRACT_ITEM_INDEX_EQ[]="index=";
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_VAL_EQ[]=" val=";
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_METHOD_NOT_IMPLEMENTED[]=" Method not implemented";
 
-const PROGMEM char MESSAGE_ABSTRACT_ITEM_CURRENT_VAL_EQ[]=" поточное значение =";
-const PROGMEM char MESSAGE_ABSTRACT_ITEM_MAX_SPECIFIED_VAL_EQ[]=" максимально заданое =";
-const PROGMEM char MESSAGE_ABSTRACT_ITEM_MIN_SPECIFIED_VAL_EQ[]=" минимально заданое =";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_CURRENT_VAL_EQ[]=" РїРѕС‚РѕС‡РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ =";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_MAX_SPECIFIED_VAL_EQ[]=" РјР°РєСЃРёРјР°Р»СЊРЅРѕ Р·Р°РґР°РЅРѕРµ =";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_MIN_SPECIFIED_VAL_EQ[]=" РјРёРЅРёРјР°Р»СЊРЅРѕ Р·Р°РґР°РЅРѕРµ =";
 
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_SETTING_BEGIN[]="------------Saving sensors settings------------";
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_NAME_EQ[]=" Set sensor value NAME=";
@@ -620,6 +620,7 @@ const PROGMEM char SENSOR_bmeMeasurer[]="bmeMeasurer";
 const PROGMEM char SENSOR_luxMeasurer[]="luxMeasurer";
 const PROGMEM char SENSOR_ds18d20Measurer[]="ds18d20Measurer";
 const PROGMEM char SENSOR_ds18d20Boiler[]="ds18d20Boiler";
+const PROGMEM char SENSOR_AC_Rele1[]="AC_Rele1";
 
 
 

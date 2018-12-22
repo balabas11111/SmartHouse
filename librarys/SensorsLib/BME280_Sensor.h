@@ -20,6 +20,11 @@
 
 #define BME280_ID 200
 
+#define BME_280_TEMPERATURE_INDEX 0
+#define BME_280_PRESSURE_INDEX 1
+#define BME_280_HUMIDITY_INDEX 2
+#define BME_280_ALTITUDE_INDEX 3
+
 const char SENSOR_BME280_NAME[] PROGMEM ="Bme280Sensor";
 const char SENSOR_BME280_DESCRIPTION[] PROGMEM ="Bme280Sensor";
 const char SENSOR_BME280_SIZE[] PROGMEM ="C/%/Pa/m";
@@ -60,21 +65,41 @@ public:
 		Serial.print(FPSTR(MESSAGE_STATUS_EQUAL));
 		Serial.println(status);
 
-		items[0]={0,FPSTR(TEMPERATURE),FPSTR(MEASURE_CELSIUS_DEGREES),FPSTR(MEASURE_CELSIUS_DEGREES_RU),FPSTR(TEMPERATURE_RU),-127,0,-512,512,"",0};
-		items[1]={1,FPSTR(PRESSURE),FPSTR(MEASURE_PASCAL),FPSTR(MEASURE_PASCAL_RU),FPSTR(PRESSURE_RU),-127,0,-512,120000,"",0};
-		items[2]={2,FPSTR(HUMIDITY),FPSTR(MEASURE_PERSENT),FPSTR(MEASURE_PERSENT_RU),FPSTR(HUMIDITY_RU),-127,0,-512,512,"",0};
-		items[3]={3,FPSTR(ALTITUDE),FPSTR(MEASURE_METER),FPSTR(MEASURE_METER_RU),FPSTR(ALTITUDE_RU),-127,0,-512,10000,"",0};
+		this->status=status;
+
+		items[BME_280_TEMPERATURE_INDEX]={BME_280_TEMPERATURE_INDEX,FPSTR(TEMPERATURE),FPSTR(MEASURE_CELSIUS_DEGREES),FPSTR(MEASURE_CELSIUS_DEGREES_RU),FPSTR(TEMPERATURE_RU),-127,0,-512,512,"",0};
+		items[BME_280_PRESSURE_INDEX]={BME_280_PRESSURE_INDEX,FPSTR(PRESSURE),FPSTR(MEASURE_PASCAL),FPSTR(MEASURE_PASCAL_RU),FPSTR(PRESSURE_RU),-127,0,-512,120000,"",0};
+		items[BME_280_HUMIDITY_INDEX]={BME_280_HUMIDITY_INDEX,FPSTR(HUMIDITY),FPSTR(MEASURE_PERSENT),FPSTR(MEASURE_PERSENT_RU),FPSTR(HUMIDITY_RU),-127,0,-512,512,"",0};
+		items[BME_280_ALTITUDE_INDEX]={BME_280_ALTITUDE_INDEX,FPSTR(ALTITUDE),FPSTR(MEASURE_METER),FPSTR(MEASURE_METER_RU),FPSTR(ALTITUDE_RU),-127,0,-512,10000,"",0};
 
 	}
 
 	void update(){
-		items[0].val=(float)bme.readTemperature();
-		items[1].val=(float)bme.readPressure();
-		items[2].val=(float)bme.readHumidity();
-		items[3].val=(float)bme.readAltitude(1013.25);
+		items[BME_280_TEMPERATURE_INDEX].val=(float)bme.readTemperature();
+		items[BME_280_PRESSURE_INDEX].val=(float)bme.readPressure();
+		items[BME_280_HUMIDITY_INDEX].val=(float)bme.readHumidity();
+		items[BME_280_ALTITUDE_INDEX].val=(float)bme.readAltitude(1013.25);
 	}
 	void print(){
 		printValues();
+	}
+
+	float getTemperatureCelsius(){
+		return items[BME_280_TEMPERATURE_INDEX].val;
+	}
+
+	float getPressurePascal(){
+		return items[BME_280_PRESSURE_INDEX].val;
+	}
+
+	float getPressureHgmm(){
+		float result=items[BME_280_PRESSURE_INDEX].val;
+		result=result*(0.00750062);
+		return result;
+	}
+
+	float getHumidityPercent(){
+		return items[BME_280_HUMIDITY_INDEX].val;
 	}
 
 private:

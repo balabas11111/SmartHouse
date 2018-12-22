@@ -41,49 +41,82 @@
   Button             D5
   Beeper             D8
  */
+#define MODE_TIME_REFRESH_INTERVAL 500
+#define MODE_OTHER_REFRESH_INTERVAL 30000
+#define DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED 1000
+#define SYMBOL_EMPTY 0x7f
+#define SYMBOL_DEGREE 60
+#define SYMBOL_HUMIDITY 47
+#define SYMBOL_PRESSURE 46
+#define SYMBOL_MINUS 99
 
+#define MODE_TIME 0
+#define MODE_BME_TEMP 1
+#define MODE_BME_HUMIDITY 2
+#define MODE_BME_PRESSURE 3
+#define MODE_DS18D20_TEMP 4
 
 #define HUMAN_PRESENTED LOW
 #define HUMAN_NOT_PRESENTED HIGH
 
 EspSettingsBox espSettingsBox(FPSTR("NTP clock with PIR sensor"));
 
-TM1637 timeDisplay(D6,D7);
+BeeperB beeper(D5,HIGH,LOW,true,false);
+
+I2Chelper i2cHelper(D1,D2,false);
+
+PinDigital buttonMenu(FPSTR(SENSOR_buttonLeft),D8,onButtonMenuChanged);
+PinDigital AC_Rele1(FPSTR(SENSOR_AC_Rele1),D0,LOW,HIGH);
+Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged);
+
+DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), D3);
+BME280_Sensor bmeMeasurer(FPSTR(SENSOR_bmeMeasurer));
 
 ESP8266WebServer server ( 80 );
 ESP8266HTTPUpdateServer httpUpdater(true);
 
-I2Chelper i2cHelper(D1,D2,false);
+TM1637 timeDisplay(D6,D7);
 DisplayHelperAbstract displayHelper(&espSettingsBox);
 
 TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,measureSensors);
 TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSettingsBox.isThingSpeakEnabled,processThingSpeakPost);
-TimeTrigger dotTrigger(0,1000,false,refreshDisplay);
+TimeTrigger displayRefreshTrigger(0,MODE_TIME_REFRESH_INTERVAL,false,refreshDisplay);
 
-PinDigital buttonMenu(FPSTR(SENSOR_buttonLeft),D5,onButtonMenuChanged);
-
-BeeperB beeper(D8,HIGH,LOW,true);
-
-BME280_Sensor bmeMeasurer(FPSTR(SENSOR_bmeMeasurer));
-Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged);
-NtpTimeClientService timeClient(&espSettingsBox,processTimeClientEvent,60000);
-
-DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), D3);
+NtpTimeClientService timeClient(&espSettingsBox,nullptr,60000);
 
 WiFiHelper wifiHelper(&espSettingsBox, &displayHelper, &server,postInitWebServer,false);
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 
-Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeClient,&dotTrigger,&pirDetector};
+Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeClient,&displayRefreshTrigger,&pirDetector};
 
-AbstractItem* abstractItems[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector};
+AbstractItem* abstractItems[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&AC_Rele1};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),120000);
 
+/*
+ 0 - time
+ 1 - temp1
+ 2 - humidity
+ 3 - pressure
+ 4 - temp DS18
+ */
+uint8_t displayMode=0;
+uint8_t maxMode=0;
+uint8_t currentDs18=0;
+
 void setup() {
   Serial.begin(115200);
+
+  timeDisplay.set(2);
+  timeDisplay.init();
+  displayLoad();
+   //load
   deviceHelper.startDevice(espSettingsBox.DeviceId);
 
   espSettingsBox.init();
+
+  beeper.init();
+  beeper.shortBeep();
 
   i2cHelper.init();
 
@@ -91,35 +124,19 @@ void setup() {
   wifiHelper.init();
 
   timeClient.init();
+  bmeMeasurer.init();
   ds18d20Measurer.init();
-
-  timeDisplay.set(2);
-  timeDisplay.init();
-  //load
-  int8_t load[4]={1,0,10,13};
-  timeDisplay.display(load);
-/*
-  delay(5000);
-
-  //ph 0 -
-  int8_t load0[4]={46,47,60,99};
-  timeDisplay.display(load0);
-
-    delay(5000);
-
-
-  delay(5000);
-*/
-  dotTrigger.start();
 
   loadSensors();
   measureSensors();
 
+  initDisplayMode();
   deviceHelper.printDeviceDiagnostic();
 
-  if(ds18d20Measurer.getItemCount()==0){
+  if(ds18d20Measurer.getItemCount()==0 || i2cHelper.getDevCount()==0){
 	  beeper.longBeep();
   }else{
+	  beeper.shortBeep();
 	  beeper.shortBeep();
   }
   Serial.println(FPSTR(MESSAGE_DEVICE_STARTED));
@@ -131,13 +148,173 @@ void loop() {
 
 boolean dotVal=false;
 
-void refreshDisplay(){
-	if(timeClient.isTimeReceived()){
-		dotVal=!dotVal;
-		timeDisplay.point(dotVal);
+void displayLoad(){
+	timeDisplay.clearDisplay();
+	delay(50);
+	timeDisplay.point(false);
+	int8_t load[4]={1,0,10,13};
+	timeDisplay.display(load);
+}
 
-		int8_t* time=timeClient.getCurrentTime();
-		timeDisplay.display(time);
+void initDisplayMode(){
+  if(bmeMeasurer.getStatus()){
+	  maxMode+=MODE_BME_PRESSURE;
+  }
+
+  maxMode+=ds18d20Measurer.getItemCount();
+
+  displayMode=0;
+  currentDs18=0;
+
+  Serial.print(FPSTR("maxDisplayMode="));
+  Serial.println(maxMode);
+
+  displayRefreshTrigger.start();
+}
+
+void displayTime(){
+	dotVal=!dotVal;
+	timeDisplay.point(dotVal);
+
+	int8_t* time=timeClient.getCurrentTime();
+	timeDisplay.display(time);
+}
+
+void displayTemperatureBme(boolean fromButton){
+	displayDisplayModeInfo(SYMBOL_DEGREE,20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
+	displayIntStringValue(bmeMeasurer.getIntStringValByIndex(BME_280_TEMPERATURE_INDEX),SYMBOL_DEGREE);
+}
+
+void displayHumidityBme(boolean fromButton){
+	displayDisplayModeInfo(SYMBOL_HUMIDITY,20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
+	displayIntStringValue(bmeMeasurer.getIntStringValByIndex(BME_280_HUMIDITY_INDEX),SYMBOL_HUMIDITY);
+}
+
+void displayPressureBme(boolean fromButton){
+	displayDisplayModeInfo(SYMBOL_PRESSURE,20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
+	Serial.print("pressure PA=");
+	Serial.print(bmeMeasurer.getPressurePascal());
+	Serial.print("; pressure mm=");
+	Serial.println(bmeMeasurer.getIntStringValFromFloat(bmeMeasurer.getPressureHgmm()));
+	displayIntStringValue(bmeMeasurer.getIntStringValFromFloat(bmeMeasurer.getPressureHgmm()),SYMBOL_PRESSURE);
+}
+
+void displayTemperatureDS18D20(boolean fromButton){
+	displayDisplayModeInfo(SYMBOL_DEGREE,20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
+	String dsTempVal=ds18d20Measurer.getIntStringValByIndex(currentDs18);
+	displayIntStringValue(dsTempVal,SYMBOL_DEGREE);
+}
+
+void displayDisplayModeInfo(int modeDescriptor,uint8_t delay1,uint16_t delay2,boolean fromButton){
+	clearDisplay(delay1);
+
+	if(fromButton){
+		int8_t statusText[4]={SYMBOL_MINUS,displayMode,SYMBOL_EMPTY,modeDescriptor};
+		timeDisplay.display(statusText);
+
+		delay(delay2);
+	}
+}
+
+void displayIntStringValue(String str,int modeDescriptor){
+	int len=str.length();
+	int8_t valText[4]={SYMBOL_EMPTY,SYMBOL_EMPTY,SYMBOL_EMPTY,SYMBOL_EMPTY};
+	uint8_t displLastIndex=3;
+
+	if(len>=4){
+		len=4;
+	}else{
+		valText[3]=modeDescriptor;
+	}
+	if(len>=1){
+		uint8_t startIndex=displLastIndex-len;
+		for(uint8_t i=0;i<len;i++){
+			valText[startIndex+i]=(str.substring(i, i+1)).toInt();
+			Serial.print(valText[startIndex+i]);
+		}
+		for(uint8_t i=0;i<startIndex;i++){
+			valText[i]=SYMBOL_EMPTY;
+		}
+		Serial.println();
+	}
+
+	timeDisplay.display(valText);
+}
+
+
+void clearDisplay(uint8_t delayTime){
+	timeDisplay.clearDisplay();
+	delay(delayTime);
+	timeDisplay.point(false);
+}
+
+void refreshDisplayPage(boolean fromButton){
+	if(timeClient.isTimeReceived()){
+
+		switch(displayMode){
+			case MODE_TIME: displayTime(); break;
+			case MODE_BME_TEMP: displayTemperatureBme(fromButton); break;
+			case MODE_BME_HUMIDITY: displayHumidityBme(fromButton); break;
+			case MODE_BME_PRESSURE: displayPressureBme(fromButton); break;
+
+			default:
+				if(ds18d20Measurer.getItemCount()>0){
+					displayTemperatureDS18D20(fromButton);
+				}else{
+					changePage();
+				}
+		}
+	}else{
+		displayLoad();
+	}
+}
+
+void refreshDisplay(){
+	refreshDisplayPage(false);
+}
+
+void selectCurrentDS18D20(){
+	if(displayMode==1+maxMode-ds18d20Measurer.getItemCount()){
+		currentDs18=0;
+	}
+	else{
+		if(displayMode>=1+maxMode-ds18d20Measurer.getItemCount() && displayMode<maxMode){
+			currentDs18++;
+		}
+	}
+}
+
+void changePage(){
+	if(displayMode>=maxMode){
+		displayMode=MODE_TIME;
+	}else{
+		displayMode++;
+	}
+
+	selectCurrentDS18D20();
+
+	Serial.print(FPSTR("maxMode="));
+	Serial.println(maxMode);
+	Serial.print(FPSTR("displayMode="));
+	Serial.println(displayMode);
+	Serial.print(FPSTR("currentDs18="));
+	Serial.println(currentDs18);
+
+	if(displayMode==MODE_TIME){
+		displayRefreshTrigger.start(MODE_TIME_REFRESH_INTERVAL);
+	}else{
+		displayRefreshTrigger.start(MODE_OTHER_REFRESH_INTERVAL);
+	}
+
+	refreshDisplayPage(true);
+}
+
+//---------------------------------------------------------------------
+//button handling
+void onButtonMenuChanged(){
+	if(!buttonMenu.isOn()){
+		Serial.println(FPSTR("Menu button released"));
+		changePage();
 	}
 }
 
@@ -194,17 +371,16 @@ void postInitWebServer(){
 //base functions
 void measureSensors(){
 	deviceHelper.update(abstractItems, ARRAY_SIZE(abstractItems));
-	String result=deviceHelper.processAlarm(abstractItems, ARRAY_SIZE(abstractItems));
+
+	for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
+		Serial.println();
+		Serial.println(abstractItems[i]->getJson());
+
+	}
+
+	//String result=deviceHelper.processAlarm(abstractItems, ARRAY_SIZE(abstractItems));
 
 	deviceHelper.printDeviceDiagnostic();
-}
-
-//---------------------------------------------------------------------
-//button handling
-void onButtonMenuChanged(){
-	if(!buttonMenu.isOn()){
-		Serial.println(FPSTR("Menu button released"));
-	}
 }
 
 //---------------------------------------------------------------------

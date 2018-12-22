@@ -13,7 +13,7 @@
 class BeeperB{
 
 public:
-	BeeperB(uint8_t pin,uint8_t NO_PLAY_FLAG,uint8_t PLAY_FLAG,boolean sendNoPlayFLag);
+	BeeperB(uint8_t pin,uint8_t NO_PLAY_FLAG,uint8_t PLAY_FLAG,boolean sendNoPlayFLag,boolean doInit);
 	void init();
 	void shortBeep();
 	void longBeep();

@@ -21,6 +21,16 @@ class PinDigital:  public AbstractItem, public Loopable {
 
 public:
 
+	PinDigital(String _name,uint8_t _pin)
+		:AbstractItem(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
+		construct(_pin, nullptr, OUTPUT, CHANGE, HIGH, HIGH,0);
+	}
+
+	PinDigital(String _name,uint8_t _pin, uint8_t pinVal,uint8_t turnOffLevel)
+			:AbstractItem(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
+			construct(_pin, nullptr, OUTPUT, CHANGE, pinVal, turnOffLevel,0);
+		}
+
 	PinDigital(String _name,uint8_t _pin,std::function<void(void)> onChanged)
 		:AbstractItem(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
 		construct(_pin, onChanged, INPUT, CHANGE, LOW, LOW,0);

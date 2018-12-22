@@ -101,6 +101,7 @@ public:
 
 			Serial.print(FPSTR("-First Time received new interval="));
 			Serial.println(timeClientTrigger->getInterval());
+			Serial.println(getCurrentTimeAsString(':'));
 		}
 
 		return updated;

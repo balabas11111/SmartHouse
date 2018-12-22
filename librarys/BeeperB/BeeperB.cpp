@@ -10,13 +10,15 @@
 const int defaultBeepDelay=250;
 const int defaultBeep=500;
 
-	BeeperB::BeeperB(uint8_t pin,uint8_t NO_PLAY_FLAG,uint8_t PLAY_FLAG,boolean sendNoPlayFLag){
+	BeeperB::BeeperB(uint8_t pin,uint8_t NO_PLAY_FLAG,uint8_t PLAY_FLAG,boolean sendNoPlayFLag,boolean doInit){
 		this->_pin=pin;
 		this->_NO_PLAY_FLAG=NO_PLAY_FLAG;
 		this->_PLAY_FLAG=PLAY_FLAG;
 		this->useWriteMethodInsteadPlay=sendNoPlayFLag;
 
-		noPlayGenerator();
+		if(doInit){
+			init();
+		}
 	}
 	void BeeperB::init(){
 		pinMode(_pin, OUTPUT);

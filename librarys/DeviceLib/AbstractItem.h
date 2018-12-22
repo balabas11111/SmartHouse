@@ -361,6 +361,22 @@ public:
 		return result;
 	}
 
+	boolean getStatus(){
+		return status;
+	}
+
+	int16_t getIntValByIndex(uint8_t index){
+			return (int16_t)items[index].val;
+	}
+
+	String getIntStringValByIndex(uint8_t index){
+		return String(getIntValByIndex(index));
+	}
+
+	String getIntStringValFromFloat(float valFlt){
+		uint16_t intVal=(int16_t)valFlt;
+		return String(intVal);
+	}
 protected:
 
 	uint8_t id;
@@ -384,6 +400,7 @@ protected:
 	//boolean alarmMode=false;
 
 	SensorValue* items;
+	boolean status=false;
 
 	virtual boolean processMqVal(uint8_t index,String value){
 		Serial.print(FPSTR(MESSAGE_ABSTRACT_ITEM_INDEX_EQ));
@@ -442,7 +459,6 @@ protected:
 		if(itemCount>0)
 			items=new SensorValue[itemCount];
 	}
-
 };
 
 #endif /* LIBRARIES_DEVICELIB_AbstractItem_H_ */

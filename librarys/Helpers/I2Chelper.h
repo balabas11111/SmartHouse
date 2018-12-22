@@ -96,6 +96,10 @@ public:
 		  devCount=nDevices;
 	}
 
+	uint8_t getDevCount(){
+		return devCount;
+	}
+
 private:
 	uint8_t sda;
 	uint8_t scl;

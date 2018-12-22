@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2018-12-18 18:30:22
+//This file has been generated on 2018-12-22 06:16:27
 
 #include "Arduino.h"
 #include "Arduino.h"
@@ -31,11 +31,24 @@
 
 void setup() ;
 void loop() ;
+void displayLoad();
+void initDisplayMode();
+void displayTime();
+void displayTemperatureBme(boolean fromButton);
+void displayHumidityBme(boolean fromButton);
+void displayPressureBme(boolean fromButton);
+void displayTemperatureDS18D20(boolean fromButton);
+void displayDisplayModeInfo(int modeDescriptor,uint8_t delay1,uint16_t delay2,boolean fromButton);
+void displayIntStringValue(String str,int modeDescriptor);
+void clearDisplay(uint8_t delayTime);
+void refreshDisplayPage(boolean fromButton);
 void refreshDisplay();
+void selectCurrentDS18D20();
+void changePage();
+void onButtonMenuChanged();
 void processTimeClientEvent(int8_t* time);
 void postInitWebServer();
 void measureSensors();
-void onButtonMenuChanged();
 void onPirDetectorChanged();
 void loadSensors();
 void saveSensors();
