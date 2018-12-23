@@ -2,6 +2,7 @@
 #include <Hash.h>
 #include <ESP8266WiFi.h>
 #include "EspSettingsBox.h"
+#include "ESPNtpSett.h"
 #include "Loopable.h"
 #include "FS.h"
 #include "I2Chelper.h"
@@ -39,6 +40,7 @@
   AC_RELE            D0
   I2C                D1, D2
   DS18D20            D3
+  SignalLed PIR      D4
 
   TM1637 - Display   D6 D7
 
@@ -50,15 +52,20 @@
 #define HUMAN_PRESENTED LOW
 #define HUMAN_NOT_PRESENTED HIGH
 
-EspSettingsBox espSettingsBox(FPSTR("NTP clock with PIR sensor"));
+ESPNtpSett espNtpSett;
+
+ESPExtraSettingsBox* extraBoxes[]={&espNtpSett};
+
+EspSettingsBox espSettingsBox(FPSTR("NTP clock with PIR sensor"),extraBoxes,ARRAY_SIZE(extraBoxes));
 
 BeeperB beeper(D5,HIGH,LOW,true,false);
 
 I2Chelper i2cHelper(D1,D2,false);
 
 PinDigital buttonMenu(FPSTR(SENSOR_buttonLeft),D8,onButtonMenuChanged);
-PinDigital AC_Rele1(FPSTR(SENSOR_AC_Rele1),D0,LOW,HIGH);
-Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged);
+//PinDigital AC_Rele1(FPSTR(SENSOR_AC_Rele1),D0,LOW,HIGH);
+PinDigital signalLed(FPSTR(SENSOR_signalLed),D0,LOW,HIGH);
+Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged,700,30000);
 
 DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), D3);
 BME280_Sensor bmeMeasurer(FPSTR(SENSOR_bmeMeasurer));
@@ -77,23 +84,22 @@ DisplayHelper_TM1637_Clock_PIR displayHelper(&timeDisplay,&espSettingsBox,&bmeMe
 WiFiHelper wifiHelper(&espSettingsBox, nullptr, &server,postInitWebServer,false);
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 
-Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeClient,&displayHelper/*,&pirDetector*/};
+Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeClient,
+						&displayHelper,&pirDetector};
 
-AbstractItem* abstractItems[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&AC_Rele1};
+AbstractItem* abstractItems[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),120000);
 
 void setup() {
   Serial.begin(115200);
 
-  displayHelper.init();
-
+  espSettingsBox.init();
+/*
   deviceHelper.startDevice(espSettingsBox.DeviceId);
 
-  espSettingsBox.init();
-
+  displayHelper.init();
   beeper.init();
-
   i2cHelper.init();
 
   httpUpdater.setup(&server);
@@ -109,27 +115,28 @@ void setup() {
   displayHelper.postProcessConnection(wifiHelper.isAP(),wifiHelper.getIpStr());
 
   deviceHelper.printDeviceDiagnostic();
+  processPostInitSounds();
 
-  if(i2cHelper.getDevCount()==0){
-	  beeper.longBeep();
-  }else if(ds18d20Measurer.getItemCount()==0){
-	  beeper.longBeep();
-  }else{
-	  beeper.shortBeep();
-	  beeper.shortBeep();
-  }
+  onPirDetectorChanged();
+*/
   Serial.println(FPSTR(MESSAGE_DEVICE_STARTED));
 }
 
 void loop() {
-	deviceHelper.loop();
+	//deviceHelper.loop();
 }
 
-void refreshDisplay(){
-	//Serial.println(FPSTR("main refresh display"));
-	displayHelper.refreshDisplay();
+//---------------------------------------------------------------------
+void processPostInitSounds(){
+	if(i2cHelper.getDevCount()==0){
+		  beeper.shortBeep();
+	  }else if(ds18d20Measurer.getItemCount()==0){
+		  beeper.shortBeep();
+	  }else{
+		  beeper.shortBeep();
+		  beeper.shortBeep();
+	  }
 }
-
 
 //---------------------------------------------------------------------
 //button handling
@@ -140,13 +147,13 @@ void onButtonMenuChanged(){
 	}
 }
 
-void processTimeClientEvent(int8_t* time){
-	Serial.println(FPSTR("processTimeClientEvent"));
-	Serial.println(timeClient.getCurrentTimeAsString('.'));
-	Serial.println(timeClient.getCurrentDateAsString('.'));
-	//timeDisplay.display(time);
+//---------------------------------------------------------------------
+//handle pirDetector events
+void onPirDetectorChanged(){
+	signalLed.turnOnOff(pirDetector.isOn());
 }
 
+//-------------Web server functions-------------------------------------
 void postInitWebServer(){
 	server.on(FPSTR(URL_SUBMIT_FORM_COMMANDS), HTTP_POST, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), executeCommand());
@@ -204,16 +211,9 @@ void measureSensors(){
 	for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
 		Serial.println();
 		Serial.println(abstractItems[i]->getJson());
-
 	}
 
 	deviceHelper.printDeviceDiagnostic();
-}
-
-//---------------------------------------------------------------------
-//handle pirDetector events
-void onPirDetectorChanged(){
-	Serial.println("* Pir changed");
 }
 
 //---------------------------------------------------------------------

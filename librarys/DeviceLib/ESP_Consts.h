@@ -243,6 +243,7 @@ const PROGMEM char MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN[]="Save Abstr
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SAVED[]="...saved";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED[]="Default settings will be saved";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS[]="File not exists";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_BOX_FILE_NOT_EXISTS[]="Box File not exists";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_FILE_EMPTY[]="File is empty";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON[]="Error parse JSON file";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_VALUE_PARSED[]="val read=";
@@ -259,6 +260,7 @@ const PROGMEM char MESSAGE_ESPSETTINGSBOX_CURRENT_MEMORY_STATE[]="Current memory
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_DIRECT_FILE_READ[]="----------------direct file read------------";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SETTINGS_FROM_MEMORY[]="-----------------Settings from memory-------";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SAVE_DEVICE_SETTINGS_TO_FILE[]="Save device settings to file";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_SAVE_EXTRABOX_SETTINGS_TO_FILE[]="Save ExtraBox settings to file";
 
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_MEMORY[]="-----------------Settings loaded to memory-------";
 
@@ -612,6 +614,7 @@ const PROGMEM char SENSOR_buttonLeft[]="buttonLeft";
 const PROGMEM char SENSOR_buttonRight[]="buttonRight";
 const PROGMEM char SENSOR_lampLeft[]="lampLeft";
 const PROGMEM char SENSOR_lampRight[]="lampRight";
+const PROGMEM char SENSOR_signalLed[]="signalLed";
 const PROGMEM char SENSOR_lamp2[]="lamp2";
 const PROGMEM char SENSOR_lamp3[]="lamp3";
 const PROGMEM char SENSOR_acMeter[]="acMeter";

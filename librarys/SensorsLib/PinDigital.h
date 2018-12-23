@@ -90,8 +90,14 @@ public:
 	}
 
 
-	virtual int getVal();
+	virtual int getVal(){
+		return digitalRead(pin);
+	}
 	virtual bool setVal(uint8_t _val);
+
+	virtual int getValAnalog(){
+		return analogRead(pin);
+	}
 
 	//PinAbstract functions
 	void processClick(boolean fromTimer);
@@ -102,6 +108,10 @@ public:
 	uint8_t getPinModeInOut();
 
 	virtual uint8_t updateVal();
+
+	boolean isInterruptAttached(){
+		return interruptAttached;
+	}
 private:
 
 	bool changed;
@@ -116,6 +126,7 @@ protected:
 	//uint8_t pinVal;
 	uint8_t turnOffLevel;
 	boolean isClick;
+	boolean interruptAttached;
 
 	TimeTrigger* clickTrigger;
 

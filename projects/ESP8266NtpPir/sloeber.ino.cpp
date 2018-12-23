@@ -2,13 +2,14 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2018-12-22 18:11:37
+//This file has been generated on 2018-12-23 01:00:02
 
 #include "Arduino.h"
 #include "Arduino.h"
 #include <Hash.h>
 #include <ESP8266WiFi.h>
 #include "EspSettingsBox.h"
+#include "ESPNtpSett.h"
 #include "Loopable.h"
 #include "FS.h"
 #include "I2Chelper.h"
@@ -32,12 +33,11 @@
 
 void setup() ;
 void loop() ;
-void refreshDisplay();
+void processPostInitSounds();
 void onButtonMenuChanged();
-void processTimeClientEvent(int8_t* time);
+void onPirDetectorChanged();
 void postInitWebServer();
 void measureSensors();
-void onPirDetectorChanged();
 void loadSensors();
 void saveSensors();
 String setSensorJson();

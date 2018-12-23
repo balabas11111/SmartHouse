@@ -16,20 +16,30 @@
 
 class Pir_Sensor: public PinDigital {
 public:
-	Pir_Sensor(String name,uint8_t _pin,std::function<void(void)> onChangeFunction)
+	Pir_Sensor(String name,uint8_t _pin,std::function<void(void)> onChangeFunction, uint16_t analogLevelForHigh, uint humanNotPresentInterval )
 		:PinDigital(name,_pin,[this](){processPinChange();}){
-		humanPresentTrigger=new TimeTrigger(0,humanNotPresentInterval,false,[this](){onHumanPresentTrigger();});
-		//pirPin=_pin;
-		//signalLed=_signalLed;
-		externalFunction=onChangeFunction;
-
+		this->humanNotPresentInterval=humanNotPresentInterval;
+		this->humanPresentTrigger=new TimeTrigger(0,humanNotPresentInterval,false,[this](){onHumanPresentTrigger();});
+		this->externalFunction=onChangeFunction;
+		this->analogLevelForHigh=analogLevelForHigh;
 		setSetAllowed(0, false);
 	}
 	virtual ~Pir_Sensor(){};
 
 	boolean loop(){
 		humanPresentTrigger->loop();
+		if(analogLevelForHigh!=0){
+			processInterrupt();
+		}
 		return PinDigital::loop();
+	}
+
+	int getVal() override{
+		if(analogLevelForHigh!=0){
+			return (getValAnalog()>=analogLevelForHigh)?HIGH:LOW;
+		}
+
+		return PinDigital::getVal();
 	}
 
 	void processPinChange(){
@@ -48,19 +58,16 @@ public:
 	}
 
 	void onMovementDetected(){
-		Serial.println("-------handleMovementDetected");
-		/*if(signalLed!=nullptr)
-			signalLed->changeAndDelay(50, 2);
-			*/
+		Serial.println(FPSTR("-------handleMovementDetected"));
 
-		if(!humanPresented && externalFunction!=nullptr){
-			externalFunction();
-		}
-
+		boolean executeAction=!humanPresented && externalFunction!=nullptr;
 		humanPresented=true;
 		humanPresentTrigger->setActive(false);
 
-		handleLightOnOff();
+		if(executeAction){
+			externalFunction();
+		}
+
 	}
 
 	void onNoMovementDetected(){
@@ -70,34 +77,40 @@ public:
 	}
 
 	void onHumanPresentTrigger(){
-		Serial.println("-------no movement during period");
+		Serial.println(FPSTR("-------no movement during period"));
 
 		humanPresented=false;
 		humanPresentTrigger->setActive(false);
-
-		handleLightOnOff();
 
 		if(externalFunction!=nullptr){
 			externalFunction();
 		}
 	}
 
-	void handleLightOnOff(){
-		/*if(signalLed!=nullptr)
-			signalLed->turnOnOff(humanPresented);
-			*/
-	}
+	virtual void displayDetails() override{
+		Serial.print(FPSTR("Read pir"));
+		Serial.print(FPSTR(" dR="));
+		Serial.print(String(digitalRead(pin)));
+		Serial.print(FPSTR(" aR="));
+		Serial.print(String(analogRead(pin)));
+		Serial.print(FPSTR(" int="));
+		Serial.print(String(isInterruptAttached()));
+		Serial.print(FPSTR("* Pir changed humanPresented="));
+		Serial.print(isHumanPresented());
+		Serial.print(FPSTR(" on="));
+		Serial.println(isOn());
+
+		Serial.println();
+	};
 
 private:
 	TimeTrigger *humanPresentTrigger;
 
-	const int humanNotPresentInterval=30000;
-
+	uint humanNotPresentInterval=30000;
 	boolean humanPresented=false;
 
-	//PinDigital *signalLed;
 	std::function<void(void)> externalFunction;
-
+	uint16_t analogLevelForHigh=0;
 };
 
 #endif /* LIBRARIES_MEASURER_PIRDETECTOR_H_ */

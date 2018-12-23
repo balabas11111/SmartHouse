@@ -16,15 +16,19 @@
 #include "AbstractItem.h"
 #include "ESP_Consts.h"
 #include "IPAddress.h"
+#include "ESPExtraSettingsBox.h"
 
 class EspSettingsBox: public Initializable{
 
 public:
 	EspSettingsBox(String deviceKind);
+	EspSettingsBox(String deviceKind,ESPExtraSettingsBox** boxes,uint8_t boxesCount);
 	//EspSettingsBox(String deviceKind,boolean forceLoad);
 	EspSettingsBox(String deviceKind,boolean forceLoad,boolean _initSpiff);
 
 	virtual boolean initialize(boolean _init) override;
+
+	boolean initExtraBoxes();
 
 	void loadSettingsJson();
 	void saveSettingsJson();
@@ -62,6 +66,277 @@ public:
 	String getJson(String page);
 
 	String getFileName(AbstractItem* item);
+
+	String getDefaultExtraBoxJson(){
+		return "{\"name\":\"extraBoxesCount\",\"val\":\""+String(extraBoxesCount)+"\"}";
+	}
+
+	String getExtraBoxJson(){
+		String result="";
+		for(uint8_t i=0;i<extraBoxesCount;i++){
+			result+=extraBoxes[i]->getJson();
+			result+=",";
+		}
+
+		result+=getDefaultExtraBoxJson();
+		return result;
+	}
+
+	String getExtraBoxJson(String boxname){
+		ESPExtraSettingsBox* box=getExtraBox(boxname);
+		if(box==nullptr){
+			return getDefaultExtraBoxJson();
+		}
+
+		return box->getJson();
+	}
+
+	String getExtraBoxJson(uint8_t boxIndex){
+		if(boxIndex>extraBoxesCount){
+			return getDefaultExtraBoxJson();
+		}
+
+		return extraBoxes[boxIndex]->getJson();
+	}
+
+	String getBoxFileName(uint8_t boxIndex){
+		String boxFileName=FPSTR(ESPSETTINGSBOX_SETTINGS_PATH);
+					boxFileName+=extraBoxes[boxIndex]->getName();
+					boxFileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_TXT_EXT);
+
+		return boxFileName;
+	}
+
+	boolean checkBoxFileExists(uint8_t boxIndex){
+		if(boxIndex>extraBoxesCount){
+			return false;
+		}
+
+		String boxFileName=getBoxFileName(boxIndex);
+
+	   File file = SPIFFS.open(boxFileName, "r");
+
+		if(!file || file.size()==0){
+			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_BOX_FILE_NOT_EXISTS));
+			saveExtraBox(boxIndex);
+		}
+
+		return true;
+	}
+
+	void saveExtraBoxes(){
+		for(uint8_t i=0;i<extraBoxesCount;i++){
+			saveExtraBox(i);
+		}
+	}
+
+	void loadExtraBoxes(){
+		for(uint8_t i=0;i<extraBoxesCount;i++){
+			loadExtraBox(i);
+		}
+	}
+
+	boolean saveExtraBox(uint8_t boxIndex){
+		if(boxIndex>extraBoxesCount){
+			return false;
+		}
+
+		uint8_t boxKeySize=extraBoxes[boxIndex]->getKeySize();
+
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVE_EXTRABOX_SETTINGS_TO_FILE));
+
+		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
+
+		DynamicJsonBuffer jsonBuffer;
+		//StaticJsonBuffer<1024> jsonBuffer;
+
+		JsonObject& root = jsonBuffer.createObject();
+
+		for(uint8_t i=0;i<boxKeySize;i++){
+			String key=extraBoxes[boxIndex]->getKey(i);
+			String value=extraBoxes[boxIndex]->getValue(i);
+
+			root[key] = value;
+		}
+
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_FROM_MEMORY));
+		String vals="";
+		root.printTo(vals);
+		Serial.println(vals);
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVE_EXTRABOX_SETTINGS_TO_FILE));
+
+		String boxFileName=getBoxFileName(boxIndex);
+		File boxFile = SPIFFS.open(boxFileName, "w");
+
+		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
+		root.printTo(boxFile);
+		boxFile.close();
+		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SAVED));
+
+		delay(1);
+
+		Serial.println(FPSTR(MESSAGE_DONE));
+		boxFile.close();
+
+		delay(1);
+
+		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SAVED));
+		Serial.println(FPSTR(MESSAGE_DONE));
+
+		return true;
+	}
+
+	boolean deleteExtraBoxFile(uint8_t boxIndex){
+		String fileName=getBoxFileName(boxIndex);
+
+		return SPIFFS.remove(fileName);
+	}
+
+	boolean loadExtraBox(uint8_t boxIndex){
+
+	  checkBoxFileExists(boxIndex);
+
+      StaticJsonBuffer<1024> jsonBuffer;
+      delay(1);
+
+      String boxFileName=getBoxFileName(boxIndex);
+      File boxFile = SPIFFS.open(boxFileName, "r");
+      size_t size = boxFile.size();
+
+      std::unique_ptr<char[]> buf (new char[size]);
+      boxFile.readBytes(buf.get(), size);
+      JsonObject& root = jsonBuffer.parseObject(buf.get());
+      if (!root.success()) {
+    	  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
+      } else {
+    	  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
+    	  root.printTo(Serial);
+    	  Serial.println();
+    	  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_READ_FROM_FILE_COMPLETE));
+
+    	  uint8_t boxKeySize=extraBoxes[boxIndex]->getKeySize();
+
+    	  for(uint8_t i=0;i<boxKeySize;i++){
+				String key=extraBoxes[boxIndex]->getKey(i);
+				String value=root[key].as<char*>();
+
+				uint8_t keyIndex=i;
+
+				if(extraBoxes[boxIndex]->getKey(i)!=key){
+					keyIndex=extraBoxes[boxIndex]->getKeyIndex(key);
+				}
+
+				extraBoxes[boxIndex]->setValue(keyIndex,value);
+			}
+
+    	  	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_MEMORY));
+    	  	String vals="";
+    	  	root.printTo(vals);
+    	  	Serial.println(vals);
+    	  	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+
+      	  }
+
+      boxFile.close();
+	  return true;
+	}
+
+	boolean loadDefaultValues(uint8_t boxIndex){
+		if(boxIndex>extraBoxesCount){
+			return false;
+		}
+
+		return extraBoxes[boxIndex]->init();
+	}
+
+	ESPExtraSettingsBox* getExtraBox(String boxName){
+		if(extraBoxesCount!=0){
+			for(uint8_t i=0;i<extraBoxesCount;i++){
+				if(extraBoxes[i]->getName()==boxName){
+					return extraBoxes[i];
+				}
+			}
+		}
+
+		return nullptr;
+	}
+
+	String getExtraValue(String boxName,String key){
+		if(extraBoxesCount!=0){
+			for(uint8_t i=0;i<extraBoxesCount;i++){
+				if(extraBoxes[i]->getName()==boxName){
+					return extraBoxes[i]->getValue(key);
+				}
+			}
+		}
+
+		return String("");
+	}
+
+	String getExtraValue(String boxName,int index){
+		if(extraBoxesCount!=0){
+			for(uint8_t i=0;i<extraBoxesCount;i++){
+				if(extraBoxes[i]->getName()==boxName){
+					return extraBoxes[i]->getValue(index);
+				}
+			}
+		}
+		return String("");
+	}
+
+	int getExtraValueInt(String boxName,String key){
+		return getExtraValue(boxName,key).toInt();
+	}
+
+	int getExtraValueInt(String boxName,int index){
+		return getExtraValue(boxName,index).toInt();
+	}
+
+	float getExtraValueFloat(String boxName,String key){
+		return getExtraValue(boxName,key).toFloat();
+	}
+
+	float getExtraValueFloat(String boxName,int index){
+		return getExtraValue(boxName,index).toFloat();
+	}
+
+	boolean setExtraValue(String boxName,String key,String value){
+		ESPExtraSettingsBox* extraBox=getExtraBox(boxName);
+
+		if(extraBox!=nullptr){
+			return extraBox->setValue(key, value);
+		}
+
+		return false;
+	}
+
+	boolean setExtraValue(String boxName,int index,String value){
+		ESPExtraSettingsBox* extraBox=getExtraBox(boxName);
+
+		if(extraBox!=nullptr){
+			return extraBox->setValue(index, value);
+		}
+
+		return false;
+	}
+
+	boolean setExtraValue(uint8_t boxIndex,String key,String value){
+		if(boxIndex>extraBoxesCount){
+			return false;
+		}
+
+		return extraBoxes[boxIndex]->setValue(key, value);
+	}
+
+	boolean setExtraValue(uint8_t boxIndex,int index,String value){
+		if(boxIndex>extraBoxesCount){
+			return false;
+		}
+
+		return extraBoxes[boxIndex]->setValue(index, value);
+	}
 /*
 	String getSimpleJsonPublishUrl(){
 		return FPSTR(ESPSETTINGSBOX_GET_SIMPLE_JSON_PUBLISH_URL);
@@ -200,6 +475,9 @@ private:
 	boolean spiffInitialized;
 	String _fileName;
 	//String _extFileName;
+
+	ESPExtraSettingsBox** extraBoxes;
+	uint8_t extraBoxesCount=0;
 
 	void construct(String deviceKind,boolean forceLoad,boolean initSpiff);
 	void initSpiff();

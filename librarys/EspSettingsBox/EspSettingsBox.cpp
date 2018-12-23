@@ -22,6 +22,12 @@ EspSettingsBox::EspSettingsBox(String deviceKind){
 	construct(deviceKind,false,false);
 }
 
+EspSettingsBox::EspSettingsBox(String deviceKind,ESPExtraSettingsBox** boxes,uint8_t boxesCount){
+	construct(deviceKind,false,false);
+	this->extraBoxes=boxes;
+	this->extraBoxesCount=boxesCount;
+}
+
 /*EspSettingsBox::EspSettingsBox(boolean forceLoad){
 	construct(forceLoad,false);
 }*/
@@ -43,6 +49,10 @@ EspSettingsBox::EspSettingsBox(String deviceKind,boolean forceLoad,boolean _init
 			}
 
 			loadSettingsJson();
+
+			initExtraBoxes();
+			loadExtraBoxes();
+
 			initialized=_init;
 		}
 
@@ -54,6 +64,22 @@ EspSettingsBox::EspSettingsBox(String deviceKind,boolean forceLoad,boolean _init
 
 		return initialized;
 	}
+
+boolean EspSettingsBox::initExtraBoxes(){
+	if(extraBoxesCount!=0){
+		boolean result=false;
+		Serial.println();
+		Serial.println(FPSTR("Init extra sett boxes"));
+		for(uint8_t i=0;i<extraBoxesCount;i++){
+			result=extraBoxes[i]->init() || result;
+			extraBoxes[i]->printDetails();
+		}
+
+		Serial.println(FPSTR("Init extra sett boxes...done"));
+		return true;
+	}
+	return false;
+}
 
 boolean EspSettingsBox::isSpiffInitialized(){
 	return spiffInitialized;
@@ -561,7 +587,8 @@ String EspSettingsBox::getSimpleJson(){
 						\
 						{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
 						{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
-						{\"name\":\"thingSpeakChannelUrl\",\"val\":\""+getThingSpeakChannelUrl()+"\"}],\
+						{\"name\":\"thingSpeakChannelUrl\",\"val\":\""+getThingSpeakChannelUrl()+"\"},"
+						+getExtraBoxJson()+"],\
 						\"DeviceId\":\""+DeviceId+"\",\
 						\"DeviceDescription\":\""+DeviceDescription+"\",\
 						\"DeviceLocation\":\""+DeviceLocation+"\",\
@@ -587,12 +614,8 @@ String EspSettingsBox::getJson(String page){
 						{\"name\":\"accessUser\",\"val\":\""+String(accessUser)+"\"},\
 						{\"name\":\"accessPass\",\"val\":\"*****\"},\
 						{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\"},\
-						{\"name\":\"settingsPass\",\"val\":\"*****\"},\
-						{\"name\":\"ntpEnabled\",\"val\":\""+String(ntpEnabled)+"\"},\
-						{\"name\":\"NTP_poolServerName\",\"val\":\""+String(NTP_poolServerName)+"\"},\
-						{\"name\":\"NTP_timeOffset\",\"val\":\""+NTP_timeOffset+"\"},\
-						{\"name\":\"NTP_updateInterval\",\"val\":\""+NTP_updateInterval+"\"},\
-						{\"name\":\"NTP_timeTriggerInterval\",\"val\":\""+NTP_timeTriggerInterval+"\"}]}";
+						{\"name\":\"settingsPass\",\"val\":\"*****\"},\""
+						+getExtraBoxJson()+"]}";
 	}
 	if(page=="net"){
 			result="{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"items\":[\

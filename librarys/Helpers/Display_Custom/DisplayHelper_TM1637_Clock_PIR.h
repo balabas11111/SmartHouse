@@ -191,7 +191,7 @@ public:
 		displayIntStringValue(dsTempVal,SYMBOL_DEGREE);
 	}
 
-	void displayDisplayModeInfo(int modeDescriptor,uint8_t delay1,uint16_t delay2,boolean fromButton){
+	void displayDisplayModeInfo(uint8_t modeDescriptor,uint8_t delay1,uint16_t delay2,boolean fromButton){
 		clearDisplay(delay1);
 
 		if(fromButton){
@@ -216,12 +216,12 @@ public:
 			uint8_t startIndex=displLastIndex-len;
 			for(uint8_t i=0;i<len;i++){
 				valText[startIndex+i]=(str.substring(i, i+1)).toInt();
-				Serial.print(valText[startIndex+i]);
+				//Serial.print(valText[startIndex+i]);
 			}
 			for(uint8_t i=0;i<startIndex;i++){
 				valText[i]=SYMBOL_EMPTY;
 			}
-			Serial.println();
+			//Serial.println();
 		}
 
 		timeDisplay->display(valText);

@@ -217,6 +217,20 @@ public:
 		return updated;
 	}
 
+	ulong DateTimeToEpochTime(uint16_t year,uint8_t month,uint8_t day,uint8_t hour,uint8_t minute,uint8_t seconds){
+
+		uint8_t monthLength=monthDays[month];
+		uint16_t yearLength=(LEAP_YEAR(year))?366:355;
+
+		if (month==1) { // february
+			if (LEAP_YEAR(year)){monthLength=29;} else {monthLength=28;}
+		}
+
+		ulong result=seconds+minute*60+hour*60*60+day*24*60*60+monthLength*24*60*60+yearLength*24*60*60;
+
+		return result;
+	}
+
 	ulong getCurrentTimeAsLong(){
 		return timeClient->getEpochTime();
 	}

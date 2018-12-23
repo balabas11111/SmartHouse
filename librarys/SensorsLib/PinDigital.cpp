@@ -45,14 +45,17 @@ void PinDigital::setupModes(uint8_t pinVal) {
 	}else{
 		if(onChanged!=nullptr && changeMode!=254){
 #ifdef ESP8266
+			Serial.print(getName());
+			Serial.print(FPSTR(" pin="));
+			Serial.print(pin);
+			Serial.println(FPSTR(" - interrupt attached"));
+
 			attachInterrupt(pin, [this](){processInterrupt();}, changeMode);
+
+			interruptAttached=true;
 #endif
 		}
 	}
-}
-
-int PinDigital::getVal(){
-	return digitalRead(pin);
 }
 
 bool PinDigital::setVal(uint8_t _val){
