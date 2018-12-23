@@ -40,6 +40,7 @@ public:
 	String getName();
 	boolean loop();
 
+	void start(long interval,boolean active);
 	void start(long interval);
 	void start();
 	void stop();

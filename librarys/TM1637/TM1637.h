@@ -36,6 +36,30 @@
 #define  BRIGHT_TYPICAL 2
 #define  BRIGHTEST      7
 
+#define SYMBOL_A 10
+#define SYMBOL_b 11
+#define SYMBOL_C 12
+#define SYMBOL_d 13
+#define SYMBOL_E 14
+#define SYMBOL_F 15
+#define SYMBOL_G -70
+#define SYMBOL_h 20
+#define SYMBOL_H -50
+#define SYMBOL_L -12
+#define SYMBOL_n 21
+#define SYMBOL_o 0
+#define SYMBOL_P 46
+#define SYMBOL_r 19
+#define SYMBOL_S 5
+#define SYMBOL_t 22
+
+#define SYMBOL_u -120
+#define SYMBOL_y -54
+
+#define SYMBOL_SPACE  17
+#define SYMBOL_MINUS  16
+#define SYMBOL_DEGREE 18
+
 class TM1637
 {
   public:
@@ -59,4 +83,27 @@ class TM1637
     uint8_t Clkpin;
     uint8_t Datapin;
 };
+
+/*#define SYMBOL_EMPTY 0x7f
+
+#define SYMBOL_A 10
+#define SYMBOL_b 11
+#define SYMBOL_C 12
+#define SYMBOL_d 13
+#define SYMBOL_E 14
+#define SYMBOL_F 15
+//17
+#define SYMBOL_G -70
+#define SYMBOL_h 47
+#define SYMBOL_H -50
+#define SYMBOL_L -12
+#define SYMBOL_n -116
+
+#define SYMBOL_P 46
+#define SYMBOL_y -54
+
+#define SYMBOL_DEGREE 60
+
+
+#define SYMBOL_MINUS 99*/
 #endif

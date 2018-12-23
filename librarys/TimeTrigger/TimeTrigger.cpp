@@ -39,7 +39,8 @@ void TimeTrigger::construct(unsigned long lastTriggerTime,unsigned long interval
 }
 
 void TimeTrigger::init(){
-	setActive(true);
+	//setActive(true);
+	start();
 }
 void TimeTrigger::setActive(boolean b){
 	Serial.println("TimeTrigger active="+String(b)+" interval="+String(_interval));
@@ -94,6 +95,12 @@ boolean TimeTrigger::loop(){
 	}
 
 	return false;
+}
+
+void TimeTrigger::start(long interval,boolean active){
+	setInterval(interval);
+	saveTime();
+	setActive(true);
 }
 
 void TimeTrigger::start(long interval) {

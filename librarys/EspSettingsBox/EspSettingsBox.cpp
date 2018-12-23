@@ -18,6 +18,13 @@
 #include "AbstractItem.h"
 #include "ESP_Consts.h"
 
+//true values
+const char BOOLEAN_ON[]             PROGMEM ="on";
+const char BOOLEAN_1[]              PROGMEM ="1";
+const char BOOLEAN_true[]           PROGMEM ="true";
+
+const char BOOLEAN_false[]          PROGMEM ="false";
+
 EspSettingsBox::EspSettingsBox(String deviceKind){
 	construct(deviceKind,false,false);
 }
@@ -51,7 +58,6 @@ EspSettingsBox::EspSettingsBox(String deviceKind,boolean forceLoad,boolean _init
 			loadSettingsJson();
 
 			initExtraBoxes();
-			loadExtraBoxes();
 
 			initialized=_init;
 		}
@@ -67,16 +73,20 @@ EspSettingsBox::EspSettingsBox(String deviceKind,boolean forceLoad,boolean _init
 
 boolean EspSettingsBox::initExtraBoxes(){
 	if(extraBoxesCount!=0){
-		boolean result=false;
+		boolean result=true;
 		Serial.println();
-		Serial.println(FPSTR("Init extra sett boxes"));
+		Serial.println(FPSTR("----------------Init extra sett boxes---------------"));
 		for(uint8_t i=0;i<extraBoxesCount;i++){
-			result=extraBoxes[i]->init() || result;
+			result=extraBoxes[i]->init() && result;
+			result=loadExtraBox(i) && result;
 			extraBoxes[i]->printDetails();
 		}
 
-		Serial.println(FPSTR("Init extra sett boxes...done"));
-		return true;
+		Serial.print(FPSTR("Init extra sett boxes...result="));
+		Serial.println(result);
+		Serial.print(FPSTR("-----------------------------------------------------"));
+		Serial.println();
+		return result;
 	}
 	return false;
 }
@@ -145,8 +155,6 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	dnsIp2=stringToIp(String(root["dip2"].as<char*>()));
 	    	  	serverIp=stringToIp(String(root["serverip"].as<char*>()));
 
-	    	  	beepOnAlert=root["bOnA"];
-
 	    	  	isThingSpeakEnabled=root["ptTsEnabled"];
 	    	  	postDataToTSInterval = root["pdTs"];
 	    	  	thSkUsrKey=root["sPk"].as<char*>();
@@ -165,21 +173,6 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	isHttpPostEnabled=stringToBoolean(root["isHttpSendEnabled"]);
 	    	  	postDataToHttpInterval=root["postDataToHttpInterval"];
 	    	  	httpPostIp=stringToIp(String(root["httpPostIp"].as<char*>()));
-
-	    	  	alarmSendNotifAlertStart=stringToBoolean(root["AlSAs"].as<char*>());
-	    	  	alarmSendNotifAlertStop=stringToBoolean(root["AlSn"].as<char*>());
-	    	  	alarmPlaySound=stringToBoolean(root["AlPs"].as<char*>());
-	    	  	//alamNotificationInterval=root["AlNi"];
-
-	    	  	ntpEnabled=stringToBoolean(root["ntpEnabled"]);
-	    	  	NTP_poolServerName=root["NTP_poolServerName"].as<char*>();
-	    	  	NTP_timeOffset=root["NTP_timeOffset"];
-	    	  	NTP_timeTriggerInterval=root["NTP_timeTriggerInterval"];
-	    	  	NTP_updateInterval=root["NTP_updateInterval"];
-
-	    	  	telegramApiKey=root["telegramApiKey"].as<char*>();
-	    	  	telegramReceivers=root["telegramReceivers"].as<char*>();
-	    	  	telegramSenders=root["telegramSenders"].as<char*>();
 
 	    	  	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_MEMORY));
 	    	  	String vals="";
@@ -236,11 +229,6 @@ void EspSettingsBox::saveSettingsJson(){
 		root["dip2"] = dnsIp2.toString();
 		root["serverip"] = serverIp.toString();
 
-		root["bOnA"] = beepOnAlert;
-		root["AlSAs"]=alarmSendNotifAlertStart;
-		root["AlSn"]=alarmSendNotifAlertStop;
-		root["AlPs"]=alarmPlaySound;
-
 		root["ptTsEnabled"]=isThingSpeakEnabled;
 		root["pdTs"] = postDataToTSInterval;
 		root["sPk"] = thSkUsrKey;
@@ -259,16 +247,6 @@ void EspSettingsBox::saveSettingsJson(){
 		root["isHttpSendEnabled"]=isHttpPostEnabled;
 		root["postDataToHttpInterval"]=postDataToHttpInterval;
 		root["httpPostIp"]=httpPostIp.toString();
-
-		root["ntpEnabled"]=ntpEnabled;
-		root["NTP_poolServerName"]=NTP_poolServerName;
-		root["NTP_timeOffset"]=NTP_timeOffset;
-		root["NTP_timeTriggerInterval"]=NTP_timeTriggerInterval;
-		root["NTP_updateInterval"]=NTP_updateInterval;
-
-		root["telegramApiKey"]=telegramApiKey;
-		root["telegramReceivers"]=telegramReceivers;
-		root["telegramSenders"]=telegramSenders;
 
 		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_FROM_MEMORY));
 		String vals="";
@@ -378,43 +356,7 @@ void EspSettingsBox::saveAbstractItemToFile(AbstractItem* item){
 
 	delay(1);
 }
-/*
-void EspSettingsBox::printSettingsFile(){
-		//Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_PRINT_SETTINGS_FILE));
-		//Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-		File file = SPIFFS.open(_fileName, "r");
 
-		if(!file){
-			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED));
-			saveSettingsJson();
-			file = SPIFFS.open(_fileName, "r");
-		}
-
-		    Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_DIRECT_FILE_READ));
-		    File fileSet = SPIFFS.open(_fileName, "r");
-		    	if(fileSet){
-		    		String str;
-		    		int i=0;
-
-		    		 while(fileSet.available()){
-		    			 i++;
-		    			 str=fileSet.readStringUntil('\n');
-		    			 Serial.println(str);
-		    		 }
-		    		 file.close();
-
-		    		 Serial.print(_fileName);
-		    		 Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_EXISTS));
-		    	}else{
-		    		Serial.print(_fileName);
-		    		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_MISSED));
-		    	}
-		    delay(1);
-
-		    //printVariablesToSerial();
-		    Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-}
-*/
 void EspSettingsBox::initSpiff(){
 	Serial.println();
 	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SYSTEM_BEGIN_INIT));
@@ -461,6 +403,7 @@ void EspSettingsBox::printSpiffsInfo(){
 			  size_t fileSize = dir.fileSize();
 			  Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_NAME_EQ));
 			  Serial.print(fileName);
+			  Serial.print(FPSTR(" "));
 			  Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_SIZE_EQ));
 			  Serial.println(fileSize);
 			}
@@ -529,6 +472,10 @@ boolean EspSettingsBox::validateIP(String str){
 
 boolean EspSettingsBox::stringToBoolean(String str){
 	return (str=="on" || str=="1" || str=="true" || str=="True");
+}
+
+String EspSettingsBox::booleanToString(boolean val){
+	return val?"true":"false";
 }
 
 IPAddress EspSettingsBox::stringToIp(String str){
@@ -630,9 +577,7 @@ String EspSettingsBox::getJson(String page){
 						{\"name\":\"subnetIp\",\"val\":\""+subnetIp.toString()+"\"},\
 						{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\"},\
 						{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\"},\
-						{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\"},\
-						{\"name\":\"telegramApiKey\",\"val\":\""+telegramApiKey+"\"},\
-						{\"name\":\"telegramReceivers\",\"val\":\""+telegramReceivers+"\"}]}";
+						{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\"}]}";
 	}
 	if(page=="publish"){
 			result="{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"items\":[\
@@ -667,6 +612,23 @@ String EspSettingsBox::getJson(String page){
 	return result;
 }
 
+boolean EspSettingsBox::setSettingsValueIfExtra(String fieldName, String fieldValue){
+	if(!hasExtraBoxes()){
+		return false;
+	}
+
+	for(uint8_t i=0;i<extraBoxesCount;i++){
+		int keyIndex=extraBoxes[i]->isTargetOfSettingsValue(fieldName);
+
+		if(keyIndex>-1){
+			extraBoxes[i]->setValue(keyIndex, fieldValue);
+			return true;
+		}
+	}
+
+	return false;
+}
+
 boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	String startTag=FPSTR(ESPSETTINGSBOX_START_TAG);
 	int startIndex=startTag.length();
@@ -682,6 +644,10 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return false;
 	}else{
 		fieldName=fieldName.substring(startIndex);
+	}
+
+	if(setSettingsValueIfExtra(fieldName,fieldValue)){
+		return true;
 	}
 
 	if(fieldName==FPSTR(ESBOX_deviceFirmWareVersion)){
@@ -780,23 +746,6 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		serverIp=stringToIp(fieldValue);
 		return true;
 	}
-	if(fieldName==FPSTR(ESBOX_beepOnAlert)){
-		beepOnAlert=stringToBoolean(fieldValue);
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_alarmSendNotifAlertStart)){
-		alarmSendNotifAlertStart=stringToBoolean(fieldValue);
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_alarmSendNotifAlertStop)){
-		alarmSendNotifAlertStop=stringToBoolean(fieldValue);
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_alarmPlaySound)){
-		alarmPlaySound=stringToBoolean(fieldValue);
-		return true;
-	}
-
 	if(fieldName==FPSTR(ESBOX_isThingSpeakEnabled)){
 		isThingSpeakEnabled=stringToBoolean(fieldValue);
 		return true;
@@ -860,38 +809,6 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	}
 	if(fieldName==FPSTR(ESBOX_httpPostIp)){
 		httpPostIp=stringToIp(fieldValue);
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_ntpEnabled)){
-		ntpEnabled=stringToBoolean(fieldValue);
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_NTP_poolServerName)){
-		NTP_poolServerName=fieldValue;
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_NTP_timeOffset)){
-		NTP_timeOffset=fieldValue.toInt();
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_NTP_updateInterval)){
-		NTP_updateInterval=fieldValue.toInt();
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_NTP_timeTriggerInterval)){
-		NTP_timeTriggerInterval=fieldValue.toInt();
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_telegramApiKey)){
-		telegramApiKey=fieldValue;
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_telegramReceivers)){
-		telegramReceivers=fieldValue;
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_telegramSenders)){
-		telegramSenders=fieldValue;
 		return true;
 	}
 	return false;

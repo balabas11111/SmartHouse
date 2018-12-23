@@ -8,7 +8,18 @@
 #ifndef LIBRARIES_ESPSETTINGSBOX_ESPEXTRASETTINGSBOX_H_
 #define LIBRARIES_ESPSETTINGSBOX_ESPEXTRASETTINGSBOX_H_
 
+#define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
+#define VAR_NAME(var) #var
+
 #include "Arduino.h"
+//added as suffix in EspSettingsBox getJson
+const char HTML_LABEL_PREFFIX[]             PROGMEM ="lbl_";
+const char SETTINGS_BOX_BASE_NAME[]         PROGMEM ="espSettingsBox_";
+
+const char ALARM_SETTINGS_BOX_NAME[]        PROGMEM ="ALARM";
+const char DISPLAY_SETTINGS_BOX_NAME[]      PROGMEM ="DISPLAY";
+const char NTP_SETTINGS_BOX_NAME[]          PROGMEM ="NTP";
+const char TELEGRAM_SETTINGS_BOX_NAME[]     PROGMEM ="TEL";
 
 class ESPExtraSettingsBox {
 public:
@@ -18,38 +29,36 @@ public:
 
 	virtual boolean init(){
 		Serial.print(FPSTR("-----Init Extra Box---"));
-		Serial.println(getName());
+		Serial.print(getName());
 
-		/*
-		Serial.print(FPSTR("keySize="));
-		Serial.println(keySize);
-		*/
 		if(values==nullptr){
 			values=new String[keySize];
 		}
 
-		const char* const* defaults=getDefaults();
+		//fillDefaultValues();
 
-		for(uint8_t i=0;i<keySize;i++){
-			values[i]=String(defaults[i]);
-
-			/*Serial.print(String(defaults[i]));
-			Serial.print(FPSTR(";("));
-
-			Serial.print(values[i]);
-			Serial.print(FPSTR("):"));
-			*/
-		}
-
-		Serial.println();
-
-		Serial.println(FPSTR("...init done"));
-		//Serial.println();
+		Serial.println(FPSTR("...done"));
 		return true;
 	}
 
 	virtual const char* const* getDefaults()=0;
 	virtual const char* const*  getKeys()=0;
+	virtual String getDescription()=0;
+
+	virtual int fillDefaultValues(){
+		Serial.println(FPSTR("fill default values"));
+
+		const char* const* defaults=getDefaults();
+		const char* const* keys=getKeys();
+
+		for(uint8_t i=0;i<keySize;i++){
+			values[i]=String(defaults[i]);
+
+			printKeyDetails(String(keys[i]), String(values[i]), String(defaults[i]));
+		}
+		Serial.println(FPSTR("fill default values...done"));
+		return keySize-1;
+	}
 
 	virtual String* getValues(){
 		return values;
@@ -63,6 +72,14 @@ public:
 		return getKeyIndex(key)!=-1;
 	}
 
+	String getKey(int index){
+		return String(getKeys()[index]);
+	}
+
+	String getDefaultValue(int index){
+		return String(getDefaults()[index]);
+	}
+
 	int getKeyIndex(String key){
 		const char* const* keys=getKeys();
 		for(uint8_t i=0;i<keySize;i++){
@@ -73,95 +90,119 @@ public:
 		return -1;
 	}
 
-	String getValue(String key){
-		int index=getKeyIndex(key);
-		return getValue(index);
-	}
-
-	int getValueInt(String key){
-		return getValue(key).toInt();
-	}
-
-	float getValueFloat(String key){
-		return getValue(key).toFloat();
-	}
-
 	String getValue(int index){
-		if(index==-1 || index>keySize){ return String("");}
+		if(index==-1 || index>=keySize){ return String("");}
 
 		return values[index];
 	}
 
-	int getValueInt(int index){
-		return getValue(index).toInt();
-	}
-
-	float getValueFloat(int index){
-		return getValue(index).toFloat();
-	}
-
-	boolean setValue(String key,String value){
-		int index=getKeyIndex(key);
-		return setValue(index,value);
-	}
-
 	boolean setValue(int index,String value){
-		if(index!=-1 && index<=keySize){
+		if(index>-1 && index<keySize){
 			values[index]=value;
 			return true;
 		}
 		return false;
 	}
 
-	String getKey(int index){
-		return String(getKeys()[index]);
+	void printKeyDetails(String key,String value,String defaultVal){
+		Serial.print(FPSTR("key="));
+		Serial.print(key);
+		Serial.print(FPSTR(" def="));
+		Serial.print(defaultVal);
+		Serial.print(FPSTR(" val="));
+		Serial.println(value);
 	}
 
 	void printDetails(){
-		Serial.println(FPSTR("-------------------------"));
-		Serial.print(FPSTR("keySize="));
-		Serial.println(keySize);
-		Serial.println(FPSTR("-----------KEYS----------"));
+		Serial.println(FPSTR(""));
+		Serial.print(FPSTR("-----------KEYS ("));
+		Serial.print(keySize);
+		Serial.print(FPSTR(") name="));
+		Serial.print(getName());
+		Serial.print(FPSTR(" descr="));
+		Serial.print(getDescription());
+		Serial.println(FPSTR("------------------"));
 
-		const char* const* keys=getKeys();
-
+		//const char* const* keys=getKeys();
 		for(uint8_t i=0;i<keySize;i++){
-			Serial.print(String(keys[i]));
-			Serial.print(FPSTR(";"));
+			//Serial.print(String(keys[i]));
+			//-------------------------------
+			uint expLen=28;
+			String result=String(getKeys()[i]);
+			if(result.length()>=expLen){
+				result=result.substring(0, expLen);
+			}
+			if(result.length()<expLen){
+
+				for(uint8_t j=0;j<expLen-result.length();j++){
+					result+=" ";
+				}
+			}
+			Serial.print(result);
+			//-------------------------------
+			Serial.print(FPSTR(" = "));
+			Serial.println(getValues()[i]);
 		}
 
-		Serial.println();
+		Serial.println(FPSTR("---------HTML Labels------------"));
+
+		for(uint8_t i=0;i<keySize;i++){
+			Serial.print(FPSTR(HTML_LABEL_PREFFIX));
+			Serial.println(getKey(i));
+		}
 		Serial.println(FPSTR("---------HTML Names------------"));
 
 		for(uint8_t i=0;i<keySize;i++){
-			Serial.print(getName());
-			Serial.print(FPSTR("_"));
-			Serial.println(String(keys[i]));
+			Serial.print(FPSTR(SETTINGS_BOX_BASE_NAME));
+			Serial.println(getKeyHtmlName(i));
 		}
 
-		Serial.println(FPSTR("-----------VALUES----------"));
-
-		String* vals=getValues();
-/*
-		Serial.print(FPSTR("keySize="));
-		Serial.println(keySize);
-*/
-		for(uint8_t i=0;i<keySize;i++){
-			Serial.print(vals[i]);
-			Serial.print(FPSTR(";"));
-		}
-
-		Serial.println();
-		Serial.println(FPSTR("---------------------"));
+		Serial.println(FPSTR("----------getJson()-----------"));
+		Serial.println(getJson());
+		Serial.println(FPSTR("------------------------------"));
 	}
 
 	uint8_t getKeySize(){
 		return keySize;
 	}
 
-	String getJson(){
+	int isTargetOfSettingsValue(String keyWithPreffix){
+		String key="";
+		int keyIndex=-1;
 
-		return "";
+		if(keyWithPreffix.startsWith(getKeyPreffix())){
+			key=keyWithPreffix.substring(getKeyPreffix().length()+1);
+			keyIndex=getKeyIndex(key);
+		}
+
+		Serial.print(FPSTR("check is target keyWithPreffix="));
+		Serial.print(keyWithPreffix);
+		Serial.print(FPSTR(" key="));
+		Serial.print(key);
+		Serial.print(FPSTR(" keyIndex="));
+		Serial.println(keyIndex);
+
+		return keyIndex;
+	}
+
+	String getKeyPreffix(){
+		return getName()+"_";
+	}
+
+	String getKeyHtmlName(int index){
+		return getKeyPreffix()+getKey(index);
+	}
+
+	String getJson(){
+		String result="";
+
+		for(uint8_t i=0;i<getKeySize();i++){
+			result+="{\"name\":\""+getKeyHtmlName(i)+"\",\"val\":\""+getValue(i)+"\"}";
+			if(i!=getKeySize()-1){
+				result+=",";
+			}
+		}
+		return result;
 	}
 
 protected:

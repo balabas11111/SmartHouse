@@ -1,17 +1,24 @@
 #include "Arduino.h"
 #include <Hash.h>
-#include <ESP8266WiFi.h>
+
 #include "EspSettingsBox.h"
-#include "ESPNtpSett.h"
-#include "Loopable.h"
+#include <ESPSett_Alarm.h>
+#include <ESPSett_Display.h>
+#include <ESPSett_Ntp.h>
+#include <ESPSett_Telegram.h>
+
 #include "FS.h"
-#include "I2Chelper.h"
-#include "WiFiHelper.h"
 #include <Wire.h>
 
-#include "NtpTimeClientService.h"
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPUpdateServer.h>
+#include <ESP8266WiFi.h>
+
+#include "Loopable.h"
+#include "I2Chelper.h"
+#include "WiFiHelper.h"
+
+#include "NtpTimeClientService.h"
 #include "TimeTrigger.h"
 
 #include <DeviceHelper.h>
@@ -27,6 +34,7 @@
 #include "Display_Custom/DisplayHelper_TM1637_Clock_PIR.h"
 
 #include "TM1637.h"
+
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
@@ -52,17 +60,20 @@
 #define HUMAN_PRESENTED LOW
 #define HUMAN_NOT_PRESENTED HIGH
 
-ESPNtpSett espNtpSett;
+ESPSett_Ntp espSett_Ntp;
+ESPSett_Telegram espSett_Telegram;
 
-ESPExtraSettingsBox* extraBoxes[]={&espNtpSett};
+ESPExtraSettingsBox* extraBoxes[]={&espSett_Ntp,&espSett_Telegram};
 
 EspSettingsBox espSettingsBox(FPSTR("NTP clock with PIR sensor"),extraBoxes,ARRAY_SIZE(extraBoxes));
+//EspSettingsBox espSettingsBox(FPSTR("NTP clock with PIR sensor"));
 
 BeeperB beeper(D5,HIGH,LOW,true,false);
 
 I2Chelper i2cHelper(D1,D2,false);
 
-PinDigital buttonMenu(FPSTR(SENSOR_buttonLeft),D8,onButtonMenuChanged);
+//PinDigital buttonMenu(FPSTR(SENSOR_buttonLeft),D8,onButtonMenuChanged);
+PinDigital buttonMenu(FPSTR(SENSOR_buttonLeft),D8,onButtonChanged);
 //PinDigital AC_Rele1(FPSTR(SENSOR_AC_Rele1),D0,LOW,HIGH);
 PinDigital signalLed(FPSTR(SENSOR_signalLed),D0,LOW,HIGH);
 Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged,700,30000);
@@ -75,11 +86,12 @@ ESP8266HTTPUpdateServer httpUpdater(true);
 
 TM1637 timeDisplay(D6,D7);
 
-TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,measureSensors);
-TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSettingsBox.isThingSpeakEnabled,processThingSpeakPost);
+TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),false,updateSensors);
+TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),false,processThingSpeakPost);
 
 NtpTimeClientService timeClient(&espSettingsBox,nullptr,60000);
 DisplayHelper_TM1637_Clock_PIR displayHelper(&timeDisplay,&espSettingsBox,&bmeMeasurer,&ds18d20Measurer,&timeClient);
+
 
 WiFiHelper wifiHelper(&espSettingsBox, nullptr, &server,postInitWebServer,false);
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
@@ -91,49 +103,114 @@ AbstractItem* abstractItems[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signa
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),120000);
 
+void initComponents(){
+	displayHelper.init();
+	beeper.init();
+	i2cHelper.init();
+	httpUpdater.setup(&server);
+	displayHelper.displayConn();
+	wifiHelper.init();
+
+	timeClient.init();
+	bmeMeasurer.init();
+	ds18d20Measurer.init();
+
+	loadSensors();
+
+	sensorsTrigger.init();
+}
+
 void setup() {
   Serial.begin(115200);
 
+  deviceHelper.printDeviceDiagnosticNoSpiff();
+
   espSettingsBox.init();
-/*
-  deviceHelper.startDevice(espSettingsBox.DeviceId);
+
+  deviceHelper.printDeviceDiagnostic();
+  espSettingsBox.printSpiffsInfo();
 
   displayHelper.init();
-  beeper.init();
-  i2cHelper.init();
 
-  httpUpdater.setup(&server);
-  wifiHelper.init();
+  //espSettingsBox.testExtraBoxFunctionality();
 
-  timeClient.init();
-  bmeMeasurer.init();
-  ds18d20Measurer.init();
+  deviceHelper.startDevice(espSettingsBox.DeviceId);
 
-  loadSensors();
-  measureSensors();
+  initComponents();
+
+  updateSensors();
 
   displayHelper.postProcessConnection(wifiHelper.isAP(),wifiHelper.getIpStr());
 
-  deviceHelper.printDeviceDiagnostic();
-  processPostInitSounds();
+  playPostInitSounds();
 
   onPirDetectorChanged();
-*/
+
+  deviceHelper.printDeviceDiagnostic();
   Serial.println(FPSTR(MESSAGE_DEVICE_STARTED));
 }
 
 void loop() {
-	//deviceHelper.loop();
+	deviceHelper.loop();
+	//buttonMenu.loop();
+}
+
+//test functions--------------------------------------
+void measureSensors(){
+	Serial.println("measuresensors");
+}
+
+void processThingSpeakPost(){
+	Serial.println("process ThingSpeak post");
+}
+
+int8_t symbolKey=0;
+
+void onButtonChanged(){
+	if(!buttonMenu.isOn()){
+		Serial.println(FPSTR("Menu button UP"));
+
+		int8_t s1=symbolKey / 100;
+		int8_t s2=(symbolKey % 100) / 10;
+		int8_t s3=(symbolKey % 100) % 10;
+
+		if(s1<0){s1*=-1;}
+		if(s2<0){s2*=-1;}
+		if(s3<0){s3*=-1;}
+
+		Serial.print(s1);
+		Serial.print(s2);
+		Serial.print(s3);
+
+		Serial.print("='");
+		Serial.print(symbolKey);
+		Serial.println("'=");
+
+		int8_t statusText[4]={s1,s2,s3,symbolKey};
+		timeDisplay.display(statusText);
+
+		symbolKey+=1;
+		if(symbolKey>=26){
+			symbolKey=0;
+		}
+	}
 }
 
 //---------------------------------------------------------------------
-void processPostInitSounds(){
+//handle pirDetector events
+void onPirDetectorChanged(){
+	signalLed.turnOnOff(pirDetector.isOn());
+}
+
+//---------------------------------------------------------------------
+void playPostInitSounds(){
 	if(i2cHelper.getDevCount()==0){
-		  beeper.shortBeep();
+		  beeper.longBeep();
 	  }else if(ds18d20Measurer.getItemCount()==0){
 		  beeper.shortBeep();
-	  }else{
 		  beeper.shortBeep();
+		  beeper.shortBeep();
+	  }else{
 		  beeper.shortBeep();
 	  }
 }
@@ -145,12 +222,6 @@ void onButtonMenuChanged(){
 		Serial.println(FPSTR("Menu button released"));
 		displayHelper.changePage();
 	}
-}
-
-//---------------------------------------------------------------------
-//handle pirDetector events
-void onPirDetectorChanged(){
-	signalLed.turnOnOff(pirDetector.isOn());
 }
 
 //-------------Web server functions-------------------------------------
@@ -182,12 +253,12 @@ void postInitWebServer(){
 	server.on(FPSTR(URL_GET_SENSORS_CURRNT_VALUES), HTTP_GET, [](){
 		if(server.hasArg(FPSTR(MESSAGE_SERVER_ARG_SENSOR))){
 			String arg=server.arg(FPSTR(MESSAGE_SERVER_ARG_SENSOR));
-
+/*
 			if(arg==FPSTR(NTP_TIME_CLIENT_SERVICE_NAME)){
 				wifiHelper.checkAuthentication();
 				server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), timeClient.getJson());
 			}
-
+*/
 			if(arg==FPSTR(MESSAGE_SERVER_ARG_VAL_ALL)){
 				wifiHelper.checkAuthentication();
 				server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), getAllSensorsJson());
@@ -205,7 +276,7 @@ void postInitWebServer(){
 	});
 }
 //base functions
-void measureSensors(){
+void updateSensors(){
 	deviceHelper.update(abstractItems, ARRAY_SIZE(abstractItems));
 
 	for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
@@ -322,7 +393,7 @@ String setEspSettingsBoxValues(){
 	return espSettingsBox.getJson(page);
 }
 //-------------------------Thing speak functions---------------------
-void processThingSpeakPost(){
+void executeThingSpeakPost(){
 	thingSpeakHelper.sendItemsToThingSpeak(abstractItems, ARRAY_SIZE(abstractItems));
 }
 //------------------------------MQTT functions-----------------------------------------------------

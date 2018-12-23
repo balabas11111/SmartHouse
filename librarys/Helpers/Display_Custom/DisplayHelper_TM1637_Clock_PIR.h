@@ -22,16 +22,11 @@
 #define MODE_DATE_REFRESH_INTERVAL 1000
 #define MODE_OTHER_REFRESH_INTERVAL 30000
 
-#define MODE_DISPLAY_AP_SAP_DELAY 1000
-#define MODE_DISPLAY_WIFI_DELAY 1000
+#define DISPLAY_AP_SAP_DELAY 1000
+#define DISPLAY_WIFI_DELAY 1000
+#define DISPLAY_POSTIP_DELAY 1000
 
 #define DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED 1000
-#define SYMBOL_EMPTY 0x7f
-#define SYMBOL_A 10
-#define SYMBOL_DEGREE 60
-#define SYMBOL_HUMIDITY 47
-#define SYMBOL_PRESSURE 46
-#define SYMBOL_MINUS 99
 
 #define MODE_TIME 0
 #define MODE_DATE 1
@@ -42,6 +37,16 @@
 
 class DisplayHelper_TM1637_Clock_PIR: public Loopable {
 public:
+	DisplayHelper_TM1637_Clock_PIR(TM1637* timeDisplay,EspSettingsBox* espSettingsBox,
+				BME280_Sensor* bmeMeasurer,DS18D20_Sensor* ds18d20Measurer){
+
+		this->displayRefreshTrigger=new TimeTrigger(0,MODE_TIME_REFRESH_INTERVAL,false,[this](){refreshDisplay();});
+		this->timeDisplay=timeDisplay;
+		this->espSettingsBox=espSettingsBox;
+		this->bmeMeasurer=bmeMeasurer;
+		this->ds18d20Measurer=ds18d20Measurer;
+	}
+
 	DisplayHelper_TM1637_Clock_PIR(TM1637* timeDisplay,EspSettingsBox* espSettingsBox,
 			BME280_Sensor* bmeMeasurer,DS18D20_Sensor* ds18d20Measurer,NtpTimeClientService* timeClient){
 
@@ -54,6 +59,12 @@ public:
 	}
 	virtual ~DisplayHelper_TM1637_Clock_PIR(){};
 
+	void init(){
+		 timeDisplay->set(2);
+		 timeDisplay->init();
+		 displayLoad();
+	}
+
 	virtual boolean loop(){
 		if(!timeClient->isTimeReceived()){
 			return false;
@@ -62,11 +73,21 @@ public:
 	}
 
 	void displayLoad(){
-		timeDisplay->clearDisplay();
-		delay(50);
-		timeDisplay->point(false);
-		int8_t load[4]={1,0,10,13};
-		timeDisplay->display(load);
+		clearDisplay(1);
+		int8_t load[4]={SYMBOL_L,SYMBOL_o,SYMBOL_A,SYMBOL_d};
+		display(load);
+	}
+
+	void displayConn(){
+		clearDisplay(1);
+		int8_t load[4]={SYMBOL_C,SYMBOL_o,SYMBOL_n,SYMBOL_n};
+		display(load);
+	}
+
+	void displayDone(){
+		clearDisplay(1);
+		int8_t load[4]={SYMBOL_d,SYMBOL_o,SYMBOL_n,SYMBOL_E};
+		display(load);
 	}
 
 	void displayWiFiParams(boolean isAP,String ip){
@@ -74,18 +95,22 @@ public:
 		Serial.println(FPSTR("---Display WiFiParams---"));
 
 		timeDisplay->clearDisplay();
-		delay(MODE_DISPLAY_AP_SAP_DELAY);
+		delay(DISPLAY_AP_SAP_DELAY);
 		timeDisplay->point(false);
 
 		if(isAP){
-			int8_t mode[4]={SYMBOL_EMPTY,SYMBOL_EMPTY,10,13};
-			timeDisplay->display(mode);
+			int8_t mode[4]={SYMBOL_SPACE,SYMBOL_SPACE,SYMBOL_A,SYMBOL_P};
+			display(mode);
 		}else{
-			int8_t mode[4]={SYMBOL_EMPTY,0,10,10};
-			timeDisplay->display(mode);
+			int8_t mode[4]={SYMBOL_SPACE,SYMBOL_S,SYMBOL_t,SYMBOL_A};
+			display(mode);
 		}
 
-		delay(MODE_DISPLAY_WIFI_DELAY);
+		delay(DISPLAY_WIFI_DELAY);
+
+		int8_t mode[4]={SYMBOL_SPACE,SYMBOL_SPACE,1,SYMBOL_P};
+		display(mode);
+		delay(DISPLAY_WIFI_DELAY);
 
 		int len=ip.length();
 		int beginIndex=0;
@@ -95,7 +120,7 @@ public:
 			String symbol=ip.substring(i,i+1);
 
 			if(symbol=="." || i==len-1){
-				int8_t ipPart[4]={SYMBOL_EMPTY,SYMBOL_EMPTY,SYMBOL_EMPTY,SYMBOL_EMPTY};
+				int8_t ipPart[4]={SYMBOL_SPACE,SYMBOL_SPACE,SYMBOL_SPACE,SYMBOL_SPACE};
 
 				String part=ip.substring(beginIndex,i);
 
@@ -104,21 +129,16 @@ public:
 				}
 
 				beginIndex=i+1;
+				uint8_t startIndex=4-part.length();
 
 				for(uint8_t j=0;j<part.length();j++){
-					ipPart[j]=part.substring(j,j+1).toInt();
+					ipPart[j+startIndex]=part.substring(j,j+1).toInt();
 				}
 
-				timeDisplay->display(ipPart);
-				delay(2000);
+				display(ipPart);
+				delay(DISPLAY_POSTIP_DELAY);
 			}
 		}
-	}
-
-	void init(){
-		 timeDisplay->set(2);
-		 timeDisplay->init();
-		 displayLoad();
 	}
 
 	void initDisplayMode(){
@@ -140,7 +160,7 @@ public:
 	void postProcessConnection(boolean isAp,String ip){
 		initDisplayMode();
 	    displayWiFiParams(isAp,ip);
-		displayLoad();
+		displayDone();
 	}
 
 	void displayTime(){
@@ -148,7 +168,7 @@ public:
 		timeDisplay->point(dotVal);
 
 		int8_t* time=timeClient->getCurrentTimePrepared();
-		timeDisplay->display(time);
+		display(time);
 	}
 
 	void displayDate(){
@@ -163,7 +183,7 @@ public:
 		}
 		Serial.println();
 		*/
-		timeDisplay->display(date);
+		display(date);
 	}
 
 	void displayTemperatureBme(boolean fromButton){
@@ -172,17 +192,17 @@ public:
 	}
 
 	void displayHumidityBme(boolean fromButton){
-		displayDisplayModeInfo(SYMBOL_HUMIDITY,20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
-		displayIntStringValue(bmeMeasurer->getIntStringValByIndex(BME_280_HUMIDITY_INDEX),SYMBOL_HUMIDITY);
+		displayDisplayModeInfo(SYMBOL_H,20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
+		displayIntStringValue(bmeMeasurer->getIntStringValByIndex(BME_280_HUMIDITY_INDEX),SYMBOL_H);
 	}
 
 	void displayPressureBme(boolean fromButton){
-		displayDisplayModeInfo(SYMBOL_PRESSURE,20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
+		displayDisplayModeInfo(SYMBOL_P,20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
 		Serial.print("pressure PA=");
 		Serial.print(bmeMeasurer->getPressurePascal());
 		Serial.print("; pressure mm=");
 		Serial.println(bmeMeasurer->getIntStringValFromFloat(bmeMeasurer->getPressureHgmm()));
-		displayIntStringValue(bmeMeasurer->getIntStringValFromFloat(bmeMeasurer->getPressureHgmm()),SYMBOL_PRESSURE);
+		displayIntStringValue(bmeMeasurer->getIntStringValFromFloat(bmeMeasurer->getPressureHgmm()),SYMBOL_P);
 	}
 
 	void displayTemperatureDS18D20(boolean fromButton){
@@ -191,12 +211,12 @@ public:
 		displayIntStringValue(dsTempVal,SYMBOL_DEGREE);
 	}
 
-	void displayDisplayModeInfo(uint8_t modeDescriptor,uint8_t delay1,uint16_t delay2,boolean fromButton){
+	void displayDisplayModeInfo(int8_t modeDescriptor,uint8_t delay1,uint16_t delay2,boolean fromButton){
 		clearDisplay(delay1);
 
 		if(fromButton){
-			int8_t statusText[4]={SYMBOL_MINUS,displayMode,SYMBOL_EMPTY,modeDescriptor};
-			timeDisplay->display(statusText);
+			int8_t statusText[4]={SYMBOL_MINUS,displayMode,SYMBOL_SPACE,modeDescriptor};
+			display(statusText);
 
 			delay(delay2);
 		}
@@ -204,7 +224,7 @@ public:
 
 	void displayIntStringValue(String str,int modeDescriptor){
 		int len=str.length();
-		int8_t valText[4]={SYMBOL_EMPTY,SYMBOL_EMPTY,SYMBOL_EMPTY,SYMBOL_EMPTY};
+		int8_t valText[4]={SYMBOL_SPACE,SYMBOL_SPACE,SYMBOL_SPACE,SYMBOL_SPACE};
 		uint8_t displLastIndex=3;
 
 		if(len>=4){
@@ -219,14 +239,17 @@ public:
 				//Serial.print(valText[startIndex+i]);
 			}
 			for(uint8_t i=0;i<startIndex;i++){
-				valText[i]=SYMBOL_EMPTY;
+				valText[i]=SYMBOL_SPACE;
 			}
 			//Serial.println();
 		}
 
-		timeDisplay->display(valText);
+		display(valText);
 	}
 
+	void display(int8_t DispData[]){
+		timeDisplay->display(DispData);
+	}
 
 	void clearDisplay(uint8_t delayTime){
 		timeDisplay->clearDisplay();
@@ -323,7 +346,7 @@ private:
 	 4 - pressure
 	 5 - temp DS18
 	 */
-	uint8_t displayMode=0;
+	int8_t displayMode=0;
 	uint8_t maxMode=0;
 	uint8_t currentDs18=0;
 	boolean dotVal=false;

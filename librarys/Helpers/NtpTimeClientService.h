@@ -10,7 +10,11 @@
 
 #include "Initializable.h"
 #include "Loopable.h"
+
 #include "EspSettingsBox.h"
+#include "ESPSett_Ntp.h"
+#include "ESPExtraSettingsBox.h"
+
 #include "ESP_Consts.h"
 #include "Date_Const.h"
 #include "TimeTrigger.h"
@@ -24,20 +28,17 @@ const char NTP_TIME_CLIENT_SERVICE_TYPE[] PROGMEM ="NtpTime";
 class NtpTimeClientService: public Initializable, public Loopable {
 public:
 
-	NtpTimeClientService(EspSettingsBox* espSettingsBox,std::function<void(int8_t*)> _externalFunction, ulong externalFunctionInterval){
+	NtpTimeClientService(EspSettingsBox* _espSettingsBox,std::function<void(int8_t*)> _externalFunction, ulong externalFunctionInterval){
 			Serial.println(FPSTR("Create time client"));
-
-			this->timeClient=new NTPClient(ntpUDP, espSettingsBox->NTP_poolServerName.c_str(), espSettingsBox->NTP_timeOffset, espSettingsBox->NTP_updateInterval);
-			this->timeClientTrigger=new TimeTrigger(0,1000,false,[this](){processTimeClient();});
+			this->espSettingsBox=_espSettingsBox;
 			this->externalFunction=_externalFunction;
 			this->externalFunctionInterval=externalFunctionInterval;
 		}
 
-	NtpTimeClientService(EspSettingsBox* espSettingsBox,std::function<void(int8_t*)> _externalFunction){
-		Serial.println(FPSTR("Init time client"));
+	NtpTimeClientService(EspSettingsBox* _espSettingsBox,std::function<void(int8_t*)> _externalFunction){
+		Serial.println(FPSTR("Create time client"));
 
-		timeClient=new NTPClient(ntpUDP, espSettingsBox->NTP_poolServerName.c_str(), espSettingsBox->NTP_timeOffset, espSettingsBox->NTP_updateInterval);
-		timeClientTrigger=new TimeTrigger(0,espSettingsBox->NTP_timeTriggerInterval,false,[this](){processTimeClient();});
+		this->espSettingsBox=_espSettingsBox;
 		externalFunction=_externalFunction;
 	}
 
@@ -47,24 +48,47 @@ public:
 		if(_init){
 
 			Serial.println("-----Init Ntp Client-----");
+			int boxIndex=espSettingsBox->getExtraBoxIndex(FPSTR(NTP_SETTINGS_BOX_NAME));
+			String poolServerName=espSettingsBox->getExtraValue(boxIndex, NTP_poolServerName);
+			int timeOffset=espSettingsBox->getExtraValueInt(boxIndex, NTP_timeOffset);
+			int updateInterval=espSettingsBox->getExtraValueInt(boxIndex, NTP_updateInterval);
+			int triggerInterval=espSettingsBox->getExtraValueInt(boxIndex,NTP_timeTriggerInterval);
+
+			Serial.println("boxIndex"+String(boxIndex));
+			Serial.println("poolServerName"+poolServerName);
+			Serial.println("timeOffset"+String(timeOffset));
+			Serial.println("updateInterval"+String(updateInterval));
+			Serial.println("triggerInterval"+String(triggerInterval));
+
+			timeClient=new NTPClient(ntpUDP,
+								espSettingsBox->getExtraValue(boxIndex, NTP_poolServerName).c_str(),
+								espSettingsBox->getExtraValueInt(boxIndex, NTP_timeOffset),
+								espSettingsBox->getExtraValueInt(boxIndex, NTP_updateInterval));
+			timeClientTrigger=new TimeTrigger(0,espSettingsBox->getExtraValueInt(boxIndex,NTP_timeTriggerInterval),false,[this](){processTimeClient();});
+
+
 			timeClient->begin();
 			timeClient->forceUpdate();
 			timeClientTrigger->init();
 
-			Serial.println(FPSTR("TimeUpdateInterval="));
+			Serial.print(FPSTR("externalFunctionInterval="));
 			Serial.println(externalFunctionInterval);
+			Serial.print(FPSTR("initialized="));
+			Serial.println(_init);
 
+			initialized=_init;
 			displayDetails();
 		}
-		initialized=_init;
 
 		return initialized;
 	}
 
 	virtual boolean loop(){
 		if(initialized){
+			Serial.println("loop time client");
 			timeClientTrigger->loop();
 			timeClient->update();
+
 			return true;
 		}
 
@@ -72,6 +96,9 @@ public:
 	}
 
 	virtual void displayDetails(){
+		if(!initialized){
+			return;
+		}
 		Serial.print(FPSTR("Epoch time="));
 		Serial.print(timeClient->getEpochTime());
 		Serial.print(FPSTR("Time="));
@@ -81,6 +108,9 @@ public:
 	}
 
 	boolean updateCurrentTime(){
+		if(!initialized){
+			return false;
+		}
 		timeClient->update();
 
 		boolean update=false;
@@ -232,6 +262,9 @@ public:
 	}
 
 	ulong getCurrentTimeAsLong(){
+		if(!initialized){
+			return 0;
+		}
 		return timeClient->getEpochTime();
 	}
 
@@ -346,6 +379,7 @@ private:
 
 	int8_t monthDate[4]={0x00,0x00,0x00,0x00};
 
+	EspSettingsBox* espSettingsBox;
 	NTPClient* timeClient;
 	TimeTrigger* timeClientTrigger;
 	std::function<void(int8_t*)> externalFunction;

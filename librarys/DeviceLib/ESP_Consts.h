@@ -244,9 +244,11 @@ const PROGMEM char MESSAGE_ESPSETTINGSBOX_SAVED[]="...saved";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED[]="Default settings will be saved";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS[]="File not exists";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_BOX_FILE_NOT_EXISTS[]="Box File not exists";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_BOX_FILE_EXISTS[]="Box File EXISTS";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_FILE_EMPTY[]="File is empty";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON[]="Error parse JSON file";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_VALUE_PARSED[]="val read=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_FILE_LINES[]="File lines=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_READ_FROM_FILE_COMPLETE[]="read from file complete";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ITEM_SETTINGS_LOADED[]="val put=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_NO_SETTINGS_FILE_EXISTS[]="No settings file exists";
@@ -259,10 +261,12 @@ const PROGMEM char MESSAGE_ESPSETTINGSBOX_PRINT_SETTINGS_FILE[]="-----------Prin
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_CURRENT_MEMORY_STATE[]="Current memory state";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_DIRECT_FILE_READ[]="----------------direct file read------------";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SETTINGS_FROM_MEMORY[]="-----------------Settings from memory-------";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_SETTINGS_FROM_BOX_MEMORY[]="-----------------Settings from BOX memory-------";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SAVE_DEVICE_SETTINGS_TO_FILE[]="Save device settings to file";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SAVE_EXTRABOX_SETTINGS_TO_FILE[]="Save ExtraBox settings to file";
 
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_MEMORY[]="-----------------Settings loaded to memory-------";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_BOX_MEMORY[]="-----------------Settings loaded to BOX memory-------";
 
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE[]=" Begin save";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_FILE_SAVED[]="...saved";

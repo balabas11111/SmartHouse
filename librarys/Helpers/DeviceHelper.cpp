@@ -19,14 +19,11 @@ DeviceHelper::DeviceHelper(Loopable** _loopItems,uint8_t _loopItemsSize,long min
 	this->loopItems=_loopItems;
 	this->loopItemsSize=_loopItemsSize;
 
-	displayDetails();
-	Serial.println();
-
 	this->alarmMode=false;
 	this->minAlarmInterval=minAlarmInterval*1000;
 	this->lastAlarmTime=0;
 
-	triggerInitiated=false;
+	this->triggerInitiated=false;
 }
 
 void DeviceHelper::displayDetails(){
@@ -89,21 +86,26 @@ boolean DeviceHelper::init(Initializable** initItems,uint8_t initItemsSize){
 	return initOk==initItemsSize;
 }
 
-
-void DeviceHelper::printDeviceDiagnostic(){
-	yield();
-	Serial.println(FPSTR(MESSAGE_DEVICE_DIAGNOSTIC_BEGIN));
+void DeviceHelper::printDeviceDiagnosticNoSpiff(){
 	Serial.print(FPSTR(MESSAGE_DEVICE_FREE_HEAP));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(ESP.getFreeHeap());Serial.print(FPSTR(MESSAGE_DOT_COMMA));
 	Serial.print(FPSTR(MESSAGE_DEVICE_CPU_MHZ));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(ESP.getCpuFreqMHz());Serial.print(FPSTR(MESSAGE_DOT_COMMA));
 	Serial.print(FPSTR(MESSAGE_DEVICE_FLASH_CHIP_SIZE));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(ESP.getFlashChipSize());Serial.print(FPSTR(MESSAGE_DOT_COMMA));
 	Serial.print(FPSTR(MESSAGE_DEVICE_FREE_SCETCH_SPACE));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(ESP.getFreeSketchSpace());Serial.print(FPSTR(MESSAGE_DOT_COMMA));
+	Serial.println();
+}
+
+
+void DeviceHelper::printDeviceDiagnostic(){
+	delay(1);
+	Serial.println(FPSTR(MESSAGE_DEVICE_DIAGNOSTIC_BEGIN));
+	printDeviceDiagnosticNoSpiff();
 
 #ifdef ESP32
 	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_spiffsUsed_EQ));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(SPIFFS.usedBytes());Serial.print(FPSTR(MESSAGE_DOT_COMMA));
 	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_spiffsTotal_EQ));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(SPIFFS.totalBytes());Serial.print(FPSTR(MESSAGE_DOT_COMMA));
 #endif
 #ifdef ESP8266
-	//Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_spiffsUsed_EQ));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(SPIFFS.f);Serial.print(FPSTR(MESSAGE_DOT_COMMA));
+	//Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_spiffsUsed_EQ));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(SPIFFS.);Serial.print(FPSTR(MESSAGE_DOT_COMMA));
 	//Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_spiffsTotal_EQ));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(SPIFFS.totalBytes());Serial.print(FPSTR(MESSAGE_DOT_COMMA));
 	Serial.print(FPSTR(MESSAGE_DEVICE_RESET_REASON));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(ESP.getResetReason());Serial.println(FPSTR(MESSAGE_DOT_COMMA));
 #endif

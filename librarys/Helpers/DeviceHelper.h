@@ -31,6 +31,8 @@ public:
 
 	void printDeviceDiagnostic();
 
+	void printDeviceDiagnosticNoSpiff();
+
 	String processAlarm(AbstractItem** sensors, uint8_t sensorsSize);
 
 	void createPostponedCommand(String command);

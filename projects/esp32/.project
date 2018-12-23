@@ -57,6 +57,11 @@
 			<location>D:/projects/!!!SmartHouse/librarys/EspSettingsBox</location>
 		</link>
 		<link>
+			<name>libraries/FreeRTOS</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/FreeRTOS/10.0.0-7</locationURI>
+		</link>
+		<link>
 			<name>libraries/Loopable</name>
 			<type>2</type>
 			<location>D:/projects/!!!SmartHouse/librarys/Loopable</location>
