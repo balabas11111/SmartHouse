@@ -27,11 +27,12 @@
 #include <SPIFFS.h>
 #endif
 
-
-
 #include <PinDigital.h>
 #include <AbstractItem.h>
 #include <DisplayHelperAbstract.h>
+
+#define NOT_CONNECT_ITERATIONS 100
+#define RE_CONNECT_DELAY 250
 
 class WiFiHelper:public Initializable,public Loopable {
 
@@ -295,6 +296,9 @@ public:
 		WiFi.mode(WIFI_AP);
 		displayLine(FPSTR(MESSAGE_WIFIHELPER_START_AP),3,0);
 		displayLine(FPSTR(MESSAGE_WIFIHELPER_ACCESS_POINT),5,0);
+
+		setupApEvents();
+
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_STARTING_ACCESS_POINT));
 		WiFi.softAP(const_cast<char*>(espSettingsBox->ssidAP.c_str()));
 
@@ -320,8 +324,10 @@ public:
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_PASSWORD));
 		Serial.println(espSettingsBox->password);
 
-		WiFi.disconnect(0);
+		//WiFi.disconnect(0);
 		WiFi.mode(WIFI_STA);
+
+		setupSTAevents();
 
 		if(espSettingsBox->staticIp){
 			WiFi.config(espSettingsBox->localIp,espSettingsBox->gateIp,
@@ -333,14 +339,62 @@ public:
 		WiFi.begin ( const_cast<char*>(espSettingsBox->ssid.c_str()),
 				const_cast<char*>(espSettingsBox->password.c_str()) );
 
-		// Wait for connection
-		//if(signalPin!=nullptr){signalPin->turnOn();}
-
 		connectToWiFiIfNotConnected();
 
-		//if(signalPin!=nullptr){signalPin->turnOff();}
-
 		return true;
+	}
+//------------------------------------------------------------------------------
+	void setupApEvents(){
+		//WiFi.onSoftAPModeStationConnected(&onApConnected);
+		//WiFi.onSoftAPModeStationDisconnected(&onApDisconnected);
+	}
+
+	void onApConnected(const WiFiEventSoftAPModeStationConnected& evt) {
+	  Serial.print(FPSTR("AP connected: MAC="));
+	  Serial.println(macToString(evt.mac));
+
+	}
+
+	void onApDisconnected(const WiFiEventSoftAPModeStationDisconnected& evt) {
+	  Serial.print(FPSTR("AP disconnected: "));
+	  Serial.println(macToString(evt.mac));
+	}
+//------------------------------------------------------------------------------
+	void setupSTAevents(){
+		//WiFi.onStationModeConnected(&onStationModeConnected);
+		//WiFi.onStationModeDisconnected(&onStationModeDisconnected);
+		//WiFi.onStationModeDHCPTimeout(&onStationModeDHCPTimeout);
+	}
+
+	void onStationModeConnected(const WiFiEventStationModeConnected& evt){
+		Serial.print(FPSTR("STA connected: "));
+		Serial.print(FPSTR(" ssid="));
+		Serial.print(evt.ssid);
+		Serial.print(FPSTR(" bssid="));
+		Serial.print(macToString(evt.bssid));
+		Serial.print(FPSTR(" channel="));
+		Serial.println(evt.channel);
+	}
+
+	void onStationModeDisconnected(const WiFiEventStationModeDisconnected& evt){
+		Serial.print(FPSTR("STA DISconnected: "));
+		Serial.print(FPSTR(" ssid="));
+		Serial.print(evt.ssid);
+		Serial.print(FPSTR(" bssid="));
+		Serial.print(macToString(evt.bssid));
+		Serial.print(FPSTR(" reason="));
+		Serial.println(evt.reason);
+	}
+
+	void onStationModeDHCPTimeout(){
+		Serial.print(FPSTR("STA DHCP timed out: "));
+	}
+//------------------------------------------------------------------------------
+	String macToString(const unsigned char* mac) {
+	  char buf[20];
+	  snprintf(buf, sizeof(buf), "%02x:%02x:%02x:%02x:%02x:%02x",
+	           mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+	  return String(buf);
 	}
 	/*
 #ifdef ESP32
@@ -390,26 +444,26 @@ public:
 #endif
 */
 	boolean isWiFIConnected(){
-		return WiFi.status() == 3;
+		return WiFi.status() == WL_CONNECTED;
 	}
 
 	void connectToWiFiIfNotConnected(){
 		uint8_t count=0;
 		displayDetails();
 
+		wl_status_t oldstatus=WiFi.status();
+
 		while(!isWiFIConnected() ){
-			/*if(signalPin!=nullptr)
-				signalPin->changeAndDelay(250);
-				*/
-			if(count==20){
+			if(count>=NOT_CONNECT_ITERATIONS || oldstatus!=WiFi.status()){
 				displayDetails();
 				count=0;
 			}else{
-				Serial.print(".");
-				delay(500);
+				Serial.print(FPSTR("."));
+				delay(RE_CONNECT_DELAY);
 				count++;
 			}
-			//
+
+			oldstatus=WiFi.status();
 		}
 		Serial.println();
 		displayDetails();
@@ -422,29 +476,32 @@ public:
 #ifdef ESP8266
 		WiFi.printDiag(Serial);
 #endif
-
 		wl_status_t status=WiFi.status();
 
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
-		switch(status) {
-		        case 3:
-		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECTED));
-		        	break;
-		        case WL_NO_SSID_AVAIL:
-		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECTED));
-		        	break;
-		        case 4:
-		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECT_FAILED));
-		        	break;
-		        case 0:
-		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_IDLE_STATUS));
-		        	break;
-		        case WL_SCAN_COMPLETED:
-		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_SCAN_COMPLETED));
-					break;
-				default:
-					Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_DISCONNECTED));
+		Serial.print(FPSTR(" ("));
+		Serial.print(status);
+		Serial.print(FPSTR(")  ="));
+		if(status>5 || status<0){
+			Serial.println(FPSTR(WL_UNKNOWN_STATUS));
+		}else{
+			Serial.println(FPSTR(WIFIHELPER_WIFI_STATUSES[status]));
 		}
+
+		Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_MODE));
+		Serial.println(FPSTR(WIFIHELPER_WIFI_MODES[WiFi.getMode()]));
+
+		Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_PHYMODE));
+		Serial.println(FPSTR(WIFIHELPER_PHY_MODES[WiFi.getPhyMode()]));
+
+		Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_CHANNEL));
+		Serial.println(WiFi.channel());
+
+		Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_SlEEPMODE));
+		Serial.println(FPSTR(WIFIHELPER_SlEEP_MODES[WiFi.getSleepMode()]));
+
+		Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_AUTOCONNECT));
+		Serial.println(WiFi.getAutoConnect());
 
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_SSSID_EQ));
 		Serial.println ( WiFi.SSID() );
@@ -467,6 +524,40 @@ public:
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
 	}
+/*
+	void printWiFiStatus(wl_status_t status){
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
+		Serial.print(FPSTR(" ("));
+		Serial.print(status);
+		Serial.print(FPSTR(")  ="));
+		if(status>5 || status<0){
+			Serial.println(FPSTR(WL_UNKNOWN_STATUS));
+		}else{
+			Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS[status]));
+		}
+
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
+		switch(status) {
+		        case 3:
+		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECTED));
+		        	break;
+		        case WL_NO_SSID_AVAIL:
+		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECTED));
+		        	break;
+		        case 4:
+		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECT_FAILED));
+		        	break;
+		        case 0:
+		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_IDLE_STATUS));
+		        	break;
+		        case WL_SCAN_COMPLETED:
+		        	Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_SCAN_COMPLETED));
+					break;
+				default:
+					Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_WL_DISCONNECTED));
+		}
+	}
+	*/
 
 	void checkAuthentication(){
 		if(espSettingsBox->settingsUser.length()!=0 && espSettingsBox->settingsPass.length()!=0){

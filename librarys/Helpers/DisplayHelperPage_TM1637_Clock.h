@@ -31,7 +31,7 @@ public:
 	}
 
 	virtual boolean loop(DisplayHelper* helper){
-		if(startBlink==false && timeClient->isTimeReceived){
+		if(startBlink==false && timeClient->isTimeReceived()){
 			startBlink=true;
 			lasttime=millis();
 		}
@@ -41,7 +41,7 @@ public:
 				dotVal=!dotVal;
 				helper->displayActivity(dotVal);
 
-				int8_t* time=timeClient->getCurrentTime();
+				int8_t* time=timeClient->getCurrentTimePrepared();
 				helper->displayLine(time, 4);
 			}
 		}
@@ -56,7 +56,7 @@ protected:
 			return false;
 		}
 
-		int8_t time[4]=timeClient->getCurrentTime();
+		int8_t time[4]=timeClient->getCurrentTimePrepared();
 
 		helper->displayLine(time, 4);
 

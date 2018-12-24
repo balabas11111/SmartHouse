@@ -107,7 +107,7 @@ void initComponents(){
 	displayHelper.init();
 	beeper.init();
 	i2cHelper.init();
-	httpUpdater.setup(&server);
+	httpUpdater.setup(&server,espSettingsBox.settingsUser.c_str(),espSettingsBox.settingsPass.c_str());
 	displayHelper.displayConn();
 	wifiHelper.init();
 

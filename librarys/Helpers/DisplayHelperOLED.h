@@ -16,6 +16,8 @@
 
 #define TURN_OFF_SECS 15
 
+//http://javl.github.io/image2cpp/
+
 class DisplayHelperOLED: public DisplayHelperAbstract {
 
 public:

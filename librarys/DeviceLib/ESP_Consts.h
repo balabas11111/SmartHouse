@@ -1,7 +1,7 @@
 /*
  * Measurer.h
  *
- *  Created on: 14 ГѓВ®ГѓВЄГѓВІ. 2018 ГѓВЈ.
+ *  Created on: 14 Ã�â€œÃ‘â€œÃ�â€™Ã‚Â®Ã�â€œÃ‘â€œÃ�â€™Ã�â€žÃ�â€œÃ‘â€œÃ�â€™Ã�â€ . 2018 Ã�â€œÃ‘â€œÃ�â€™Ã�Ë†.
  *      Author: Vitaliy
  */
 
@@ -32,17 +32,17 @@
 */
 
 //sensors constants
-const char TEMPERATURE_RU[] PROGMEM ="РўРµРјРїРµСЂР°С‚СѓСЂР°";
-const char HUMIDITY_RU[] PROGMEM ="Р’Р»Р°Р¶РЅРѕСЃС‚СЊ";
-const char PRESSURE_RU[] PROGMEM ="Р”Р°РІР»РµРЅРёРµ";
-const char ALTITUDE_RU[] PROGMEM ="Р’С‹СЃРѕС‚Р°";
-const char LIGHT_RU[] PROGMEM ="РћСЃРІРµС‰РµРЅРёРµ";
+const char TEMPERATURE_RU[] PROGMEM ="Ã�Â Ã‘Å¾Ã�Â Ã‚ÂµÃ�Â Ã‘ËœÃ�Â Ã‘â€”Ã�Â Ã‚ÂµÃ�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã‘â€œÃ�Â¡Ã�â€šÃ�Â Ã‚Â°";
+const char HUMIDITY_RU[] PROGMEM ="Ã�Â Ã¢â‚¬â„¢Ã�Â Ã‚Â»Ã�Â Ã‚Â°Ã�Â Ã‚Â¶Ã�Â Ã�â€¦Ã�Â Ã‘â€¢Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã�Å ";
+const char PRESSURE_RU[] PROGMEM ="Ã�Â Ã¢â‚¬ï¿½Ã�Â Ã‚Â°Ã�Â Ã�â€ Ã�Â Ã‚Â»Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‘â€˜Ã�Â Ã‚Âµ";
+const char ALTITUDE_RU[] PROGMEM ="Ã�Â Ã¢â‚¬â„¢Ã�Â¡Ã¢â‚¬Â¹Ã�Â¡Ã�Æ’Ã�Â Ã‘â€¢Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã‚Â°";
+const char LIGHT_RU[] PROGMEM ="Ã�Â Ã‘â€ºÃ�Â¡Ã�Æ’Ã�Â Ã�â€ Ã�Â Ã‚ÂµÃ�Â¡Ã¢â‚¬Â°Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‘â€˜Ã�Â Ã‚Âµ";
 
-const char MEASURE_CELSIUS_DEGREES_RU[] PROGMEM ="В°C";
+const char MEASURE_CELSIUS_DEGREES_RU[] PROGMEM ="Ã�â€™Ã‚Â°C";
 const char MEASURE_PERSENT_RU[] PROGMEM ="%";
-const char MEASURE_PASCAL_RU[] PROGMEM ="РїР°";
-const char MEASURE_METER_RU[] PROGMEM ="Рј";
-const char MEASURE_LIGHT_RU[] PROGMEM ="Р›СЋРєСЃ";
+const char MEASURE_PASCAL_RU[] PROGMEM ="Ã�Â Ã‘â€”Ã�Â Ã‚Â°";
+const char MEASURE_METER_RU[] PROGMEM ="Ã�Â Ã‘Ëœ";
+const char MEASURE_LIGHT_RU[] PROGMEM ="Ã�Â Ã¢â‚¬ÂºÃ�Â¡Ã�â€¹Ã�Â Ã‘â€�Ã�Â¡Ã�Æ’";
 
 const char TEMPERATURE[] PROGMEM ="Temperature";
 const char HUMIDITY[] PROGMEM ="Humidity";
@@ -53,7 +53,7 @@ const char LIGHT[] PROGMEM ="Light";
 const char TEMPERATURE_DHT22[] PROGMEM ="Temperature_DHT22";
 const char HUMIDITY_DHT22[] PROGMEM ="Humidity_DHT22";
 
-const char MEASURE_CELSIUS_DEGREES[] PROGMEM ="В°C";
+const char MEASURE_CELSIUS_DEGREES[] PROGMEM ="Ã�â€™Ã‚Â°C";
 const char MEASURE_PERSENT[] PROGMEM ="%";
 const char MEASURE_PASCAL[] PROGMEM ="Pa";
 const char MEASURE_METER[] PROGMEM ="m";
@@ -154,15 +154,15 @@ const PROGMEM char ID_STATUS_SUFFIX[]="_status";
 const PROGMEM char STATUS_OK_CLASS[]="w3-panel w3-green w3-card-4";
 const PROGMEM char STATUS_ERROR_CLASS[]="w3-panel w3-red w3-card-4";
 //Message constants
-const PROGMEM char MESSAGE_REFRESH[]="РћР±РЅРѕРІР»СЏСЋ";
-const PROGMEM char MESSAGE_NOT_FOUND[]="РќРµ РЅР°Р№РґРµРЅРѕ";
-const PROGMEM char MESSAGE_ERROR[]="РћРЁР�Р‘РљРђ";
-const PROGMEM char MESSAGE_REQUEST_ERROR[]="РћРЁР�Р‘РљРђ Р·Р°РїСЂРѕСЃР°";
-const PROGMEM char MESSAGE_REMOTE_ERROR[]="РЈРґР°Р»РµРЅРЅР°СЏ РѕС€РёР±РєР°";
-const PROGMEM char MESSAGE_SERVER_UNAVAILABLE[]="РЈСЃС‚СЂРѕР№СЃС‚РІРѕ РЅРµРґРѕСЃС‚СѓРїРЅРѕ";
-const PROGMEM char MESSAGE_SENSOR_NOT_FOUND[]="Р”Р°С‚С‡РёРє РЅРµ РЅР°Р№РґРµРЅ";
-const PROGMEM char MESSAGE_SENSOR_BROKEN[]="Р”Р°С‚С‡РёРє РЅРµРёСЃРїСЂР°РІРµРЅ";
-const PROGMEM char MESSAGE_DEVICE_BROKEN[]="РЈСЃС‚СЂРѕР№СЃС‚РІРѕ РЅРµРёСЃРїСЂР°РІРЅРѕ";
+const PROGMEM char MESSAGE_REFRESH[]="Ã�Â Ã‘â€ºÃ�Â Ã‚Â±Ã�Â Ã�â€¦Ã�Â Ã‘â€¢Ã�Â Ã�â€ Ã�Â Ã‚Â»Ã�Â¡Ã�ï¿½Ã�Â¡Ã�â€¹";
+const PROGMEM char MESSAGE_NOT_FOUND[]="Ã�Â Ã‘Å“Ã�Â Ã‚Âµ Ã�Â Ã�â€¦Ã�Â Ã‚Â°Ã�Â Ã¢â€žâ€“Ã�Â Ã’â€˜Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‘â€¢";
+const PROGMEM char MESSAGE_ERROR[]="Ã�Â Ã‘â€ºÃ�Â Ã�ï¿½Ã�Â Ã¯Â¿Â½Ã�Â Ã¢â‚¬ËœÃ�Â Ã‘â„¢Ã�Â Ã‘â€™";
+const PROGMEM char MESSAGE_REQUEST_ERROR[]="Ã�Â Ã‘â€ºÃ�Â Ã�ï¿½Ã�Â Ã¯Â¿Â½Ã�Â Ã¢â‚¬ËœÃ�Â Ã‘â„¢Ã�Â Ã‘â€™ Ã�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â Ã‘â€”Ã�Â¡Ã�â€šÃ�Â Ã‘â€¢Ã�Â¡Ã�Æ’Ã�Â Ã‚Â°";
+const PROGMEM char MESSAGE_REMOTE_ERROR[]="Ã�Â Ã�Ë†Ã�Â Ã’â€˜Ã�Â Ã‚Â°Ã�Â Ã‚Â»Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã�â€¦Ã�Â Ã‚Â°Ã�Â¡Ã�ï¿½ Ã�Â Ã‘â€¢Ã�Â¡Ã¢â€šÂ¬Ã�Â Ã‘â€˜Ã�Â Ã‚Â±Ã�Â Ã‘â€�Ã�Â Ã‚Â°";
+const PROGMEM char MESSAGE_SERVER_UNAVAILABLE[]="Ã�Â Ã�Ë†Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã�â€šÃ�Â Ã‘â€¢Ã�Â Ã¢â€žâ€“Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã�â€ Ã�Â Ã‘â€¢ Ã�Â Ã�â€¦Ã�Â Ã‚ÂµÃ�Â Ã’â€˜Ã�Â Ã‘â€¢Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã‘â€œÃ�Â Ã‘â€”Ã�Â Ã�â€¦Ã�Â Ã‘â€¢";
+const PROGMEM char MESSAGE_SENSOR_NOT_FOUND[]="Ã�Â Ã¢â‚¬ï¿½Ã�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã¢â‚¬Â¡Ã�Â Ã‘â€˜Ã�Â Ã‘â€� Ã�Â Ã�â€¦Ã�Â Ã‚Âµ Ã�Â Ã�â€¦Ã�Â Ã‚Â°Ã�Â Ã¢â€žâ€“Ã�Â Ã’â€˜Ã�Â Ã‚ÂµÃ�Â Ã�â€¦";
+const PROGMEM char MESSAGE_SENSOR_BROKEN[]="Ã�Â Ã¢â‚¬ï¿½Ã�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã¢â‚¬Â¡Ã�Â Ã‘â€˜Ã�Â Ã‘â€� Ã�Â Ã�â€¦Ã�Â Ã‚ÂµÃ�Â Ã‘â€˜Ã�Â¡Ã�Æ’Ã�Â Ã‘â€”Ã�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â Ã�â€ Ã�Â Ã‚ÂµÃ�Â Ã�â€¦";
+const PROGMEM char MESSAGE_DEVICE_BROKEN[]="Ã�Â Ã�Ë†Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã�â€šÃ�Â Ã‘â€¢Ã�Â Ã¢â€žâ€“Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã�â€ Ã�Â Ã‘â€¢ Ã�Â Ã�â€¦Ã�Â Ã‚ÂµÃ�Â Ã‘â€˜Ã�Â¡Ã�Æ’Ã�Â Ã‘â€”Ã�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â Ã�â€ Ã�Â Ã�â€¦Ã�Â Ã‘â€¢";
 
 const PROGMEM char MIN_TIMEOUT_VALUE_SENSOR[]="2000";
 //--------------------------------------------------------
@@ -236,7 +236,7 @@ const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_NOT_IDENTIFIED[]="No Alarm";
 const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_STARTED[]="Alarm started";
 const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED[]="Alarm finished";
 
-const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED_RESULT[]="Р РµР¶РёРј С‚СЂРµРІРѕРіРё РїСЂРµРєСЂР°С‰РµРЅ. Р’СЃРµ РїРѕРєР°Р·Р°С‚РµР»Рё РІ РЅРѕСЂРјРµ";
+const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED_RESULT[]="Ã�Â Ã‚Â Ã�Â Ã‚ÂµÃ�Â Ã‚Â¶Ã�Â Ã‘â€˜Ã�Â Ã‘Ëœ Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã�â€šÃ�Â Ã‚ÂµÃ�Â Ã�â€ Ã�Â Ã‘â€¢Ã�Â Ã‘â€“Ã�Â Ã‘â€˜ Ã�Â Ã‘â€”Ã�Â¡Ã�â€šÃ�Â Ã‚ÂµÃ�Â Ã‘â€�Ã�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Â°Ã�Â Ã‚ÂµÃ�Â Ã�â€¦. Ã�Â Ã¢â‚¬â„¢Ã�Â¡Ã�Æ’Ã�Â Ã‚Âµ Ã�Â Ã‘â€”Ã�Â Ã‘â€¢Ã�Â Ã‘â€�Ã�Â Ã‚Â°Ã�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã‚ÂµÃ�Â Ã‚Â»Ã�Â Ã‘â€˜ Ã�Â Ã�â€  Ã�Â Ã�â€¦Ã�Â Ã‘â€¢Ã�Â¡Ã�â€šÃ�Â Ã‘ËœÃ�Â Ã‚Âµ";
 
 //----------EspSettingsBox Messages---------------
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN[]="Save AbstractItem to file=";
@@ -459,7 +459,7 @@ const PROGMEM char MESSAGE_WIFIHELPER_GET[]=" GET ";
 const PROGMEM char MESSAGE_WIFIHELPER_POST[]=" POST ";
 
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_DIAGNOSTIC[]="-----------wiFi diagnostic-------------------";
-
+/*
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_UNKNOWN[]="UNKNOWN";
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECTED[]="WL_CONNECTED";
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_NO_SSID_AVAIL[]="WL_NO_SSID_AVAIL";
@@ -467,7 +467,38 @@ const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECT_FAILED[]="WL_CONNEC
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_IDLE_STATUS[]="WL_IDLE_STATUS";
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_SCAN_COMPLETED[]="WL_SCAN_COMPLETED";
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_DISCONNECTED[]="WL_DISCONNECTED";
+*/
+const PROGMEM char WL_UNKNOWN_STATUS[]="WL_UNKNOWN_STATUS";
 
+const char* const WIFIHELPER_WIFI_STATUSES[]      PROGMEM=
+{
+		"WL_IDLE_STATUS",
+		"WL_NO_SSID_AVAIL",
+		"WL_SCAN_COMPLETED",
+		"WL_CONNECTED",
+		"WL_CONNECT_FAILED",
+		"WL_CONNECTION_LOST",
+		"WL_DISCONNECTED"
+};
+
+const char* const WIFIHELPER_WIFI_MODES[]      PROGMEM=
+{
+		"WIFI_OFF",
+		"WIFI_STA",
+		"WIFI_AP",
+		"WIFI_AP_STA"
+};
+
+const char* const WIFIHELPER_PHY_MODES[]      PROGMEM={ "", "B", "G", "N" };
+
+const char* const WIFIHELPER_SlEEP_MODES[]      PROGMEM={ "WIFI_NONE_SLEEP", "WIFI_LIGHT_SLEEP", "WIFI_MODEM_SLEEP"};
+
+
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_MODE[]="MODE: ";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_PHYMODE[]="PHY MODE: ";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_SlEEPMODE[]="SlEEP MODE: ";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_AUTOCONNECT[]="autoConnect: ";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_CHANNEL[]="channel: ";
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_SSSID_EQ[]="SSID: ";
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_IP_TYPE_EQ[]="IP Type: ";
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATIC_IP_TYPE[]=" STATIC IP ";
@@ -518,16 +549,16 @@ const PROGMEM char MESSAGE_THINGSPEAK_NAME_FOR_REQUEST_EQ[]="&name=";
 const PROGMEM char MESSAGE_THINGSPEAK_DESCRIPTION_FOR_REQUEST[]="&description";
 const PROGMEM char MESSAGE_THINGSPEAK_DESCRIPTION_FOR_REQUEST_EQ[]="&description=";
 
-const PROGMEM char MESSAGE_THINGSPEAK_GET_CHANNELS[]=" РєР°РЅР°Р»РѕРІ Р·Р°РїРёСЃРё РґР°РЅРЅС‹С…;";
-const PROGMEM char MESSAGE_THINGSPEAK_SET_CHANNELS[]=" РєР°РЅР°Р»РѕРІ СѓРїСЂР°РІР»РµРЅРёСЏ;";
+const PROGMEM char MESSAGE_THINGSPEAK_GET_CHANNELS[]=" Ã�Â Ã‘â€�Ã�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã‚Â°Ã�Â Ã‚Â»Ã�Â Ã‘â€¢Ã�Â Ã�â€  Ã�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â Ã‘â€”Ã�Â Ã‘â€˜Ã�Â¡Ã�Æ’Ã�Â Ã‘â€˜ Ã�Â Ã’â€˜Ã�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã�â€¦Ã�Â¡Ã¢â‚¬Â¹Ã�Â¡Ã¢â‚¬Â¦;";
+const PROGMEM char MESSAGE_THINGSPEAK_SET_CHANNELS[]=" Ã�Â Ã‘â€�Ã�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã‚Â°Ã�Â Ã‚Â»Ã�Â Ã‘â€¢Ã�Â Ã�â€  Ã�Â¡Ã‘â€œÃ�Â Ã‘â€”Ã�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â Ã�â€ Ã�Â Ã‚Â»Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‘â€˜Ã�Â¡Ã�ï¿½;";
 
 const PROGMEM char MESSAGE_THINGSPEAK_CHANNELS_PREF[]="channels/";
 const PROGMEM char MESSAGE_THINGSPEAK_SUBSCRIBE_FIELDS_FIELD[]="/subscribe/fields/field";
 
 const PROGMEM char MESSAGE_THINGSPEAK_FAILED_STATUS[]="Failed";
 const PROGMEM char MESSAGE_THINGSPEAK_OK_STATUS[]="Ok";
-const PROGMEM char MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED[]="РџСѓР±Р»РёРєР°С†РёСЏ ThingSpeak РЅРµ СЂР°Р·СЂРµС€РµРЅР°";
-const PROGMEM char MESSAGE_THINGSPEAK_NO_USER_SPECIFIED[]="РќРµ Р·Р°РґР°РЅ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ ThingSpeak";
+const PROGMEM char MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED[]="Ã�Â Ã‘Å¸Ã�Â¡Ã‘â€œÃ�Â Ã‚Â±Ã�Â Ã‚Â»Ã�Â Ã‘â€˜Ã�Â Ã‘â€�Ã�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Â Ã�Â Ã‘â€˜Ã�Â¡Ã�ï¿½ ThingSpeak Ã�Â Ã�â€¦Ã�Â Ã‚Âµ Ã�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â Ã‚Â·Ã�Â¡Ã�â€šÃ�Â Ã‚ÂµÃ�Â¡Ã¢â€šÂ¬Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‚Â°";
+const PROGMEM char MESSAGE_THINGSPEAK_NO_USER_SPECIFIED[]="Ã�Â Ã‘Å“Ã�Â Ã‚Âµ Ã�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â Ã’â€˜Ã�Â Ã‚Â°Ã�Â Ã�â€¦ Ã�Â Ã‘â€”Ã�Â Ã‘â€¢Ã�Â Ã‚Â»Ã�Â¡Ã�Å Ã�Â Ã‚Â·Ã�Â Ã‘â€¢Ã�Â Ã�â€ Ã�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã‚ÂµÃ�Â Ã‚Â»Ã�Â¡Ã�Å  ThingSpeak";
 const PROGMEM char MESSAGE_THINGSPEAK_EMPTY_KEY[]="EmptyKey";
 
 //Ntp clock client
@@ -541,9 +572,9 @@ const PROGMEM char DEVICE_WIDGETS_SNAPSHOT[]="----------Device helper----------"
 const PROGMEM char MESSAGE_COMMANDS_EXECUTE_COMMAND[]="----------Execute command----------";
 const PROGMEM char MESSAGE_COMMANDS_ERROR[]="Error";
 const PROGMEM char MESSAGE_COMMANDS_OK[]="Ok";
-const PROGMEM char MESSAGE_COMMANDS_COMMAND_NOT_RECOGNIZED[]="РљРѕРјР°РЅРґР° РЅРµ СЂР°СЃРїРѕР·РЅР°РЅР°";
+const PROGMEM char MESSAGE_COMMANDS_COMMAND_NOT_RECOGNIZED[]="Ã�Â Ã‘â„¢Ã�Â Ã‘â€¢Ã�Â Ã‘ËœÃ�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã’â€˜Ã�Â Ã‚Â° Ã�Â Ã�â€¦Ã�Â Ã‚Âµ Ã�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â¡Ã�Æ’Ã�Â Ã‘â€”Ã�Â Ã‘â€¢Ã�Â Ã‚Â·Ã�Â Ã�â€¦Ã�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã‚Â°";
 const PROGMEM char MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED[]="Device will be restarted";
-const PROGMEM char MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED_MSG[]="РЈСЃС‚СЂРѕР№СЃС‚РІРѕ Р±СѓРґРµС‚ РїРµСЂРµР·Р°РїСѓС‰РµРЅРѕ. Р”РѕР¶РґРёС‚РµСЃСЊ РїРµСЂРµР·Р°РіСЂСѓР·РєРё СЃС‚СЂР°РЅРёС†С‹";
+const PROGMEM char MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED_MSG[]="Ã�Â Ã�Ë†Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã�â€šÃ�Â Ã‘â€¢Ã�Â Ã¢â€žâ€“Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã�â€ Ã�Â Ã‘â€¢ Ã�Â Ã‚Â±Ã�Â¡Ã‘â€œÃ�Â Ã’â€˜Ã�Â Ã‚ÂµÃ�Â¡Ã¢â‚¬Å¡ Ã�Â Ã‘â€”Ã�Â Ã‚ÂµÃ�Â¡Ã�â€šÃ�Â Ã‚ÂµÃ�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â Ã‘â€”Ã�Â¡Ã‘â€œÃ�Â¡Ã¢â‚¬Â°Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‘â€¢. Ã�Â Ã¢â‚¬ï¿½Ã�Â Ã‘â€¢Ã�Â Ã‚Â¶Ã�Â Ã’â€˜Ã�Â Ã‘â€˜Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã‚ÂµÃ�Â¡Ã�Æ’Ã�Â¡Ã�Å  Ã�Â Ã‘â€”Ã�Â Ã‚ÂµÃ�Â¡Ã�â€šÃ�Â Ã‚ÂµÃ�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â Ã‘â€“Ã�Â¡Ã�â€šÃ�Â¡Ã‘â€œÃ�Â Ã‚Â·Ã�Â Ã‘â€�Ã�Â Ã‘â€˜ Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã‘â€˜Ã�Â¡Ã¢â‚¬Â Ã�Â¡Ã¢â‚¬Â¹";
 
 const PROGMEM char MESSAGE_SERVER_ARG_CONFIRM_COMMAND[]="confirm_command";
 const PROGMEM char MESSAGE_SERVER_ARG_PAGE[]="page";
@@ -557,7 +588,7 @@ const PROGMEM char MESSAGE_SERVER_ARG_VAL_recreateThingSpeak[]="recreateThingSpe
 const PROGMEM char MESSAGE_SERVER_ARG_VAL_deleteSettings[]="deleteSettings";
 const PROGMEM char MESSAGE_SERVER_ARG_VAL_RESTART[]="restart";
 
-const PROGMEM char MESSAGE_COMMANDS_FILES_DELETED[]="РЈРґР°Р»РµРЅРѕ С„Р°Р№Р»РѕРІ :";
+const PROGMEM char MESSAGE_COMMANDS_FILES_DELETED[]="Ã�Â Ã�Ë†Ã�Â Ã’â€˜Ã�Â Ã‚Â°Ã�Â Ã‚Â»Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‘â€¢ Ã�Â¡Ã¢â‚¬Å¾Ã�Â Ã‚Â°Ã�Â Ã¢â€žâ€“Ã�Â Ã‚Â»Ã�Â Ã‘â€¢Ã�Â Ã�â€  :";
 
 //abstract item message
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_NAME_EQ[]="NAME=";
@@ -565,9 +596,9 @@ const PROGMEM char MESSAGE_ABSTRACT_ITEM_INDEX_EQ[]="index=";
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_VAL_EQ[]=" val=";
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_METHOD_NOT_IMPLEMENTED[]=" Method not implemented";
 
-const PROGMEM char MESSAGE_ABSTRACT_ITEM_CURRENT_VAL_EQ[]=" РїРѕС‚РѕС‡РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ =";
-const PROGMEM char MESSAGE_ABSTRACT_ITEM_MAX_SPECIFIED_VAL_EQ[]=" РјР°РєСЃРёРјР°Р»СЊРЅРѕ Р·Р°РґР°РЅРѕРµ =";
-const PROGMEM char MESSAGE_ABSTRACT_ITEM_MIN_SPECIFIED_VAL_EQ[]=" РјРёРЅРёРјР°Р»СЊРЅРѕ Р·Р°РґР°РЅРѕРµ =";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_CURRENT_VAL_EQ[]=" Ã�Â Ã‘â€”Ã�Â Ã‘â€¢Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã‘â€¢Ã�Â¡Ã¢â‚¬Â¡Ã�Â Ã�â€¦Ã�Â Ã‘â€¢Ã�Â Ã‚Âµ Ã�Â Ã‚Â·Ã�Â Ã�â€¦Ã�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Â¡Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‘â€˜Ã�Â Ã‚Âµ =";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_MAX_SPECIFIED_VAL_EQ[]=" Ã�Â Ã‘ËœÃ�Â Ã‚Â°Ã�Â Ã‘â€�Ã�Â¡Ã�Æ’Ã�Â Ã‘â€˜Ã�Â Ã‘ËœÃ�Â Ã‚Â°Ã�Â Ã‚Â»Ã�Â¡Ã�Å Ã�Â Ã�â€¦Ã�Â Ã‘â€¢ Ã�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â Ã’â€˜Ã�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã‘â€¢Ã�Â Ã‚Âµ =";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_MIN_SPECIFIED_VAL_EQ[]=" Ã�Â Ã‘ËœÃ�Â Ã‘â€˜Ã�Â Ã�â€¦Ã�Â Ã‘â€˜Ã�Â Ã‘ËœÃ�Â Ã‚Â°Ã�Â Ã‚Â»Ã�Â¡Ã�Å Ã�Â Ã�â€¦Ã�Â Ã‘â€¢ Ã�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â Ã’â€˜Ã�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã‘â€¢Ã�Â Ã‚Âµ =";
 
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_SETTING_BEGIN[]="------------Saving sensors settings------------";
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_NAME_EQ[]=" Set sensor value NAME=";
