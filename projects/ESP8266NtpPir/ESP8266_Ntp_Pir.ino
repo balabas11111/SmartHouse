@@ -89,7 +89,7 @@ TM1637 timeDisplay(D6,D7);
 TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),false,updateSensors);
 TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),false,processThingSpeakPost);
 
-NtpTimeClientService timeClient(&espSettingsBox,nullptr,60000);
+NtpTimeClientService timeClient(&espSettingsBox,refreshDisplay,60000);
 DisplayHelper_TM1637_Clock_PIR displayHelper(&timeDisplay,&espSettingsBox,&bmeMeasurer,&ds18d20Measurer,&timeClient);
 
 
@@ -156,7 +156,7 @@ void loop() {
 }
 
 //test functions--------------------------------------
-void measureSensors(){
+void refreshDisplay(){
 	Serial.println("measuresensors");
 }
 

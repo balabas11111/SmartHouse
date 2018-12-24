@@ -28,14 +28,16 @@ const char NTP_TIME_CLIENT_SERVICE_TYPE[] PROGMEM ="NtpTime";
 class NtpTimeClientService: public Initializable, public Loopable {
 public:
 
-	NtpTimeClientService(EspSettingsBox* _espSettingsBox,std::function<void(int8_t*)> _externalFunction, ulong externalFunctionInterval){
+	NtpTimeClientService(EspSettingsBox* _espSettingsBox,std::function<void(void)> _externalFunction, ulong externalFunctionInterval){
 			Serial.println(FPSTR("Create time client"));
+
+			this->timeClient=new NTPClient(ntpUDP,"pl.pool.ntp.org",7200,1000);
 			this->espSettingsBox=_espSettingsBox;
 			this->externalFunction=_externalFunction;
 			this->externalFunctionInterval=externalFunctionInterval;
 		}
 
-	NtpTimeClientService(EspSettingsBox* _espSettingsBox,std::function<void(int8_t*)> _externalFunction){
+	NtpTimeClientService(EspSettingsBox* _espSettingsBox,std::function<void(void)> _externalFunction){
 		Serial.println(FPSTR("Create time client"));
 
 		this->espSettingsBox=_espSettingsBox;
@@ -51,25 +53,42 @@ public:
 			int boxIndex=espSettingsBox->getExtraBoxIndex(FPSTR(NTP_SETTINGS_BOX_NAME));
 			String poolServerName=espSettingsBox->getExtraValue(boxIndex, NTP_poolServerName);
 			int timeOffset=espSettingsBox->getExtraValueInt(boxIndex, NTP_timeOffset);
-			int updateInterval=espSettingsBox->getExtraValueInt(boxIndex, NTP_updateInterval);
+			int updateInterval=1000*espSettingsBox->getExtraValueInt(boxIndex, NTP_updateInterval);
 			int triggerInterval=espSettingsBox->getExtraValueInt(boxIndex,NTP_timeTriggerInterval);
 
-			Serial.println("boxIndex"+String(boxIndex));
-			Serial.println("poolServerName"+poolServerName);
-			Serial.println("timeOffset"+String(timeOffset));
-			Serial.println("updateInterval"+String(updateInterval));
-			Serial.println("triggerInterval"+String(triggerInterval));
+			Serial.print("boxIndex=");
+			Serial.println(boxIndex);
+			Serial.print("poolServerName=");
+			Serial.println(poolServerName);
+			Serial.print("=poolServerName.c_str() =");
+			Serial.println(poolServerName.c_str());
+			Serial.print("=");
+			Serial.print("timeOffset =");
+			Serial.println(timeOffset);
+			Serial.print("updateInterval=");
+			Serial.println(updateInterval);
+			Serial.print("triggerInterval=");
+			Serial.println(triggerInterval);
 
+			timeClient->setPoolServerName(poolServerName.c_str());
+			timeClient->setTimeOffset(timeOffset);
+			timeClient->setUpdateInterval(updateInterval);
+/*
 			timeClient=new NTPClient(ntpUDP,
 								espSettingsBox->getExtraValue(boxIndex, NTP_poolServerName).c_str(),
 								espSettingsBox->getExtraValueInt(boxIndex, NTP_timeOffset),
 								espSettingsBox->getExtraValueInt(boxIndex, NTP_updateInterval));
-			timeClientTrigger=new TimeTrigger(0,espSettingsBox->getExtraValueInt(boxIndex,NTP_timeTriggerInterval),false,[this](){processTimeClient();});
-
+								*/
+			//timeClientTrigger=new TimeTrigger(0,triggerInterval,false,[this](){processTimeClient();});
 
 			timeClient->begin();
-			timeClient->forceUpdate();
-			timeClientTrigger->init();
+			bool result=timeClient->forceUpdate();
+
+			Serial.print(FPSTR("timeClient->begin() status="));
+			Serial.println(result);
+
+			timeClient->printDetails();
+			//timeClientTrigger->init();
 
 			Serial.print(FPSTR("externalFunctionInterval="));
 			Serial.println(externalFunctionInterval);
@@ -85,9 +104,9 @@ public:
 
 	virtual boolean loop(){
 		if(initialized){
-			Serial.println("loop time client");
-			timeClientTrigger->loop();
-			timeClient->update();
+			//Serial.println("loop time client");
+			updateCurrentTime();
+			//timeClientTrigger->loop();
 
 			return true;
 		}
@@ -104,16 +123,24 @@ public:
 		Serial.print(FPSTR("Time="));
 		Serial.print(getCurrentTimeAsString(':'));
 		Serial.print(FPSTR(" Date="));
-		Serial.println(getCurrentDateAsString(':'));
+		Serial.print(getCurrentDateAsString(':'));
+		Serial.print(FPSTR(" timeReceived="));
+		Serial.println(isTimeReceived());
 	}
 
 	boolean updateCurrentTime(){
 		if(!initialized){
 			return false;
 		}
-		timeClient->update();
+		boolean updatedOnClient=timeClient->update();
 
-		boolean update=false;
+		if(!updatedOnClient){
+			Serial.println(FPSTR("TimeUpdate FAILED"));
+			timeClient->printDetails();
+			return false;
+		}
+
+		boolean displayTimeChanged=false;
 
 		uint8_t h=timeClient->getHours();
 		uint8_t m=timeClient->getMinutes();
@@ -135,7 +162,7 @@ public:
 
 		for(uint8_t i=0;i<PREPARED_TIME_LENGTH;i++){
 			if(tmpTimePrep[i]!=currTimePrepared[i]){
-				update=true;
+				displayTimeChanged=true;
 			}
 
 			currTimePrepared[i]=tmpTimePrep[i];
@@ -143,7 +170,7 @@ public:
 
 		for(uint8_t i=0;i<TIME_LENGTH;i++){
 			if(tmpTime[i]!=currTime[i]){
-				update=true;
+				displayTimeChanged=true;
 			}
 
 			currTime[i]=tmpTime[i];
@@ -215,18 +242,18 @@ public:
 
 	    for(uint8_t i=0;i<PREPARED_DATE_LENGTH;i++){
 			if(tmpDatePrepared[i]!=currDatePrepared[i]){
-				update=true;
+				displayTimeChanged=true;
 			}
 
 			currDatePrepared[i]=tmpDatePrepared[i];
-			Serial.print(tmpDatePrepared[i]);
+			//Serial.print(tmpDatePrepared[i]);
 	    }
 
-	    Serial.println();
+	    //Serial.println();
 
 	    for(uint8_t i=0;i<DATE_LENGTH;i++){
 			if(tmpDate[i]!=currDate[i]){
-				update=true;
+				displayTimeChanged=true;
 				//Serial.print(currDate[i]);
 			}
 
@@ -234,17 +261,24 @@ public:
 			//Serial.print("-");
 	    }
 
-		if(!updated && update){
-			timeClientTrigger->setInterval(externalFunctionInterval);
-			updated=true;
+		if(displayTimeChanged){
+
+			if(!timeReceived){
+				timeReceived=true;
+				Serial.print(FPSTR("----First Time received----"));
+				//this->timeClient->setUpdateInterval(120000);
+				displayDetails();
+			}
+
+			/*timeClientTrigger->setInterval(externalFunctionInterval);
+
 
 			Serial.print(FPSTR("-First Time received new interval="));
 			Serial.println(timeClientTrigger->getInterval());
+			*/
 		}
 
-		displayDetails();
-
-		return updated;
+		return displayTimeChanged;
 	}
 
 	ulong DateTimeToEpochTime(uint16_t year,uint8_t month,uint8_t day,uint8_t hour,uint8_t minute,uint8_t seconds){
@@ -345,7 +379,7 @@ public:
 	}
 
 	boolean isTimeReceived(){
-		return updated;
+		return timeReceived;
 	}
 
 	String getJson(){
@@ -382,16 +416,16 @@ private:
 	EspSettingsBox* espSettingsBox;
 	NTPClient* timeClient;
 	TimeTrigger* timeClientTrigger;
-	std::function<void(int8_t*)> externalFunction;
+	std::function<void(void)> externalFunction;
 	ulong externalFunctionInterval;
-	boolean updated=false;
+	boolean timeReceived=false;
 
 
 	void processTimeClient(){
 		updateCurrentTime();
 
-		if(updated && externalFunction!=nullptr){
-			externalFunction(currTimePrepared);
+		if(timeReceived && externalFunction!=nullptr){
+			externalFunction();
 		}
 	}
 };
