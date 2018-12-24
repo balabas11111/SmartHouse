@@ -89,11 +89,11 @@ TM1637 timeDisplay(D6,D7);
 TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),false,updateSensors);
 TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),false,processThingSpeakPost);
 
-NtpTimeClientService timeClient(&espSettingsBox,refreshDisplay,60000);
+NtpTimeClientService timeClient(&espSettingsBox);
 DisplayHelper_TM1637_Clock_PIR displayHelper(&timeDisplay,&espSettingsBox,&bmeMeasurer,&ds18d20Measurer,&timeClient);
 
 
-WiFiHelper wifiHelper(&espSettingsBox, nullptr, &server,postInitWebServer,false);
+WiFiHelper wifiHelper(&espSettingsBox, nullptr, &server,setupWifiEvents,postInitWebServer,true);
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 
 Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeClient,
@@ -156,10 +156,6 @@ void loop() {
 }
 
 //test functions--------------------------------------
-void refreshDisplay(){
-	Serial.println("measuresensors");
-}
-
 void processThingSpeakPost(){
 	Serial.println("process ThingSpeak post");
 }
@@ -253,12 +249,12 @@ void postInitWebServer(){
 	server.on(FPSTR(URL_GET_SENSORS_CURRNT_VALUES), HTTP_GET, [](){
 		if(server.hasArg(FPSTR(MESSAGE_SERVER_ARG_SENSOR))){
 			String arg=server.arg(FPSTR(MESSAGE_SERVER_ARG_SENSOR));
-/*
+
 			if(arg==FPSTR(NTP_TIME_CLIENT_SERVICE_NAME)){
 				wifiHelper.checkAuthentication();
 				server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), timeClient.getJson());
 			}
-*/
+
 			if(arg==FPSTR(MESSAGE_SERVER_ARG_VAL_ALL)){
 				wifiHelper.checkAuthentication();
 				server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), getAllSensorsJson());
@@ -275,6 +271,20 @@ void postInitWebServer(){
 		server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), FPSTR(MESSAGE_STATUS_JSON_WIDGET_NOT_FOUND));
 	});
 }
+
+void setupWifiEvents(){
+	Serial.println(FPSTR("Init WiFi events"));
+
+	if(wifiHelper.isAP()){
+		WiFi.onSoftAPModeStationConnected([](const WiFiEventSoftAPModeStationConnected& evt){wifiHelper.onSoftAPModeStationConnected(evt);});
+		WiFi.onSoftAPModeStationDisconnected([](const WiFiEventSoftAPModeStationDisconnected& evt){wifiHelper.onSoftAPModeStationDisconnected(evt);});
+	}else{
+		WiFi.onStationModeConnected([](const WiFiEventStationModeConnected& evt){wifiHelper.onStationModeConnected(evt);});
+		WiFi.onStationModeDisconnected([](const WiFiEventStationModeDisconnected& evt){wifiHelper.onStationModeDisconnected(evt);});
+		WiFi.onStationModeDHCPTimeout([](){wifiHelper.onStationModeDHCPTimeout();});
+	}
+}
+
 //base functions
 void updateSensors(){
 	deviceHelper.update(abstractItems, ARRAY_SIZE(abstractItems));

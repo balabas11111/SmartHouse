@@ -28,20 +28,12 @@ const char NTP_TIME_CLIENT_SERVICE_TYPE[] PROGMEM ="NtpTime";
 class NtpTimeClientService: public Initializable, public Loopable {
 public:
 
-	NtpTimeClientService(EspSettingsBox* _espSettingsBox,std::function<void(void)> _externalFunction, ulong externalFunctionInterval){
-			Serial.println(FPSTR("Create time client"));
+	NtpTimeClientService(EspSettingsBox* _espSettingsBox){
+		construct(_espSettingsBox,nullptr);
+	}
 
-			this->timeClient=new NTPClient(ntpUDP,"pl.pool.ntp.org",7200,1000);
-			this->espSettingsBox=_espSettingsBox;
-			this->externalFunction=_externalFunction;
-			this->externalFunctionInterval=externalFunctionInterval;
-		}
-
-	NtpTimeClientService(EspSettingsBox* _espSettingsBox,std::function<void(void)> _externalFunction){
-		Serial.println(FPSTR("Create time client"));
-
-		this->espSettingsBox=_espSettingsBox;
-		externalFunction=_externalFunction;
+	NtpTimeClientService(EspSettingsBox* _espSettingsBox,std::function<void(void)> _externalFunction){//, ulong externalFunctionInterval){
+		construct(_espSettingsBox,_externalFunction);
 	}
 
 	~NtpTimeClientService(){};
@@ -90,8 +82,8 @@ public:
 			timeClient->printDetails();
 			//timeClientTrigger->init();
 
-			Serial.print(FPSTR("externalFunctionInterval="));
-			Serial.println(externalFunctionInterval);
+			//Serial.print(FPSTR("externalFunctionInterval="));
+			//Serial.println(externalFunctionInterval);
 			Serial.print(FPSTR("initialized="));
 			Serial.println(_init);
 
@@ -249,8 +241,6 @@ public:
 			//Serial.print(tmpDatePrepared[i]);
 	    }
 
-	    //Serial.println();
-
 	    for(uint8_t i=0;i<DATE_LENGTH;i++){
 			if(tmpDate[i]!=currDate[i]){
 				displayTimeChanged=true;
@@ -268,6 +258,9 @@ public:
 				Serial.print(FPSTR("----First Time received----"));
 				//this->timeClient->setUpdateInterval(120000);
 				displayDetails();
+				if(externalFunction!=nullptr){
+					externalFunction();
+				}
 			}
 
 			/*timeClientTrigger->setInterval(externalFunctionInterval);
@@ -415,12 +408,19 @@ private:
 
 	EspSettingsBox* espSettingsBox;
 	NTPClient* timeClient;
-	TimeTrigger* timeClientTrigger;
+	//TimeTrigger* timeClientTrigger;
 	std::function<void(void)> externalFunction;
-	ulong externalFunctionInterval;
+	//ulong externalFunctionInterval=0;
 	boolean timeReceived=false;
 
+	void construct(EspSettingsBox* _espSettingsBox,std::function<void(void)> _externalFunction){//, ulong externalFunctionInterval){
+		Serial.println(FPSTR("Create time client"));
 
+		this->timeClient=new NTPClient(ntpUDP,"pl.pool.ntp.org",7200,1000);
+		this->espSettingsBox=_espSettingsBox;
+		this->externalFunction=_externalFunction;
+	}
+/*
 	void processTimeClient(){
 		updateCurrentTime();
 
@@ -428,6 +428,7 @@ private:
 			externalFunction();
 		}
 	}
+	*/
 };
 
 #endif /* LIBRARIES_HELPERS_NTPTIMECLIENTSERVICE_H_ */

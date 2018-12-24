@@ -39,34 +39,38 @@ class WiFiHelper:public Initializable,public Loopable {
 public:
 	#ifdef ESP8266
 	WiFiHelper(EspSettingsBox *_settingsBox, DisplayHelper *_displayHelper/*, PinDigital *_signalPin*/,
-			ESP8266WebServer *_server,std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
+			ESP8266WebServer *_server,std::function<void(void)> _serverInitEventFunc,std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
 
 		server=_server;
-		construct(_settingsBox, _displayHelper,_serverPostInitFunc,_disconnectOnStartIfConnected);
+		construct(_settingsBox, _displayHelper,_serverInitEventFunc,_serverPostInitFunc,_disconnectOnStartIfConnected);
 	}
 	#endif
 	#ifdef ESP32
-	WiFiHelper(EspSettingsBox *_settingsBox,DisplayHelperAbstract *_displayHelper,
-			WebServer *_server,std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
+	WiFiHelper(EspSettingsBox *_settingsBox,DisplayHelper *_displayHelper,
+			WebServer *_server,std::function<void(void)> _serverInitEventFunc,std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
 
 		server=_server;
-		construct(_settingsBox, _displayHelper,_serverPostInitFunc,_disconnectOnStartIfConnected);
+		construct(_settingsBox, _displayHelper,_serverInitEventFunc,_serverPostInitFunc,_disconnectOnStartIfConnected);
 	}
 	#endif
 
 
-	void construct(EspSettingsBox *_settingsBox, DisplayHelper *_displayHelper/*, PinDigital *_signalPin*/,
-			std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
-		espSettingsBox=_settingsBox;
-		displayHelper=_displayHelper;
-		//signalPin=_signalPin;
-		serverPostInitFunc=_serverPostInitFunc;
-		disconnectOnStartIfConnected=_disconnectOnStartIfConnected;
+	void construct(EspSettingsBox *_settingsBox, DisplayHelper *_displayHelper,
+			std::function<void(void)> _serverInitEventFunc,std::function<void(void)> _serverPostInitFunc,
+			boolean _disconnectOnStartIfConnected){
 
-		initStaticPages=true;
-		initFilesManager=true;
+		this->espSettingsBox=_settingsBox;
+		this->displayHelper=_displayHelper;
 
-		initialized=false;
+		this->serverInitEventFunc=_serverInitEventFunc;
+		this->serverPostInitFunc=_serverPostInitFunc;
+
+		this->disconnectOnStartIfConnected=_disconnectOnStartIfConnected;
+
+		this->initStaticPages=true;
+		this->initFilesManager=true;
+
+		this->initialized=false;
 	}
 
 	boolean initialize(boolean _init){
@@ -74,7 +78,7 @@ public:
 			Serial.println(FPSTR(MESSAGE_WIFIHELPER_INIT_CONNECTION));
 
 			displayDetails();
-			if(WiFi.status()==3){
+			if(WiFi.status()==3 && disconnectOnStartIfConnected){
 				Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_DISCONNECTING));
 #ifdef ESP8266
 					WiFi.disconnect(1);
@@ -293,14 +297,18 @@ public:
 	//-----------------------------------------------------------------------
 
 	boolean startAsAccessPoint(){
+		startedAsAP=true;
+
 		WiFi.mode(WIFI_AP);
 		displayLine(FPSTR(MESSAGE_WIFIHELPER_START_AP),3,0);
 		displayLine(FPSTR(MESSAGE_WIFIHELPER_ACCESS_POINT),5,0);
 
-		setupApEvents();
+		if(serverInitEventFunc!=nullptr){
+			serverInitEventFunc();
+		}
 
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_STARTING_ACCESS_POINT));
-		WiFi.softAP(const_cast<char*>(espSettingsBox->ssidAP.c_str()));
+		WiFi.softAP(const_cast<char*>(espSettingsBox->ssidAP.c_str()),const_cast<char*>(espSettingsBox->password.c_str()));
 
 		Serial.print (FPSTR(MESSAGE_WIFIHELPER_SOFT_AP));
 		Serial.println ( espSettingsBox->ssidAP);
@@ -310,8 +318,6 @@ public:
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
 		Serial.println(WiFi.status());
 		Serial.println ( FPSTR(MESSAGE_HORIZONTAL_LINE));
-
-		startedAsAP=true;
 
 		return true;
 	}
@@ -327,7 +333,9 @@ public:
 		//WiFi.disconnect(0);
 		WiFi.mode(WIFI_STA);
 
-		setupSTAevents();
+		if(serverInitEventFunc!=nullptr){
+			serverInitEventFunc();
+		}
 
 		if(espSettingsBox->staticIp){
 			WiFi.config(espSettingsBox->localIp,espSettingsBox->gateIp,
@@ -343,27 +351,16 @@ public:
 
 		return true;
 	}
-//------------------------------------------------------------------------------
-	void setupApEvents(){
-		//WiFi.onSoftAPModeStationConnected(&onApConnected);
-		//WiFi.onSoftAPModeStationDisconnected(&onApDisconnected);
-	}
 
-	void onApConnected(const WiFiEventSoftAPModeStationConnected& evt) {
+	void onSoftAPModeStationConnected(const WiFiEventSoftAPModeStationConnected& evt) {
 	  Serial.print(FPSTR("AP connected: MAC="));
 	  Serial.println(macToString(evt.mac));
 
 	}
 
-	void onApDisconnected(const WiFiEventSoftAPModeStationDisconnected& evt) {
+	void onSoftAPModeStationDisconnected(const WiFiEventSoftAPModeStationDisconnected& evt) {
 	  Serial.print(FPSTR("AP disconnected: "));
 	  Serial.println(macToString(evt.mac));
-	}
-//------------------------------------------------------------------------------
-	void setupSTAevents(){
-		//WiFi.onStationModeConnected(&onStationModeConnected);
-		//WiFi.onStationModeDisconnected(&onStationModeDisconnected);
-		//WiFi.onStationModeDHCPTimeout(&onStationModeDHCPTimeout);
 	}
 
 	void onStationModeConnected(const WiFiEventStationModeConnected& evt){
@@ -951,6 +948,7 @@ private:
 	EspSettingsBox *espSettingsBox;
 	DisplayHelper *displayHelper;
 	//PinDigital *signalPin;
+	std::function<void(void)> serverInitEventFunc;
 	std::function<void(void)> serverPostInitFunc;
 	boolean disconnectOnStartIfConnected;
 
