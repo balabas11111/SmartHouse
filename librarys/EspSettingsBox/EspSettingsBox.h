@@ -97,33 +97,74 @@ public:
 		return extraBoxes[boxIndex]->getJson();
 	}
 
-	String getBoxFileName(uint8_t boxIndex){
-		String boxFileName=FPSTR(ESPSETTINGSBOX_SETTINGS_PATH);
-					boxFileName+=extraBoxes[boxIndex]->getName();
-					boxFileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_TXT_EXT);
-
-		return boxFileName;
+	String getSettingsFileFileName(String settingsName){
+		String jsonFileName=FPSTR(ESPSETTINGSBOX_SETTINGS_PATH);
+				jsonFileName+=settingsName;
+				jsonFileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_TXT_EXT);
+		return jsonFileName;
 	}
 
-	boolean checkBoxFileExists(uint8_t boxIndex){
+	boolean isSettingsFileExists(String settingsName){
+   	   String fileName=getSettingsFileFileName(settingsName);
+
+	   File file = SPIFFS.open(settingsName, "r");
+
+	   boolean exists=file && file.size()!=0;
+
+	   if(exists){
+		   Serial.print(FPSTR("File exists "));
+		   Serial.print(fileName);
+		   Serial.print(FPSTR(" size="));
+		   Serial.println(file.size());
+	   }else{
+		   Serial.print(FPSTR("NOT exists "));
+		   Serial.println(fileName);
+	   }
+
+	   file.close();
+
+	   return exists;
+	}
+
+	boolean deleteSettingsFile(String settingsName){
+		String fileName=getSettingsFileFileName(settingsName);
+		boolean result= SPIFFS.remove(fileName);
+
+		Serial.print(FPSTR("Del BOX file ="));
+		Serial.print(fileName);
+		Serial.print(FPSTR(" result ="));
+		Serial.println(result);
+
+		return result;
+	}
+
+	boolean saveSettingToFile(String settingsName,String str){
+
+		String fileName=getSettingsFileFileName(settingsName);
+
+		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_SAVE_BEGIN));
+		Serial.println(fileName);
+
+		File file = SPIFFS.open(fileName, "w");
+
+		boolean result=(file.println(str)>0);
+
+		file.close();
+		Serial.println(str);
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVED));
+
+		delay(1);
+		return result;
+
+	}
+
+	boolean isBoxFileExists(uint8_t boxIndex){
 		if(boxIndex>extraBoxesCount){
 			return false;
 		}
 
-	   String boxFileName=getBoxFileName(boxIndex);
-
-	   File file = SPIFFS.open(boxFileName, "r");
-
-	   boolean saveDefVals=!file || file.size()==0;
-	   file.close();
-
-		if(saveDefVals){
-			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_BOX_FILE_NOT_EXISTS));
+		if(!isSettingsFileExists(extraBoxes[boxIndex]->getName())){
 			saveExtraBox(boxIndex);
-		}else{
-			Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BOX_FILE_EXISTS));
-			Serial.print(FPSTR(" file="));
-			Serial.println(boxFileName);
 		}
 
 		return true;
@@ -153,7 +194,6 @@ public:
 		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
 
 		DynamicJsonBuffer jsonBuffer;
-		//StaticJsonBuffer<1024> jsonBuffer;
 
 		JsonObject& root = jsonBuffer.createObject();
 
@@ -172,7 +212,7 @@ public:
 
 		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVE_EXTRABOX_SETTINGS_TO_FILE));
 
-		String boxFileName=getBoxFileName(boxIndex);
+		String boxFileName=getSettingsFileFileName(extraBoxes[boxIndex]->getName());
 		File boxFile = SPIFFS.open(boxFileName, "w");
 
 		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
@@ -188,36 +228,16 @@ public:
 
 	void deleteExtraBoxesFiles(){
 		for(uint8_t i=0;i<extraBoxesCount;i++){
-			deleteExtraBoxFile(i);
+			deleteSettingsFile(extraBoxes[i]->getName());
 		}
-
-	}
-
-	boolean deleteExtraBoxFile(uint8_t boxIndex){
-		String fileName=getBoxFileName(boxIndex);
-		boolean result= SPIFFS.remove(fileName);
-
-		Serial.print(FPSTR("Del BOX file ="));
-		Serial.print(fileName);
-		Serial.print(FPSTR(" result ="));
-		Serial.println(result);
-
-		return result;
 	}
 
 	boolean validateExtraBoxFile(uint8_t boxIndex,boolean recreate){
-	   String boxFileName=getBoxFileName(boxIndex);
-	   File boxFile = SPIFFS.open(boxFileName, "r");
-	   size_t size = boxFile.size();
-	   boolean fileExists=boxFile && size!=0;
-	   boxFile.close();
 
 	   Serial.println(FPSTR("-------Validate BOX file------"));
-	   Serial.print(boxFileName);
-	   Serial.print(FPSTR(" exists="));
-	   Serial.print(fileExists);
-	   Serial.print(FPSTR(" size="));
-	   Serial.println(size);
+
+	   String boxFileName=getSettingsFileFileName(extraBoxes[boxIndex]->getName());
+	   boolean fileExists=isSettingsFileExists(extraBoxes[boxIndex]->getName());
 
 	   if(!fileExists && recreate){
 		   Serial.println(FPSTR("file NOT exists and will be recreated"));
@@ -227,15 +247,15 @@ public:
 		   Serial.println(FPSTR("file exists"));
 	   }
 
-	   File boxFile2 = SPIFFS.open(boxFileName, "r");
-	   size_t size2 = boxFile2.size();
+	   File boxFile = SPIFFS.open(boxFileName, "r");
+	   size_t size = boxFile.size();
 
 		StaticJsonBuffer<1024> jsonBuffer;
-		std::unique_ptr<char[]> buf (new char[size2]);
-		boxFile2.readBytes(buf.get(), size2);
+		std::unique_ptr<char[]> buf (new char[size]);
+		boxFile.readBytes(buf.get(), size);
 		JsonObject& root = jsonBuffer.parseObject(buf.get());
 
-		boxFile2.close();
+		boxFile.close();
 
 		if (!root.success()) {
 			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
@@ -262,7 +282,7 @@ public:
 
 			if(!keysValid){
 				Serial.println(FPSTR("RECREATE file"));
-				deleteExtraBoxFile(boxIndex);
+				deleteSettingsFile(extraBoxes[boxIndex]->getName());
 
 				extraBoxes[boxIndex]->fillDefaultValues();
 
@@ -277,7 +297,7 @@ public:
 
 	boolean loadExtraBox(uint8_t boxIndex){
 
-	  String boxFileName=getBoxFileName(boxIndex);
+	  String boxFileName=getSettingsFileFileName(extraBoxes[boxIndex]->getName());
 	  Serial.print(FPSTR("---Load Extra BOX from file "));
 	  Serial.println(boxFileName);
 

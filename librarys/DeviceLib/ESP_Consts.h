@@ -240,6 +240,7 @@ const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED_RESULT[]="Ã�Â 
 
 //----------EspSettingsBox Messages---------------
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN[]="Save AbstractItem to file=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_SETTINGS_SAVE_BEGIN[]="Save Settings to file=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SAVED[]="...saved";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED[]="Default settings will be saved";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS[]="File not exists";

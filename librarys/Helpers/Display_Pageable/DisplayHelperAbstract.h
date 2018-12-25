@@ -8,8 +8,8 @@
 #ifndef LIBRARIES_DISPLAYHELPER_DISPLAYHELPERBASE_H_
 #define LIBRARIES_DISPLAYHELPER_DISPLAYHELPERBASE_H_
 
-#include <DisplayHelper.h>
-#include <DisplayHelperPage.h>
+#include <Display_Pageable/DisplayHelper.h>
+#include <Display_Pageable/DisplayHelperPage.h>
 #include "Arduino.h"
 #include "EspSettingsBox.h"
 #include <Initializable.h>

@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2018-12-24 06:14:22
+//This file has been generated on 2018-12-25 02:56:59
 
 #include "Arduino.h"
 #include "Arduino.h"
@@ -20,10 +20,10 @@
 #include "Loopable.h"
 #include "I2Chelper.h"
 #include "WiFiHelper.h"
-#include "NtpTimeClientService.h"
+#include "Time/NtpTimeClientService.h"
 #include "TimeTrigger.h"
 #include <DeviceHelper.h>
-#include <DisplayHelperAbstract.h>
+#include <Display_Pageable/DisplayHelperAbstract.h>
 #include <ThingSpeakHelper.h>
 #include <PinDigital.h>
 #include <Pir_Sensor.h>
@@ -37,13 +37,11 @@
 void initComponents();
 void setup() ;
 void loop() ;
-void refreshDisplay();
-void processThingSpeakPost();
-void onButtonChanged();
 void onPirDetectorChanged();
 void playPostInitSounds();
 void onButtonMenuChanged();
 void postInitWebServer();
+void setupWifiEvents();
 void updateSensors();
 void loadSensors();
 void saveSensors();
@@ -54,6 +52,8 @@ void executePostPonedCommand();
 String setEspSettingsBoxValues();
 void executeThingSpeakPost();
 void sendAbstractItemToHttp(AbstractItem* item);
+void processThingSpeakPost();
+void onButtonChanged();
 
 #include "ESP8266_Ntp_Pir.ino"
 

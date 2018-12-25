@@ -29,9 +29,9 @@
 
 #include <PinDigital.h>
 #include <AbstractItem.h>
-#include <DisplayHelperAbstract.h>
+#include <Display_Pageable/DisplayHelperAbstract.h>
 
-#define NOT_CONNECT_ITERATIONS 100
+#define NOT_CONNECT_ITERATIONS 20
 #define RE_CONNECT_DELAY 250
 
 class WiFiHelper:public Initializable,public Loopable {
@@ -283,10 +283,7 @@ public:
 	//-----------------------------------------------------------------------
 
 	void handleNotFound(){
-		/*if(!handleFileRead(server->uri()))
-			  server->send(404, "text/plain", "FileNotFound");
-*/
-		Serial.println(FPSTR("Handle not found"));
+		Serial.print(FPSTR("NOT found uri="));
 		Serial.println(server->uri());
 		server->send(404,FPSTR(CONTENT_TYPE_TEXT_HTML), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_NOT_FOUND));
 	}
@@ -334,6 +331,7 @@ public:
 		WiFi.mode(WIFI_STA);
 
 		if(serverInitEventFunc!=nullptr){
+			Serial.println(FPSTR("Init event functions"));
 			serverInitEventFunc();
 		}
 

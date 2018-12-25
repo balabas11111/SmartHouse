@@ -8,7 +8,7 @@
 #ifndef LIBRARIES_HELPERS_DISPLAYHELPERPAGE_H_
 #define LIBRARIES_HELPERS_DISPLAYHELPERPAGE_H_
 
-#include <DisplayHelper.h>
+#include <Display_Pageable/DisplayHelper.h>
 #include "Arduino.h"
 
 

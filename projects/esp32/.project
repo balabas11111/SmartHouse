@@ -44,7 +44,7 @@
 		<link>
 			<name>libraries/DallasTemperature</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DallasTemperature/3.8.0</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DallasTemperature/3.7.6</locationURI>
 		</link>
 		<link>
 			<name>libraries/DeviceLib</name>
@@ -57,19 +57,29 @@
 			<location>D:/projects/!!!SmartHouse/librarys/EspSettingsBox</location>
 		</link>
 		<link>
-			<name>libraries/FreeRTOS</name>
+			<name>libraries/FS</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/FreeRTOS/10.0.0-7</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp320/libraries/FS</locationURI>
 		</link>
 		<link>
-			<name>libraries/Loopable</name>
+			<name>libraries/HTTPClient</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/Loopable</location>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp320/libraries/HTTPClient</locationURI>
 		</link>
 		<link>
 			<name>libraries/OneWire</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire/2.3.4</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire/2.3.3</locationURI>
+		</link>
+		<link>
+			<name>libraries/SPI</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp320/libraries/SPI</locationURI>
+		</link>
+		<link>
+			<name>libraries/SPIFFS</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp320/libraries/SPIFFS</locationURI>
 		</link>
 		<link>
 			<name>libraries/SensorsLib</name>
@@ -80,6 +90,26 @@
 			<name>libraries/TimeTrigger</name>
 			<type>2</type>
 			<location>D:/projects/!!!SmartHouse/librarys/TimeTrigger</location>
+		</link>
+		<link>
+			<name>libraries/WiFi</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp320/libraries/WiFi</locationURI>
+		</link>
+		<link>
+			<name>libraries/WiFiClientSecure</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp320/libraries/WiFiClientSecure</locationURI>
+		</link>
+		<link>
+			<name>libraries/Wire</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp320/libraries/Wire</locationURI>
+		</link>
+		<link>
+			<name>libraries/base64</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/base64/1.1.0</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -13,7 +13,7 @@
 #include <ESP8266WiFi.h>
 #include "BME280_Sensor.h"
 #include "DS18D20_Sensor.h"
-#include "NtpTimeClientService.h"
+#include "Time/NtpTimeClientService.h"
 #include "TM1637.h"
 #include "TimeTrigger.h"
 #include "Loopable.h"

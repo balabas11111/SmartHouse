@@ -510,11 +510,7 @@ String EspSettingsBox::clearNlFromString(String str){
 }
 
 String EspSettingsBox::getFileName(AbstractItem* item){
-	String result=FPSTR(ESPSETTINGSBOX_SETTINGS_PATH);
-		   result+=item->getName();
-		   result+=FPSTR(ESPSETTINGSBOX_SETTINGS_TXT_EXT);
-
-	return result;
+	return getSettingsFileFileName(item->getName());
 }
 
 String EspSettingsBox::getThingSpeakChannelUrl(){

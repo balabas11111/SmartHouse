@@ -18,11 +18,11 @@
 #include "I2Chelper.h"
 #include "WiFiHelper.h"
 
-#include "NtpTimeClientService.h"
+#include "Time/NtpTimeClientService.h"
 #include "TimeTrigger.h"
 
 #include <DeviceHelper.h>
-#include <DisplayHelperAbstract.h>
+#include <Display_Pageable/DisplayHelperAbstract.h>
 #include <ThingSpeakHelper.h>
 #include <PinDigital.h>
 #include <Pir_Sensor.h>
@@ -152,44 +152,6 @@ void setup() {
 
 void loop() {
 	deviceHelper.loop();
-	//buttonMenu.loop();
-}
-
-//test functions--------------------------------------
-void processThingSpeakPost(){
-	Serial.println("process ThingSpeak post");
-}
-
-int8_t symbolKey=0;
-
-void onButtonChanged(){
-	if(!buttonMenu.isOn()){
-		Serial.println(FPSTR("Menu button UP"));
-
-		int8_t s1=symbolKey / 100;
-		int8_t s2=(symbolKey % 100) / 10;
-		int8_t s3=(symbolKey % 100) % 10;
-
-		if(s1<0){s1*=-1;}
-		if(s2<0){s2*=-1;}
-		if(s3<0){s3*=-1;}
-
-		Serial.print(s1);
-		Serial.print(s2);
-		Serial.print(s3);
-
-		Serial.print("='");
-		Serial.print(symbolKey);
-		Serial.println("'=");
-
-		int8_t statusText[4]={s1,s2,s3,symbolKey};
-		timeDisplay.display(statusText);
-
-		symbolKey+=1;
-		if(symbolKey>=26){
-			symbolKey=0;
-		}
-	}
 }
 
 //---------------------------------------------------------------------
@@ -414,4 +376,39 @@ void sendAbstractItemToHttp(AbstractItem* item){
 	}
 }
 
+//test functions--------------------------------------
+void processThingSpeakPost(){
+	Serial.println("process ThingSpeak post");
+}
 
+int8_t symbolKey=0;
+
+void onButtonChanged(){
+	if(!buttonMenu.isOn()){
+		Serial.println(FPSTR("Menu button UP"));
+
+		int8_t s1=symbolKey / 100;
+		int8_t s2=(symbolKey % 100) / 10;
+		int8_t s3=(symbolKey % 100) % 10;
+
+		if(s1<0){s1*=-1;}
+		if(s2<0){s2*=-1;}
+		if(s3<0){s3*=-1;}
+
+		Serial.print(s1);
+		Serial.print(s2);
+		Serial.print(s3);
+
+		Serial.print("='");
+		Serial.print(symbolKey);
+		Serial.println("'=");
+
+		int8_t statusText[4]={s1,s2,s3,symbolKey};
+		timeDisplay.display(statusText);
+
+		symbolKey+=1;
+		if(symbolKey>=26){
+			symbolKey=0;
+		}
+	}
+}

@@ -184,10 +184,10 @@ environment/project/io.sloeber.core.toolChain.release.259892230/A.EXTRA.TIME.DTS
 environment/project/io.sloeber.core.toolChain.release.259892230/A.EXTRA.TIME.DTS/value=0
 environment/project/io.sloeber.core.toolChain.release.259892230/A.EXTRA.TIME.LOCAL/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.259892230/A.EXTRA.TIME.LOCAL/operation=replace
-environment/project/io.sloeber.core.toolChain.release.259892230/A.EXTRA.TIME.LOCAL/value=1545491648
+environment/project/io.sloeber.core.toolChain.release.259892230/A.EXTRA.TIME.LOCAL/value=1545702926
 environment/project/io.sloeber.core.toolChain.release.259892230/A.EXTRA.TIME.UTC/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.259892230/A.EXTRA.TIME.UTC/operation=replace
-environment/project/io.sloeber.core.toolChain.release.259892230/A.EXTRA.TIME.UTC/value=1545484448
+environment/project/io.sloeber.core.toolChain.release.259892230/A.EXTRA.TIME.UTC/value=1545695726
 environment/project/io.sloeber.core.toolChain.release.259892230/A.EXTRA.TIME.ZONE/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.259892230/A.EXTRA.TIME.ZONE/operation=replace
 environment/project/io.sloeber.core.toolChain.release.259892230/A.EXTRA.TIME.ZONE/value=7200
@@ -544,7 +544,7 @@ environment/project/io.sloeber.core.toolChain.release.259892230/JANTJE.UPLOAD/op
 environment/project/io.sloeber.core.toolChain.release.259892230/JANTJE.UPLOAD/value=Default
 environment/project/io.sloeber.core.toolChain.release.259892230/JANTJE.WARNING_LEVEL/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.259892230/JANTJE.WARNING_LEVEL/operation=replace
-environment/project/io.sloeber.core.toolChain.release.259892230/JANTJE.WARNING_LEVEL/value=true
+environment/project/io.sloeber.core.toolChain.release.259892230/JANTJE.WARNING_LEVEL/value=false
 environment/project/io.sloeber.core.toolChain.release.259892230/JANTJE.WORKSPACE_LOCATION/delimiter=;
 environment/project/io.sloeber.core.toolChain.release.259892230/JANTJE.WORKSPACE_LOCATION/operation=replace
 environment/project/io.sloeber.core.toolChain.release.259892230/JANTJE.WORKSPACE_LOCATION/value=D\:\\projects\\\!\!\!SmartHouse\\workspace

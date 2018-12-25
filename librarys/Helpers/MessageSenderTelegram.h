@@ -105,7 +105,7 @@ public:
 	}
 
 	void sendMessage(String message){
-		bot->sendMessage(espSettingsBox->telegramReceivers, message);
+		//bot->sendMessage(espSettingsBox->telegramReceivers, message);
 	}
 
 private:

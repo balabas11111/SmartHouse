@@ -46,6 +46,12 @@ const char* const NTP_EXTRA_DEFAULTS[] PROGMEM={
 												NTP_timeTriggerInterval_Def
 												};
 */
+/*
+typedef enum {
+	NTP_enabled, NTP_poolServerName, NTP_timeOffset,NTP_updateInterval,NTP_timeTriggerInterval
+} NTP_Indexes;
+*/
+
 const char NTP_SETTINGS_BOX_DESCR[] PROGMEM ="Синхронизация времени по NTP";
 
 const uint8_t NTP_enabled             PROGMEM =0;

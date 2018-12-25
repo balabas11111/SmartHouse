@@ -47,6 +47,9 @@
 #define INDEX_DAY_OF_WEEK 3
 #define INDEX_LEAP_YEAR 4
 
+const char CALENDAR_DATE_DIVIDER[] PROGMEM ="-";
+const char CALENDAR_TIME_DIVIDER[] PROGMEM =":";
+
 static const uint8_t monthDays[]={31,28,31,30,31,30,31,31,30,31,30,31};
 
 const char CALENDAR_DAY_MONDAY_SHORT[] PROGMEM ="Mo";
