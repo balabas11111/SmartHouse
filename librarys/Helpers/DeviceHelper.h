@@ -13,6 +13,7 @@
 #include <Arduino.h>
 #include "Measurable.h"
 #include "AbstractItem.h"
+#include "JSONprovider.h"
 //#include "ESP8266WebServer.h"
 #include "TimeTrigger.h"
 
@@ -27,7 +28,7 @@ public:
 	boolean init(Initializable** initItems,uint8_t initItemsSize);
 	void update(AbstractItem** sensors,uint8_t sensorsSize);
 
-	String getJson(AbstractItem** sensors,uint8_t size);
+	String getJson(JSONprovider** sensors,uint8_t size);
 
 	void printDeviceDiagnostic();
 

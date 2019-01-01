@@ -107,9 +107,9 @@ public:
 	boolean isSettingsFileExists(String settingsName){
    	   String fileName=getSettingsFileFileName(settingsName);
 
-	   File file = SPIFFS.open(settingsName, "r");
+	   File file = SPIFFS.open(fileName, "r");
 
-	   boolean exists=file && file.size()!=0;
+	   boolean exists=!(!file || file.size()==0);
 
 	   if(exists){
 		   Serial.print(FPSTR("File exists "));
@@ -147,14 +147,15 @@ public:
 
 		File file = SPIFFS.open(fileName, "w");
 
-		boolean result=(file.println(str)>0);
+		size_t fileSize=file.print(str);
 
 		file.close();
 		Serial.println(str);
-		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVED));
+		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVED));
+		Serial.println(fileSize);
 
 		delay(1);
-		return result;
+		return fileSize>0;
 
 	}
 
@@ -244,7 +245,7 @@ public:
 		   extraBoxes[boxIndex]->fillDefaultValues();
 		   saveExtraBox(boxIndex);
 	   }else{
-		   Serial.println(FPSTR("file exists"));
+		   //Serial.println(FPSTR("file exists"));
 	   }
 
 	   File boxFile = SPIFFS.open(boxFileName, "r");
@@ -444,6 +445,10 @@ public:
 		return getExtraValue(boxName,index).toFloat();
 	}
 
+	boolean getExtraValueBoolean(int boxIndex,int key){
+		return stringToBoolean(getExtraValue(boxIndex, key));
+	}
+
 	boolean getExtraValueBoolean(String boxName,String key){
 		return stringToBoolean(getExtraValue(boxName, key));
 	}
@@ -613,7 +618,7 @@ public:
 
 	boolean staticIp=false;
 
-	IPAddress localIp=IPAddress(192, 168, 0, 70);
+	IPAddress localIp=IPAddress(192, 168, 0, 120);
 	IPAddress apIp=IPAddress(192, 168, 4, 1);
 	IPAddress gateIp=IPAddress(192, 168, 0, 1);
 	IPAddress subnetIp=IPAddress(255, 255, 255, 0);

@@ -71,6 +71,8 @@ public:
 		this->initFilesManager=true;
 
 		this->initialized=false;
+		this->lastConnected=millis();
+		this->oldstatus=WiFi.status();
 	}
 
 	boolean initialize(boolean _init){
@@ -78,7 +80,7 @@ public:
 			Serial.println(FPSTR(MESSAGE_WIFIHELPER_INIT_CONNECTION));
 
 			displayDetails();
-			if(WiFi.status()==3 && disconnectOnStartIfConnected){
+			if(WiFi.status()==WL_CONNECTED && disconnectOnStartIfConnected){
 				Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_DISCONNECTING));
 #ifdef ESP8266
 					WiFi.disconnect(1);
@@ -108,9 +110,7 @@ public:
 
 	boolean loop(){
 		if(initialized){
-			if(!isWiFIConnected()){
-				connectToWiFiIfNotConnected();
-			}
+			connectToWiFiIfNotConnected();
 			server->handleClient();
 		}
 		return initialized;
@@ -131,9 +131,9 @@ public:
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
 		Serial.println(WiFi.status());
 		//printHeap();
-		server->onNotFound([this](){handleNotFound();});
+		//server->onNotFound([this](){handleNotFound();});
 		//printHeap();
-		server->serveStatic("/", SPIFFS, String(FPSTR(ESPSETTINGSBOX_DEFAULT_PAGE)).c_str());
+		//server->serveStatic("/", SPIFFS, String(FPSTR(ESPSETTINGSBOX_DEFAULT_PAGE)).c_str());
 		//printHeap();
 		if(initStaticPages){
 			initStaticPagesInWebFolder();
@@ -327,8 +327,12 @@ public:
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_PASSWORD));
 		Serial.println(espSettingsBox->password);
 
-		//WiFi.disconnect(0);
+		WiFi.disconnect(0);
+		WiFi.persistent(false);
+		//WiFi.setAutoConnect(0);
+		//WiFi.enableSTA(true);
 		WiFi.mode(WIFI_STA);
+		//WiFi.setPhyMode(WIFI_PHY_MODE_11G);
 
 		if(serverInitEventFunc!=nullptr){
 			Serial.println(FPSTR("Init event functions"));
@@ -444,14 +448,19 @@ public:
 
 	void connectToWiFiIfNotConnected(){
 		uint8_t count=0;
-		displayDetails();
+		//displayDetails();
+/*
+		wl_status_t newStatus=WiFi.status();
 
-		wl_status_t oldstatus=WiFi.status();
-
+		if(newStatus!=oldstatus || lastConnected+10000<millis()){
+			displayDetails();
+			lastConnected=millis();
+		}
+*/
 		while(!isWiFIConnected() ){
-			if(count>=NOT_CONNECT_ITERATIONS || oldstatus!=WiFi.status()){
+			if(count==0 || count>=NOT_CONNECT_ITERATIONS || oldstatus!=WiFi.status()){
 				displayDetails();
-				count=0;
+				count=1;
 			}else{
 				Serial.print(FPSTR("."));
 				delay(RE_CONNECT_DELAY);
@@ -460,8 +469,8 @@ public:
 
 			oldstatus=WiFi.status();
 		}
-		Serial.println();
-		displayDetails();
+
+//		oldstatus=newStatus;
 	}
 
 	void displayDetails(){
@@ -469,7 +478,7 @@ public:
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_DIAGNOSTIC));
 		printHeap();
 #ifdef ESP8266
-		WiFi.printDiag(Serial);
+		//WiFi.printDiag(Serial);
 #endif
 		wl_status_t status=WiFi.status();
 
@@ -477,26 +486,26 @@ public:
 		Serial.print(FPSTR(" ("));
 		Serial.print(status);
 		Serial.print(FPSTR(")  ="));
-		if(status>5 || status<0){
+		if(status>7 || status<0){
 			Serial.println(FPSTR(WL_UNKNOWN_STATUS));
 		}else{
 			Serial.println(FPSTR(WIFIHELPER_WIFI_STATUSES[status]));
 		}
 
-		Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_MODE));
-		Serial.println(FPSTR(WIFIHELPER_WIFI_MODES[WiFi.getMode()]));
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_MODE));
+		Serial.print(FPSTR(WIFIHELPER_WIFI_MODES[WiFi.getMode()]));
 
-		Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_PHYMODE));
-		Serial.println(FPSTR(WIFIHELPER_PHY_MODES[WiFi.getPhyMode()]));
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_PHYMODE));
+		Serial.print(FPSTR(WIFIHELPER_PHY_MODES[WiFi.getPhyMode()]));
 
-		Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_CHANNEL));
-		Serial.println(WiFi.channel());
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_CHANNEL));
+		Serial.print(WiFi.channel());
 
-		Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_SlEEPMODE));
-		Serial.println(FPSTR(WIFIHELPER_SlEEP_MODES[WiFi.getSleepMode()]));
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_SlEEPMODE));
+		Serial.print(FPSTR(WIFIHELPER_SlEEP_MODES[WiFi.getSleepMode()]));
 
-		Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_AUTOCONNECT));
-		Serial.println(WiFi.getAutoConnect());
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_AUTOCONNECT));
+		Serial.print(WiFi.getAutoConnect());
 
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_SSSID_EQ));
 		Serial.println ( WiFi.SSID() );
@@ -672,16 +681,17 @@ public:
 				listDir(SPIFFS, "/", 0);
 			#endif
 */
-			server->on("/list", HTTP_GET, [this](){handleFileList();});
+			server->on(FPSTR(URL_LIST), HTTP_GET, [this](){handleFileList();});
+			server->on(FPSTR(URL_VIEW), HTTP_GET, [this](){handleFileView ();});
 			//load editor
 			server->on(FPSTR(URL_EDIT), HTTP_GET, [this](){
-				if(!handleFileRead(FPSTR(MESSAGE_WIFIHELPER_EDIT_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
+				if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_EDIT_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
 			});
 			server->on(FPSTR(URL_INDEX), HTTP_GET, [this](){
-				if(!handleFileRead(FPSTR(MESSAGE_WIFIHELPER_INDEX_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
+				if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_INDEX_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
 			});
 			server->on(FPSTR(URL_SETTINGS), HTTP_GET, [this](){
-				if(!handleFileRead(FPSTR(MESSAGE_WIFIHELPER_SETTINGS_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
+				if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_SETTINGS_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
 			});
 			//create file
 			//server->on("/edit", HTTP_PUT, [this](){handleFileCreate();});
@@ -737,7 +747,20 @@ public:
 		}
 
 		bool handleFileRead(String path){
-		  Serial.println("handleFileRead: " + path);
+			Serial.println("handleFileRead: " + path);
+			  String contentType = getContentType(path);
+				  if(SPIFFS.exists(path)){
+					File file = SPIFFS.open(path, "r");
+					//size_t sent =
+					server->streamFile(file, contentType);
+					file.close();
+					return true;
+				  }
+			  return false;
+		}
+
+		bool handleFileGzRead(String path){
+		  Serial.println("handleFileGzRead: " + path);
 		  if(path.endsWith("/")) path += "index.htm";
 		  String contentType = getContentType(path);
 		  String pathWithGz = path + ".gz";
@@ -810,10 +833,21 @@ public:
 		  server->send(500, "text/plain", msg + "\r\n");
 		}
 
+		void handleFileView(){
+		  if(!server->hasArg("file")) {
+			returnFail("BAD ARGS file is missed in params");
+			return;
+		  }
+
+		  if(server->hasArg("file")){
+			  handleFileRead(server->arg("file"));
+		  }
+		}
+
 		#ifdef ESP8266
 		void handleFileList() {
 		  if(!server->hasArg("dir")) {
-		    returnFail("BAD ARGS Dir is missed in params");
+		    returnFail("BAD ARGS dir is missed in params");
 		    return;
 		  }
 
@@ -943,6 +977,9 @@ private:
 	WebServer *server;
 #endif
 	//String name;
+	ulong lastConnected=0;
+	wl_status_t oldstatus;
+
 	EspSettingsBox *espSettingsBox;
 	DisplayHelper *displayHelper;
 	//PinDigital *signalPin;

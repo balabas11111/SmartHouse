@@ -21,6 +21,7 @@
 #define MODE_TIME_REFRESH_INTERVAL 500
 #define MODE_DATE_REFRESH_INTERVAL 1000
 #define MODE_OTHER_REFRESH_INTERVAL 30000
+#define MODE_SWITCH_TO_TIME_INTERVAL 10000
 
 #define DISPLAY_AP_SAP_DELAY 1000
 #define DISPLAY_WIFI_DELAY 1000
@@ -41,6 +42,7 @@ public:
 				BME280_Sensor* bmeMeasurer,DS18D20_Sensor* ds18d20Measurer){
 
 		this->displayRefreshTrigger=new TimeTrigger(0,MODE_TIME_REFRESH_INTERVAL,false,[this](){refreshDisplay();});
+		this->timeSwitchTrigger=new TimeTrigger(0,MODE_SWITCH_TO_TIME_INTERVAL,false,[this](){autoSwitchToTimeDisplay();});
 		this->timeDisplay=timeDisplay;
 		this->espSettingsBox=espSettingsBox;
 		this->bmeMeasurer=bmeMeasurer;
@@ -51,6 +53,7 @@ public:
 			BME280_Sensor* bmeMeasurer,DS18D20_Sensor* ds18d20Measurer,NtpTimeClientService* timeClient){
 
 		this->displayRefreshTrigger=new TimeTrigger(0,MODE_TIME_REFRESH_INTERVAL,false,[this](){refreshDisplay();});
+		this->timeSwitchTrigger=new TimeTrigger(0,MODE_SWITCH_TO_TIME_INTERVAL,false,[this](){autoSwitchToTimeDisplay();});
 		this->timeDisplay=timeDisplay;
 		this->espSettingsBox=espSettingsBox;
 		this->bmeMeasurer=bmeMeasurer;
@@ -66,15 +69,29 @@ public:
 	}
 
 	virtual boolean loop(){
-		if(!timeClient->isTimeReceived()){
+		if(timeClient==nullptr || !timeClient->isTimeReceived()){
 			return false;
 		}
+
+		timeSwitchTrigger->loop();
 		return displayRefreshTrigger->loop();
+	}
+
+	void displayTime(){
+		clearDisplay(1);
+		int8_t load[4]={SYMBOL_t,1,SYMBOL_n,SYMBOL_E};
+		display(load);
 	}
 
 	void displayLoad(){
 		clearDisplay(1);
 		int8_t load[4]={SYMBOL_L,SYMBOL_o,SYMBOL_A,SYMBOL_d};
+		display(load);
+	}
+
+	void displayErr(){
+		clearDisplay(1);
+		int8_t load[4]={SYMBOL_E,SYMBOL_r,SYMBOL_r,SYMBOL_SPACE};
 		display(load);
 	}
 
@@ -163,7 +180,11 @@ public:
 		displayDone();
 	}
 
-	void displayTime(){
+	void displayTimePage(){
+		if(timeClient==nullptr){
+			displayErr();
+			return;
+		}
 		dotVal=!dotVal;
 		timeDisplay->point(dotVal);
 
@@ -171,51 +192,100 @@ public:
 		display(time);
 	}
 
-	void displayDate(){
-		clearDisplay(1);
+	void displayDatePage(boolean fromButton){
+		if(timeClient==nullptr){
+			displayErr();
+			return;
+		}
+		clearDisplay(0);
+
+		if(fromButton){
+			int8_t statusText[4]={SYMBOL_d,SYMBOL_A,SYMBOL_t,SYMBOL_E};
+			display(statusText);
+
+			delay(DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED);
+		}
 		dotVal=true;
 		timeDisplay->point(dotVal);
 
 		int8_t* date=timeClient->getCurrentMonthDate();
-		/*
-		for(uint8_t i=0;i<4;i++){
-			Serial.print(date[i]);
-		}
-		Serial.println();
-		*/
 		display(date);
+
+		if(fromButton){
+			timeSwitchTrigger->start();
+		}
 	}
 
-	void displayTemperatureBme(boolean fromButton){
-		displayDisplayModeInfo(SYMBOL_DEGREE,20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
+	void displayTemperatureBmePage(boolean fromButton){
+		clearDisplay(0);
+
+		if(fromButton){
+			int8_t statusText[4]={SYMBOL_t,SYMBOL_E,SYMBOL_SPACE,SYMBOL_DEGREE};
+			display(statusText);
+
+			delay(DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED);
+		}
+		displayDisplayModeInfo(20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
 		displayIntStringValue(bmeMeasurer->getIntStringValByIndex(BME_280_TEMPERATURE_INDEX),SYMBOL_DEGREE);
+
+		if(fromButton){
+			timeSwitchTrigger->start();
+		}
 	}
 
-	void displayHumidityBme(boolean fromButton){
-		displayDisplayModeInfo(SYMBOL_H,20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
-		displayIntStringValue(bmeMeasurer->getIntStringValByIndex(BME_280_HUMIDITY_INDEX),SYMBOL_H);
+	void displayHumidityBmePage(boolean fromButton){
+		clearDisplay(0);
+
+		if(fromButton){
+			int8_t statusText[4]={SYMBOL_h,SYMBOL_u,SYMBOL_SPACE,SYMBOL_PERCENT};
+			display(statusText);
+
+			delay(DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED);
+		}
+
+		displayDisplayModeInfo(20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
+		displayIntStringValue(bmeMeasurer->getIntStringValByIndex(BME_280_HUMIDITY_INDEX),SYMBOL_h);
+
+		if(fromButton){
+			timeSwitchTrigger->start();
+		}
 	}
 
-	void displayPressureBme(boolean fromButton){
-		displayDisplayModeInfo(SYMBOL_P,20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
+	void displayPressureBmePage(boolean fromButton){
+		clearDisplay(0);
+
+		if(fromButton){
+			int8_t statusText[4]={SYMBOL_P,SYMBOL_r,SYMBOL_E,SYMBOL_S};
+			display(statusText);
+
+			delay(DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED);
+		}
 		Serial.print("pressure PA=");
 		Serial.print(bmeMeasurer->getPressurePascal());
 		Serial.print("; pressure mm=");
 		Serial.println(bmeMeasurer->getIntStringValFromFloat(bmeMeasurer->getPressureHgmm()));
 		displayIntStringValue(bmeMeasurer->getIntStringValFromFloat(bmeMeasurer->getPressureHgmm()),SYMBOL_P);
+
+		if(fromButton){
+			timeSwitchTrigger->start();
+		}
 	}
 
-	void displayTemperatureDS18D20(boolean fromButton){
-		displayDisplayModeInfo(SYMBOL_DEGREE,20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
+	void displayTemperatureDS18D20Page(boolean fromButton){
+		displayDisplayModeInfo(20,DELAY_AFTER_NOT_TIME_PAGE_DISPLAYED,fromButton);
 		String dsTempVal=ds18d20Measurer->getIntStringValByIndex(currentDs18);
 		displayIntStringValue(dsTempVal,SYMBOL_DEGREE);
+
+		if(fromButton){
+			timeSwitchTrigger->start();
+		}
 	}
 
-	void displayDisplayModeInfo(int8_t modeDescriptor,uint8_t delay1,uint16_t delay2,boolean fromButton){
+	void displayDisplayModeInfo(uint8_t delay1,uint16_t delay2,boolean fromButton){
 		clearDisplay(delay1);
 
 		if(fromButton){
-			int8_t statusText[4]={SYMBOL_MINUS,displayMode,SYMBOL_SPACE,modeDescriptor};
+			int8_t statusText[4]={SYMBOL_n,SYMBOL_r,SYMBOL_SPACE,displayMode};
 			display(statusText);
 
 			delay(delay2);
@@ -258,6 +328,10 @@ public:
 	}
 
 	void refreshDisplayPage(boolean fromButton){
+		if(timeClient==nullptr){
+			displayErr();
+			return;
+		}
 		if(timeClient->isTimeReceived()){
 /*
 			Serial.print(FPSTR("refreshDisplayPage fromButton="));
@@ -266,15 +340,15 @@ public:
 			Serial.print(displayMode);
 */
 			switch(displayMode){
-				case MODE_TIME: displayTime(); break;
-				case MODE_DATE: displayDate(); break;
-				case MODE_BME_TEMP: displayTemperatureBme(fromButton); break;
-				case MODE_BME_HUMIDITY: displayHumidityBme(fromButton); break;
-				case MODE_BME_PRESSURE: displayPressureBme(fromButton); break;
+				case MODE_TIME: displayTimePage(); break;
+				case MODE_DATE: displayDatePage(fromButton); break;
+				case MODE_BME_TEMP: displayTemperatureBmePage(fromButton); break;
+				case MODE_BME_HUMIDITY: displayHumidityBmePage(fromButton); break;
+				case MODE_BME_PRESSURE: displayPressureBmePage(fromButton); break;
 
 				default:
 					if(ds18d20Measurer->getItemCount()>0){
-						displayTemperatureDS18D20(fromButton);
+						displayTemperatureDS18D20Page(fromButton);
 					}else{
 						changePage();
 					}
@@ -283,6 +357,13 @@ public:
 			//Serial.println(FPSTR("timeClient not initialized"));
 			displayLoad();
 		}
+	}
+
+	void autoSwitchToTimeDisplay(){
+		displayMode=100;
+		changePage();
+		timeSwitchTrigger->stop();
+		displayTime();
 	}
 
 	void refreshDisplay(){
@@ -309,14 +390,14 @@ public:
 		}
 
 		selectCurrentDS18D20();
-
+/*
 		Serial.print(FPSTR("maxMode="));
 		Serial.println(maxMode);
 		Serial.print(FPSTR("displayMode="));
 		Serial.println(displayMode);
 		Serial.print(FPSTR("currentDs18="));
 		Serial.println(currentDs18);
-
+*/
 		uint refreshInterval=MODE_OTHER_REFRESH_INTERVAL;
 
 		switch(displayMode){
@@ -339,6 +420,7 @@ private:
 	DS18D20_Sensor* ds18d20Measurer;
 	NtpTimeClientService* timeClient;
 	TimeTrigger* displayRefreshTrigger;
+	TimeTrigger* timeSwitchTrigger;
 
 	/*
 	 0 - time

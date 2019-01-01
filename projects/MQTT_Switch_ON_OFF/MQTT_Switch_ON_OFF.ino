@@ -16,7 +16,6 @@
 #include "TimeTrigger.h"
 
 #include <DeviceHelper.h>
-#include <DisplayHelperAbstract.h>
 #include <ThingSpeakHelper.h>
 #include <PinDigital.h>
 #include <Pir_Sensor.h>
@@ -28,7 +27,6 @@
 #include "StatusMessage.h"
 
 #include "PinDigitalVirtual.h"
-#include "PCF8574Helper.h"
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
@@ -43,10 +41,8 @@
 EspSettingsBox espSettingsBox(FPSTR("Dev board on off switch"),true,true);
 
 ESP8266WebServer server ( 80 );
-ESP8266HTTPUpdateServer httpUpdater(true);
 
 I2Chelper i2cHelper(D1,D2,false);
-DisplayHelperAbstract displayHelper(&espSettingsBox);
 
 //TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,measureSensors);
 //TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),espSettingsBox.isThingSpeakEnabled,processThingSpeakPost);
@@ -75,12 +71,10 @@ BH1750_Sensor luxMeasurer(FPSTR(SENSOR_luxMeasurer));
 //DHT22_Sensor dhtMeasurer(VAR_NAME(dhtSensor), D0, 22);
 DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), D3);
 
-WiFiHelper wifiHelper(&espSettingsBox, &displayHelper, &server,postInitWebServer,false);
+WiFiHelper wifiHelper(&espSettingsBox, nullptr, &server,nullptr,postInitWebServer,false);
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 
-PCF8574Helper extender(virtualItems,ARRAY_SIZE(virtualItems));
-
-Loopable* loopArray[]={&extender,&wifiHelper,&buttonLeft,&buttonRight,&acMeter/*,&sensorsTrigger,&thingSpeakTrigger*/};
+Loopable* loopArray[]={&wifiHelper,&buttonLeft,&buttonRight,&acMeter/*,&sensorsTrigger,&thingSpeakTrigger*/};
 
 AbstractItem* abstractItems[]={&lampLeft,&lampRight,&lamp2,&lamp3,&bmeMeasurer,&luxMeasurer,&acMeter,&ds18d20Measurer};
 
@@ -95,8 +89,6 @@ void setup() {
 
   i2cHelper.init();
 
-  extender.init();
-  httpUpdater.setup(&server);
   wifiHelper.init();
   bmeMeasurer.init();
   luxMeasurer.init();

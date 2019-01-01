@@ -14,10 +14,12 @@
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266WiFi.h>
 
+#include "JSONprovider.h"
 #include "Loopable.h"
 #include "I2Chelper.h"
 #include "WiFiHelper.h"
 
+#include "Time/TimeIntervalService.h"
 #include "Time/NtpTimeClientService.h"
 #include "TimeTrigger.h"
 
@@ -39,16 +41,19 @@
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
 
+WiFiEventHandler stationModeConnectedHandler;
+WiFiEventHandler onStationModeDHCPTimeoutHandler;
+WiFiEventHandler onStationModeDisconnectedHandler;
+WiFiEventHandler onStationModeGotIPHandler;
 /* NTP Clock Device
 
  Connection
 
-  PirSensor          A0
+  PirSensor          D4
 
-  AC_RELE            D0
+  SignalLed PIR      D0
   I2C                D1, D2
   DS18D20            D3
-  SignalLed PIR      D4
 
   TM1637 - Display   D6 D7
 
@@ -61,22 +66,19 @@
 #define HUMAN_NOT_PRESENTED HIGH
 
 ESPSett_Ntp espSett_Ntp;
-ESPSett_Telegram espSett_Telegram;
 
-ESPExtraSettingsBox* extraBoxes[]={&espSett_Ntp,&espSett_Telegram};
+ESPExtraSettingsBox* extraBoxes[]={&espSett_Ntp};
 
 EspSettingsBox espSettingsBox(FPSTR("NTP clock with PIR sensor"),extraBoxes,ARRAY_SIZE(extraBoxes));
-//EspSettingsBox espSettingsBox(FPSTR("NTP clock with PIR sensor"));
 
 BeeperB beeper(D5,HIGH,LOW,true,false);
 
 I2Chelper i2cHelper(D1,D2,false);
 
-//PinDigital buttonMenu(FPSTR(SENSOR_buttonLeft),D8,onButtonMenuChanged);
-PinDigital buttonMenu(FPSTR(SENSOR_buttonLeft),D8,onButtonChanged);
-//PinDigital AC_Rele1(FPSTR(SENSOR_AC_Rele1),D0,LOW,HIGH);
-PinDigital signalLed(FPSTR(SENSOR_signalLed),D0,LOW,HIGH);
-Pir_Sensor pirDetector(VAR_NAME(pirDetector),A0,onPirDetectorChanged,700,30000);
+PinDigital buttonMenu(FPSTR(SENSOR_buttonLeft),D8,onButtonMenuChanged);
+PinDigital signalLed(FPSTR(SENSOR_signalLed),D0,LOW,LOW);
+
+Pir_Sensor pirDetector(VAR_NAME(pirDetector),D4,onPirDetectorChanged,700,30000);
 
 DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), D3);
 BME280_Sensor bmeMeasurer(FPSTR(SENSOR_bmeMeasurer));
@@ -86,23 +88,27 @@ ESP8266HTTPUpdateServer httpUpdater(true);
 
 TM1637 timeDisplay(D6,D7);
 
-TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),false,updateSensors);
+TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,updateSensors);
 TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),false,processThingSpeakPost);
 
 NtpTimeClientService timeClient(&espSettingsBox);
-DisplayHelper_TM1637_Clock_PIR displayHelper(&timeDisplay,&espSettingsBox,&bmeMeasurer,&ds18d20Measurer,&timeClient);
-
+DisplayHelper_TM1637_Clock_PIR displayHelper(&timeDisplay,&espSettingsBox,&bmeMeasurer,&ds18d20Measurer,&timeClient);//,);
 
 WiFiHelper wifiHelper(&espSettingsBox, nullptr, &server,setupWifiEvents,postInitWebServer,true);
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 
-Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeClient,
-						&displayHelper,&pirDetector};
+TimeIntervalService timeIntervalService(&espSettingsBox,&timeClient,nullptr);
+
+Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeClient,&displayHelper,
+		&pirDetector,&timeIntervalService};//,&pirDetector
 
 AbstractItem* abstractItems[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
+JSONprovider* jsonProviders[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeClient,&timeIntervalService};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),120000);
 
+
+boolean reconnected=false;
 void initComponents(){
 	displayHelper.init();
 	beeper.init();
@@ -118,12 +124,16 @@ void initComponents(){
 	loadSensors();
 
 	sensorsTrigger.init();
+	timeIntervalService.init();
 }
 
 void setup() {
   Serial.begin(115200);
 
   deviceHelper.printDeviceDiagnosticNoSpiff();
+
+  SPIFFS.begin();
+  SPIFFS.remove("/settings/settings.txt");
 
   espSettingsBox.init();
 
@@ -132,12 +142,9 @@ void setup() {
 
   displayHelper.init();
 
-  //espSettingsBox.testExtraBoxFunctionality();
-
   deviceHelper.startDevice(espSettingsBox.DeviceId);
 
   initComponents();
-
   updateSensors();
 
   displayHelper.postProcessConnection(wifiHelper.isAP(),wifiHelper.getIpStr());
@@ -148,10 +155,20 @@ void setup() {
 
   deviceHelper.printDeviceDiagnostic();
   Serial.println(FPSTR(MESSAGE_DEVICE_STARTED));
+
+  reconnected=false;
 }
 
 void loop() {
 	deviceHelper.loop();
+
+	if(reconnected){
+		beeper.shortBeep();
+		reconnected=false;
+		Serial.println("reconnect detected");
+	}
+
+	processTimeIntervals();
 }
 
 //---------------------------------------------------------------------
@@ -211,20 +228,21 @@ void postInitWebServer(){
 	server.on(FPSTR(URL_GET_SENSORS_CURRNT_VALUES), HTTP_GET, [](){
 		if(server.hasArg(FPSTR(MESSAGE_SERVER_ARG_SENSOR))){
 			String arg=server.arg(FPSTR(MESSAGE_SERVER_ARG_SENSOR));
-
+/*
 			if(arg==FPSTR(NTP_TIME_CLIENT_SERVICE_NAME)){
 				wifiHelper.checkAuthentication();
 				server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), timeClient.getJson());
 			}
-
+*/
 			if(arg==FPSTR(MESSAGE_SERVER_ARG_VAL_ALL)){
 				wifiHelper.checkAuthentication();
-				server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), getAllSensorsJson());
+				server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),
+						deviceHelper.getJson(jsonProviders, ARRAY_SIZE(jsonProviders)));
 			}
 
-			for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
-				if(arg==abstractItems[i]->getName()){
-					server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), abstractItems[i]->getJson());
+			for(uint8_t i=0;i<ARRAY_SIZE(jsonProviders);i++){
+				if(arg==jsonProviders[i]->getName()){
+					server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), jsonProviders[i]->getJson());
 					break;
 				}
 			}
@@ -241,11 +259,43 @@ void setupWifiEvents(){
 		WiFi.onSoftAPModeStationConnected([](const WiFiEventSoftAPModeStationConnected& evt){wifiHelper.onSoftAPModeStationConnected(evt);});
 		WiFi.onSoftAPModeStationDisconnected([](const WiFiEventSoftAPModeStationDisconnected& evt){wifiHelper.onSoftAPModeStationDisconnected(evt);});
 	}else{
-		WiFi.onStationModeConnected([](const WiFiEventStationModeConnected& evt){wifiHelper.onStationModeConnected(evt);});
-		WiFi.onStationModeDisconnected([](const WiFiEventStationModeDisconnected& evt){wifiHelper.onStationModeDisconnected(evt);});
-		WiFi.onStationModeDHCPTimeout([](){wifiHelper.onStationModeDHCPTimeout();});
+		Serial.println(FPSTR("--------setupWifiEvents-------"));
+		stationModeConnectedHandler=WiFi.onStationModeConnected(onStationModeConnected);
+		onStationModeDisconnectedHandler=WiFi.onStationModeDisconnected(onStationModeDisconnected);
+		onStationModeDHCPTimeoutHandler=WiFi.onStationModeDHCPTimeout(onStationModeDHCPTimeout);
+		onStationModeGotIPHandler=WiFi.onStationModeGotIP(onStationModeGotIP);
 	}
 }
+//--------------------------------------------------------------------------------------
+void onStationModeConnected(const WiFiEventStationModeConnected& evt){
+		Serial.print(FPSTR("STA connected: "));
+		Serial.print(FPSTR(" ssid="));
+		Serial.print(evt.ssid);
+		Serial.print(FPSTR(" bssid="));
+		Serial.print(wifiHelper.macToString(evt.bssid));
+		Serial.print(FPSTR(" channel="));
+		Serial.println(evt.channel);
+	}
+
+	void onStationModeDisconnected(const WiFiEventStationModeDisconnected& evt){
+		Serial.print(FPSTR("STA DISconnected: "));
+		Serial.print(FPSTR(" ssid="));
+		Serial.print(evt.ssid);
+		Serial.print(FPSTR(" bssid="));
+		Serial.print(wifiHelper.macToString(evt.bssid));
+		Serial.print(FPSTR(" reason="));
+		Serial.println(evt.reason);
+	}
+
+	void onStationModeDHCPTimeout(){
+		Serial.print(FPSTR("STA DHCP timed out: "));
+	}
+
+	void onStationModeGotIP(const WiFiEventStationModeGotIP& evt){
+		Serial.print(FPSTR("onStationModeGotIP IP="));
+		Serial.println(evt.ip);
+		reconnected=true;
+	}
 
 //base functions
 void updateSensors(){
@@ -257,6 +307,18 @@ void updateSensors(){
 	}
 
 	deviceHelper.printDeviceDiagnostic();
+}
+
+void processTimeIntervals(){
+	if(timeIntervalService.getAlarmActive()){
+		beeper.playGenerator();
+	}else{
+		beeper.noPlayGenerator();
+	}
+}
+
+void printPir(){
+	pirDetector.displayDetails();
 }
 
 //---------------------------------------------------------------------
@@ -312,7 +374,7 @@ String setSensorJson(){
 }
 
 String getAllSensorsJson(){
-	return deviceHelper.getJson(abstractItems, ARRAY_SIZE(abstractItems));
+	return deviceHelper.getJson(jsonProviders, ARRAY_SIZE(jsonProviders));
 }
 
 String executeCommand(){
@@ -383,7 +445,7 @@ void processThingSpeakPost(){
 
 int8_t symbolKey=0;
 
-void onButtonChanged(){
+void changeSymbol(){
 	if(!buttonMenu.isOn()){
 		Serial.println(FPSTR("Menu button UP"));
 
@@ -407,7 +469,7 @@ void onButtonChanged(){
 		timeDisplay.display(statusText);
 
 		symbolKey+=1;
-		if(symbolKey>=26){
+		if(symbolKey<0){
 			symbolKey=0;
 		}
 	}

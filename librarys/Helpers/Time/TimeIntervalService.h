@@ -12,11 +12,16 @@
 #include "ArduinoJson.h"
 #include "Time/NtpTimeClientService.h"
 #include "EspSettingsBox.h"
+#include "JSONprovider.h"
 #include "Loopable.h"
 #include "Initializable.h"
 #include "FunctionalInterrupt.h"
+#include "DS3231.h"
+#include "TimeTrigger.h"
 
 #define ALARM_SIZE 10
+#define SEC_IN_DAY 24*60*60
+#define SEC_IN_WEEK 7*24*60*60
 
 const char* const IntervalState_Names[] PROGMEM={
 		"NEW", "WAIT", "ACTIVE", "FINISHED", "TO_DELETE", "MISSED", "FAILED"
@@ -47,15 +52,16 @@ typedef enum {
 typedef struct timeIntervalDetail{
   uint8_t id;
   String name;
-  IntervalType type;
-  ulong startTime;
-  ulong endTime;
-  IntervalState state;
+  uint8_t type;
+  uint32_t startTime;
+  uint32_t endTime;
+  uint32_t time;
+  uint8_t state;
   String days;
   String param;
 }TimeIntervalDetail;
 
-class TimeIntervalService: public Initializable, public Loopable {
+class TimeIntervalService: public Initializable, public Loopable, public JSONprovider {
 public:
 	virtual ~TimeIntervalService(){};
 
@@ -86,13 +92,14 @@ public:
 			finishInit();
 		}
 
+		alarmSwitcer.loop();
 		processIntervals();
 
 		return true;
 	}
 
 	ulong now(){
-		return timeService->now();
+		return timeService->getnow();
 	}
 
 	boolean finishInit(){
@@ -101,25 +108,32 @@ public:
 		processIntervals();
 
 		waitForTimeReceive=false;
+
+		addTestInterval();
+
 		return true;
 	}
 
 	TimeIntervalDetail getInterval(uint8_t ind){
-		if(!isInitComplete() || index>=itemCount){
-			return NULL;
+		if(!isInitComplete() || ind>=itemCount){
+			ind=itemCount;
 		}
 
 		return items[ind];
+	}
+
+	virtual String getName(){
+		return FPSTR("TimeIntervalService");
 	}
 
 	virtual String getJson(){
 		String result="{"+getItemJson()+",\"items\":[";
 
 			for(uint8_t i=0;i<itemCount;i++){
-				result+=getItemJson(i);
-				if(i!=itemCount-1){
-					result+=",";
-				}
+					result+=getItemJson(i);
+					if(i!=itemCount-1){
+						result+=",";
+					}
 			}
 
 			result+="]}";
@@ -127,8 +141,46 @@ public:
 		return result;
 	}
 
-	virtual void add(){
+	virtual void add(uint32_t start,uint32_t end,IntervalType type,uint16_t time,String days){
+		items[itemCount].state=WAIT;
+		items[itemCount].type=type;
+		items[itemCount].startTime=start;
+		items[itemCount].endTime=end;
+		items[itemCount].time=type==PERIODIC?time:0;
+		items[itemCount].days=type==MULTIDAILY?days:"";
 
+		Serial.println(FPSTR("Interval added"));
+		printTimeInterval(items[itemCount]);
+		itemCount++;
+		saveToFile();
+	}
+
+	void addTestInterval(){
+		itemCount=0;
+
+		uint32_t start=DateTime(2019,1,1,22,0,0).unixtime();
+
+		ulong testTime=timeService->getnow()+40;
+		add(start,start+50,ONCE,0,"");
+	}
+
+	int getActiveAlarms(){
+		for(uint8_t i=0;i<itemCount;i++){
+			if(items[i].state==ACTIVE){
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	boolean getAlarmActive(){
+		return alarmActive;
+	}
+
+	void stopAlarm(){
+		alarmSwitcer.stop();
+		alarmActive=false;
 	}
 
 protected:
@@ -175,8 +227,8 @@ protected:
 				items[i].state=root["items"][i]["type"];
 				items[i].startTime=root["items"][i]["minVal"];
 				items[i].endTime=root["items"][i]["maxVal"];
-				items[i].days=root["items"][i]["days"];
-				items[i].param=root["items"][i]["param"];
+				items[i].days=root["items"][i]["days"].as<char*>();
+				items[i].param=root["items"][i]["param"].as<char*>();
 
 				Serial.println(getItemJson(i));
 			}
@@ -202,11 +254,12 @@ protected:
 		uint8_t updated=0;
 
 		for(uint8_t i=0;i<itemCount;i++){
-			ulong now=now();
+			ulong now=timeService->getnow();
 
 			boolean reschedule=false;
 			boolean dispatch=false;
 			boolean update=false;
+
 
 			switch(items[i].state){
 				case NEW: reschedule=true; break;
@@ -214,10 +267,12 @@ protected:
 					{	IntervalCompNow compRes=compareIntervalAndNow(now,items[i]);
 						switch(compRes){
 							case NOW_IN_PAST_OF_INTERVAL:
+									Serial.println(FPSTR("WAIT is in past"));
 									setState(i,FINISHED);
 									reschedule=true;
 									break;
 							case NOW_IN_INTERVAL:
+									Serial.println(FPSTR("WAIT is in interval"));
 									setState(i,ACTIVE);
 									dispatch=true;
 									break;
@@ -228,6 +283,7 @@ protected:
 					{	IntervalCompNow compRes=compareIntervalAndNow(now,items[i]);
 						switch(compRes){
 							case NOW_IN_PAST_OF_INTERVAL:
+									Serial.println(FPSTR("ACTIVE is in past"));
 									setState(i,FINISHED);
 									reschedule=true;
 									dispatch=true;
@@ -239,13 +295,16 @@ protected:
 					{	IntervalCompNow compRes=compareIntervalAndNow(now,items[i]);
 						switch(compRes){
 							case NOW_IN_PAST_OF_INTERVAL:
+									Serial.println(FPSTR("FINISHED is in past"));
 									reschedule=true;
 									break;
 							case NOW_IN_INTERVAL:
+									Serial.println(FPSTR("FINISHED is in interval"));
 									setState(i,ACTIVE);
 									dispatch=true;
 									break;
 							case NOW_IN_FUTURE_OF_INTERVAL:
+									Serial.println(FPSTR("FINISHED is in future"));
 									setState(i,WAIT);
 									update=true;
 									break;
@@ -255,7 +314,12 @@ protected:
 
 			}
 
-			doSave=dispatch || reschedule || update;
+			doSave= reschedule || update;
+
+			if(dispatch || doSave){
+				Serial.print(FPSTR("check interval "));
+				printTimeInterval(items[i]);
+			}
 
 			if(update){
 				updated++;
@@ -263,15 +327,11 @@ protected:
 
 			if(dispatch){
 				dispatched++;
-				if(externalFunction!=nullptr){
-					Serial.print(FPSTR("dispatch "));
-					Serial.println(getItemJson(i));
-					externalFunction(items[i]);
-				}
+				dispatchExternalFunction(i);
 			}
 
 			if(reschedule){
-				scheduleNextExecution(i);
+				doSave=scheduleNextExecution(i) || doSave;
 				rescheduled++;
 				Serial.print(FPSTR("reschedule "));
 				Serial.println(getItemJson(i));
@@ -291,15 +351,178 @@ protected:
 		}
 	}
 
-	boolean scheduleNextExecution(uint8_t ind){
+	void dispatchExternalFunction(uint8_t ind){
+		Serial.print(FPSTR("dispatch "));
+		Serial.println(getItemJson(ind));
 
-		return true;
+		boolean started=items[ind].state==ACTIVE;
+		alarmActive=started;
+
+		this->alarmSwitcer.setActive(started);
+
+		Serial.print(FPSTR("alarmActive="));
+		Serial.println(alarmActive);
+
+		if(externalFunction!=nullptr){
+			externalFunction(items[ind]);
+		}
 	}
 
+	boolean scheduleNextExecution(uint8_t ind){
+
+		boolean result=false;
+
+		Serial.println("Before change");
+		printTimeInterval(items[ind]);
+
+		if(items[ind].type==ONCE){
+			items[ind].state=TO_DELETE;
+			result= true;
+		}
+		if(items[ind].type==PERIODIC){
+			items[ind].startTime+=items[ind].time;
+			items[ind].endTime+=items[ind].time;
+			items[ind].state=WAIT;
+			result= true;
+		}
+		if(items[ind].type==DAILY){
+			items[ind].startTime+=SEC_IN_DAY;
+			items[ind].endTime+=SEC_IN_DAY;
+			items[ind].state=WAIT;
+			result= true;
+		}
+		if(items[ind].type==MULTIDAILY){
+			int8_t days[7]={0,0,0,0,0,0,0};
+
+			String d=items[ind].days;
+			uint8_t lastPos=0;
+
+			for(uint8_t i=0;i<d.length();i++){
+				if(d.substring(i,i+1)==","){
+					uint8_t day=d.substring(lastPos,i-1).toInt();
+					days[day]=1;
+				}
+			}
+
+			for(uint8_t i=0;i<7;i++){
+				Serial.print(days[i]);
+			}
+
+			Serial.println();
+
+			DateTime dt1=DateTime(items[ind].startTime);
+			uint8_t todayDay=dt1.dayOfTheWeek();
+
+			Serial.print("todayDay=");
+			Serial.println(todayDay);
+
+			int nextDay=-1;
+
+			for(uint8_t i=todayDay+1;i<7;i++){
+				if(days[i]==1){
+					nextDay=i;
+					break;
+				}
+			}
+
+			if(nextDay==-1){
+				for(uint8_t i=0;i<=todayDay;i++){
+					if(days[i]==1){
+						nextDay=i;
+						break;
+					}
+				}
+			}
+
+			Serial.print("nextDay=");
+			Serial.println(nextDay);
+
+			uint8_t dayDif=0;
+
+			if(nextDay>todayDay){
+				dayDif=nextDay-todayDay;
+			}else{
+				dayDif=6-todayDay+nextDay+1;
+			}
+
+			Serial.print("dayDif=");
+			Serial.println(dayDif);
+
+			items[ind].startTime+=dayDif*SEC_IN_DAY;
+			items[ind].endTime+=dayDif*SEC_IN_DAY;
+			items[ind].state=WAIT;
+			result= true;
+		}
+		if(items[ind].type==WEEKLY){
+			items[ind].startTime+=7*SEC_IN_DAY;
+			items[ind].endTime+=7*SEC_IN_DAY;
+			items[ind].state=WAIT;
+			result= true;
+		}
+		if(items[ind].type==MONTHLY){
+
+			DateTime dt1= DateTime(items[ind].startTime);
+
+
+			uint newMonth=dt1.month();
+			uint16_t newYear=dt1.year();
+
+			if(newMonth==12){
+				newMonth=1;
+				newYear+=1;
+			}else{
+				newMonth+=1;
+			}
+
+			DateTime dt2=DateTime(newYear,newMonth,dt1.day(),dt1.hour(),dt1.minute(),dt1.second());
+
+			uint32_t increment=dt2.unixtime()-items[ind].startTime;
+
+			items[ind].startTime+=increment;
+			items[ind].endTime+=increment;
+			items[ind].state=WAIT;
+			result= true;
+		}
+
+		Serial.println("After change");
+		printTimeInterval(items[ind]);
+
+		return result;
+	}
+
+	void printTimeInterval(TimeIntervalDetail time){
+		Serial.print("type=");
+		Serial.print(time.type);
+		Serial.print(" state=");
+		Serial.print(time.state);
+		Serial.print(" startTime=");
+		printDateTime(time.startTime);
+		Serial.print(" endTime=");
+		printDateTime(time.endTime);
+		Serial.println();
+	}
+
+	void printDateTime(uint32_t interval){
+		DateTime dt1=DateTime(interval);
+		Serial.print(dt1.getFormattedIsoDateTime());
+	}
+
+
+
+	void onAlarmActiveChange(){
+		Serial.println("alarmActive changed");
+		alarmActive=!alarmActive;
+	}
+
+
+
 private:
+
+	boolean alarmActive;
 	boolean waitForTimeReceive=false;
 	EspSettingsBox* espSettingsBox;
 	NtpTimeClientService* timeService;
+	TimeTrigger alarmSwitcer=TimeTrigger(0,1000,false,[this](){onAlarmActiveChange();});
 
 	std::function<void(TimeIntervalDetail)> externalFunction;
 
@@ -327,10 +550,10 @@ private:
 					+"\"param\":\""+item.param+"\"}";
 	}
 
-	String getTypeName(IntervalType id){
+	String getTypeName(uint8_t id){
 		return String(FPSTR(IntervalType_Names[id]));
 	}
-	String getStateName(IntervalState id){
+	String getStateName(uint8_t id){
 		return String(FPSTR(IntervalState_Names[id]));
 	}
 
@@ -339,7 +562,7 @@ private:
 	}
 
 	IntervalCompNow compareIntervalAndNow(ulong now,TimeIntervalDetail interval){
-		if(interval.endTime<now){
+		if(interval.endTime>now && interval.startTime>now){
 			return NOW_IN_FUTURE_OF_INTERVAL;
 		}
 

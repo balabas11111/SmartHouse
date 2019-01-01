@@ -8,6 +8,8 @@
 #ifndef LIBRARIES_MEASURER_PIRDETECTOR_H_
 #define LIBRARIES_MEASURER_PIRDETECTOR_H_
 
+#define MIN_NO_PRESENTED_INTERVAL 5000
+
 #include <PinDigital.h>
 #include "Arduino.h"
 #include "TimeTrigger.h"
@@ -16,9 +18,12 @@
 
 class Pir_Sensor: public PinDigital {
 public:
-	Pir_Sensor(String name,uint8_t _pin,std::function<void(void)> onChangeFunction, uint16_t analogLevelForHigh, uint humanNotPresentInterval )
+	Pir_Sensor(String name,uint8_t _pin,std::function<void(void)> onChangeFunction, int analogLevelForHigh, uint humanNotPresentInterval )
 		:PinDigital(name,_pin,[this](){processPinChange();}){
 		this->humanNotPresentInterval=humanNotPresentInterval;
+		if(this->humanNotPresentInterval<MIN_NO_PRESENTED_INTERVAL){
+			this->humanNotPresentInterval=MIN_NO_PRESENTED_INTERVAL;
+		}
 		this->humanPresentTrigger=new TimeTrigger(0,humanNotPresentInterval,false,[this](){onHumanPresentTrigger();});
 		this->externalFunction=onChangeFunction;
 		this->analogLevelForHigh=analogLevelForHigh;
@@ -36,16 +41,20 @@ public:
 
 	int getVal() override{
 		if(analogLevelForHigh!=0){
-			return (getValAnalog()>=analogLevelForHigh)?HIGH:LOW;
+			//Serial.println("readAnalog");
+			lastAnalog=analogRead(pin);
+			return (lastAnalog>=analogLevelForHigh)?HIGH:LOW;
 		}
 
 		return PinDigital::getVal();
 	}
 
 	void processPinChange(){
-		Serial.print("Pir change ");
-		Serial.println(getVal());
-
+		/*Serial.print(FPSTR("Pir change val="));
+		Serial.print(getVal());
+		Serial.print(FPSTR(" lastAnalog="));
+		Serial.println(lastAnalog);
+		*/
 		if(isOn()){
 			onMovementDetected();
 		}else{
@@ -58,7 +67,9 @@ public:
 	}
 
 	void onMovementDetected(){
-		Serial.println(FPSTR("-------handleMovementDetected"));
+		if(!humanPresented){
+			Serial.println(FPSTR("-------handleMovementDetected"));
+		}
 
 		boolean executeAction=!humanPresented && externalFunction!=nullptr;
 		humanPresented=true;
@@ -104,13 +115,14 @@ public:
 	};
 
 private:
+	int lastAnalog=0;
 	TimeTrigger *humanPresentTrigger;
 
 	uint humanNotPresentInterval=30000;
 	boolean humanPresented=false;
 
 	std::function<void(void)> externalFunction;
-	uint16_t analogLevelForHigh=0;
+	int analogLevelForHigh=0;
 };
 
 #endif /* LIBRARIES_MEASURER_PIRDETECTOR_H_ */

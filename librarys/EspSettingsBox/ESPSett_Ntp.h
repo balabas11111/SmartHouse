@@ -51,6 +51,8 @@ typedef enum {
 	NTP_enabled, NTP_poolServerName, NTP_timeOffset,NTP_updateInterval,NTP_timeTriggerInterval
 } NTP_Indexes;
 */
+//10 hours
+#define MIN_UPDATE_INTERVAL 36000000
 
 const char NTP_SETTINGS_BOX_DESCR[] PROGMEM ="Синхронизация времени по NTP";
 

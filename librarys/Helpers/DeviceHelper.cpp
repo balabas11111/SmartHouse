@@ -7,6 +7,7 @@
 #include "Arduino.h"
 #include <DeviceHelper.h>
 #include "ESP_Consts.h"
+#include "JSONprovider.h"
 #ifdef ESP32
 #include "SPIFFS.h"
 #endif
@@ -176,7 +177,7 @@ String DeviceHelper::processAlarm(AbstractItem** sensors, uint8_t sensorsSize){
 	return alarmMessage;
 }
 
-String DeviceHelper::getJson(AbstractItem** sensors, uint8_t size) {
+String DeviceHelper::getJson(JSONprovider** sensors, uint8_t size) {
 	yield();
 		String result="{\"sensors\":[";
 

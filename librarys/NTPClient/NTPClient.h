@@ -93,7 +93,9 @@ class NTPClient {
      */
     void end();
 
-    boolean timeReceived();
+    ulong getLastUpdated();
+
+    boolean udpStarted();
 };
 
 //Added by Sloeber 

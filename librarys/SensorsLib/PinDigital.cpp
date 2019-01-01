@@ -111,9 +111,11 @@ void PinDigital::processInterrupt(){
 
 		if(now!=oldVal){
 			changed=true;
+			/*
 			Serial.print(" name");Serial.print(name);
 			Serial.print(" old");Serial.print(oldVal);
 			Serial.print(" now");Serial.println(now);
+			*/
 
 			#ifdef DIGITAL_PIN_DISPLAY_CHANGE_EVENT
 				Serial.print(printState()+" now="+String(now));

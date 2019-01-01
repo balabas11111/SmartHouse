@@ -32,17 +32,17 @@
 */
 
 //sensors constants
-const char TEMPERATURE_RU[] PROGMEM ="Ã�Â Ã‘Å¾Ã�Â Ã‚ÂµÃ�Â Ã‘ËœÃ�Â Ã‘â€”Ã�Â Ã‚ÂµÃ�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã‘â€œÃ�Â¡Ã�â€šÃ�Â Ã‚Â°";
-const char HUMIDITY_RU[] PROGMEM ="Ã�Â Ã¢â‚¬â„¢Ã�Â Ã‚Â»Ã�Â Ã‚Â°Ã�Â Ã‚Â¶Ã�Â Ã�â€¦Ã�Â Ã‘â€¢Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã�Å ";
-const char PRESSURE_RU[] PROGMEM ="Ã�Â Ã¢â‚¬ï¿½Ã�Â Ã‚Â°Ã�Â Ã�â€ Ã�Â Ã‚Â»Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‘â€˜Ã�Â Ã‚Âµ";
-const char ALTITUDE_RU[] PROGMEM ="Ã�Â Ã¢â‚¬â„¢Ã�Â¡Ã¢â‚¬Â¹Ã�Â¡Ã�Æ’Ã�Â Ã‘â€¢Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã‚Â°";
-const char LIGHT_RU[] PROGMEM ="Ã�Â Ã‘â€ºÃ�Â¡Ã�Æ’Ã�Â Ã�â€ Ã�Â Ã‚ÂµÃ�Â¡Ã¢â‚¬Â°Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‘â€˜Ã�Â Ã‚Âµ";
+const char TEMPERATURE_RU[] PROGMEM ="Температура °C BME-280";
+const char HUMIDITY_RU[] PROGMEM ="Относительная влажность % BME-280";
+const char PRESSURE_RU[] PROGMEM ="Атмосферное давление Паскаль BME-280";
+const char ALTITUDE_RU[] PROGMEM ="Высота над уровнем моря BME-280";
+const char LIGHT_RU[] PROGMEM ="Освещенность Люкс BH-1750";
 
-const char MEASURE_CELSIUS_DEGREES_RU[] PROGMEM ="Ã�â€™Ã‚Â°C";
+const char MEASURE_CELSIUS_DEGREES_RU[] PROGMEM ="°C";
 const char MEASURE_PERSENT_RU[] PROGMEM ="%";
-const char MEASURE_PASCAL_RU[] PROGMEM ="Ã�Â Ã‘â€”Ã�Â Ã‚Â°";
-const char MEASURE_METER_RU[] PROGMEM ="Ã�Â Ã‘Ëœ";
-const char MEASURE_LIGHT_RU[] PROGMEM ="Ã�Â Ã¢â‚¬ÂºÃ�Â¡Ã�â€¹Ã�Â Ã‘â€�Ã�Â¡Ã�Æ’";
+const char MEASURE_PASCAL_RU[] PROGMEM ="Паскаль";
+const char MEASURE_METER_RU[] PROGMEM ="м";
+const char MEASURE_LIGHT_RU[] PROGMEM ="Люкс";
 
 const char TEMPERATURE[] PROGMEM ="Temperature";
 const char HUMIDITY[] PROGMEM ="Humidity";
@@ -53,7 +53,7 @@ const char LIGHT[] PROGMEM ="Light";
 const char TEMPERATURE_DHT22[] PROGMEM ="Temperature_DHT22";
 const char HUMIDITY_DHT22[] PROGMEM ="Humidity_DHT22";
 
-const char MEASURE_CELSIUS_DEGREES[] PROGMEM ="Ã�â€™Ã‚Â°C";
+const char MEASURE_CELSIUS_DEGREES[] PROGMEM ="°C";
 const char MEASURE_PERSENT[] PROGMEM ="%";
 const char MEASURE_PASCAL[] PROGMEM ="Pa";
 const char MEASURE_METER[] PROGMEM ="m";
@@ -455,6 +455,7 @@ const PROGMEM char MESSAGE_WIFIHELPER_HTTP_BEGIN_EQ[]=" begin=";
 const PROGMEM char MESSAGE_WIFIHELPER_HTTP_HEADER_EQ[]=" header=";
 
 const PROGMEM char MESSAGE_WIFIHELPER_DEPLOY_FILEMANAGER_EDIT[]="Deploying Filemanager /edit";
+const PROGMEM char MESSAGE_WIFIHELPER_DEPLOY_DEFAULT_PAGES[]="Deploying default pages /edit /index /settings /list?dir= /list?file=";
 
 const PROGMEM char MESSAGE_WIFIHELPER_GET[]=" GET ";
 const PROGMEM char MESSAGE_WIFIHELPER_POST[]=" POST ";
@@ -479,7 +480,8 @@ const char* const WIFIHELPER_WIFI_STATUSES[]      PROGMEM=
 		"WL_CONNECTED",
 		"WL_CONNECT_FAILED",
 		"WL_CONNECTION_LOST",
-		"WL_DISCONNECTED"
+		"WL_DISCONNECTED",
+		"WL_CONNECTING"
 };
 
 const char* const WIFIHELPER_WIFI_MODES[]      PROGMEM=
@@ -495,11 +497,11 @@ const char* const WIFIHELPER_PHY_MODES[]      PROGMEM={ "", "B", "G", "N" };
 const char* const WIFIHELPER_SlEEP_MODES[]      PROGMEM={ "WIFI_NONE_SLEEP", "WIFI_LIGHT_SLEEP", "WIFI_MODEM_SLEEP"};
 
 
-const PROGMEM char MESSAGE_WIFIHELPER_WIFI_MODE[]="MODE: ";
-const PROGMEM char MESSAGE_WIFIHELPER_WIFI_PHYMODE[]="PHY MODE: ";
-const PROGMEM char MESSAGE_WIFIHELPER_WIFI_SlEEPMODE[]="SlEEP MODE: ";
-const PROGMEM char MESSAGE_WIFIHELPER_WIFI_AUTOCONNECT[]="autoConnect: ";
-const PROGMEM char MESSAGE_WIFIHELPER_WIFI_CHANNEL[]="channel: ";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_MODE[]=" MODE: ";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_PHYMODE[]=" PHY MODE: ";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_SlEEPMODE[]=" SlEEP MODE: ";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_AUTOCONNECT[]=" autoConnect: ";
+const PROGMEM char MESSAGE_WIFIHELPER_WIFI_CHANNEL[]=" channel: ";
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_SSSID_EQ[]="SSID: ";
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_IP_TYPE_EQ[]="IP Type: ";
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATIC_IP_TYPE[]=" STATIC IP ";
@@ -616,6 +618,8 @@ const PROGMEM char MESSAGE_VIRTUAL_PIN_ID[]=" vPinId=";
 //--------------------------------------------------------
 
 //server urls
+const PROGMEM char URL_LIST[]="/list";
+const PROGMEM char URL_VIEW[]="/view";
 const PROGMEM char URL_EDIT[]="/edit";
 const PROGMEM char URL_INDEX[]="/index.htm";
 const PROGMEM char URL_SETTINGS[]="/settings.htm";

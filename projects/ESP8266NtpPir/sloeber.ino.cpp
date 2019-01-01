@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2018-12-25 02:56:59
+//This file has been generated on 2019-01-01 21:46:25
 
 #include "Arduino.h"
 #include "Arduino.h"
@@ -17,9 +17,11 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266WiFi.h>
+#include "JSONprovider.h"
 #include "Loopable.h"
 #include "I2Chelper.h"
 #include "WiFiHelper.h"
+#include "Time/TimeIntervalService.h"
 #include "Time/NtpTimeClientService.h"
 #include "TimeTrigger.h"
 #include <DeviceHelper.h>
@@ -42,7 +44,13 @@ void playPostInitSounds();
 void onButtonMenuChanged();
 void postInitWebServer();
 void setupWifiEvents();
+void onStationModeConnected(const WiFiEventStationModeConnected& evt);
+void onStationModeDisconnected(const WiFiEventStationModeDisconnected& evt);
+void onStationModeDHCPTimeout();
+void onStationModeGotIP(const WiFiEventStationModeGotIP& evt);
 void updateSensors();
+void processTimeIntervals();
+void printPir();
 void loadSensors();
 void saveSensors();
 String setSensorJson();
@@ -53,7 +61,7 @@ String setEspSettingsBoxValues();
 void executeThingSpeakPost();
 void sendAbstractItemToHttp(AbstractItem* item);
 void processThingSpeakPost();
-void onButtonChanged();
+void changeSymbol();
 
 #include "ESP8266_Ntp_Pir.ino"
 

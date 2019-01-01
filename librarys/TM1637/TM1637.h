@@ -42,23 +42,29 @@
 #define SYMBOL_d 13
 #define SYMBOL_E 14
 #define SYMBOL_F 15
-#define SYMBOL_G -70
+#define SYMBOL_G 32
 #define SYMBOL_h 20
 #define SYMBOL_H -50
 #define SYMBOL_L -12
 #define SYMBOL_n 21
 #define SYMBOL_o 0
-#define SYMBOL_P 46
+#define SYMBOL_P 118
 #define SYMBOL_r 19
 #define SYMBOL_S 5
 #define SYMBOL_t 22
 
 #define SYMBOL_u -120
-#define SYMBOL_y -54
+#define SYMBOL_y 31
 
 #define SYMBOL_SPACE  17
 #define SYMBOL_MINUS  16
 #define SYMBOL_DEGREE 18
+#define SYMBOL_PERCENT 37
+#define SYMBOL_verLine_up_left 38
+#define SYMBOL_Brt_up_left 52
+#define SYMBOL_Brt_up_right 101
+#define SYMBOL_Brt_down_right 102
+#define SYMBOL_Zieg 107
 
 class TM1637
 {

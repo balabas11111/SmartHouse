@@ -11,6 +11,7 @@
 #include "Arduino.h"
 #include "AbstractitemReq.h"
 #include "ESP_Consts.h"
+#include "JSONprovider.h"
 
 const char FIELD_DESCR[] PROGMEM ="descr";
 const char FIELD_MIN_VAL[] PROGMEM ="minVal";
@@ -25,7 +26,7 @@ const uint8_t FIELD_FIELDID_ID  =4;
 const uint8_t FIELD_QUEUE_ID    =5;
 
 
-class AbstractItem {
+class AbstractItem: public JSONprovider {
 
 struct childRecords{
 	uint8_t id;
@@ -112,7 +113,7 @@ public:
 		return this->id;
 	}
 
-	String getName(){
+	virtual String getName(){
 		return this->name;
 	}
 

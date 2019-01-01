@@ -43,7 +43,7 @@ void TimeTrigger::init(){
 	start();
 }
 void TimeTrigger::setActive(boolean b){
-	Serial.println("TimeTrigger active="+String(b)+" interval="+String(_interval));
+	//Serial.println("TimeTrigger active="+String(b)+" interval="+String(_interval));
 	_active=b;
 }
 

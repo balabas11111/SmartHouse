@@ -149,8 +149,12 @@ void NTPClient::end() {
   this->_udpSetup = false;
 }
 
-boolean NTPClient::timeReceived(){
-	return _lastUpdate>0;
+ulong NTPClient::getLastUpdated(){
+	return _lastUpdate;
+}
+
+boolean NTPClient::udpStarted(){
+	return this->_udpSetup;
 }
 
 void NTPClient::setTimeOffset(int timeOffset) {
