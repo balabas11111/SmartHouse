@@ -212,7 +212,7 @@ const PROGMEM char MESSAGE_HANDLE_HTTP_WIDGET[]="----------Handle Http widget---
 //serial println device diagnostic constants
 //before 16936 17048 17696
 const PROGMEM char MESSAGE_DEVICE_DIAGNOSTIC_BEGIN[]="----------Device diagnostic----------";
-const PROGMEM char MESSAGE_DEVICE_FREE_HEAP[]="FreeHeap";
+const PROGMEM char MESSAGE_DEVICE_FREE_HEAP[]="FreeHeap=";
 const PROGMEM char MESSAGE_DEVICE_CPU_MHZ[]="CpuFreqMHz";
 const PROGMEM char MESSAGE_DEVICE_FLASH_CHIP_SIZE[]="FlashChipSize";
 const PROGMEM char MESSAGE_DEVICE_FREE_SCETCH_SPACE[]="FreeSketchSpace";
@@ -461,15 +461,6 @@ const PROGMEM char MESSAGE_WIFIHELPER_GET[]=" GET ";
 const PROGMEM char MESSAGE_WIFIHELPER_POST[]=" POST ";
 
 const PROGMEM char MESSAGE_WIFIHELPER_WIFI_DIAGNOSTIC[]="-----------wiFi diagnostic-------------------";
-/*
-const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_UNKNOWN[]="UNKNOWN";
-const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECTED[]="WL_CONNECTED";
-const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_NO_SSID_AVAIL[]="WL_NO_SSID_AVAIL";
-const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_CONNECT_FAILED[]="WL_CONNECT_FAILED";
-const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_IDLE_STATUS[]="WL_IDLE_STATUS";
-const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_SCAN_COMPLETED[]="WL_SCAN_COMPLETED";
-const PROGMEM char MESSAGE_WIFIHELPER_WIFI_STATUS_WL_DISCONNECTED[]="WL_DISCONNECTED";
-*/
 const PROGMEM char WL_UNKNOWN_STATUS[]="WL_UNKNOWN_STATUS";
 
 const char* const WIFIHELPER_WIFI_STATUSES[]      PROGMEM=
@@ -607,8 +598,12 @@ const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_SETTING_BEGIN[]="-------
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_NAME_EQ[]=" Set sensor value NAME=";
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_STATUS_EQ[]=" status=";
 
-const PROGMEM char MESSAGE_ABSTRACT_ITEM_NOT_FOUND[]="NotFound";
-const PROGMEM char MESSAGE_ABSTRACT_ITEM_OK[]="Ok";
+const PROGMEM char STATUS_NOT_FOUND[]="NotFound";
+const PROGMEM char STATUS_OK[]="Ok";
+const PROGMEM char STATUS_ERROR[]="Error";
+const PROGMEM char STATUS_INVALID_LENGTH[]="Invalid length";
+const PROGMEM char STATUS_PARSE_ERROR[]="Parse error";
+const PROGMEM char STATUS_UPDATE_ERROR[]="Update error";
 
 //Virtual pin
 const PROGMEM char MESSAGE_VIRTUAL_PIN_START_INIT[]="init VirtualPin =";
@@ -618,9 +613,11 @@ const PROGMEM char MESSAGE_VIRTUAL_PIN_ID[]=" vPinId=";
 //--------------------------------------------------------
 
 //server urls
+const PROGMEM char URL_ROOT[]="/";
 const PROGMEM char URL_LIST[]="/list";
 const PROGMEM char URL_VIEW[]="/view";
 const PROGMEM char URL_EDIT[]="/edit";
+const PROGMEM char URL_TEST[]="/test";
 const PROGMEM char URL_INDEX[]="/index.htm";
 const PROGMEM char URL_SETTINGS[]="/settings.htm";
 
@@ -628,26 +625,14 @@ const PROGMEM char URL_SUBMIT_FORM_COMMANDS[]="/submitForm_commands";
 const PROGMEM char URL_SUBMIT_FORM_SETTINGS[]="/submitForm_settings";
 const PROGMEM char URL_GET_JSON_SETTINGS[]="/getJson_settings";
 const PROGMEM char URL_GET_JSON_SENSORS[]="/getJson_sensors";
+const PROGMEM char URL_GET_JSON_INTERVALS[]="/getJson_intervals";
 const PROGMEM char URL_SUBMIT_FORM_SENSORS[]="/submitForm_sensors";
+const PROGMEM char URL_SUBMIT_FORM_INTERVALS[]="/submitForm_intervals";
 
 const PROGMEM char URL_GET_SENSORS_CURRNT_VALUES[]="/gscv";
 const PROGMEM char URL_SET_SENSOR_CURRENT_VALUE[]="/sscv";
 
 const PROGMEM char URL_SET_DIGITAL_PIN_CURRENT_VALUE[]="/sdpcv";
-/*
-const PROGMEM char URL_GET_BUTTON_LEFT[]="/buttonLeft/getJson";
-const PROGMEM char URL_GET_BUTTON_RIGHT[]="/buttonRight/getJson";
-
-const PROGMEM char URL_GET_LAMP_LEFT[]="/lampLeft/getJson";
-const PROGMEM char URL_GET_LAMP_RIGHT[]="/lampRight/getJson";
-const PROGMEM char URL_GET_ACMETER[]="/acMeter/getJson";
-const PROGMEM char URL_GET_BME_MEASURER[]="/bmeMeasurer/getJson";
-const PROGMEM char URL_GET_LUX_MEASURER[]="/luxMeasurer/getJson";
-const PROGMEM char URL_GET_DS18D20_MEASURER[]="/ds18d20Measurer/getJson";
-
-const PROGMEM char URL_SET_LAMP_LEFT[]="/lampLeft/setValue";
-const PROGMEM char URL_SET_LAMP_RIGHT[]="/lampRight/setValue";
-*/
 //sensorsNames
 const PROGMEM char SENSOR_buttonMenu[]="buttonMenu";
 const PROGMEM char SENSOR_buttonLeft[]="buttonLeft";
@@ -664,7 +649,5 @@ const PROGMEM char SENSOR_luxMeasurer[]="luxMeasurer";
 const PROGMEM char SENSOR_ds18d20Measurer[]="ds18d20Measurer";
 const PROGMEM char SENSOR_ds18d20Boiler[]="ds18d20Boiler";
 const PROGMEM char SENSOR_AC_Rele1[]="AC_Rele1";
-
-
 
 #endif /* LIBRARIES_MEASURER_MEASURERCONSTS_H_ */

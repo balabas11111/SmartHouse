@@ -25,11 +25,23 @@ const int defaultBeep=500;
 		digitalWrite(_pin, _NO_PLAY_FLAG);
 		shortBeep();
 	}
+	void BeeperB::shortBeep(uint8_t count){
+		for(uint8_t i=0;i<count;i++){
+			shortBeep();
+		}
+	}
 	void BeeperB::shortBeep(){
 		doBeep(0);
 	}
 	void BeeperB::longBeep(){
 		doBeep(5000);
+	}
+	void BeeperB::playGenerator(boolean doPlay){
+		if(doPlay){
+			playGenerator();
+		}else{
+			noPlayGenerator();
+		}
 	}
 	void BeeperB::playGenerator(){
 		digitalWrite(_pin, _PLAY_FLAG);

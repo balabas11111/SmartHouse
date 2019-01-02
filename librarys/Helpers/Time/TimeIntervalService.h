@@ -24,7 +24,7 @@
 #define SEC_IN_WEEK 7*24*60*60
 
 const char* const IntervalState_Names[] PROGMEM={
-		"NEW", "WAIT", "ACTIVE", "FINISHED", "TO_DELETE", "MISSED", "FAILED"
+		"NEW", "WAIT", "ACTIVE", "FINISHED", "TO_DELETE", "INACTIVE"
 };
 const char* const IntervalCompNow_Names[] PROGMEM={
 		"NOW_IN_FUTURE_OF_INTERVAL", "NOW_IN_INTERVAL", "NOW_IN_PAST_OF_INTERVAL"
@@ -46,7 +46,7 @@ typedef enum {
 } IntervalType;
 
 typedef enum {
-  NEW, WAIT, ACTIVE, FINISHED, TO_DELETE, MISSED, FAILED
+  NEW, WAIT, ACTIVE, FINISHED, TO_DELETE, INACTIVE
 } IntervalState;
 
 typedef struct timeIntervalDetail{
@@ -65,11 +65,13 @@ class TimeIntervalService: public Initializable, public Loopable, public JSONpro
 public:
 	virtual ~TimeIntervalService(){};
 
-	TimeIntervalService(EspSettingsBox* espSettingsBox,NtpTimeClientService* ntpTimeClientService,std::function<void(TimeIntervalDetail)> externalFunction){
+	TimeIntervalService(EspSettingsBox* espSettingsBox,NtpTimeClientService* ntpTimeClientService,std::function<void(TimeIntervalDetail)> externalFunction,std::function<void(void)> defaultValuesFunction,uint8_t fixedItemlength){
 		this->espSettingsBox=espSettingsBox;
 		this->timeService=ntpTimeClientService;
 		this->waitForTimeReceive=false;
 		this->externalFunction=externalFunction;
+		this->defaultValuesFunction=defaultValuesFunction;
+		this->fixedItemlength=fixedItemlength;
 	}
 
 	virtual boolean initialize(boolean _init){
@@ -99,7 +101,7 @@ public:
 	}
 
 	ulong now(){
-		return timeService->getnow();
+		return timeService->getNow();
 	}
 
 	boolean finishInit(){
@@ -109,7 +111,7 @@ public:
 
 		waitForTimeReceive=false;
 
-		addTestInterval();
+		initItems();
 
 		return true;
 	}
@@ -127,7 +129,7 @@ public:
 	}
 
 	virtual String getJson(){
-		String result="{"+getItemJson()+",\"items\":[";
+		String result="{"+getItemJson()+",\"intervals\":[";
 
 			for(uint8_t i=0;i<itemCount;i++){
 					result+=getItemJson(i);
@@ -141,27 +143,74 @@ public:
 		return result;
 	}
 
-	virtual void add(uint32_t start,uint32_t end,IntervalType type,uint16_t time,String days){
-		items[itemCount].state=WAIT;
-		items[itemCount].type=type;
-		items[itemCount].startTime=start;
-		items[itemCount].endTime=end;
-		items[itemCount].time=type==PERIODIC?time:0;
-		items[itemCount].days=type==MULTIDAILY?days:"";
-
-		Serial.println(FPSTR("Interval added"));
-		printTimeInterval(items[itemCount]);
+	virtual void add(String name,IntervalType type,uint32_t start,uint32_t end,uint16_t time,String days,String param){
+		if(fixedItemlength!=0 && itemCount==fixedItemlength){
+			return;
+		}
+		updateInterval(itemCount,name,type,start,end,time,WAIT,days,param);
 		itemCount++;
 		saveToFile();
 	}
 
-	void addTestInterval(){
-		itemCount=0;
+	virtual boolean updateInterval(uint8_t ind,String name,uint8_t type,uint32_t start,uint32_t end,uint16_t time,uint8_t state,String days,String param){
+		if((fixedItemlength!=0 && itemCount>fixedItemlength) || ind>itemCount){
+			return false;
+		}
 
-		uint32_t start=DateTime(2019,1,1,22,0,0).unixtime();
+		Serial.print(FPSTR("updateInterval"));
 
-		ulong testTime=timeService->getnow()+40;
-		add(start,start+50,ONCE,0,"");
+		items[ind].id=ind;
+		items[ind].name=name;
+		items[ind].type=type;
+		items[ind].startTime=start;
+		items[ind].endTime=end;
+		items[ind].time=type==PERIODIC?time:0;
+		items[ind].state=state;
+		items[ind].days=type==MULTIDAILY?days:"0,0,0,0,0,0,0";
+		items[ind].param=param.length()!=0?param:"-1";
+
+		Serial.println(getItemJson(ind));
+
+		return true;
+	}
+
+	String setIntervalFromJson(String json){
+		boolean ok=false;
+		String statusText="";
+
+		if(json.length()>0){
+			StaticJsonBuffer<1024> jsonBuffer;
+			delay(1);
+
+			JsonObject& root = jsonBuffer.parseObject(json);
+
+			if(root.success()){
+
+				uint8_t id=root["id"];
+				String name=root["name"].as<char*>();
+				uint8_t type=root["type"];
+				uint32_t startTime=root["startTime"];
+				uint32_t endTime=root["endTime"];
+				uint32_t time=root["time"];
+				uint8_t state=root["state"];
+				String days=root["days"].as<char*>();
+				String param=root["param"].as<char*>();
+
+				ok=updateInterval(id,name,type,startTime,endTime,time,state,days,param);
+
+				if(!ok){
+					statusText=FPSTR(STATUS_UPDATE_ERROR);
+				}
+			}else{
+				statusText=FPSTR(STATUS_PARSE_ERROR);
+			}
+		}else{
+			statusText=FPSTR(STATUS_INVALID_LENGTH);
+		}
+
+	    String status=ok?FPSTR(STATUS_OK):FPSTR(STATUS_ERROR);
+
+	    return "{\"status\":\""+status+"\",\"item\":\""+statusText+"\"}";
 	}
 
 	int getActiveAlarms(){
@@ -174,16 +223,32 @@ public:
 		return -1;
 	}
 
-	boolean getAlarmActive(){
-		return alarmActive;
+	boolean getBeeperActive(){
+		return beeperActive;
 	}
 
-	void stopAlarm(){
+	void stopBeeper(){
 		alarmSwitcer.stop();
-		alarmActive=false;
+		beeperActive=false;
 	}
 
+	void stopAlarmsIfActive(){
+		if(getActiveAlarms()==-1){
+			return;
+		}
+		stopBeeper();
+	}
 protected:
+	void initItems(){
+		boolean loaded=loadFromFile();
+
+		if(!loaded && defaultValuesFunction!=nullptr){
+			Serial.println(FPSTR("Fill time interval service with default values"));
+			defaultValuesFunction();
+			saveToFile();
+		}
+	}
+
 	boolean loadFromFile(){
 
 		if(!espSettingsBox->isSettingsFileExists(FPSTR(TimeIntervalService_NAME))){
@@ -221,16 +286,21 @@ protected:
 			Serial.println(itemCount);
 
 			for(uint8_t i=0;i<itemCount;i++){
-				items[i].id=i;
-				items[i].name=root["items"][i]["name"].as<char*>();
-				items[i].type=root["items"][i]["typeInt"];
-				items[i].state=root["items"][i]["type"];
-				items[i].startTime=root["items"][i]["minVal"];
-				items[i].endTime=root["items"][i]["maxVal"];
-				items[i].days=root["items"][i]["days"].as<char*>();
-				items[i].param=root["items"][i]["param"].as<char*>();
-
+				if(fixedItemlength==0 || i<fixedItemlength){
+					items[i].id=i;
+					items[i].name=root["items"][i]["name"].as<char*>();
+					items[i].type=root["items"][i]["typeInt"];
+					items[i].state=root["items"][i]["type"];
+					items[i].startTime=root["items"][i]["minVal"];
+					items[i].endTime=root["items"][i]["maxVal"];
+					items[i].days=root["items"][i]["days"].as<char*>();
+					items[i].param=root["items"][i]["param"].as<char*>();
+				}
 				Serial.println(getItemJson(i));
+			}
+
+			if(fixedItemlength!=0){
+				itemCount=fixedItemlength;
 			}
 
 			Serial.println(FPSTR("TimeIntervalService load complete"));
@@ -254,7 +324,7 @@ protected:
 		uint8_t updated=0;
 
 		for(uint8_t i=0;i<itemCount;i++){
-			ulong now=timeService->getnow();
+			ulong now=timeService->getNow();
 
 			boolean reschedule=false;
 			boolean dispatch=false;
@@ -356,12 +426,12 @@ protected:
 		Serial.println(getItemJson(ind));
 
 		boolean started=items[ind].state==ACTIVE;
-		alarmActive=started;
+		beeperActive=started;
 
 		this->alarmSwitcer.setActive(started);
 
 		Serial.print(FPSTR("alarmActive="));
-		Serial.println(alarmActive);
+		Serial.println(beeperActive);
 
 		if(externalFunction!=nullptr){
 			externalFunction(items[ind]);
@@ -507,24 +577,22 @@ protected:
 		Serial.print(dt1.getFormattedIsoDateTime());
 	}
 
-
-
-	void onAlarmActiveChange(){
+	void onBeeperActiveChange(){
 		Serial.println("alarmActive changed");
-		alarmActive=!alarmActive;
+		beeperActive=!beeperActive;
 	}
-
-
 
 private:
 
-	boolean alarmActive;
+	uint8_t fixedItemlength=0;
+	boolean beeperActive=false;
 	boolean waitForTimeReceive=false;
 	EspSettingsBox* espSettingsBox;
 	NtpTimeClientService* timeService;
-	TimeTrigger alarmSwitcer=TimeTrigger(0,1000,false,[this](){onAlarmActiveChange();});
+	TimeTrigger alarmSwitcer=TimeTrigger(0,1000,false,[this](){onBeeperActiveChange();});
 
 	std::function<void(TimeIntervalDetail)> externalFunction;
+	std::function<void(void)> defaultValuesFunction;
 
 	uint8_t itemCount=0;
 	TimeIntervalDetail items[ALARM_SIZE];
@@ -532,22 +600,26 @@ private:
 	String getItemJson(){
 		return "\"id\":\"123\",\"name\":\"TimeIntervalService\",\"type\":\"ScheduleService\",\"size\":\"1\",\
 				\"descr\":\"TimeIntervalService_DESCR\",\"itemCount\":\""+String(itemCount)+"\"";
-
 	}
 
 	String getItemJson(uint8_t index){
-		TimeIntervalDetail item=items[index];
+		return getItemJson(items[index]);
+	}
 
+	String getItemJson(TimeIntervalDetail item){
 		return "{\"id\":\""+String(item.id)+"\","
 					+"\"name\":\""+item.name+"\","
 					+"\"type\":\""+getTypeName(item.type)+"\","
 					+"\"typeInt\":\""+String(item.type)+"\","
 					+"\"state\":\""+getStateName(item.state)+"\","
 					+"\"stateInt\":\""+String(item.state)+"\","
-					+"\"minVal\":\""+String(item.startTime)+"\","
-					+"\"maxVal\":\""+String(item.endTime)+"\","
+					+"\"startTime\":\""+String(item.startTime)+"\","
+					+"\"endTime\":\""+String(item.endTime)+"\","
 					+"\"days\":\""+item.days+"\","
-					+"\"param\":\""+item.param+"\"}";
+					+"\"param\":\""+item.param+"\","
+						+"\"startDateTime\":"+timeService->getDateTimeAsJson(item.startTime)+","
+						+"\"endDateTime\":"+timeService->getDateTimeAsJson(item.endTime)
+					+"}";
 	}
 
 	String getTypeName(uint8_t id){

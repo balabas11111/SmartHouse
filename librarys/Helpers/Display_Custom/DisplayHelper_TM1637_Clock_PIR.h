@@ -382,6 +382,13 @@ public:
 		}
 	}
 
+	void changePageIfTrigger(boolean trigger){
+		if(trigger){
+			Serial.println(FPSTR("Page change triggered"));
+			changePage();
+		}
+	}
+
 	void changePage(){
 		if(displayMode>=maxMode){
 			displayMode=MODE_TIME;

@@ -387,8 +387,15 @@ function addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val
 	}
 };
 /*-------------------------------form submission---------------------*/
-
 function postForm(form,url,validateHandler,resultProcessHandler){
+	postFormWithPreprocess(form,url,validateHandler,resultProcessHandler,processFormDataAsFormItems);
+}
+
+function postFormAsJsonVal(form,url,validateHandler,resultProcessHandler){
+	postFormWithPreprocess(form,url,validateHandler,resultProcessHandler,processFormDataAsJsonVal);
+}
+
+function postFormWithPreprocess(form,url,validateHandler,resultProcessHandler,formProcessFunction){
 	console.log('submitting form');
 	
 	var isValidForm = form.checkValidity();
@@ -411,26 +418,7 @@ function postForm(form,url,validateHandler,resultProcessHandler){
 		
 		var childNodes = getComponentChildrenByClass(form,'w3-check');
 		
-		for(var i=0;i<childNodes.length;i++){
-			var child=childNodes[i];
-			if(child!=undefined && child.tagName!=undefined){
-				var tagName = child.tagName.toLowerCase();
-				
-				if (tagName == 'input'){
-					if(child.type!=undefined){
-						var type=child.type.toLowerCase();
-						
-						if(type=='checkbox'){
-							var chbVal=child.checked;
-							
-							if(chbVal!=true){
-								formData.append(child.id, false);
-							}
-						}
-					};
-				}
-			}
-		}
+		formData=formProcessFunction(form,childNodes);
 		
 		showMessage(currentMessageComp,'Сохраняю данные...','w3-yellow');
 		
@@ -457,6 +445,51 @@ function postForm(form,url,validateHandler,resultProcessHandler){
 		showMessage(currentMessageComp,errorMessage,'w3-red');
 	}
 }
+
+function processFormDataAsFormItems(form,childNodes){
+	
+	var formData = new FormData(form);
+	
+	for(var i=0;i<childNodes.length;i++){
+		var child=childNodes[i];
+		if(child!=undefined && child.tagName!=undefined){
+			var tagName = child.tagName.toLowerCase();
+			
+			if (tagName == 'input'){
+				if(child.type!=undefined){
+					var type=child.type.toLowerCase();
+					
+					if(type=='checkbox'){
+						var chbVal=child.checked;
+						
+						if(chbVal!=true){
+							formData.append(child.id, false);
+						}
+					}
+				};
+			}
+		}
+	}
+	
+	return formData;
+}
+
+function processFormDataAsJsonVal(form,childNodes){
+	
+	var formData = new FormData(form);
+	
+	const data = formToJSON(form.elements);
+	formData.append("val", data);
+	
+	return formData;
+}
+
+const formToJSON = elements => [].reduce.call(elements, (data, element) => {
+	  
+	  data[element.name] = element.value;
+	  return data;
+
+	}, {});
 
 
 

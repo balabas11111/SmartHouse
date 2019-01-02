@@ -1,7 +1,7 @@
 /*
  * EspSettingsBox.h
  *
- *  Created on: 2 февр. 2018 г.
+ *  Created on: 2 Ñ„ÐµÐ²Ñ€. 2018 Ð³.
  *      Author: Vitaliy
  */
 
@@ -49,7 +49,7 @@ public:
 	}
 
 	void printHeap(){
-		Serial.print(FPSTR("heap="));
+		Serial.print(FPSTR(MESSAGE_DEVICE_FREE_HEAP));
 		Serial.println(ESP.getFreeHeap());
 	}
 
@@ -589,9 +589,9 @@ public:
 	#ifdef ESP32
 		String DeviceId = "SENS_"+String(ESP.getChipRevision());
 	#endif
-	String DeviceKind = "Климат и управление выключателями";
+	String DeviceKind = "ÐšÐ»Ð¸Ð¼Ð°Ñ‚ Ð¸ ÑƒÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð²Ñ‹ÐºÐ»ÑŽÑ‡Ð°Ñ‚ÐµÐ»Ñ�Ð¼Ð¸";
 	String DeviceDescription = "_";
-	String DeviceLocation = "Кухня";
+	String DeviceLocation = "ÐšÑƒÑ…Ð½Ñ�";
 
 	boolean displayAlvaysOn=false;
 	uint8_t displayAutochange=15;

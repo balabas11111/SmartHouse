@@ -33,7 +33,7 @@ settings.js_replacement
 	<a href="edit" class="w3-bar-item w3-button w3-hover-green">Редактировать файлы</a>
 </div>
 <!-- Page Content -->
-<div id="mainContent">
+<div id="pageContent">
 
 	<div class="w3-container w3-teal w3-animate-opacity">
 		<div class="w3-quarter w3-container w3-animate-opacity" style="width: 70px; height: 70px;">
@@ -48,10 +48,12 @@ settings.js_replacement
 	  <button class="w3-bar-item w3-button" onclick="openTab('sensors','Датчики')">Датчики</button>
 	  <button class="w3-bar-item w3-button" onclick="openTab('publish','Публикация')">Публикация</button>
 	  <button class="w3-bar-item w3-button" onclick="openTab('manage','Управление')">Управление</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('intervals','Интервалы')">Интервалы</button>
 	</div>
 
 	<div id="mainContent" class="w3-card-4" style="width:90%; min-width: 600px; margin-top:10px; margin-left:10px;  margin-bottom:30px;">
-	
+
+<!-- Begin device tab -->	
 		<div id="device" class="settingsTab reloadableSettingsContainer w3-container" style="display:none">
 			<div class="w3-container w3-teal">
 				<h2>Устройство</h2>
@@ -208,7 +210,9 @@ settings.js_replacement
 				
 			<div style="height:20px;"></div>
 		</div>
+<!-- end device tab -->
 
+<!-- Begin net tab -->	
 		<div id="net" class="settingsTab reloadableSettingsContainer" style="display:none">
 			<div class="w3-container w3-teal">
 				<h2>Сеть</h2>
@@ -385,7 +389,9 @@ settings.js_replacement
 				
 			<div style="height:20px;"></div>
 		</div>
+<!-- end net tab -->
 
+<!-- Begin sensors tab -->
 		<div id="sensors" class="settingsTab reloadableSettingsContainer" style="display:none">
 			<div class="w3-container w3-teal">
 				<h2>Датчики</h2>
@@ -409,7 +415,7 @@ settings.js_replacement
 		    <div class="w3-modal-content w3-animate-top w3-card-4" style="width: 90%;">
 		      	
 		      	<header class="w3-container w3-teal"> 
-			      <span onclick="closeSensorsPopup();" class="w3-button w3-display-topright">&times;</span>
+			      <span onclick="closePopup('currentSensor_modal','sensors_msg');" class="w3-button w3-display-topright">&times;</span>
 			      <h3 id="currentSensor_header">Поточный датчик</h3>
 			    </header>
 		      	
@@ -435,7 +441,9 @@ settings.js_replacement
 	        
 		  </div>
 		</div>
-		
+<!-- end sensors tab -->
+
+<!-- Begin publish tab -->		
 		<div id="publish" class="settingsTab reloadableSettingsContainer" style="display:none">
 			<div class="w3-container w3-teal">
 				<h2>Публикация данных</h2>
@@ -677,7 +685,9 @@ settings.js_replacement
 				
 				<div style="height:20px;"></div>
 		</div>
-		
+<!-- end publish tab -->	
+
+<!-- Begin manage tab -->			
 		<div id="manage" class="settingsTab" style="display:none">
 			<div class="w3-container w3-teal">
 				<h2>Управление</h2>
@@ -748,8 +758,11 @@ settings.js_replacement
 	        
 		  </div>
 		</div>
-		
-		
+<!-- end manage tab -->		
+
+<!-- Begin intervals tab -->			
+
+<!-- end intervals tab -->
 		<!--
 		<form id="settingsForm" class="w3-container" action="/settings" method="POST">
 			

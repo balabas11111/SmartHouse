@@ -1,7 +1,7 @@
 /*
  * NtpTimeClientService.h
  *
- *  Created on: 28 окт. 2018 г.
+ *  Created on: 28 Ð¾ÐºÑ‚. 2018 Ð³.
  *      Author: Vitaliy
  */
 
@@ -9,6 +9,7 @@
 #define LIBRARIES_HELPERS_NTPTIMECLIENTSERVICE_H_
 
 #include "Initializable.h"
+#include "JSONprovider.h"
 #include "Loopable.h"
 
 #include "EspSettingsBox.h"
@@ -20,16 +21,30 @@
 #include "WiFiUdp.h"
 #include "NTPClient.h"
 #include "FunctionalInterrupt.h"
+
+#include "projectConsts.h"
+
 #include "DS3231.h"
-#include "JSONprovider.h"
 
 #define YEAR0 1970
 #define LEAP_YEAR(Y)     ( ((YEAR0+Y)>0) && !((YEAR0+Y)%4) && ( ((YEAR0+Y)%100) || !((YEAR0+Y)%400) ) )
 
 const char NTP_TIME_CLIENT_SERVICE_NAME[] PROGMEM ="NtpTimeClientService";
 const char NTP_TIME_CLIENT_SERVICE_TYPE[] PROGMEM ="NtpTime";
+//-----------------println variables--------------------------
+const char NTP_TIME_CLIENT_INIT_BEGIN[] PROGMEM ="-----Init Time Service-----";
+const char NTP_TIME_CLIENT_FORCE_UPDATE_STATUS[] PROGMEM = "timeClient->forceUpdate() status=";
+const char NTP_TIME_CLIENT_NO_NTP_SYNC_ENABLED[] PROGMEM = "No NTP sync enabled";
+const char NTP_TIME_CLIENT_NO_LOCAL_TIME_DEVCE[] PROGMEM = "NO LocalTime device";
+const char NTP_TIME_CLIENT_UPDATE_FAILED[] PROGMEM = "TimeUpdate FAILED";
+const char NTP_TIME_CLIENT_NTP_SYNC_COMPLETE[] PROGMEM = "---NTP Sync complete---";
+const char NTP_TIME_CLIENT_NTP_DETAILS[] PROGMEM = "---NTP details---";
+const char NTP_TIME_CLIENT_RTC_DETAILS[] PROGMEM = "---RTC details---";
+const char NTP_TIME_CLIENT_UNIX_TIME_EQ[] PROGMEM = " unixTime=";
+const char NTP_TIME_CLIENT_DATE_TIME_EQ[] PROGMEM = " DateTime=";
 
 const char* DAYS_OF_WEEK_SHORT[7]={"Mo","Tu","We","Th","Fr","Sa","Su"};
+const char* DAYS_OF_WEEK[7]={"Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"};
 
 class NtpTimeClientService: public Initializable, public Loopable,public JSONprovider {
 public:
@@ -47,8 +62,7 @@ public:
 	virtual boolean initialize(boolean _init){
 		if(_init){
 
-			Serial.println(FPSTR("-----Init Time Service-----"));
-
+			Serial.println(FPSTR(NTP_TIME_CLIENT_INIT_BEGIN));
 
 			int boxIndex=espSettingsBox->getExtraBoxIndex(FPSTR(NTP_SETTINGS_BOX_NAME));
 			String poolServerName=espSettingsBox->getExtraValue(boxIndex, NTP_poolServerName);
@@ -70,7 +84,7 @@ public:
 				timeClient->begin();
 				bool result=timeClient->forceUpdate();
 
-				Serial.print(FPSTR("timeClient->begin() status="));
+				Serial.print(FPSTR(NTP_TIME_CLIENT_FORCE_UPDATE_STATUS));
 				Serial.println(result);
 
 				initialized=true;
@@ -80,6 +94,11 @@ public:
 				}
 
 				displayDetails();
+			}else{
+				Serial.println(FPSTR(NTP_TIME_CLIENT_NO_NTP_SYNC_ENABLED));
+#ifdef HAS_LOCAl_CLOCK
+				finishInitialization();
+#endif
 			}
 
 			initialized=_init;
@@ -96,16 +115,230 @@ public:
 		return false;
 	}
 
-	void onNtpTimeReceived(){
-		Serial.println(FPSTR("---Ntp Time received----"));
-		//displayDetails();
+	ulong getNow(){
+#ifdef HAS_LOCAl_CLOCK
+		return RTClib::now().unixtime();
+#else
+		return timeClient->getEpochTime();
+#endif
+	}
 
+	boolean update(){
+		if(!initialized || !ntpEnabled){
+			return false;
+		}
+
+		bool result=timeClient->update();
+
+		if(!result){
+			Serial.println(FPSTR(NTP_TIME_CLIENT_UPDATE_FAILED));
+			timeClient->printDetails();
+			return false;
+		}
+		if(timeClient->udpStarted()){
+			onNtpTimeReceived();
+			return true;
+		}
+		return false;
+	}
+
+	String getDayOfWeekNameShort(uint8_t dow){
+		return DAYS_OF_WEEK_SHORT[dow];
+	}
+
+	String getDayOfWeekName(uint8_t dow){
+		return DAYS_OF_WEEK[dow];
+	}
+
+	int8_t* getCurrentTimePrepared(){
+		parseTimeToCache();
+
+		return currTimePrepared;
+	}
+
+	int8_t* getCurrentMonthDate(){
+		parseDateToCache();
+
+		return monthDate;
+	}
+
+	String getJson(){
+#ifdef HAS_LOCAl_CLOCK
+		DateTime dt=RTClib::now();
+#else
+		DateTime dt=DateTime(timeClient->getEpochTime());
+#endif
+		String result="{\"id\":\"-1\",\"name\":\"";
+				result+=String(getName());
+				result+="\",\"type\":\"";
+				result+=String(getName());
+				result+="\",";
+#ifdef HAS_LOCAl_CLOCK
+				result+="\"HAS_LOCAl_CLOCK\":\"1\",";
+#else
+				result+="\"HAS_LOCAl_CLOCK\":\"0\",";
+#endif
+				result+="\"dateTime\":";
+				result+=getDateTimeAsJson(dt);
+				result+="}";
+		return result;
+	}
+
+	String getDateTimeAsJson(uint32_t unixTime){
+		DateTime dt=DateTime(unixTime);
+		return getDateTimeAsJson(dt);
+	}
+
+	String getDateTimeAsJson(DateTime dt){
+		uint8_t dow=dt.dayOfTheWeek();
+
+		return "{\"unixTime\":\""+String(dt.unixtime())+"\","
+				+"\"year\":\""+String(dt.year())+"\","
+				+"\"month\":\""+String(dt.month())+"\","
+				+"\"day\":\""+String(dt.day())+"\","
+				+"\"hour\":\""+String(dt.hour())+"\","
+				+"\"minute\":\""+String(dt.minute())+"\","
+				+"\"second\":\""+String(dt.second())+"\","
+				+"\"dayOfTheWeek\":\""+String(dow)+"\","
+				+"\"dayOfTheWeekNameShort\":\""+String(getDayOfWeekNameShort(dow))+"\","
+				+"\"dayOfTheWeekName\":\""+String(getDayOfWeekName(dow))+"\""
+			+"}";
+	}
+
+	virtual String getName(){
+		return FPSTR(NTP_TIME_CLIENT_SERVICE_NAME);
+	}
+
+	virtual void displayDetails(){
+		if(!initialized){
+			return;
+		}
+		Serial.print(FPSTR(NTP_TIME_CLIENT_NTP_DETAILS));
+		Serial.print(FPSTR(NTP_TIME_CLIENT_UNIX_TIME_EQ));
+		Serial.print(timeClient->getEpochTime());
+		Serial.print(FPSTR(NTP_TIME_CLIENT_DATE_TIME_EQ));
+		Serial.println(timeClient->getFormattedTime());
+#ifdef HAS_LOCAl_CLOCK
+		Serial.print(FPSTR(NTP_TIME_CLIENT_RTC_DETAILS));
+
+		DateTime dt=RTClib::now();
+
+		Serial.print(FPSTR(NTP_TIME_CLIENT_UNIX_TIME_EQ));
+		Serial.print(dt.unixtime());
+		Serial.print(FPSTR(NTP_TIME_CLIENT_DATE_TIME_EQ));
+		Serial.println(dt.getFormattedIsoDateTime());
+#endif
+	}
+
+	boolean isTimeReceived(){
+		return timeReceived;
+	}
+protected:
+	void onNtpTimeReceived(){
+		Serial.println(FPSTR(NTP_TIME_CLIENT_NTP_SYNC_COMPLETE));
 		timeClient->end();
 
-		//Serial.println(FPSTR("TimeClient "));
-
 		DateTime dt=DateTime(timeClient->getEpochTime());
-/*
+
+	#ifdef HAS_LOCAl_CLOCK
+		rtc.setYear(dt.year()-2000);
+		rtc.setMonth(dt.month());
+		rtc.setDate(dt.day());
+
+		rtc.setHour(timeClient->getHours());
+		rtc.setMinute(timeClient->getMinutes());
+		rtc.setSecond(timeClient->getSeconds());
+
+		Serial.println(FPSTR(NTP_TIME_CLIENT_RTC_DETAILS));
+		Serial.print(FPSTR(NTP_TIME_CLIENT_DATE_TIME_EQ));
+		Serial.println(RTClib::now().getFormattedIsoDateTime());
+	#else
+		Serial.println(FPSTR(NTP_TIME_CLIENT_NO_LOCAL_TIME_DEVCE));
+	#endif
+		Serial.println(getJson());
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+		finishInitialization();
+	}
+
+	void finishInitialization(){
+		timeReceived=true;
+
+		if(externalFunction!=nullptr){
+			externalFunction();
+		}
+	}
+private:
+#ifdef HAS_LOCAl_CLOCK
+	DS3231  rtc;
+#endif
+
+	WiFiUDP ntpUDP;
+
+	EspSettingsBox* espSettingsBox;
+	NTPClient* timeClient;
+	std::function<void(void)> externalFunction;
+	boolean timeReceived=false;
+	boolean ntpEnabled=true;
+
+	int8_t currTimePrepared[6] = {0x00,0x00,0x00,0x00,0x00,0x00};
+	int8_t monthDate[4]={0x00,0x00,0x00,0x00};
+
+	void construct(EspSettingsBox* _espSettingsBox,std::function<void(void)> _externalFunction){//, ulong externalFunctionInterval){
+		Serial.println(FPSTR("Create time client"));
+
+		this->timeClient=new NTPClient(ntpUDP,"pl.pool.ntp.org",7200,1000);
+		this->espSettingsBox=_espSettingsBox;
+		this->externalFunction=_externalFunction;
+
+#ifdef HAS_LOCAl_CLOCK
+		this->rtc.setClockMode(false);
+#endif
+	}
+
+	void parseTimeToCache(){
+#ifdef HAS_LOCAl_CLOCK
+		bool h12;
+		bool PM;
+
+		uint8_t h=rtc.getHour(h12, PM);
+		uint8_t m=rtc.getMinute();
+		uint8_t s=rtc.getSecond();
+#else
+		timeClient->update();
+		uint8_t h=timeClient->getHours();
+		uint8_t m=timeClient->getMinutes();
+		uint8_t s=timeClient->getSeconds();
+#endif
+
+		currTimePrepared[0] = h / 10;
+		currTimePrepared[1] = h % 10;
+		currTimePrepared[2] = m / 10;
+		currTimePrepared[3] = m % 10;
+		currTimePrepared[4] = s / 10;
+		currTimePrepared[5] = s % 10;
+	}
+
+	void parseDateToCache(){
+#ifdef HAS_LOCAl_CLOCK
+		bool centure;
+		uint8_t y=rtc.getYear();
+		uint8_t m=rtc.getMonth(centure);
+		uint8_t d=rtc.getDate();
+#else
+		timeClient->update();
+		DateTime dt=DateTime(timeClient->getEpochTime());
+
+		uint8_t y=dt.year();
+		uint8_t m=dt.month();
+		uint8_t d=dt.day();
+#endif
+		monthDate[0] = d/10;
+		monthDate[1] = d%10;
+		monthDate[2] = m/10;
+		monthDate[3] = m%10;
+	}
+	/*
+	 void printDateTimeDetails(DateTime dt){
 		Serial.print("dt.unixtime()=");
 		Serial.print(dt.unixtime());
 		Serial.print(" dt.DateTime=");
@@ -126,165 +359,8 @@ public:
 		Serial.println(dt.month());
 		Serial.println("dt.day()");
 		Serial.println(dt.day());
-*/
-		rtc.setYear(dt.year()-2000);
-		rtc.setMonth(dt.month());
-		rtc.setDate(dt.day());
-
-		rtc.setHour(timeClient->getHours());
-		rtc.setMinute(timeClient->getMinutes());
-		rtc.setSecond(timeClient->getSeconds());
-
-		Serial.println(FPSTR("Local time set finished"));
-
-		Serial.println(RTClib::now().getFormattedIsoDateTime());
-		Serial.println(getJson());
-		Serial.println(FPSTR("---------------------------------"));
-
-		timeReceived=true;
-
-		if(externalFunction!=nullptr){
-			externalFunction();
-		}
 	}
 
-	ulong getnow(){
-		return RTClib::now().unixtime();
-		//return timeClient->getEpochTime();
-	}
-
-	boolean update(){
-		if(!initialized || !ntpEnabled){
-			return false;
-		}
-
-		bool result=timeClient->update();
-
-		if(!result){
-			Serial.println(FPSTR("TimeUpdate FAILED"));
-			timeClient->printDetails();
-			return false;
-		}
-		if(timeClient->udpStarted()){
-			onNtpTimeReceived();
-			return true;
-		}
-		return false;
-	}
-
-	String getDayOfWeekNameShort(uint8_t dow){
-		return DAYS_OF_WEEK_SHORT[dow];
-	}
-
-	int8_t* getCurrentTimePrepared(){
-		parseTimeToCache();
-
-		return currTimePrepared;
-	}
-
-	int8_t* getCurrentMonthDate(){
-		parseDateToCache();
-
-		return monthDate;
-	}
-
-	String getJson(){
-		DateTime dt=RTClib::now();
-		uint8_t dow=rtc.getDoW();
-
-		String result="{\"id\":\"-1\",\
-				\"name\":\""+String(getName())+"\",\"type\":\""+String(getName())+"\",\
-\"year\":\""+String(dt.year())+"\",\"month\":\""+String(dt.month())+"\",\"day\":\""+String(dt.day())+"\",\
-\"dayOfWeek\":\""+String(dow)+"\",\
-\"dayOfWeekNameShort\":\""+getDayOfWeekNameShort(dow)+"\",\
-\"leapYear\":\""+String(LEAP_YEAR(dt.year()))+"\",\
-\"epochTime\":\""+String(dt.unixtime())+"\",\
-\"hour\":\""+String(dt.hour())+"\",\"minute\":\""+String(dt.minute())+"\",\"second\":\""+String(dt.second())+"\"}";
-		return result;
-	}
-
-	virtual String getName(){
-		return FPSTR(NTP_TIME_CLIENT_SERVICE_NAME);
-	}
-
-	virtual void displayDetails(){
-		if(!initialized){
-			return;
-		}
-		Serial.print(FPSTR("---NTP details---"));
-		Serial.print(FPSTR("Epoch time="));
-		Serial.print(timeClient->getEpochTime());
-		Serial.print(FPSTR(" TimeStamp="));
-		Serial.println(timeClient->getFormattedTime());
-		Serial.print(FPSTR("---RTC details---"));
-
-		DateTime dt=RTClib::now();
-
-		Serial.print(FPSTR("Epoch time="));
-		Serial.print(dt.unixtime());
-		Serial.print(FPSTR("dt.getFormattedIsoDateTime()"));
-		Serial.println(dt.getFormattedIsoDateTime());
-	}
-
-	boolean isTimeReceived(){
-		return timeReceived;
-	}
-
-private:
-	WiFiUDP ntpUDP;
-
-	DS3231  rtc;
-	EspSettingsBox* espSettingsBox;
-	NTPClient* timeClient;
-	std::function<void(void)> externalFunction;
-	boolean timeReceived=false;
-	boolean ntpEnabled=true;
-
-	int8_t currTimePrepared[6] = {0x00,0x00,0x00,0x00,0x00,0x00};
-	int8_t monthDate[4]={0x00,0x00,0x00,0x00};
-
-
-
-	void construct(EspSettingsBox* _espSettingsBox,std::function<void(void)> _externalFunction){//, ulong externalFunctionInterval){
-		Serial.println(FPSTR("Create time client"));
-
-		this->timeClient=new NTPClient(ntpUDP,"pl.pool.ntp.org",7200,1000);
-		this->espSettingsBox=_espSettingsBox;
-		this->externalFunction=_externalFunction;
-
-		this->rtc.setClockMode(false);
-	}
-
-	void parseTimeToCache(){
-		bool h12;
-		bool PM;
-
-		uint8_t h=rtc.getHour(h12, PM);
-		uint8_t m=rtc.getMinute();
-		uint8_t s=rtc.getSecond();
-
-		//int8_t tmpTimePrep[PREPARED_TIME_LENGTH] = {0x00,0x00,0x00,0x00,0x00,0x00};
-
-		currTimePrepared[0] = h / 10;
-		currTimePrepared[1] = h % 10;
-		currTimePrepared[2] = m / 10;
-		currTimePrepared[3] = m % 10;
-		currTimePrepared[4] = s / 10;
-		currTimePrepared[5] = s % 10;
-	}
-
-	void parseDateToCache(){
-		bool centure;
-		uint8_t y=rtc.getYear();
-		uint8_t m=rtc.getMonth(centure);
-		uint8_t d=rtc.getDate();
-
-		monthDate[0] = d/10;
-		monthDate[1] = d%10;
-		monthDate[2] = m/10;
-		monthDate[3] = m%10;
-	}
-	/*
 	boolean parseTimeToCache(){
 		boolean timeChanged=false;
 

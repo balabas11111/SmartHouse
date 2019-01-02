@@ -15,12 +15,14 @@ class BeeperB{
 public:
 	BeeperB(uint8_t pin,uint8_t NO_PLAY_FLAG,uint8_t PLAY_FLAG,boolean sendNoPlayFLag,boolean doInit);
 	void init();
+	void shortBeep(uint8_t count);
 	void shortBeep();
 	void longBeep();
 	void play(unsigned int frequency, unsigned long duration);
 	void noPlay();
 	void doBeep(unsigned long duration);
 
+	void playGenerator(boolean doPlay);
 	void playGenerator();
 	void noPlayGenerator();
 
