@@ -36,16 +36,12 @@
 #include "Display_Custom/DisplayHelper_TM1637_Clock_PIR.h"
 
 #include "TM1637.h"
-
-
-#define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
-#define VAR_NAME(var) #var
-
+/*
 WiFiEventHandler stationModeConnectedHandler;
 WiFiEventHandler onStationModeDHCPTimeoutHandler;
 WiFiEventHandler onStationModeDisconnectedHandler;
 WiFiEventHandler onStationModeGotIPHandler;
-
+*/
 ESPSett_Ntp espSett_Ntp;
 
 ESPExtraSettingsBox* extraBoxes[]={&espSett_Ntp};

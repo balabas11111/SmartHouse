@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2019-01-01 21:46:25
+//This file has been generated on 2019-01-03 17:09:05
 
 #include "Arduino.h"
 #include "Arduino.h"
@@ -39,15 +39,11 @@
 void initComponents();
 void setup() ;
 void loop() ;
-void onPirDetectorChanged();
 void playPostInitSounds();
-void onButtonMenuChanged();
+void postInitTimeIntervalService();
 void postInitWebServer();
-void setupWifiEvents();
-void onStationModeConnected(const WiFiEventStationModeConnected& evt);
-void onStationModeDisconnected(const WiFiEventStationModeDisconnected& evt);
-void onStationModeDHCPTimeout();
-void onStationModeGotIP(const WiFiEventStationModeGotIP& evt);
+void onButtonMenuChanged();
+void onPirDetectorChanged();
 void updateSensors();
 void processTimeIntervals();
 void printPir();

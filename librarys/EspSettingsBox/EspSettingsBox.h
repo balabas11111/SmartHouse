@@ -18,6 +18,9 @@
 #include "IPAddress.h"
 #include "ESPExtraSettingsBox.h"
 
+#define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
+#define VAR_NAME(var) #var
+
 class EspSettingsBox: public Initializable{
 
 public:
@@ -348,7 +351,7 @@ public:
 	  return true;
 	}
 
-	boolean loadDefaultValues(uint8_t boxIndex){
+	boolean loadExtraBoxDefaultValues(uint8_t boxIndex){
 		if(boxIndex>extraBoxesCount){
 			return false;
 		}
@@ -545,6 +548,8 @@ public:
 		return FPSTR(ESPSETTINGSBOX_SET_JSON_PUBLISH_URL);
 	}
 */
+
+
 	String getDeviceNameFull(){
 		String result=FPSTR(MESSAGE_THINGSPEAK_NAME_FOR_REQUEST_EQ);
 		result+=DeviceLocation;
@@ -581,6 +586,22 @@ public:
 	int deleteSettingsFiles();
 
 	boolean saveThingSpeakChannelCreation(String response/*,boolean manageChannel*/);
+
+	//----------------------utility methods--------------
+	String getStringArrayAsJson(String name,const char* const* array,uint maxIndex){
+		String result="\""+name+"\":[";
+
+		for(uint8_t i=0;i<maxIndex;i++){
+			result+="\"";
+			result+=array[i];
+			result+="\",";
+		}
+
+		result.setCharAt(result.length()-1, ']');
+
+		return result;
+	}
+
 
 	String deviceFirmWareVersion = "v.1.0";
 	#ifdef ESP8266

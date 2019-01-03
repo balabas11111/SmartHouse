@@ -1,0 +1,153 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru-ru" xml:lang="ru">
+<head>
+
+<script type="text/javascript">
+	const jsonStr=`{"id":"123","name":"TimeIntervalService","type":"ScheduleService","size":"1",
+		"descr":"TimeIntervalService_DESCR","itemCount":"2",
+		"intervalType":["ONCE", "PERIODIC", "DAILY", "MULTIDAILY", "WEEKLY", "MONTHLY", "QUATERLY"],
+		"intervalState":["NEW", "WAIT", "ACTIVE", "FINISHED", "TO_DELETE", "INACTIVE"],
+		"dayOfWeekShort":["Mo","Tu","We","Th","Fr","Sa","Su"],
+		"dayOfWeek":["Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"],
+		"intervals":[
+			{"id":"0","name":"item.name1","type":"DAILY","typeInt":"2",
+				"state":"INACTIVE","stateInt":"5","disabled":"1",
+				"startTime":"1546701591",
+				"endTime":"1546787991",
+				"days":"0,1,0,1,0,0,0",
+				"param":"0",
+					"startDateTime":{"unixTime":"1546701591",
+										"year":"2019",
+										"month":"1",
+										"day":"5",
+										"hour":"15",
+										"minute":"19",
+										"second":"51",
+										"dayOfTheWeek":"6",
+										"dayOfTheWeekNameShort":"Sa",
+										"dayOfTheWeekName":"Суббота"
+					},
+					"endDateTime":{"unixTime":"1546787991",
+									"year":"2019",
+									"month":"1",
+									"day":"6",
+									"hour":"15",
+									"minute":"19",
+									"second":"51",
+									"dayOfTheWeek":"7",
+									"dayOfTheWeekNameShort":"Su",
+									"dayOfTheWeekName":"Воскресенье"
+								}
+			},
+			{"id":"1","name":"item.name2","type":"DAILY","typeInt":"2",
+				"state":"WAIT","stateInt":"1","disabled":"0",
+				"startTime":"1546528791",
+				"endTime":"1546615191",
+				"days":"0,1,0,1,0,0,0",
+				"param":"0",
+					"startDateTime":{"unixTime":"1546528791",
+										"year":"2019",
+										"month":"1",
+										"day":"3",
+										"hour":"15",
+										"minute":"19",
+										"second":"51",
+										"dayOfTheWeek":"4",
+										"dayOfTheWeekNameShort":"Th",
+										"dayOfTheWeekName":"Четверг"
+					},
+					"endDateTime":{"unixTime":"1546528791",
+									"year":"2019",
+									"month":"1",
+									"day":"4",
+									"hour":"15",
+									"minute":"19",
+									"second":"51",
+									"dayOfTheWeek":"5",
+									"dayOfTheWeekNameShort":"Fr",
+									"dayOfTheWeekName":"Пятница"
+								}
+			}
+		]}`;
+		
+function putItemsToComboCox(component,items){
+	if(component==undefined){
+		return;
+	}
+	component.innerHTML = '';
+	var opt = null;
+	
+	for(i = 0; i<items.length; i++){ 
+	    opt = document.createElement('option');
+	    opt.value = i;
+	    opt.innerHTML = items[i];
+	    component.appendChild(opt);
+	}
+}
+
+function putUnixTimeToComponent(component,unixTime){
+	const dt=new Date(unixTime * 1000);
+	
+	const date = new Date(dt).toISOString().substring(0, 16);
+	
+	component.value=date;
+}
+
+function onLoadPageComplete(){
+	var currentJson=JSON.parse(jsonStr);
+	
+	var dayOfWeekShort=document.getElementById('dayOfWeekShort');
+	var intervalType=document.getElementById('intervalType');
+	var intervalState=document.getElementById('intervalState');
+	
+	var startDateTime=document.getElementById('startDateTime');
+	var startDate=document.getElementById('startDate');
+	var startTime=document.getElementById('startTime');
+	
+	var endDateTime=document.getElementById('endDateTime');
+	
+	putItemsToComboCox(dayOfWeekShort,currentJson.dayOfWeekShort);
+	putItemsToComboCox(intervalType,currentJson.intervalType);
+	putItemsToComboCox(intervalState,currentJson.intervalState);
+	
+	var startDateTimeVal=currentJson.intervals[0].startTime;
+	var endDateTimeVal=currentJson.intervals[0].endTime;
+	
+	putUnixTimeToComponent(startDateTime,startDateTimeVal);
+	
+	putUnixTimeToComponent(startDate,startDateTimeVal);
+	putUnixTimeToComponent(startTime,startDateTimeVal);
+	
+	putUnixTimeToComponent(endDateTime,endDateTimeVal);
+	
+	alert(new Date(startTime.value));
+	
+	
+}
+
+</script>
+
+</head>
+<body onload="onLoadPageComplete()">
+
+<div id="CustomInterval_content">
+<!-- start custom interval -->
+	<select id="dayOfWeekShort">
+     </select>
+     
+     <select id="intervalType">
+     </select>
+     
+     <select id="intervalState">
+     </select>
+     
+     <input type="datetime-local" id="startDateTime" name="startDateTime"></>
+     <input type="date" id="startDate" name="startDate"></>
+     <input type="time" id="startTime" name="startTime"></>
+     <input type="datetime-local" id="endDateTime" name="endDateTime"/></>
+
+<!-- end custom interval -->
+</div>
+
+
+</body>
+</html>

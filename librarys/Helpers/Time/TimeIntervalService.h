@@ -129,7 +129,13 @@ public:
 	}
 
 	virtual String getJson(){
-		String result="{"+getItemJson()+",\"intervals\":[";
+		String result="{"+getItemJson()
+
+		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("intervalType"), IntervalType_Names, ARRAY_SIZE(IntervalType_Names))
+		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("intervalState"), IntervalState_Names, ARRAY_SIZE(IntervalState_Names))
+		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("dayOfWeekShort"), DAYS_OF_WEEK_SHORT, ARRAY_SIZE(DAYS_OF_WEEK_SHORT))
+		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("dayOfWeek"), DAYS_OF_WEEK, ARRAY_SIZE(DAYS_OF_WEEK))
+		+ ",\"intervals\":[";
 
 			for(uint8_t i=0;i<itemCount;i++){
 					result+=getItemJson(i);
@@ -607,11 +613,14 @@ private:
 	}
 
 	String getItemJson(TimeIntervalDetail item){
+		boolean disabled=(item.state==INACTIVE);
+
 		return "{\"id\":\""+String(item.id)+"\","
 					+"\"name\":\""+item.name+"\","
 					+"\"type\":\""+getTypeName(item.type)+"\","
 					+"\"typeInt\":\""+String(item.type)+"\","
 					+"\"state\":\""+getStateName(item.state)+"\","
+					+"\"disabled\":\""+String(item.state==INACTIVE)+"\","
 					+"\"stateInt\":\""+String(item.state)+"\","
 					+"\"startTime\":\""+String(item.startTime)+"\","
 					+"\"endTime\":\""+String(item.endTime)+"\","
@@ -621,6 +630,7 @@ private:
 						+"\"endDateTime\":"+timeService->getDateTimeAsJson(item.endTime)
 					+"}";
 	}
+
 
 	String getTypeName(uint8_t id){
 		return String(FPSTR(IntervalType_Names[id]));
