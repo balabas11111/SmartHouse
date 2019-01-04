@@ -1,6 +1,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="ru-ru" xml:lang="ru">
 <head>
 
+ <script src="../../js/DeviceLib.js" type="text/javascript" charset="utf-8"></script>
+
 <script type="text/javascript">
 	const jsonStr=`{"id":"123","name":"TimeIntervalService","type":"ScheduleService","size":"1",
 		"descr":"TimeIntervalService_DESCR","itemCount":"2",
@@ -13,7 +15,7 @@
 				"state":"INACTIVE","stateInt":"5","disabled":"1",
 				"startTime":"1546701591",
 				"endTime":"1546787991",
-				"days":"0,1,0,1,0,0,0",
+				"days":"0,1,0,1,0,1,0",
 				"param":"0",
 					"startDateTime":{"unixTime":"1546701591",
 										"year":"2019",
@@ -38,11 +40,11 @@
 									"dayOfTheWeekName":"Воскресенье"
 								}
 			},
-			{"id":"1","name":"item.name2","type":"DAILY","typeInt":"2",
+			{"id":"1","name":"item.name2","type":"MULTIDAILY","typeInt":"3",
 				"state":"WAIT","stateInt":"1","disabled":"0",
 				"startTime":"1546528791",
 				"endTime":"1546615191",
-				"days":"0,1,0,1,0,0,0",
+				"days":"1,1,1,0,0,0,0",
 				"param":"0",
 					"startDateTime":{"unixTime":"1546528791",
 										"year":"2019",
@@ -68,61 +70,100 @@
 								}
 			}
 		]}`;
-		
-function putItemsToComboCox(component,items){
-	if(component==undefined){
-		return;
-	}
-	component.innerHTML = '';
-	var opt = null;
-	
-	for(i = 0; i<items.length; i++){ 
-	    opt = document.createElement('option');
-	    opt.value = i;
-	    opt.innerHTML = items[i];
-	    component.appendChild(opt);
-	}
-}
 
-function putUnixTimeToComponent(component,unixTime){
-	const dt=new Date(unixTime * 1000);
+function getValueIndex(val,array){
+	for (var i = 0; i < array.length; ++i){
+		if(array[i]==val){
+			return i;
+		}
+	}
 	
-	const date = new Date(dt).toISOString().substring(0, 16);
+	return -1;
+}		
+		
+function activeToStringState(active,array){
+	var val='WAIT';
 	
-	component.value=date;
+	if(active=='0'){val='INACTIVE';}
+	
+	return getValueIndex(val,array);
+}	
+
+function multiDailyHandle(currentJson){
+	
+	var intervalType=document.getElementById('intervalType');
+	
+	const isMultidaily= intervalType.selectedIndex==getValueIndex('MULTIDAILY',currentJson.intervalType);
+	
+	if(isMultidaily){
+		showComponent('dayOfWeek');
+	}else{
+		hideComponent('dayOfWeek');
+	}
+		
+}
+		
+function intervalFormToJson(currentJson){
+	var dayOfWeekComp=document.getElementById('dayOfWeek');
+	var intervalActiveComp=document.getElementById('intervalActive');
+	var array=currentJson.intervalState;
+		
+	var days=checkBoxListToArray(dayOfWeekComp).join(',');
+	var active=getComponentValue(intervalActiveComp);
+	
+	var stateInt=activeToStringState(active,array);
+		
+	var result='{"id":"'+getComponentValueById('intervalId')+'","name":"'+getComponentValueById('intervalName')+'","type":"'+getComponentValueById('intervalType')+'","state":"'+stateInt+'","startTime":"'+getComponentValueById('startDateTime')+'","endTime":"'+getComponentValueById('endDateTime')+'","days":"'+days+'"}'
+	return result;	
 }
 
 function onLoadPageComplete(){
 	var currentJson=JSON.parse(jsonStr);
+	var intervalInd=0;
 	
 	var dayOfWeekShort=document.getElementById('dayOfWeekShort');
+	
+	var intervalId=document.getElementById('intervalId');
+	var intervalName=document.getElementById('intervalName');
+	var intervalParam=document.getElementById('intervalParam');
 	var intervalType=document.getElementById('intervalType');
 	var intervalState=document.getElementById('intervalState');
+	var intervalActive=document.getElementById('intervalActive');
 	
 	var startDateTime=document.getElementById('startDateTime');
-	var startDate=document.getElementById('startDate');
-	var startTime=document.getElementById('startTime');
-	
 	var endDateTime=document.getElementById('endDateTime');
 	
-	putItemsToComboCox(dayOfWeekShort,currentJson.dayOfWeekShort);
-	putItemsToComboCox(intervalType,currentJson.intervalType);
-	putItemsToComboCox(intervalState,currentJson.intervalState);
+	var dayOfWeek=document.getElementById('dayOfWeek');
 	
-	var startDateTimeVal=currentJson.intervals[0].startTime;
-	var endDateTimeVal=currentJson.intervals[0].endTime;
+	putItemsToComboCox(intervalType,currentJson.intervalType,currentJson.intervals[intervalInd].typeInt);
+	putItemsToComboCox(intervalState,currentJson.intervalState,currentJson.intervals[intervalInd].stateInt);
 	
-	putUnixTimeToComponent(startDateTime,startDateTimeVal);
+	var startDateTimeVal=currentJson.intervals[intervalInd].startTime;
+	var endDateTimeVal=currentJson.intervals[intervalInd].endTime;
+	var dayOfWeekVal=currentJson.intervals[intervalInd].days.split(',');
+	var dayOfWeekNames=currentJson.dayOfWeek;
 	
-	putUnixTimeToComponent(startDate,startDateTimeVal);
-	putUnixTimeToComponent(startTime,startDateTimeVal);
+	setComponentValue(intervalId,currentJson.intervals[intervalInd].id);
+	setComponentValue(intervalName,currentJson.intervals[intervalInd].name);
+	setComponentValue(intervalParam,currentJson.intervals[intervalInd].param);
 	
-	putUnixTimeToComponent(endDateTime,endDateTimeVal);
+	var active=currentJson.intervals[intervalInd].state!="INACTIVE"
 	
-	alert(new Date(startTime.value));
+	setComponentValue(intervalActive,active);
 	
+	setComponentValue(startDateTime,startDateTimeVal);
+	setComponentValue(endDateTime,endDateTimeVal);
 	
+	arrayToCheckBoxList(dayOfWeek,'dayOfWeek',dayOfWeekVal,dayOfWeekNames);
+	
+	//alert(new Date(startTime.value));
+	var resultText=intervalFormToJson(currentJson);
+	setComponentValueById('resultText',resultText);
+	
+	multiDailyHandle(currentJson);
 }
+
+
 
 </script>
 
@@ -130,20 +171,57 @@ function onLoadPageComplete(){
 <body onload="onLoadPageComplete()">
 
 <div id="CustomInterval_content">
-<!-- start custom interval -->
+<!-- start custom interval 
 	<select id="dayOfWeekShort">
      </select>
      
      <select id="intervalType">
      </select>
      
-     <select id="intervalState">
-     </select>
+     <select id="intervalState"></select>
+     -->
+     <div id="interval0">
      
-     <input type="datetime-local" id="startDateTime" name="startDateTime"></>
-     <input type="date" id="startDate" name="startDate"></>
-     <input type="time" id="startTime" name="startTime"></>
-     <input type="datetime-local" id="endDateTime" name="endDateTime"/></>
+     <div id="headerFrame">
+     	<label for="intervalId">intervalId</label>
+     	<input type="text" id="intervalId" name="intervalId"/>
+     	
+       	<label for="intervalName">intervalName</label>
+     	<input type="text" id="intervalName" name="intervalName"/>
+     	
+     	<label for="intervalParam">intervalParam</label>
+     	<input type="text" id="intervalParam" name="intervalParam"/>
+     </div>
+     
+     <div id="typeFrame">
+     	 <label for="intervalType">intervalType</label>
+     	 <select id="intervalType"></select>
+     	 
+     	 <label for="intervalState">intervalState</label>
+     	 <select id="intervalState"></select>
+     	 
+     	 <label for="intervalActive">intervalActive</label>
+	     <input type="checkbox" id="intervalActive" name="intervalActive"/>
+     </div>
+     
+     <div id="timeframe">
+	     <label for="startDateTime">startDateTime</label>
+	     <input type="datetime-local" id="startDateTime" name="startDateTime"/>
+	     
+	     <label for="endDateTime">endDateTime</label>
+	     <input type="datetime-local" id="endDateTime" name="endDateTime"/>
+	 </div>
+	     
+	     <div id="dayOfWeek">
+	     	
+	     </div>
+     </div>
+     
+     <p>
+     	<h1>result text</h1>
+     	<div id="resultText"></div>
+     </p>
+     
 
 <!-- end custom interval -->
 </div>

@@ -88,6 +88,12 @@ function getComponentChildrenByClass(comp,clazz){
 	return childNodes;
 }
 
+function getComponentChildrenByTag(comp,tag){
+	var childNodes = comp.getElementsByTagName(tag);
+	
+	return childNodes;
+}
+
 function getComponentById(id){
 	return document.getElementById(id);
 }
@@ -155,12 +161,151 @@ function addChildComponentIfNotExists(comp,item){
 	}
 	
 }
-/*----------------------------component values setters---------------------------*/
+
+function arrayToCheckBoxList(component,namePreffix,valArray,nameArray,clazz,style){
+	if(component==undefined){
+		return;
+	}
+	
+	component.innerHTML = '';
+	var cbx=null;
+	var lbl=null;
+	
+	var itemCount=valArray.length;
+	
+	if(nameArray.length>itemCount){
+		itemCount=nameArray.length;
+	}
+	
+	for(i = 0; i<itemCount; i++){ 
+		
+		var cbxname='checkbox_'+namePreffix+'_'+i;
+		cbx = document.createElement('input');
+		cbx.setAttribute('id',cbxname);
+		cbx.setAttribute('name',cbxname);
+		cbx.setAttribute('type','checkbox');
+		if(clazz!=undefined && clazz.length>0){
+			cbx.setAttribute('class',clazz);
+		}
+		if(style!=undefined && style.length>0){
+			cbx.setAttribute('style',style);
+		}
+		setComponentValue(cbx,valArray[i]);
+		/*cbx.setAttribute('class',className);*/
+		
+		lbl = document.createElement('label');
+		lbl.setAttribute('id','lbl_'+cbxname);
+		lbl.setAttribute('for',cbxname);
+		setComponentValue(lbl,nameArray[i]);
+	    
+	    component.appendChild(cbx);
+	    component.appendChild(lbl);
+	}
+}
+
+function checkBoxListToArray(component){
+	var result = [];	
+	
+	var inputs=getComponentChildrenByTag(component,'input');
+	var j=0;
+	
+	 for (var i = 0; i < inputs.length; ++i) {
+		 var val=getComponentValue(inputs[i]);
+		 
+		 if(val=='1' || val=='0'){
+			 result[j]=val;
+			 j++;
+		 }
+	 }
+	 
+	 return result;
+}
+
+function putItemsToComboCox(component,items,selectedIndex){
+	if(component==undefined || items==undefined || items.length==undefined){
+		return;
+	}
+	component.innerHTML = '';
+	var opt = null;
+	
+	for(i = 0; i<items.length; i++){ 
+	    opt = document.createElement('option');
+	    opt.value = i;
+	    opt.innerHTML = items[i];
+	    component.appendChild(opt);
+	}
+	
+	if(selectedIndex==undefined || selectedIndex>items.length-1){
+		selectedIndex=-1;
+	}
+	component.selectedIndex=selectedIndex;
+}
+/*----------------------------component values gettters/setters---------------------------*/
+function getComponentValueById(id){
+	return getComponentValue(getComponentById(id));
+}
+
+function setComponentValueById(id,val){
+	setComponentValue(getComponentById(id),val);
+}
+
+function getComponentValue(component){
+	if(component!=undefined){
+		var tagName = component.tagName.toLowerCase();
+		
+		if (tagName == 'input'){
+			if(component.type!=undefined){
+				var type=component.type.toLowerCase();
+				
+				if(type=='checkbox'){
+					if(component.hasAttribute("checked") || component.checked){
+						return '1';
+					}
+					return '0';
+				}else if(type=='date'){
+					var dt=new Date(component.value);
+					var tmp = Math.round(dt.getTime()/1000-dt.getTimezoneOffset()*60);
+					return tmp;
+				}else if(type=='time'){
+					var dt=new Date(component.value);
+					var tmp = Math.round(dt.getTime()/1000-dt.getTimezoneOffset()*60);
+					return tmp;
+				}else if(type=='datetime-local'){
+					var dt=new Date(component.value);
+					var tmp = Math.round(dt.getTime()/1000-dt.getTimezoneOffset()*60);
+					return tmp;
+				}				
+				else{
+					return component.value;
+				}
+			}else{
+				return component.value;
+			}
+		};
+		
+		if(tagName=='select'){
+			return component.selectedIndex;
+		}
+		
+		if (tagName == 'a'){
+			return component.href;
+		};
+		
+		if (tagName == 'h1' || tagName == 'h2' || tagName == 'h3' || tagName == 'h4' || tagName == 'h5'
+			|| tagName == 'b'){
+			return component.innerHTML;
+		};
+	}
+	
+	return undefined;
+}
+
+
 function setComponentValue(component,val){
 	if(component!=undefined){
 		var tagName = component.tagName.toLowerCase();
 		
-		if (tagName == 'h1' || tagName == 'h2' || tagName == 'h3' || tagName == 'h4' || tagName == 'h5'
+		if (tagName =='label' || tagName=='div' || tagName == 'h1' || tagName == 'h2' || tagName == 'h3' || tagName == 'h4' || tagName == 'h5'
 			|| tagName == 'b'){
 			component.innerHTML=val;
 		};
@@ -171,11 +316,22 @@ function setComponentValue(component,val){
 				
 				if(type=='checkbox'){
 					var chbVal=false;
-					if(val==1 || val=='1'){
+					if(val==1 || val=='1' || val=='True' || val=='true'){
 						chbVal=true;
+						component.checked=chbVal;
 					}
-					component.checked=chbVal;
-				}else{
+					
+				}else if(type=='date'){
+					const tmp=new Date(val*1000).toISOString().substring(0, 10);
+					component.value=tmp;
+				}else if(type=='time'){
+					const tmp=new Date(val*1000).toISOString().substring(11, 19);
+					component.value=tmp;
+				}else if(type=='datetime-local'){
+					const tmp=new Date(val*1000).toISOString().substring(0, 19);
+					component.value=tmp;
+				}				
+				else{
 					component.value=val;
 				}
 			}else{
