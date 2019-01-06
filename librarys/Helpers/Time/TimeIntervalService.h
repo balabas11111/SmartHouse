@@ -35,6 +35,7 @@ const char* const IntervalType_Names[] PROGMEM={
 
 const char TimeIntervalService_ID[] PROGMEM ="123";
 const char TimeIntervalService_NAME[] PROGMEM ="TimeIntervalService";
+const char TimeIntervalService_FileName_NAME[] PROGMEM ="timeIntServ";
 const char TimeIntervalService_DESCR[] PROGMEM ="Service to schedule periodic executions";
 
 typedef enum {
@@ -106,12 +107,16 @@ public:
 
 	boolean finishInit(){
 		Serial.println(FPSTR("---Finish TimeIntervalService initialization"));
-		loadFromFile();
+		boolean loaded=loadFromFile();
 		processIntervals();
 
 		waitForTimeReceive=false;
 
-		initItems();
+		if(!loaded && defaultValuesFunction!=nullptr){
+			Serial.println(FPSTR("Fill time interval service with default values"));
+			defaultValuesFunction();
+			saveToFile();
+		}
 
 		return true;
 	}
@@ -245,19 +250,10 @@ public:
 		stopBeeper();
 	}
 protected:
-	void initItems(){
-		boolean loaded=loadFromFile();
-
-		if(!loaded && defaultValuesFunction!=nullptr){
-			Serial.println(FPSTR("Fill time interval service with default values"));
-			defaultValuesFunction();
-			saveToFile();
-		}
-	}
 
 	boolean loadFromFile(){
 
-		if(!espSettingsBox->isSettingsFileExists(FPSTR(TimeIntervalService_NAME))){
+		if(!espSettingsBox->isSettingsFileExists(FPSTR(TimeIntervalService_FileName_NAME))){
 			Serial.println(FPSTR("---TimeInterval file NOT exists---"));
 			return false;
 		}
@@ -279,6 +275,7 @@ protected:
 
 		if (!root.success()) {
 			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
+			return false;
 		  }else{
 			Serial.println();
 			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_READ_FROM_FILE_COMPLETE));
@@ -319,7 +316,7 @@ protected:
 
 	void saveToFile(){
 		Serial.println();
-		espSettingsBox->saveSettingToFile(FPSTR(TimeIntervalService_NAME),getJson());
+		espSettingsBox->saveSettingToFile(FPSTR(TimeIntervalService_FileName_NAME),getJson());
 	}
 
 	void processIntervals(){

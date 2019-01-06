@@ -12,9 +12,9 @@
 </style>
 
 <script language="javascript">
-{Project_index.js}
-
 {DeviceLib.js}
+
+{Project_index.js}
 </script>
 
 </head>
@@ -22,39 +22,23 @@
 				
 <div id="leftSidebar" class="w3-sidebar w3-bar-block w3-light-grey w3-border-right w3-animate-left" style="display: none;">
 	<button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Свернуть</button>
-	<a href="settings.htm" class="w3-bar-item w3-button w3-hover-green">Настройки</a>
+	<a href="settings" class="w3-bar-item w3-button w3-hover-green">Настройки</a>
 	<a id="espSettingsBox_thingSpeakChannelUrl" class="w3-bar-item w3-button w3-hover-green" style="display: none;" href="https://thingspeak.com/channels/<channelId>/private_show" >ThingSpeak.com</a>
 </div>
 
 <div id="main">
 	<div id="pageHeader" class="w3-teal w3-row">
-		
-		<div class="w3-quarter w3-container w3-animate-opacity" style="width: 70px; height: 70px;">
-			<button id="openNavBtn" class="w3-button w3-teal w3-xlarge" onclick="w3_open()" title="Открыть меню">☰</button>
-		</div>
-		<div class="w3-quarter w3-container w3-animate-opacity"	style="width: 150px;" >
-			<h4 id="espSettingsBox_DeviceId" style="margin-top: 20px;" 
-				title="Идентификатор устройства">Устройство</h4>	
-		</div>
-		<div class="w3-third w3-container w3-animate-opacity">
-			<h2 id="espSettingsBox_DeviceLocation" style="margin-left: 20px;" 
-				title="Наименование/размещение устройства">Загрузка</h2>
-		</div>
+		{defaultHeader.html}
 	</div>					
 	
-	<div class="w3-container">
-	<!--Main content starts here-->
+	<div id="mainContent" class="w3-container">
 		{BME280.html}
 		{signalLed.html}
-			
-	<!--Main content ends here-->
-	</div>
-	<div class="w3-footer">	
-		<form name="publish_form">
-			<div id="websocket_status" class="w3-panel w3-teal w3-card-4">Устройство управления лампочками и просмотра параметров микроклимата</div>
-		</form>
 	</div>
 	
+	<div class="w3-footer">	
+		{defaultFooter.html}	
+	</div>
 		
 </div>
 

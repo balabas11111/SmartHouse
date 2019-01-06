@@ -17,6 +17,7 @@
 #include "ESP_Consts.h"
 #include "IPAddress.h"
 #include "ESPExtraSettingsBox.h"
+#include "projectConsts.h"
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
@@ -24,10 +25,10 @@
 class EspSettingsBox: public Initializable{
 
 public:
-	EspSettingsBox(String deviceKind);
-	EspSettingsBox(String deviceKind,ESPExtraSettingsBox** boxes,uint8_t boxesCount);
+	EspSettingsBox();
+	EspSettingsBox(ESPExtraSettingsBox** boxes,uint8_t boxesCount);
 	//EspSettingsBox(String deviceKind,boolean forceLoad);
-	EspSettingsBox(String deviceKind,boolean forceLoad,boolean _initSpiff);
+	EspSettingsBox(boolean forceLoad,boolean _initSpiff);
 
 	virtual boolean initialize(boolean _init) override;
 
@@ -156,6 +157,9 @@ public:
 		Serial.println(fileName);
 
 		File file = SPIFFS.open(fileName, "w");
+		if(!file){
+			Serial.println(FPSTR("Error opening file for write"));
+		}
 
 		size_t fileSize=file.print(str);
 
@@ -570,7 +574,7 @@ public:
 		String result= FPSTR(MESSAGE_THINGSPEAK_DESCRIPTION_FOR_REQUEST_EQ);
 				result+=DeviceDescription;
 				result+=FPSTR(MESSAGE_SPACE);
-				result+=DeviceKind;
+				result+=DEVICE_KIND;
 		return result;
 	}
 
@@ -617,9 +621,9 @@ public:
 	#ifdef ESP32
 		String DeviceId = "SENS_"+String(ESP.getChipRevision());
 	#endif
-	String DeviceKind = "ÐšÐ»Ð¸Ð¼Ð°Ñ‚ Ð¸ ÑƒÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð²Ñ‹ÐºÐ»ÑŽÑ‡Ð°Ñ‚ÐµÐ»Ñ�Ð¼Ð¸";
-	String DeviceDescription = "_";
-	String DeviceLocation = "ÐšÑƒÑ…Ð½Ñ�";
+	//String DeviceKind = DEVICE_KIND;
+	String DeviceDescription = DEVICE_DESCR;
+	String DeviceLocation = DEVICE_LOCATION;
 
 	boolean displayAlvaysOn=false;
 	uint8_t displayAutochange=15;
@@ -707,7 +711,7 @@ private:
 	ESPExtraSettingsBox** extraBoxes;
 	uint8_t extraBoxesCount=0;
 
-	void construct(String deviceKind,boolean forceLoad,boolean initSpiff);
+	void construct(boolean forceLoad,boolean initSpiff);
 	void initSpiff();
 	void listDir(fs::FS &fs, const char * dirname, uint8_t levels);
 

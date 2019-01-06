@@ -6,6 +6,7 @@ echo ====================================================
 @ECHO OFF
 
 set RESULT_FILE=%TEMP_FOLDER%ipres.txt
+set FILES_FILE=%TEMP_FOLDER%files.txt
 
 rem set URL_PREFFIX=%TEMP_FOLDER_NAME%/
 set URL_PREFFIX=/web/
@@ -28,21 +29,23 @@ echo -----------------Upload files----------------------- >> %RESULT_FILE%
 echo: >> %RESULT_FILE%
 for %%f in (%TEMP_FOLDER_NAME%\*.gz) do (
 	echo Delete %URL_PREFFIX%%%~nxf
-	curl -i -X DELETE -H "Expect:" -F "filename=%URL_PREFFIX%%%~nxf" http://%IP%/edit >> %RESULT_FILE%
+	curl -s -i -X DELETE -H "Expect:" -F "filename=%URL_PREFFIX%%%~nxf" http://%IP%/edit >> %RESULT_FILE%
 	echo Upload %URL_PREFFIX%%%~nxf
-	curl -i -X POST -H "Expect:" -F "uploadfile=@%%f;filename=%URL_PREFFIX%%%~nxf;" -F submit=upload http://%IP%/edit  >> %RESULT_FILE%
+	curl -s -i -X POST -H "Expect:" -F "uploadfile=@%%f;filename=%URL_PREFFIX%%%~nxf;" -F submit=upload http://%IP%/edit  >> %RESULT_FILE%
 	echo -----------------------------------------------------------------------------
 )
 
+GOTO:EXIT_LABEL
+
 REM powershell -Command "Remove-Item %TEMP_FOLDER% -Force -Recurse -ErrorAction Ignore"	
 	
-:EXIT_LABEL
-
 echo ====================================================
 echo        IP call result
 echo ====================================================
 type "%RESULT_FILE%"
 echo: 
 echo ====================================================
+
+:EXIT_LABEL
 
 

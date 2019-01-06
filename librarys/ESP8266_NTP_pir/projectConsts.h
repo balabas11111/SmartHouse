@@ -8,11 +8,17 @@
 #ifndef PROJECTCONSTS_H_
 #define PROJECTCONSTS_H_
 
+#define DEVICE_KIND "NTP clock/Alarm/BME-280/PIR/4 d display/thingspeak v 2.0"
+#define DEVICE_DESCR "NTP часы, будильник, Температура/Влажность, Датчик движения"
+#define DEVICE_LOCATION "Размещение часов"
+
+#define GET_FILES_ALLOWED 3
+
 /* NTP Clock Device with:
 //-------------------------------------------------------------
  4 digits display;
  NTP synchronisation;
- DS3221 local clock;
+ BME-280
  PIR sensor;
 //-------------------------------------------------------------
  Connection
@@ -31,7 +37,7 @@
 
 
 //specific settings for project
-#define HAS_LOCAl_CLOCK 1
+//#define HAS_LOCAl_CLOCK 1
 
 
 #endif /* PROJECTCONSTS_H_ */

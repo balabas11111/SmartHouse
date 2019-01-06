@@ -40,7 +40,7 @@ ESPSett_Ntp espSett_Ntp;
 
 ESPExtraSettingsBox* extraBoxes[]={&espSett_Ntp};
 
-EspSettingsBox espSettingsBox(FPSTR("NTP clock with PIR sensor"),extraBoxes,ARRAY_SIZE(extraBoxes));
+EspSettingsBox espSettingsBox(extraBoxes,ARRAY_SIZE(extraBoxes));
 
 BeeperB beeper(D5,HIGH,LOW,true,false);
 
@@ -159,9 +159,6 @@ void postInitWebServer(){
 	server.on(FPSTR(URL_SUBMIT_FORM_COMMANDS), HTTP_POST, [](){
 		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), executeCommand());
 	});
-	server.on(FPSTR(URL_SUBMIT_FORM_SETTINGS), HTTP_POST, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), setEspSettingsBoxValues());
-	});
 	server.on(FPSTR(URL_SUBMIT_FORM_SENSORS), HTTP_POST, [](){
 		wifiHelper.checkAuthentication();
 		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), setSensorJson());
@@ -170,15 +167,6 @@ void postInitWebServer(){
 		wifiHelper.checkAuthentication();
 		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),
 				timeIntervalService.setIntervalFromJson(server.arg(FPSTR(MESSAGE_SERVER_ARG_VAL))));
-	});
-
-	server.on(FPSTR(ESPSETTINGSBOX_GET_SIMPLE_JSON_PUBLISH_URL), HTTP_GET, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), espSettingsBox.getSimpleJson());
-	});
-	server.on(FPSTR(URL_GET_JSON_SETTINGS), HTTP_GET, [](){
-		wifiHelper.checkAuthentication();
-		String page=server.arg(FPSTR(MESSAGE_SERVER_ARG_PAGE));
-		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), espSettingsBox.getJson(page));
 	});
 	server.on(FPSTR(URL_GET_JSON_SENSORS), HTTP_GET, [](){
 		wifiHelper.checkAuthentication();
@@ -215,6 +203,11 @@ void postInitWebServer(){
 		server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), FPSTR(MESSAGE_STATUS_JSON_WIDGET_NOT_FOUND));
 	});
 }
+
+ESP8266WebServer* getServer(){
+	return wifiHelper.getServer();
+}
+
 //---------------------------------------------------------------------
 //button handling
 void onButtonMenuChanged(){
@@ -332,25 +325,7 @@ void executePostPonedCommand(){
 	deviceHelper.executePostponedCommand();
 }
 
-//----------espSettings save-------------------------------------------
-String setEspSettingsBoxValues(){
-	wifiHelper.checkAuthentication();
-	boolean result=false;
-	String page=server.arg(FPSTR(MESSAGE_SERVER_ARG_PAGE));
 
-	for(uint8_t i=0;i<server.args();i++){
-		String argName=server.argName(i);
-		String argVal=server.arg(i);
-
-		result=espSettingsBox.setSettingsValue(argName,argVal) || result;
-	}
-
-	if(result){
-		espSettingsBox.saveSettingsJson();
-	}
-
-	return espSettingsBox.getJson(page);
-}
 //-------------------------Thing speak functions---------------------
 void executeThingSpeakPost(){
 	thingSpeakHelper.sendItemsToThingSpeak(abstractItems, ARRAY_SIZE(abstractItems));

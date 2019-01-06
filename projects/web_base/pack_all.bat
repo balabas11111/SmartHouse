@@ -66,7 +66,7 @@ for %%h in (%PROJECT_HTML_FOLDER%*.htm) do (
 echo ======================================================================
 echo    'Convert BASE html Components. Project placeholder %PROJECT_PLACEHOLDERS_FOLDER%\*'
 echo ======================================================================
-@echo ON
+
 for /D %%d in (%PROJECT_PLACEHOLDERS_FOLDER%\*) do (
 	
 	echo %%~d\*.html
@@ -90,7 +90,7 @@ for /D %%d in (%PROJECT_PLACEHOLDERS_FOLDER%\*) do (
 		)
 	)
 )
-@echo OFF
+
 echo ======================================================================
 echo                 'Process CSS and Fonts'
 echo ======================================================================

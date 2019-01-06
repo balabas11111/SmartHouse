@@ -166,9 +166,8 @@ public:
 			initStaticPagesInWebFolder();
 		}
 		//printHeap();
-		if(initFilesManager){
-			initDefaultServerHandlers();
-		}
+		initDefaultServerHandlers();
+		initEspSettingsBoxHandlers();
 		//printHeap();
 		if(serverPostInitFunc!=nullptr){
 			Serial.println(FPSTR(MESSAGE_WIFIHELPER_POST_INIT_WEB_SERV_HANDLERS));
@@ -181,7 +180,7 @@ public:
 	}
 
 	void returnFail(String msg) {
-	  server->send(500, "text/plain", msg + "\r\n");
+	  server->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), msg + "\r\n");
 	}
 	//-------------------------------
 	String executeGetRequest(String url){
@@ -393,37 +392,55 @@ protected:
 	//---------------initializations----------------------------------------
 	void initDefaultServerHandlers(){
 
-		Serial.println(FPSTR(MESSAGE_WIFIHELPER_DEPLOY_FILEMANAGER_EDIT));
+		Serial.println(FPSTR("Init default server handlers"));
 
 		server->on(FPSTR(URL_LIST), HTTP_GET, [this](){handleFileList();});
 		server->on(FPSTR(URL_VIEW), HTTP_GET, [this](){handleFileView ();});
 		server->on(FPSTR(URL_TEST), HTTP_GET, [this](){handleTest();});
 
+		//init HTM.GZ files return
 		server->on(FPSTR(URL_INDEX), HTTP_GET, [this](){
-			if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_INDEX_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
+			if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_INDEX_HTML_PAGE)))
+				server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
 		});
 		server->on(FPSTR(URL_SETTINGS), HTTP_GET, [this](){
-			if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_SETTINGS_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
+			if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_SETTINGS_HTML_PAGE)))
+				server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
 		});
-
-		//load editor
 		server->on(FPSTR(URL_EDIT), HTTP_GET, [this](){
-			if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_EDIT_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
+			if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_EDIT_HTML_PAGE)))
+				server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
 		});
-		//create file
+		server->on(FPSTR(URL_ROOT), HTTP_GET, [this](){
+			if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_INDEX_HTML_PAGE)))
+				server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
+		});
 		//server->on(FPSTR(URL_EDIT), HTTP_PUT, [this](){handleFileCreate();});
-		//delete file
 		server->on(FPSTR(URL_EDIT), HTTP_DELETE, [this](){handleFileDelete();});
-		//first callback is called after the request has ended with all parsed arguments
 		server->on(FPSTR(URL_EDIT), HTTP_POST, [this](){ server->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), ""); }, [this](){handleFileUpload();});
 
-		//server->serveStatic(String(FPSTR(URL_ROOT)).c_str(), SPIFFS, String(FPSTR(ESPSETTINGSBOX_DEFAULT_PAGE)).c_str());
+		server->onNotFound([this](){handleNotFound();});
 
-		//server->onNotFound([this](){handleNotFound();});
-
-	    Serial.println(FPSTR(MESSAGE_WIFIHELPER_HTTP_SERVER_STARTED));
+		Serial.println(FPSTR("Default server handlers...done"));
 	}
 
+	void initEspSettingsBoxHandlers(){
+		Serial.println(FPSTR("Init EspSettingsBoxHandlers"));
+
+		server->on(FPSTR(URL_SUBMIT_FORM_SETTINGS), HTTP_POST, [this](){
+			server->send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), setEspSettingsBoxValues());
+		});
+		server->on(FPSTR(ESPSETTINGSBOX_GET_SIMPLE_JSON_PUBLISH_URL), HTTP_GET, [this](){
+			server->send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), espSettingsBox->getSimpleJson());
+		});
+		server->on(FPSTR(URL_GET_JSON_SETTINGS), HTTP_GET, [this](){
+			checkAuthentication();
+			String page=server->arg(FPSTR(MESSAGE_SERVER_ARG_PAGE));
+			server->send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), espSettingsBox->getJson(page));
+		});
+
+		Serial.println(FPSTR("Init EspSettingsBoxHandlers...done"));
+	}
 
 	boolean startAsAccessPoint(){
 		startedAsAP=true;
@@ -483,6 +500,16 @@ protected:
 	void handleNotFound(){
 		Serial.print(FPSTR("NOT found uri="));
 		Serial.println(server->uri());
+
+		String corrUrl=getCorrectedUrl(String(server->uri()).substring(1));
+
+		if(corrUrl!=""){
+			Serial.print(FPSTR("Corrected "));
+			Serial.println(corrUrl);
+			server->sendHeader(FPSTR(HEADER_Location), corrUrl, true);
+			server->send ( 302, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "");
+		}
+
 		server->send(404,FPSTR(CONTENT_TYPE_TEXT_HTML), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_NOT_FOUND));
 	}
 
@@ -533,6 +560,20 @@ protected:
 	  return false;
 	}
 
+	String getCorrectedUrl(String url){
+		if(url.startsWith(FPSTR(URL_INDEX))){
+			return FPSTR(URL_INDEX);
+		}
+		if(url.startsWith(FPSTR(URL_SETTINGS))){
+			return FPSTR(URL_SETTINGS);
+		}
+		if(url.startsWith(FPSTR(URL_EDIT))){
+			return FPSTR(URL_EDIT);
+		}
+
+		return "";
+	}
+
 	void handleFileUpload(){
 	  if(server->uri() != FPSTR(URL_EDIT)) return;
 
@@ -541,7 +582,7 @@ protected:
 	  if(upload.status == UPLOAD_FILE_START){
 		String filename = upload.filename;
 		if(!filename.startsWith("/")) filename = "/"+filename;
-		Serial.print("handleFileUpload Name: "); Serial.println(filename);
+		Serial.print(FPSTR("handleFileUpload Name: ")); Serial.println(filename);
 		fsUploadFile = SPIFFS.open(filename, "w");
 		filename = String();
 	  } else if(upload.status == UPLOAD_FILE_WRITE){
@@ -556,74 +597,94 @@ protected:
 	}
 
 	void handleFileDelete(){
-	  if(server->args() == 0) return server->send(500, "text/plain", "BAD ARGS");
+	  if(server->args() == 0) return server->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "BAD ARGS");
 	  String path = server->arg(0);
-	  Serial.println("handleFileDelete: " + path);
+	  Serial.print(FPSTR("handleFileDelete: "));
+	  Serial.println(path);
+
 	  if(path == "/")
-		return server->send(500, "text/plain", "BAD PATH");
+		return server->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "BAD PATH");
 	  if(!SPIFFS.exists(path))
-		return server->send(404, "text/plain", "FileNotFound");
+		return server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "FileNotFound");
 	  SPIFFS.remove(path);
-	  server->send(200, "text/plain", "");
+	  server->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "");
 	  path = String();
 	}
 
 	void handleFileCreate(){
 	  if(server->args() == 0)
-		return server->send(500, "text/plain", "BAD ARGS");
+		return server->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "BAD ARGS");
 	  String path = server->arg(0);
 	  Serial.println("handleFileCreate: " + path);
 	  if(path == "/")
-		return server->send(500, "text/plain", "BAD PATH");
+		return server->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "BAD PATH");
 	  if(SPIFFS.exists(path))
-		return server->send(500, "text/plain", "FILE EXISTS");
+		return server->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "FILE EXISTS");
 	  File file = SPIFFS.open(path, "w");
 	  if(file)
 		file.close();
 	  else
-		return server->send(500, "text/plain", "CREATE FAILED");
-	  server->send(200, "text/plain", "");
+		return server->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "CREATE FAILED");
+	  server->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "");
 	  path = String();
 	}
 
 	void handleFileView(){
-	  if(!server->hasArg("file")) {
+	  if(!server->hasArg(FPSTR(SERVER_ARG_file))) {
 		returnFail("BAD ARGS file is missed in params");
 		return;
 	  }
 
-	  if(server->hasArg("file")){
-		  handleFileRead(server->arg("file"));
+	  if(server->hasArg(FPSTR(SERVER_ARG_file))){
+		  handleFileRead(server->arg(FPSTR(SERVER_ARG_file)));
 	  }
 	}
 
 	#ifdef ESP8266
 	void handleFileList() {
-	  if(!server->hasArg("dir")) {
-		returnFail("BAD ARGS dir is missed in params");
-		return;
-	  }
 
-	  String path = server->arg("dir");
-	  Serial.println("handleFileList: " + path);
+	  String path = (server->hasArg(FPSTR(SERVER_ARG_dir)))?
+			  server->arg(FPSTR(SERVER_ARG_dir)):"/";
+
+	  String kind = (server->hasArg(FPSTR(SERVER_ARG_kind)))?
+			  server->arg(FPSTR(SERVER_ARG_kind)):FPSTR(SERVER_ARG_list);
+
+	  Serial.print(FPSTR("handleFileList: "));
+	  Serial.println(path);
+
 	  Dir dir = SPIFFS.openDir(path);
 	  path = String();
 
-	  String output = "[";
-	  while(dir.next()){
-		File entry = dir.openFile("r");
-		if (output != "[") output += ',';
-		bool isDir = false;
-		output += "{\"type\":\"";
-		output += (isDir)?"dir":"file";
-		output += "\",\"name\":\"";
-		output += String(entry.name()).substring(1);
-		output += "\"}";
-		entry.close();
+	  String output="";
+
+	  if(kind!=FPSTR(SERVER_ARG_list)){
+		  output += "{\"files\":[";
+		  while(dir.next()){
+			File entry = dir.openFile("r");
+			if (output != "[") output += ',';
+			bool isDir = false;
+			output += "{\"type\":\"";
+			output += (isDir)?FPSTR(SERVER_ARG_dir):FPSTR(SERVER_ARG_file);
+			output += "\",\"name\":\"";
+			output += String(entry.name());
+			output += "\"}";
+			entry.close();
+		  }
+
+		  output += "]}";
+
+		  server->send(200, FPSTR(CONTENT_TYPE_TEXT_JSON), output);
+	  }else{
+		  while(dir.next()){
+			File entry = dir.openFile("r");
+			bool isDir = false;
+			output += String(entry.name());
+			output += FPSTR(NEXT_LINE_RN);
+			entry.close();
+		  }
+		  server->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), output);
 	  }
 
-	  output += "]";
-	  server->send(200, "text/json", output);
 	}
 	#else
 	void handleFileList() {
@@ -655,7 +716,7 @@ protected:
 		  output += ',';
 
 		output += "{\"type\":\"";
-		output += (entry.isDirectory()) ? "dir" : "file";
+		output += (entry.isDirectory()) ? "dir" : FPSTR(SERVER_ARG_file);
 		output += "\",\"name\":\"";
 		// Ignore '/' prefix
 		output += entry.name()+1;
@@ -880,6 +941,26 @@ protected:
 		Serial.print(FPSTR("onStationModeGotIP IP="));
 		Serial.println(evt.ip);
 		reconnected=true;
+	}
+
+	//----------espSettings save-------------------------------------------
+	String setEspSettingsBoxValues(){
+		checkAuthentication();
+		boolean result=false;
+		String page=server->arg(FPSTR(MESSAGE_SERVER_ARG_PAGE));
+
+		for(uint8_t i=0;i<server->args();i++){
+			String argName=server->argName(i);
+			String argVal=server->arg(i);
+
+			result=espSettingsBox->setSettingsValue(argName,argVal) || result;
+		}
+
+		if(result){
+			espSettingsBox->saveSettingsJson();
+		}
+
+		return espSettingsBox->getJson(page);
 	}
 
 private:

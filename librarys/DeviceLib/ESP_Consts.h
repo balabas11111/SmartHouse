@@ -181,6 +181,7 @@ const PROGMEM char CONTENT_TYPE_TEXT_PLAIN[]="text/plain";
 
 const PROGMEM char CONTENT_TYPE_APPLICATION_OCTED_STREAM[]="application/octet-stream";
 const PROGMEM char CONTENT_TYPE_TEXT_CSS[]="text/css";
+const PROGMEM char CONTENT_TYPE_TEXT_JSON[]="text/json";
 const PROGMEM char CONTENT_TYPE_APPLICATION_JAVASCRIPT[]="application/javascript";
 const PROGMEM char CONTENT_TYPE_IMAGE_PNG[]="image/png";
 const PROGMEM char CONTENT_TYPE_IMAGE_GIF[]="image/gif";
@@ -192,6 +193,21 @@ const PROGMEM char CONTENT_TYPE_APPLICATION_XZIP[]="application/x-zip";
 const PROGMEM char CONTENT_TYPE_APPLICATION_XGZIP[]="application/x-gzip";
 
 const PROGMEM char CONTENT_TYPE_JSON_UTF8[]="application/json; charset=UTF-8";
+const PROGMEM char CONTENT_TYPE_TEXT_JSON_UTF8[] ="text/json; charset=UTF-8";
+const PROGMEM char CONTENT_TYPE_TEXT_HTML_UTF8[] ="text/html; charset=UTF-8";
+const PROGMEM char CONTENT_TYPE_TEXT_XML_UTF8[]  ="text/xml; charset=UTF-8";
+const PROGMEM char CONTENT_TYPE_TEXT_PLAIN_UTF8[]="text/plain; charset=UTF-8";
+//Default Server argument
+const PROGMEM char SERVER_ARG_name[]="name";
+const PROGMEM char SERVER_ARG_dir[]="dir";
+const PROGMEM char SERVER_ARG_file[]="file";
+const PROGMEM char SERVER_ARG_kind[]="kind";
+const PROGMEM char SERVER_ARG_list[]="list";
+
+//headers
+const PROGMEM char HEADER_Location[]="Location";
+//
+const PROGMEM char NEXT_LINE_RN[]="\r\n";
 //serial println constants
 
 const PROGMEM char MESSAGE_STATUS_EQUAL[]="Status=";
@@ -385,6 +401,7 @@ const PROGMEM char ESBOX_telegramSenders[]="telegramSenders";
 //WiFi deploy folder
 const PROGMEM char ESPSETTINGSBOX_DEFAULT_PAGE[]="/web/index.htm";
 const PROGMEM char ESPSETTINGSBOX_DEFAULT_WEB_FOLDER[]="/web/";
+const PROGMEM char ESPSETTINGSBOX_DEFAULT_WEB_FOLDER_NO_END[]="/web";
 const PROGMEM char ESPSETTINGSBOX_DEFAULT_WEB_FOLDER_ESP32[]="web/";
 const PROGMEM char ESPSETTINGSBOX_DEPLOY_EXT[]="gz,js,css";
 
@@ -511,9 +528,6 @@ const PROGMEM char MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_PASSWORD[]="espSettingsBo
 const PROGMEM char MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_NOT_FOUND[]="Not Found";
 const PROGMEM char MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND[]="File Not Found";
 const PROGMEM char MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_I_M_HERE[]="I'm here";
-const PROGMEM char MESSAGE_WIFIHELPER_EDIT_HTML_PAGE[]="/web/edit.htm";
-const PROGMEM char MESSAGE_WIFIHELPER_INDEX_HTML_PAGE[]="/web/index.htm";
-const PROGMEM char MESSAGE_WIFIHELPER_SETTINGS_HTML_PAGE[]="/web/settings.htm";
 
 //
 const PROGMEM char MESSAGE_I2CHELPER_BEGIN_INIT[]="-----Begin initialize of I2CHelper-----";
@@ -613,13 +627,14 @@ const PROGMEM char MESSAGE_VIRTUAL_PIN_ID[]=" vPinId=";
 //--------------------------------------------------------
 
 //server urls
-const PROGMEM char URL_ROOT[]="/";
 const PROGMEM char URL_LIST[]="/list";
 const PROGMEM char URL_VIEW[]="/view";
-const PROGMEM char URL_EDIT[]="/edit";
 const PROGMEM char URL_TEST[]="/test";
-const PROGMEM char URL_INDEX[]="/index.htm";
-const PROGMEM char URL_SETTINGS[]="/settings.htm";
+
+const PROGMEM char URL_ROOT[]="/";
+const PROGMEM char URL_INDEX[]="/index";
+const PROGMEM char URL_SETTINGS[]="/settings";
+const PROGMEM char URL_EDIT[]="/edit";
 
 const PROGMEM char URL_SUBMIT_FORM_COMMANDS[]="/submitForm_commands";
 const PROGMEM char URL_SUBMIT_FORM_SETTINGS[]="/submitForm_settings";
@@ -633,6 +648,11 @@ const PROGMEM char URL_GET_SENSORS_CURRNT_VALUES[]="/gscv";
 const PROGMEM char URL_SET_SENSOR_CURRENT_VALUE[]="/sscv";
 
 const PROGMEM char URL_SET_DIGITAL_PIN_CURRENT_VALUE[]="/sdpcv";
+
+const PROGMEM char MESSAGE_WIFIHELPER_INDEX_HTML_PAGE[]="/web/index.htm";
+const PROGMEM char MESSAGE_WIFIHELPER_SETTINGS_HTML_PAGE[]="/web/settings.htm";
+const PROGMEM char MESSAGE_WIFIHELPER_EDIT_HTML_PAGE[]="/web/edit.htm";
+
 //sensorsNames
 const PROGMEM char SENSOR_buttonMenu[]="buttonMenu";
 const PROGMEM char SENSOR_buttonLeft[]="buttonLeft";

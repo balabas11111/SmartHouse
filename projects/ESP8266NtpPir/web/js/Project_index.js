@@ -1,20 +1,12 @@
 function onLoadPageComplete(){
 	w3_close();
 	
-	updateComponentsByAjaxCall('GET', '/espSettingsBox/getSimpleJson', processSettingsJson,'',undefined, 0,2000);
+	registerJsonHandler('bmeMeasurer',processSimpleJson);
+	registerJsonHandler('signalLed',processJsonOnImageComponent);
+	
+	updateComponentsByAjaxCall('GET', '/getJson_settings', processSettingsJson,'',undefined, 0,2000);
 	updateComponentsByAjaxCall('GET', '/gscv?sensor=all', processAllJson,'',undefined, 10000,2000);
 }
-
-var handlersMap=new Map(handlersMapGenerator);
-
-var handlersMapGenerator=function*(){
-	yield ['bmeMeasurer',processSimpleJson];
-	yield ['luxMeasurer',processSimpleJson];
-	yield ['ds18d20Measurer',processSimpleJsonRecreateChildren];
-	yield ['lampLeft',processJsonOnImageComponent];
-	yield ['lampRight',processJsonOnImageComponent];
-	yield ['acMeter',processJsonOnImageComponent];
-};
 
 function lampWidgetClick(component){
 	var componentId=component.id;

@@ -305,7 +305,7 @@ function setComponentValue(component,val){
 	if(component!=undefined){
 		var tagName = component.tagName.toLowerCase();
 		
-		if (tagName =='label' || tagName=='div' || tagName == 'h1' || tagName == 'h2' || tagName == 'h3' || tagName == 'h4' || tagName == 'h5'
+		if (tagName =='label' || tagName=='div' || tagName == 'h1' || tagName == 'h2' || tagName == 'h3' || tagName == 'h4' || tagName == 'h5' || tagName == 'h6'
 			|| tagName == 'b'){
 			component.innerHTML=val;
 		};
@@ -352,30 +352,48 @@ function updateComponentValue(preffix,id,suffix,value){
 	setComponentValue(comp,value);
 }
 /*--------------------process all json -------------------------------*/
-function getHandlerByName(name){
+var jsonHandlers={};
+var validationChains={};
+
+function registerDefaultHandlers(){
+	console.log('Register default handlers');
+	registerJsonHandler('processSimpleJson',processSimpleJson);
+	registerJsonHandler('processSimpleJsonRecreateChildren',processSimpleJsonRecreateChildren);
+	registerJsonHandler('processJsonOnImageComponent',processJsonOnImageComponent);
+	registerJsonHandler('noJsonProcess',noJsonProcess);
+}
+
+function registerJsonHandler(name,handler){
+	console.log('Register handler ',name);
+	jsonHandlers[name]=handler;
+}
+
+function getJsonHandlerByName(name){
 	if(name==undefined){
 		return undefined;
 	}
 
-	return handlersMap.get(name);
+	return jsonHandlers[name];
 }
 
 function processAllJson(allSensorData){
 	var sensors=allSensorData.sensors;
 	
-	for(var s in sensors){
+	for(var i in sensors){
 		var data=sensors[i];
 		
 		if(data!=undefined && data!=null){
 			var sensorName=data.name;
 			
-			var dataHandler=getHandlerByName(sensorName);
+			var dataHandler=getJsonHandlerByName(sensorName);
 			
 			if(dataHandler!=undefined && dataHandler!=null){
 				dataHandler(data);
 			}else{
 				console.log('Json error. handler not found for :');
 				console.log(data);
+				console.log('noJsonProcess will be used as handler');
+				registerJsonHandler(sensorName,noJsonProcess);
 			}
 			
 		}else{
@@ -384,7 +402,9 @@ function processAllJson(allSensorData){
 	}
 }
 
-/*-----------------------------------process Json answers from device----------------*/
+/*--------------------jsonHandlers----------------*/
+function noJsonProcess(data){}
+
 function processSimpleJson(data){
 	processSimpleJsonResponse(data,'');	
 }

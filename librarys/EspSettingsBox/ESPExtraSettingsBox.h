@@ -21,7 +21,7 @@ const char DISPLAY_SETTINGS_BOX_NAME[]      PROGMEM ="DISPLAY";
 const char NTP_SETTINGS_BOX_NAME[]          PROGMEM ="NTP";
 const char TELEGRAM_SETTINGS_BOX_NAME[]     PROGMEM ="TEL";
 
-const char SETTINGS_KIND_all[]   PROGMEM ="device";
+const char SETTINGS_KIND_all[]   PROGMEM ="all";
 const char SETTINGS_KIND_device[]   PROGMEM ="device";
 const char SETTINGS_KIND_net[]      PROGMEM ="net";
 const char SETTINGS_KIND_sensors[]  PROGMEM ="sensors";

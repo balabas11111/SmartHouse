@@ -73,7 +73,9 @@ public:
 			if(updateInterval<MIN_UPDATE_INTERVAL){
 				updateInterval=MIN_UPDATE_INTERVAL;
 			}
-
+#ifndef HAS_LOCAl_CLOCK
+		Serial.println(FPSTR("NO Local clock device. Only NTP is used"));
+#endif
 			if(ntpEnabled){
 				timeClient->setPoolServerName(poolServerName.c_str());
 				timeClient->setTimeOffset(timeOffset);

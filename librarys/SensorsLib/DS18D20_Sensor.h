@@ -22,7 +22,7 @@
 const char SENSOR_DS18D20_NAME[] PROGMEM ="DS18D20_Sensor";
 const char SENSOR_DS18D20_DESCRIPTION[] PROGMEM ="DS18D20 Sensor";
 const char SENSOR_DS18D20_SIZE[] PROGMEM ="C";
-const char SENSOR_DS18D20_DESCRIPTION_RU[] PROGMEM ="Температура °C DS18D20";
+const char SENSOR_DS18D20_DESCRIPTION_RU[] PROGMEM ="РўРµРјРїРµСЂР°С‚СѓСЂР° В°C DS18D20";
 
 const char HEADER_DS18D20[] PROGMEM ="-------DS18D20 initialize------------";
 const char INIT_STR_DS18D20[] PROGMEM ="Init DS18D20";

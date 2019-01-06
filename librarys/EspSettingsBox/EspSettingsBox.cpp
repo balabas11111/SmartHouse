@@ -17,6 +17,7 @@
 #include "FS.h"
 #include "AbstractItem.h"
 #include "ESP_Consts.h"
+#include "projectConsts.h"
 
 //true values
 const char BOOLEAN_ON[]             PROGMEM ="on";
@@ -25,12 +26,12 @@ const char BOOLEAN_true[]           PROGMEM ="true";
 
 const char BOOLEAN_false[]          PROGMEM ="false";
 
-EspSettingsBox::EspSettingsBox(String deviceKind){
-	construct(deviceKind,false,false);
+EspSettingsBox::EspSettingsBox(){
+	construct(false,false);
 }
 
-EspSettingsBox::EspSettingsBox(String deviceKind,ESPExtraSettingsBox** boxes,uint8_t boxesCount){
-	construct(deviceKind,false,false);
+EspSettingsBox::EspSettingsBox(ESPExtraSettingsBox** boxes,uint8_t boxesCount){
+	construct(false,false);
 	this->extraBoxes=boxes;
 	this->extraBoxesCount=boxesCount;
 }
@@ -39,8 +40,8 @@ EspSettingsBox::EspSettingsBox(String deviceKind,ESPExtraSettingsBox** boxes,uin
 	construct(forceLoad,false);
 }*/
 
-EspSettingsBox::EspSettingsBox(String deviceKind,boolean forceLoad,boolean _initSpiff){
-	construct(deviceKind,forceLoad,_initSpiff);
+EspSettingsBox::EspSettingsBox(boolean forceLoad,boolean _initSpiff){
+	construct(forceLoad,_initSpiff);
 }
 
 //Initializable
@@ -128,7 +129,6 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_READ_FROM_FILE_COMPLETE));
 
 	    	    DeviceId = root["dId"].as<char*>();
-	    	  	DeviceKind = root["DeviceKind"].as<char*>();
 	    	  	DeviceDescription =root["DeviceDescription"].as<char*>();
 	    	  	DeviceLocation=root["DeviceLocation"].as<char*>();
 	    	  	isAccesPoint = stringToBoolean(root["iAp"].as<char*>()) ;
@@ -202,7 +202,6 @@ void EspSettingsBox::saveSettingsJson(){
 
 		root["dId"] = DeviceId;
 
-		root["DeviceKind"] = DeviceKind;
 		root["DeviceDescription"] =  DeviceDescription;
 		root["DeviceLocation"] =  DeviceLocation;
 		root["iAp"] = isAccesPoint;
@@ -448,8 +447,7 @@ void EspSettingsBox::listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
 		}
 #endif
 
-void EspSettingsBox::construct(String deviceKind,boolean forceLoad,boolean _initSpiff){
-	this->DeviceKind=deviceKind;
+void EspSettingsBox::construct(boolean forceLoad,boolean _initSpiff){
 	this->_fileName=FPSTR(ESPSETTINGSBOX_SETTINGS_PATH);
 	this->_fileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_DEFAULT_FILE);
 
@@ -513,10 +511,10 @@ String EspSettingsBox::getThingSpeakChannelUrl(){
 }
 
 String EspSettingsBox::getSimpleJson(){
-	String result="{\"name\":\"espSettingsBox\",\"itemCount\":\"8\",\"items\":[\
+	String result="{\"name\":\"espSettingsBox\",\"itemCount\":\"8\",\"settingsKind\":\"simple\",\"items\":[\
 						{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\",\"descr\":\"Версия прошивки\"},\
 						{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\",\"descr\":\"ID устройства\"},\
-						{\"name\":\"DeviceKind\",\"val\":\""+DeviceKind+"\",\"descr\":\"Тип устройства\"},\
+						{\"name\":\"DeviceKind\",\"val\":\""+String(DEVICE_KIND)+"\",\"descr\":\"Тип устройства\"},\
 						{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\",\"descr\":\"Описание устройства\"},\
 						{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\",\"descr\":\"Размещение устройства\"},\
 						\
@@ -533,71 +531,80 @@ return result;
 }
 
 String EspSettingsBox::getJson(String page){
+	if(!page || page==""){
+		return getSimpleJson();
+	}
 
 	String result="{}";
 
-	if(page==FPSTR(SETTINGS_KIND_device)){
-			result="{\"name\":\"espSettingsBox\",\"itemCount\":\"17\",\"items\":[\
-						{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\"},\
-						{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\"},\
-						{\"name\":\"DeviceKind\",\"val\":\""+DeviceKind+"\"},\
-						{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\"},\
-						{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\"},\
-						{\"name\":\"displayAlvaysOn\",\"val\":\""+String(displayAlvaysOn)+"\"},\
-						{\"name\":\"displayAutochange\",\"val\":\""+String(displayAutochange)+"\"},\
-						{\"name\":\"refreshInterval\",\"val\":\""+String(refreshInterval)+"\"},\
-						{\"name\":\"accessUser\",\"val\":\""+String(accessUser)+"\"},\
-						{\"name\":\"accessPass\",\"val\":\"*****\"},\
-						{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\"},\
-						{\"name\":\"settingsPass\",\"val\":\"*****\"},"
-						+getExtraBoxJsonByKind(page)+"]}";
-	}
-	if(page==FPSTR(SETTINGS_KIND_net)){
-			result="{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"items\":[\
-						{\"name\":\"isAccesPoint\",\"val\":\""+String(isAccesPoint)+"\"},\
-						{\"name\":\"ssidAP\",\"val\":\""+ssidAP+"\"},\
-						{\"name\":\"ssid\",\"val\":\""+ssid+"\"},\
-						{\"name\":\"password\",\"val\":\"*****\"},\
-						{\"name\":\"staticIp\",\"val\":\""+String(staticIp)+"\"},\
-						{\"name\":\"localIp\",\"val\":\""+localIp.toString()+"\"},\
-						{\"name\":\"apIp\",\"val\":\""+apIp.toString()+"\"},\
-						{\"name\":\"gateIp\",\"val\":\""+gateIp.toString()+"\"},\
-						{\"name\":\"subnetIp\",\"val\":\""+subnetIp.toString()+"\"},\
-						{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\"},\
-						{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\"},\
-						{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\","
-						+getExtraBoxJsonByKind(page)+"]}";
-	}
-	if(page==FPSTR(SETTINGS_KIND_publish)){
-			result="{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"items\":[\
-					{\"name\":\"isThingSpeakEnabled\",\"val\":\""+String(isThingSpeakEnabled)+"\"},\
-					{\"name\":\"postDataToTSInterval\",\"val\":\""+String(postDataToTSInterval)+"\"},\
-					{\"name\":\"thSkUsrKey\",\"val\":\""+thSkUsrKey+"\"},\
-					{\"name\":\"thSkWKey\",\"val\":\""+thSkWKey+"\"},\
-					{\"name\":\"thSkRKey\",\"val\":\""+thSkRKey+"\"},\
-					{\"name\":\"thSkChId\",\"val\":\""+String(thSkChId)+"\"},\
-					{\"name\":\"thSkTKey\",\"val\":\""+thSkTKey+"\"},\
-					{\"name\":\"isMqttEnabled\",\"val\":\""+String(isMqttEnabled)+"\"},\
-					{\"name\":\"postDataToMqttInterval\",\"val\":\""+String(postDataToMqttInterval)+"\"},\
-					{\"name\":\"mqtt_server\",\"val\":\""+mqtt_server+"\"},\
-					{\"name\":\"mqtt_user\",\"val\":\""+mqtt_user+"\"},\
-					{\"name\":\"mqtt_pass\",\"val\":\"*****\"},\
-					{\"name\":\"mqtt_port\",\"val\":\""+String(mqtt_port)+"\"},\
-					{\"name\":\"isHttpPostEnabled\",\"val\":\""+String(isHttpPostEnabled)+"\"},\
-					{\"name\":\"postDataToHttpInterval\",\"val\":\""+String(postDataToHttpInterval)+"\"},\
-					{\"name\":\"httpPostIp\",\"val\":\""+httpPostIp.toString()+"\"},\
-					{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
-					{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\","
-						+getExtraBoxJsonByKind(page)+"]}";
+if(page==FPSTR(SETTINGS_KIND_device)){
 
-			/*
-			 	 	{\"name\":\"thSkWManageKey\",\"val\":\""+thSkWManageKey+"\"},\
-					{\"name\":\"thSkRManageKey\",\"val\":\""+thSkRManageKey+"\"},\
-					{\"name\":\"thSkManageChId\",\"val\":\""+thSkManageChId+"\"},\
-					{\"name\":\"sendItemsToBaseQUeue\",\"val\":\""+String(sendItemsToBaseQUeue)+"\"},\
-					{\"name\":\"mqtt_TStopic\",\"val\":\""+mqtt_TStopic+"\"},\
-			 */
-	}
+result=
+	"{\"name\":\"espSettingsBox\",\"itemCount\":\"17\",\"settingsKind\":\"device\",\"items\":[\
+	{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\"},\
+	{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\"},\
+	{\"name\":\"DeviceKind\",\"val\":\""+String(DEVICE_KIND)+"\"},\
+	{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\"},\
+	{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\"},\
+	{\"name\":\"displayAlvaysOn\",\"val\":\""+String(displayAlvaysOn)+"\"},\
+	{\"name\":\"displayAutochange\",\"val\":\""+String(displayAutochange)+"\"},\
+	{\"name\":\"refreshInterval\",\"val\":\""+String(refreshInterval)+"\"},\
+	{\"name\":\"accessUser\",\"val\":\""+String(accessUser)+"\"},\
+	{\"name\":\"accessPass\",\"val\":\"*****\"},\
+	{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\"},\
+	{\"name\":\"settingsPass\",\"val\":\"*****\"},"
+	+getExtraBoxJsonByKind(page)+"]}";
+}
+if(page==FPSTR(SETTINGS_KIND_net)){
+
+result=
+	"{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"settingsKind\":\"net\",\"items\":[\
+	{\"name\":\"isAccesPoint\",\"val\":\""+String(isAccesPoint)+"\"},\
+	{\"name\":\"ssidAP\",\"val\":\""+ssidAP+"\"},\
+	{\"name\":\"ssid\",\"val\":\""+ssid+"\"},\
+	{\"name\":\"password\",\"val\":\"*****\"},\
+	{\"name\":\"staticIp\",\"val\":\""+String(staticIp)+"\"},\
+	{\"name\":\"localIp\",\"val\":\""+localIp.toString()+"\"},\
+	{\"name\":\"apIp\",\"val\":\""+apIp.toString()+"\"},\
+	{\"name\":\"gateIp\",\"val\":\""+gateIp.toString()+"\"},\
+	{\"name\":\"subnetIp\",\"val\":\""+subnetIp.toString()+"\"},\
+	{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\"},\
+	{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\"},\
+	{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\"},"
+	+getExtraBoxJsonByKind(page)+"]}";
+}
+if(page==FPSTR(SETTINGS_KIND_publish)){
+
+result=
+	"{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"settingsKind\":\"publish\",\"items\":[\
+	{\"name\":\"isThingSpeakEnabled\",\"val\":\""+String(isThingSpeakEnabled)+"\"},\
+	{\"name\":\"postDataToTSInterval\",\"val\":\""+String(postDataToTSInterval)+"\"},\
+	{\"name\":\"thSkUsrKey\",\"val\":\""+thSkUsrKey+"\"},\
+	{\"name\":\"thSkWKey\",\"val\":\""+thSkWKey+"\"},\
+	{\"name\":\"thSkRKey\",\"val\":\""+thSkRKey+"\"},\
+	{\"name\":\"thSkChId\",\"val\":\""+String(thSkChId)+"\"},\
+	{\"name\":\"thSkTKey\",\"val\":\""+thSkTKey+"\"},\
+	{\"name\":\"isMqttEnabled\",\"val\":\""+String(isMqttEnabled)+"\"},\
+	{\"name\":\"postDataToMqttInterval\",\"val\":\""+String(postDataToMqttInterval)+"\"},\
+	{\"name\":\"mqtt_server\",\"val\":\""+mqtt_server+"\"},\
+	{\"name\":\"mqtt_user\",\"val\":\""+mqtt_user+"\"},\
+	{\"name\":\"mqtt_pass\",\"val\":\"*****\"},\
+	{\"name\":\"mqtt_port\",\"val\":\""+String(mqtt_port)+"\"},\
+	{\"name\":\"isHttpPostEnabled\",\"val\":\""+String(isHttpPostEnabled)+"\"},\
+	{\"name\":\"postDataToHttpInterval\",\"val\":\""+String(postDataToHttpInterval)+"\"},\
+	{\"name\":\"httpPostIp\",\"val\":\""+httpPostIp.toString()+"\"},\
+	{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
+	{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"},"
+		+getExtraBoxJsonByKind(page)+"]}";
+
+/*
+	{\"name\":\"thSkWManageKey\",\"val\":\""+thSkWManageKey+"\"},\
+	{\"name\":\"thSkRManageKey\",\"val\":\""+thSkRManageKey+"\"},\
+	{\"name\":\"thSkManageChId\",\"val\":\""+thSkManageChId+"\"},\
+	{\"name\":\"sendItemsToBaseQUeue\",\"val\":\""+String(sendItemsToBaseQUeue)+"\"},\
+	{\"name\":\"mqtt_TStopic\",\"val\":\""+mqtt_TStopic+"\"},\
+*/
+}
 
 	return result;
 }
@@ -646,10 +653,6 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	}
 	if(fieldName==FPSTR(ESBOX_DeviceId)){
 		DeviceId=fieldValue;
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_DeviceKind)){
-		DeviceKind=fieldValue;
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_DeviceDescription)){
