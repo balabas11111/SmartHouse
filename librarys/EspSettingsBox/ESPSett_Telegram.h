@@ -77,6 +77,9 @@ public:
 	virtual String getDescription() override{
 		return FPSTR(TELEGRAM_SETTINGS_BOX_DESCR);
 	}
+	virtual String getSettingsKind()override{
+		return FPSTR(SETTINGS_KIND_net);
+	}
 };
 
 #endif /* LIBRARIES_ESPSETTINGSBOX_ESPSETTTELEGRAM_H_ */

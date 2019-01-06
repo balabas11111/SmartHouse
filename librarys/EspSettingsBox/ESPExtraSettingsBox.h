@@ -21,6 +21,14 @@ const char DISPLAY_SETTINGS_BOX_NAME[]      PROGMEM ="DISPLAY";
 const char NTP_SETTINGS_BOX_NAME[]          PROGMEM ="NTP";
 const char TELEGRAM_SETTINGS_BOX_NAME[]     PROGMEM ="TEL";
 
+const char SETTINGS_KIND_all[]   PROGMEM ="device";
+const char SETTINGS_KIND_device[]   PROGMEM ="device";
+const char SETTINGS_KIND_net[]      PROGMEM ="net";
+const char SETTINGS_KIND_sensors[]  PROGMEM ="sensors";
+const char SETTINGS_KIND_publish[]  PROGMEM ="publish";
+const char SETTINGS_KIND_intervals[]PROGMEM ="intervals";
+const char SETTINGS_KIND_manage[]   PROGMEM ="manage";
+
 class ESPExtraSettingsBox {
 public:
 	ESPExtraSettingsBox(){};
@@ -35,8 +43,6 @@ public:
 			values=new String[keySize];
 		}
 
-		//fillDefaultValues();
-
 		Serial.println(FPSTR("...done"));
 		return true;
 	}
@@ -44,6 +50,7 @@ public:
 	virtual const char* const* getDefaults()=0;
 	virtual const char* const*  getKeys()=0;
 	virtual String getDescription()=0;
+	virtual String getSettingsKind()=0;
 
 	virtual int fillDefaultValues(){
 		Serial.println(FPSTR("fill default values"));

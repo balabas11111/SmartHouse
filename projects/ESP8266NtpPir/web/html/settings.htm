@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!-- saved from url=(0025)http://192.168.0.50/setup -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Настройки устройства</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<!--
+<link rel="stylesheet" href="./css/w3.css">
+
+<script src="./js/DeviceLib.js"></script>
+<script src="./js/settings.js"></script>
+-->
+<style>
+{w3.css}
+</style>
+
+<script type="text/javascript">
+{Project_settings.js}
+</script>
+
+<script type="text/javascript">
+{DeviceLib.js}
+</script>
+
+<script type="text/javascript">
+{Intervals.js}
+</script>
+
+<script type="text/javascript">
+{Sensors.js}
+</script>
+
+<script type="text/javascript">
+{SettingsBase.js}
+</script>
+
+</head>
+
+<body onload="onLoadPageComplete()">
+				
+<div id="leftSidebar" class="w3-sidebar w3-bar-block w3-light-grey w3-border-right w3-animate-left" style="display: none;">
+	<button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Свернуть</button>
+	<a href="index.htm" class="w3-bar-item w3-button w3-hover-green">Главная</a>
+	<a href="edit" class="w3-bar-item w3-button w3-hover-green">Редактировать файлы</a>
+</div>
+<!-- Page Content -->
+<div id="pageContent">
+
+	<div class="w3-container w3-teal w3-animate-opacity">
+		<div class="w3-quarter w3-container w3-animate-opacity" style="width: 70px; height: 70px;">
+			<button id="openNavBtn" class="w3-button w3-teal w3-xlarge" onclick="w3_open()" title="Открыть меню">☰</button>
+		</div>
+		<h1>Настройки устройства</h1>
+	</div>
+	
+	<div class="w3-bar w3-teal">
+	  <button class="w3-bar-item w3-button" onclick="openTab('device','Устройство')">Устройство</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('net','Сеть')">Сеть</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('sensors','Датчики')">Датчики</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('publish','Публикация')">Публикация</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('intervals','Интервалы')">Интервалы</button>
+	  <button class="w3-bar-item w3-button" onclick="openTab('manage','Управление')">Управление</button>
+	</div>
+
+	<div id="mainContent" class="w3-card-4" style="width:90%; min-width: 600px; margin-top:10px; margin-left:10px;  margin-bottom:30px;">
+
+
+{Settings_Device_content.html}
+
+{Settings_Intervals_content.html}
+
+{Settings_Manage_content.html}
+
+{Settings_Net_content.html}
+
+{Settings_Publish_content.html}
+
+{Settings_Sensors_content.html}
+
+	</div>
+	
+</div>
+</body>
+</html>

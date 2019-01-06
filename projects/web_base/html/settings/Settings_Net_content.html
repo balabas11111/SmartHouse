@@ -1,0 +1,180 @@
+<!-- Begin net tab -->	
+		<div id="net" class="settingsTab reloadableSettingsContainer" style="display:none">
+			<div class="w3-container w3-teal">
+				<h2>Сеть</h2>
+			</div>	
+			
+			<p>Устройство может работать как точка доступа или подключаться к существующей WiFi</p>
+			
+			<div id="net_content">
+				
+				<form id="net_form" class="w3-container">
+			  
+			  		<input name="page" type="hidden" value="net"/>
+			  		
+			  		<div class="w3-row w3-green" style="height: 50px;">
+						<h3>Настройки WiFi</h3>
+					</div>	
+			  
+			  		<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_isAccesPoint" for="espSettingsBox_isAccesPoint">Является точкой доступа</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_isAccesPoint" name="espSettingsBox_isAccesPoint" class="w3-check" type="checkbox">
+						</div>
+				  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_ssidAP" for="espSettingsBox_ssidAP">SSID если в режиме точки доступа</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_ssidAP" name="espSettingsBox_ssidAP" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_ssid" for="espSettingsBox_ssid">SSID если в режиме клиента</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_ssid" name="espSettingsBox_ssid" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+							</div>
+					  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_password" for="espSettingsBox_password">Пароль WiFi</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_password" name="espSettingsBox_password" class="w3-input w3-border" style="width:50%" type="password" value="*****" >
+							</div>
+					  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_passwordConfirm" for="espSettingsBox_passwordConfirm">Подтверждение Пароль WiFi</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_passwordConfirm" name="espSettingsBox_passwordConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****">
+							</div>
+					  	</div>
+					
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_staticIp" for="espSettingsBox_staticIp">Использовать статический IP</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_staticIp" name="espSettingsBox_staticIp" class="w3-check" type="checkbox">
+							</div>
+					  	</div>
+	
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_localIp" for="espSettingsBox_localIp">IP адресс в локальной сети (LocalIp)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_localIp" name="espSettingsBox_localIp" class="w3-input w3-border" style="width:50%" type="text" 
+									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+							</div>
+					  	</div>
+	
+					<div class="w3-row">
+							<div class="w3-half">
+								<label id="lbl_apIp" for="espSettingsBox_apIp">IP адресс Если точка доступа (Access point IP)</label>
+							</div>
+					  		<div class="w3-half">
+								<input id="espSettingsBox_apIp" name="espSettingsBox_apIp" class="w3-input w3-border" style="width:50%" type="text" 
+										value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+							</div>
+					  	</div>
+	
+					<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_gateIp" for="espSettingsBox_gateIp">IP адресс шлюза (GateWay)</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_gateIp" name="espSettingsBox_gateIp" class="w3-input w3-border" style="width:50%" type="text" 
+									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+						</div>
+				  	</div>
+	
+					<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_subnetIp" for="espSettingsBox_subnetIp">IP адресс подсети (Subnet)</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_subnetIp" name="espSettingsBox_subnetIp" class="w3-input w3-border" style="width:50%" type="text" 
+								value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+						</div>
+				  	</div>
+	
+					<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_dnsIp" for="espSettingsBox_dnsIp">IP адресс DNS</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_dnsIp" name="espSettingsBox_dnsIp" class="w3-input w3-border" style="width:50%" type="text" 
+								value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+						</div>
+				  	</div>
+	
+					<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_dnsIp2" for="espSettingsBox_dnsIp2">IP адресс DNS2</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_dnsIp2" name="espSettingsBox_dnsIp2" class="w3-input w3-border" style="width:50%" type="text" 
+									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+						</div>
+				  	</div>
+	
+					<div class="w3-row">
+						<div class="w3-half">
+							<label id="lbl_serverIp" for="espSettingsBox_serverIp">IP адресс Сервера !!!SmartHouse</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_serverIp" name="espSettingsBox_serverIp" class="w3-input w3-border" style="width:50%" type="text" 
+									value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+						</div>
+				  	</div>
+				  	
+				  	<div class="w3-row w3-green" style="height: 50px;">
+						<h3>Настройки Viber</h3>
+					</div>
+					
+					<div class="w3-row">
+						<div class="w3-half">			
+							<label for="espSettingsBox_telegramApiKey">Telegram bot ID</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_telegramApiKey" name="espSettingsBox_telegramApiKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+						</div>
+				  	</div>
+				  	
+				  	<div class="w3-row">
+						<div class="w3-half">			
+							<label for="espSettingsBox_telegramReceivers">Telegram получатель разделенные ;</label>
+						</div>
+				  		<div class="w3-half">
+							<input id="espSettingsBox_telegramReceivers" name="espSettingsBox_telegramReceivers" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+						</div>
+				  	</div>
+				  	
+				  	{Project_Settings_Net_content.html}
+			
+				</form>	  	
+			  </div>
+			  
+			  <p>
+		  		<button id="saveNetSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
+						onclick="submitCurrentForm();">Сохранить</button>
+			  </p>
+			
+			
+			<div id="net_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
+				
+			<div style="height:20px;"></div>
+		</div>
+<!-- end net tab -->

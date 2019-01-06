@@ -86,14 +86,17 @@ public:
 
 	virtual ~ESPSett_Ntp(){};
 
-	virtual const char* const* getKeys() override{
-		return NTP_EXTRA_KEYS;
-	}
 	virtual const char* const* getDefaults() override{
 		return NTP_EXTRA_DEFAULTS;
 	}
+	virtual const char* const* getKeys() override{
+		return NTP_EXTRA_KEYS;
+	}
 	virtual String getDescription() override{
 		return FPSTR(NTP_SETTINGS_BOX_DESCR);
+	}
+	String getSettingsKind()override{
+		return FPSTR(SETTINGS_KIND_net);
 	}
 };
 

@@ -1,0 +1,52 @@
+<!-- Begin sensors tab -->
+		<div id="sensors" class="settingsTab reloadableSettingsContainer" style="display:none">
+			<div class="w3-container w3-teal">
+				<h2>Датчики</h2>
+			</div>
+			
+			  <p>Настройки датчиков. Описание. Режим тревоги. Очереди </p>
+			  
+				<div id="sensors_content">
+					<form id="sensors_form" class="w3-container">
+					
+					</form>  
+				</div>
+				  
+			  
+				<div id="sensors_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px; display:none;"></div>
+				
+				<div style="height:20px;"></div>
+		</div>
+		
+		 <div id="currentSensor_modal" class="w3-modal">
+		    <div class="w3-modal-content w3-animate-top w3-card-4" style="width: 90%;">
+		      	
+		      	<header class="w3-container w3-teal"> 
+			      <span onclick="closePopup('currentSensor_modal','sensors_msg');" class="w3-button w3-display-topright">&times;</span>
+			      <h3 id="currentSensor_header">Поточный датчик</h3>
+			    </header>
+		      	
+		      	<div class="w3-container">
+   
+		        	<form id="currentSensor_form" class="w3-container">
+		        		<input id="currentSensor_name" name="currentSensor_name" type="hidden">
+		        		
+		        		<div id=currentSensor_content>
+		        		
+						</div>						
+						
+						{Project_Settings_Sensors_content.html}
+					</form>
+				
+				 </div>
+				 
+				 <footer class="w3-container w3-teal w3-display-container">
+				 	  <div id="currentSensor_msg" class="w3-card-4" style="margin-left:2px; margin-right:20x; margin-bottom:2px;"></div>
+				 
+				      <button id="currentSensor_saveBtn" class="w3-btn w3-white w3-border w3-border-red w3-round-large" style="margin-top: 2px; margin-bottom: 2px;"
+							onclick="submitCurrentSensorForm();">Сохранить</button>
+    			</footer>
+	        
+		  </div>
+		</div>
+<!-- end sensors tab -->

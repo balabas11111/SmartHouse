@@ -1,0 +1,69 @@
+<!--BME280 BH1750 starts-->
+<div>
+	<div class="w3-card-4" style="width: 400px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+			<div class="w3-container w3-teal">
+				 <div><h3 id="bmeMeasurer_descr">bmeMeasurer</h3></div>
+			</div>
+			
+			<form id="bmeMeasurer" class="w3-container">
+						
+				<div id="temperatureDiv" class="w3-row" style="margin-top: 15px;">
+					<div class="w3-quarter">
+						<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJ/SURBVGhD7Zk/aBRBFMafIgGFGPQuEBAVVAzYKFwT7vYS0FjYpLPQMuZEG2tLC0HBwk4UbLSTtCHExCSHJzbZeHcYby/3x1SCrYUI/tnx22E2rPI4b6p9TvKDj4Xbmcf37czs7O7RLjuBWqN7uhp0nr1rtrdw7OD4pLq5ecSc/j9YDzo5mP9SbXZUUgjzea3VOmmayQem/b9DbCtoz5tmsln/8PE4GyBW0P7p+58OmOZy8RutMTZAQv5G95hpLpdas+tx5pOKg4QePQyLtJTQeV1EAlZBilRRRVKxwnG6qotIwCrIOE0pj67HCifolC4iAZsgorGcWjcwpe5vK0/ndBEJ7Mw14sqIiMZqRFy5a7mzRlzZ2UUTLM/l67V6o5feLywcjdpmppdHszMruVgHr709rItIQBXIS857VgXSI5KdKVeGS2UVK1Mqy1kjNkGGS6svsqXVbiwEmdJFJGATRDQ2QTLTbwaHblYOxaLLGwO6iARsgjizRpwJ4szUEo1NEGduvw6tEUceUcSiiPbgneIBaz4hPL7fMl3koc7QAN4nZjnjnBDmcRTcdJcDjD3lDPcSgt813WWA6XSRM/ovIcgvUV9OYOiPd28bRdPRlEkXNUEj+soyJvsR+n4Nx2i/KZceyqNJzqCNwgKdNeXSA4v8CmfOSrgYplx64GpeYs3ZyKOcKZceMHGCNdensEa+h3kaNOXSBWbqnMl+hKm5aMqkT/SpkzPZjxDkgimTPnjU2AtDLzmjvYSRfG5KyEFN0hCMrXGGOaHtK5Ujmf+3RxsbDD7C6PzgzEfCuW/QPWyk+0w3ueAuNArTd2D4NbQFtaEV/HYbQfV3313ch+g3dpTZj2wLjMMAAAAASUVORK5CYII="/>
+					</div>
+					<div class="w3-third">
+						<label for="bmeMeasurer_Temperature" style="max-width: 240px;">
+							<b>Температура °C</b>
+						</label>
+						<input id="bmeMeasurer_Temperature"	class="w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
+					</div>
+				</div>	
+
+				<div id="pressureDiv" class="w3-row" style="margin-top: 15px;">
+					<div class="w3-quarter">
+						<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAVXSURBVGhD7ZlpaJxFGMdHvC+KiheeaLwKSrAekCatFsQzpeC3VBGJBIOiIuItQkEpUTyoKIpQP0TQqNlEQ5rszLtbu5st0qDJO7MJiFIrtPRQ64nVNrs+M/PfTXZn3zd7vPkg7A8eSP77Z2eed65n3mVNmjRp0uT/hZCdFJxx9QwUl/Gpk41Hh/47CCGfg68TiiG3knXmOhhfENspdlG8B0sECPUQRZ4a/xCKC59cZj0UAwNHQ3URasR44rIXiiHXznrzHSxfHqT7sEQAV0/XlEgYhUSEfACKgTq8PN/OegpBI9S3lIl8AMUlqc6pKZG46oJSkfxK1r6Eiai3obhwdSE84YlwORqWSL6NtVICG3OrWH/0iQjVZxrn6nUoLmP+lfD8AqUyXH5lfCK7DkoJlECXTqAQEY+I3Gwbl89CceHyJni+hVIZLn8wPk+2QSlhqUckYxoPm9dc9RgPV3EoLpnMieQ5Ynzim/OgViT6NTI5eSw9xd9N4+OqFaoLV+8gkTeguAh1AzwHoTjkVrOWpdm1uGovNh52PnD1nfXJu6G4cPWC8Qj1BRSHpVsjQr2JDg5AcREz11qP+tecJ0FwNW18ZYfhQugkX6NP9kO3Ltuxt7tt356eVUP4qAHMnJY/m8Y9tRaqi96WbSKDUFwK00rIf9jo12dCDWQwmWofSkzkh7x0BCMi1MNofA9LJo+BWorwzybPX8bH5V1QXYT6DJ7gkSU+HsucHkukVlB0R5PI55Mn0RPei0SehOrC5SZ4JM3qo6CWkvBXkC9nfTQyIcS8TJdJoBANJyLUU6ZhfcAl1SlQS/GyF1ECh+BbD9VFyC02Cap6F4E6vpYS+D6WmNjdeCKmAMTa0AkFwdX7NgmpAnc0ke2AJ8cS2RuhLko0a0TIDUjiR7PgK8FnLqdEDqOTwWuDyy/xXZ9Cqcjo6OjxI6nUaYUY3Jq6vbFE+MwZlMhvtnHZDdVFyH54UlBchH+LTZQS1rVYCINeutd0vDzqT0S9hCc4G7hTxeVVlMCc7STVWEFwNYFkg8t/EG0iA+o4anif7WDo4n0NSWyD4iL8a5DEHG0WLVADiXZq6dLadvCASaoStvY6YDvp3wPVpVARCCmg1ERji11PAZvIJiguxXJd/Rm4EWgK5TpX90GpCup4BNuvkLvR+G1QXIR8GYmMQHHRO5rx0LQanzoLalU0fiCOyQuQxGFzqgfBpYdOPgbFxZP34rumoFRN4yWKeXelG5dZKJUR8if4wnarV+DZDKVm6l8jwn8QTzG4grU3PD2t8mzLzLlQXXRhaH3BVUEAw97EmpiX5jEvtaPORNSLtnH5LhQXU1sZz1z4JQvTz1P3Q6maxtcIl2+hkxuguHB5vfXQWROGnp4mkewdUKpmOJlpoR2rh6Kv3kTsdOD+I1Bc9G5mPIutI7Xf+OL+dVBqpoE1UvmdbAlx/07jCauvNEL9ar9r+mooVRNLplup8xtpjfRXn4geenvv0DFrGucyVtQ8eSlLTp9f/H/+/dbOeQ+uwHazgE/9bXw8+6r1yCdYcucJxrcI9a0Re3bYaVAeXA6bG58OoT5yPjcedbBYR9mHgndWju9x46mC+kZEE/dXU0P2XjEfsyVvQ+y1d6rMc4S00gqAy+fLPBQhb/BDqG+NCPlosWGe/YN501fgk3m4fwn57Nw3vgo/+tjRsy8ZbPihVcIChsS25ditClHnrqULRn0dDX3tYy5KNBLyk8AXDenZU+lzRb79LDl7MdRFie4+op9cWFleQN9Twn5a08Szl9GDuRn/VUVMpDrtiV6M7UOJ9C4amQh/emvSpEmTJnXD2H+krWJvTOcvkgAAAABJRU5ErkJggg=="/>
+					</div>
+					<div class="w3-third">
+						<label for="bmeMeasurer_Pressure" style="max-width: 240px;">
+							<b>Давление (Паскаль)</b>
+						</label>
+						<input id="bmeMeasurer_Pressure" class="w3-input w3-border" style="width:90%" type="text" value="обновляю" disabled>
+					</div>
+				</div>			
+		   					   		
+				<div id="humidityDiv" class="w3-row" style="margin-top: 15px;">
+					<div class="w3-quarter">
+						<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAARMSURBVGhD7ZldaBxVGIZHqLWIF/YiF+JVK2gbUYO9SIlJUxtQtNZIW7FshMa0rqQoiBe22IIKIr3zRlJaI7UxpmxYMtPtssn+Du5PBTHSYPyrmU0FQWrthZ0fZ2fSOX5nOWtD8m12d+bMhTgPvITszJzvfffMd85MIgQEBAT8P8ko9n55ntzDfv1vkrz696ZU2VLTZftj9pEnnG7hgNMjpP9VtzDr7BDK8PMjdgp/CCF3pMtWBkKQlGI5EKiXHXIN6RGOgchKQagCO4U/ECJMQ9SUKtsL8iLZwA67gnQJHaRbCNcEszHqa5DEFactrVg3lgdh+oCdwgUIEvI1CNxK55AQIMucWTS3sNNc4zwhbIcAJyFAzLcgtBdoT+BBqKws7R92uiuguYdpgJq4B5mcJ+vTiv0DHuC2ksrSy+wSV/g+IzAT72DGV8u6Fv+VbGSXucaXHqF7BjS4jhtHpNin2KUtA7dWu2+rFsyGiBquJ8W6lblaeZxd3hK+9QhtcNRsQ1kZNkRLQI/sAfPpWzvXzdm77vpde/7+CXbIPXQFgs3ua9xoE1Ls59hQLSNmL4WkXIlI2ZL3GUktLIVQg00qpdjfyzJZx4Zrikg+3ybmCtukXPE4lyDUAHyji5jBlqRUhtiQTTGVLQ5XA9TkNUhqofJKUrHJyGyFnPjSJEdzJnmvYJLRyxaZgc9R04iqz2EtzArMxAAEUODnNc9Btn1D7nw9aVx/5BONbBpRV2nrGY0MXjTI2TkLNb9SiSutb5JceiQkmSNYAEx9Ezp5H2ZK/Gl1KPFnqzqTPWO60dtgVmRZ3hAvFDbWJMnFVz0H6TqnGpjpRur8TCPPRvSqusY08sCp28cOxvQP2fAoYPhY1fhKuQ0yIGqHl5vjpZ3j2h+sBAr3IM9E9B8xI161GWZncLr+bs/11jooknsfOq06mBEe2jelTrNSDfHU7IfixnHMAC/1jms3Wam6cFl+90aNrzADvESb/42808bKoXDZEJ8+r/2GGeCp16b1flYOhcsjyq4vtD+x4jw1lNCaemTx1CO7I/ovWHGeGp6xulg5FDFT2CNmi2kpW/zOdZC9Ub2EFeclugQfkdf+EyuXHhlKmEcxA7y0Y1z7i5Wqi5TJt4u5UngqWxp1HeTdGLl7q4/7yEuSEWOlGuL5ofGFSf1bzIRXbTmtksPJSgcrU5cLcmE79MdJCBDzFOSttPmgH7OyP6rnWYk14fpiNSDpY5gZt+o8q5lvTmv3seHXhNuM1Oif1OcwU63q4TOqE06ofWzYpuHyYkV5cZ6s9xrmsU9vLoXjRlNvh6Jc7KCrVU2eVi0Mepu1w7eKGV1LT45rN4YTlUfZMA0Bw3zfRzDoAtAf1WcbBdoM6v5cUwdjxgl2adNIcukA3dGXaRZUhmcu/v96o/vMoYvG2/uiemF3RF3om9CuPwUPmnALXg5d0M8fiVud7NSAgICAgBUIwj/1oWMyLCcBQQAAAABJRU5ErkJggg=="/>
+					</div>
+					<div class="w3-third">
+						<label for="bmeMeasurer_Humidity" style="max-width: 240px;">
+							<b>Влажность (%)</b>
+						</label>
+						<input id="bmeMeasurer_Humidity" class="w3-input w3-border" style="width: 90%; margin-bottom: 10px;" type="text" value="обновляю" disabled>
+					</div>
+				</div>	
+							   		
+		   	</form>
+		   	
+		   	<div class="w3-container w3-teal">
+				 <div><h3 id="luxMeasurer_descr">luxMeasurer</h3></div>
+			</div>
+			
+			<form id="luxMeasurer" class="w3-container">
+				
+				<div id="lightDiv" class="w3-row" style="margin-top: 15px;">
+					<div class="w3-quarter">
+						<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQYSURBVGhD7ZdbSFRRFIZPRXNGM+xOFzLJblpaJlFZFIFd3qJ0KiPFwrQixyJRZizHggqy6K2negh6iF6KIumiHkctBZOadFCZtIsaZXQ3JMi1WmNrSmVnM6Nz5gTzwf8ys/da/79nn332SAECBPAci8UyMvGg2ZhkNJeRLAaDYRR/9f9gyMgLJfN3SehSotF8gb/+f0jMMl3uG8KlrVmmExuSMxas37VrDA/VNklZZtvAENsOFThSzKdhx5FC3JSyDxN2pr9PSE7fyFO0SZLRlPsnRD4k5xS0ph07g2nHinqVSoG2H84v5OGaZkSi0XQlKSu/KzXP8sUVwKXdBWfw0oVtjdgg6Xi8djFYLLrUvKPdA0NkFp7E2mtxiFYZoVy+rvkwzuN2y/6cnr4hck+ZsO32rN4QLoFVvqnpMAkpGWEbUzIpwK9no+h8JnaVjO8Xok+YYiiWZJ6qLdbv3LOGTqX67OP5tqsXN2NPeZAwhEtQrrsDD6Ugnq4d1m3fG7HWcCAk+7xlHFh1DpH5gaJx9/CRFMwltAco8l6RcZHolynVbBjnliGDr0XGRaKxVlSkEJ6uLcicWWT6b6JtVglV0lierh1ohelZkb+KTP9NFP4B3pdCuYR2oCBnRYYHE4Wp0VwYsOpn0tv8u8jwYKIFqMVKaTyX0Qa09y+LzP5LtAB1dGhM4DL+Byp0UWQKRGb/JfplHqMSMolL+R8Kcktk1B3RXBs8GDOFS/kXelbWiEy6KwpjRyV4KpfzL/SsVItMuisK0wQlQTO4nP+gIJtFBj0R1XBgpT6MS/oHRGkkPbyNIoOeiN4zrajI4VzWP1CQdJE5T0VhXkKpHMFl1cf5z5BMuH2ZHEy0zdqhSjefS6sPBckVGfNGzkUhRXJpdXFeJsnEp4GmvBUFeQvlo6O5vLrQUVokMuWtaJu9ozCxXF49wBo8jcJ4fJkcTFTvA1aOjuMW6kGreElkaIj6BErQCm6hDnyZ7BGYGZKo5mdU9Ku5jTpQ0xsiM0MVva+6oEK/ltv4HrpMxouM9FOFHrFmHGLdFETbdMSGMER7+B/Vz0R8Qp/XTkSsHvt7Hi3SN7oBJHAr30PHZ1U/407VTUZsnoPYHovYGY/4bpX7erMc8UV0b0ioCe0GRd7ErXxLv8ukbQZixzKxQS8FL2J64GmYkdv5DrpMjqBtYEfHfKGRYdHbeITmuWZu6TugekK20MAwCtqWfOR2vgOfS3roiOsWGRguQUukwu18CzTNi4GXMW9EJoakzpUUIqrE+X+IW6kDNs5Og9ZFDfB62Q+hMXfU6dxKS7soQDHYIxZyaf8B9RHroHnOOXgWWQat0Y3wanEHtMV+7DXZFvvtl5Z8oJOpHVoWPYGWBTfAMTcH7OGzuESAAAG8RpJ+Apfn2Zxo1YIOAAAAAElFTkSuQmCC"/>
+					</div>
+					<div class="w3-third">
+						<label for="luxMeasurer_Light" style="max-width: 240px;">
+							<b>Освещение (Люкс)</b>
+						</label>
+						<input id="luxMeasurer_Light" class="w3-input w3-border" style="width: 90%; margin-bottom: 10px;" type="text" value="обновляю" disabled>
+					</div>
+				</div>	
+										
+			</form>
+	</div>
+</div>
+<!--BME280 BH1750 ends-->

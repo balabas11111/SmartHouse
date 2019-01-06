@@ -59,8 +59,13 @@ public:
 	void loadAbstractItemFromFile(AbstractItem* item);
 	void saveAbstractItemToFile(AbstractItem* item);
 
-	boolean stringToBoolean(String str);
-	String booleanToString(boolean val);
+	static boolean stringToBoolean(String str){
+		return (str=="on" || str=="1" || str=="true" || str=="True");
+	}
+
+	static String booleanToString(boolean val){
+		return val?"true":"false";
+	}
 	IPAddress stringToIp(String str);
 
 	boolean validateIP(String str);
@@ -77,11 +82,13 @@ public:
 		return "{\"name\":\"extraBoxesCount\",\"val\":\""+String(extraBoxesCount)+"\"}";
 	}
 
-	String getExtraBoxJson(){
+	String getExtraBoxJsonByKind(String extraBoxKind){
 		String result="";
 		for(uint8_t i=0;i<extraBoxesCount;i++){
-			result+=extraBoxes[i]->getJson();
-			result+=",";
+			if(extraBoxKind==FPSTR(SETTINGS_KIND_all) || extraBoxes[i]->getSettingsKind()==extraBoxKind){
+				result+=extraBoxes[i]->getJson();
+				result+=",";
+			}
 		}
 
 		result+=getDefaultExtraBoxJson();
@@ -535,7 +542,7 @@ public:
 		box->printDetails();
 
 		Serial.println(FPSTR("-----------------JSON---------------------"));
-		Serial.println(getJson(FPSTR("device")));
+		Serial.println(getJson(FPSTR(SETTINGS_KIND_device)));
 	}
 /*
 	String getSimpleJsonPublishUrl(){

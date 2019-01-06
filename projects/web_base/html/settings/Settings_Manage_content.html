@@ -1,0 +1,74 @@
+<!-- Begin manage tab -->			
+		<div id="manage" class="settingsTab" style="display:none">
+			<div class="w3-container w3-teal">
+				<h2>Управление</h2>
+			</div>
+			
+			  <p>Общее управление устройством</p>
+			   <div id="manage_content">
+			  		<button class="w3-button w3-white w3-border w3-border-red w3-round-large" onclick="openConfirmPopup('Подтвердите рестарт устройства','restart');"
+			  			style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px;">
+	  	 				Перезапустить устройство
+					</button>
+					
+					<button class="w3-button w3-white w3-border w3-border-red w3-round-large" onclick="openConfirmPopup('Подтвердите пересоздание каналов ThingSpeak. Внимание очереди датчиков также будут обновлены','recreateThingSpeak');"
+			  			style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px;">
+	  	 				Пересоздать каналы ThingSpeak
+					</button>
+					
+					<button class="w3-button w3-white w3-border w3-border-red w3-round-large" onclick="openConfirmPopup('Внимание. Все файлы настроек будут удалены. Устройство загрузится с настройками по умолчанию.','deleteSettings');"
+			  			style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px;">
+	  	 				Удалить файлы настроек
+					</button>
+			  </div>
+			  
+			  {Project_Settings_Manage_content.html}
+		</div>
+		
+		<div id="confirm_modal" class="w3-modal">
+		    <div class="w3-modal-content w3-animate-top w3-card-4">
+		      	
+		      	<header class="w3-container w3-teal"> 
+			      <span id="confirm_headerCloseBtn" onclick="hideComponent('confirm_modal');" class="w3-button w3-display-topright">&times;</span>
+			      <form>
+			      	<h3 id="confirm_header">Подтвердите действие</h3>
+			      </form>
+			    </header>
+		      	
+		      	<div class="w3-container">
+   
+		        	<form id="confirm_form" class="w3-container" style="margin: 10px;">
+		        		<input id="confirm_command" name="confirm_command" type="hidden">
+		        		
+		        		<div id=confirm_content>
+		        		
+						</div>						
+						
+						<div id="confirm_msg" class="w3-card-4" style="margin-top: 2px; margin-bottom: 2px;"></div>
+				
+						<div style="height:2px;"></div>
+						
+					</form>
+				
+				 </div>
+				 
+				 <footer class="w3-container w3-teal w3-display-container">
+				 		<div class="w3-row w3-half">
+				 			<div class="w3-half">
+							      <button id="confirm_okBtn" class="w3-btn w3-white w3-border w3-border-green w3-round-large" style="margin-top: 2px; margin-bottom: 2px;"
+										onclick="">Подтвердить</button>
+							</div>
+							<div class="w3-half">
+								  <button id="confirm_cancelBtn" class="w3-btn w3-white w3-border w3-border-red w3-round-large" style="margin-top: 2px; margin-bottom: 2px;"
+										onclick="hideComponent('confirm_modal');">Отменить</button>
+							</div>
+							<div class="w3-half">
+								  <button id="confirm_closeBtn" class="w3-btn w3-white w3-border w3-border-red w3-round-large" style="margin-top: 2px; margin-bottom: 2px;"
+										onclick="hideComponent('confirm_modal');">Закрыть</button>
+							</div>
+						</div>
+    			</footer>
+	        
+		  </div>
+		</div>
+<!-- end manage tab -->		

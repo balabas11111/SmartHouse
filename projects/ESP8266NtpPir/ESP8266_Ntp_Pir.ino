@@ -36,12 +36,6 @@
 #include "Display_Custom/DisplayHelper_TM1637_Clock_PIR.h"
 
 #include "TM1637.h"
-/*
-WiFiEventHandler stationModeConnectedHandler;
-WiFiEventHandler onStationModeDHCPTimeoutHandler;
-WiFiEventHandler onStationModeDisconnectedHandler;
-WiFiEventHandler onStationModeGotIPHandler;
-*/
 ESPSett_Ntp espSett_Ntp;
 
 ESPExtraSettingsBox* extraBoxes[]={&espSett_Ntp};
@@ -406,6 +400,11 @@ void changeSymbol(){
 	}
 }
 /*
+WiFiEventHandler stationModeConnectedHandler;
+WiFiEventHandler onStationModeDHCPTimeoutHandler;
+WiFiEventHandler onStationModeDisconnectedHandler;
+WiFiEventHandler onStationModeGotIPHandler;
+
 void setupWifiEvents(){
 	Serial.println(FPSTR("Init WiFi events"));
 

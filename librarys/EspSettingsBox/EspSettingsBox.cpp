@@ -470,14 +470,6 @@ boolean EspSettingsBox::validateIP(String str){
 	return result;
 }
 
-boolean EspSettingsBox::stringToBoolean(String str){
-	return (str=="on" || str=="1" || str=="true" || str=="True");
-}
-
-String EspSettingsBox::booleanToString(boolean val){
-	return val?"true":"false";
-}
-
 IPAddress EspSettingsBox::stringToIp(String str){
 	uint8_t pos=0;
 	String tmp="";
@@ -531,7 +523,7 @@ String EspSettingsBox::getSimpleJson(){
 						{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
 						{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
 						{\"name\":\"thingSpeakChannelUrl\",\"val\":\""+getThingSpeakChannelUrl()+"\"},"
-						+getExtraBoxJson()+"],\
+						+getExtraBoxJsonByKind(SETTINGS_KIND_all)+"],\
 						\"DeviceId\":\""+DeviceId+"\",\
 						\"DeviceDescription\":\""+DeviceDescription+"\",\
 						\"DeviceLocation\":\""+DeviceLocation+"\",\
@@ -544,7 +536,7 @@ String EspSettingsBox::getJson(String page){
 
 	String result="{}";
 
-	if(page=="device"){
+	if(page==FPSTR(SETTINGS_KIND_device)){
 			result="{\"name\":\"espSettingsBox\",\"itemCount\":\"17\",\"items\":[\
 						{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\"},\
 						{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\"},\
@@ -557,10 +549,10 @@ String EspSettingsBox::getJson(String page){
 						{\"name\":\"accessUser\",\"val\":\""+String(accessUser)+"\"},\
 						{\"name\":\"accessPass\",\"val\":\"*****\"},\
 						{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\"},\
-						{\"name\":\"settingsPass\",\"val\":\"*****\"},\""
-						+getExtraBoxJson()+"]}";
+						{\"name\":\"settingsPass\",\"val\":\"*****\"},"
+						+getExtraBoxJsonByKind(page)+"]}";
 	}
-	if(page=="net"){
+	if(page==FPSTR(SETTINGS_KIND_net)){
 			result="{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"items\":[\
 						{\"name\":\"isAccesPoint\",\"val\":\""+String(isAccesPoint)+"\"},\
 						{\"name\":\"ssidAP\",\"val\":\""+ssidAP+"\"},\
@@ -573,9 +565,10 @@ String EspSettingsBox::getJson(String page){
 						{\"name\":\"subnetIp\",\"val\":\""+subnetIp.toString()+"\"},\
 						{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\"},\
 						{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\"},\
-						{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\"}]}";
+						{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\","
+						+getExtraBoxJsonByKind(page)+"]}";
 	}
-	if(page=="publish"){
+	if(page==FPSTR(SETTINGS_KIND_publish)){
 			result="{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"items\":[\
 					{\"name\":\"isThingSpeakEnabled\",\"val\":\""+String(isThingSpeakEnabled)+"\"},\
 					{\"name\":\"postDataToTSInterval\",\"val\":\""+String(postDataToTSInterval)+"\"},\
@@ -594,7 +587,8 @@ String EspSettingsBox::getJson(String page){
 					{\"name\":\"postDataToHttpInterval\",\"val\":\""+String(postDataToHttpInterval)+"\"},\
 					{\"name\":\"httpPostIp\",\"val\":\""+httpPostIp.toString()+"\"},\
 					{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
-					{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}]}";
+					{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\","
+						+getExtraBoxJsonByKind(page)+"]}";
 
 			/*
 			 	 	{\"name\":\"thSkWManageKey\",\"val\":\""+thSkWManageKey+"\"},\

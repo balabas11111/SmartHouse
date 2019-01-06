@@ -63,6 +63,9 @@ public:
 	virtual String getDescription() override{
 		return FPSTR(DISPLAY_SETTINGS_BOX_DESCR);
 	}
+	virtual String getSettingsKind()override{
+		return FPSTR(SETTINGS_KIND_device);
+	}
 };
 
 #endif /* LIBRARIES_ESPSETTINGSBOX_ESPSETT_DISPLAY_H_ */

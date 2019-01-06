@@ -1,0 +1,157 @@
+<!-- Begin device tab -->	
+		<div id="device" class="settingsTab reloadableSettingsContainer w3-container" style="display:none">
+			<div class="w3-container w3-teal">
+				<h2>Устройство</h2>
+			</div>
+		  
+		  	<div id="device_content">
+				<form id="device_form" class="w3-container">
+				
+						<div class="w3-row w3-green" style="height: 50px;">
+							<h2>Общие настройки устройства</h2>
+						</div>
+						
+						<input name="page" type="hidden" value="device"/>
+						
+						<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_deviceFirmWareVersion" for="espSettingsBox_deviceFirmWareVersion">Версия прошивки</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<h3 id=espSettingsBox_deviceFirmWareVersion>Загружаю</h3>
+					  		</div>
+					  	</div>
+	
+						<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_DeviceId" for="espSettingsBox_DeviceId">ID устройства</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<h3 id=espSettingsBox_DeviceId>Загружаю</h3>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_DeviceKind" for="espSettingsBox_DeviceKind">Тип устройства</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<h3 id=espSettingsBox_DeviceKind>Загружаю</h3>	
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_DeviceDescription" for="espSettingsBox_DeviceDescription">Описание устройства</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_DeviceDescription" name="espSettingsBox_DeviceDescription" class="w3-input w3-border" type="text" value="обновляю"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_DeviceLocation" for="espSettingsBox_DeviceLocation">размещение устройства</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_DeviceLocation" name="espSettingsBox_DeviceLocation" class="w3-input w3-border" type="text" value="обновляю"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row w3-green" style="height: 50px;">
+							<h2>Настройки обновления датчиков</h2>
+						</div>
+						
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_refreshInterval" for="espSettingsBox_refreshInterval">Обновление значений датчиков</label>
+					  		</div>
+					  		<div class="w3-half">	
+					  			<input id="espSettingsBox_refreshInterval" name="espSettingsBox_refreshInterval" class="w3-input w3-border" style="width:50%" 
+					  				type="number" min="60" max="1024" step="1" value="61"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row w3-green" style="height: 50px;">
+					  		<h2>Настройки доступа</h2>
+					  	</div>
+					  	
+					  	<div class="w3-row" style="height: 50px;">
+					  		<h2>Главная страница</h2>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_accessUser" for="espSettingsBox_accessUser">Пользователь главной страницы</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_accessUser" name="espSettingsBox_accessUser" class="w3-input w3-border" style="width:50%" 
+					  				type="text" value="обновляю"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_accessPass" for="espSettingsBox_accessPass">Пароль главной страницы</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_accessPass" name="espSettingsBox_accessPass" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_accessPassConfirm" for="espSettingsBox_accessPassConfirm">Подтверждение пароля</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_accessPassConfirm" name="espSettingsBox_accessPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row" style="height: 50px;">
+					  		<h2>Страница настроек</h2>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_settingsUser" for="espSettingsBox_settingsUser">Пользователь страницы настроек</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_settingsUser" name="espSettingsBox_settingsUser" class="w3-input w3-border" style="width:50%"
+					  				 type="text" value="обновляю" required="required" pattern="[A-Za-z0-9]{1,20}"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_settingsPass" for="espSettingsBox_settingsPass">Пароль страницы настроек</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_settingsPass" name="espSettingsBox_settingsPass" class="w3-input w3-border" style="width:50%"
+					  				type="password" value="*****"/>
+					  		</div>
+					  	</div>
+					  	
+					  	<div class="w3-row">
+							<div class="w3-half">
+					  			<label id="lbl_settingsPassConfirm" for="espSettingsBox_settingsPassConfirm">Подтверждение пароля</label>
+					  		</div>
+					  		<div class="w3-half">
+					  			<input id="espSettingsBox_settingsPassConfirm" name="espSettingsBox_settingsPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
+					  		</div>
+					  	</div>
+{Project_Settings_Device_content.html}
+				</form>	
+			</div>
+			
+			
+			<p>
+		  		<button id="saveDeviceSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
+						onclick="submitCurrentForm();">Сохранить</button>
+			</p>
+			  
+			<div id="device_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px;"></div>
+				
+			<div style="height:20px;"></div>
+		</div>
+<!-- end device tab -->
