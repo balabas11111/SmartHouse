@@ -34,9 +34,11 @@ SET BASE_HTML_PLACEHOLDERS_FOLDER=%BASE_HTML_COMPONENTS_FOLDER%%PLACEHOLDERS_NAM
 echo ----------------------------------------------------------------------
 echo   'Recreate deployment folder'
 echo ----------------------------------------------------------------------
+@echo ON
 powershell -Command "Remove-Item %TEMP_FOLDER_CREATE_PATH% -Force -Recurse -ErrorAction Ignore"
 powershell -Command "New-Item -ItemType Directory -Force -Path %TEMP_FOLDER_CREATE_PATH%"
 powershell -Command "New-Item -ItemType Directory -Force -Path %TEMP_HTML_PLACEHOLDERS_FOLDER%"
+@echo OFF
 
 SET /a itemCount=0
 
@@ -96,7 +98,6 @@ for /D %%d in (%PROJECT_PLACEHOLDERS_FOLDER%\*) do (
 			) || (@echo '{%%~nxg}' not found in %TARGET_FILE%)
 	)
 )
-pause
 
 echo ======================================================================
 echo                 'Process CSS and Fonts'

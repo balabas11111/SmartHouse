@@ -10,7 +10,7 @@ const MAX_VAL_SUFFIX="maxVal";
 const FIELD_ID_SUFFIX="fieldId";
 const QUEUE_SUFFIX="queue";
 
-const CLASS_AUTO_CREATED_CHILD="autoCreatedChild"
+const CLASS_AUTO_CREATED_CHILD="autoCreatedChild";
 const LABEL_PREFFIX="Label";
 
 /*--------------------------Menu functions-----------------------------*/
@@ -130,7 +130,7 @@ function addChildComponentIfNotExists(comp,item){
 	
 	var newLabelId=getComponentIdWithPreffix(LABEL_PREFFIX,itemName);
 	var newInputId=getComponentIdWithPreffix(parentId,itemName);
-	var newLabelHtml="<b>"+itemDescr+"</b>"
+	var newLabelHtml="<b>"+itemDescr+"</b>";
 
 	var labelComponent=getComponentById(newLabelId);
 	var inputComponent=getComponentById(newInputId);
@@ -371,7 +371,7 @@ function processAllJson(allSensorData){
 		if(data!=undefined && data!=null){
 			var sensorName=data.name;
 			
-			var dataHandler=getHandlerByName(sensorName)
+			var dataHandler=getHandlerByName(sensorName);
 			
 			if(dataHandler!=undefined && dataHandler!=null){
 				dataHandler(data);
@@ -392,7 +392,7 @@ function processSimpleJson(data){
 }
 
 function processSimpleJsonResponse(data,preffix){
-	var name=data.name
+	var name=data.name;
 	var itemCount=data.itemCount;
 	var descr=data.descr;
 	
@@ -634,18 +634,19 @@ function processFormDataAsJsonVal(form,childNodes){
 	
 	var formData = new FormData(form);
 	
-	const data = formToJSON(form.elements);
+	/*const data = formToJSON(form.elements);
 	formData.append("val", data);
-	
+	*/
 	return formData;
 }
-
+/*
 const formToJSON = elements => [].reduce.call(elements, (data, element) => {
 	  
 	  data[element.name] = element.value;
 	  return data;
 
 	}, {});
+	*/
 
 
 
