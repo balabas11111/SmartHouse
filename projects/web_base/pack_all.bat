@@ -10,10 +10,9 @@ echo ======================================================================
 echo PROJECT_PATH=%PROJECT_PATH%
 echo BASE_WEB_PATH=%BASE_WEB_PATH%
 
-
-SET TEMP_FOLDER_NAME=tempDeploy
+SET TEMP_FOLDER_NAME=target
 SET TEMP_FOLDER_CREATE_PATH=%PROJECT_PATH%%TEMP_FOLDER_NAME%
-SET TEMP_FOLDER=%PROJECT_PATH%tempDeploy\
+SET TEMP_FOLDER=%PROJECT_PATH%%TEMP_FOLDER_NAME%\
 SET LOG_FILE=%TEMP_FOLDER%build.log
 
 SET PROJECT_HTML_FOLDER=%PROJECT_PATH%html\
@@ -67,38 +66,31 @@ for %%h in (%PROJECT_HTML_FOLDER%*.htm) do (
 echo ======================================================================
 echo    'Convert BASE html Components. Project placeholder %PROJECT_PLACEHOLDERS_FOLDER%\*'
 echo ======================================================================
-
+@echo ON
 for /D %%d in (%PROJECT_PLACEHOLDERS_FOLDER%\*) do (
-	SET DAT_FILE_NAME=Base_placeholder.dat
-	echo %%~d\%DAT_FILE_NAME%
 	
-	set /p BASE_PLACEHOLDER_NAME=<%%~d\%DAT_FILE_NAME%
+	echo %%~d\*.html
 	
-	echo %BASE_PLACEHOLDER_NAME% 
-	
-	echo ------------------------------------------------------------------------
-	echo        convert %BASE_PLACEHOLDER_NAME% to %%~nxd.html
-	echo ------------------------------------------------------------------------
-	
-	SET PROJECT_FILE=%%~nxd.html
-	SET PARAMETERS_FOLDER=%%~d
-	
-	SET BASE_FILE=%BASE_HTML_PLACEHOLDERS_FOLDER%%BASE_PLACEHOLDER_NAME%
-	SET TARGET_FILE=%TEMP_HTML_PLACEHOLDERS_FOLDER%\%PROJECT_FILE%
-	
-	echo BASE_FILE %BASE_FILE%
-	echo TARGET_FILE %TARGET_FILE%
-	
-	powershell -Command "Copy-Item %BASE_FILE% -Destination %TARGET_FILE%"
-	
-	for %%g in (%PARAMETERS_FOLDER%\*.txt) do (
-		find /I "{%%~nxg}" %TARGET_FILE% >> %LOG_FILE%  && (
-				echo replace '{%%~nxg}' in %TARGET_FILE% content=%PARAMETERS_FOLDER%\%%~nxg
-				powershell -Command "(gc %TARGET_FILE% -Encoding UTF8) -replace '{%%~nxg}', (gc %PARAMETERS_FOLDER%\%%~nxg -Encoding UTF8) | Out-File %TARGET_FILE%"
-			) || (@echo '{%%~nxg}' not found in %TARGET_FILE%)
+	for %%e in (%%~d\*.html) do (
+		
+		echo ------------------------------------------------------------------------
+		echo        convert %%~nxe to %%~nxd.html
+		echo ------------------------------------------------------------------------
+		
+		echo BASE_FILE %BASE_HTML_PLACEHOLDERS_FOLDER%%%~nxe
+		echo TARGET_FILE %TEMP_HTML_PLACEHOLDERS_FOLDER%\%%~nd.html
+		
+		powershell -Command "Copy-Item %BASE_HTML_PLACEHOLDERS_FOLDER%%%~nxe -Destination %TEMP_HTML_PLACEHOLDERS_FOLDER%\%%~nd.html
+		
+		for %%g in (%%~d\*.txt) do (
+			find /I "{%%~nxg}" %TEMP_HTML_PLACEHOLDERS_FOLDER%\%%~nd.html >> %LOG_FILE%  && (
+					echo replace '{%%~nxg}' in %TEMP_HTML_PLACEHOLDERS_FOLDER%\%%~nd.html content=%%~d\%%~nxg
+					powershell -Command "(gc %TEMP_HTML_PLACEHOLDERS_FOLDER%\%%~nd.html -Encoding UTF8) -replace '{%%~nxg}', (gc %%~d\%%~nxg -Encoding UTF8) | Out-File %TEMP_HTML_PLACEHOLDERS_FOLDER%\%%~nd.html"
+				) || (@echo '{%%~nxg}' not found in %TEMP_HTML_PLACEHOLDERS_FOLDER%\%%~nd.html)
+		)
 	)
 )
-
+@echo OFF
 echo ======================================================================
 echo                 'Process CSS and Fonts'
 echo ======================================================================

@@ -5,6 +5,8 @@ function onLoadPageComplete(){
 	updateComponentsByAjaxCall('GET', '/gscv?sensor=all', processAllJson,'',undefined, 10000,2000);
 }
 
+var handlersMap=new Map(handlersMapGenerator);
+
 var handlersMapGenerator=function*(){
 	yield ['bmeMeasurer',processSimpleJson];
 	yield ['luxMeasurer',processSimpleJson];

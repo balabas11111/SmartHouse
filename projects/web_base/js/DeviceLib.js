@@ -352,8 +352,6 @@ function updateComponentValue(preffix,id,suffix,value){
 	setComponentValue(comp,value);
 }
 /*--------------------process all json -------------------------------*/
-var handlersMap=new Map(handlersMapGenerator);
-
 function getHandlerByName(name){
 	if(name==undefined){
 		return undefined;

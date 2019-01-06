@@ -67,7 +67,7 @@ public:
 
 		this->disconnectOnStartIfConnected=_disconnectOnStartIfConnected;
 
-		this->initStaticPages=true;
+		this->initStaticPages=false;
 		this->initFilesManager=true;
 
 		this->initialized=false;
@@ -145,6 +145,39 @@ public:
 		}else{
 			//Serial.println("Authentication is not required for setupPage");
 		}
+	}
+
+	void setupServer(){
+		//printHeap();
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+		Serial.println(FPSTR(MESSAGE_WIFIHELPER_SETUP_SERVER));
+
+#ifdef ESP8266
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_MODE_EQ));
+		Serial.print(WiFi.getMode());
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_GET_AUTO_CONNECT));
+		Serial.print(WiFi.getAutoConnect());
+#endif
+		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
+		Serial.println(getWiFiStatusStr(WiFi.status()));
+
+		//printHeap();
+		if(initStaticPages){
+			initStaticPagesInWebFolder();
+		}
+		//printHeap();
+		if(initFilesManager){
+			initDefaultServerHandlers();
+		}
+		//printHeap();
+		if(serverPostInitFunc!=nullptr){
+			Serial.println(FPSTR(MESSAGE_WIFIHELPER_POST_INIT_WEB_SERV_HANDLERS));
+			serverPostInitFunc();
+			printHeap();
+		}
+		server->begin();
+		Serial.println(FPSTR(MESSAGE_WIFIHELPER_SERVER_SETUP_COMPLETED));
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 	}
 
 	void returnFail(String msg) {
@@ -252,6 +285,10 @@ public:
 		return result;
 	}
 
+	ESP8266WebServer* getServer(){
+		return this->server;
+	}
+
 	//---------------------------------------------------------------------
 		String getWiFiStatusStr(wl_status_t status){
 			if(status>7 || status<0){
@@ -354,46 +391,13 @@ public:
 	}
 protected:
 	//---------------initializations----------------------------------------
-	void setupServer(){
-		//printHeap();
-		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-		Serial.println(FPSTR(MESSAGE_WIFIHELPER_SETUP_SERVER));
-
-#ifdef ESP8266
-		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_MODE_EQ));
-		Serial.print(WiFi.getMode());
-		Serial.print(FPSTR(MESSAGE_WIFIHELPER_GET_AUTO_CONNECT));
-		Serial.print(WiFi.getAutoConnect());
-#endif
-		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_STATUS_EQ));
-		Serial.println(getWiFiStatusStr(WiFi.status()));
-
-		//printHeap();
-		if(initStaticPages){
-			initStaticPagesInWebFolder();
-		}
-		//printHeap();
-		if(initFilesManager){
-			initDefaultServerHandlers();
-		}
-		//printHeap();
-		if(serverPostInitFunc!=nullptr){
-			Serial.println(FPSTR(MESSAGE_WIFIHELPER_POST_INIT_WEB_SERV_HANDLERS));
-			serverPostInitFunc();
-			printHeap();
-		}
-		server->begin();
-		Serial.println(FPSTR(MESSAGE_WIFIHELPER_SERVER_SETUP_COMPLETED));
-		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-	}
-
 	void initDefaultServerHandlers(){
 
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_DEPLOY_FILEMANAGER_EDIT));
 
 		server->on(FPSTR(URL_LIST), HTTP_GET, [this](){handleFileList();});
 		server->on(FPSTR(URL_VIEW), HTTP_GET, [this](){handleFileView ();});
-		server->on(FPSTR(URL_TEST), HTTP_PUT, [this](){handleTest();});
+		server->on(FPSTR(URL_TEST), HTTP_GET, [this](){handleTest();});
 
 		server->on(FPSTR(URL_INDEX), HTTP_GET, [this](){
 			if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_INDEX_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
@@ -407,15 +411,15 @@ protected:
 			if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_EDIT_HTML_PAGE))) server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
 		});
 		//create file
-		server->on(FPSTR(URL_EDIT), HTTP_PUT, [this](){handleFileCreate();});
+		//server->on(FPSTR(URL_EDIT), HTTP_PUT, [this](){handleFileCreate();});
 		//delete file
 		server->on(FPSTR(URL_EDIT), HTTP_DELETE, [this](){handleFileDelete();});
 		//first callback is called after the request has ended with all parsed arguments
 		server->on(FPSTR(URL_EDIT), HTTP_POST, [this](){ server->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), ""); }, [this](){handleFileUpload();});
 
-		server->serveStatic(String(FPSTR(URL_ROOT)).c_str(), SPIFFS, String(FPSTR(ESPSETTINGSBOX_DEFAULT_PAGE)).c_str());
+		//server->serveStatic(String(FPSTR(URL_ROOT)).c_str(), SPIFFS, String(FPSTR(ESPSETTINGSBOX_DEFAULT_PAGE)).c_str());
 
-		server->onNotFound([this](){handleNotFound();});
+		//server->onNotFound([this](){handleNotFound();});
 
 	    Serial.println(FPSTR(MESSAGE_WIFIHELPER_HTTP_SERVER_STARTED));
 	}
@@ -877,6 +881,7 @@ protected:
 		Serial.println(evt.ip);
 		reconnected=true;
 	}
+
 private:
 #ifdef ESP8266
 	ESP8266WebServer *server;
