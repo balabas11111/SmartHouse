@@ -635,9 +635,9 @@ function validateFormFunctionDefault(form){
 	var validateMessage='';
 	
 	var isValidForm = form.checkValidity();
+	var childNodes=getComponentChildrenByTag(form,'input');
 	
 	if(!isValidForm){
-		var childNodes=getComponentChildrenByTag(form,'input');
 		var labels=getComponentChildrenByTag(form,'label');
 		
 		for(var i=0;i<childNodes.length;i++){
@@ -653,6 +653,10 @@ function validateFormFunctionDefault(form){
 				}
 				validateMessage+=child.validationMessage+' <br>'
 			}
+		}
+	}else{
+		for(var i=0;i<childNodes.length;i++){
+			markComponentValidity(childNodes[i], true);
 		}
 	}
 	
