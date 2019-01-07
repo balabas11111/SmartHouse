@@ -76,7 +76,7 @@ function openTab(tabName,headerName) {
 		
 		if(tabName=='net'){
 			getValuesHandler=processDeviceSettingsGet;
-			validateValuesHandler=undefined;
+			validateValuesHandler=validateFormFunctionDefault;
 			submitValuesUrl='/submitForm_'+'settings';
 			getValuesUrl='/getJson_'+'settings?page='+tabName;
 		}
@@ -105,7 +105,7 @@ function openTab(tabName,headerName) {
 		
 		if(tabName=='publish'){
 			getValuesHandler=processDeviceSettingsGet;
-			validateValuesHandler=undefined;
+			validateValuesHandler=validateFormFunctionDefault;
 			submitValuesUrl='/submitForm_'+'settings';
 			getValuesUrl='/getJson_'+'settings?page='+tabName;
 		}
@@ -130,7 +130,7 @@ function processDeviceSettingsGet(data){
 }
 
 function validateDeviceSettingsForm(){
-	var errorMessage='';
+	var errorMessage=validateFormFunctionDefault(currentForm);
 	
 	var pass=document.getElementById('espSettingsBox_accessPass');
 	var conf=document.getElementById('espSettingsBox_accessPassConfirm');
@@ -143,7 +143,7 @@ function validateDeviceSettingsForm(){
 	errorMessage=errorMessage+processPassConfirmPath(pass,conf);
 	
 	if(!pass || pass.value==undefined || 0===pass.length){
-		errorMessage='Доступ на страницу пароля возможен только по паролю!';
+		errorMessage+='Доступ на страницу пароля возможен только по паролю!';
 	}
 			
 	return errorMessage;
@@ -152,12 +152,12 @@ function validateDeviceSettingsForm(){
 function processPassConfirmPath(pass,conf){
 	var message="";
 	
-	markComponentAs_Valid(pass);
-	markComponentAs_Valid(conf);
+	markComponentValidity(pass,true);
+	markComponentValidity(conf,true);
 	
 	if(pass.value!=conf.value){
-		markComponentAs_InValid(pass);
-		markComponentAs_InValid(conf);
+		markComponentValidity(pass,false);
+		markComponentValidity(conf,false);
 		
 		message="Пароль и подьверждение пароля не равны";
 	}

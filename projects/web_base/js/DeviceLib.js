@@ -36,18 +36,14 @@ function showComponent(componentId){
 	}
 };
 
-function markComponentAs_Valid(comp){
+function markComponentValidity(comp,valid){
 	if(comp!=undefined){
 		if(comp.classList!=undefined){
-			comp.classList.remove('w3-border-red');
-		}
-	}
-}
-	
-function markComponentAs_InValid(comp){
-	if(comp!=undefined){
-		if(comp.classList!=undefined){
-			comp.classList.add('w3-border-red');
+			if(valid){
+				comp.classList.remove('w3-border-red');
+			}else{
+				comp.classList.add('w3-border-red');
+			}
 		}
 	}
 }
@@ -92,6 +88,28 @@ function getComponentChildrenByTag(comp,tag){
 	var childNodes = comp.getElementsByTagName(tag);
 	
 	return childNodes;
+}
+
+function getLabelsHtmlByForTag(labels,forTagValue){
+	for(var i in labels){
+		var label=labels[i];
+		
+		if(label!=undefined && label['htmlFor']==forTagValue){
+			return label.innerHTML;
+		}
+	}
+	return "";
+}
+
+function getFirstComponentInnerHtmlByTagValue(items,tagName,tagValue){
+	for(var i in items){
+		var item=items[i];
+		
+		if(item.hasAttribute(tagName) && item[tagName]==tagValue){
+			return item.innerHTML;
+		}
+	}
+	return "";
 }
 
 function getComponentById(id){
@@ -560,38 +578,32 @@ function addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val
 	}
 };
 /*-------------------------------form submission---------------------*/
-function postForm(form,url,validateHandler,resultProcessHandler){
-	postFormWithPreprocess(form,url,validateHandler,resultProcessHandler,processFormDataAsFormItems);
+function postForm(form,url,validateFormFunction,resultProcessHandler){
+	postFormWithPreprocess(form,url,validateFormFunction,resultProcessHandler,constructFormDataDefault);
 }
 
-function postFormAsJsonVal(form,url,validateHandler,resultProcessHandler){
-	postFormWithPreprocess(form,url,validateHandler,resultProcessHandler,processFormDataAsJsonVal);
+function postFormAsJsonVal(form,url,validateFormFunction,resultProcessHandler){
+	postFormWithPreprocess(form,url,validateFormFunction,resultProcessHandler,constructFormDataWithItemsAsJson);
 }
 
-function postFormWithPreprocess(form,url,validateHandler,resultProcessHandler,formProcessFunction){
+function postFormWithPreprocess(form,url,validateFormFunction,resultProcessHandler,constructFormDataFunction){
 	console.log('submitting form');
 	
-	var isValidForm = form.checkValidity();
-	
 	var errorMessage='';
+	var isValidForm=true;
 	
-	if(isValidForm){
-		if(validateHandler!=undefined){
-			errorMessage=validateHandler();
-		}
-		
-		if(!(0===errorMessage.length)){
-			isValidForm=false;
-		}
+	if(validateFormFunction!=undefined){
+		errorMessage=validateFormFunction(form);
+		isValidForm=(errorMessage=='');
 	}
 	
 	if(isValidForm){
 		
-		var formData = new FormData(form);
+		if(constructFormDataFunction==undefined){
+			constructFormDataFunction=constructFormDataDefault;
+		}
 		
-		var childNodes = getComponentChildrenByClass(form,'w3-check');
-		
-		formData=formProcessFunction(form,childNodes);
+		var formData = constructFormDataFunction(form);
 		
 		showMessage(currentMessageComp,'Сохраняю данные...','w3-yellow');
 		
@@ -614,32 +626,58 @@ function postFormWithPreprocess(form,url,validateHandler,resultProcessHandler,fo
 			};
 		request.send(formData);
 	}else{
-		errorMessage='Некоторые значения неверны:  '+errorMessage;
+		errorMessage='<strong>Некоторые значения неверны:</strong>  <br><br>'+errorMessage;
 		showMessage(currentMessageComp,errorMessage,'w3-red');
 	}
 }
 
-function processFormDataAsFormItems(form,childNodes){
+function validateFormFunctionDefault(form){
+	var validateMessage='';
 	
+	var isValidForm = form.checkValidity();
+	
+	if(!isValidForm){
+		var childNodes=getComponentChildrenByTag(form,'input');
+		var labels=getComponentChildrenByTag(form,'label');
+		
+		for(var i=0;i<childNodes.length;i++){
+			var child=childNodes[i];
+			var valid=child.validity.valid;
+			
+			markComponentValidity(child, valid);
+			
+			if(!valid){
+				var lbl=getLabelsHtmlByForTag(labels,child.id);
+				if(lbl!=''){
+					validateMessage+=lbl+': ';
+				}
+				validateMessage+=child.validationMessage+' <br>'
+			}
+		}
+	}
+	
+	return validateMessage;
+}
+
+function constructFormDataDefault(form){
 	var formData = new FormData(form);
+	
+	var childNodes = getComponentChildrenByTag(form,'input');
 	
 	for(var i=0;i<childNodes.length;i++){
 		var child=childNodes[i];
-		if(child!=undefined && child.tagName!=undefined){
-			var tagName = child.tagName.toLowerCase();
+		if(child!=undefined && child.tagName!=undefined && child.type!=undefined){
 			
-			if (tagName == 'input'){
-				if(child.type!=undefined){
-					var type=child.type.toLowerCase();
-					
-					if(type=='checkbox'){
-						var chbVal=child.checked;
-						
-						if(chbVal!=true){
-							formData.append(child.id, false);
-						}
-					}
-				};
+			var type=child.type.toLowerCase();
+			
+			if(type=='checkbox'){
+				var chbVal=child.checked;
+				
+				if(chbVal!=true){
+					formData.append(child.id, false);
+				}else{
+					formData.set(child.id,true);
+				}
 			}
 		}
 	}
@@ -647,9 +685,9 @@ function processFormDataAsFormItems(form,childNodes){
 	return formData;
 }
 
-function processFormDataAsJsonVal(form,childNodes){
+function constructFormDataWithItemsAsJson(form){
 	
-	var formData = new FormData(form);
+	var formData = constructFormDataDefault(form);
 	
 	/*const data = formToJSON(form.elements);
 	formData.append("val", data);

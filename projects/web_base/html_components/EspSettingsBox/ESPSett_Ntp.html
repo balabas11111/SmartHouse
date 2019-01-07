@@ -17,7 +17,7 @@
 		</div>
 		<div class="w3-half">
 			<input id="espSettingsBox_NTP_poolServerName" name="espSettingsBox_NTP_poolServerName" class="w3-input w3-border" style="width:50%" 
-				type="text" value="обновляю"/>
+				type="text" value="обновляю" required/>
 		</div>
 	</div>
 	
@@ -26,7 +26,7 @@
 			<label id="lbl_timeOffset" for="espSettingsBox_NTP_timeOffset">Разница времени с устройством (сек)</label>
 		</div>
 		<div class="w3-half">
-			<input id="espSettingsBox_NTP_timeOffset" name="espSettingsBox_NTP_timeOffset" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
+			<input id="espSettingsBox_NTP_timeOffset" name="espSettingsBox_NTP_timeOffset" class="w3-input w3-border" style="width:50%" type="number" min="1800" step="1800" required>
 		</div>
 	</div>
 	
@@ -35,7 +35,7 @@
 			<label id="lbl_updateInterval" for="espSettingsBox_NTP_updateInterval">Интервал синхронизации времени (сек)</label>
 		</div>
 		<div class="w3-half">
-			<input id="espSettingsBox_NTP_updateInterval" name="espSettingsBox_NTP_updateInterval" class="w3-input w3-border" style="width:50%" type="number" min="120" step="10">
+			<input id="espSettingsBox_NTP_updateInterval" name="espSettingsBox_NTP_updateInterval" class="w3-input w3-border" style="width:50%" type="number" min="120" step="10" required>
 		</div>
 	</div>
 	
@@ -44,6 +44,6 @@
 			<label id="lbl_timeTriggerInterval" for="espSettingsBox_NTP_timeTriggerInterval">Интервал отправки времени клиентам (мс)</label>
 		</div>
 		<div class="w3-half">
-			<input id="espSettingsBox_NTP_timeTriggerInterval" name="espSettingsBox_NTP_timeTriggerInterval" class="w3-input w3-border" style="width:50%" type="number" min="100" step="10">
+			<input id="espSettingsBox_NTP_timeTriggerInterval" name="espSettingsBox_NTP_timeTriggerInterval" class="w3-input w3-border" style="width:50%" type="number" min="100" step="10" required>
 		</div>
 	</div>

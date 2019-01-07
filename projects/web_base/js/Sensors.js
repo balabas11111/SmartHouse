@@ -229,14 +229,14 @@ function validateMinMaxValues(){
 	for (var i in minValComponents) {
 		var comp=minValComponents[i];
 		if(comp!=undefined && comp.classList!=undefined){
-			markComponentAs_Valid(comp);
+			markComponentValidity(comp,true);
 		}
 	}
 	
 	for (var i in maxValComponents) {
 		var comp=maxValComponents[i];
 		if(comp!=undefined && comp.classList!=undefined){
-			markComponentAs_Valid(comp);
+			markComponentValidity(comp,true);
 		}
 	}
 		
@@ -253,11 +253,10 @@ function validateMinMaxValues(){
 			var maxCompVal=maxComp.value;
 				
 			if(compVal>=maxCompVal){
-				markComponentAs_InValid(comp);
-				markComponentAs_InValid(maxComp);
+				markComponentValidity(comp,false);
+				markComponentValidity(maxComp,false);
 				
 				error=true;
-				
 			}
 		}
 	}
@@ -295,7 +294,7 @@ function validateDescrValues(){
 	for (var i in descrComponents) {
 		var comp=descrComponents[i];
 		if(comp!=undefined && comp.classList!=undefined){
-			markComponentAs_Valid(comp);
+			markComponentValidity(comp,true);
 		}
 	}
 	
@@ -306,7 +305,7 @@ function validateDescrValues(){
 			var compVal=comp.value;
 			
 			if(compVal==''){
-				markComponentAs_InValid(comp);
+				markComponentValidity(comp,false);
 				var sensorName=comp.getAttribute(SENSOR_NAME_ATTR);
 				var itemName=comp.getAttribute(ITEM_NAME_ATTR);
 				error=true;
@@ -330,14 +329,14 @@ function validateFieldValuesUnique(validateComnponent,validClassName,errorMessag
 	for (var i in fieldIdComponents) {
 		var comp=fieldIdComponents[i];
 		if(comp!=undefined && comp.classList!=undefined){
-			markComponentAs_Valid(comp);
+			markComponentValidity(comp,true);
 		}
 	}
 	
 	for (var i in fieldIdComponents2) {
 		var comp=fieldIdComponents2[i];
 		if(comp!=undefined && comp.classList!=undefined){
-			markComponentAs_Valid(comp);
+			markComponentValidity(comp,true);
 		}
 	}
 	
@@ -355,7 +354,7 @@ function validateFieldValuesUnique(validateComnponent,validClassName,errorMessag
 				
 				if(notAllowEmpty){
 									
-					markComponentAs_InValid(comp);
+					markComponentValidity(comp,false);
 					error=true;
 					result=errorMessage1;
 				}
@@ -377,11 +376,11 @@ function validateFieldValuesUnique(validateComnponent,validClassName,errorMessag
 								var item=getCurrentItemFromParentItem(sensor,'items','name',itemName2);
 								
 								if(sensor!=undefined && item!=undefined){
-									result+=' Значение ="'+compVal2+'" уже используется: '+' Устройство "'+sensor.descr+'"'+'Датчик "'+item.descr+'";';
+									result+=' Значение ="'+compVal2+'" уже используется: '+' Устройство "'+sensor.descr+'"'+'Датчик "'+item.descr+'"; <br>';
 								}
 																
-								markComponentAs_InValid(comp);
-								markComponentAs_InValid(comp2);
+								markComponentValidity(comp,false);
+								markComponentValidity(comp2,false);
 								
 								error=true;
 								
