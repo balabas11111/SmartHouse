@@ -657,7 +657,7 @@ public:
 		return result;
 	}
 
-
+//--------------------device settings kind (page)-------------------
 	#ifdef ESP8266
 		String DeviceId = "SENS_"+String(ESP.getChipId());
 	#endif
@@ -667,16 +667,16 @@ public:
 	String DeviceDescription = DEVICE_DESCR;
 	String DeviceLocation = DEVICE_LOCATION;
 
-	boolean displayAlvaysOn=false;
-	uint8_t displayAutochange=15;
-
-	uint16_t refreshInterval=60;
-
 	String accessUser = "";
 	String accessPass = "";
 
 	String settingsUser = "balabas";
 	String settingsPass = "balabas";
+
+	uint16_t refreshInterval=60;
+
+	boolean displayAlvaysOn=false;
+	uint8_t displayAutochange=15;
 
 	boolean isAccesPoint=false;
 	#ifdef ESP8266
@@ -685,7 +685,6 @@ public:
 	#ifdef ESP32
 		String ssidAP="SENS_"+String(ESP.getChipRevision());;
 	#endif
-	//String passwordAP="";
 
 	String ssid = "balabasKiev5";//balabasKiev5
 	String password = "wuWylKegayg2wu22";//wuWylKegayg2wu22
@@ -722,30 +721,8 @@ public:
 	uint16_t postDataToHttpInterval=241;
 	IPAddress httpPostIp=IPAddress(192, 168, 0, 2);
 
-	boolean saveRequired=false;
-
-	/*
-	boolean beepOnAlert=false;
-	boolean alarmSendNotifAlertStart=true;
-	boolean alarmSendNotifAlertStop=true;
-	boolean alarmPlaySound=true;
-
-	boolean ntpEnabled=false;
-	String NTP_poolServerName="europe.pool.ntp.org";
-	int NTP_timeOffset=7200;
-	int NTP_updateInterval=120;
-
-	ulong NTP_timeTriggerInterval=1000;
-
-	//telegram settings
-	//default bot  t.me/SmartHouse_balabas_bot   default chat   https://t.me/joinchat/JPhZDxJ7MBZV9HPkR0YE6A
-
-	String telegramApiKey="737840576:AAH_9-PM8knquJ3x1GN-sOTX4NGPNdU50iE";
-	String telegramReceivers="JPhZDxJ7MBZV9HPkR0YE6A";
-	String telegramSenders;
-	*/
-
 private:
+	boolean saveRequired=false;
 	boolean loaded=false;
 
 	boolean spiffInitialized;

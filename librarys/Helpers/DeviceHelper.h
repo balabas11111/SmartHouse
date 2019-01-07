@@ -29,6 +29,7 @@ public:
 	void update(AbstractItem** sensors,uint8_t sensorsSize);
 
 	String getJson(JSONprovider** sensors,uint8_t size);
+	String getJsonAbstractItems(AbstractItem** sensors,uint8_t size);
 
 	void printDeviceDiagnostic();
 

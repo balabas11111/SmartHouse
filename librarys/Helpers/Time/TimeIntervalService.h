@@ -1,7 +1,7 @@
 /*
  * TimeIntervalService.h
  *
- *  Created on: 24 ���. 2018 �.
+ *  Created on: 24 ���. 2018 �.
  *      Author: Vitaliy
  */
 
@@ -22,7 +22,7 @@
 #define ALARM_SIZE 10
 #define SEC_IN_DAY 24*60*60
 #define SEC_IN_WEEK 7*24*60*60
-
+/*
 const char* const IntervalState_Names[] PROGMEM={
 		"NEW", "WAIT", "ACTIVE", "FINISHED", "TO_DELETE", "INACTIVE"
 };
@@ -31,6 +31,19 @@ const char* const IntervalCompNow_Names[] PROGMEM={
 };
 const char* const IntervalType_Names[] PROGMEM={
 		"ONCE", "PERIODIC", "DAILY", "MULTIDAILY", "WEEKLY", "MONTHLY", "QUATERLY"
+};
+*/
+#define INNACTIVE_INTERVAL_INDEX 5
+#define MULTIDAILY_INTERVAL_INDEX 3
+
+const char* const IntervalState_Names[] PROGMEM={
+		"Новый", "Ожидает", "Выполняется", "Окончен", "К удалению", "Неактивный"
+};
+const char* const IntervalCompNow_Names[] PROGMEM={
+		"NOW_IN_FUTURE_OF_INTERVAL", "NOW_IN_INTERVAL", "NOW_IN_PAST_OF_INTERVAL"
+};
+const char* const IntervalType_Names[] PROGMEM={
+		"Единожды", "Периодически", "Ежедневно", "По дням", "Еженедельно", "Ежемесячно", "Ежеквартально"
 };
 
 const char TimeIntervalService_ID[] PROGMEM ="123";
@@ -135,7 +148,8 @@ public:
 
 	virtual String getJson(){
 		String result="{"+getItemJson()
-
+		+ ",\"innactiveIndex\":\""+String(INNACTIVE_INTERVAL_INDEX)+"\""
+		+ ",\"multidailyIndex\":\""+String(MULTIDAILY_INTERVAL_INDEX)+"\""
 		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("intervalType"), IntervalType_Names, ARRAY_SIZE(IntervalType_Names))
 		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("intervalState"), IntervalState_Names, ARRAY_SIZE(IntervalState_Names))
 		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("dayOfWeekShort"), DAYS_OF_WEEK_SHORT, ARRAY_SIZE(DAYS_OF_WEEK_SHORT))

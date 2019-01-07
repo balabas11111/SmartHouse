@@ -102,6 +102,10 @@ public:
 		return items[BME_280_HUMIDITY_INDEX].val;
 	}
 
+	String getKind() override{
+		return KIND_SENSOR;
+	}
+
 private:
 	Adafruit_BME280 bme;
 };

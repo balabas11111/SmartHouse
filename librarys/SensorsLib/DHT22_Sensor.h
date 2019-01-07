@@ -95,6 +95,10 @@ public:
 	void print(){
 		printValues();
 	}
+
+	String getKind() override{
+		return KIND_SENSOR;
+	}
 private:
 	DHT* dht;
 };

@@ -16,10 +16,14 @@
 #include "Loopable.h"
 #include "AbstractItem.h"
 
+const PROGMEM char PirSensor_name[]="PirSensor";
+const PROGMEM char PirSensor_descr[]="Датчик движения";
+
 class Pir_Sensor: public PinDigital {
 public:
 	Pir_Sensor(String name,uint8_t _pin,std::function<void(void)> onChangeFunction, int analogLevelForHigh, uint humanNotPresentInterval )
-		:PinDigital(name,_pin,[this](){processPinChange();}){
+		//:PinDigital(name,_pin,[this](){processPinChange();}){
+		:PinDigital(name,_pin,[this](){processPinChange();}, INPUT, CHANGE, LOW, LOW,0,FPSTR(PirSensor_name),FPSTR(PinDigital_highLow),FPSTR(PirSensor_descr)){
 		this->humanNotPresentInterval=humanNotPresentInterval;
 		if(this->humanNotPresentInterval<MIN_NO_PRESENTED_INTERVAL){
 			this->humanNotPresentInterval=MIN_NO_PRESENTED_INTERVAL;
@@ -113,6 +117,10 @@ public:
 
 		Serial.println();
 	};
+
+	String getKind() override{
+		return KIND_SENSOR;
+	}
 
 private:
 	int lastAnalog=0;

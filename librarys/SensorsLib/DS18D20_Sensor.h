@@ -103,6 +103,10 @@ public:
 		printValues();
 	}
 
+	String getKind() override{
+		return KIND_SENSOR;
+	}
+
 private:
 	uint8_t pin;
 	OneWire* oneWire;

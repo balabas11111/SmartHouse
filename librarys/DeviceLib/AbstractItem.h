@@ -61,6 +61,8 @@ public:
 	}
 	virtual ~AbstractItem(){};
 
+	virtual String getKind()=0;
+
 	SensorValue* getItems(){
 		return items;
 	}
@@ -431,6 +433,7 @@ protected:
 	String getItemJson(){
 		return "\"id\":\""+String(id)+"\","
 				+"\"name\":\""+name+"\","
+				+"\"kind\":\""+getKind()+"\","
 				+"\"type\":\""+type+"\","
 				+"\"size\":\""+size+"\","
 				+"\"descr\":\""+descr+"\","

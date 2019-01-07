@@ -94,7 +94,7 @@ function openTab(tabName,headerName) {
 		
 		if(tabName=='intervals'){
 			currentForm.innerHTML="";
-			getValuesHandler=processItemsJsonGet;
+			getValuesHandler=processIntervalsJsonGet;
 			putItemsToContainerHandler=putIntervalContentToContainer;
 			currentItemPreffix='currentInterval';
 			itemsTagName='intervals';
@@ -135,12 +135,12 @@ function validateDeviceSettingsForm(){
 	var pass=document.getElementById('espSettingsBox_accessPass');
 	var conf=document.getElementById('espSettingsBox_accessPassConfirm');
 	
-	errorMessage=processPassConfirmPath(pass,conf);
+	errorMessage+=processPassConfirmPath(pass,conf);
 	
 	pass=document.getElementById('espSettingsBox_settingsPass');
 	conf=document.getElementById('espSettingsBox_settingsPass');
 	
-	errorMessage=errorMessage+processPassConfirmPath(pass,conf);
+	errorMessage+=processPassConfirmPath(pass,conf);
 	
 	if(!pass || pass.value==undefined || 0===pass.length){
 		errorMessage+='Доступ на страницу пароля возможен только по паролю!';
@@ -360,33 +360,29 @@ function getCurrentItemHandler(data){
 /*--------------------------GUI creation part-----------------------------*/
 function createItemEditButton(tagName,tagValue,itemDescr){
 	var div=document.createElement('div');
-	div.setAttribute('class','w3-third');
+		div.setAttribute('class','w3-tooltip');
+		div.setAttribute('style','margin-top: 10px; margin-left: 3px; width: 30px');
 	
-	var div2=document.createElement('div');
-		div2.setAttribute('class','w3-tooltip');
+	var text='&#10162 Редактировать';
+	if(itemDescr!=undefined){
+		text+=' ';
+		text+=itemDescr;
+	}
 		
 	var span=document.createElement('span');
 		span.setAttribute('class','w3-text w3-tag w3-gray w3-round');
-		span.setAttribute('style','position:absolute;left:0;bottom:40px');
-	div2.appendChild(span);	
-	
-	var iel=document.createElement('i');
-		iel.setAttribute('class','material-icons');
-		iel.innerHTML='help_outline';
-	
-	var text='Редактировать '+itemDescr;
-	var content = document.createTextNode(text);
-	div2.appendChild(content);
+		span.setAttribute('style','position:absolute;left:0;bottom:45px');
+		span.innerHTML=text;
+	div.appendChild(span);	
 	
 	var onClickText="openItemPopup('"+tagName+"','"+tagValue+"')";
 	
 	var button=document.createElement('button');
-		span.setAttribute('class','w3-button w3-white w3-border w3-border-red w3-round-large');
-		span.setAttribute('onclick',onClickText);
-	div2.appendChild(button);		
+		button.setAttribute('class','w3-border w3-border-red w3-round w3-green');
+		button.setAttribute('onclick',onClickText);
+		button.innerHTML='&#9997';
+	div.appendChild(button);		
 	
-	div.appendChild(div2);
-	  
 	return div;
 }
 
@@ -401,17 +397,35 @@ function createDivComponent(className,innerHtml){
 	return div;
 }
 
-function createInputComponent(id1,id2,fieldIntId,suffixName,fieldVal,sensorName,itemName,noId,editable){
+function createInputSimple(id,name,clazz,style,value,editable){
+	var input1=document.createElement("Input");
+	
+	input1.setAttribute("id",id);
+	input1.setAttribute("name",name);
+	if(clazz==undefined){ clazz="w3-input w3-border";}
+	input1.setAttribute("class",clazz);
+	if(style!=undefined){ input1.setAttribute("style",style);}
+	input1.setAttribute("value",value);
+	
+	if(editable==undefined || !editable)
+		input1.setAttribute("disabled","disabled");
+	
+return input1; 
+}
+
+function createInputComponent(id1,id2,fieldIntId,extraClass,fieldVal,sensorName,itemName,noId,editable){
 	var compId=getInputCompName(id1,id2,fieldIntId);
 	
 	var input1=document.createElement("Input");
 		
 		input1.setAttribute("id",compId+"_"+noId);
 		input1.setAttribute("name",compId);
-		input1.setAttribute("class","w3-input w3-border "+suffixName);
+		input1.setAttribute("class","w3-input w3-border "+extraClass);
 		input1.setAttribute("style",'width: 90%;');
 		input1.setAttribute("value",fieldVal);
-		input1.setAttribute(SENSOR_NAME_ATTR,sensorName);
+		if(sensorName!=undefined){
+			input1.setAttribute(SENSOR_NAME_ATTR,sensorName);
+		}
 		if(editable==undefined || !editable)
 			input1.setAttribute("disabled","disabled");
 		if(itemName!=undefined)
@@ -421,13 +435,13 @@ function createInputComponent(id1,id2,fieldIntId,suffixName,fieldVal,sensorName,
 }
 
 function createHeaderElement(elType,elStyle,elText){
-	var sensorHeader = document.createElement(elType);
+	var itemHeader = document.createElement(elType);
 	if(elStyle!=undefined && elStyle!='')
-		sensorHeader.setAttribute('style',elStyle);
+		itemHeader.setAttribute('style',elStyle);
 	var textNode = document.createTextNode(elText);
-	sensorHeader.appendChild(textNode);
+	itemHeader.appendChild(textNode);
 	
-	return sensorHeader;
+	return itemHeader;
 }
 
 function getInputCompName(sensorName,itemName,suffix){

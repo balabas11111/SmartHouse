@@ -5,7 +5,7 @@ function onLoadPageComplete(){
 	registerJsonHandler('signalLed',processJsonOnImageComponent);
 	
 	updateComponentsByAjaxCall('GET', '/getJson_settings', processSettingsJson,'',undefined, 0,2000);
-	updateComponentsByAjaxCall('GET', '/gscv?sensor=all', processAllJson,'',undefined, 10000,2000);
+	updateComponentsByAjaxCall('GET', '/getJson_providers', processAllJson,'',undefined, 10000,2000);
 }
 
 function lampWidgetClick(component){

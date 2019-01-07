@@ -112,6 +112,10 @@ public:
 	boolean isInterruptAttached(){
 		return interruptAttached;
 	}
+
+	String getKind() override{
+		return KIND_PINDIGITAL;
+	}
 private:
 
 	bool changed;

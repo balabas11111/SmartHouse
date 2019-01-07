@@ -66,6 +66,10 @@ public:
 		printValues();
 	}
 
+	String getKind() override{
+		return KIND_SENSOR;
+	}
+
 private:
 	BH1750 lightMeter;;
 };

@@ -73,7 +73,7 @@ TimeIntervalService timeIntervalService(&espSettingsBox,&timeService,nullptr,pos
 Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeService,&displayHelper,
 		&pirDetector,&timeIntervalService};//,&pirDetector
 
-AbstractItem* abstractItems[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
+AbstractItem* sensors[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
 JSONprovider* jsonProviders[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeService,&timeIntervalService};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),120000);
@@ -148,10 +148,12 @@ void playPostInitSounds(){
 }
 //-------------TimeIntervalServiceInit------------------------
 void postInitTimeIntervalService(){
-		uint32_t start=DateTime(2019,1,1,22,0,0).unixtime();
+	uint32_t testTime=timeService.getNow()+10000;
+		timeIntervalService.add("Test interval",DAILY,testTime,testTime+50,0,"","0");
 
-		ulong testTime=timeService.getNow()+40;
-		timeIntervalService.add("Test interval",ONCE,start,start+50,0,"","0");
+		timeIntervalService.add("Monthly interval",MONTHLY,testTime+100,testTime+200,0,"","0");
+
+		timeIntervalService.add("Super interval",MULTIDAILY,testTime+1000,testTime+2000,0,"0,1,0,1,0,1,0","0");
 }
 
 //-------------Web server functions-------------------------------------
@@ -166,7 +168,11 @@ void postInitWebServer(){
 	server.on(FPSTR(URL_SUBMIT_FORM_INTERVALS), HTTP_POST, [](){
 		wifiHelper.checkAuthentication();
 		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),
-				timeIntervalService.setIntervalFromJson(server.arg(FPSTR(MESSAGE_SERVER_ARG_VAL))));
+			timeIntervalService.setIntervalFromJson(server.arg(FPSTR(MESSAGE_SERVER_ARG_VAL))));
+	});
+	server.on(FPSTR(URL_GET_JSON_PROVIDERS), HTTP_GET, [](){
+		wifiHelper.checkAuthentication();
+		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), getAllProvidersJson());
 	});
 	server.on(FPSTR(URL_GET_JSON_SENSORS), HTTP_GET, [](){
 		wifiHelper.checkAuthentication();
@@ -221,11 +227,11 @@ void onPirDetectorChanged(){
 
 //base functions
 void updateSensors(){
-	deviceHelper.update(abstractItems, ARRAY_SIZE(abstractItems));
+	deviceHelper.update(sensors, ARRAY_SIZE(sensors));
 
-	for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
+	for(uint8_t i=0;i<ARRAY_SIZE(sensors);i++){
 		Serial.println();
-		Serial.println(abstractItems[i]->getJson());
+		Serial.println(sensors[i]->getJson());
 	}
 
 	deviceHelper.printDeviceDiagnostic();
@@ -241,11 +247,11 @@ void printPir(){
 
 //---------------------------------------------------------------------
 void loadSensors(){
-	espSettingsBox.loadAbstractItemsFromFile(abstractItems, ARRAY_SIZE(abstractItems));
+	espSettingsBox.loadAbstractItemsFromFile(sensors, ARRAY_SIZE(sensors));
 }
 
 void saveSensors(){
-	espSettingsBox.saveAbstractItemsToFile(abstractItems, ARRAY_SIZE(abstractItems));
+	espSettingsBox.saveAbstractItemsToFile(sensors, ARRAY_SIZE(sensors));
 }
 //-----------------------------------------------------
 String setSensorJson(){
@@ -261,9 +267,9 @@ String setSensorJson(){
 
 	AbstractItem* aitem=NULL;
 
-	for(uint8_t i=0;i<ARRAY_SIZE(abstractItems);i++){
-		if(abstractItems[i]->getName()==sensorName){
-			aitem=abstractItems[i];
+	for(uint8_t i=0;i<ARRAY_SIZE(sensors);i++){
+		if(sensors[i]->getName()==sensorName){
+			aitem=sensors[i];
 			break;
 		}
 	}
@@ -292,6 +298,10 @@ String setSensorJson(){
 }
 
 String getAllSensorsJson(){
+	return deviceHelper.getJsonAbstractItems(sensors, ARRAY_SIZE(sensors));
+}
+
+String getAllProvidersJson(){
 	return deviceHelper.getJson(jsonProviders, ARRAY_SIZE(jsonProviders));
 }
 
@@ -310,7 +320,7 @@ String executeCommand(){
 		sm.setVals(FPSTR(MESSAGE_COMMANDS_OK),FPSTR(MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED_MSG));
 	}
 	if(command==FPSTR(MESSAGE_SERVER_ARG_VAL_recreateThingSpeak)){
-		sm=thingSpeakHelper.recreateThingSpeaChannelskWithCheck(abstractItems,ARRAY_SIZE(abstractItems));
+		sm=thingSpeakHelper.recreateThingSpeaChannelskWithCheck(sensors,ARRAY_SIZE(sensors));
 	}
 	if(command==FPSTR(MESSAGE_SERVER_ARG_VAL_deleteSettings)){
 		String msg=FPSTR(MESSAGE_COMMANDS_FILES_DELETED);
@@ -328,7 +338,7 @@ void executePostPonedCommand(){
 
 //-------------------------Thing speak functions---------------------
 void executeThingSpeakPost(){
-	thingSpeakHelper.sendItemsToThingSpeak(abstractItems, ARRAY_SIZE(abstractItems));
+	thingSpeakHelper.sendItemsToThingSpeak(sensors, ARRAY_SIZE(sensors));
 }
 //------------------------------MQTT functions-----------------------------------------------------
 

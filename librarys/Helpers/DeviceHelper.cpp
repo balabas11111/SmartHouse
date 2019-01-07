@@ -193,6 +193,22 @@ String DeviceHelper::getJson(JSONprovider** sensors, uint8_t size) {
 		return result;
 }
 
+String DeviceHelper::getJsonAbstractItems(AbstractItem** sensors, uint8_t size) {
+	yield();
+		String result="{\"sensors\":[";
+
+			for(uint8_t i=0;i<size;i++){
+				delay(1);
+				result+=sensors[i]->getJson();
+				if(i!=size-1){
+					result+=",";
+				}
+			}
+		result+="]}";
+
+		return result;
+}
+
 void DeviceHelper::createPostponedCommand(String command) {
 	postponedCommand=command;
 	postPonedTrigger->start();

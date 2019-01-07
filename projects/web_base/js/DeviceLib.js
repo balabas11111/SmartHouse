@@ -4,6 +4,10 @@ const FORM_SUFFIX="form";
 const VAL_SUFFIX="";
 const ITEM_COUNT_SUFFIX="itemCount";
 
+const ID_SUFFIX="id";
+const NAME_SUFFIX="name";
+const TYPE_SUFFIX="type";
+const STATE_SUFFIX="state";
 const DESCR_SUFFIX="descr";
 const MIN_VAL_SUFFIX="minVal";
 const MAX_VAL_SUFFIX="maxVal";
@@ -195,7 +199,7 @@ function arrayToCheckBoxList(component,namePreffix,valArray,nameArray,clazz,styl
 		
 		for(i = 0; i<itemCount; i++){ 
 			
-			var cbxname='checkbox_'+namePreffix+'_'+i;
+			var cbxname='cb_'+namePreffix+'_'+i;
 			cbx = document.createElement('input');
 			cbx.setAttribute('id',cbxname);
 			cbx.setAttribute('name',cbxname);

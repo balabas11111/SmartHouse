@@ -10,6 +10,10 @@
 
 #include "Arduino.h"
 
+#define KIND_PINDIGITAL "KIND_PINDIGITAL"
+#define KIND_SENSOR "KIND_SENSOR"
+#define KIND_SERVICE "KIND_SERVICE"
+
 class JSONprovider {
 public:
 	JSONprovider(){};

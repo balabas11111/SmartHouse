@@ -641,6 +641,7 @@ const PROGMEM char URL_SUBMIT_FORM_COMMANDS[]="/submitForm_commands";
 const PROGMEM char URL_SUBMIT_FORM_SETTINGS[]="/submitForm_settings";
 const PROGMEM char URL_GET_JSON_SETTINGS[]="/getJson_settings";
 const PROGMEM char URL_GET_JSON_SENSORS[]="/getJson_sensors";
+const PROGMEM char URL_GET_JSON_PROVIDERS[]="/getJson_providers";
 const PROGMEM char URL_GET_JSON_INTERVALS[]="/getJson_intervals";
 const PROGMEM char URL_SUBMIT_FORM_SENSORS[]="/submitForm_sensors";
 const PROGMEM char URL_SUBMIT_FORM_INTERVALS[]="/submitForm_intervals";
