@@ -34,9 +34,9 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 	var col4h=createDivComponent('w3-quarter','');
 	
 	var editButton=createItemEditButton('name',sensorName,sensorDescr);
-	var sName=createHeaderElement('H4','margin-left: 20px;',sensorName)
-	var sType=createHeaderElement('H4','margin-left: 20px;',sensorType)
-	var sSize=createHeaderElement('H4','margin-left: 20px;',sensorSize)
+	var sName=createHeaderElement('H4','margin-left: 20px;',sensorName);
+	var sType=createHeaderElement('H4','margin-left: 20px;',sensorType);
+	var sSize=createHeaderElement('H4','margin-left: 20px;',sensorSize);
 	var sDescr=createInputComponent(sensorId,255,FIELD_DESCR_ID,DESCR_SUFFIX,sensorDescr,sensorName,itemName,noId,editable);
 	
 	if(editable==undefined || !editable){

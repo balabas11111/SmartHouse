@@ -28,16 +28,17 @@ echo ====================================================
 echo -----------------Upload files----------------------- >> %RESULT_FILE% 	
 echo: >> %RESULT_FILE%
 for %%f in (%TEMP_FOLDER_NAME%\*.gz) do (
-	echo Delete %URL_PREFFIX%%%~nxf
+	echo %URL_PREFFIX%%%~nxf
 	curl -s -i -X DELETE -H "Expect:" -F "filename=%URL_PREFFIX%%%~nxf" http://%IP%/edit >> %RESULT_FILE%
-	echo Upload %URL_PREFFIX%%%~nxf
 	curl -s -i -X POST -H "Expect:" -F "uploadfile=@%%f;filename=%URL_PREFFIX%%%~nxf;" -F submit=upload http://%IP%/edit  >> %RESULT_FILE%
-	echo -----------------------------------------------------------------------------
 )
+
+powershell -Command "Remove-Item %LOG_FILE% -Force -Recurse -ErrorAction Ignore"
+powershell -Command "Remove-Item %RESULT_FILE% -Force -Recurse -ErrorAction Ignore"
 
 GOTO:EXIT_LABEL
 
-REM powershell -Command "Remove-Item %TEMP_FOLDER% -Force -Recurse -ErrorAction Ignore"	
+REM powershell -Command "Remove-Item %RESULT_FILE% -Force -Recurse -ErrorAction Ignore"	
 	
 echo ====================================================
 echo        IP call result
@@ -47,5 +48,5 @@ echo:
 echo ====================================================
 
 :EXIT_LABEL
-
+echo ====================================================
 

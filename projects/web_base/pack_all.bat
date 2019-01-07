@@ -210,8 +210,8 @@ echo         'Htm files
 echo ----------------------------------------------------------------------	
 for %%h in (%TEMP_FOLDER%*.htm) do (
 	echo %%~nxh
-	%BASE_WEB_PATH%!gzip\gzip.exe %TEMP_FOLDER%%%~nxh -k
-	
+	REM %BASE_WEB_PATH%!gzip\gzip.exe %TEMP_FOLDER%%%~nxh -k
+	%BASE_WEB_PATH%!gzip\gzip.exe %TEMP_FOLDER%%%~nxh
 )
 echo ----------------------------------------------------------------------	
 echo         'Gzip files
@@ -220,3 +220,12 @@ for %%g in (%TEMP_FOLDER%*.gz) do (
 	echo %%~nxg
 )
 echo ======================================================================
+
+for %%h in (%TEMP_FOLDER%*.txt) do (
+	powershell -Command "Remove-Item %%h -Force -Recurse -ErrorAction Ignore"
+)
+for %%h in (%TEMP_FOLDER%*.log) do (
+	powershell -Command "Remove-Item %%h -Force -Recurse -ErrorAction Ignore"
+)
+powershell -Command "Remove-Item %TEMP_HTML_PLACEHOLDERS_FOLDER% -Force -Recurse -ErrorAction Ignore"
+

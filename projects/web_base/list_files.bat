@@ -43,6 +43,9 @@ echo        %IP% files count = %number%
 echo ====================================================
 type "%FILES_FILE%"
 echo ====================================================
+
+powershell -Command "Remove-Item %LOG_FILE% -Force -Recurse -ErrorAction Ignore"
+
 GOTO:EXIT_LABEL	
 :ERROR_LABEL
 

@@ -67,6 +67,11 @@
 			<location>D:/projects/!!!SmartHouse/librarys/BeeperB</location>
 		</link>
 		<link>
+			<name>libraries/DHT_sensor_library</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DHT_sensor_library/1.2.2</locationURI>
+		</link>
+		<link>
 			<name>libraries/DS3231</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DS3231/1.0.2</locationURI>

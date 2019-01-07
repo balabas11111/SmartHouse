@@ -358,6 +358,7 @@ const PROGMEM char ESBOX_isAccesPoint[]="isAccesPoint";
 const PROGMEM char ESBOX_ssidAP[]="ssidAP";
 const PROGMEM char ESBOX_ssid[]="ssid";
 const PROGMEM char ESBOX_password[]="password";
+const PROGMEM char ESBOX_passwordConfirm[]="passwordConfirm";
 const PROGMEM char ESBOX_staticIp[]="staticIp";
 const PROGMEM char ESBOX_localIp[]="localIp";
 const PROGMEM char ESBOX_apIp[]="apIp";

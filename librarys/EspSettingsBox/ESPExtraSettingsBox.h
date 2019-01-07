@@ -16,8 +16,10 @@
 const char HTML_LABEL_PREFFIX[]             PROGMEM ="lbl_";
 const char SETTINGS_BOX_BASE_NAME[]         PROGMEM ="espSettingsBox_";
 
-const char ALARM_SETTINGS_BOX_NAME[]        PROGMEM ="ALARM";
-const char DISPLAY_SETTINGS_BOX_NAME[]      PROGMEM ="DISPLAY";
+#define EXTRA_SETT_BOX_NAME_LENGTH 3
+
+const char ALARM_SETTINGS_BOX_NAME[]        PROGMEM ="ALM";
+const char DISPLAY_SETTINGS_BOX_NAME[]      PROGMEM ="DIS";
 const char NTP_SETTINGS_BOX_NAME[]          PROGMEM ="NTP";
 const char TELEGRAM_SETTINGS_BOX_NAME[]     PROGMEM ="TEL";
 
@@ -28,6 +30,13 @@ const char SETTINGS_KIND_sensors[]  PROGMEM ="sensors";
 const char SETTINGS_KIND_publish[]  PROGMEM ="publish";
 const char SETTINGS_KIND_intervals[]PROGMEM ="intervals";
 const char SETTINGS_KIND_manage[]   PROGMEM ="manage";
+
+const char* const SETTINGS_KINDS_SAVE_ENABLED[] PROGMEM=
+{
+		SETTINGS_KIND_device,
+		SETTINGS_KIND_net,
+		SETTINGS_KIND_publish
+};
 
 class ESPExtraSettingsBox {
 public:
@@ -178,17 +187,17 @@ public:
 		int keyIndex=-1;
 
 		if(keyWithPreffix.startsWith(getKeyPreffix())){
-			key=keyWithPreffix.substring(getKeyPreffix().length()+1);
+			key=keyWithPreffix.substring(getKeyPreffix().length());
 			keyIndex=getKeyIndex(key);
 		}
-
+/*
 		Serial.print(FPSTR("check is target keyWithPreffix="));
 		Serial.print(keyWithPreffix);
 		Serial.print(FPSTR(" key="));
 		Serial.print(key);
 		Serial.print(FPSTR(" keyIndex="));
 		Serial.println(keyIndex);
-
+*/
 		return keyIndex;
 	}
 
@@ -212,10 +221,19 @@ public:
 		return result;
 	}
 
+	void setSaveRequired(boolean val){
+		saveRequired=val;
+	}
+
+	boolean getSaveRequired(){
+		return saveRequired;
+	}
+
 protected:
 	String name;
 	String* values;
 	uint8_t keySize=0;
+	boolean saveRequired=false;
 };
 
 #endif /* LIBRARIES_ESPSETTINGSBOX_ESPEXTRASETTINGSBOX_H_ */

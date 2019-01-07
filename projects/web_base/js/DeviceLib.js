@@ -163,43 +163,42 @@ function addChildComponentIfNotExists(comp,item){
 }
 
 function arrayToCheckBoxList(component,namePreffix,valArray,nameArray,clazz,style){
-	if(component==undefined){
-		return;
-	}
+	if(component!=undefined){
 	
-	component.innerHTML = '';
-	var cbx=null;
-	var lbl=null;
-	
-	var itemCount=valArray.length;
-	
-	if(nameArray.length>itemCount){
-		itemCount=nameArray.length;
-	}
-	
-	for(i = 0; i<itemCount; i++){ 
+		component.innerHTML = '';
+		var cbx=null;
+		var lbl=null;
 		
-		var cbxname='checkbox_'+namePreffix+'_'+i;
-		cbx = document.createElement('input');
-		cbx.setAttribute('id',cbxname);
-		cbx.setAttribute('name',cbxname);
-		cbx.setAttribute('type','checkbox');
-		if(clazz!=undefined && clazz.length>0){
-			cbx.setAttribute('class',clazz);
-		}
-		if(style!=undefined && style.length>0){
-			cbx.setAttribute('style',style);
-		}
-		setComponentValue(cbx,valArray[i]);
-		/*cbx.setAttribute('class',className);*/
+		var itemCount=valArray.length;
 		
-		lbl = document.createElement('label');
-		lbl.setAttribute('id','lbl_'+cbxname);
-		lbl.setAttribute('for',cbxname);
-		setComponentValue(lbl,nameArray[i]);
-	    
-	    component.appendChild(cbx);
-	    component.appendChild(lbl);
+		if(nameArray.length>itemCount){
+			itemCount=nameArray.length;
+		}
+		
+		for(i = 0; i<itemCount; i++){ 
+			
+			var cbxname='checkbox_'+namePreffix+'_'+i;
+			cbx = document.createElement('input');
+			cbx.setAttribute('id',cbxname);
+			cbx.setAttribute('name',cbxname);
+			cbx.setAttribute('type','checkbox');
+			if(clazz!=undefined && clazz.length>0){
+				cbx.setAttribute('class',clazz);
+			}
+			if(style!=undefined && style.length>0){
+				cbx.setAttribute('style',style);
+			}
+			setComponentValue(cbx,valArray[i]);
+			/*cbx.setAttribute('class',className);*/
+			
+			lbl = document.createElement('label');
+			lbl.setAttribute('id','lbl_'+cbxname);
+			lbl.setAttribute('for',cbxname);
+			setComponentValue(lbl,nameArray[i]);
+		    
+		    component.appendChild(cbx);
+		    component.appendChild(lbl);
+		}
 	}
 }
 
@@ -316,7 +315,7 @@ function setComponentValue(component,val){
 				
 				if(type=='checkbox'){
 					var chbVal=false;
-					if(val==1 || val=='1' || val=='True' || val=='true'){
+					if(val==1 || val=='on' || val=='1' || val=='True' || val=='true'){
 						chbVal=true;
 						component.checked=chbVal;
 					}

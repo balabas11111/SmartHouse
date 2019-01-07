@@ -8,7 +8,8 @@
 #ifndef PROJECTCONSTS_H_
 #define PROJECTCONSTS_H_
 
-#define DEVICE_KIND "NTP clock/Alarm/BME-280/PIR/4 d display/thingspeak v 2.0"
+#define DEVICE_FIRMWARE_VER "v 2.0"
+#define DEVICE_KIND "NTPclock Alarm BME-280 PIR 4D_display ThingSpeak"
 #define DEVICE_DESCR "NTP часы, будильник, Температура/Влажность, Датчик движения"
 #define DEVICE_LOCATION "Размещение часов"
 

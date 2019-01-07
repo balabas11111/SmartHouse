@@ -41,6 +41,54 @@ public:
 
 	boolean setSettingsValueIfExtra(String fieldName,String fieldValue);
 
+	boolean getSaveRequired(){
+		return saveRequired;
+	}
+
+	void beginSetSettingsValue(String page){
+		Serial.print(FPSTR("--- page="));
+		Serial.print(page);
+		Serial.println(FPSTR(" save Started"));
+
+		saveRequired=false;
+
+		for(uint8_t i=0;i<extraBoxesCount;i++){
+			if(extraBoxes[i]->getSettingsKind()==page){
+				extraBoxes[i]->setSaveRequired(false);
+			}
+		}
+	}
+
+	void finishSetSettingsValue(String page){
+		Serial.print(FPSTR("EspSettingsBox saveRequired="));
+		Serial.print(saveRequired);
+		Serial.print(FPSTR("  "));
+
+		if(saveRequired){
+			saveSettingsJson();
+		}
+
+		saveRequired=false;
+		boolean ebsr=false;
+
+		for(uint8_t i=0;i<extraBoxesCount;i++){
+			if(extraBoxes[i]->getSaveRequired()){
+				Serial.print(extraBoxes[i]->getName());
+				Serial.println(FPSTR(" saveRequired=1"));
+				saveExtraBox(i);
+				ebsr=true;
+			}
+			extraBoxes[i]->setSaveRequired(false);
+		}
+
+		if(!ebsr){
+			Serial.println(FPSTR(" extraBoxes saveRequired=0"));
+		}
+		Serial.print(FPSTR("--- page="));
+		Serial.print(page);
+		Serial.print(FPSTR(" save finished"));
+	}
+
 	void loadAbstractItemsFromFile(AbstractItem** items,uint8_t size){
 		for(uint8_t i=0;i<size;i++){
 			loadAbstractItemFromFile(items[i]);
@@ -204,9 +252,10 @@ public:
 
 		uint8_t boxKeySize=extraBoxes[boxIndex]->getKeySize();
 
-		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVE_EXTRABOX_SETTINGS_TO_FILE));
 
-		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
+		Serial.print(FPSTR("ExtraBox "));
+		Serial.print(extraBoxes[boxIndex]->getName());
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
 
 		DynamicJsonBuffer jsonBuffer;
 
@@ -219,23 +268,18 @@ public:
 			root[key] = value;
 		}
 
-		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_FROM_BOX_MEMORY));
 		String vals="";
 		root.printTo(vals);
 		Serial.println(vals);
-		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-
-		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVE_EXTRABOX_SETTINGS_TO_FILE));
+		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
 
 		String boxFileName=getSettingsFileFileName(extraBoxes[boxIndex]->getName());
 		File boxFile = SPIFFS.open(boxFileName, "w");
 
-		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
 		root.printTo(boxFile);
 		boxFile.close();
 		delay(1);
 
-		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SAVED));
 		Serial.println(FPSTR(MESSAGE_DONE));
 
 		return true;
@@ -614,14 +658,12 @@ public:
 	}
 
 
-	String deviceFirmWareVersion = "v.1.0";
 	#ifdef ESP8266
 		String DeviceId = "SENS_"+String(ESP.getChipId());
 	#endif
 	#ifdef ESP32
 		String DeviceId = "SENS_"+String(ESP.getChipRevision());
 	#endif
-	//String DeviceKind = DEVICE_KIND;
 	String DeviceDescription = DEVICE_DESCR;
 	String DeviceLocation = DEVICE_LOCATION;
 
@@ -679,6 +721,8 @@ public:
 	boolean isHttpPostEnabled=false;
 	uint16_t postDataToHttpInterval=241;
 	IPAddress httpPostIp=IPAddress(192, 168, 0, 2);
+
+	boolean saveRequired=false;
 
 	/*
 	boolean beepOnAlert=false;

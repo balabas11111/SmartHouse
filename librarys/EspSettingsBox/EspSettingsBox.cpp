@@ -202,6 +202,8 @@ void EspSettingsBox::saveSettingsJson(){
 
 		root["dId"] = DeviceId;
 
+		root["DeviceVersion"] = String(DEVICE_FIRMWARE_VER);
+		root["DeviceKind"] = String(DEVICE_KIND);
 		root["DeviceDescription"] =  DeviceDescription;
 		root["DeviceLocation"] =  DeviceLocation;
 		root["iAp"] = isAccesPoint;
@@ -512,7 +514,7 @@ String EspSettingsBox::getThingSpeakChannelUrl(){
 
 String EspSettingsBox::getSimpleJson(){
 	String result="{\"name\":\"espSettingsBox\",\"itemCount\":\"8\",\"settingsKind\":\"simple\",\"items\":[\
-						{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\",\"descr\":\"Версия прошивки\"},\
+						{\"name\":\"deviceFirmWareVersion\",\"val\":\""+String(DEVICE_FIRMWARE_VER)+"\",\"descr\":\"Версия прошивки\"},\
 						{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\",\"descr\":\"ID устройства\"},\
 						{\"name\":\"DeviceKind\",\"val\":\""+String(DEVICE_KIND)+"\",\"descr\":\"Тип устройства\"},\
 						{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\",\"descr\":\"Описание устройства\"},\
@@ -541,7 +543,7 @@ if(page==FPSTR(SETTINGS_KIND_device)){
 
 result=
 	"{\"name\":\"espSettingsBox\",\"itemCount\":\"17\",\"settingsKind\":\"device\",\"items\":[\
-	{\"name\":\"deviceFirmWareVersion\",\"val\":\""+deviceFirmWareVersion+"\"},\
+	{\"name\":\"deviceFirmWareVersion\",\"val\":\""+String(DEVICE_FIRMWARE_VER)+"\"},\
 	{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\"},\
 	{\"name\":\"DeviceKind\",\"val\":\""+String(DEVICE_KIND)+"\"},\
 	{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\"},\
@@ -613,12 +615,25 @@ boolean EspSettingsBox::setSettingsValueIfExtra(String fieldName, String fieldVa
 	if(!hasExtraBoxes()){
 		return false;
 	}
+	if(fieldName.length()<EXTRA_SETT_BOX_NAME_LENGTH ||
+			fieldName.charAt(EXTRA_SETT_BOX_NAME_LENGTH)!='_'){
+		return false;
+	}
 
 	for(uint8_t i=0;i<extraBoxesCount;i++){
 		int keyIndex=extraBoxes[i]->isTargetOfSettingsValue(fieldName);
 
 		if(keyIndex>-1){
-			extraBoxes[i]->setValue(keyIndex, fieldValue);
+			if(extraBoxes[i]->getValue(keyIndex)!=fieldValue){
+				Serial.print(FPSTR(" - value updated key="));
+				Serial.print(fieldName);
+				Serial.print(FPSTR(" current="));
+				Serial.print(extraBoxes[i]->getValue(keyIndex));
+				Serial.print(FPSTR(" updated="));
+				Serial.println(fieldValue);
+				extraBoxes[i]->setValue(keyIndex, fieldValue);
+				extraBoxes[i]->setSaveRequired(true);
+			}
 			return true;
 		}
 	}
@@ -629,13 +644,17 @@ boolean EspSettingsBox::setSettingsValueIfExtra(String fieldName, String fieldVa
 boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	String startTag=FPSTR(ESPSETTINGSBOX_START_TAG);
 	int startIndex=startTag.length();
-
+/*
 	Serial.print(fieldName);
 	Serial.print(FPSTR(MESSAGE_EQUALS));
 	Serial.print(fieldValue);
 	Serial.print(FPSTR(MESSAGE_OPEN_BRACE));
 	Serial.print(fieldName.substring(startIndex));
 	Serial.println(FPSTR(MESSAGE_CLOSE_BRACE));
+*/
+	if(fieldName==FPSTR(MESSAGE_SERVER_ARG_PAGE)){
+		return true;
+	}
 
 	if(!fieldName.startsWith(startTag)){
 		return false;
@@ -647,161 +666,295 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 
-	if(fieldName==FPSTR(ESBOX_deviceFirmWareVersion)){
-		deviceFirmWareVersion=fieldValue;
-		return true;
-	}
 	if(fieldName==FPSTR(ESBOX_DeviceId)){
-		DeviceId=fieldValue;
+		if(DeviceId!=fieldValue){
+			DeviceId=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_DeviceDescription)){
-		DeviceDescription=fieldValue;
+		if(DeviceDescription!=fieldValue){
+			DeviceDescription=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_DeviceLocation)){
-		DeviceLocation=fieldValue;
+		if(DeviceLocation!=fieldValue){
+			DeviceLocation=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_displayAlvaysOn)){
-		displayAlvaysOn=stringToBoolean(fieldValue);
+		boolean val=stringToBoolean(fieldValue);
+		if(displayAlvaysOn!=val){
+			displayAlvaysOn=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_displayAutochange)){
-		displayAutochange=fieldValue.toInt();
+		long val=fieldValue.toInt();
+		if(displayAutochange!=val){
+			displayAutochange=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_refreshInterval)){
-		refreshInterval=fieldValue.toInt();
+		long val=fieldValue.toInt();
+		if(refreshInterval!=val){
+			refreshInterval=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_accessUser)){
-		accessUser=fieldValue;
+		if(accessUser!=fieldValue){
+			accessUser=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
-	if(fieldName==FPSTR(ESBOX_accessPass) && fieldValue!=FPSTR(ESBOX_STARS)){
-		accessPass=fieldValue;
+	if(fieldName==FPSTR(ESBOX_accessPass)){
+		if(fieldValue!=FPSTR(ESBOX_STARS) && accessPass!=fieldValue){
+			accessPass=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_settingsUser)){
-		settingsUser=fieldValue;
+		if(settingsUser!=fieldValue){
+			settingsUser=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
-	if(fieldName==FPSTR(ESBOX_settingsPass) && fieldValue!=FPSTR(ESBOX_STARS)){
-		settingsPass=fieldValue;
+	if(fieldName==FPSTR(ESBOX_settingsPass)){
+		if(fieldValue!=FPSTR(ESBOX_STARS) && settingsPass!=fieldValue){
+			settingsPass=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_isAccesPoint)){
-		isAccesPoint=stringToBoolean(fieldValue);
+		boolean val=stringToBoolean(fieldValue);
+		if(isAccesPoint!=val){
+			isAccesPoint=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_ssidAP)){
-		ssidAP=fieldValue;
+		if(ssidAP!=fieldValue){
+			ssidAP=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_ssid)){
-		ssid=fieldValue;
+		if(ssid!=fieldValue){
+			ssid=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
-	if(fieldName==FPSTR(ESBOX_password) && fieldValue!=FPSTR(ESBOX_STARS)){
-		password=fieldValue;
+	if(fieldName==FPSTR(ESBOX_password)){
+		if(fieldValue!=FPSTR(ESBOX_STARS) && password!=fieldValue){
+			password=fieldValue;
+			saveRequired=true;
+		}
+		return true;
+	}
+	if(fieldName==FPSTR(ESBOX_passwordConfirm)){
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_staticIp)){
-		staticIp=stringToIp(fieldValue);
+		boolean val=stringToBoolean(fieldValue);
+		if(staticIp!=val){
+			staticIp=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_localIp)){
-		localIp=stringToIp(fieldValue);
+		IPAddress val=stringToIp(fieldValue);
+		if(localIp!=val){
+			localIp=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_apIp)){
-		apIp=stringToIp(fieldValue);
+		IPAddress val=stringToIp(fieldValue);
+		if(apIp!=val){
+			apIp=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_gateIp)){
-		gateIp=stringToIp(fieldValue);
+		IPAddress val=stringToIp(fieldValue);
+		if(gateIp!=val){
+			gateIp=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_subnetIp)){
-		subnetIp=stringToIp(fieldValue);
+		IPAddress val=stringToIp(fieldValue);
+		if(subnetIp!=val){
+			subnetIp=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_dnsIp)){
-		dnsIp=stringToIp(fieldValue);
+		IPAddress val=stringToIp(fieldValue);
+		if(dnsIp!=val){
+			dnsIp=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_dnsIp2)){
-		dnsIp2=stringToIp(fieldValue);
+		IPAddress val=stringToIp(fieldValue);
+		if(dnsIp2!=val){
+			dnsIp2=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_serverIp)){
-		serverIp=stringToIp(fieldValue);
+		IPAddress val=stringToIp(fieldValue);
+		if(serverIp!=val){
+			serverIp=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_isThingSpeakEnabled)){
-		isThingSpeakEnabled=stringToBoolean(fieldValue);
+		boolean val=stringToBoolean(fieldValue);
+		if(isThingSpeakEnabled!=val){
+			isThingSpeakEnabled=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_postDataToTSInterval)){
-		postDataToTSInterval=fieldValue.toInt();
+		long val=fieldValue.toInt();
+		if(postDataToTSInterval!=val){
+			postDataToTSInterval=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_thSkUsrKey)){
-		thSkUsrKey=fieldValue;
+		if(thSkUsrKey!=fieldValue){
+			thSkUsrKey=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_thSkWKey)){
-		thSkWKey=fieldValue;
+		if(thSkWKey!=fieldValue){
+			thSkWKey=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_thSkRKey)){
-		thSkRKey=fieldValue;
+		if(thSkRKey!=fieldValue){
+			thSkRKey=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_thSkChId)){
-		thSkChId=fieldValue.toInt();
+		long val=fieldValue.toInt();
+		if(thSkChId!=val){
+			thSkChId=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_thSkTKey)){
-		thSkTKey=fieldValue;
+		if(thSkTKey!=fieldValue){
+			thSkTKey=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
 
 	if(fieldName==FPSTR(ESBOX_isMqttEnabled)){
-		isMqttEnabled=stringToBoolean(fieldValue);
+		boolean val=stringToBoolean(fieldValue);
+		if(isMqttEnabled!=val){
+			isMqttEnabled=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_postDataToMqttInterval)){
-		postDataToMqttInterval=fieldValue.toInt();
+		uint16_t val=fieldValue.toInt();
+		if(postDataToMqttInterval!=val){
+			postDataToMqttInterval=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_mqtt_server)){
-		mqtt_server=fieldValue;
+		if(mqtt_server!=fieldValue){
+			mqtt_server=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_mqtt_user)){
-		mqtt_user=fieldValue;
+		if(mqtt_user!=fieldValue){
+			mqtt_user=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
-	if(fieldName==FPSTR(ESBOX_mqtt_pass) && fieldValue!=FPSTR(ESBOX_STARS)){
-		mqtt_pass=fieldValue;
+	if(fieldName==FPSTR(ESBOX_mqtt_pass)){
+		if(fieldValue!=FPSTR(ESBOX_STARS) && mqtt_pass!=fieldValue){
+			mqtt_pass=fieldValue;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_mqtt_port)){
-		mqtt_port=fieldValue.toInt();
+		long val=fieldValue.toInt();
+		if(mqtt_port!=val){
+			mqtt_port=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_isHttpPostEnabled)){
-		isHttpPostEnabled=stringToBoolean(fieldValue);
+		boolean val=stringToBoolean(fieldValue);
+		if(isHttpPostEnabled!=val){
+			isHttpPostEnabled=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_postDataToHttpInterval)){
-		postDataToHttpInterval=fieldValue.toInt();
+		long val=fieldValue.toInt();
+		if(postDataToHttpInterval!=val){
+			postDataToHttpInterval=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_httpPostIp)){
-		httpPostIp=stringToIp(fieldValue);
+		IPAddress val=stringToIp(fieldValue);
+		if(httpPostIp!=val){
+			httpPostIp=val;
+			saveRequired=true;
+		}
 		return true;
 	}
 	return false;

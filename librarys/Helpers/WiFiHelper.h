@@ -946,19 +946,23 @@ protected:
 	//----------espSettings save-------------------------------------------
 	String setEspSettingsBoxValues(){
 		checkAuthentication();
-		boolean result=false;
 		String page=server->arg(FPSTR(MESSAGE_SERVER_ARG_PAGE));
+
+		espSettingsBox->beginSetSettingsValue(page);
 
 		for(uint8_t i=0;i<server->args();i++){
 			String argName=server->argName(i);
 			String argVal=server->arg(i);
 
-			result=espSettingsBox->setSettingsValue(argName,argVal) || result;
+			if(!espSettingsBox->setSettingsValue(argName,argVal)){
+				Serial.print(FPSTR("FAILED find target for argName="));
+				Serial.print(argName);
+				Serial.print(FPSTR(" argVal="));
+				Serial.println(argVal);
+			}
 		}
 
-		if(result){
-			espSettingsBox->saveSettingsJson();
-		}
+		espSettingsBox->finishSetSettingsValue(page);
 
 		return espSettingsBox->getJson(page);
 	}
