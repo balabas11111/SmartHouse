@@ -181,26 +181,11 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 
 function validateCurrentSensorForm(){
 	var errorMessage='';
-	var validateForm=getComponentById(currentItemPreffix+'_form');
 		
-	errorMessage=errorMessage+validateFieldValuesUnique(validateForm,QUEUE_SUFFIX,"Неверное значение 'Очередь'; <br>","Поле 'Очередь' не уникальное; <br>",false);
-	errorMessage=errorMessage+validateFieldValuesUnique(validateForm,FIELD_ID_SUFFIX,"Неверное значение 'Поле ThingSpeak'; <br>","'Поле ThingSpeak' не уникальное; <br>",true);
+	errorMessage=errorMessage+validateFieldValuesUnique(currentForm,QUEUE_SUFFIX,"Неверное значение 'Очередь'; <br>","Поле 'Очередь' не уникальное; <br>",false);
+	errorMessage=errorMessage+validateFieldValuesUnique(currentForm,FIELD_ID_SUFFIX,"Неверное значение 'Поле ThingSpeak'; <br>","'Поле ThingSpeak' не уникальное; <br>",true);
 	errorMessage=errorMessage+validateMinMaxValues();
 	errorMessage=errorMessage+validateDescrValues();
-	
-	return errorMessage;
-}
-
-function submitCurrentSensorForm(){
-	var form=getComponentById(currentItemPreffix+'_form');
-	
-	showMessage(currentMessageComp,'Сохраняю настройки датчика...','w3-yellow');
-	
-	postForm(form,submitValuesUrl,validateCurrentSensorForm,getCurrentItemHandler);
-}
-
-function validateSensorsPage(){
-	var errorMessage='';
 	
 	return errorMessage;
 }
@@ -211,23 +196,13 @@ function validateMinMaxValues(){
 	var maxValComponents=document.getElementsByClassName(MAX_VAL_SUFFIX);
 	var result='';
 	var error=false;
+	var comp=undefined;
 	
-	for (var i in minValComponents) {
-		var comp=minValComponents[i];
-		if(comp!=undefined && comp.classList!=undefined){
-			markComponentValidity(comp,true);
-		}
-	}
-	
-	for (var i in maxValComponents) {
-		var comp=maxValComponents[i];
-		if(comp!=undefined && comp.classList!=undefined){
-			markComponentValidity(comp,true);
-		}
-	}
+	markComponentsArrayValidity(minValComponents,true);
+	markComponentsArrayValidity(maxValComponents,true);
 		
 	for (var i in minValComponents) {
-		var comp=minValComponents[i];
+		comp=minValComponents[i];
 		var compId=comp.id;
 		if(compId!=undefined){
 			var compVal=comp.value;
@@ -259,8 +234,6 @@ function getMaxComponent(sensorName,itemName){
 	
 	for (var i in components) {
 		var comp=components[i];
-		var compId=comp.id;
-		var compVal=comp.value;
 		
 		var sensorName2=comp.getAttribute(SENSOR_NAME_ATTR);
 		var itemName2=comp.getAttribute(ITEM_NAME_ATTR);
@@ -276,16 +249,12 @@ function validateDescrValues(){
 	var descrComponents=document.getElementsByClassName(DESCR_SUFFIX);
 	var result='';
 	var error=false;
+	var comp=undefined;
+	
+	markComponentsArrayValidity(descrComponents,true);
 	
 	for (var i in descrComponents) {
-		var comp=descrComponents[i];
-		if(comp!=undefined && comp.classList!=undefined){
-			markComponentValidity(comp,true);
-		}
-	}
-	
-	for (var i in descrComponents) {
-		var comp=descrComponents[i];
+		comp=descrComponents[i];
 		var compId=comp.id;
 		if(compId!=undefined){
 			var compVal=comp.value;
@@ -312,19 +281,8 @@ function validateFieldValuesUnique(validateComnponent,validClassName,errorMessag
 	var fieldIdComponents=validateComnponent.getElementsByClassName(validClassName);
 	var fieldIdComponents2=document.getElementsByClassName(validClassName);
 	
-	for (var i in fieldIdComponents) {
-		var comp=fieldIdComponents[i];
-		if(comp!=undefined && comp.classList!=undefined){
-			markComponentValidity(comp,true);
-		}
-	}
-	
-	for (var i in fieldIdComponents2) {
-		var comp=fieldIdComponents2[i];
-		if(comp!=undefined && comp.classList!=undefined){
-			markComponentValidity(comp,true);
-		}
-	}
+	markComponentsArrayValidity(fieldIdComponents,true);
+	markComponentsArrayValidity(fieldIdComponents2,true);
 	
 	for (var i in fieldIdComponents) {
 		var comp=fieldIdComponents[i];
@@ -350,7 +308,7 @@ function validateFieldValuesUnique(validateComnponent,validClassName,errorMessag
 						var comp2=fieldIdComponents2[j];
 						var compId2=comp2.id;
 						
-						if(compId!=undefined && compId2!=undefined){
+						if(compId2!=undefined){
 							var compVal2=comp2.value;
 							
 							var sensorName2=comp2.getAttribute(SENSOR_NAME_ATTR);

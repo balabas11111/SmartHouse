@@ -87,7 +87,7 @@ function openTab(tabName,headerName) {
 			putItemsToContainerHandler=putSensorContentToContainer;
 			currentItemPreffix='currentSensor';
 			itemsTagName='sensors';
-			validateValuesHandler=validateSensorsPage;
+			validateValuesHandler=validateCurrentSensorForm;
 			submitValuesUrl='/submitForm_'+'sensors';
 			getValuesUrl='/getJson_'+'sensors';
 		}
@@ -197,7 +197,7 @@ function submitCommand(command){
 	
 	showMessage(msg,'Отправляю команду '+command+' на устройство...','w3-yellow');
 	
-	postForm(form,'/submitForm_commands',undefined,getCurrentCommandHandler);
+	postForm(form,'/submitForm_commands',undefined,constructFormDataDefault,getCurrentCommandHandler,msg);
 }
 
 function getCurrentCommandHandler(data){
@@ -450,5 +450,12 @@ function getInputCompName(sensorName,itemName,suffix){
 
 /*-------------------form submit-----------*/
 function submitCurrentForm(){
-	postForm(currentForm,submitValuesUrl,validateValuesHandler,getValuesHandler);
+	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataDefault,getValuesHandler,currentMessageComp);
 }
+
+function submitCurrentFormReloadCurrTab(){
+		showMessage(currentMessageComp,'Сохраняю настройки ...','w3-yellow');
+		postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataDefault,getCurrentItemHandler,currentMessageComp);
+}
+
+

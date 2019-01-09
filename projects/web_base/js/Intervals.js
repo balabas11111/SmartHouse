@@ -69,17 +69,24 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	var col3h=createDivComponent('w3-quarter','');
 	var col4h=createDivComponent('w3-quarter','');
 	/* column 1*/
-	var cid='i_id_'+id;
-	var cname='i_name_'+id;
-	var ctypeInt='i_typeInt_'+id;
-	var cstateInt='i_stateInt_'+id;
-	var cstartTime='i_startTime_'+id;
-	var cendTime='i_endTime_'+id;
-	var cdays='i_days_'+id;
-	var cparam='i_param_'+id;
 	
-	var inputId=createInputSimple(cid,cid,undefined,'',id,editable);
-	var inputName=createInputSimple(cname,cname,undefined,'',name,editable);
+	var suf='';
+	
+	if(editable==undefined || !editable){
+		suf='_'+id;
+	}
+	
+	var cid='id_'+suf;
+	var cname='name_'+suf;
+	var ctypeInt='typeInt_'+suf;
+	var cstateInt='stateInt_'+suf;
+	var cstartTime='startTime_'+suf;
+	var cendTime='endTime_'+suf;
+	var cdays='days_'+suf;
+	var cparam='param_'+suf;
+	
+	var inputId=createInputSimple(cid,'id',undefined,'',id,editable);
+	var inputName=createInputSimple(cname,'name',undefined,'',name,editable);
 	
 	if(editable==undefined || !editable){
 		var cellDivButton=createDivComponent('w3-cell','');
@@ -101,6 +108,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	
 	var typeSelect=document.createElement("select");
 	typeSelect.id=ctypeInt;
+	typeSelect.name='typeInt';
 	if(editable==undefined || !editable){typeSelect.setAttribute("disabled","disabled");}
 	putItemsToComboCox(typeSelect,intervalType,typeInt);
 	var cellDivType=createDivComponent('','');
@@ -108,6 +116,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	
 	var stateSelect=document.createElement("select");
 	stateSelect.id=cstateInt;
+	stateSelect.name='stateInt';
 	if(editable==undefined || !editable){stateSelect.setAttribute("disabled","disabled");}
 	putItemsToComboCox(stateSelect,intervalState,stateInt);
 	var cellDivState=createDivComponent('','');
@@ -117,13 +126,13 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	col2h.appendChild(cellDivState);
 	
 	/* column 3*/
-	var inputStartTime=createInputSimple(cstartTime,cstartTime,undefined,'','',editable);
+	var inputStartTime=createInputSimple(cstartTime,'startTime',undefined,'','',editable);
 	inputStartTime.setAttribute('type','datetime-local');
 	setComponentValue(inputStartTime,startTime);
 	var cellDivStartTime=createDivComponent('','');
 	cellDivStartTime.appendChild(inputStartTime);
 	
-	var inputendTime=createInputSimple(cendTime,cendTime,undefined,'','',editable);
+	var inputendTime=createInputSimple(cendTime,'endTime',undefined,'','',editable);
 	inputendTime.setAttribute('type','datetime-local');
 	setComponentValue(inputendTime,endTime);
 	var cellDivendTime=createDivComponent('','');
@@ -136,6 +145,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	if(typeInt==multidailyIndex){
 		var daysDiv=createDivComponent('','');
 		daysDiv.id=cdays;
+		daysDiv.name='days';
 		
 		arrayToCheckBoxList(daysDiv,cdays,days,dayOfWeekShort);
 		
@@ -143,10 +153,9 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	}
 	
 	var paramDiv=createDivComponent('','');
-	var inputParam=createInputSimple(cparam,cparam,undefined,'',param,editable);
+	var inputParam=createInputSimple(cparam,'param',undefined,'',param,editable);
 	
 	paramDiv.appendChild(inputParam);
-	
 	
 	col4h.appendChild(paramDiv);
 					
@@ -167,27 +176,8 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 
 function validateCurrentIntervalForm(){
 	var errorMessage='';
-	var validateForm=getComponentById(currentItemPreffix+'_form');
 		
-	errorMessage=errorMessage+validateFieldValuesUnique(validateForm,QUEUE_SUFFIX,"Неверное значение 'Очередь'; <br>","Поле 'Очередь' не уникальное; <br>",false);
-	errorMessage=errorMessage+validateFieldValuesUnique(validateForm,FIELD_ID_SUFFIX,"Неверное значение 'Поле ThingSpeak'; <br>","'Поле ThingSpeak' не уникальное; <br>",true);
-	errorMessage=errorMessage+validateMinMaxValues();
-	errorMessage=errorMessage+validateDescrValues();
 	
 	return errorMessage;
 }
 
-function submitCurrentIntervalForm(){
-	var form=getComponentById(currentItemPreffix+'_form');
-	
-	showMessage(currentMessageComp,'Сохраняю настройки интервала...','w3-yellow');
-	
-	postFormAsJsonVal(form,submitValuesUrl,validateCurrentIntervalForm,getCurrentItemHandler);
-}
-
-function validateIntervalPage(){
-	var errorMessage='';
-	
-	
-	return errorMessage;
-}

@@ -40,6 +40,14 @@ function showComponent(componentId){
 	}
 };
 
+function markComponentsArrayValidity(compons,valid){
+	if(compons!=undefined){
+		for (var i in compons) {
+			markComponentValidity(compons[i],valid);
+		}
+	}
+}
+
 function markComponentValidity(comp,valid){
 	if(comp!=undefined){
 		if(comp.classList!=undefined){
@@ -582,15 +590,7 @@ function addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val
 	}
 };
 /*-------------------------------form submission---------------------*/
-function postForm(form,url,validateFormFunction,resultProcessHandler){
-	postFormWithPreprocess(form,url,validateFormFunction,resultProcessHandler,constructFormDataDefault);
-}
-
-function postFormAsJsonVal(form,url,validateFormFunction,resultProcessHandler){
-	postFormWithPreprocess(form,url,validateFormFunction,resultProcessHandler,constructFormDataWithItemsAsJson);
-}
-
-function postFormWithPreprocess(form,url,validateFormFunction,resultProcessHandler,constructFormDataFunction){
+function postForm(form,url,validateFormFunction,constructFormDataFunction,resultProcessHandler,msgComp){
 	console.log('submitting form');
 	
 	var errorMessage='';
@@ -609,7 +609,7 @@ function postFormWithPreprocess(form,url,validateFormFunction,resultProcessHandl
 		
 		var formData = constructFormDataFunction(form);
 		
-		showMessage(currentMessageComp,'Сохраняю данные...','w3-yellow');
+		showMessage(msgComp,'Сохраняю данные...','w3-yellow');
 		
 		var request = new XMLHttpRequest();
 		request.open("POST", url, true);
@@ -621,17 +621,17 @@ function postFormWithPreprocess(form,url,validateFormFunction,resultProcessHandl
 						var json = JSON.parse(this.responseText);
 						resultProcessHandler(json);
 						
-						showMessage(currentMessageComp,'Данные сохранены!','w3-green');
+						showMessage(msgComp,'Данные сохранены!','w3-green');
 						
 					} else {
-						showMessage(currentMessageComp,'Ошибка на стророне сервера!','w3-red');
+						showMessage(msgComp,'Ошибка на стророне сервера!','w3-red');
 					};
 				};
 			};
 		request.send(formData);
 	}else{
-		errorMessage='<strong>Некоторые значения неверны:</strong>  <br><br>'+errorMessage;
-		showMessage(currentMessageComp,errorMessage,'w3-red');
+		errorMessage='<strong>Ошибка валидации:</strong>  <br><br>'+errorMessage;
+		showMessage(msgComp,errorMessage,'w3-red');
 	}
 }
 
