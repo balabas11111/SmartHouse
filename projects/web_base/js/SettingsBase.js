@@ -82,7 +82,6 @@ function openTab(tabName,headerName) {
 		}
 		
 		if(tabName=='sensors'){
-			currentForm.innerHTML="";
 			getValuesHandler=processItemsJsonGet;
 			putItemsToContainerHandler=putSensorContentToContainer;
 			currentItemPreffix='currentSensor';
@@ -93,7 +92,6 @@ function openTab(tabName,headerName) {
 		}
 		
 		if(tabName=='intervals'){
-			currentForm.innerHTML="";
 			getValuesHandler=processIntervalsJsonGet;
 			putItemsToContainerHandler=putIntervalContentToContainer;
 			currentItemPreffix='currentInterval';
