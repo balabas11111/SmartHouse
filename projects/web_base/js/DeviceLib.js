@@ -670,10 +670,10 @@ function validateFormFunctionDefault(form){
 function constructFormDataDefault(form){
 	var formData = new FormData(form);
 	
-	var childNodes = getComponentChildrenByTag(form,'input');
+	var formInputs = getComponentChildrenByTag(form,'input');
 	
-	for(var i=0;i<childNodes.length;i++){
-		var child=childNodes[i];
+	for(var i=0;i<formInputs.length;i++){
+		var child=formInputs[i];
 		if(child!=undefined && child.tagName!=undefined && child.type!=undefined){
 			
 			var type=child.type.toLowerCase();
@@ -682,9 +682,9 @@ function constructFormDataDefault(form){
 				var chbVal=child.checked;
 				
 				if(chbVal!=true){
-					formData.append(child.id, false);
+					formData.append(child.name, false);
 				}else{
-					formData.set(child.id,true);
+					formData.set(child.name,true);
 				}
 			}
 		}
@@ -693,13 +693,35 @@ function constructFormDataDefault(form){
 	return formData;
 }
 
-function constructFormDataWithItemsAsJson(form){
+function constructFormDataAsJson(form){
 	
-	var formData = constructFormDataDefault(form);
+	var formInputs = getComponentChildrenByTag(form,'input');
+	var str='{';
+	var pageName='';
 	
-	/*const data = formToJSON(form.elements);
-	formData.append("val", data);
-	*/
+	for(var i=0;i<formInputs.length;i++){
+		var child=formInputs[i];
+		if(child!=undefined && child.tagName!=undefined && child.type!=undefined){
+			
+			if(child.name!=undefined && child.id!=undefined){
+				inputName=child.name;
+				inputValue=getComponentValue(child);
+				
+				str=str+'"'+child.name+'": "'+getComponentValue(child)+'",';
+			}
+		}
+	}
+	
+	if(str.substring(str.length - 1)==','){
+		str=str.substring(0,str.length-1);
+	}
+	
+	str+='}';
+	
+	var formData = new FormData();
+	formData.append('form_id',form.id);
+	formData.append('form_val_json',str);	
+	
 	return formData;
 }
 /*

@@ -456,4 +456,9 @@ function submitCurrentFormReloadCurrTab(){
 		postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataDefault,getCurrentItemHandler,currentMessageComp);
 }
 
+function submitCurrentFormAsJsonReloadCurrTab(){
+	showMessage(currentMessageComp,'Сохраняю настройки ...','w3-yellow');
+	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataAsJson,getCurrentItemHandler,currentMessageComp);
+}
+
 

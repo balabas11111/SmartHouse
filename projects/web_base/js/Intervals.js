@@ -76,14 +76,14 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 		suf='_'+id;
 	}
 	
-	var cid='id_'+suf;
-	var cname='name_'+suf;
-	var ctypeInt='typeInt_'+suf;
-	var cstateInt='stateInt_'+suf;
-	var cstartTime='startTime_'+suf;
-	var cendTime='endTime_'+suf;
-	var cdays='days_'+suf;
-	var cparam='param_'+suf;
+	var cid='id'+suf;
+	var cname='name'+suf;
+	var ctypeInt='typeInt'+suf;
+	var cstateInt='stateInt'+suf;
+	var cstartTime='startTime'+suf;
+	var cendTime='endTime'+suf;
+	var cdays='days'+suf;
+	var cparam='param'+suf;
 	
 	var inputId=createInputSimple(cid,'id',undefined,'',id,editable);
 	var inputName=createInputSimple(cname,'name',undefined,'',name,editable);

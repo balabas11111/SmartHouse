@@ -168,7 +168,7 @@ void postInitWebServer(){
 	server.on(FPSTR(URL_SUBMIT_FORM_INTERVALS), HTTP_POST, [](){
 		wifiHelper.checkAuthentication();
 		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),
-			timeIntervalService.setIntervalFromJson(server.arg(FPSTR(MESSAGE_SERVER_ARG_VAL))));
+			setIntervalJson());
 	});
 	server.on(FPSTR(URL_GET_JSON_PROVIDERS), HTTP_GET, [](){
 		wifiHelper.checkAuthentication();
@@ -254,6 +254,16 @@ void saveSensors(){
 	espSettingsBox.saveAbstractItemsToFile(sensors, ARRAY_SIZE(sensors));
 }
 //-----------------------------------------------------
+String setIntervalJson(){
+	if(server.hasArg(FPSTR(MESSAGE_SERVER_ARG_FORM_ID))
+			&& server.hasArg(FPSTR(MESSAGE_SERVER_ARG_FORM_VAL_JSON))
+			&& server.arg(FPSTR(MESSAGE_SERVER_ARG_FORM_ID))==FPSTR(SERVER_ARG_TIME_INTERVAL_CURRENT_INTERVAL_FORM)){
+		return timeIntervalService.setIntervalFromJson(server.arg(FPSTR(MESSAGE_SERVER_ARG_FORM_VAL_JSON)));
+	}
+
+	return FPSTR(MESSAGE_TIME_INTERVAL_STATUS_ERROR_MISSING_PARAMS);
+}
+
 String setSensorJson(){
 	Serial.println(FPSTR(MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_SETTING_BEGIN));
 

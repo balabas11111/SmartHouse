@@ -75,6 +75,27 @@ typedef struct timeIntervalDetail{
   String param;
 }TimeIntervalDetail;
 
+const char* const SERVER_ARG_TIME_INTERVAL_SERVICE[] PROGMEM={
+		"id", "name", "type", "startTime", "endTime", "time" "state", "days", "param"
+};
+
+const PROGMEM char SERVER_ARG_TIME_INTERVAL_CURRENT_INTERVAL_FORM[]    = "currentInterval_form";
+
+const PROGMEM char MESSAGE_ERROR_TIME_INTERVAL_SERVICE_UPDATE[]        = "Error update time Interval";
+const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_OK[]                   = "{\"status\":\"Ok\",\"message\":\"Ok\"}";
+const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR[]                = "{\"status\":\"Error\",\"item\":\"Error update time Interval\"}";
+const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR_MISSING_PARAMS[] = "{\"status\":\"Error\",\"item\":\"Required params missing\"}";
+/*
+const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_id[]        = "id";
+const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_name[]      = "name";
+const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_type[]      = "type";
+const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_startTime[] = "startTime";
+const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_endTime[]   = "endTime";
+const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_state[]     = "state";
+const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_days[]      = "days";
+const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_param[]     = "param";
+*/
+
 class TimeIntervalService: public Initializable, public Loopable, public JSONprovider {
 public:
 	virtual ~TimeIntervalService(){};
@@ -178,6 +199,11 @@ public:
 	}
 
 	virtual boolean updateInterval(uint8_t ind,String name,uint8_t type,uint32_t start,uint32_t end,uint16_t time,uint8_t state,String days,String param){
+		if(ind==-1){
+			Serial.println(FPSTR("new Interval add"));
+			ind=itemCount;
+		}
+
 		if((fixedItemlength!=0 && itemCount>fixedItemlength) || ind>itemCount){
 			return false;
 		}
@@ -262,6 +288,22 @@ public:
 			return;
 		}
 		stopBeeper();
+	}
+
+	uint8_t getHttpParamsExpectedLength(){
+		return sizeof(SERVER_ARG_TIME_INTERVAL_SERVICE);
+	}
+
+	String getHttpParamName(uint8_t ind){
+		return FPSTR(SERVER_ARG_TIME_INTERVAL_SERVICE[ind]);
+	}
+
+	String setHttpParams(String* args){
+		boolean saveResult=updateInterval(args[0].toInt(),args[1],args[2].toInt(),args[3].toInt(),args[4].toInt(),args[5].toInt(),args[6].toInt(),args[7],args[8]);
+
+		return saveResult?
+				FPSTR(MESSAGE_TIME_INTERVAL_STATUS_OK)
+				:FPSTR(MESSAGE_TIME_INTERVAL_STATUS_ERROR);
 	}
 protected:
 
