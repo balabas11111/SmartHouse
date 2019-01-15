@@ -46,7 +46,7 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 	
 	if(editable==undefined || !editable){
 		var cellDivButton=createDivComponent('w3-cell','');
-		var editButton=createItemEditButton('name',sensorName,sensorDescr);
+		var editButton=createItemEditButton('name',sensorName,sensorDescr,undefined);
 		
 		cellDivButton.appendChild(editButton);
 		

@@ -17,6 +17,8 @@ const QUEUE_SUFFIX="queue";
 const CLASS_AUTO_CREATED_CHILD="autoCreatedChild";
 const LABEL_PREFFIX="Label";
 
+const localTest=false;
+
 /*--------------------------Menu functions-----------------------------*/
 function w3_open(){
 	document.getElementById("leftSidebar").style.display = "block";
@@ -28,17 +30,23 @@ function w3_close(){
 /*---------------------------------------------------------------------*/
 function hideComponent(componentId){
 	var comp=document.getElementById(componentId);
-	if(comp!=undefined){
-		comp.style.display = "none";
-	}
+	setVisible(comp,false);
 };
 
 function showComponent(componentId){
 	var comp=document.getElementById(componentId);
-	if(comp!=undefined){
-		comp.style.display = "block";
-	}
+	setVisible(comp,true);
 };
+
+function setVisible(comp,visible){
+	if(comp!=undefined){
+		if(visible){
+			comp.style.display = "block";
+		}else{
+			comp.style.display = "none";
+		}
+	}
+}
 
 function markComponentsArrayValidity(compons,valid){
 	if(compons!=undefined){
@@ -547,6 +555,15 @@ function processJsonOnImageComponent(data){
 	}
 }
 /*---------------------------AJAX functions------------------------------------*/
+function isHttpStatusOk(status){
+	/*Standard http 200 Ok*/
+	if(status==200){	return true;	}
+	/*local files only*/
+	if(localTest && status==0){	return true; }
+	
+	return false;
+}
+
 function updateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout, errorTimeOut){
 	
 	var request = new XMLHttpRequest();
@@ -562,7 +579,7 @@ function updateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, tim
 		function() {
 			if(this.readyState == 4){
 								
-				if (this.status == 200){
+				if (isHttpStatusOk(this.status)){
 					
 					var json = JSON.parse(this.responseText);
 							
@@ -582,6 +599,7 @@ function updateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, tim
 			};
 		};
 	request.send(formData);
+	/*request.send(null);*/	
 };
 
 function addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout, errorTimeOut, reloadTime){
@@ -624,7 +642,7 @@ function postForm(form,url,validateFormFunction,constructFormDataFunction,result
 						showMessage(msgComp,'Данные сохранены!','w3-green');
 						
 					} else {
-						showMessage(msgComp,'Ошибка на стророне сервера!','w3-red');
+						showMessage(msgComp,'Ошибка на стороне сервера!','w3-red');
 					};
 				};
 			};

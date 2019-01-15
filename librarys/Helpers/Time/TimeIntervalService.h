@@ -18,8 +18,8 @@
 #include "FunctionalInterrupt.h"
 #include "DS3231.h"
 #include "TimeTrigger.h"
+#include "projectConsts.h"
 
-#define ALARM_SIZE 10
 #define SEC_IN_DAY 24*60*60
 #define SEC_IN_WEEK 7*24*60*60
 /*
@@ -33,8 +33,15 @@ const char* const IntervalType_Names[] PROGMEM={
 		"ONCE", "PERIODIC", "DAILY", "MULTIDAILY", "WEEKLY", "MONTHLY", "QUATERLY"
 };
 */
-#define INNACTIVE_INTERVAL_INDEX 5
-#define MULTIDAILY_INTERVAL_INDEX 3
+#ifndef CUSTOM_TIME_SERVICE_PARAMS
+	#define ALARM_SIZE 10
+
+	#define INNACTIVE_INTERVAL_INDEX 5
+	#define MULTIDAILY_INTERVAL_INDEX 3
+	#define PERIODIC_INTERVAL_INDEX 1
+
+	const char TimeIntervalService_ServVals[] PROGMEM = ",\"innactiveIndex\":\"5\",\"multidailyIndex\":\"3\",\"periodicIndex\":\"1\"";
+#endif
 
 const char* const IntervalState_Names[] PROGMEM={
 		"Новый", "Ожидает", "Выполняется", "Окончен", "К удалению", "Неактивный"
@@ -169,8 +176,7 @@ public:
 
 	virtual String getJson(){
 		String result="{"+getItemJson()
-		+ ",\"innactiveIndex\":\""+String(INNACTIVE_INTERVAL_INDEX)+"\""
-		+ ",\"multidailyIndex\":\""+String(MULTIDAILY_INTERVAL_INDEX)+"\""
+		+ FPSTR(TimeIntervalService_ServVals)
 		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("intervalType"), IntervalType_Names, ARRAY_SIZE(IntervalType_Names))
 		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("intervalState"), IntervalState_Names, ARRAY_SIZE(IntervalState_Names))
 		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("dayOfWeekShort"), DAYS_OF_WEEK_SHORT, ARRAY_SIZE(DAYS_OF_WEEK_SHORT))
@@ -349,9 +355,10 @@ protected:
 					items[i].id=i;
 					items[i].name=root["items"][i]["name"].as<char*>();
 					items[i].type=root["items"][i]["typeInt"];
-					items[i].state=root["items"][i]["type"];
-					items[i].startTime=root["items"][i]["minVal"];
-					items[i].endTime=root["items"][i]["maxVal"];
+					items[i].state=root["items"][i]["stateInt"];
+					items[i].startTime=root["items"][i]["startTime"];
+					items[i].endTime=root["items"][i]["endTime"];
+					items[i].time=root["items"][i]["time"];
 					items[i].days=root["items"][i]["days"].as<char*>();
 					items[i].param=root["items"][i]["param"].as<char*>();
 				}
@@ -673,10 +680,11 @@ private:
 					+"\"type\":\""+getTypeName(item.type)+"\","
 					+"\"typeInt\":\""+String(item.type)+"\","
 					+"\"state\":\""+getStateName(item.state)+"\","
-					+"\"disabled\":\""+String(item.state==INACTIVE)+"\","
+					+"\"disabled\":\""+String(item.state==INNACTIVE_INTERVAL_INDEX)+"\","
 					+"\"stateInt\":\""+String(item.state)+"\","
 					+"\"startTime\":\""+String(item.startTime)+"\","
 					+"\"endTime\":\""+String(item.endTime)+"\","
+					+"\"time\":\""+String(item.time)+"\","
 					+"\"days\":\""+item.days+"\","
 					+"\"param\":\""+item.param+"\","
 						+"\"startDateTime\":"+timeService->getDateTimeAsJson(item.startTime)+","

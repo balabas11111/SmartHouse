@@ -20,6 +20,7 @@ var currentForm=undefined;
 var getValuesHandler=undefined;
 var validateValuesHandler=undefined;
 
+var putItemsHeaderToContainer=undefined;
 var putItemsToContainerHandler=undefined;
 var currentItemPreffix=undefined;
 var itemsTagName=undefined;
@@ -83,6 +84,7 @@ function openTab(tabName,headerName) {
 		
 		if(tabName=='sensors'){
 			getValuesHandler=processItemsJsonGet;
+			putItemsHeaderToContainer=undefined;
 			putItemsToContainerHandler=putSensorContentToContainer;
 			currentItemPreffix='currentSensor';
 			itemsTagName='sensors';
@@ -93,10 +95,11 @@ function openTab(tabName,headerName) {
 		
 		if(tabName=='intervals'){
 			getValuesHandler=processIntervalsJsonGet;
+			putItemsHeaderToContainer=putIntervalHeaderToContainer;
 			putItemsToContainerHandler=putIntervalContentToContainer;
 			currentItemPreffix='currentInterval';
 			itemsTagName='intervals';
-			validateValuesHandler=validateIntervalPage;
+			validateValuesHandler=validateCurrentIntervalForm;
 			submitValuesUrl='/submitForm_'+'intervals';
 			getValuesUrl='/getJson_'+'intervals';
 		}
@@ -113,6 +116,10 @@ function openTab(tabName,headerName) {
 								function(evt){
 									evt.preventDefault();
 								},false);
+			
+		if(localTest && getValuesUrl.substring(0,1)=='/'){
+			getValuesUrl=getValuesUrl.substring(1,getValuesUrl.length)+'.json';
+		}
 			
 			updateComponentsByAjaxCall('GET', getValuesUrl, getValuesHandler,"",undefined, 0,2000);
 		}else{
@@ -295,6 +302,10 @@ function processItemsJsonGet(data){
 	var items=data[itemsTagName];
 	
 	currentJson=items;
+	
+	if(putItemsHeaderToContainer!=undefined){
+		putItemsHeaderToContainer(container,items);
+	}
 			
 	for(var s in items){
 		var item=items[s];
@@ -328,7 +339,7 @@ function getCurrentItemFromParentItem(parentItem,parentItemTag,tagName,tagValue)
 	return undefined;
 }
 
-function openItemPopup(tagName,sensorName){
+function openItemPopup(tagName,sensorName,headerValue){
 	var sensor=getCurrentItemFromCurrentJson(tagName,sensorName);
 	currentMessageComp=getComponentById(currentItemPreffix+'_msg');
 	
@@ -338,7 +349,7 @@ function openItemPopup(tagName,sensorName){
 		var container=getComponentById(currentItemPreffix+'_content');
 		
 		sensorNameContainer.value=sensorName;
-		sensorNameHeader.innerHTML=sensorName;
+		sensorNameHeader.innerHTML=headerValue;
 		container.innerHTML='';
 		
 		putItemsToContainerHandler(container,sensor,true,true);
@@ -356,12 +367,12 @@ function getCurrentItemHandler(data){
 	}
 }
 /*--------------------------GUI creation part-----------------------------*/
-function createItemEditButton(tagName,tagValue,itemDescr){
+function createItemDeleteButton(tagName,tagValue,itemDescr){
 	var div=document.createElement('div');
 		div.setAttribute('class','w3-tooltip');
 		div.setAttribute('style','margin-top: 10px; margin-left: 3px; width: 30px');
 	
-	var text='&#10162 Редактировать';
+	var text='&#9986 Удалить';
 	if(itemDescr!=undefined){
 		text+=' ';
 		text+=itemDescr;
@@ -373,7 +384,39 @@ function createItemEditButton(tagName,tagValue,itemDescr){
 		span.innerHTML=text;
 	div.appendChild(span);	
 	
-	var onClickText="openItemPopup('"+tagName+"','"+tagValue+"')";
+	var onClickText="openItemDeletePopup('"+tagName+"','"+tagValue+"')";
+	
+	var button=document.createElement('button');
+		button.setAttribute('class','w3-border w3-border-red w3-round w3-green');
+		button.setAttribute('onclick',onClickText);
+		button.innerHTML='&#9986';
+	div.appendChild(button);		
+	
+	return div;
+}
+
+function createItemEditButton(tagName,tagValue,itemDescr,headerValue){
+	var div=document.createElement('div');
+		div.setAttribute('class','w3-tooltip');
+		div.setAttribute('style','margin-top: 10px; margin-left: 3px; width: 30px');
+	
+	var text='&#10162 Редактирование';
+	if(itemDescr!=undefined){
+		text+=' ';
+		text+=itemDescr;
+	}
+	
+	if(headerValue==undefined || headerValue==''){
+		headerValue=text;
+	}
+		
+	var span=document.createElement('span');
+		span.setAttribute('class','w3-text w3-tag w3-gray w3-round');
+		span.setAttribute('style','position:absolute;left:0;bottom:45px');
+		span.innerHTML=text;
+	div.appendChild(span);	
+	
+	var onClickText="openItemPopup('"+tagName+"','"+tagValue+"','"+headerValue+"')";
 	
 	var button=document.createElement('button');
 		button.setAttribute('class','w3-border w3-border-red w3-round w3-green');
@@ -387,12 +430,23 @@ function createItemEditButton(tagName,tagValue,itemDescr){
 
 function createDivComponent(className,innerHtml){
 	var div=document.createElement('div');
-		div.setAttribute('class',className);
-		if(innerHtml!=undefined && innerHtml!=''){
-			div.innerHTML=innerHtml;
-		}
+	
+	if(className!=undefined && className!=''){	div.setAttribute('class',className); }
+	if(innerHtml!=undefined && innerHtml!=''){	div.innerHTML=innerHtml; }
 		
 	return div;
+}
+
+function createLabelSimple(id,forVal,clazz,style,value){
+	var lbl=document.createElement("label");
+	
+	lbl.setAttribute("id",id);
+	lbl.setAttribute("for",forVal);
+	if(clazz!=undefined){ lbl.setAttribute("class",clazz);}
+	if(style!=undefined){ lbl.setAttribute("style",style);}
+	lbl.innerHTML=value;
+	
+	return lbl; 
 }
 
 function createInputSimple(id,name,clazz,style,value,editable){

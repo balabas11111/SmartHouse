@@ -4,12 +4,26 @@ SET BASE_WEB_PATH=%REAL_PATH:~0,-1%\
 
 @ECHO OFF
 cls
+
+for %%a in ("%PROJECT_PATH%.\..") do set "PROJECT_NAME=%%~nxa"
+
+For /f "tokens=2-4 delims=/ " %%a in ('date /t') do (set mydate=%%c-%%a-%%b)
+For /f "tokens=1-2 delims=/:" %%a in ('time /t') do (set mytime=%%a:%%b)
+
+SET EXTRA_BUILD_INFO=
+if "%LOCAL_TEST_MODE%" == "1" ( 
+	SET EXTRA_BUILD_INFO=LOCAL-TEST-MODE
+) 
+
+SET BUILD_INFO= %PROJECT_NAME% (ver %mydate% %mytime% st=%computername%) %EXTRA_BUILD_INFO% 
+
 echo ======================================================================
 echo ----------------------------BUILD STARTED-----------------------------
+echo ----BUILD_INFO  %BUILD_INFO%
 echo ======================================================================
 echo PROJECT_PATH=%PROJECT_PATH%
 echo BASE_WEB_PATH=%BASE_WEB_PATH%
-
+ause
 SET TEMP_FOLDER_NAME=target
 SET TEMP_FOLDER_CREATE_PATH=%PROJECT_PATH%%TEMP_FOLDER_NAME%
 SET TEMP_FOLDER=%PROJECT_PATH%%TEMP_FOLDER_NAME%\
@@ -210,8 +224,11 @@ echo         'Htm files
 echo ----------------------------------------------------------------------	
 for %%h in (%TEMP_FOLDER%*.htm) do (
 	echo %%~nxh
-	REM %BASE_WEB_PATH%!gzip\gzip.exe %TEMP_FOLDER%%%~nxh -k
-	%BASE_WEB_PATH%!gzip\gzip.exe %TEMP_FOLDER%%%~nxh
+	if "%LOCAL_TEST_MODE%" == "1" (
+		%BASE_WEB_PATH%!gzip\gzip.exe %TEMP_FOLDER%%%~nxh -k
+	) ELSE ( 
+		%BASE_WEB_PATH%!gzip\gzip.exe %TEMP_FOLDER%%%~nxh
+	)
 )
 echo ----------------------------------------------------------------------	
 echo         'Gzip files
@@ -221,6 +238,29 @@ for %%g in (%TEMP_FOLDER%*.gz) do (
 )
 echo ======================================================================
 
+if "%LOCAL_TEST_MODE%" NEQ "1" (
+	GOTO:ENDLABEL
+)
+echo ----------------------------------------------------------------------	
+echo         'Copy test files
+echo ----------------------------------------------------------------------	
+for %%h in (%BASE_WEB_PATH%testJS\*) do (
+	echo copy %%~nxh -- dest=%TEMP_FOLDER_CREATE_PATH%
+	powershell -Command "Copy-Item %BASE_WEB_PATH%testJS\%%~nxh -Destination %TEMP_FOLDER_CREATE_PATH%"
+)
+echo ----------------------------------------------------------------------	
+echo         'replace files
+echo ----------------------------------------------------------------------	
+for %%h in (%TEMP_FOLDER%*.htm) do (
+	echo  %%~nxh 'const localTest=false;' -- 'const localTest=true;'
+	powershell -Command "(gc %TEMP_FOLDER%%%~nxh -Encoding UTF8) -replace 'const localTest=false;', 'const localTest=true;' | Out-File %TEMP_FOLDER%%%~nxh"
+)
+
+
+echo ======================================================================
+
+:ENDLABEL
+
 for %%h in (%TEMP_FOLDER%*.txt) do (
 	powershell -Command "Remove-Item %%h -Force -Recurse -ErrorAction Ignore"
 )
@@ -228,4 +268,13 @@ for %%h in (%TEMP_FOLDER%*.log) do (
 	powershell -Command "Remove-Item %%h -Force -Recurse -ErrorAction Ignore"
 )
 powershell -Command "Remove-Item %TEMP_HTML_PLACEHOLDERS_FOLDER% -Force -Recurse -ErrorAction Ignore"
-
+echo ----------------------------------------------------------------------	
+echo         'set build info 'BUILD INFO ===%BUILD_INFO%==='
+echo ----------------------------------------------------------------------	
+for %%h in (%TEMP_FOLDER%*.htm) do (
+	powershell -Command "(gc %TEMP_FOLDER%%%~nxh -Encoding UTF8) -replace '{build info}', 'BUILD INFO ===%BUILD_INFO%===' | Out-File %TEMP_FOLDER%%%~nxh"
+)
+echo ======================================================================
+echo ----------------------------PACK ALL COMPLETED-----------------------------
+echo ----BUILD_INFO  %BUILD_INFO%
+echo ======================================================================
