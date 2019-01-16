@@ -54,15 +54,21 @@ const char TimeIntervalService_ServVals[] PROGMEM="\
 
 #endif
 
-const char* const IntervalState_Names[] PROGMEM={
-		"Новый", "Ожидает", "Выполняется", "Окончен", "К удалению", "Неактивный"
-};
-const char* const IntervalCompNow_Names[] PROGMEM={
-		"NOW_IN_FUTURE_OF_INTERVAL", "NOW_IN_INTERVAL", "NOW_IN_PAST_OF_INTERVAL"
-};
 const char* const IntervalType_Names[] PROGMEM={
 		"Единожды", "Периодически", "Ежедневно", "По дням", "Еженедельно", "Ежемесячно", "Ежеквартально"
 };
+const char* const IntervalState_Names[] PROGMEM={
+		"Новый", "Ожидает", "Выполняется", "Окончен", "К удалению", "Неактивный"
+};
+const char* const IntervalKind_Names[] PROGMEM={
+		"Будильник", "Розетка 1 - включение"
+};
+
+const char* const IntervalCompNow_Names[] PROGMEM={
+		"NOW_IN_FUTURE_OF_INTERVAL", "NOW_IN_INTERVAL", "NOW_IN_PAST_OF_INTERVAL"
+};
+
+const char TimeIntervalService_EMPTY_DAYS[] PROGMEM ="0,0,0,0,0,0,0";
 
 const char TimeIntervalService_ID[] PROGMEM ="123";
 const char TimeIntervalService_NAME[] PROGMEM ="TimeIntervalService";
@@ -166,6 +172,7 @@ public:
 			Serial.println(FPSTR("Fill time interval service with default values"));
 			defaultValuesFunction();
 			saveToFile();
+			Serial.println(FPSTR("Default interval complete"));
 		}
 
 		return true;
@@ -185,14 +192,6 @@ public:
 
 	virtual String getJson(){
 		String result="{"+getItemJson()
-#ifndef TIME_SERV_SERV_VALS
-		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("intervalType"), IntervalType_Names, ARRAY_SIZE(IntervalType_Names))
-		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("intervalState"), IntervalState_Names, ARRAY_SIZE(IntervalState_Names))
-		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("dayOfWeekShort"), DAYS_OF_WEEK_SHORT, ARRAY_SIZE(DAYS_OF_WEEK_SHORT))
-		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("dayOfWeek"), DAYS_OF_WEEK, ARRAY_SIZE(DAYS_OF_WEEK))
-#else
-		+ FPSTR(TimeIntervalService_ServVals)
-#endif
 		+ ",\"intervals\":[";
 
 			for(uint8_t i=0;i<itemCount;i++){
@@ -211,39 +210,105 @@ public:
 		if(fixedItemlength!=0 && itemCount==fixedItemlength){
 			return;
 		}
-		updateInterval(itemCount,name,type,start,end,time,WAIT,days,kind);
+		if(days==NULL || days.length()==0){
+			days=FPSTR(TimeIntervalService_EMPTY_DAYS);
+		}
+		updateInterval(-1,name,type,start,end,time,WAIT,days,kind);
 		itemCount++;
-		saveToFile();
 	}
 
-	virtual boolean updateInterval(uint8_t ind,String name,uint8_t type,uint32_t start,uint32_t end,uint16_t time,uint8_t state,String days,uint8_t kind){
-		if(ind==-1){
+	virtual boolean updateInterval(int8_t id,String name,uint8_t type,uint32_t start,uint32_t end,uint16_t time,uint8_t state,String days,uint8_t kind){
+		boolean isNew=false;
+		if(id<0){
 			Serial.println(FPSTR("new Interval add"));
-			ind=itemCount;
+			id=itemCount;
+			isNew=true;
 		}
 
-		if((fixedItemlength!=0 && itemCount>fixedItemlength) || ind>itemCount){
+		if((fixedItemlength!=0 && itemCount>fixedItemlength) || id>itemCount){
 			return false;
 		}
 
-		Serial.print(FPSTR("updateInterval"));
+		boolean noerror=validateInterval(id,name,type,start,end,time,state,days,kind);
 
-		items[ind].id=ind;
-		items[ind].name=name;
-		items[ind].type=type;
-		items[ind].startTime=start;
-		items[ind].endTime=end;
-		items[ind].time=type==PERIODIC?time:0;
-		items[ind].state=state;
-		items[ind].days=type==MULTIDAILY?days:"0,0,0,0,0,0,0";
-		items[ind].kind=kind;
+		if(noerror){
+			items[id].id=id;
+			items[id].name=name;
+			items[id].type=type;
+			items[id].startTime=start;
+			items[id].endTime=end;
+			items[id].time=type==PERIODIC?time:0;
+			items[id].state=state;
+			items[id].days=type==MULTIDAILY?days:"0,0,0,0,0,0,0";
+			items[id].kind=kind;
 
-		Serial.println(getItemJson(ind));
+			Serial.println(getItemJson(id));
+		}
 
-		return true;
+		return noerror;
+
+	}
+
+	boolean validateInterval(int8_t id,String name,uint8_t type,uint32_t start,uint32_t end,uint16_t time,uint8_t state,String days,uint8_t kind){
+		boolean result=true;
+
+		if(!(id>=0 && id<=itemCount)){
+			result=false;
+			Serial.print(FPSTR("id out of range"));
+			Serial.print(FPSTR("id="));
+			Serial.println(id);
+		}
+		if(!(name!=NULL && name.length()>0)){
+			result=false;
+			Serial.print(FPSTR("name is wrong"));
+			Serial.print(FPSTR(", name="));
+			Serial.println(name);
+		}
+		if(!(type>=0 && type<sizeof(IntervalType_Names))){
+			result=false;
+			Serial.print(FPSTR("type out of range"));
+			Serial.print(FPSTR(", type="));
+			Serial.println(type);
+		}
+		if(!(start<end)){
+			result=false;
+			Serial.print(FPSTR("start<end"));
+			Serial.print(FPSTR(", start="));
+			Serial.print(start);
+			Serial.print(FPSTR(", end="));
+			Serial.println(end);
+		}
+		if(!(state>=0 && state<sizeof(IntervalState_Names))){
+			result=false;
+			Serial.print(FPSTR("state out of range"));
+			Serial.print(FPSTR(", state="));
+			Serial.println(state);
+		}
+		if(!(days!=NULL && days.length()==13)){
+			result=false;
+			Serial.print(FPSTR("days is wrong"));
+			Serial.print(FPSTR(", days="));
+			Serial.println(days);
+		}
+		if(!(kind>=0 && state<sizeof(IntervalKind_Names))){
+			result=false;
+			Serial.print(FPSTR("kind out of range"));
+			Serial.print(FPSTR(", kind="));
+			Serial.println(kind);
+		}
+
+		if(!result){
+			Serial.println(FPSTR("FAILED updateInterval("));
+		}
+
+		return result;
 	}
 
 	String setIntervalFromJson(String json){
+
+		Serial.print(FPSTR("Set Interval value JSON="));
+		Serial.println(json);
+
 		boolean ok=false;
 		String statusText="";
 
@@ -276,6 +341,10 @@ public:
 		}else{
 			statusText=FPSTR(STATUS_INVALID_LENGTH);
 		}
+
+	    if(ok){
+	    	ok=saveToFile();
+	    }
 
 	    String status=ok?FPSTR(STATUS_OK):FPSTR(STATUS_ERROR);
 
@@ -323,7 +392,6 @@ public:
 				FPSTR(MESSAGE_TIME_INTERVAL_STATUS_OK)
 				:FPSTR(MESSAGE_TIME_INTERVAL_STATUS_ERROR);
 	}
-protected:
 
 	boolean loadFromFile(){
 
@@ -332,12 +400,12 @@ protected:
 			return false;
 		}
 
-		String fileName=espSettingsBox->getSettingsFileFileName(FPSTR(TimeIntervalService_NAME));
+		String fileName=espSettingsBox->getSettingsFileFileName(FPSTR(TimeIntervalService_FileName_NAME));
 
 		Serial.print(FPSTR("Load TimeIntervals from file "));
 		Serial.println(fileName);
 
-     	StaticJsonBuffer<1024> jsonBuffer;
+		DynamicJsonBuffer jsonBuffer;
 		delay(1);
 
 		File file = SPIFFS.open(fileName, "r");
@@ -365,14 +433,14 @@ protected:
 			for(uint8_t i=0;i<itemCount;i++){
 				if(fixedItemlength==0 || i<fixedItemlength){
 					items[i].id=i;
-					items[i].name=root["items"][i]["name"].as<char*>();
-					items[i].type=root["items"][i]["typeInt"];
-					items[i].state=root["items"][i]["stateInt"];
-					items[i].startTime=root["items"][i]["startTime"];
-					items[i].endTime=root["items"][i]["endTime"];
-					items[i].time=root["items"][i]["time"];
-					items[i].days=root["items"][i]["days"].as<char*>();
-					items[i].kind=root["items"][i]["kind"];
+					items[i].name=root["intervals"][i]["name"].as<char*>();
+					items[i].type=root["intervals"][i]["type"];
+					items[i].state=root["intervals"][i]["state"];
+					items[i].startTime=root["intervals"][i]["startTime"];
+					items[i].endTime=root["intervals"][i]["endTime"];
+					items[i].time=root["intervals"][i]["time"];
+					items[i].days=root["intervals"][i]["days"].as<char*>();
+					items[i].kind=root["intervals"][i]["kind"];
 				}
 				Serial.println(getItemJson(i));
 			}
@@ -389,11 +457,11 @@ protected:
 		  return true;
 	}
 
-	void saveToFile(){
+	boolean saveToFile(){
 		Serial.println();
-		espSettingsBox->saveSettingToFile(FPSTR(TimeIntervalService_FileName_NAME),getJson());
+		return espSettingsBox->saveSettingToFile(FPSTR(TimeIntervalService_FileName_NAME),getJson());
 	}
-
+protected:
 	void processIntervals(){
 		boolean doSave=false;
 
@@ -677,7 +745,15 @@ private:
 
 	String getItemJson(){
 		return "\"id\":\"123\",\"name\":\"TimeIntervalService\",\"type\":\"ScheduleService\",\"size\":\"1\",\
-				\"descr\":\"TimeIntervalService_DESCR\",\"itemCount\":\""+String(itemCount)+"\"";
+				\"descr\":\"TimeIntervalService_DESCR\",\"itemCount\":\""+String(itemCount)+"\""
+#ifndef TIME_SERV_SERV_VALS
+		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("intervalType"), IntervalType_Names, ARRAY_SIZE(IntervalType_Names))
+		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("intervalState"), IntervalState_Names, ARRAY_SIZE(IntervalState_Names))
+		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("dayOfWeekShort"), DAYS_OF_WEEK_SHORT, ARRAY_SIZE(DAYS_OF_WEEK_SHORT))
+		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("dayOfWeek"), DAYS_OF_WEEK, ARRAY_SIZE(DAYS_OF_WEEK))
+#else
+		+ FPSTR(TimeIntervalService_ServVals);
+#endif
 	}
 
 	String getItemJson(uint8_t index){
@@ -689,19 +765,19 @@ private:
 
 		return "{\"id\":\""+String(item.id)+"\","
 					+"\"name\":\""+item.name+"\","
-					+"\"type\":\""+getTypeName(item.type)+"\","
-					+"\"typeInt\":\""+String(item.type)+"\","
-					+"\"state\":\""+getStateName(item.state)+"\","
+					//+"\"type\":\""+getTypeName(item.type)+"\","
+					+"\"type\":\""+String(item.type)+"\","
+					//+"\"state\":\""+getStateName(item.state)+"\","
 					+"\"disabled\":\""+String(item.state==INNACTIVE_INTERVAL_INDEX)+"\","
-					+"\"stateInt\":\""+String(item.state)+"\","
+					+"\"state\":\""+String(item.state)+"\","
 					+"\"startTime\":\""+String(item.startTime)+"\","
 					+"\"endTime\":\""+String(item.endTime)+"\","
 					+"\"time\":\""+String(item.time)+"\","
 					+"\"days\":\""+item.days+"\","
-					+"\"kind\":\""+item.kind+"\","
+					+"\"kind\":\""+item.kind+"\"}";/*,"
 						+"\"startDateTime\":"+timeService->getDateTimeAsJson(item.startTime)+","
 						+"\"endDateTime\":"+timeService->getDateTimeAsJson(item.endTime)
-					+"}";
+					+"}";*/
 	}
 
 

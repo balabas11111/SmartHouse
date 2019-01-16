@@ -23,7 +23,7 @@ echo ----BUILD_INFO  %BUILD_INFO%
 echo ======================================================================
 echo PROJECT_PATH=%PROJECT_PATH%
 echo BASE_WEB_PATH=%BASE_WEB_PATH%
-ause
+
 SET TEMP_FOLDER_NAME=target
 SET TEMP_FOLDER_CREATE_PATH=%PROJECT_PATH%%TEMP_FOLDER_NAME%
 SET TEMP_FOLDER=%PROJECT_PATH%%TEMP_FOLDER_NAME%\
@@ -223,8 +223,8 @@ echo ======================================================================
 echo         'Htm files
 echo ----------------------------------------------------------------------	
 for %%h in (%TEMP_FOLDER%*.htm) do (
-	echo %%~nxh
 	if "%LOCAL_TEST_MODE%" == "1" (
+		echo %%~nxh
 		%BASE_WEB_PATH%!gzip\gzip.exe %TEMP_FOLDER%%%~nxh -k
 	) ELSE ( 
 		%BASE_WEB_PATH%!gzip\gzip.exe %TEMP_FOLDER%%%~nxh

@@ -125,7 +125,7 @@ public:
 
 		delay(DISPLAY_WIFI_DELAY);
 
-		int8_t mode[4]={SYMBOL_SPACE,SYMBOL_SPACE,1,SYMBOL_P};
+		int8_t mode[4]={SYMBOL_A,SYMBOL_d,SYMBOL_d,SYMBOL_r};
 		display(mode);
 		delay(DISPLAY_WIFI_DELAY);
 

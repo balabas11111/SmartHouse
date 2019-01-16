@@ -150,9 +150,7 @@ void playPostInitSounds(){
 void postInitTimeIntervalService(){
 	uint32_t testTime=timeService.getNow()+10000;
 		timeIntervalService.add("Test interval",DAILY,testTime,testTime+50,0,"",0);
-
 		timeIntervalService.add("Monthly interval",MONTHLY,testTime+100,testTime+200,0,"",0);
-
 		timeIntervalService.add("Super interval",MULTIDAILY,testTime+1000,testTime+2000,0,"0,1,0,1,0,1,0",0);
 }
 

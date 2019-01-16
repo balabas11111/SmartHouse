@@ -38,8 +38,8 @@ function putIntervalHeaderToContainer(container,items){
 function putIntervalContentToContainer(container,interval,noId,editable){
 	var id=interval.id;
 	var name=interval.name;
-	var typeInt=interval.typeInt;
-	var stateInt=interval.stateInt;
+	var typeInt=interval.type;
+	var stateInt=interval.state;
 	var startTime=interval.startTime;
 	var endTime=interval.endTime;
 	var time=interval.time;
@@ -103,7 +103,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 		col1h.appendChild(cellDeleteButton);
 	}
 	
-	var inputId=createInputSimple('idCurrent','id','intervals','',id,false);
+	var inputId=createInputSimple(cid,'id','intervals','',id,false);
 	var cellDivId=createDivComponent('w3-cell w3-container','');
 	cellDivId.appendChild(inputId);
 	setVisible(cellDivId,false);
@@ -211,7 +211,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 		var kindSelect=document.createElement("select");
 		var kindDiv=createDivComponent('','');
 		
-		kindSelect.id='kind';
+		kindSelect.id=ckindInt;
 		kindSelect.name='kind';
 		kindSelect.setAttribute('class','w3-select intervals');
 		kindSelect.setAttribute('style','width: 80%;');
@@ -298,7 +298,7 @@ function constructIntervalsFormDataAsJson(form){
 		}
 	}
 	
-	str=str+'"days": ['+checkBoxListToString('days')+']';
+	str=str+'"days": "'+checkBoxListToString('days')+'"';
 	
 	if(str.substring(str.length - 1)==','){
 		str=str.substring(0,str.length-1);

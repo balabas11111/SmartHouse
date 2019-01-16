@@ -262,7 +262,22 @@ public:
 		}
 		Serial.println();
 	}
+
+	void printAbstractItemRequest(AbstractItemRequest req){
+		Serial.print(FPSTR("AbstractItemRequest(valid="));
+		Serial.print(req.valid);
+		Serial.print(FPSTR(", deviceId="));
+		Serial.print(req.deviceId);
+		Serial.print(FPSTR(", itemId="));
+		Serial.print(req.itemId);
+		Serial.print(FPSTR(", fieldId="));
+		Serial.print(req.fieldId);
+		Serial.print(FPSTR(", fieldVal="));
+		Serial.println(req.fieldVal);
+	}
+
 	boolean setFieldFromRequest(AbstractItemRequest req){
+		printAbstractItemRequest(req);
 
 		if(this->id!=req.deviceId || !req.valid){
 			return false;

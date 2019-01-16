@@ -42,7 +42,7 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 	var sName=createHeaderElement('H4','margin-left: 20px;',sensorName);
 	var sType=createHeaderElement('H4','margin-left: 20px;',sensorType);
 	var sSize=createHeaderElement('H4','margin-left: 20px;',sensorSize);
-	var sDescr=createInputComponent(sensorId,255,0,'id',sensorDescr,sensorName,itemName,noId,editable);
+	var sDescr=createInputComponent(sensorId,255,FIELD_DESCR_ID,'id',sensorDescr,sensorName,itemName,noId,editable);
 	
 	if(editable==undefined || !editable){
 		var cellDivButton=createDivComponent('w3-cell','');
