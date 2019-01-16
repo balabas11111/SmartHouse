@@ -1,0 +1,105 @@
+{
+	"sensors": [{
+		"id": "200",
+		"name": "bmeMeasurer",
+		"kind": "KIND_SENSOR",
+		"type": "Bme280Sensor",
+		"size": "C/%/Pa/m",
+		"descr": "Климат BME280",
+		"itemCount": "4",
+		"items": [{
+			"id": "0",
+			"name": "Temperature",
+			"type": "°C",
+			"size": "°C",
+			"descr": "Температура °C BME-280",
+			"val": "26.60",
+			"minVal": "-512.00",
+			"maxVal": "512.00",
+			"fieldId": "0",
+			"queue": ""
+		}, {
+			"id": "1",
+			"name": "Pressure",
+			"type": "Pa",
+			"size": "Паскаль",
+			"descr": "Атмосферное давление Паскаль BME-280",
+			"val": "100110.41",
+			"minVal": "-512.00",
+			"maxVal": "120000.00",
+			"fieldId": "0",
+			"queue": ""
+		}, {
+			"id": "2",
+			"name": "Humidity",
+			"type": "%",
+			"size": "%",
+			"descr": "Относительная влажность % BME-280",
+			"val": "42.34",
+			"minVal": "-512.00",
+			"maxVal": "512.00",
+			"fieldId": "0",
+			"queue": ""
+		}, {
+			"id": "3",
+			"name": "Altitude",
+			"type": "m",
+			"size": "м",
+			"descr": "Высота над уровнем моря BME-280",
+			"val": "101.62",
+			"minVal": "-512.00",
+			"maxVal": "10000.00",
+			"fieldId": "0",
+			"queue": ""
+		}]
+	}, {
+		"id": "0",
+		"name": "ds18d20Measurer",
+		"kind": "KIND_SENSOR",
+		"type": "DS18D20 Sensor",
+		"size": "C",
+		"descr": "Температура °C DS18D20",
+		"itemCount": "0",
+		"items": []
+	}, {
+		"id": "2",
+		"name": "pirDetector",
+		"kind": "KIND_SENSOR",
+		"type": "PirSensor",
+		"size": "HIGH/LOW",
+		"descr": "Датчик движения",
+		"itemCount": "1",
+		"items": [{
+			"id": "0",
+			"name": "pirDetector",
+			"type": "PirSensor",
+			"size": "HIGH/LOW",
+			"descr": "Датчик движения",
+			"val": "0.00",
+			"minVal": "-2.00",
+			"maxVal": "2.00",
+			"fieldId": "0",
+			"queue": ""
+		}]
+	}, {
+		"id": "16",
+		"name": "signalLed",
+		"kind": "KIND_PINDIGITAL",
+		"type": "PinDigital",
+		"size": "HIGH/LOW",
+		"descr": "signalLed",
+		"itemCount": "1",
+		"items": [{
+			"id": "0",
+			"name": "signalLed",
+			"type": "PinDigital",
+			"size": "HIGH/LOW",
+			"descr": "signalLed",
+			"val": "0.00",
+			"minVal": "-2.00",
+			"maxVal": "2.00",
+			"fieldId": "0",
+			"queue": ""
+		}]
+	}]
+}

@@ -1,0 +1,172 @@
+{
+	"sensors": [{
+		"id": "200",
+		"name": "bmeMeasurer",
+		"kind": "KIND_SENSOR",
+		"type": "Bme280Sensor",
+		"size": "C/%/Pa/m",
+		"descr": "Климат BME280",
+		"itemCount": "4",
+		"items": [{
+			"id": "0",
+			"name": "Temperature",
+			"type": "°C",
+			"size": "°C",
+			"descr": "Температура °C BME-280",
+			"val": "26.60",
+			"minVal": "-512.00",
+			"maxVal": "512.00",
+			"fieldId": "0",
+			"queue": ""
+		}, {
+			"id": "1",
+			"name": "Pressure",
+			"type": "Pa",
+			"size": "Паскаль",
+			"descr": "Атмосферное давление Паскаль BME-280",
+			"val": "100110.41",
+			"minVal": "-512.00",
+			"maxVal": "120000.00",
+			"fieldId": "0",
+			"queue": ""
+		}, {
+			"id": "2",
+			"name": "Humidity",
+			"type": "%",
+			"size": "%",
+			"descr": "Относительная влажность % BME-280",
+			"val": "42.34",
+			"minVal": "-512.00",
+			"maxVal": "512.00",
+			"fieldId": "0",
+			"queue": ""
+		}, {
+			"id": "3",
+			"name": "Altitude",
+			"type": "m",
+			"size": "м",
+			"descr": "Высота над уровнем моря BME-280",
+			"val": "101.62",
+			"minVal": "-512.00",
+			"maxVal": "10000.00",
+			"fieldId": "0",
+			"queue": ""
+		}]
+	}, {
+		"id": "0",
+		"name": "ds18d20Measurer",
+		"kind": "KIND_SENSOR",
+		"type": "DS18D20 Sensor",
+		"size": "C",
+		"descr": "Температура °C DS18D20",
+		"itemCount": "0",
+		"items": []
+	}, {
+		"id": "2",
+		"name": "pirDetector",
+		"kind": "KIND_SENSOR",
+		"type": "PirSensor",
+		"size": "HIGH/LOW",
+		"descr": "Датчик движения",
+		"itemCount": "1",
+		"items": [{
+			"id": "0",
+			"name": "pirDetector",
+			"type": "PirSensor",
+			"size": "HIGH/LOW",
+			"descr": "Датчик движения",
+			"val": "0.00",
+			"minVal": "-2.00",
+			"maxVal": "2.00",
+			"fieldId": "0",
+			"queue": ""
+		}]
+	}, {
+		"id": "16",
+		"name": "signalLed",
+		"kind": "KIND_PINDIGITAL",
+		"type": "PinDigital",
+		"size": "HIGH/LOW",
+		"descr": "Сигнальная лампа",
+		"itemCount": "1",
+		"items": [{
+			"id": "0",
+			"name": "signalLed",
+			"type": "PinDigital",
+			"size": "HIGH/LOW",
+			"descr": "Сигнальная лампа",
+			"val": "1.00",
+			"minVal": "-2.00",
+			"maxVal": "2.00",
+			"fieldId": "0",
+			"queue": ""
+		}]
+	}, {
+		"id": "-1",
+		"name": "NtpTimeClientService",
+		"type": "NtpTimeClientService",
+		"HAS_LOCAl_CLOCK": "0",
+		"dateTime": {
+			"unixTime": "1547685601",
+			"year": "2019",
+			"month": "1",
+			"day": "17",
+			"hour": "0",
+			"minute": "40",
+			"second": "1",
+			"dayOfTheWeek": "4",
+			"dayOfTheWeekNameShort": "Fr",
+			"dayOfTheWeekName": "Пятница"
+		}
+	}, {
+		"id": "123",
+		"name": "TimeIntervalService",
+		"type": "ScheduleService",
+		"size": "1",
+		"descr": "TimeIntervalService_DESCR",
+		"itemCount": "3",
+		"innactiveIndex": "5",
+		"multidailyIndex": "3",
+		"periodicIndex": "1",
+		"intervalType": ["Единожды", "Периодически", "Ежедневно", "По дням", "Еженедельно", "Ежемесячно", "Ежеквартально"],
+		"intervalState": ["Новый", "Ожидает", "Выполняется", "Окончен", "К удалению", "Неактивный"],
+		"dayOfWeekShort": ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
+		"dayOfWeek": ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"],
+		"intervalKindId": ["ALARM", "SOCKET_1_ON"],
+		"intervalKind": ["Будильник", "Розетка 1 - включение"],
+		"intervals": [{
+			"id": "0",
+			"name": "Test interval",
+			"type": "2",
+			"disabled": "0",
+			"state": "1",
+			"startTime": "1547694308",
+			"endTime": "1547694358",
+			"time": "0",
+			"days": "0,0,0,0,0,0,0",
+			"kind": "0"
+		}, {
+			"id": "1",
+			"name": "Monthly interval",
+			"type": "5",
+			"disabled": "0",
+			"state": "1",
+			"startTime": "1547694408",
+			"endTime": "1547694508",
+			"time": "0",
+			"days": "0,0,0,0,0,0,0",
+			"kind": "0"
+		}, {
+			"id": "2",
+			"name": "Super interval",
+			"type": "3",
+			"disabled": "0",
+			"state": "1",
+			"startTime": "1547695308",
+			"endTime": "1547696308",
+			"time": "0",
+			"days": "0,1,0,1,0,1,0",
+			"kind": "0"
+		}]
+	}]
+}

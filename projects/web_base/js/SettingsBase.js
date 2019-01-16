@@ -141,6 +141,7 @@ function openTab(tabName,headerName) {
 function updateUrlEnvironment(url){
 	if(localTest && url.substring(0,1)=='/'){
 		url=url.substring(1,url.length)+'.json';
+		url=url.replace('?', '');
 	}
 	return url;
 }

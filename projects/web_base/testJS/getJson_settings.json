@@ -1,0 +1,57 @@
+{
+	"name": "espSettingsBox",
+	"itemCount": "8",
+	"settingsKind": "simple",
+	"items": [{
+		"name": "deviceFirmWareVersion",
+		"val": "v 2.0",
+		"descr": "Версия прошивки"
+	}, {
+		"name": "DeviceId",
+		"val": "SENS_962570",
+		"descr": "ID устройства"
+	}, {
+		"name": "DeviceKind",
+		"val": "NTPclock Alarm BME-280 PIR 4D_display ThingSpeak",
+		"descr": "Тип устройства"
+	}, {
+		"name": "DeviceDescription",
+		"val": "NTP часы, будильник, Температура/Влажность, Датчик движения",
+		"descr": "Описание устройства"
+	}, {
+		"name": "DeviceLocation",
+		"val": "Размещение часов",
+		"descr": "Размещение устройства"
+	}, {
+		"name": "thSkChId",
+		"val": "612324"
+	}, {
+		"name": "currentLocalIp",
+		"val": "2013309120"
+	}, {
+		"name": "thingSpeakChannelUrl",
+		"val": "https://thingspeak.com/channels/612324/private_show"
+	}, {
+		"name": "NTP_enabled",
+		"val": "true"
+	}, {
+		"name": "NTP_poolServerName",
+		"val": "europe.pool.ntp.org"
+	}, {
+		"name": "NTP_timeOffset",
+		"val": "7200"
+	}, {
+		"name": "NTP_updateInterval",
+		"val": "120"
+	}, {
+		"name": "NTP_timeTriggerInterval",
+		"val": "1000"
+	}, {
+		"name": "extraBoxesCount",
+		"val": "1"
+	}],
+	"DeviceId": "SENS_962570",
+	"DeviceDescription": "NTP часы, будильник, Температура/Влажность, Датчик движения",
+	"DeviceLocation": "Размещение часов",
+	"thingSpeakChannelUrl": "https://thingspeak.com/channels/612324/private_show"
+}

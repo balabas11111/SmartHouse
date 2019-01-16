@@ -242,7 +242,8 @@ public:
 			items[id].days=type==MULTIDAILY?days:"0,0,0,0,0,0,0";
 			items[id].kind=kind;
 
-			Serial.println(getItemJson(id));
+			//Serial.println(getItemJson(id));
+			Serial.println(FPSTR("Interval saved"));
 		}
 
 		return noerror;

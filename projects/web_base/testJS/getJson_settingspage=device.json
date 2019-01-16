@@ -1,0 +1,45 @@
+{
+	"name": "espSettingsBox",
+	"itemCount": "17",
+	"settingsKind": "device",
+	"items": [{
+		"name": "deviceFirmWareVersion",
+		"val": "v 2.0"
+	}, {
+		"name": "DeviceId",
+		"val": "SENS_962570"
+	}, {
+		"name": "DeviceKind",
+		"val": "NTPclock Alarm BME-280 PIR 4D_display ThingSpeak"
+	}, {
+		"name": "DeviceDescription",
+		"val": "NTP часы, будильник, Температура/Влажность, Датчик движения"
+	}, {
+		"name": "DeviceLocation",
+		"val": "Размещение часов"
+	}, {
+		"name": "displayAlvaysOn",
+		"val": "0"
+	}, {
+		"name": "displayAutochange",
+		"val": "15"
+	}, {
+		"name": "refreshInterval",
+		"val": "60"
+	}, {
+		"name": "accessUser",
+		"val": ""
+	}, {
+		"name": "accessPass",
+		"val": "*****"
+	}, {
+		"name": "settingsUser",
+		"val": "balabas"
+	}, {
+		"name": "settingsPass",
+		"val": "*****"
+	}, {
+		"name": "extraBoxesCount",
+		"val": "1"
+	}]
+}
