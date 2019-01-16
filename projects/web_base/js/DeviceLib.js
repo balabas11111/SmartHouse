@@ -1,4 +1,11 @@
+/*-----Locale constants---*/
+const LBL_MSG_LOC_DEVICE_SMART_HOUSE='Устройство !!!SmartHouse - ';
+const LBL_MSG_LOC_SAVING_DATA='Сохраняю данные...';
+const LBL_MSG_LOC_DATA_SAVED='Данные сохранены!';
+const LBL_MSG_LOC_SERVER_SIDE_ERROR='Ошибка на стороне сервера!';
+const LBL_MSG_LOC_VALIDATION_ERROR='Ошибка валидации:';
 
+/*-----serv constants---*/
 const MSG_SUFFIX="msg";
 const FORM_SUFFIX="form";
 const VAL_SUFFIX="";
@@ -240,6 +247,30 @@ function arrayToCheckBoxList(component,namePreffix,valArray,nameArray,clazz,styl
 	}
 }
 
+function checkBoxListToString(componentId){
+	var component=getComponentById(componentId);
+	var result = '';	
+	
+	var inputs=getComponentChildrenByTag(component,'input');
+	
+	 for (var i = 0; i < inputs.length; ++i) {
+		 if(inputs[i]!=undefined && inputs[i].type=='checkbox'){
+			 var val=getComponentValue(inputs[i]);
+			 
+			 if(val=='1' || val=='0'){
+				 result+=val;
+				 result+=',';
+			 }
+		 }
+	 }
+	 
+	if(result.substring(result.length - 1)==','){
+		 result=result.substring(0,result.length-1);
+	}
+	 
+	 return result;
+}
+
 function checkBoxListToArray(component){
 	var result = [];	
 	
@@ -247,11 +278,13 @@ function checkBoxListToArray(component){
 	var j=0;
 	
 	 for (var i = 0; i < inputs.length; ++i) {
-		 var val=getComponentValue(inputs[i]);
-		 
-		 if(val=='1' || val=='0'){
-			 result[j]=val;
-			 j++;
+		 if(inputs[i]!=undefined && inputs[i].type=='checkbox'){
+			 var val=getComponentValue(inputs[i]);
+			 
+			 if(val=='1' || val=='0'){
+				 result[j]=val;
+				 j++;
+			 }
 		 }
 	 }
 	 
@@ -476,7 +509,7 @@ function processSettingsJson(data){
 	var devLocation=data.DeviceLocation;
 	
 	if(devId!=undefined && devId!='' && devLocation!=undefined && devLocation!=''){
-		pageHeader='Устройство !!!SmartHouse - '+devId+' '+devLocation;
+		pageHeader=LBL_MSG_LOC_DEVICE_SMART_HOUSE+devId+' '+devLocation;
 		document.title=pageHeader;
 	}
 }
@@ -599,7 +632,6 @@ function updateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, tim
 			};
 		};
 	request.send(formData);
-	/*request.send(null);*/	
 };
 
 function addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout, errorTimeOut, reloadTime){
@@ -609,8 +641,6 @@ function addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val
 };
 /*-------------------------------form submission---------------------*/
 function postForm(form,url,validateFormFunction,constructFormDataFunction,resultProcessHandler,msgComp){
-	console.log('submitting form');
-	
 	var errorMessage='';
 	var isValidForm=true;
 	
@@ -627,28 +657,28 @@ function postForm(form,url,validateFormFunction,constructFormDataFunction,result
 		
 		var formData = constructFormDataFunction(form);
 		
-		showMessage(msgComp,'Сохраняю данные...','w3-yellow');
+		showMessage(msgComp,LBL_MSG_LOC_SAVING_DATA,'w3-yellow');
 		
 		var request = new XMLHttpRequest();
 		request.open("POST", url, true);
 		request.onreadystatechange  = 
 			function(){
 				if(this.readyState == 4){
-					if (this.status == 200){
+					if (isHttpStatusOk(this.status)){
 						
 						var json = JSON.parse(this.responseText);
 						resultProcessHandler(json);
 						
-						showMessage(msgComp,'Данные сохранены!','w3-green');
+						showMessage(msgComp,LBL_MSG_LOC_DATA_SAVED,'w3-green');
 						
 					} else {
-						showMessage(msgComp,'Ошибка на стороне сервера!','w3-red');
+						showMessage(msgComp,LBL_MSG_LOC_SERVER_SIDE_ERROR,'w3-red');
 					};
 				};
 			};
 		request.send(formData);
 	}else{
-		errorMessage='<strong>Ошибка валидации:</strong>  <br><br>'+errorMessage;
+		errorMessage='<strong>'+LBL_MSG_LOC_VALIDATION_ERROR+'</strong>  <br><br>'+errorMessage;
 		showMessage(msgComp,errorMessage,'w3-red');
 	}
 }
@@ -713,20 +743,26 @@ function constructFormDataDefault(form){
 
 function constructFormDataAsJson(form){
 	
+	const TARGET_SUF='_target';
+	const FORM_ID='form_id';
+	const FORM_REMOTE_TARGET='form_remote_target';
+	const FORM_VAL_JSON='form_val_json';
+	
+	var formData = new FormData();
+	
 	var formInputs = getComponentChildrenByTag(form,'input');
 	var str='{';
 	var pageName='';
 	
 	for(var i=0;i<formInputs.length;i++){
 		var child=formInputs[i];
-		if(child!=undefined && child.tagName!=undefined && child.type!=undefined){
-			
-			if(child.name!=undefined && child.id!=undefined){
+		if(child!=undefined && child.tagName!=undefined && child.type!=undefined
+				&& child.name!=undefined && child.id!=undefined){
+
 				inputName=child.name;
 				inputValue=getComponentValue(child);
 				
-				str=str+'"'+child.name+'": "'+getComponentValue(child)+'",';
-			}
+				str=str+'"'+inputName+'": "'+inputValue+'",';
 		}
 	}
 	
@@ -736,9 +772,11 @@ function constructFormDataAsJson(form){
 	
 	str+='}';
 	
-	var formData = new FormData();
-	formData.append('form_id',form.id);
-	formData.append('form_val_json',str);	
+	var target=getComponentValueById(form.id+FORM_REMOTE_TARGET);
+	
+	formData.append(FORM_ID,form.id);
+	formData.append(FORM_REMOTE_TARGET,TARGET_SUF);
+	formData.append(FORM_VAL_JSON,str);	
 	
 	return formData;
 }

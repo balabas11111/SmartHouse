@@ -590,6 +590,7 @@ const PROGMEM char MESSAGE_SERVER_ARG_PAGE[]="page";
 const PROGMEM char MESSAGE_SERVER_ARG_SENSOR[]="sensor";
 const PROGMEM char MESSAGE_SERVER_ARG_VAL[]="val";
 const PROGMEM char MESSAGE_SERVER_ARG_FORM_ID[]="form_id";
+const PROGMEM char MESSAGE_SERVER_ARG_FORM_REMOTE_TARGET[]="form_remote_target";
 const PROGMEM char MESSAGE_SERVER_ARG_FORM_VAL_JSON[]="form_val_json";
 const PROGMEM char MESSAGE_SERVER_ARG_CURRENT_SENSOR_NAME[]="currentSensor_name";
 

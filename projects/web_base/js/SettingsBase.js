@@ -16,6 +16,7 @@ var currentHeaderName='';
 
 var currentMessageComp=undefined;
 var currentForm=undefined;
+var currentFormList=undefined;
 
 var getValuesHandler=undefined;
 var validateValuesHandler=undefined;
@@ -57,7 +58,8 @@ function openTab(tabName,headerName) {
 	var containerComponent=document.getElementById(tabName);
 	
 	currentMessageComp=getComponentById(getComponentIdWithSuffix(tabName,MSG_SUFFIX));
-	currentForm=getComponentById(getComponentIdWithSuffix(tabName,FORM_SUFFIX));
+	
+	var currentFormId=getComponentIdWithSuffix(tabName,FORM_SUFFIX);
 	
 	document.title='Настройки устройства - '+currentHeaderName;
 	
@@ -91,6 +93,7 @@ function openTab(tabName,headerName) {
 			validateValuesHandler=validateCurrentSensorForm;
 			submitValuesUrl='/submitForm_'+'sensors';
 			getValuesUrl='/getJson_'+'sensors';
+			currentFormId=getComponentIdWithSuffix(currentItemPreffix,FORM_SUFFIX);
 		}
 		
 		if(tabName=='intervals'){
@@ -102,6 +105,7 @@ function openTab(tabName,headerName) {
 			validateValuesHandler=validateCurrentIntervalForm;
 			submitValuesUrl='/submitForm_'+'intervals';
 			getValuesUrl='/getJson_'+'intervals';
+			currentFormId=getComponentIdWithSuffix(currentItemPreffix,FORM_SUFFIX);
 		}
 		
 		if(tabName=='publish'){
@@ -110,22 +114,35 @@ function openTab(tabName,headerName) {
 			submitValuesUrl='/submitForm_'+'settings';
 			getValuesUrl='/getJson_'+'settings?page='+tabName;
 		}
+		
+		currentFormList=getComponentById(getComponentIdWithSuffix(tabName,FORM_SUFFIX));
+		currentForm=getComponentById(currentFormId);
 
 		if(getValuesHandler!=undefined){
+			currentFormList.addEventListener('submit', 
+									function(evt){
+										evt.preventDefault();
+									},false);
 			currentForm.addEventListener('submit', 
 								function(evt){
 									evt.preventDefault();
 								},false);
 			
-		if(localTest && getValuesUrl.substring(0,1)=='/'){
-			getValuesUrl=getValuesUrl.substring(1,getValuesUrl.length)+'.json';
-		}
+			getValuesUrl=updateUrlEnvironment(getValuesUrl);
+			submitValuesUrl=updateUrlEnvironment(submitValuesUrl);
 			
 			updateComponentsByAjaxCall('GET', getValuesUrl, getValuesHandler,"",undefined, 0,2000);
 		}else{
 			alert('Error on page!');
 		}
 	}
+}
+
+function updateUrlEnvironment(url){
+	if(localTest && url.substring(0,1)=='/'){
+		url=url.substring(1,url.length)+'.json';
+	}
+	return url;
 }
 
 /*---------------------------------device settings tab----------------------*/
@@ -296,7 +313,7 @@ function closePopup(modalName,messageComponentName){
 }
 
 function processItemsJsonGet(data){
-	var container=currentForm;
+	var container=currentFormList;
 
 	container.innerHTML='';
 	var items=data[itemsTagName];

@@ -6,6 +6,7 @@ var intervalType=[];
 var intervalState=[];
 var dayOfWeekShort=[];
 var dayOfWeek=[];
+var intervalKind=[];
 
 function processIntervalsJsonGet(data){
 	fillParameters(data);
@@ -13,25 +14,21 @@ function processIntervalsJsonGet(data){
 }
 
 function fillParameters(data){
-	if(intervalType.length==0){
-		var arr=data.intervalType;
-		for(var i=0;i<arr.length;i++){intervalType[i]=arr[i];}
-	}
-	if(intervalState.length==0){
-		var arr=data.intervalState;
-		for(var i=0;i<arr.length;i++){intervalState[i]=arr[i];}
-	}
-	if(dayOfWeekShort.length==0){
-		var arr=data.dayOfWeekShort;
-		for(var i=0;i<arr.length;i++){dayOfWeekShort[i]=arr[i];}
-	}
-	if(dayOfWeek.length==0){
-		var arr=data.dayOfWeek;
-		for(var i=0;i<arr.length;i++){dayOfWeek[i]=arr[i];}
-	}
+	fillParameterArray(intervalType,data.intervalType);
+	fillParameterArray(intervalState,data.intervalState);
+	fillParameterArray(dayOfWeekShort,data.dayOfWeekShort);
+	fillParameterArray(dayOfWeek,data.dayOfWeek);
+	fillParameterArray(intervalKind,data.intervalKind);
+	
 	multidailyIndex=data.multidailyIndex;
 	periodicIndex=data.periodicIndex;
 	innactiveIndex=data.innactiveIndex;
+}
+
+function fillParameterArray(targetArray,jsonArray){
+	if(targetArray.length==0){
+		for(var i=0;i<jsonArray.length;i++){targetArray[i]=jsonArray[i];}
+	}
 }
 
 function putIntervalHeaderToContainer(container,items){
@@ -47,7 +44,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	var endTime=interval.endTime;
 	var time=interval.time;
 	var days=interval.days.split(',');
-	var param=interval.param;
+	var kindInt=interval.kind;
 	
 	var hr = document.createElement('hr');
 	container.appendChild(hr);
@@ -91,7 +88,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	var cendTime='endTime'+suf;
 	var ctime='time'+suf;
 	var cdays='days'+suf;
-	var cparam='param'+suf;
+	var ckindInt='kind'+suf;
 	
 	if(editable==undefined || !editable){
 		var cellEditButton=createDivComponent('w3-cell','');
@@ -106,13 +103,13 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 		col1h.appendChild(cellDeleteButton);
 	}
 	
-	var inputId=createInputSimple(cid,'id',undefined,'',id,false);
+	var inputId=createInputSimple('idCurrent','id','intervals','',id,false);
 	var cellDivId=createDivComponent('w3-cell w3-container','');
 	cellDivId.appendChild(inputId);
 	setVisible(cellDivId,false);
 
 	var lblName=createLabelSimple('lbl'+cname,cname,undefined,undefined,'Название');
-	var inputName=createInputSimple(cname,'name',undefined,'width: 80%;',name,editable);
+	var inputName=createInputSimple(cname,'name','intervals','width: 80%;',name,editable);
 	var cellDivName=createDivComponent('','');
 	cellDivName.appendChild(lblName);
 	cellDivName.appendChild(inputName);
@@ -121,14 +118,14 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	col1h.appendChild(cellDivName);
 	/* column 2*/
 	
-	var lblType=createLabelSimple('lbl'+ctypeInt,ctypeInt,undefined,undefined,'Тип интервала');
+	var lblType=createLabelSimple('lbl'+ctypeInt,ctypeInt,undefined,undefined,'Периодичность');
 	var typeSelect=document.createElement("select");
 	var cellDivType=createDivComponent('','');
 	
 	typeSelect.id=ctypeInt;
-	typeSelect.name='typeInt';
+	typeSelect.name='type';
 	typeSelect.setAttribute('onChange',"handlePeriodTypeChange(this.selectedIndex);");
-	typeSelect.setAttribute('class','w3-select');
+	typeSelect.setAttribute('class','w3-select intervals');
 	typeSelect.setAttribute('style','width: 80%;');
 	
 	if(editable==undefined || !editable){typeSelect.setAttribute("disabled","disabled");}
@@ -142,8 +139,8 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	var cellDivState=createDivComponent('','');
 	
 	stateSelect.id=cstateInt;
-	stateSelect.name='stateInt';
-	stateSelect.setAttribute('class','w3-select');
+	stateSelect.name='state';
+	stateSelect.setAttribute('class','w3-select intervals');
 	stateSelect.setAttribute('style','width: 80%;');
 	
 	if(editable==undefined || !editable){stateSelect.setAttribute("disabled","disabled");}
@@ -157,7 +154,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	
 	/* column 3*/
 	var lblStartTime=createLabelSimple('lbl'+cstartTime,cstartTime,undefined,undefined,'Старт');
-	var inputStartTime=createInputSimple(cstartTime,'startTime',undefined,'width: 90%;','',editable);
+	var inputStartTime=createInputSimple(cstartTime,'startTime','intervals','width: 90%;','',editable);
 	var cellDivStartTime=createDivComponent('','');
 	
 	inputStartTime.setAttribute('type','datetime-local');
@@ -167,7 +164,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	cellDivStartTime.appendChild(inputStartTime);
 	/*--*/
 	var lblEndTime=createLabelSimple('lbl'+cendTime,cendTime,undefined,undefined,'Стоп ');
-	var inputEndTime=createInputSimple(cendTime,'endTime',undefined,'width: 90%;','',editable);
+	var inputEndTime=createInputSimple(cendTime,'endTime','intervals','width: 90%;','',editable);
 	var cellDivendTime=createDivComponent('','');
 	
 	inputEndTime.setAttribute('type','datetime-local');
@@ -180,16 +177,26 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	col3h.appendChild(cellDivendTime);
 	
 	/* column 4*/
+		
 		var lblDays=createLabelSimple('lbl'+cdays,undefined,undefined,undefined,'Дни выполнения');
 		var daysDiv=createDivComponent('','');
-		daysDiv.id=cdays+'Div';
-		daysDiv.name='days';
+		var daysDivChkBox=createDivComponent('','');
+		if(editable==undefined || !editable){
+			daysDivChkBox.id=cdays;
+		}
+		else{
+			daysDivChkBox.id='days';
+		}
 		
+		daysDiv.id=cdays+'Div';
+		daysDiv.name=cdays+'Div';
+		
+		arrayToCheckBoxList(daysDivChkBox,cdays,days,dayOfWeekShort);
 		daysDiv.appendChild(lblDays);
-		arrayToCheckBoxList(daysDiv,cdays,days,dayOfWeekShort);
+		daysDiv.appendChild(daysDivChkBox);
 		/*--*/
 		var lblTime=createLabelSimple('lbl'+ctime,ctime,undefined,undefined,'Период (сек) ');
-		var inputTime=createInputSimple(ctime,'time',undefined,'width: 50%;',time,editable);
+		var inputTime=createInputSimple(ctime,'time','intervals','width: 50%;',time,editable);
 		var timeDiv=createDivComponent('','');
 		timeDiv.id=ctime+'Div';
 		
@@ -200,20 +207,26 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 		timeDiv.appendChild(lblTime);
 		timeDiv.appendChild(inputTime);
 		/*--*/
-		var lblParam=createLabelSimple('lbl'+cparam,cparam,undefined,undefined,'Параметр');
-		var inputParam=createInputSimple(cparam,'param',undefined,'width: 60%;',param,editable);
-		var paramDiv=createDivComponent('','');
+		var lblKind=createLabelSimple('lbl'+ckindInt,ckindInt,undefined,undefined,'Тип');
+		var kindSelect=document.createElement("select");
+		var kindDiv=createDivComponent('','');
 		
-		paramDiv.id=cparam+'Div';
+		kindSelect.id='kind';
+		kindSelect.name='kind';
+		kindSelect.setAttribute('class','w3-select intervals');
+		kindSelect.setAttribute('style','width: 80%;');
 		
-		paramDiv.appendChild(lblParam);
-		paramDiv.appendChild(inputParam);
+		if(editable==undefined || !editable){kindSelect.setAttribute("disabled","disabled");}
+		putItemsToComboCox(kindSelect,intervalKind,kindInt);
+		
+		kindDiv.appendChild(lblKind);
+		kindDiv.appendChild(kindSelect);
 		/*--*/
-		applyIntervalTypeValueToComp(daysDiv,timeDiv,paramDiv,typeInt);
+		applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,typeInt);
 		
 	col4h.appendChild(daysDiv);
 	col4h.appendChild(timeDiv);
-	col4h.appendChild(paramDiv);
+	col4h.appendChild(kindDiv);
 					
 	divhv.appendChild(col1h);
 	divhv.appendChild(col2h);
@@ -233,20 +246,74 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 function handlePeriodTypeChange(selectedIndex){
 	var daysDiv=getComponentById('daysDiv');
 	var timeDiv=getComponentById('timeDiv');
-	var paramDiv=getComponentById('paramDiv');
+	var kindDiv=getComponentById('kindDiv');
 	
-	applyIntervalTypeValueToComp(daysDiv,timeDiv,paramDiv,selectedIndex)
+	applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,selectedIndex)
 }
 
 /*show or hide days interval component based on type*/
-function applyIntervalTypeValueToComp(daysDiv,timeDiv,paramDiv,typeInt){
+function applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,typeInt){
 	var isMultidaily=(typeInt==multidailyIndex);
 	var isPeriodic=(typeInt==periodicIndex);
-	var isParam=true;
+	var isKindVis=true;
 	
 	setVisible(daysDiv,isMultidaily);
 	setVisible(timeDiv,isPeriodic);
-	setVisible(paramDiv,isParam);
+	setVisible(kindDiv,isKindVis);
+}
+
+function submitIntervalsFormAsJsonReloadCurrTab(){
+	showMessage(currentMessageComp,'Сохраняю настройки ...','w3-yellow');
+	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructIntervalsFormDataAsJson,getCurrentItemHandler,currentMessageComp);
+}
+
+function constructIntervalsFormDataAsJson(form){
+	
+	const TARGET_SUF='_target';
+	const FORM_ID='form_id';
+	const FORM_REMOTE_TARGET='form_remote_target';
+	const FORM_VAL_JSON='form_val_json';
+	
+	var formData = new FormData();
+	
+	var formInputs = getComponentChildrenByClass(form,'intervals');
+	
+	var str='{';
+	var pageName='';
+	
+	var days={};
+	
+	for(var i=0;i<formInputs.length;i++){
+		var child=formInputs[i];
+		if(child!=undefined && child.tagName!=undefined && child.type!=undefined
+				&& child.name!=undefined && child.id!=undefined){
+
+				if(child.name.substring(0,8)!='cb_days_'){
+				
+					inputName=child.name;
+					inputValue=getComponentValue(child);
+				
+					str=str+'"'+inputName+'": "'+inputValue+'",';
+				}
+		}
+	}
+	
+	str=str+'"days": ['+checkBoxListToString('days')+']';
+	
+	if(str.substring(str.length - 1)==','){
+		str=str.substring(0,str.length-1);
+	}
+	
+	str+='}';
+	
+	var targetId=form.getAttribute('id')+TARGET_SUF;
+	var target=getComponentValueById(targetId);
+	
+	formData.append(FORM_ID,form.id);
+	formData.append(FORM_REMOTE_TARGET,target);
+	formData.append(FORM_VAL_JSON,str);	
+	
+	return formData;
 }
 
 function validateCurrentIntervalForm(){

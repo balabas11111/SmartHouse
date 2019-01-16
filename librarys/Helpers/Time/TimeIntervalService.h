@@ -34,13 +34,24 @@ const char* const IntervalType_Names[] PROGMEM={
 };
 */
 #ifndef CUSTOM_TIME_SERVICE_PARAMS
+
 	#define ALARM_SIZE 10
 
 	#define INNACTIVE_INTERVAL_INDEX 5
 	#define MULTIDAILY_INTERVAL_INDEX 3
 	#define PERIODIC_INTERVAL_INDEX 1
 
-	const char TimeIntervalService_ServVals[] PROGMEM = ",\"innactiveIndex\":\"5\",\"multidailyIndex\":\"3\",\"periodicIndex\":\"1\"";
+	#define TIME_SERV_SERV_VALS 1
+
+const char TimeIntervalService_ServVals[] PROGMEM="\
+,\"innactiveIndex\":\"5\",\"multidailyIndex\":\"3\",\"periodicIndex\":\"1\"\
+,\"intervalType\":[\"Единожды\", \"Периодически\", \"Ежедневно\", \"По дням\", \"Еженедельно\", \"Ежемесячно\", \"Ежеквартально\"]\
+,\"intervalState\":[\"Новый\", \"Ожидает\", \"Выполняется\", \"Окончен\", \"К удалению\", \"Неактивный\"]\
+,\"dayOfWeekShort\":[\"Mo\",\"Tu\",\"We\",\"Th\",\"Fr\",\"Sa\",\"Su\"]\
+,\"dayOfWeek\":[\"Понедельник\",\"Вторник\",\"Среда\",\"Четверг\",\"Пятница\",\"Суббота\",\"Воскресенье\"]\
+,\"intervalKindId\":[\"ALARM\", \"SOCKET_1_ON\"]\
+,\"intervalKind\":[\"Будильник\", \"Розетка 1 - включение\"]";
+
 #endif
 
 const char* const IntervalState_Names[] PROGMEM={
@@ -79,14 +90,12 @@ typedef struct timeIntervalDetail{
   uint32_t time;
   uint8_t state;
   String days;
-  String param;
+  uint8_t kind;
 }TimeIntervalDetail;
 
 const char* const SERVER_ARG_TIME_INTERVAL_SERVICE[] PROGMEM={
-		"id", "name", "type", "startTime", "endTime", "time" "state", "days", "param"
+		"id", "name", "type", "startTime", "endTime", "time" "state", "days", "kind"
 };
-
-const PROGMEM char SERVER_ARG_TIME_INTERVAL_CURRENT_INTERVAL_FORM[]    = "currentInterval_form";
 
 const PROGMEM char MESSAGE_ERROR_TIME_INTERVAL_SERVICE_UPDATE[]        = "Error update time Interval";
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_OK[]                   = "{\"status\":\"Ok\",\"message\":\"Ok\"}";
@@ -100,7 +109,7 @@ const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_startTime[] = "startTime";
 const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_endTime[]   = "endTime";
 const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_state[]     = "state";
 const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_days[]      = "days";
-const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_param[]     = "param";
+const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_kind[]     = "kind";
 */
 
 class TimeIntervalService: public Initializable, public Loopable, public JSONprovider {
@@ -171,16 +180,19 @@ public:
 	}
 
 	virtual String getName(){
-		return FPSTR("TimeIntervalService");
+		return FPSTR(TimeIntervalService_NAME);
 	}
 
 	virtual String getJson(){
 		String result="{"+getItemJson()
-		+ FPSTR(TimeIntervalService_ServVals)
+#ifndef TIME_SERV_SERV_VALS
 		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("intervalType"), IntervalType_Names, ARRAY_SIZE(IntervalType_Names))
 		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("intervalState"), IntervalState_Names, ARRAY_SIZE(IntervalState_Names))
 		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("dayOfWeekShort"), DAYS_OF_WEEK_SHORT, ARRAY_SIZE(DAYS_OF_WEEK_SHORT))
 		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("dayOfWeek"), DAYS_OF_WEEK, ARRAY_SIZE(DAYS_OF_WEEK))
+#else
+		+ FPSTR(TimeIntervalService_ServVals)
+#endif
 		+ ",\"intervals\":[";
 
 			for(uint8_t i=0;i<itemCount;i++){
@@ -195,16 +207,16 @@ public:
 		return result;
 	}
 
-	virtual void add(String name,IntervalType type,uint32_t start,uint32_t end,uint16_t time,String days,String param){
+	virtual void add(String name,IntervalType type,uint32_t start,uint32_t end,uint16_t time,String days,uint8_t kind){
 		if(fixedItemlength!=0 && itemCount==fixedItemlength){
 			return;
 		}
-		updateInterval(itemCount,name,type,start,end,time,WAIT,days,param);
+		updateInterval(itemCount,name,type,start,end,time,WAIT,days,kind);
 		itemCount++;
 		saveToFile();
 	}
 
-	virtual boolean updateInterval(uint8_t ind,String name,uint8_t type,uint32_t start,uint32_t end,uint16_t time,uint8_t state,String days,String param){
+	virtual boolean updateInterval(uint8_t ind,String name,uint8_t type,uint32_t start,uint32_t end,uint16_t time,uint8_t state,String days,uint8_t kind){
 		if(ind==-1){
 			Serial.println(FPSTR("new Interval add"));
 			ind=itemCount;
@@ -224,7 +236,7 @@ public:
 		items[ind].time=type==PERIODIC?time:0;
 		items[ind].state=state;
 		items[ind].days=type==MULTIDAILY?days:"0,0,0,0,0,0,0";
-		items[ind].param=param.length()!=0?param:"-1";
+		items[ind].kind=kind;
 
 		Serial.println(getItemJson(ind));
 
@@ -251,9 +263,9 @@ public:
 				uint32_t time=root["time"];
 				uint8_t state=root["state"];
 				String days=root["days"].as<char*>();
-				String param=root["param"].as<char*>();
+				uint8_t kind=root["kind"];
 
-				ok=updateInterval(id,name,type,startTime,endTime,time,state,days,param);
+				ok=updateInterval(id,name,type,startTime,endTime,time,state,days,kind);
 
 				if(!ok){
 					statusText=FPSTR(STATUS_UPDATE_ERROR);
@@ -305,7 +317,7 @@ public:
 	}
 
 	String setHttpParams(String* args){
-		boolean saveResult=updateInterval(args[0].toInt(),args[1],args[2].toInt(),args[3].toInt(),args[4].toInt(),args[5].toInt(),args[6].toInt(),args[7],args[8]);
+		boolean saveResult=updateInterval(args[0].toInt(),args[1],args[2].toInt(),args[3].toInt(),args[4].toInt(),args[5].toInt(),args[6].toInt(),args[7],args[8].toInt());
 
 		return saveResult?
 				FPSTR(MESSAGE_TIME_INTERVAL_STATUS_OK)
@@ -360,7 +372,7 @@ protected:
 					items[i].endTime=root["items"][i]["endTime"];
 					items[i].time=root["items"][i]["time"];
 					items[i].days=root["items"][i]["days"].as<char*>();
-					items[i].param=root["items"][i]["param"].as<char*>();
+					items[i].kind=root["items"][i]["kind"];
 				}
 				Serial.println(getItemJson(i));
 			}
@@ -686,7 +698,7 @@ private:
 					+"\"endTime\":\""+String(item.endTime)+"\","
 					+"\"time\":\""+String(item.time)+"\","
 					+"\"days\":\""+item.days+"\","
-					+"\"param\":\""+item.param+"\","
+					+"\"kind\":\""+item.kind+"\","
 						+"\"startDateTime\":"+timeService->getDateTimeAsJson(item.startTime)+","
 						+"\"endDateTime\":"+timeService->getDateTimeAsJson(item.endTime)
 					+"}";
