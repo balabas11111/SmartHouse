@@ -270,8 +270,10 @@ String DeviceHelper::getJsonAbstractItems(AbstractItem** sensors, uint8_t size) 
 }
 
 void DeviceHelper::createPostponedCommand(String command) {
+	prepareTrigger();
 	postponedCommand=command;
 	postPonedTrigger->start();
+	Serial.println(FPSTR("post poned restart trigger started"));
 }
 
 void DeviceHelper::prepareTrigger() {
