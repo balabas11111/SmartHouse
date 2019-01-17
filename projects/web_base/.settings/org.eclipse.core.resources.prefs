@@ -18,13 +18,13 @@ encoding//html_components/sensors_indexPage/BME280_BH1750.html=UTF-8
 encoding//html_components/sensors_indexPage/DS18D20.html=UTF-8
 encoding//html_components/sensors_indexPage/acMeter.html=UTF-8
 encoding//html_components/sensors_indexPage/pirDetector.html=UTF-8
-encoding//testJS/getJson_intervals.json=UTF-8
-encoding//testJS/getJson_providers.json=UTF-8
 encoding//testJS/getJson_sensors.json=UTF-8
 encoding//testJS/getJson_settings.json=UTF-8
 encoding//testJS/getJson_settingspage\=device.json=UTF-8
 encoding//testJS/getJson_settingspage\=net.json=UTF-8
 encoding//testJS/getJson_settingspage\=publish.json=UTF-8
-encoding//testJS/submitForm_intervals.json=UTF-8
+encoding//testJS/getJsonname\=TimeIntervalService.json=UTF-8
+encoding//testJS/getJsonname\=all.json=UTF-8
+encoding//testJS/processJsonname\=TimeIntervalService.json=UTF-8
 encoding//testJS/submitForm_sensors.json=UTF-8
 encoding/testJS=UTF-8

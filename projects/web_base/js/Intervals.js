@@ -110,6 +110,9 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 
 	var lblName=createLabelSimple('lbl'+cname,cname,undefined,undefined,'Название');
 	var inputName=createInputSimple(cname,'name','intervals','width: 80%;',name,editable);
+	inputName.setAttribute('type','text');
+	inputName.setAttribute('required','1');
+	
 	var cellDivName=createDivComponent('','');
 	cellDivName.appendChild(lblName);
 	cellDivName.appendChild(inputName);
@@ -158,7 +161,9 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	var cellDivStartTime=createDivComponent('','');
 	
 	inputStartTime.setAttribute('type','datetime-local');
+	inputStartTime.setAttribute('required','1');
 	setComponentValue(inputStartTime,startTime);
+	
 	
 	cellDivStartTime.appendChild(lblStartTime);
 	cellDivStartTime.appendChild(inputStartTime);
@@ -168,6 +173,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	var cellDivendTime=createDivComponent('','');
 	
 	inputEndTime.setAttribute('type','datetime-local');
+	inputStartTime.setAttribute('required','1');
 	setComponentValue(inputEndTime,endTime);
 	
 	cellDivendTime.appendChild(lblEndTime);
@@ -201,8 +207,6 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 		timeDiv.id=ctime+'Div';
 		
 		inputTime.setAttribute('type','number');
-		inputTime.setAttribute('min','60');
-		inputTime.setAttribute('step','5');
 		
 		timeDiv.appendChild(lblTime);
 		timeDiv.appendChild(inputTime);
@@ -223,6 +227,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 		kindDiv.appendChild(kindSelect);
 		/*--*/
 		applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,typeInt);
+		applyTimeComponentValidators(inputTime,(typeInt==periodicIndex));
 		
 	col4h.appendChild(daysDiv);
 	col4h.appendChild(timeDiv);
@@ -260,6 +265,22 @@ function applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,typeInt){
 	setVisible(daysDiv,isMultidaily);
 	setVisible(timeDiv,isPeriodic);
 	setVisible(kindDiv,isKindVis);
+	
+	markFormAsValid(currentForm,currentMessageComp,true);
+	
+	applyTimeComponentValidators(getComponentById('time'),isPeriodic);
+}
+
+function applyTimeComponentValidators(inputTime,isPeriodic){
+	if(inputTime!=undefined){
+		if(isPeriodic){
+			inputTime.setAttribute('min','60');
+			inputTime.setAttribute('step','5');
+		}else{
+			inputTime.removeAttribute('min');
+			inputTime.removeAttribute('step');
+		}
+	}
 }
 
 function submitIntervalsFormAsJsonReloadCurrTab(){
@@ -268,13 +289,6 @@ function submitIntervalsFormAsJsonReloadCurrTab(){
 }
 
 function constructIntervalsFormDataAsJson(form){
-	
-	const TARGET_SUF='_target';
-	const FORM_ID='form_id';
-	const FORM_REMOTE_TARGET='form_remote_target';
-	const FORM_VAL_JSON='form_val_json';
-	
-	var formData = new FormData();
 	
 	var formInputs = getComponentChildrenByClass(form,'intervals');
 	
@@ -306,19 +320,37 @@ function constructIntervalsFormDataAsJson(form){
 	
 	str+='}';
 	
-	var targetId=form.getAttribute('id')+TARGET_SUF;
+	var targetId=form.getAttribute('id')+'_target';
 	var target=getComponentValueById(targetId);
 	
-	formData.append(FORM_ID,form.id);
-	formData.append(FORM_REMOTE_TARGET,target);
-	formData.append(FORM_VAL_JSON,str);	
-	
-	return formData;
+	return constructFormData_JSONprocessor(target,str);
 }
 
 function validateCurrentIntervalForm(){
-	var errorMessage='';
+	markFormAsValid(currentForm,currentMessageComp,true);
+	markComponentValidityById('days',true);
+	
+	var errorMessage=validateFormFunctionDefault(currentForm);
+	var typeInt=getComponentById('typeInt').selectedIndex;
+	
+	var startTime=getComponentValueById('startTime');
+	var endTime=getComponentValueById('endTime');
+	
+	if(startTime>=endTime){
+		errorMessage+='Время начала больше или равно времени завершения <br>';
+		markComponentValidityById('startTime',false);
+		markComponentValidityById('endTime',false);
+	}
+	
+	if(typeInt==multidailyIndex){
+		var days=checkBoxListToString('days');
 		
+		if(days.length!=13 || !days.includes('1')){
+			markComponentValidityById('days',true);
+			errorMessage+='Не указан ни один день <br>';
+		}
+		
+	}
 	
 	return errorMessage;
 }

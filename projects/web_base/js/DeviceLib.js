@@ -45,6 +45,10 @@ function showComponent(componentId){
 	setVisible(comp,true);
 };
 
+function isVisible(comp){
+	return (comp!=undefined && comp.style!=undefined && comp.style.display=='block')
+}
+
 function setVisible(comp,visible){
 	if(comp!=undefined){
 		if(visible){
@@ -63,6 +67,12 @@ function markComponentsArrayValidity(compons,valid){
 	}
 }
 
+function markComponentValidityById(id,valid){
+	var comp=getComponentById(id);
+	
+	markComponentValidity(comp,valid);
+}
+
 function markComponentValidity(comp,valid){
 	if(comp!=undefined){
 		if(comp.classList!=undefined){
@@ -73,6 +83,14 @@ function markComponentValidity(comp,valid){
 			}
 		}
 	}
+}
+
+function markFormAsValid(form,msgComp,valid){
+	var childNodes=getComponentChildrenByTag(form,'input');
+	
+	markComponentsArrayValidity(childNodes,valid);
+	
+	showMessage(msgComp,'','w3-green');
 }
 
 function showMessage(msgComp,message,className){
@@ -640,6 +658,24 @@ function addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val
 	}
 };
 /*-------------------------------form submission---------------------*/
+function constructFormData_JSONprocessor(target,page,json){
+	/*--construct standard form to process in device JSONprocessors*/
+	if(page=undefined){page=''};
+	
+	const REMOTE_TARGET='remote_target';
+	const REMOTE_PAGE='remote_page';
+	const VAL_JSON='val_json';
+	
+	var formData = new FormData();
+	formData.append(REMOTE_TARGET,target);
+	formData.append(REMOTE_PAGE,page);
+	formData.append(VAL_JSON,json);	
+	
+	console.log('JSONprocessor name='+target+' json='+json);
+	
+	return formData;
+}
+
 function postForm(form,url,validateFormFunction,constructFormDataFunction,resultProcessHandler,msgComp){
 	var errorMessage='';
 	var isValidForm=true;

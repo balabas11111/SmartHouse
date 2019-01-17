@@ -15,7 +15,9 @@
 #include <ESP8266WiFi.h>
 
 #include "JSONprovider.h"
+#include "JSONprocessor.h"
 #include "Loopable.h"
+
 #include "I2Chelper.h"
 #include "WiFiHelper.h"
 
@@ -75,9 +77,12 @@ Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeService,&
 
 AbstractItem* sensors[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
 JSONprovider* jsonProviders[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeService,&timeIntervalService};
+JSONprocessor* jsonProcessors[]={&timeIntervalService};
 
-DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),120000);
-
+DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
+						  jsonProcessors,ARRAY_SIZE(jsonProcessors),
+						  jsonProviders,ARRAY_SIZE(jsonProviders),
+						  120000);
 
 void initComponents(){
 	displayHelper.init();
@@ -146,14 +151,6 @@ void playPostInitSounds(){
 		  beeper.shortBeep();
 	  }
 }
-//-------------TimeIntervalServiceInit------------------------
-void postInitTimeIntervalService(){
-	uint32_t testTime=timeService.getNow()+10000;
-		timeIntervalService.add("Test interval",DAILY,testTime,testTime+50,0,"",0);
-		timeIntervalService.add("Monthly interval",MONTHLY,testTime+100,testTime+200,0,"",0);
-		timeIntervalService.add("Super interval",MULTIDAILY,testTime+1000,testTime+2000,0,"0,1,0,1,0,1,0",0);
-}
-
 //-------------Web server functions-------------------------------------
 void postInitWebServer(){
 	server.on(FPSTR(URL_SUBMIT_FORM_COMMANDS), HTTP_POST, [](){
@@ -163,50 +160,45 @@ void postInitWebServer(){
 		wifiHelper.checkAuthentication();
 		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), setSensorJson());
 	});
-	server.on(FPSTR(URL_SUBMIT_FORM_INTERVALS), HTTP_POST, [](){
-		wifiHelper.checkAuthentication();
-		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),
-			setIntervalJson());
-	});
-	server.on(FPSTR(URL_GET_JSON_PROVIDERS), HTTP_GET, [](){
-		wifiHelper.checkAuthentication();
-		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), getAllProvidersJson());
-	});
 	server.on(FPSTR(URL_GET_JSON_SENSORS), HTTP_GET, [](){
 		wifiHelper.checkAuthentication();
 		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), getAllSensorsJson());
 	});
-	server.on(FPSTR(URL_GET_JSON_INTERVALS), HTTP_GET, [](){
-		wifiHelper.checkAuthentication();
-		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), timeIntervalService.getJson());
-	});
 
-	server.on(FPSTR(URL_GET_SENSORS_CURRNT_VALUES), HTTP_GET, [](){
-		if(server.hasArg(FPSTR(MESSAGE_SERVER_ARG_SENSOR))){
-			String arg=server.arg(FPSTR(MESSAGE_SERVER_ARG_SENSOR));
-/*
-			if(arg==FPSTR(NTP_TIME_CLIENT_SERVICE_NAME)){
-				wifiHelper.checkAuthentication();
-				server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), timeClient.getJson());
-			}
-*/
-			if(arg==FPSTR(MESSAGE_SERVER_ARG_VAL_ALL)){
-				wifiHelper.checkAuthentication();
-				server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),
-						deviceHelper.getJson(jsonProviders, ARRAY_SIZE(jsonProviders)));
-			}
-
-			for(uint8_t i=0;i<ARRAY_SIZE(jsonProviders);i++){
-				if(arg==jsonProviders[i]->getName()){
-					server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), jsonProviders[i]->getJson());
-					break;
-				}
-			}
-		}
-
-		server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), FPSTR(MESSAGE_STATUS_JSON_WIDGET_NOT_FOUND));
-	});
+	server.on(FPSTR(URL_GET_JSON), HTTP_GET, [](){getProvidersJson();});
+	server.on(FPSTR(URL_PROCESS_JSON), HTTP_POST, [](){processJson();});
 }
+
+void getProvidersJson(){
+	wifiHelper.checkAuthentication();
+
+	if(server.hasArg(FPSTR(MESSAGE_SERVER_ARG_NAME))){
+		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),
+							deviceHelper.getProvidersJson(server.arg(FPSTR(MESSAGE_SERVER_ARG_NAME))));
+	}
+
+	server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT).getJson());
+}
+
+void processJson(){
+	wifiHelper.checkAuthentication();
+
+	if(server.hasArg(FPSTR(MESSAGE_SERVER_ARG_FORM_ID))
+				&& server.hasArg(MESSAGE_SERVER_ARG_REMOTE_TARGET)
+				&& server.hasArg(MESSAGE_SERVER_ARG_REMOTE_PAGE)
+				&& server.hasArg(FPSTR(MESSAGE_SERVER_ARG_VAL_JSON))){
+
+		return server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),deviceHelper.processJson(
+																server.arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_TARGET)),
+																server.arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_PAGE)),
+																server.arg(FPSTR(MESSAGE_SERVER_ARG_VAL_JSON))
+															  )
+						  );
+	}
+
+	server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT).getJson());
+}
+
 
 ESP8266WebServer* getServer(){
 	return wifiHelper.getServer();
@@ -223,7 +215,26 @@ void onPirDetectorChanged(){
 	signalLed.turnOnOff(pirDetector.isOn());
 }
 
-//base functions
+void printPir(){
+	pirDetector.displayDetails();
+}
+//-------------TimeIntervalService------------------------
+void postInitTimeIntervalService(){
+	uint32_t testTime=timeService.getNow()+10000;
+		timeIntervalService.add("Test interval",DAILY,testTime,testTime+50,0,"",0);
+		timeIntervalService.add("Monthly interval",MONTHLY,testTime+100,testTime+200,0,"",0);
+		timeIntervalService.add("Super interval",MULTIDAILY,testTime+1000,testTime+2000,0,"0,1,0,1,0,1,0",0);
+}
+
+void processTimeIntervals(){
+
+}
+
+//------------------Sensors func---------------------------------------------------
+void loadSensors(){
+	espSettingsBox.loadAbstractItemsFromFile(sensors, ARRAY_SIZE(sensors));
+}
+
 void updateSensors(){
 	deviceHelper.update(sensors, ARRAY_SIZE(sensors));
 
@@ -235,33 +246,8 @@ void updateSensors(){
 	deviceHelper.printDeviceDiagnostic();
 }
 
-void processTimeIntervals(){
-
-}
-
-void printPir(){
-	pirDetector.displayDetails();
-}
-
-//---------------------------------------------------------------------
-void loadSensors(){
-	espSettingsBox.loadAbstractItemsFromFile(sensors, ARRAY_SIZE(sensors));
-}
-
 void saveSensors(){
 	espSettingsBox.saveAbstractItemsToFile(sensors, ARRAY_SIZE(sensors));
-}
-//-----------------------------------------------------
-String setIntervalJson(){
-	if(server.hasArg(FPSTR(MESSAGE_SERVER_ARG_FORM_ID))
-			&& server.hasArg(MESSAGE_SERVER_ARG_FORM_REMOTE_TARGET)
-			&& server.hasArg(FPSTR(MESSAGE_SERVER_ARG_FORM_VAL_JSON))
-			&& server.arg(FPSTR(MESSAGE_SERVER_ARG_FORM_REMOTE_TARGET))==FPSTR(TimeIntervalService_NAME)){
-
-		return timeIntervalService.setIntervalFromJson(server.arg(FPSTR(MESSAGE_SERVER_ARG_FORM_VAL_JSON)));
-	}
-
-	return FPSTR(MESSAGE_TIME_INTERVAL_STATUS_ERROR_MISSING_PARAMS);
 }
 
 String setSensorJson(){
@@ -311,23 +297,20 @@ String getAllSensorsJson(){
 	return deviceHelper.getJsonAbstractItems(sensors, ARRAY_SIZE(sensors));
 }
 
-String getAllProvidersJson(){
-	return deviceHelper.getJson(jsonProviders, ARRAY_SIZE(jsonProviders));
-}
-
+//--------------------command----------------------------
 String executeCommand(){
 	wifiHelper.checkAuthentication();
 	Serial.println(FPSTR(MESSAGE_COMMANDS_EXECUTE_COMMAND));
 
 	String command=server.arg(FPSTR(MESSAGE_SERVER_ARG_CONFIRM_COMMAND));
 
-	StatusMessage sm={FPSTR(MESSAGE_COMMANDS_ERROR),FPSTR(MESSAGE_COMMANDS_COMMAND_NOT_RECOGNIZED)};
+	StatusMessage sm= StatusMessage(STATUS_ERROR_INT,FPSTR(MESSAGE_COMMANDS_COMMAND_NOT_RECOGNIZED));
 
 	if(command==FPSTR(MESSAGE_SERVER_ARG_VAL_restart)){
 		Serial.println(FPSTR(MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED));
 		deviceHelper.createPostponedCommand(command);
 
-		sm.setVals(FPSTR(MESSAGE_COMMANDS_OK),FPSTR(MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED_MSG));
+		sm.setValues(STATUS_OK_INT,FPSTR(MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED_MSG));
 	}
 	if(command==FPSTR(MESSAGE_SERVER_ARG_VAL_recreateThingSpeak)){
 		sm=thingSpeakHelper.recreateThingSpeaChannelskWithCheck(sensors,ARRAY_SIZE(sensors));
@@ -335,10 +318,10 @@ String executeCommand(){
 	if(command==FPSTR(MESSAGE_SERVER_ARG_VAL_deleteSettings)){
 		String msg=FPSTR(MESSAGE_COMMANDS_FILES_DELETED);
 			   msg+=String(espSettingsBox.deleteSettingsFiles());
-		sm.setVals(FPSTR(MESSAGE_COMMANDS_OK),msg);
+		sm.setValues(STATUS_OK_INT,msg);
 	}
 
-	return "{\"status\":\""+sm.status+"\",\"message\":\""+sm.message+"\"}";
+	return sm.getJson();
 }
 
 void executePostPonedCommand(){

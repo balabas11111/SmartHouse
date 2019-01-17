@@ -115,7 +115,7 @@ public:
 		return this->id;
 	}
 
-	virtual String getName(){
+	virtual String getName() override{
 		return this->name;
 	}
 

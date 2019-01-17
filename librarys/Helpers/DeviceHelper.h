@@ -14,19 +14,28 @@
 #include "Measurable.h"
 #include "AbstractItem.h"
 #include "JSONprovider.h"
+#include "JSONprocessor.h"
+#include "StatusMessage.h"
 //#include "ESP8266WebServer.h"
 #include "TimeTrigger.h"
 
 class DeviceHelper:public Loopable{
 
 public:
-	DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,long minAlarmInterval);
+	DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
+				JSONprocessor** jsonProcessors,uint8_t jsonProcessorsSize,
+				JSONprovider** jsonProviders,uint8_t jsonProvidersSize,
+				long minAlarmInterval);
 	void displayDetails();
 	boolean loop();
 
 	void startDevice(String deviceId);
 	boolean init(Initializable** initItems,uint8_t initItemsSize);
 	void update(AbstractItem** sensors,uint8_t sensorsSize);
+
+	String processJson(String target,String page,String json);
+	String getProvidersJson(String providerName);
+	String getProvidersJson();
 
 	String getJson(JSONprovider** sensors,uint8_t size);
 	String getJsonAbstractItems(AbstractItem** sensors,uint8_t size);
@@ -44,6 +53,12 @@ public:
 private:
 	Loopable** loopItems;
 	uint8_t loopItemsSize;
+
+	JSONprocessor** jsonProcessors;
+	uint8_t jsonProcessorsSize;
+
+	JSONprovider** jsonProviders;
+	uint8_t jsonProvidersSize;
 
 	boolean alarmMode;
 	unsigned long minAlarmInterval;

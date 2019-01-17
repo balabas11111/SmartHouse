@@ -35,11 +35,12 @@ set sources[3]=*"http://%IP%/edit"
 set sources2[0]=*"http://%IP%/view?file=/settings/settings.txt"
 set sources2[1]=*"http://%IP%/list?dir=/"
 set sources2[2]=*"http://%IP%/espSettingsBox/getSimpleJson"
-set sources2[3]=*"http://%IP%/gscv?sensor=all"
+set sources2[3]=*"http://%IP%/getJson?providers=all"
 set sources2[4]=*"http://%IP%/getJson_settings?page=device"
 set sources2[5]=*"http://%IP%/getJson_settings?page=net"
 set sources2[6]=*"http://%IP%/getJson_sensors"
-set sources2[7]=*"http://%IP%/getJson_intervals"
+set sources2[7]=*"http://%IP%/getJson?name=TimeIntervalService"
+set sources2[3]=*"http://%IP%/getJson?sensors=all"
 
 echo ====================================================  >> %URL_FILE%
 for /F "tokens=2 delims=*" %%s in ('set sources2[') do (

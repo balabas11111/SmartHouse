@@ -13,6 +13,7 @@
 #include "Time/NtpTimeClientService.h"
 #include "EspSettingsBox.h"
 #include "JSONprovider.h"
+#include "JSONprocessor.h"
 #include "Loopable.h"
 #include "Initializable.h"
 #include "FunctionalInterrupt.h"
@@ -118,7 +119,7 @@ const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_days[]      = "days";
 const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_kind[]     = "kind";
 */
 
-class TimeIntervalService: public Initializable, public Loopable, public JSONprovider {
+class TimeIntervalService: public Initializable, public Loopable, public JSONprovider, public JSONprocessor {
 public:
 	virtual ~TimeIntervalService(){};
 
@@ -305,13 +306,15 @@ public:
 		return result;
 	}
 
-	String setIntervalFromJson(String json){
+	StatusMessage processJson(String json,String page){
 
-		Serial.print(FPSTR("Set Interval value JSON="));
+		Serial.print(FPSTR("Set Interval value page="));
+		Serial.print(page);
+		Serial.print(FPSTR(" JSON="));
 		Serial.println(json);
 
 		boolean ok=false;
-		String statusText="";
+		StatusMessage sm=StatusMessage(STATUS_UNKNOWN_INT);
 
 		if(json.length()>0){
 			StaticJsonBuffer<1024> jsonBuffer;
@@ -334,13 +337,13 @@ public:
 				ok=updateInterval(id,name,type,startTime,endTime,time,state,days,kind);
 
 				if(!ok){
-					statusText=FPSTR(STATUS_UPDATE_ERROR);
+					sm.setStatus(STATUS_UPDATE_ERROR_INT);
 				}
 			}else{
-				statusText=FPSTR(STATUS_PARSE_ERROR);
+				sm.setStatus(STATUS_PARSE_ERROR_INT);
 			}
 		}else{
-			statusText=FPSTR(STATUS_INVALID_LENGTH);
+			sm.setStatus(STATUS_INVALID_LENGTH_INT);
 		}
 
 	    if(ok){
@@ -349,7 +352,7 @@ public:
 
 	    String status=ok?FPSTR(STATUS_OK):FPSTR(STATUS_ERROR);
 
-	    return "{\"status\":\""+status+"\",\"item\":\""+statusText+"\"}";
+	    return sm;
 	}
 
 	int getActiveAlarms(){

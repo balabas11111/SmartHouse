@@ -16,15 +16,25 @@
 #endif
 //#include "ESP8266WebServer.h"
 
-DeviceHelper::DeviceHelper(Loopable** _loopItems,uint8_t _loopItemsSize,long minAlarmInterval){
-	this->loopItems=_loopItems;
-	this->loopItemsSize=_loopItemsSize;
+DeviceHelper::DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
+							JSONprocessor** jsonProcessors,uint8_t jsonProcessorsSize,
+							JSONprovider** jsonProviders,uint8_t jsonProvidersSize,
+							long minAlarmInterval){
+	this->loopItems=loopItems;
+	this->loopItemsSize=loopItemsSize;
+
+	this->jsonProcessors=jsonProcessors;
+	this->jsonProcessorsSize=jsonProcessorsSize;
+
+	this->jsonProviders=jsonProviders;
+	this->jsonProvidersSize=jsonProvidersSize;
 
 	this->alarmMode=false;
 	this->minAlarmInterval=minAlarmInterval*1000;
 	this->lastAlarmTime=0;
 
 	this->triggerInitiated=false;
+	postPonedTrigger=nullptr;
 }
 
 void DeviceHelper::displayDetails(){
@@ -177,13 +187,61 @@ String DeviceHelper::processAlarm(AbstractItem** sensors, uint8_t sensorsSize){
 	return alarmMessage;
 }
 
-String DeviceHelper::getJson(JSONprovider** sensors, uint8_t size) {
+String DeviceHelper::processJson(String target,String page,String json){
+	yield();
+	if(target==NULL || target.length()==0){
+		return StatusMessage(STATUS_INVALID_LENGTH_INT).getJson();
+	}
+
+	for(uint8_t i=0;i<jsonProcessorsSize;i++){
+		if(jsonProcessors[i]->checkName(target,page)){
+			return jsonProcessors[i]->processJson(page,json).getJson();
+		}
+	}
+
+	return StatusMessage(STATUS_NOT_FOUND_INT).getJson();
+}
+
+String DeviceHelper::getProvidersJson(){
+	yield();
+	String result="{\"sensors\":[";
+
+		for(uint8_t i=0;i<jsonProvidersSize;i++){
+			delay(1);
+			result+=jsonProviders[i]->getJson();
+			if(i!=jsonProvidersSize-1){
+				result+=",";
+			}
+		}
+	result+="]}";
+
+	return result;
+}
+
+String DeviceHelper::getProvidersJson(String providerName){
+	yield();
+	if(providerName==NULL || providerName.length()==0){
+		return StatusMessage(STATUS_INVALID_LENGTH_INT).getJson();
+	}
+
+	if(providerName==FPSTR(MESSAGE_SERVER_ARG_VAL_ALL)){
+		return getProvidersJson();
+	}
+
+	for(uint8_t i=0;i<jsonProvidersSize;i++){
+		return jsonProviders[i]->getJson();
+	}
+
+	return StatusMessage(STATUS_ITEM_NOT_FOUND_INT).getJson();
+}
+
+String DeviceHelper::getJson(JSONprovider** providers, uint8_t size) {
 	yield();
 		String result="{\"sensors\":[";
 
 			for(uint8_t i=0;i<size;i++){
 				delay(1);
-				result+=sensors[i]->getJson();
+				result+=providers[i]->getJson();
 				if(i!=size-1){
 					result+=",";
 				}

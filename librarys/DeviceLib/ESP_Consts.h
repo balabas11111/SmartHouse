@@ -12,25 +12,6 @@
 
 #include "Arduino.h"
 
-//Robot Dyn//vem  // 12E
-/*
-#define A0_PIN 17
-#define D0_PIN 16 //GPIO016 ////beeper
-#define D1_PIN 5  //GPIO05  //DallasTemp           PIN_WIRE_SCL
-#define D2_PIN 4  //GPIO04  //OLED //SDA //blue    PIN_WIRE_SDA
-#define D3_PIN 0  //GPIO00  //OLED //SCL //green
-#define D4_PIN 2  //GPIO02  //RedLed               INTERNAL_LED_PIN
-#define D5_PIN 14 //GPIO14  //DHT
-#define D6_PIN 12 //GPIO12  //DallasTemp red led2
-#define D7_PIN 13 //GPIO13  //GreenLed
-#define D8_PIN 15 //GPIO15  //button
-#define SD3_PIN 10
-#define SD2_PIN 9
-
-#define RX_PIN 3
-#define TX_PIN 1
-*/
-
 //sensors constants
 const char TEMPERATURE_RU[] PROGMEM ="Температура °C BME-280";
 const char HUMIDITY_RU[] PROGMEM ="Относительная влажность % BME-280";
@@ -588,10 +569,13 @@ const PROGMEM char MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED_MSG[]="Ã�Â Ã�
 const PROGMEM char MESSAGE_SERVER_ARG_CONFIRM_COMMAND[]="confirm_command";
 const PROGMEM char MESSAGE_SERVER_ARG_PAGE[]="page";
 const PROGMEM char MESSAGE_SERVER_ARG_SENSOR[]="sensor";
+const PROGMEM char MESSAGE_SERVER_ARG_PROVIDER[]="provider";
+const PROGMEM char MESSAGE_SERVER_ARG_NAME[]="name";
 const PROGMEM char MESSAGE_SERVER_ARG_VAL[]="val";
 const PROGMEM char MESSAGE_SERVER_ARG_FORM_ID[]="form_id";
-const PROGMEM char MESSAGE_SERVER_ARG_FORM_REMOTE_TARGET[]="form_remote_target";
-const PROGMEM char MESSAGE_SERVER_ARG_FORM_VAL_JSON[]="form_val_json";
+const PROGMEM char MESSAGE_SERVER_ARG_REMOTE_TARGET[]="remote_target";
+const PROGMEM char MESSAGE_SERVER_ARG_REMOTE_PAGE[]="remote_page";
+const PROGMEM char MESSAGE_SERVER_ARG_VAL_JSON[]="val_json";
 const PROGMEM char MESSAGE_SERVER_ARG_CURRENT_SENSOR_NAME[]="currentSensor_name";
 
 const PROGMEM char MESSAGE_SERVER_ARG_VAL_ALL[]="all";
@@ -616,13 +600,6 @@ const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_SETTING_BEGIN[]="-------
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_NAME_EQ[]=" Set sensor value NAME=";
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_STATUS_EQ[]=" status=";
 
-const PROGMEM char STATUS_NOT_FOUND[]="NotFound";
-const PROGMEM char STATUS_OK[]="Ok";
-const PROGMEM char STATUS_ERROR[]="Error";
-const PROGMEM char STATUS_INVALID_LENGTH[]="Invalid length";
-const PROGMEM char STATUS_PARSE_ERROR[]="Parse error";
-const PROGMEM char STATUS_UPDATE_ERROR[]="Update error";
-
 //Virtual pin
 const PROGMEM char MESSAGE_VIRTUAL_PIN_START_INIT[]="init VirtualPin =";
 const PROGMEM char MESSAGE_VIRTUAL_PIN_Mode[]=" In(0)Out(1)=";
@@ -644,13 +621,15 @@ const PROGMEM char URL_SUBMIT_FORM_COMMANDS[]="/submitForm_commands";
 const PROGMEM char URL_SUBMIT_FORM_SETTINGS[]="/submitForm_settings";
 const PROGMEM char URL_GET_JSON_SETTINGS[]="/getJson_settings";
 const PROGMEM char URL_GET_JSON_SENSORS[]="/getJson_sensors";
-const PROGMEM char URL_GET_JSON_PROVIDERS[]="/getJson_providers";
-const PROGMEM char URL_GET_JSON_INTERVALS[]="/getJson_intervals";
 const PROGMEM char URL_SUBMIT_FORM_SENSORS[]="/submitForm_sensors";
-const PROGMEM char URL_SUBMIT_FORM_INTERVALS[]="/submitForm_intervals";
 
-const PROGMEM char URL_GET_SENSORS_CURRNT_VALUES[]="/gscv";
-const PROGMEM char URL_SET_SENSOR_CURRENT_VALUE[]="/sscv";
+//const PROGMEM char URL_GET_JSON_PROVIDERS[]="/getJson_providers";
+//const PROGMEM char URL_GET_JSON_INTERVALS[]="/getJson_intervals";
+//const PROGMEM char URL_SUBMIT_FORM_INTERVALS[]="/submitForm_intervals";
+
+//use /getJson?name=name
+const PROGMEM char URL_GET_JSON[]="/getJson";
+const PROGMEM char URL_PROCESS_JSON[]="/processJson";
 
 const PROGMEM char URL_SET_DIGITAL_PIN_CURRENT_VALUE[]="/sdpcv";
 

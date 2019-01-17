@@ -61,12 +61,13 @@ public:
 
 	StatusMessage recreateThingSpeaChannelskWithCheck(AbstractItem** items,uint8_t size){
 		if(!espSettingsBox->isThingSpeakEnabled){
-			return {FPSTR(MESSAGE_THINGSPEAK_FAILED_STATUS),FPSTR(MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED)};
+			return StatusMessage(STATUS_FAILED_INT,FPSTR(MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED));
 		}else
 		if(espSettingsBox->thSkUsrKey=="" || espSettingsBox->thSkUsrKey==FPSTR(MESSAGE_THINGSPEAK_EMPTY_KEY)){
-			return {FPSTR(MESSAGE_THINGSPEAK_FAILED_STATUS),FPSTR(MESSAGE_THINGSPEAK_NO_USER_SPECIFIED)};
+			return StatusMessage(STATUS_FAILED_INT,FPSTR(MESSAGE_THINGSPEAK_NO_USER_SPECIFIED));
 		}else{
-			return {FPSTR(MESSAGE_THINGSPEAK_OK_STATUS),recreateThingSpeak(items,size)};
+			String message=recreateThingSpeak(items,size);
+			return StatusMessage(STATUS_FAILED_INT,message);
 		}
 
 	}
