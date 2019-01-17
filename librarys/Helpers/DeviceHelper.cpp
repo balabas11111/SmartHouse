@@ -194,12 +194,31 @@ String DeviceHelper::processJson(String target,String page,String json){
 	}
 
 	for(uint8_t i=0;i<jsonProcessorsSize;i++){
-		if(jsonProcessors[i]->checkName(target,page)){
+		if(jsonProcessors[i]->checkNamePage(target,page)){
 			return jsonProcessors[i]->processJson(page,json).getJson();
 		}
 	}
 
 	return StatusMessage(STATUS_NOT_FOUND_INT).getJson();
+}
+
+String DeviceHelper::getProvidersJson(String provider,String page){
+	yield();
+	if(provider==NULL || provider.length()==0){
+		return StatusMessage(STATUS_INVALID_LENGTH_INT).getJson();
+	}
+
+	if(provider==FPSTR(MESSAGE_SERVER_ARG_VAL_ALL)){
+		return getProvidersJson();
+	}
+
+	for(uint8_t i=0;i<jsonProvidersSize;i++){
+		if(jsonProviders[i]->checkName(provider)){
+			return jsonProviders[i]->getJson(page);
+		}
+	}
+
+	return StatusMessage(STATUS_ITEM_NOT_FOUND_INT).getJson();
 }
 
 String DeviceHelper::getProvidersJson(){
@@ -216,23 +235,6 @@ String DeviceHelper::getProvidersJson(){
 	result+="]}";
 
 	return result;
-}
-
-String DeviceHelper::getProvidersJson(String providerName){
-	yield();
-	if(providerName==NULL || providerName.length()==0){
-		return StatusMessage(STATUS_INVALID_LENGTH_INT).getJson();
-	}
-
-	if(providerName==FPSTR(MESSAGE_SERVER_ARG_VAL_ALL)){
-		return getProvidersJson();
-	}
-
-	for(uint8_t i=0;i<jsonProvidersSize;i++){
-		return jsonProviders[i]->getJson();
-	}
-
-	return StatusMessage(STATUS_ITEM_NOT_FOUND_INT).getJson();
 }
 
 String DeviceHelper::getJson(JSONprovider** providers, uint8_t size) {

@@ -306,7 +306,7 @@ public:
 		return result;
 	}
 
-	StatusMessage processJson(String json,String page){
+	StatusMessage processJson(String page,String json){
 
 		Serial.print(FPSTR("Set Interval value page="));
 		Serial.print(page);
@@ -346,11 +346,9 @@ public:
 			sm.setStatus(STATUS_INVALID_LENGTH_INT);
 		}
 
-	    if(ok){
-	    	ok=saveToFile();
+	    if(ok && saveToFile()){
+	    	sm.setStatus(STATUS_OK_INT);
 	    }
-
-	    String status=ok?FPSTR(STATUS_OK):FPSTR(STATUS_ERROR);
 
 	    return sm;
 	}

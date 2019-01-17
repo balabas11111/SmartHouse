@@ -197,7 +197,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 		daysDiv.id=cdays+'Div';
 		daysDiv.name=cdays+'Div';
 		
-		arrayToCheckBoxList(daysDivChkBox,cdays,days,dayOfWeekShort);
+		arrayToCheckBoxList(daysDivChkBox,cdays,days,dayOfWeekShort,editable);
 		daysDiv.appendChild(lblDays);
 		daysDiv.appendChild(daysDivChkBox);
 		/*--*/
@@ -227,7 +227,6 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 		kindDiv.appendChild(kindSelect);
 		/*--*/
 		applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,typeInt);
-		applyTimeComponentValidators(inputTime,(typeInt==periodicIndex));
 		
 	col4h.appendChild(daysDiv);
 	col4h.appendChild(timeDiv);
@@ -266,33 +265,19 @@ function applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,typeInt){
 	setVisible(timeDiv,isPeriodic);
 	setVisible(kindDiv,isKindVis);
 	
-	markFormAsValid(currentForm,currentMessageComp,true);
-	
-	applyTimeComponentValidators(getComponentById('time'),isPeriodic);
-}
-
-function applyTimeComponentValidators(inputTime,isPeriodic){
-	if(inputTime!=undefined){
-		if(isPeriodic){
-			inputTime.setAttribute('min','60');
-			inputTime.setAttribute('step','5');
-		}else{
-			inputTime.removeAttribute('min');
-			inputTime.removeAttribute('step');
-		}
-	}
+	markFormAsValid(currentForm,currentMessageComp,true,true);
 }
 
 function submitIntervalsFormAsJsonReloadCurrTab(){
 	showMessage(currentMessageComp,'Сохраняю настройки ...','w3-yellow');
-	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructIntervalsFormDataAsJson,getCurrentItemHandler,currentMessageComp);
+	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructIntervalsFormDataAsJson,validateStatusMessageDefault,getCurrentItemHandler,currentMessageComp);
 }
 
 function constructIntervalsFormDataAsJson(form){
 	
 	var formInputs = getComponentChildrenByClass(form,'intervals');
 	
-	var str='{';
+	var json='{';
 	var pageName='';
 	
 	var days={};
@@ -307,49 +292,95 @@ function constructIntervalsFormDataAsJson(form){
 					inputName=child.name;
 					inputValue=getComponentValue(child);
 				
-					str=str+'"'+inputName+'": "'+inputValue+'",';
+					json=json+'"'+inputName+'": "'+inputValue+'",';
 				}
 		}
 	}
 	
-	str=str+'"days": "'+checkBoxListToString('days')+'"';
+	json=json+'"days": "'+checkBoxListToString('days')+'"';
 	
-	if(str.substring(str.length - 1)==','){
-		str=str.substring(0,str.length-1);
+	if(json.substring(json.length - 1)==','){
+		json=json.substring(0,json.length-1);
 	}
 	
-	str+='}';
+	json+='}';
 	
 	var targetId=form.getAttribute('id')+'_target';
 	var target=getComponentValueById(targetId);
 	
-	return constructFormData_JSONprocessor(target,str);
+	return constructFormData_JSONprocessor(target,currentTab,json);
 }
 
 function validateCurrentIntervalForm(){
-	markFormAsValid(currentForm,currentMessageComp,true);
+	markFormAsValid(currentForm,currentMessageComp,true,true);
 	markComponentValidityById('days',true);
 	
-	var errorMessage=validateFormFunctionDefault(currentForm);
-	var typeInt=getComponentById('typeInt').selectedIndex;
+	var errorMessage='';
 	
-	var startTime=getComponentValueById('startTime');
-	var endTime=getComponentValueById('endTime');
+	var nameInput=getComponentById('name');
+	var typeSelect=getComponentById('typeInt');
+	var stateSelect=getComponentById('stateInt');
+	var startTimeInput=getComponentById('startTime');
+	var endTimeInput=getComponentById('endTime');
+	
+	var daysDiv=getComponentById('days');
+	var timeInput=getComponentById('time');
+	var kindSelect=getComponentById('kind');
+	
+	if(nameInput==undefined 
+			|| typeSelect==undefined || typeSelect.selectedIndex==undefined  
+			|| stateSelect==undefined || stateSelect.selectedIndex==undefined 
+			|| startTimeInput==undefined || endTimeInput==undefined 
+			|| timeInput==undefined 
+			|| kindSelect==undefined || kindSelect.selectedIndex==undefined){
+		return 'Общая ошибка приложения <br>';
+	}
+	var msg='';
+	
+	if(nameInput.value==undefined || nameInput.value==''){
+		errorMessage+=markComponentValidityWithMessage(nameInput,false,'Пустое поле имя <br>');
+	}
+	
+	var typeInt=typeSelect.selectedIndex;
+	
+	if(typeInt<0){
+		errorMessage+=markComponentValidityWithMessage(typeSelect,false,'Пустое поле тип <br>');
+	}
+	
+	if(stateSelect.selectedIndex<0){
+		errorMessage+=markComponentValidityWithMessage(stateSelect,false,'Пустое поле состояние <br>');
+	}
+	
+	var startTime=getComponentValue(startTimeInput);
+	var endTime=getComponentValue(endTimeInput);
+	
+	if(startTime==undefined){
+		errorMessage+=markComponentValidityWithMessage(startTimeInput,false,'Пустое поле Старт <br>');
+	}
+	
+	if(endTime==undefined){
+		errorMessage+=markComponentValidityWithMessage(endTimeInput,false,'Пустое поле Старт <br>');
+	}
 	
 	if(startTime>=endTime){
-		errorMessage+='Время начала больше или равно времени завершения <br>';
-		markComponentValidityById('startTime',false);
-		markComponentValidityById('endTime',false);
+		errorMessage+=markComponentValidityWithMessage(startTimeInput,false,'Время начала больше или равно времени завершения <br>');
+		errorMessage+=markComponentValidityWithMessage(endTimeInput,false,'Время Завершения меньше времени начала <br>');
 	}
 	
 	if(typeInt==multidailyIndex){
 		var days=checkBoxListToString('days');
 		
 		if(days.length!=13 || !days.includes('1')){
-			markComponentValidityById('days',true);
-			errorMessage+='Не указан ни один день <br>';
+			errorMessage+=markComponentValidityWithMessage(daysDiv,false,'Не указан ни один день <br>');
 		}
+	}
+	
+	if(typeInt==periodicIndex){
+		var time=getComponentValue(timeInput);
 		
+		if(time==undefined || time=='' || time==0 || time=='0' || time<60){
+			errorMessage+=markComponentValidityWithMessage(timeInput,false,'Минимально возможное значение периода 60 сек <br>');
+		}
 	}
 	
 	return errorMessage;

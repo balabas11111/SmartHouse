@@ -4,6 +4,7 @@ const LBL_MSG_LOC_SAVING_DATA='Сохраняю данные...';
 const LBL_MSG_LOC_DATA_SAVED='Данные сохранены!';
 const LBL_MSG_LOC_SERVER_SIDE_ERROR='Ошибка на стороне сервера!';
 const LBL_MSG_LOC_VALIDATION_ERROR='Ошибка валидации:';
+const LBL_MSG_LOC_HTTP_STATUS_EQ=' HTTP статус=';
 
 /*-----serv constants---*/
 const MSG_SUFFIX="msg";
@@ -85,10 +86,33 @@ function markComponentValidity(comp,valid){
 	}
 }
 
-function markFormAsValid(form,msgComp,valid){
+function setComponentValidityMessage(comp,message){
+	if(comp!=undefined && comp.type!=undefined){
+		var type=comp.type.toLowerCase();
+		if(type=='input'){
+			comp.setCustomValidity(message);
+		}
+	}
+}
+
+function markComponentValidityWithMessage(comp,valid,msg){
+	markComponentValidity(comp,valid);
+	setComponentValidityMessage(comp,msg);
+	
+	return msg;
+}
+
+function markFormAsValid(form,msgComp,valid,cleanValMsg){
 	var childNodes=getComponentChildrenByTag(form,'input');
 	
-	markComponentsArrayValidity(childNodes,valid);
+	if(childNodes!=undefined){
+		for (var i in childNodes) {
+			markComponentValidity(childNodes[i],valid);
+			if(cleanValMsg){
+				setComponentValidityMessage(childNodes[i],'');
+			}
+		}
+	}
 	
 	showMessage(msgComp,'','w3-green');
 }
@@ -225,7 +249,7 @@ function addChildComponentIfNotExists(comp,item){
 	
 }
 
-function arrayToCheckBoxList(component,namePreffix,valArray,nameArray,clazz,style){
+function arrayToCheckBoxList(component,namePreffix,valArray,nameArray,editable,clazz,style){
 	if(component!=undefined){
 	
 		component.innerHTML = '';
@@ -252,6 +276,9 @@ function arrayToCheckBoxList(component,namePreffix,valArray,nameArray,clazz,styl
 				cbx.setAttribute('style',style);
 			}
 			setComponentValue(cbx,valArray[i]);
+			if(editable==undefined || !editable){
+				cbx.setAttribute("disabled","disabled");
+			}
 			/*cbx.setAttribute('class',className);*/
 			
 			lbl = document.createElement('label');
@@ -676,7 +703,7 @@ function constructFormData_JSONprocessor(target,page,json){
 	return formData;
 }
 
-function postForm(form,url,validateFormFunction,constructFormDataFunction,resultProcessHandler,msgComp){
+function postForm(form,url,validateFormFunction,constructFormDataFunction,responseValidateFunc,resultProcessHandler,msgComp){
 	var errorMessage='';
 	var isValidForm=true;
 	
@@ -700,15 +727,24 @@ function postForm(form,url,validateFormFunction,constructFormDataFunction,result
 		request.onreadystatechange  = 
 			function(){
 				if(this.readyState == 4){
+					var errMsg='';
+					
 					if (isHttpStatusOk(this.status)){
-						
+						if(responseValidateFunc!=undefined){
+							errMsg=responseValidateFunc(this.responseText);
+						}
+					}else{
+						errMsg=LBL_MSG_LOC_HTTP_STATUS_EQ+this.status+' <br>';
+					}
+					
+					if(errMsg==undefined || errMsg.length==0){
 						var json = JSON.parse(this.responseText);
 						resultProcessHandler(json);
 						
 						showMessage(msgComp,LBL_MSG_LOC_DATA_SAVED,'w3-green');
 						
 					} else {
-						showMessage(msgComp,LBL_MSG_LOC_SERVER_SIDE_ERROR,'w3-red');
+						showMessage(msgComp,LBL_MSG_LOC_SERVER_SIDE_ERROR+' '+errMsg,'w3-red');
 					};
 				};
 			};
@@ -717,6 +753,18 @@ function postForm(form,url,validateFormFunction,constructFormDataFunction,result
 		errorMessage='<strong>'+LBL_MSG_LOC_VALIDATION_ERROR+'</strong>  <br><br>'+errorMessage;
 		showMessage(msgComp,errorMessage,'w3-red');
 	}
+}
+
+function validateStatusMessageDefault(statusMessage){
+	try {
+		console.log('formPost response'+statusMessage);
+		var json=JSON.parse(statusMessage);
+		if(json.statusInt!=0){
+			return json.status;
+		}
+    } catch (e) {
+        return statusMessage+'<br>';
+    }
 }
 
 function validateFormFunctionDefault(form){

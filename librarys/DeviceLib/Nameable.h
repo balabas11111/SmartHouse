@@ -17,8 +17,16 @@ public:
 
 	virtual String getName()=0;
 
-	virtual boolean checkName(String name,String page){
+	virtual boolean checkName(String name){
 		return this->getName()==name;
+	}
+
+	virtual boolean checkPage(String page){
+		return (page!=NULL);
+	}
+
+	virtual boolean checkNamePage(String name,String page){
+		return checkName(name) && checkPage(page);
 	}
 };
 

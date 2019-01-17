@@ -98,6 +98,9 @@ boolean EspSettingsBox::isSpiffInitialized(){
 
 void EspSettingsBox::loadSettingsJson(){
 
+	Serial.print(FPSTR("LoadSettingsJson file="));
+	Serial.println(_fileName);
+
 	File file = SPIFFS.open(_fileName, "r");
 
 	if(!file || file.size()==0){
@@ -193,8 +196,6 @@ void EspSettingsBox::loadSettingsJson(){
 void EspSettingsBox::saveSettingsJson(){
 	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVE_DEVICE_SETTINGS_TO_FILE));
 
-	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
-
 		DynamicJsonBuffer jsonBuffer;
 		//StaticJsonBuffer<1024> jsonBuffer;
 
@@ -255,24 +256,17 @@ void EspSettingsBox::saveSettingsJson(){
 		Serial.println(vals);
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
-		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVE_DEVICE_SETTINGS_TO_FILE));
+		Serial.print(FPSTR("file="));
+		Serial.println(_fileName);
 
 		File settFile = SPIFFS.open(_fileName, "w");
 
 		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
 		root.printTo(settFile);
 		settFile.close();
-		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SAVED));
-
-		delay(1);
-
-		Serial.println(FPSTR(MESSAGE_DONE));
-	settFile.close();
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SAVED));
 
 	delay(1);
-
-	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SAVED));
-	Serial.println(FPSTR(MESSAGE_DONE));
 }
 
 void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){

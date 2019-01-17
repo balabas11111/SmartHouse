@@ -147,6 +147,40 @@ public:
 		}
 	}
 
+	void printRequestDetails(){
+		Serial.println(FPSTR("---Request details---"));
+		Serial.print(FPSTR("url="));
+		Serial.println(server->uri());
+		Serial.print(FPSTR("args count="));
+		Serial.println(server->args());
+		for(int i=0;i<server->args();i++){
+			Serial.print(server->argName(i));
+			Serial.print(FPSTR("="));
+			Serial.println(server->arg(i));
+		}
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+	}
+
+	boolean isValidGetJsonRequest(){
+		return server->hasArg(FPSTR(MESSAGE_SERVER_ARG_NAME));
+	}
+
+	boolean isValidProcessJsonRequest(){
+		return server->hasArg(MESSAGE_SERVER_ARG_REMOTE_TARGET)
+				&& server->hasArg(MESSAGE_SERVER_ARG_REMOTE_PAGE)
+				&& server->hasArg(FPSTR(MESSAGE_SERVER_ARG_VAL_JSON));
+	}
+
+	String getPageParam(){
+		return server->hasArg(FPSTR(MESSAGE_SERVER_ARG_PAGE))?
+				server->arg(FPSTR(MESSAGE_SERVER_ARG_PAGE)):
+				"";
+	}
+
+	String getNameParam(){
+		return server->arg(FPSTR(MESSAGE_SERVER_ARG_NAME));
+	}
+
 	void setupServer(){
 		//printHeap();
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));

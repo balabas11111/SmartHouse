@@ -22,6 +22,10 @@ public:
 
 	//virtual String getName()=0;
 	virtual String getJson()=0;
+
+	virtual String getJson(String page){
+		return getJson();
+	}
 };
 
 #endif /* LIBRARIES_DEVICELIB_JSONPROVIDER_H_ */

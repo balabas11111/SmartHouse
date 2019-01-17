@@ -34,7 +34,7 @@ public:
 	void update(AbstractItem** sensors,uint8_t sensorsSize);
 
 	String processJson(String target,String page,String json);
-	String getProvidersJson(String providerName);
+	String getProvidersJson(String provider,String page);
 	String getProvidersJson();
 
 	String getJson(JSONprovider** sensors,uint8_t size);

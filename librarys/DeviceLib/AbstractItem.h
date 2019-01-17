@@ -277,7 +277,7 @@ public:
 	}
 
 	boolean setFieldFromRequest(AbstractItemRequest req){
-		printAbstractItemRequest(req);
+		//printAbstractItemRequest(req);
 
 		if(this->id!=req.deviceId || !req.valid){
 			return false;

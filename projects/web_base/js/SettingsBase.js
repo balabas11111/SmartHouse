@@ -220,7 +220,7 @@ function submitCommand(command){
 	
 	showMessage(msg,'Отправляю команду '+command+' на устройство...','w3-yellow');
 	
-	postForm(form,'/submitForm_commands',undefined,constructFormDataDefault,getCurrentCommandHandler,msg);
+	postForm(form,'/submitForm_commands',undefined,constructFormDataDefault,undefined,getCurrentCommandHandler,msg);
 }
 
 function getCurrentCommandHandler(data){
@@ -380,6 +380,7 @@ function getCurrentItemHandler(data){
 	if(data.status=='Ok'){
 		hideComponent(currentItemPreffix+'_modal');
 		openTab(currentTab,currentHeaderName);
+		showMessage(currentMessageComp,'Сохранено. Обновляю данные','w3-yellow');
 	}else{
 		showMessage(currentMessageComp,'Ошибка '+data.message,'w3-red');
 	}
@@ -520,17 +521,17 @@ function getInputCompName(sensorName,itemName,suffix){
 
 /*-------------------form submit-----------*/
 function submitCurrentForm(){
-	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataDefault,getValuesHandler,currentMessageComp);
+	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataDefault,undefined,getValuesHandler,currentMessageComp);
 }
 
 function submitCurrentFormReloadCurrTab(){
 		showMessage(currentMessageComp,'Сохраняю настройки ...','w3-yellow');
-		postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataDefault,getCurrentItemHandler,currentMessageComp);
+		postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataDefault,undefined,getCurrentItemHandler,currentMessageComp);
 }
 
 function submitCurrentFormAsJsonReloadCurrTab(){
 	showMessage(currentMessageComp,'Сохраняю настройки ...','w3-yellow');
-	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataAsJson,getCurrentItemHandler,currentMessageComp);
+	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataAsJson,undefined,getCurrentItemHandler,currentMessageComp);
 }
 
 

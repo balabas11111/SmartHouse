@@ -107,9 +107,6 @@ void setup() {
 
   deviceHelper.printDeviceDiagnosticNoSpiff();
 
-  SPIFFS.begin();
-  SPIFFS.remove("/settings/settings.txt");
-
   espSettingsBox.init();
 
   deviceHelper.printDeviceDiagnostic();
@@ -172,21 +169,28 @@ void postInitWebServer(){
 void getProvidersJson(){
 	wifiHelper.checkAuthentication();
 
-	if(server.hasArg(FPSTR(MESSAGE_SERVER_ARG_NAME))){
-		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),
-							deviceHelper.getProvidersJson(server.arg(FPSTR(MESSAGE_SERVER_ARG_NAME))));
-	}
+	if(wifiHelper.isValidGetJsonRequest()){
 
-	server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT).getJson());
+		deviceHelper.printDeviceDiagnostic();
+
+		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),
+							deviceHelper.getProvidersJson(
+									wifiHelper.getNameParam(),
+									wifiHelper.getPageParam())
+								);
+	}else{
+		Serial.println(FPSTR("!!!---JSON provider not found!---!!!"));
+		wifiHelper.printRequestDetails();
+		server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT).getJson());
+	}
 }
 
 void processJson(){
 	wifiHelper.checkAuthentication();
 
-	if(server.hasArg(FPSTR(MESSAGE_SERVER_ARG_FORM_ID))
-				&& server.hasArg(MESSAGE_SERVER_ARG_REMOTE_TARGET)
-				&& server.hasArg(MESSAGE_SERVER_ARG_REMOTE_PAGE)
-				&& server.hasArg(FPSTR(MESSAGE_SERVER_ARG_VAL_JSON))){
+	if(wifiHelper.isValidProcessJsonRequest()){
+
+		deviceHelper.printDeviceDiagnostic();
 
 		return server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),deviceHelper.processJson(
 																server.arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_TARGET)),
@@ -194,9 +198,11 @@ void processJson(){
 																server.arg(FPSTR(MESSAGE_SERVER_ARG_VAL_JSON))
 															  )
 						  );
+	}else{
+		Serial.println(FPSTR("!!!---JSON processor not found! Parameters missing---!!!"));
+		wifiHelper.printRequestDetails();
+		server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT).getJson());
 	}
-
-	server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT).getJson());
 }
 
 
