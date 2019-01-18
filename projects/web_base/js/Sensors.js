@@ -17,10 +17,10 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 	divh.setAttribute('class','w3-row w3-teal');
 	divh.setAttribute('style','margin-top: 15px; height: 50px;');
 	
-	var div1h=createDivComponent('w3-quarter','Название устройства');
-	var div2h=createDivComponent('w3-quarter','Тип устр.');
-	var div3h=createDivComponent('w3-quarter','Измеряемые величины');
-	var div4h=createDivComponent('w3-quarter','Описание устройства');
+	var div1h=createDivComponent('','w3-quarter','','Название устройства');
+	var div2h=createDivComponent('','w3-quarter','','Тип устр.');
+	var div3h=createDivComponent('','w3-quarter','','Измеряемые величины');
+	var div4h=createDivComponent('','w3-quarter','','Описание устройства');
 	
 	divh.appendChild(div1h);
 	divh.appendChild(div2h);
@@ -32,10 +32,10 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 	divhv.setAttribute('class','w3-row');
 	divhv.setAttribute('style','margin-top: 1px; height: 44px;');
 	
-	var col1h=createDivComponent('w3-quarter','');
-	var col2h=createDivComponent('w3-quarter','');
-	var col3h=createDivComponent('w3-quarter','');
-	var col4h=createDivComponent('w3-quarter','');
+	var col1h=createDivComponent('','w3-quarter');
+	var col2h=createDivComponent('','w3-quarter');
+	var col3h=createDivComponent('','w3-quarter');
+	var col4h=createDivComponent('','w3-quarter');
 	
 	
 	
@@ -45,12 +45,12 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 	var sDescr=createInputComponent(sensorId,255,FIELD_DESCR_ID,'id',sensorDescr,sensorName,itemName,noId,editable);
 	
 	if(editable==undefined || !editable){
-		var cellDivButton=createDivComponent('w3-cell','');
+		var cellDivButton=createDivComponent('','w3-cell');
 		var editButton=createItemEditButton('name',sensorName,sensorDescr,undefined);
 		
 		cellDivButton.appendChild(editButton);
 		
-		var cellDivName=createDivComponent('w3-cell w3-container','');
+		var cellDivName=createDivComponent('','w3-cell w3-container');
 		cellDivName.appendChild(sName);
 		
 		col1h.appendChild(cellDivButton);
@@ -78,16 +78,16 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 		div.setAttribute('class','w3-row w3-teal');
 		div.setAttribute('style','margin-top: 2px;');
 		
-		var div1=createDivComponent('w3-threequarter');
-		var div2=createDivComponent('w3-quarter');
+		var div1=createDivComponent('','w3-threequarter');
+		var div2=createDivComponent('','w3-quarter');
 		
-		var col0=createDivComponent('w3-third',' Датчики устройства');
-		var col1=createDivComponent('w3-third','Описание');
-		var col2=createDivComponent('w3-third','Очередь');
+		var col0=createDivComponent('','w3-third','',' Датчики устройства');
+		var col1=createDivComponent('','w3-third','','Описание');
+		var col2=createDivComponent('','w3-third','','Очередь');
 		
-		var col3=createDivComponent('w3-third','Миним. значение');
-		var col4=createDivComponent('w3-third','Макс значение');
-		var col5=createDivComponent('w3-third','Поле ThingSpeak');
+		var col3=createDivComponent('','w3-third','','Миним. значение');
+		var col4=createDivComponent('','w3-third','','Макс значение');
+		var col5=createDivComponent('','w3-third','','Поле ThingSpeak');
 		
 		col0.setAttribute('style','height: 50px;');
 		col1.setAttribute('style','height: 50px;');
@@ -121,16 +121,16 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 				div.setAttribute('class','w3-row');
 				div.setAttribute('style','margin-top: 5px;');
 				
-				var div1=createDivComponent('w3-threequarter','');
-				var div2=createDivComponent('w3-quarter','');
+				var div1=createDivComponent('','w3-threequarter');
+				var div2=createDivComponent('','w3-quarter');
 				
-				var col0=createDivComponent('w3-third','');
-				var col1=createDivComponent('w3-third','');
-				var col2=createDivComponent('w3-third','');
+				var col0=createDivComponent('','w3-third');
+				var col1=createDivComponent('','w3-third');
+				var col2=createDivComponent('','w3-third');
 									
-				var col3=createDivComponent('w3-third','');
-				var col4=createDivComponent('w3-third','');
-				var col5=createDivComponent('w3-third','');
+				var col3=createDivComponent('','w3-third');
+				var col4=createDivComponent('','w3-third');
+				var col5=createDivComponent('','w3-third');
 				
 				var text0=document.createElement('div');
 				text0.setAttribute('class','w3-half');

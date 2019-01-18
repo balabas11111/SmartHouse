@@ -53,10 +53,10 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	divh.setAttribute('class','w3-row w3-teal');
 	divh.setAttribute('style','margin-top: 15px; height: 50px;');
 	
-	var div1h=createDivComponent('w3-quarter','Интервал');
-	var div2h=createDivComponent('w3-quarter','Тип/Состояние.');
-	var div3h=createDivComponent('w3-quarter','Старт/Стоп');
-	var div4h=createDivComponent('w3-quarter','Параметры');
+	var div1h=createDivComponent('','w3-quarter','','Интервал');
+	var div2h=createDivComponent('','w3-quarter','','Тип/Состояние.');
+	var div3h=createDivComponent('','w3-quarter','','Старт/Стоп');
+	var div4h=createDivComponent('','w3-quarter','','Параметры');
 	
 	divh.appendChild(div1h);
 	divh.appendChild(div2h);
@@ -68,10 +68,10 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	divhv.setAttribute('class','w3-row');
 	divhv.setAttribute('style','margin-top: 1px; height: 130px;');
 	
-	var col1h=createDivComponent('w3-quarter','');
-	var col2h=createDivComponent('w3-quarter','');
-	var col3h=createDivComponent('w3-quarter','');
-	var col4h=createDivComponent('w3-quarter','');
+	var col1h=createDivComponent('','w3-quarter');
+	var col2h=createDivComponent('','w3-quarter');
+	var col3h=createDivComponent('','w3-quarter');
+	var col4h=createDivComponent('','w3-quarter');
 	/* column 1*/
 	
 	var suf='';
@@ -91,8 +91,8 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	var ckindInt='kind'+suf;
 	
 	if(editable==undefined || !editable){
-		var cellEditButton=createDivComponent('w3-cell','');
-		var cellDeleteButton=createDivComponent('w3-cell','');
+		var cellEditButton=createDivComponent('','w3-cell');
+		var cellDeleteButton=createDivComponent('','w3-cell');
 		var editButton=createItemEditButton('id',id,name,undefined);
 		var deleteButton=createItemDeleteButton('id',id,name);
 		
@@ -104,7 +104,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	}
 	
 	var inputId=createInputSimple(cid,'id','intervals','',id,false);
-	var cellDivId=createDivComponent('w3-cell w3-container','');
+	var cellDivId=createDivComponent('','w3-cell w3-container');
 	cellDivId.appendChild(inputId);
 	setVisible(cellDivId,false);
 
@@ -113,7 +113,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	inputName.setAttribute('type','text');
 	inputName.setAttribute('required','1');
 	
-	var cellDivName=createDivComponent('','');
+	var cellDivName=createDivComponent();
 	cellDivName.appendChild(lblName);
 	cellDivName.appendChild(inputName);
 		
@@ -123,7 +123,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	
 	var lblType=createLabelSimple('lbl'+ctypeInt,ctypeInt,undefined,undefined,'Периодичность');
 	var typeSelect=document.createElement("select");
-	var cellDivType=createDivComponent('','');
+	var cellDivType=createDivComponent();
 	
 	typeSelect.id=ctypeInt;
 	typeSelect.name='type';
@@ -139,7 +139,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	/*--*/
 	var lblState=createLabelSimple('lbl'+cstateInt,cstateInt,undefined,undefined,'Состояние');
 	var stateSelect=document.createElement("select");
-	var cellDivState=createDivComponent('','');
+	var cellDivState=createDivComponent();
 	
 	stateSelect.id=cstateInt;
 	stateSelect.name='state';
@@ -158,7 +158,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	/* column 3*/
 	var lblStartTime=createLabelSimple('lbl'+cstartTime,cstartTime,undefined,undefined,'Старт');
 	var inputStartTime=createInputSimple(cstartTime,'startTime','intervals','width: 90%;','',editable);
-	var cellDivStartTime=createDivComponent('','');
+	var cellDivStartTime=createDivComponent();
 	
 	inputStartTime.setAttribute('type','datetime-local');
 	inputStartTime.setAttribute('required','1');
@@ -170,7 +170,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	/*--*/
 	var lblEndTime=createLabelSimple('lbl'+cendTime,cendTime,undefined,undefined,'Стоп ');
 	var inputEndTime=createInputSimple(cendTime,'endTime','intervals','width: 90%;','',editable);
-	var cellDivendTime=createDivComponent('','');
+	var cellDivendTime=createDivComponent();
 	
 	inputEndTime.setAttribute('type','datetime-local');
 	inputStartTime.setAttribute('required','1');
@@ -185,8 +185,8 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 	/* column 4*/
 		
 		var lblDays=createLabelSimple('lbl'+cdays,undefined,undefined,undefined,'Дни выполнения');
-		var daysDiv=createDivComponent('','');
-		var daysDivChkBox=createDivComponent('','');
+		var daysDiv=createDivComponent();
+		var daysDivChkBox=createDivComponent();
 		if(editable==undefined || !editable){
 			daysDivChkBox.id=cdays;
 		}
@@ -203,7 +203,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 		/*--*/
 		var lblTime=createLabelSimple('lbl'+ctime,ctime,undefined,undefined,'Период (сек) ');
 		var inputTime=createInputSimple(ctime,'time','intervals','width: 50%;',time,editable);
-		var timeDiv=createDivComponent('','');
+		var timeDiv=createDivComponent();
 		timeDiv.id=ctime+'Div';
 		
 		inputTime.setAttribute('type','number');
@@ -213,7 +213,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 		/*--*/
 		var lblKind=createLabelSimple('lbl'+ckindInt,ckindInt,undefined,undefined,'Тип');
 		var kindSelect=document.createElement("select");
-		var kindDiv=createDivComponent('','');
+		var kindDiv=createDivComponent();
 		
 		kindSelect.id=ckindInt;
 		kindSelect.name='kind';

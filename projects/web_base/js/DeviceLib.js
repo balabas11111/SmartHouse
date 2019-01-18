@@ -36,29 +36,6 @@ function w3_close(){
 	document.getElementById("leftSidebar").style.display = "none";
 };
 /*---------------------------------------------------------------------*/
-function hideComponent(componentId){
-	var comp=document.getElementById(componentId);
-	setVisible(comp,false);
-};
-
-function showComponent(componentId){
-	var comp=document.getElementById(componentId);
-	setVisible(comp,true);
-};
-
-function isVisible(comp){
-	return (comp!=undefined && comp.style!=undefined && comp.style.display=='block')
-}
-
-function setVisible(comp,visible){
-	if(comp!=undefined){
-		if(visible){
-			comp.style.display = "block";
-		}else{
-			comp.style.display = "none";
-		}
-	}
-}
 
 function markComponentsArrayValidity(compons,valid){
 	if(compons!=undefined){
@@ -864,14 +841,6 @@ function constructFormDataAsJson(form){
 	
 	return formData;
 }
-/*
-const formToJSON = elements => [].reduce.call(elements, (data, element) => {
-	  
-	  data[element.name] = element.value;
-	  return data;
-
-	}, {});
-	*/
 
 
 

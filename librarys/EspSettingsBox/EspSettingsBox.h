@@ -22,7 +22,9 @@
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
 
-class EspSettingsBox: public Initializable{
+const PROGMEM char EspSettingsBox_NAME[] = "EspSettingsBox";
+
+class EspSettingsBox: public Initializable,Nameable{
 
 public:
 	EspSettingsBox();
@@ -657,6 +659,9 @@ public:
 		return result;
 	}
 
+	String getName(){
+		return FPSTR(ESPSETTINGSBOX_NAME);
+	}
 //--------------------device settings kind (page)-------------------
 	#ifdef ESP8266
 		String DeviceId = "SENS_"+String(ESP.getChipId());

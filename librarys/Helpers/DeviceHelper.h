@@ -13,13 +13,16 @@
 #include <Arduino.h>
 #include "Measurable.h"
 #include "AbstractItem.h"
+#include "Nameable.h"
 #include "JSONprovider.h"
 #include "JSONprocessor.h"
 #include "StatusMessage.h"
 //#include "ESP8266WebServer.h"
 #include "TimeTrigger.h"
 
-class DeviceHelper:public Loopable{
+const PROGMEM char DeviceHelper_NAME[] = "deviceHelper";
+
+class DeviceHelper:public Loopable, public Nameable, JSONprocessor{
 
 public:
 	DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
@@ -50,6 +53,13 @@ public:
 	void prepareTrigger();
 	void executePostponedCommand();
 
+	String getName(){
+		return FPSTR(DeviceHelper_NAME);
+	}
+
+	StatusMessage processJson(String page,String json){
+		return StatusMessage(STATUS_UNKNOWN_INT);
+	}
 private:
 	Loopable** loopItems;
 	uint8_t loopItemsSize;
