@@ -7,7 +7,6 @@
 #include "Arduino.h"
 #include <DeviceHelper.h>
 #include "ESP_Consts.h"
-#include "interfaces/JSONprovider.h"
 #ifdef ESP32
 #include "SPIFFS.h"
 #endif
@@ -19,6 +18,7 @@
 DeviceHelper::DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
 							JSONprocessor** jsonProcessors,uint8_t jsonProcessorsSize,
 							JSONprovider** jsonProviders,uint8_t jsonProvidersSize,
+							SendAble** senders,uint8_t sendersSize,
 							long minAlarmInterval){
 	this->loopItems=loopItems;
 	this->loopItemsSize=loopItemsSize;
@@ -28,6 +28,9 @@ DeviceHelper::DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
 
 	this->jsonProviders=jsonProviders;
 	this->jsonProvidersSize=jsonProvidersSize;
+
+	this->senders=senders;
+	this->sendersSize=sendersSize;
 
 	this->alarmMode=false;
 	this->minAlarmInterval=minAlarmInterval*1000;

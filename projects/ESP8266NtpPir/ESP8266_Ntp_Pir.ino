@@ -17,6 +17,7 @@
 #include "interfaces/JSONprovider.h"
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/Loopable.h"
+#include "interfaces/SendAble.h"
 
 #include "I2Chelper.h"
 #include "WiFiHelper.h"
@@ -77,10 +78,12 @@ Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeService,&
 AbstractItem* sensors[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
 JSONprovider* jsonProviders[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeService,&timeIntervalService};
 JSONprocessor* jsonProcessors[]={&timeIntervalService,&thingSpeakHelper,&espSettingsBox};
+SendAble* senders[]={&thingSpeakHelper};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
 						  jsonProcessors,ARRAY_SIZE(jsonProcessors),
 						  jsonProviders,ARRAY_SIZE(jsonProviders),
+						  senders,ARRAY_SIZE(senders),
 						  120000);
 
 void initComponents(){
@@ -150,9 +153,6 @@ void playPostInitSounds(){
 }
 //-------------Web server functions-------------------------------------
 void postInitWebServer(){
-	server.on(FPSTR(URL_SUBMIT_FORM_COMMANDS), HTTP_POST, [](){
-		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), executeCommand());
-	});
 	server.on(FPSTR(URL_SUBMIT_FORM_SENSORS), HTTP_POST, [](){
 		wifiHelper.checkAuthentication();
 		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), setSensorJson());
@@ -167,7 +167,9 @@ void postInitWebServer(){
 }
 
 void getProvidersJson(){
-	wifiHelper.checkAuthentication();
+	if(!wifiHelper.checkAuthentication()){
+		return;
+	}
 
 	if(wifiHelper.isValidGetJsonRequest()){
 

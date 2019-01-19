@@ -11,12 +11,12 @@
 #include <Arduino.h>
 #include "AbstractItem.h"
 
-#include <interfaces/Initializable.h>
+#include "interfaces/Initializable.h"
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/JSONprovider.h"
-#include <interfaces/Loopable.h>
+#include "interfaces/Loopable.h"
 #include "interfaces/Measurable.h"
-#include "interfaces/Nameable.h"
+#include "interfaces/SendAble.h"
 
 
 #include "StatusMessage/StatusMessage.h"
@@ -30,6 +30,7 @@ public:
 	DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
 				JSONprocessor** jsonProcessors,uint8_t jsonProcessorsSize,
 				JSONprovider** jsonProviders,uint8_t jsonProvidersSize,
+				SendAble** senders,uint8_t sendersSize,
 				long minAlarmInterval);
 	void displayDetails();
 	boolean loop();
@@ -72,6 +73,9 @@ private:
 
 	JSONprovider** jsonProviders;
 	uint8_t jsonProvidersSize;
+
+	SendAble** senders;
+	uint8_t sendersSize;
 
 	boolean alarmMode;
 	unsigned long minAlarmInterval;

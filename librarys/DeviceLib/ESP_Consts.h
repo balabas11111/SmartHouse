@@ -617,7 +617,6 @@ const PROGMEM char URL_INDEX[]="/index";
 const PROGMEM char URL_SETTINGS[]="/settings";
 const PROGMEM char URL_EDIT[]="/edit";
 
-const PROGMEM char URL_SUBMIT_FORM_COMMANDS[]="/submitForm_commands";
 const PROGMEM char URL_SUBMIT_FORM_SETTINGS[]="/submitForm_settings";
 const PROGMEM char URL_GET_JSON_SETTINGS[]="/getJson_settings";
 const PROGMEM char URL_GET_JSON_SENSORS[]="/getJson_sensors";
