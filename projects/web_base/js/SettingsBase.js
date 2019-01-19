@@ -103,8 +103,8 @@ function openTab(tabName,headerName) {
 			currentItemPreffix='currentInterval';
 			itemsTagName='intervals';
 			validateValuesHandler=validateCurrentIntervalForm;
-			submitValuesUrl='/processJson?name=TimeIntervalService';
-			getValuesUrl='/getJson?name=TimeIntervalService';
+			submitValuesUrl='/processJson?name=timeIntervalService';
+			getValuesUrl='/getJson?name=timeIntervalService';
 			currentFormId=getComponentIdWithSuffix(currentItemPreffix,FORM_SUFFIX);
 		}
 		

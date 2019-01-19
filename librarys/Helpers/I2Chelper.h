@@ -9,8 +9,9 @@
 #define LIBRARIES_I2CHELPER_I2CHELPER_H_
 
 #include <Arduino.h>
-#include "Initializable.h"
 #include "Wire.h"
+
+#include "interfaces/Initializable.h"
 
 class I2Chelper: public Initializable{
 

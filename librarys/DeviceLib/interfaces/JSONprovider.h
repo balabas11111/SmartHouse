@@ -1,7 +1,7 @@
 /*
  * JSONprovider.h
  *
- *  Created on: 1 ÿíâ. 2019 ã.
+ *  Created on: 1 ï¿½ï¿½ï¿½. 2019 ï¿½.
  *      Author: Vitaliy
  */
 
@@ -9,7 +9,7 @@
 #define LIBRARIES_DEVICELIB_JSONPROVIDER_H_
 
 #include "Arduino.h"
-#include "Nameable.h"
+#include "interfaces/Nameable.h"
 
 #define KIND_PINDIGITAL "KIND_PINDIGITAL"
 #define KIND_SENSOR "KIND_SENSOR"

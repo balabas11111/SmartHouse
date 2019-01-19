@@ -16,7 +16,7 @@
 #include "Time/NtpTimeClientService.h"
 #include "TM1637.h"
 #include "TimeTrigger.h"
-#include "Loopable.h"
+#include "interfaces/Loopable.h"
 
 #define MODE_TIME_REFRESH_INTERVAL 500
 #define MODE_DATE_REFRESH_INTERVAL 1000

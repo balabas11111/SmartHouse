@@ -12,7 +12,7 @@
 #include "TimeTrigger.h"
 #include <FunctionalInterrupt.h>
 #include <AbstractItem.h>
-#include <Loopable.h>
+#include <interfaces/Loopable.h>
 
 const PROGMEM char PinDigital_name[]="PinDigital";
 const PROGMEM char PinDigital_highLow[]="HIGH/LOW";

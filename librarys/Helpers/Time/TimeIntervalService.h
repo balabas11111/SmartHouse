@@ -12,10 +12,12 @@
 #include "ArduinoJson.h"
 #include "Time/NtpTimeClientService.h"
 #include "EspSettingsBox.h"
-#include "JSONprovider.h"
-#include "JSONprocessor.h"
-#include "Loopable.h"
-#include "Initializable.h"
+
+#include "interfaces/Initializable.h"
+#include "interfaces/JSONprovider.h"
+#include "interfaces/JSONprocessor.h"
+#include "interfaces/Loopable.h"
+
 #include "FunctionalInterrupt.h"
 #include "DS3231.h"
 #include "TimeTrigger.h"
@@ -23,58 +25,17 @@
 
 #define SEC_IN_DAY 24*60*60
 #define SEC_IN_WEEK 7*24*60*60
-/*
-const char* const IntervalState_Names[] PROGMEM={
-		"NEW", "WAIT", "ACTIVE", "FINISHED", "TO_DELETE", "INACTIVE"
-};
-const char* const IntervalCompNow_Names[] PROGMEM={
-		"NOW_IN_FUTURE_OF_INTERVAL", "NOW_IN_INTERVAL", "NOW_IN_PAST_OF_INTERVAL"
-};
-const char* const IntervalType_Names[] PROGMEM={
-		"ONCE", "PERIODIC", "DAILY", "MULTIDAILY", "WEEKLY", "MONTHLY", "QUATERLY"
-};
-*/
-#ifndef CUSTOM_TIME_SERVICE_PARAMS
-
-	#define ALARM_SIZE 10
-
-	#define INNACTIVE_INTERVAL_INDEX 5
-	#define MULTIDAILY_INTERVAL_INDEX 3
-	#define PERIODIC_INTERVAL_INDEX 1
-
-	#define TIME_SERV_SERV_VALS 1
-
-const char TimeIntervalService_ServVals[] PROGMEM="\
-,\"innactiveIndex\":\"5\",\"multidailyIndex\":\"3\",\"periodicIndex\":\"1\"\
-,\"intervalType\":[\"Единожды\", \"Периодически\", \"Ежедневно\", \"По дням\", \"Еженедельно\", \"Ежемесячно\", \"Ежеквартально\"]\
-,\"intervalState\":[\"Новый\", \"Ожидает\", \"Выполняется\", \"Окончен\", \"К удалению\", \"Неактивный\"]\
-,\"dayOfWeekShort\":[\"Mo\",\"Tu\",\"We\",\"Th\",\"Fr\",\"Sa\",\"Su\"]\
-,\"dayOfWeek\":[\"Понедельник\",\"Вторник\",\"Среда\",\"Четверг\",\"Пятница\",\"Суббота\",\"Воскресенье\"]\
-,\"intervalKindId\":[\"ALARM\", \"SOCKET_1_ON\"]\
-,\"intervalKind\":[\"Будильник\", \"Розетка 1 - включение\"]";
-
-#endif
-
-const char* const IntervalType_Names[] PROGMEM={
-		"Единожды", "Периодически", "Ежедневно", "По дням", "Еженедельно", "Ежемесячно", "Ежеквартально"
-};
-const char* const IntervalState_Names[] PROGMEM={
-		"Новый", "Ожидает", "Выполняется", "Окончен", "К удалению", "Неактивный"
-};
-const char* const IntervalKind_Names[] PROGMEM={
-		"Будильник", "Розетка 1 - включение"
-};
-
-const char* const IntervalCompNow_Names[] PROGMEM={
-		"NOW_IN_FUTURE_OF_INTERVAL", "NOW_IN_INTERVAL", "NOW_IN_PAST_OF_INTERVAL"
-};
 
 const char TimeIntervalService_EMPTY_DAYS[] PROGMEM ="0,0,0,0,0,0,0";
 
 const char TimeIntervalService_ID[] PROGMEM ="123";
-const char TimeIntervalService_NAME[] PROGMEM ="TimeIntervalService";
+const char TimeIntervalService_NAME[] PROGMEM ="timeIntervalService";
 const char TimeIntervalService_FileName_NAME[] PROGMEM ="timeIntServ";
 const char TimeIntervalService_DESCR[] PROGMEM ="Service to schedule periodic executions";
+
+const char* const IntervalCompNow_Names[] PROGMEM={
+		"NOW_IN_FUTURE_OF_INTERVAL", "NOW_IN_INTERVAL", "NOW_IN_PAST_OF_INTERVAL"
+};
 
 typedef enum {
   NOW_IN_FUTURE_OF_INTERVAL, NOW_IN_INTERVAL, NOW_IN_PAST_OF_INTERVAL
@@ -108,16 +69,6 @@ const PROGMEM char MESSAGE_ERROR_TIME_INTERVAL_SERVICE_UPDATE[]        = "Error 
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_OK[]                   = "{\"status\":\"Ok\",\"message\":\"Ok\"}";
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR[]                = "{\"status\":\"Error\",\"item\":\"Error update time Interval\"}";
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR_MISSING_PARAMS[] = "{\"status\":\"Error\",\"item\":\"Required params missing\"}";
-/*
-const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_id[]        = "id";
-const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_name[]      = "name";
-const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_type[]      = "type";
-const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_startTime[] = "startTime";
-const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_endTime[]   = "endTime";
-const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_state[]     = "state";
-const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_days[]      = "days";
-const PROGMEM char SERVER_ARG_TIME_INTERVAL_SERVICE_kind[]     = "kind";
-*/
 
 class TimeIntervalService: public Initializable, public Loopable, public JSONprovider, public JSONprocessor {
 public:
@@ -315,6 +266,7 @@ public:
 
 		boolean ok=false;
 		StatusMessage sm=StatusMessage(STATUS_UNKNOWN_INT);
+		String name="";
 
 		if(json.length()>0){
 			StaticJsonBuffer<1024> jsonBuffer;
@@ -325,7 +277,7 @@ public:
 			if(root.success()){
 
 				uint8_t id=root["id"];
-				String name=root["name"].as<char*>();
+				name=root["name"].as<char*>();
 				uint8_t type=root["type"];
 				uint32_t startTime=root["startTime"];
 				uint32_t endTime=root["endTime"];
@@ -337,17 +289,18 @@ public:
 				ok=updateInterval(id,name,type,startTime,endTime,time,state,days,kind);
 
 				if(!ok){
-					sm.setStatus(STATUS_UPDATE_ERROR_INT);
+					sm.setStatusCode(STATUS_UPDATE_ERROR_INT);
 				}
 			}else{
-				sm.setStatus(STATUS_PARSE_ERROR_INT);
+				sm.setStatusCode(STATUS_PARSE_ERROR_INT);
 			}
 		}else{
-			sm.setStatus(STATUS_INVALID_LENGTH_INT);
+			sm.setStatusCode(STATUS_INVALID_LENGTH_INT);
 		}
 
 	    if(ok && saveToFile()){
-	    	sm.setStatus(STATUS_OK_INT);
+	    	sm.setStatusCode(STATUS_OK_INT);
+	    	sm.setMessage(name);
 	    }
 
 	    return sm;

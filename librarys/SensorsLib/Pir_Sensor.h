@@ -13,7 +13,7 @@
 #include <PinDigital.h>
 #include "Arduino.h"
 #include "TimeTrigger.h"
-#include "Loopable.h"
+#include "interfaces/Loopable.h"
 #include "AbstractItem.h"
 
 const PROGMEM char PirSensor_name[]="PirSensor";

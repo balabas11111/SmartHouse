@@ -8,10 +8,25 @@
 #ifndef PROJECTCONSTS_H_
 #define PROJECTCONSTS_H_
 
+#define DEVICE_LOCALE_RU
+
+#ifdef DEVICE_LOCALE_RU
+	#include <projectConstsLoc_Ru.h>
+	#include <Locales/ConstsLoc_Ru.h>
+#endif
+
+#ifdef DEVICE_LOCALE_EN
+	#include <projectConstsLoc_En.h>
+	#include <ConstsLoc_En.h>
+#endif
+
 #define DEVICE_FIRMWARE_VER "v 2.0"
 #define DEVICE_KIND "NTPclock Alarm BME-280 PIR 4D_display ThingSpeak"
-#define DEVICE_DESCR "NTP часы, будильник, Температура/Влажность, Датчик движения"
-#define DEVICE_LOCATION "Размещение часов"
+
+#ifndef DEVICE_LOCALE
+	#define DEVICE_DESCR "NTP часы, будильник, Температура/Влажность, Датчик движения"
+	#define DEVICE_LOCATION "Размещение часов"
+#endif
 
 #define GET_FILES_ALLOWED 3
 
@@ -39,6 +54,25 @@
 
 //specific settings for project
 //#define HAS_LOCAl_CLOCK 1
+//---------------------TimeIntervalService parameters-------------------------
+#define CUSTOM_TIME_SERVICE_PARAMS 1
+#define CUSTOM_TIME_SERVICE_LOC_PARAMS 1
 
+#define ALARM_SIZE 10
+
+#define INNACTIVE_INTERVAL_INDEX 5
+#define MULTIDAILY_INTERVAL_INDEX 3
+#define PERIODIC_INTERVAL_INDEX 1
+
+#define TIME_SERV_SERV_VALS 1
+
+const char TimeIntervalService_ServVals[] PROGMEM="\
+,\"innactiveIndex\":\"5\",\"multidailyIndex\":\"3\",\"periodicIndex\":\"1\"\
+,\"intervalKindId\":[\"ALARM\", \"SOCKET_1_ON\"]\"";
+
+const char* const IntervalKind_Ids[] PROGMEM={
+		"ALARM", "SOCKET_1_ON"
+};
+//---------------------------------------------------------------------------
 
 #endif /* PROJECTCONSTS_H_ */

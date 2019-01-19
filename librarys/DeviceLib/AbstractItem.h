@@ -11,7 +11,7 @@
 #include "Arduino.h"
 #include "AbstractitemReq.h"
 #include "ESP_Consts.h"
-#include "JSONprovider.h"
+#include "interfaces/JSONprovider.h"
 
 const char FIELD_DESCR[] PROGMEM ="descr";
 const char FIELD_MIN_VAL[] PROGMEM ="minVal";

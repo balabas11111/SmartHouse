@@ -8,21 +8,23 @@
 #ifndef LIBRARIES_PINDIGITAL_DeviceHelper_H_
 #define LIBRARIES_PINDIGITAL_DeviceHelper_H_
 
-#include <Loopable.h>
-#include <Initializable.h>
 #include <Arduino.h>
-#include "Measurable.h"
 #include "AbstractItem.h"
-#include "Nameable.h"
-#include "JSONprovider.h"
-#include "JSONprocessor.h"
-#include "StatusMessage.h"
-//#include "ESP8266WebServer.h"
+
+#include <interfaces/Initializable.h>
+#include "interfaces/JSONprocessor.h"
+#include "interfaces/JSONprovider.h"
+#include <interfaces/Loopable.h>
+#include "interfaces/Measurable.h"
+#include "interfaces/Nameable.h"
+
+
+#include "StatusMessage/StatusMessage.h"
 #include "TimeTrigger.h"
 
 const PROGMEM char DeviceHelper_NAME[] = "deviceHelper";
 
-class DeviceHelper:public Loopable, public Nameable, JSONprocessor{
+class DeviceHelper:public Loopable, public JSONprocessor{
 
 public:
 	DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
@@ -36,10 +38,10 @@ public:
 	boolean init(Initializable** initItems,uint8_t initItemsSize);
 	void update(AbstractItem** sensors,uint8_t sensorsSize);
 
-	String processJson(String target,String page,String json);
 	String getProvidersJson(String provider,String page);
 	String getProvidersJson();
 
+	StatusMessage processJson(String target,String page,String json);
 	String getJson(JSONprovider** sensors,uint8_t size);
 	String getJsonAbstractItems(AbstractItem** sensors,uint8_t size);
 
@@ -58,6 +60,7 @@ public:
 	}
 
 	StatusMessage processJson(String page,String json){
+		printProcessParams(page, json);
 		return StatusMessage(STATUS_UNKNOWN_INT);
 	}
 private:

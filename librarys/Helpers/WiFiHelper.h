@@ -11,8 +11,8 @@
 
 #include <ESP_Consts.h>
 #include "Arduino.h"
-#include "Loopable.h"
-#include "Initializable.h"
+#include "interfaces/Loopable.h"
+#include "interfaces/Initializable.h"
 #include "EspSettingsBox.h"
 #include "FS.h"
 #ifdef ESP8266
@@ -219,7 +219,7 @@ public:
 	//-------------------------------
 	String executeGetRequest(String url){
 		if(url==""){
-			return "";
+			return "EmptyUrl";
 		}
 
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));

@@ -12,19 +12,21 @@
 //#include "ESP8266WiFi.h"
 #include "FS.h"
 #include "ArduinoJson.h"
-#include "Initializable.h"
-#include "AbstractItem.h"
 #include "ESP_Consts.h"
 #include "IPAddress.h"
 #include "ESPExtraSettingsBox.h"
 #include "projectConsts.h"
+
+#include "AbstractItem.h"
+#include "interfaces/Initializable.h"
+#include "interfaces/JSONprocessor.h"
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
 
 const PROGMEM char EspSettingsBox_NAME[] = "EspSettingsBox";
 
-class EspSettingsBox: public Initializable,Nameable{
+class EspSettingsBox: public Initializable, public JSONprocessor {
 
 public:
 	EspSettingsBox();
@@ -45,6 +47,15 @@ public:
 
 	boolean getSaveRequired(){
 		return saveRequired;
+	}
+
+	String getName(){
+		return FPSTR(ESPSETTINGSBOX_NAME);
+	}
+
+	StatusMessage processJson(String page,String json){
+		printProcessParams(page, json);
+		return StatusMessage(STATUS_UNKNOWN_INT);
 	}
 
 	void beginSetSettingsValue(String page){
@@ -594,18 +605,6 @@ public:
 		Serial.println(FPSTR("-----------------JSON---------------------"));
 		Serial.println(getJson(FPSTR(SETTINGS_KIND_device)));
 	}
-/*
-	String getSimpleJsonPublishUrl(){
-		return FPSTR(ESPSETTINGSBOX_GET_SIMPLE_JSON_PUBLISH_URL);
-	}
-	String getJsonPublishUrl(){
-		return FPSTR(ESPSETTINGSBOX_GET_JSON_PUBLISH_URL);
-	}
-	String getSetValueUrl(){
-		return FPSTR(ESPSETTINGSBOX_SET_JSON_PUBLISH_URL);
-	}
-*/
-
 
 	String getDeviceNameFull(){
 		String result=FPSTR(MESSAGE_THINGSPEAK_NAME_FOR_REQUEST_EQ);
@@ -659,9 +658,6 @@ public:
 		return result;
 	}
 
-	String getName(){
-		return FPSTR(ESPSETTINGSBOX_NAME);
-	}
 //--------------------device settings kind (page)-------------------
 	#ifdef ESP8266
 		String DeviceId = "SENS_"+String(ESP.getChipId());

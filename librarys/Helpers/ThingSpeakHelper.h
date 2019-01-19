@@ -12,10 +12,15 @@
 #include "EspSettingsBox.h"
 #include "WiFiHelper.h"
 #include "AbstractItem.h"
-#include "StatusMessage.h"
+#include "StatusMessage/StatusMessage.h"
 #include "ESP_Consts.h"
+#include "Consts/CommandsConsts.h"
+#include "interfaces/JSONprocessor.h"
+#include "interfaces/SendAbleAbstractItems.h"
 
-class ThingSpeakHelper {
+const PROGMEM char ThingSpeakHelper_NAME[] = "thingSpeakHelper";
+
+class ThingSpeakHelper: public JSONprocessor, public SendAbleAbstractItems {
 public:
 	ThingSpeakHelper(EspSettingsBox* espSettingsBox,WiFiHelper* wifiHelper){
 		this->espSettingsBox=espSettingsBox;
@@ -23,8 +28,15 @@ public:
 	}
 	virtual ~ThingSpeakHelper(){};
 
-	void sendItemsToThingSpeak(AbstractItem** items,uint8_t size){
-		if(espSettingsBox->isThingSpeakEnabled){
+	String getName() override{
+		return FPSTR(ThingSpeakHelper_NAME);
+	}
+
+	StatusMessage sendItems(AbstractItem** items,uint8_t size) override{
+
+		if(espSettingsBox->isThingSpeakEnabled
+				&& items!=nullptr
+				&& size!=0){
 			Serial.println(FPSTR(MESSAGE_THINGSPEAK_SEND_STARTED));
 
 			uint8_t count=0;
@@ -40,11 +52,18 @@ public:
 			}
 
 			if(params!=""){
-				wifiHelper->executeGetRequest(baseUrl+espSettingsBox->thSkWKey+params);
+				String res=wifiHelper->executeGetRequest(baseUrl+espSettingsBox->thSkWKey+params);
 				Serial.print(count);
-				Serial.println(FPSTR(MESSAGE_DONE));
-				Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+				if(res!=""){
+					return StatusMessage(STATUS_SEND_ERROR_INT,res);
+				}else{
+					return StatusMessage(STATUS_OK_SENT_INT);
+				}
 			}
+
+			return StatusMessage(STATUS_OK_NO_TO_SEND_INT);
+		}else{
+			return StatusMessage(STATUS_OK_DISABLED_INT);
 		}
 	}
 
@@ -143,6 +162,11 @@ public:
 		result+=FPSTR(MESSAGE_THINGSPEAK_SET_CHANNELS);
 
 		return result;
+	}
+
+	StatusMessage processJson(String page,String json){
+		printProcessParams(page, json);
+		return StatusMessage(STATUS_UNKNOWN_INT);
 	}
 
 private:

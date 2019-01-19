@@ -14,9 +14,9 @@
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266WiFi.h>
 
-#include "JSONprovider.h"
-#include "JSONprocessor.h"
-#include "Loopable.h"
+#include "interfaces/JSONprovider.h"
+#include "interfaces/JSONprocessor.h"
+#include "interfaces/Loopable.h"
 
 #include "I2Chelper.h"
 #include "WiFiHelper.h"
@@ -34,14 +34,13 @@
 
 #include "DS18D20_Sensor.h"
 #include "BME280_Sensor.h"
-#include "StatusMessage.h"
+#include "StatusMessage/StatusMessage.h"
 #include "Display_Custom/DisplayHelper_TM1637_Clock_PIR.h"
 
 #include "TM1637.h"
 ESPSett_Ntp espSett_Ntp;
 
 ESPExtraSettingsBox* extraBoxes[]={&espSett_Ntp};
-
 EspSettingsBox espSettingsBox(extraBoxes,ARRAY_SIZE(extraBoxes));
 
 BeeperB beeper(D5,HIGH,LOW,true,false);
@@ -77,7 +76,7 @@ Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeService,&
 
 AbstractItem* sensors[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
 JSONprovider* jsonProviders[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeService,&timeIntervalService};
-JSONprocessor* jsonProcessors[]={&timeIntervalService};
+JSONprocessor* jsonProcessors[]={&timeIntervalService,&thingSpeakHelper,&espSettingsBox};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
 						  jsonProcessors,ARRAY_SIZE(jsonProcessors),
@@ -85,6 +84,7 @@ DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
 						  120000);
 
 void initComponents(){
+	thingSpeakHelper.setItems(sensors, ARRAY_SIZE(sensors));
 	displayHelper.init();
 	beeper.init();
 	i2cHelper.init();
@@ -192,12 +192,13 @@ void processJson(){
 
 		deviceHelper.printDeviceDiagnostic();
 
-		return server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),deviceHelper.processJson(
-																server.arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_TARGET)),
-																server.arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_PAGE)),
-																server.arg(FPSTR(MESSAGE_SERVER_ARG_VAL_JSON))
-															  )
-						  );
+		StatusMessage sm=deviceHelper.processJson(
+				server.arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_TARGET)),
+				server.arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_PAGE)),
+				server.arg(FPSTR(MESSAGE_SERVER_ARG_VAL_JSON))
+			  );
+
+		return server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), sm.getJson());
 	}else{
 		Serial.println(FPSTR("!!!---JSON processor not found! Parameters missing---!!!"));
 		wifiHelper.printRequestDetails();
@@ -262,7 +263,7 @@ String setSensorJson(){
 	uint8_t argsProcessed=0;
 
 	String sensorName=server.arg(FPSTR(MESSAGE_SERVER_ARG_CURRENT_SENSOR_NAME));
-	String status=FPSTR(STATUS_NOT_FOUND);
+	String status=StatusMessage::getStatusDescrByIndex(STATUS_UNKNOWN_INT);
 
 	Serial.print(FPSTR(MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_NAME_EQ));
 	Serial.println(sensorName);
@@ -283,7 +284,7 @@ String setSensorJson(){
 			if(req.valid){
 				argsProcessed++;
 				if(aitem->setFieldFromRequest(req)){
-					status=FPSTR(STATUS_OK);
+					status=StatusMessage::getStatusDescrByIndex(STATUS_OK_INT);
 				}
 			}
 		}
@@ -316,7 +317,7 @@ String executeCommand(){
 		Serial.println(FPSTR(MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED));
 		deviceHelper.createPostponedCommand(command);
 
-		sm.setValues(STATUS_OK_INT,FPSTR(MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED_MSG));
+		sm.setStatusCode(STATUS_OK_ACCEPTED_INT);
 	}
 	if(command==FPSTR(MESSAGE_SERVER_ARG_VAL_recreateThingSpeak)){
 		sm=thingSpeakHelper.recreateThingSpeaChannelskWithCheck(sensors,ARRAY_SIZE(sensors));
@@ -324,7 +325,7 @@ String executeCommand(){
 	if(command==FPSTR(MESSAGE_SERVER_ARG_VAL_deleteSettings)){
 		String msg=FPSTR(MESSAGE_COMMANDS_FILES_DELETED);
 			   msg+=String(espSettingsBox.deleteSettingsFiles());
-		sm.setValues(STATUS_OK_INT,msg);
+		sm.setStatusCode(STATUS_OK_DELETED_INT);
 	}
 
 	return sm.getJson();
@@ -337,7 +338,7 @@ void executePostPonedCommand(){
 
 //-------------------------Thing speak functions---------------------
 void executeThingSpeakPost(){
-	thingSpeakHelper.sendItemsToThingSpeak(sensors, ARRAY_SIZE(sensors));
+	thingSpeakHelper.send();
 }
 //------------------------------MQTT functions-----------------------------------------------------
 

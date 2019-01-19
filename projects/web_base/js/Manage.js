@@ -1,7 +1,7 @@
 function openCommandConfirmPopup(message,target,action,displayCloseBtn){
 	
 	var inputNames=['remote_target','remote_page','val_json','action'];
-	var inputValues=[target,'command','{"command": "'+action+'"}',action];
+	var inputValues=[target,'command',action,action];
 	
 	var btnNames=['Подтвердить','Отменить'];
 	var btnToolTips=['Подтвердить','Отменить'];
@@ -14,13 +14,16 @@ function openCommandConfirmPopup(message,target,action,displayCloseBtn){
 
 function submitManageCommand(){
 	var action=confirmDlgGetGetInputValue('action');
+	var remote_target=confirmDlgGetGetInputValue('remote_target');
+	var remote_page=confirmDlgGetGetInputValue('remote_page');
+	var val_json=confirmDlgGetGetInputValue('val_json');
 	
 	var form=getComponentById('confirm_form');
 	var msg=getComponentById('confirm_msg');
 	
 	showMessage(msg,'Отправляю команду '+command+' на устройство...','w3-yellow');
 	
-	postForm(form,'/submitForm_commands',undefined,constructFormDataDefault,undefined,getCurrentCommandHandler,msg);
+	postForm(form,'/processJson?name='+remote_target,undefined,constructFormDataDefault,undefined,getCurrentCommandHandler,msg);
 }
 
 function getCurrentCommandHandler(data){

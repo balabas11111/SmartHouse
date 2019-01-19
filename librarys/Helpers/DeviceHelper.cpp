@@ -7,7 +7,7 @@
 #include "Arduino.h"
 #include <DeviceHelper.h>
 #include "ESP_Consts.h"
-#include "JSONprovider.h"
+#include "interfaces/JSONprovider.h"
 #ifdef ESP32
 #include "SPIFFS.h"
 #endif
@@ -187,20 +187,24 @@ String DeviceHelper::processAlarm(AbstractItem** sensors, uint8_t sensorsSize){
 	return alarmMessage;
 }
 
-String DeviceHelper::processJson(String target,String page,String json){
-	yield();
-	if(target==NULL || target.length()==0){
-		return StatusMessage(STATUS_INVALID_LENGTH_INT).getJson();
-	}
-
-	for(uint8_t i=0;i<jsonProcessorsSize;i++){
-		if(jsonProcessors[i]->checkNamePage(target,page)){
-			return jsonProcessors[i]->processJson(page,json).getJson();
+StatusMessage DeviceHelper::processJson(String target,String page,String json){
+		yield();
+		if(target==NULL || target.length()==0){
+			return StatusMessage(STATUS_INVALID_LENGTH_INT);
 		}
-	}
 
-	return StatusMessage(STATUS_NOT_FOUND_INT).getJson();
-}
+		if(checkNamePage(target, page)){
+			return processJson(page,json);
+		}
+
+		for(uint8_t i=0;i<jsonProcessorsSize;i++){
+			if(jsonProcessors[i]->checkNamePage(target,page)){
+				return jsonProcessors[i]->processJson(page,json);
+			}
+		}
+
+		return StatusMessage(STATUS_NOT_FOUND_INT);
+	}
 
 String DeviceHelper::getProvidersJson(String provider,String page){
 	yield();

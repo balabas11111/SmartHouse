@@ -8,9 +8,9 @@
 #ifndef LIBRARIES_HELPERS_NTPTIMECLIENTSERVICE_H_
 #define LIBRARIES_HELPERS_NTPTIMECLIENTSERVICE_H_
 
-#include "Initializable.h"
-#include "JSONprovider.h"
-#include "Loopable.h"
+#include "interfaces/Initializable.h"
+#include "interfaces/JSONprovider.h"
+#include "interfaces/Loopable.h"
 
 #include "EspSettingsBox.h"
 #include "ESPSett_Ntp.h"
@@ -42,9 +42,6 @@ const char NTP_TIME_CLIENT_NTP_DETAILS[] PROGMEM = "---NTP details---";
 const char NTP_TIME_CLIENT_RTC_DETAILS[] PROGMEM = "---RTC details---";
 const char NTP_TIME_CLIENT_UNIX_TIME_EQ[] PROGMEM = " unixTime=";
 const char NTP_TIME_CLIENT_DATE_TIME_EQ[] PROGMEM = " DateTime=";
-
-const char* DAYS_OF_WEEK_SHORT[7]={"Mo","Tu","We","Th","Fr","Sa","Su"};
-const char* DAYS_OF_WEEK[7]={"Понедельник","Вторник","Среда","Четверг","Пятница","Суббота","Воскресенье"};
 
 class NtpTimeClientService: public Initializable, public Loopable,public JSONprovider {
 public:

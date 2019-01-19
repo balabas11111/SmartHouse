@@ -225,113 +225,6 @@ function addChildComponentIfNotExists(comp,item){
 	}
 	
 }
-
-function arrayToCheckBoxList(component,namePreffix,valArray,nameArray,editable,clazz,style){
-	if(component!=undefined){
-	
-		component.innerHTML = '';
-		var cbx=null;
-		var lbl=null;
-		
-		var itemCount=valArray.length;
-		
-		if(nameArray.length>itemCount){
-			itemCount=nameArray.length;
-		}
-		
-		for(i = 0; i<itemCount; i++){ 
-			
-			var cbxname='cb_'+namePreffix+'_'+i;
-			cbx = document.createElement('input');
-			cbx.setAttribute('id',cbxname);
-			cbx.setAttribute('name',cbxname);
-			cbx.setAttribute('type','checkbox');
-			if(clazz!=undefined && clazz.length>0){
-				cbx.setAttribute('class',clazz);
-			}
-			if(style!=undefined && style.length>0){
-				cbx.setAttribute('style',style);
-			}
-			setComponentValue(cbx,valArray[i]);
-			if(editable==undefined || !editable){
-				cbx.setAttribute("disabled","disabled");
-			}
-			/*cbx.setAttribute('class',className);*/
-			
-			lbl = document.createElement('label');
-			lbl.setAttribute('id','lbl_'+cbxname);
-			lbl.setAttribute('for',cbxname);
-			setComponentValue(lbl,nameArray[i]);
-		    
-		    component.appendChild(cbx);
-		    component.appendChild(lbl);
-		}
-	}
-}
-
-function checkBoxListToString(componentId){
-	var component=getComponentById(componentId);
-	var result = '';	
-	
-	var inputs=getComponentChildrenByTag(component,'input');
-	
-	 for (var i = 0; i < inputs.length; ++i) {
-		 if(inputs[i]!=undefined && inputs[i].type=='checkbox'){
-			 var val=getComponentValue(inputs[i]);
-			 
-			 if(val=='1' || val=='0'){
-				 result+=val;
-				 result+=',';
-			 }
-		 }
-	 }
-	 
-	if(result.substring(result.length - 1)==','){
-		 result=result.substring(0,result.length-1);
-	}
-	 
-	 return result;
-}
-
-function checkBoxListToArray(component){
-	var result = [];	
-	
-	var inputs=getComponentChildrenByTag(component,'input');
-	var j=0;
-	
-	 for (var i = 0; i < inputs.length; ++i) {
-		 if(inputs[i]!=undefined && inputs[i].type=='checkbox'){
-			 var val=getComponentValue(inputs[i]);
-			 
-			 if(val=='1' || val=='0'){
-				 result[j]=val;
-				 j++;
-			 }
-		 }
-	 }
-	 
-	 return result;
-}
-
-function putItemsToComboCox(component,items,selectedIndex){
-	if(component==undefined || items==undefined || items.length==undefined){
-		return;
-	}
-	component.innerHTML = '';
-	var opt = null;
-	
-	for(i = 0; i<items.length; i++){ 
-	    opt = document.createElement('option');
-	    opt.value = i;
-	    opt.innerHTML = items[i];
-	    component.appendChild(opt);
-	}
-	
-	if(selectedIndex==undefined || selectedIndex>items.length-1){
-		selectedIndex=-1;
-	}
-	component.selectedIndex=selectedIndex;
-}
 /*----------------------------component values gettters/setters---------------------------*/
 function getComponentValueById(id){
 	return getComponentValue(getComponentById(id));
@@ -468,33 +361,7 @@ function getJsonHandlerByName(name){
 	return jsonHandlers[name];
 }
 
-function processAllJson(allSensorData){
-	var sensors=allSensorData.sensors;
-	
-	for(var i in sensors){
-		var data=sensors[i];
-		
-		if(data!=undefined && data!=null){
-			var sensorName=data.name;
-			
-			var dataHandler=getJsonHandlerByName(sensorName);
-			
-			if(dataHandler!=undefined && dataHandler!=null){
-				dataHandler(data);
-			}else{
-				console.log('Json error. handler not found for :');
-				console.log(data);
-				console.log('noJsonProcess will be used as handler');
-				registerJsonHandler(sensorName,noJsonProcess);
-			}
-			
-		}else{
-			console.log('sensor value not found. Json error');
-		}
-	}
-}
-
-/*--------------------jsonHandlers----------------*/
+/*--------------------json response processors----------------*/
 function noJsonProcess(data){}
 
 function processSimpleJson(data){
@@ -520,6 +387,32 @@ function processSimpleJsonResponse(data,preffix){
 				
 		updateComponentValue(preffix,itemName,VAL_SUFFIX,itemVal);
 		updateComponentValue(preffix,itemName,DESCR_SUFFIX,itemDescr);
+	}
+}
+
+function processAllJson(allSensorData){
+	var sensors=allSensorData.sensors;
+	
+	for(var i in sensors){
+		var data=sensors[i];
+		
+		if(data!=undefined && data!=null){
+			var sensorName=data.name;
+			
+			var dataHandler=getJsonHandlerByName(sensorName);
+			
+			if(dataHandler!=undefined && dataHandler!=null){
+				dataHandler(data);
+			}else{
+				console.log('Json error. handler not found for :');
+				console.log(data);
+				console.log('noJsonProcess will be used as handler');
+				registerJsonHandler(sensorName,noJsonProcess);
+			}
+			
+		}else{
+			console.log('sensor value not found. Json error');
+		}
 	}
 }
 
@@ -662,24 +555,6 @@ function addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val
 	}
 };
 /*-------------------------------form submission---------------------*/
-function constructFormData_JSONprocessor(target,page,json){
-	/*--construct standard form to process in device JSONprocessors*/
-	if(page=undefined){page=''};
-	
-	const REMOTE_TARGET='remote_target';
-	const REMOTE_PAGE='remote_page';
-	const VAL_JSON='val_json';
-	
-	var formData = new FormData();
-	formData.append(REMOTE_TARGET,target);
-	formData.append(REMOTE_PAGE,page);
-	formData.append(VAL_JSON,json);	
-	
-	console.log('JSONprocessor name='+target+' json='+json);
-	
-	return formData;
-}
-
 function postForm(form,url,validateFormFunction,constructFormDataFunction,responseValidateFunc,resultProcessHandler,msgComp){
 	var errorMessage='';
 	var isValidForm=true;
@@ -731,7 +606,7 @@ function postForm(form,url,validateFormFunction,constructFormDataFunction,respon
 		showMessage(msgComp,errorMessage,'w3-red');
 	}
 }
-
+/*------------------Validators----------------------------------*/
 function validateStatusMessageDefault(statusMessage){
 	try {
 		console.log('formPost response'+statusMessage);
@@ -775,7 +650,7 @@ function validateFormFunctionDefault(form){
 	
 	return validateMessage;
 }
-
+/*-------------------------Construct forms----------------*/
 function constructFormDataDefault(form){
 	var formData = new FormData(form);
 	
@@ -798,6 +673,24 @@ function constructFormDataDefault(form){
 			}
 		}
 	}
+	
+	return formData;
+}
+
+function constructFormData_JSONprocessor(target,page,json){
+	/*--construct standard form to process in device JSONprocessors*/
+	if(page=undefined){page=''};
+	
+	const REMOTE_TARGET='remote_target';
+	const REMOTE_PAGE='remote_page';
+	const VAL_JSON='val_json';
+	
+	var formData = new FormData();
+	formData.append(REMOTE_TARGET,target);
+	formData.append(REMOTE_PAGE,page);
+	formData.append(VAL_JSON,json);	
+	
+	console.log('JSONprocessor name='+target+' json='+json);
 	
 	return formData;
 }
@@ -842,5 +735,112 @@ function constructFormDataAsJson(form){
 	return formData;
 }
 
+//-------------------CheckBox list---------------*/
 
+function arrayToCheckBoxList(component,namePreffix,valArray,nameArray,editable,clazz,style){
+	if(component!=undefined){
+	
+		component.innerHTML = '';
+		var cbx=null;
+		var lbl=null;
+		
+		var itemCount=valArray.length;
+		
+		if(nameArray.length>itemCount){
+			itemCount=nameArray.length;
+		}
+		
+		for(i = 0; i<itemCount; i++){ 
+			
+			var cbxname='cb_'+namePreffix+'_'+i;
+			cbx = document.createElement('input');
+			cbx.setAttribute('id',cbxname);
+			cbx.setAttribute('name',cbxname);
+			cbx.setAttribute('type','checkbox');
+			if(clazz!=undefined && clazz.length>0){
+				cbx.setAttribute('class',clazz);
+			}
+			if(style!=undefined && style.length>0){
+				cbx.setAttribute('style',style);
+			}
+			setComponentValue(cbx,valArray[i]);
+			if(editable==undefined || !editable){
+				cbx.setAttribute("disabled","disabled");
+			}
+			/*cbx.setAttribute('class',className);*/
+			
+			lbl = document.createElement('label');
+			lbl.setAttribute('id','lbl_'+cbxname);
+			lbl.setAttribute('for',cbxname);
+			setComponentValue(lbl,nameArray[i]);
+		    
+		    component.appendChild(cbx);
+		    component.appendChild(lbl);
+		}
+	}
+}
+
+function checkBoxListToString(componentId){
+	var component=getComponentById(componentId);
+	var result = '';	
+	
+	var inputs=getComponentChildrenByTag(component,'input');
+	
+	 for (var i = 0; i < inputs.length; ++i) {
+		 if(inputs[i]!=undefined && inputs[i].type=='checkbox'){
+			 var val=getComponentValue(inputs[i]);
+			 
+			 if(val=='1' || val=='0'){
+				 result+=val;
+				 result+=',';
+			 }
+		 }
+	 }
+	 
+	if(result.substring(result.length - 1)==','){
+		 result=result.substring(0,result.length-1);
+	}
+	 
+	 return result;
+}
+
+function checkBoxListToArray(component){
+	var result = [];	
+	
+	var inputs=getComponentChildrenByTag(component,'input');
+	var j=0;
+	
+	 for (var i = 0; i < inputs.length; ++i) {
+		 if(inputs[i]!=undefined && inputs[i].type=='checkbox'){
+			 var val=getComponentValue(inputs[i]);
+			 
+			 if(val=='1' || val=='0'){
+				 result[j]=val;
+				 j++;
+			 }
+		 }
+	 }
+	 
+	 return result;
+}
+
+function putItemsToComboCox(component,items,selectedIndex){
+	if(component==undefined || items==undefined || items.length==undefined){
+		return;
+	}
+	component.innerHTML = '';
+	var opt = null;
+	
+	for(i = 0; i<items.length; i++){ 
+	    opt = document.createElement('option');
+	    opt.value = i;
+	    opt.innerHTML = items[i];
+	    component.appendChild(opt);
+	}
+	
+	if(selectedIndex==undefined || selectedIndex>items.length-1){
+		selectedIndex=-1;
+	}
+	component.selectedIndex=selectedIndex;
+}
 

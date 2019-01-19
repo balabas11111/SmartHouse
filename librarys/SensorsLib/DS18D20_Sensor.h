@@ -9,15 +9,15 @@
 #define LIBRARIES_SENSORSLIB_DS18D20_SENSOR_H_
 
 #include "Arduino.h"
-#include "Initializable.h"
+#include "OneWire.h"
+#include "DallasTemperature.h"
+
 #include "AbstractItem.h"
-#include "Initializable.h"
-#include "Measurable.h"
+#include "interfaces/Initializable.h"
+#include "interfaces/Measurable.h"
 
 #include "ESP_Consts.h"
 
-#include "OneWire.h"
-#include "DallasTemperature.h"
 
 const char SENSOR_DS18D20_NAME[] PROGMEM ="DS18D20_Sensor";
 const char SENSOR_DS18D20_DESCRIPTION[] PROGMEM ="DS18D20 Sensor";
