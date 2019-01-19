@@ -2,7 +2,7 @@
 		    <div class="w3-modal-content w3-animate-top w3-card-4">
 		      	
 		      	<header class="w3-container w3-teal"> 
-			      <span id="confirm_headerCloseBtn" onclick="hideComponent('confirm_modal');" class="w3-button w3-display-topright">&times;</span>
+			      <span id="confirm_headerCloseBtn" onclick="confirmDlgHide();" class="w3-button w3-display-topright">&times;</span>
 			      <form>
 			      	<h3 id="confirm_header">Подтвердите действие</h3>
 			      </form>
@@ -19,7 +19,9 @@
 		        		
 						</div>						
 						
-						<div id="confirm_msg" class="w3-card-4" style="margin-top: 2px; margin-bottom: 2px;"></div>
+						<div id="confirm_msg" class="w3-card-4" style="margin-top: 2px; margin-bottom: 2px;">
+						
+						</div>
 				
 						<div style="height:2px;"></div>
 						
@@ -34,12 +36,6 @@
 							      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
 							      	style="margin-top: 2px; margin-bottom: 2px;"
 										onclick="">Подтвердить</button>
-							</div>
-							<div class="w3-half">
-								  <button id="confirm_cancelBtn" 
-								  	class="w3-btn w3-white w3-border w3-round-large w3-border-red" 
-								  	style="margin-top: 2px; margin-bottom: 2px;"
-										onclick="hideComponent('confirm_modal');">Отменить</button>
 							</div>
 							<div class="w3-half">
 								  <button id="confirm_closeBtn" 

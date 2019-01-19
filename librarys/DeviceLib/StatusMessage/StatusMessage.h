@@ -14,14 +14,10 @@
 class StatusMessage{
 public:
 	String getJson(){
-		String result= FPSTR(STATUS_statusInt);
-				result+=getStatusIntAsString();
+		String result= FPSTR(STATUS_statusHttp);
+				result+=getStatusHttpAsString();
 				result+=FPSTR(STATUS_statusCode);
 				result+=getStatusCode();
-				result+=FPSTR(STATUS_statusDescr);
-				result+=getStatusDescr();
-				result+=FPSTR(STATUS_statusHttp);
-				result+=getStatusHttpAsString();
 				result+=FPSTR(STATUS_message);
 				result+=getMessage();
 				result+=FPSTR(STATUS_data);
@@ -90,7 +86,7 @@ public:
 
 	String getData(){
 		if(data==NULL){
-			return "";
+			return "\"\"";
 		}
 		return data;
 	}

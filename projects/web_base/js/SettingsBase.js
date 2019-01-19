@@ -4,6 +4,7 @@ const FIELD_MIN_ID     = 2;
 const FIELD_MAX_ID     = 3;
 const FIELD_FIELDID_ID = 4;
 const FIELD_QUEUE_ID   = 5;
+const FIELD_NAME_ID   = 6;
 
 const SENSOR_NAME_ATTR='sensorname';
 const ITEM_NAME_ATTR='itemname';
@@ -14,7 +15,6 @@ const SENSORS_SHORT="s_";
 var currentTab='';
 var currentHeaderName='';
 
-var currentMessageComp=undefined;
 var currentForm=undefined;
 var currentFormList=undefined;
 
@@ -33,6 +33,7 @@ var currentJson='';
 
 
 function openTab(tabName,headerName) {
+	restartFunctionHandler=reloadCurrentSettingsTab;
 	var loadMessagePreffix="Загружаю";
 	
 	if(currentTab==tabName){
@@ -57,7 +58,7 @@ function openTab(tabName,headerName) {
 
 	var containerComponent=document.getElementById(tabName);
 	
-	currentMessageComp=getComponentById(getComponentIdWithSuffix(tabName,MSG_SUFFIX));
+	setStatusMessageComp(getComponentById(getComponentIdWithSuffix(tabName,MSG_SUFFIX)));
 	
 	var currentFormId=getComponentIdWithSuffix(tabName,FORM_SUFFIX);
 	
@@ -66,22 +67,22 @@ function openTab(tabName,headerName) {
 	if(containerComponent.classList.contains('reloadableSettingsContainer')){
 				
 		
-		showMessage(currentMessageComp,loadMessagePreffix+' информацию о датчиках...','w3-yellow');
+		showStatusMessage(loadMessagePreffix+' информацию о датчиках...','w3-yellow');
 		
 		var handler=undefined;
 		
 		if(tabName=='device'){
 			getValuesHandler=processDeviceSettingsGet;
 			validateValuesHandler=validateDeviceSettingsForm;
-			submitValuesUrl='/submitForm_'+'settings';
-			getValuesUrl='/getJson_'+'settings?page='+tabName;
+			submitValuesUrl='/processJson?name=espSettingsBox&page=device';
+			getValuesUrl='/getJson?name=espSettingsBox&page=device';
 		}
 		
 		if(tabName=='net'){
 			getValuesHandler=processDeviceSettingsGet;
 			validateValuesHandler=validateFormFunctionDefault;
-			submitValuesUrl='/submitForm_'+'settings';
-			getValuesUrl='/getJson_'+'settings?page='+tabName;
+			submitValuesUrl='/processJson?name=espSettingsBox&page=net';
+			getValuesUrl='/getJson?name=espSettingsBox&page=net';
 		}
 		
 		if(tabName=='sensors'){
@@ -91,8 +92,8 @@ function openTab(tabName,headerName) {
 			currentItemPreffix='currentSensor';
 			itemsTagName='sensors';
 			validateValuesHandler=validateCurrentSensorForm;
-			submitValuesUrl='/submitForm_'+'sensors';
-			getValuesUrl='/getJson_'+'sensors';
+			submitValuesUrl='/processJson?name=deviceHelper&page=sensors';
+			getValuesUrl='/getJson?name=deviceHelper&page=sensors';
 			currentFormId=getComponentIdWithSuffix(currentItemPreffix,FORM_SUFFIX);
 		}
 		
@@ -111,8 +112,8 @@ function openTab(tabName,headerName) {
 		if(tabName=='publish'){
 			getValuesHandler=processDeviceSettingsGet;
 			validateValuesHandler=validateFormFunctionDefault;
-			submitValuesUrl='/submitForm_'+'settings';
-			getValuesUrl='/getJson_'+'settings?page='+tabName;
+			submitValuesUrl='/processJson?name=espSettingsBox&page=publish';
+			getValuesUrl='/getJson?name=espSettingsBox&page=publish';
 		}
 		
 		currentFormList=getComponentById(getComponentIdWithSuffix(tabName,FORM_SUFFIX));
@@ -146,10 +147,20 @@ function updateUrlEnvironment(url){
 	return url;
 }
 
+function reloadCurrentSettingsTab(){
+	openTab(currentTab,currentHeaderName);
+}
+
 /*---------------------------------device settings tab----------------------*/
 function processDeviceSettingsGet(data){
 	processSimpleJsonResponse(data,'');
-	showMessage(currentMessageComp,'Загружено '+currentHeaderName,'w3-green');
+	showStatusMessage('Загружено '+currentHeaderName,'w3-green');
+}
+
+function processDeviceSettingsSave(data){
+	processSimpleJsonResponse(data.data,'');
+	showStatusMessage('Сохранено и загружено '+currentHeaderName,'w3-green');
+	openCommandRestartPopup();
 }
 
 function validateDeviceSettingsForm(){
@@ -196,8 +207,6 @@ function ValidateIPaddress(ipaddress) {
   return (false)  
 }
 
-
-
 function processItemsJsonGet(data){
 	var container=currentFormList;
 
@@ -216,7 +225,7 @@ function processItemsJsonGet(data){
 		putItemsToContainerHandler(container,item,false,false);
 	}
 	
-	showMessage(currentMessageComp,'Загружено '+currentHeaderName,'w3-green');
+	showStatusMessage('Загружено '+currentHeaderName,'w3-green');
 }
 
 function getCurrentItemFromCurrentJson(tagName,tagValue){
@@ -244,7 +253,7 @@ function getCurrentItemFromParentItem(parentItem,parentItemTag,tagName,tagValue)
 
 function openItemPopup(tagName,sensorName,headerValue){
 	var sensor=getCurrentItemFromCurrentJson(tagName,sensorName);
-	currentMessageComp=getComponentById(currentItemPreffix+'_msg');
+	setStatusMessageComp(getComponentById(currentItemPreffix+'_msg'));
 	
 	if(sensor!=undefined){
 		var sensorNameContainer=getComponentById(currentItemPreffix+'_name');
@@ -262,12 +271,14 @@ function openItemPopup(tagName,sensorName,headerValue){
 }
 
 function getCurrentItemHandler(data){
-	if(data.status=='Ok'){
+	if(isStatusMessageResponseOk(data.statusHttp)){
 		hideComponent(currentItemPreffix+'_modal');
-		openTab(currentTab,currentHeaderName);
-		showMessage(currentMessageComp,'Сохранено. Обновляю данные','w3-yellow');
+		reloadCurrentSettingsTab();
+		showStatusMessage('Сохранено. Обновляю данные','w3-yellow');
 	}else{
-		showMessage(currentMessageComp,'Ошибка '+data.message,'w3-red');
+		var msg='Ошибка '+data.message;
+		showStatusMessage(msg,'w3-red');
+		 throw msg; 
 	}
 }
 /*--------------------------GUI creation part-----------------------------*/
@@ -329,7 +340,7 @@ function createItemEditButton(tagName,tagValue,itemDescr,headerValue){
 	div.appendChild(button);		
 	
 	return div;
-}
+}        
 
 function createInputComponent(id1,id2,fieldIntId,extraClass,fieldVal,sensorName,itemName,noId,editable){
 	var compId=getInputCompName(id1,id2,fieldIntId);
@@ -367,18 +378,19 @@ function getInputCompName(sensorName,itemName,suffix){
 }
 
 /*-------------------form submit-----------*/
-function submitCurrentForm(){
-	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataDefault,undefined,getValuesHandler,currentMessageComp);
+function submitCurrentSettingsForm(){
+	showStatusMessage('Сохраняю настройки ...','w3-yellow');
+	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataAsJson,undefined,processDeviceSettingsSave,getStatusMessageComp());
 }
 
 function submitCurrentFormReloadCurrTab(){
-		showMessage(currentMessageComp,'Сохраняю настройки ...','w3-yellow');
-		postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataDefault,undefined,getCurrentItemHandler,currentMessageComp);
+	showStatusMessage('Сохраняю настройки ...','w3-yellow');
+	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataDefault,undefined,getCurrentItemHandler,getStatusMessageComp());
 }
 
 function submitCurrentFormAsJsonReloadCurrTab(){
-	showMessage(currentMessageComp,'Сохраняю настройки ...','w3-yellow');
-	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataAsJson,undefined,getCurrentItemHandler,currentMessageComp);
+	showStatusMessage('Сохраняю настройки ...','w3-yellow');
+	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataAsJson,undefined,getCurrentItemHandler,getStatusMessageComp());
 }
 
 

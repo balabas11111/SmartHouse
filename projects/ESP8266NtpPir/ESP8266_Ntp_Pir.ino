@@ -73,17 +73,19 @@ ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 TimeIntervalService timeIntervalService(&espSettingsBox,&timeService,nullptr,postInitTimeIntervalService,0);
 
 Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeService,&displayHelper,
-		&pirDetector,&timeIntervalService};//,&pirDetector
+						&pirDetector,&timeIntervalService};
 
 AbstractItem* sensors[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
-JSONprovider* jsonProviders[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeService,&timeIntervalService};
+JSONprovider* jsonProviders[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeService,&timeIntervalService,&espSettingsBox};
 JSONprocessor* jsonProcessors[]={&timeIntervalService,&thingSpeakHelper,&espSettingsBox};
 SendAble* senders[]={&thingSpeakHelper};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
 						  jsonProcessors,ARRAY_SIZE(jsonProcessors),
 						  jsonProviders,ARRAY_SIZE(jsonProviders),
+						  sensors,ARRAY_SIZE(sensors),
 						  senders,ARRAY_SIZE(senders),
+						  &espSettingsBox,
 						  120000);
 
 void initComponents(){
@@ -153,15 +155,6 @@ void playPostInitSounds(){
 }
 //-------------Web server functions-------------------------------------
 void postInitWebServer(){
-	server.on(FPSTR(URL_SUBMIT_FORM_SENSORS), HTTP_POST, [](){
-		wifiHelper.checkAuthentication();
-		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), setSensorJson());
-	});
-	server.on(FPSTR(URL_GET_JSON_SENSORS), HTTP_GET, [](){
-		wifiHelper.checkAuthentication();
-		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), getAllSensorsJson());
-	});
-
 	server.on(FPSTR(URL_GET_JSON), HTTP_GET, [](){getProvidersJson();});
 	server.on(FPSTR(URL_PROCESS_JSON), HTTP_POST, [](){processJson();});
 }
@@ -182,35 +175,35 @@ void getProvidersJson(){
 								);
 	}else{
 		Serial.println(FPSTR("!!!---JSON provider not found!---!!!"));
-		wifiHelper.printRequestDetails();
-		server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT).getJson());
+		//wifiHelper.printRequestDetails();
+		String msg=FPSTR(MESSAGE_PROV_NOT_FOUND);
+							msg+=wifiHelper.getNameParam();
+		server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT,msg).getJson());
 	}
 }
 
 void processJson(){
-	wifiHelper.checkAuthentication();
+	if(wifiHelper.checkAuthentication()){
 
-	if(wifiHelper.isValidProcessJsonRequest()){
+		if(wifiHelper.isValidProcessJsonRequest()){
 
-		deviceHelper.printDeviceDiagnostic();
+			deviceHelper.printDeviceDiagnostic();
 
-		StatusMessage sm=deviceHelper.processJson(
-				server.arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_TARGET)),
-				server.arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_PAGE)),
-				server.arg(FPSTR(MESSAGE_SERVER_ARG_VAL_JSON))
-			  );
+			StatusMessage sm=deviceHelper.processJson(
+					server.arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_TARGET)),
+					server.arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_PAGE)),
+					server.arg(FPSTR(MESSAGE_SERVER_ARG_VAL_JSON))
+				  );
 
-		return server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), sm.getJson());
-	}else{
-		Serial.println(FPSTR("!!!---JSON processor not found! Parameters missing---!!!"));
-		wifiHelper.printRequestDetails();
-		server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT).getJson());
+			return server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), sm.getJson());
+		}else{
+			Serial.println(FPSTR("!!!---JSON processor not found! Parameters missing---!!!"));
+			//wifiHelper.printRequestDetails();
+			String msg=FPSTR(MESSAGE_PROC_NOT_FOUND);
+					msg+=wifiHelper.getNameParam();
+			server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT,msg).getJson());
+		}
 	}
-}
-
-
-ESP8266WebServer* getServer(){
-	return wifiHelper.getServer();
 }
 
 //---------------------------------------------------------------------
@@ -255,101 +248,10 @@ void updateSensors(){
 	deviceHelper.printDeviceDiagnostic();
 }
 
-void saveSensors(){
-	espSettingsBox.saveAbstractItemsToFile(sensors, ARRAY_SIZE(sensors));
-}
-
-String setSensorJson(){
-	Serial.println(FPSTR(MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_SETTING_BEGIN));
-
-	uint8_t argsProcessed=0;
-
-	String sensorName=server.arg(FPSTR(MESSAGE_SERVER_ARG_CURRENT_SENSOR_NAME));
-	String status=StatusMessage::getStatusDescrByIndex(STATUS_UNKNOWN_INT);
-
-	Serial.print(FPSTR(MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_NAME_EQ));
-	Serial.println(sensorName);
-
-	AbstractItem* aitem=NULL;
-
-	for(uint8_t i=0;i<ARRAY_SIZE(sensors);i++){
-		if(sensors[i]->getName()==sensorName){
-			aitem=sensors[i];
-			break;
-		}
-	}
-
-	if(aitem!=nullptr && aitem!=NULL){
-		for(int i=0;i<server.args();i++){
-			AbstractItemRequest req=AbstractItem::createitemRequest(server.argName(i),server.arg(i));
-
-			if(req.valid){
-				argsProcessed++;
-				if(aitem->setFieldFromRequest(req)){
-					status=StatusMessage::getStatusDescrByIndex(STATUS_OK_INT);
-				}
-			}
-		}
-
-		Serial.print(FPSTR(MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_STATUS_EQ));
-		Serial.println(status);
-
-		espSettingsBox.saveAbstractItemToFile(aitem);
-	}
-
-	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-
-	return "{\"status\":\""+status+"\",\"sensor\":\""+sensorName+"\"}";
-}
-
-String getAllSensorsJson(){
-	return deviceHelper.getJsonAbstractItems(sensors, ARRAY_SIZE(sensors));
-}
-
-//--------------------command----------------------------
-String executeCommand(){
-	wifiHelper.checkAuthentication();
-	Serial.println(FPSTR(MESSAGE_COMMANDS_EXECUTE_COMMAND));
-
-	String command=server.arg(FPSTR(MESSAGE_SERVER_ARG_CONFIRM_COMMAND));
-
-	StatusMessage sm= StatusMessage(STATUS_ERROR_INT,FPSTR(MESSAGE_COMMANDS_COMMAND_NOT_RECOGNIZED));
-
-	if(command==FPSTR(MESSAGE_SERVER_ARG_VAL_restart)){
-		Serial.println(FPSTR(MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED));
-		deviceHelper.createPostponedCommand(command);
-
-		sm.setStatusCode(STATUS_OK_ACCEPTED_INT);
-	}
-	if(command==FPSTR(MESSAGE_SERVER_ARG_VAL_recreateThingSpeak)){
-		sm=thingSpeakHelper.recreateThingSpeaChannelskWithCheck(sensors,ARRAY_SIZE(sensors));
-	}
-	if(command==FPSTR(MESSAGE_SERVER_ARG_VAL_deleteSettings)){
-		String msg=FPSTR(MESSAGE_COMMANDS_FILES_DELETED);
-			   msg+=String(espSettingsBox.deleteSettingsFiles());
-		sm.setStatusCode(STATUS_OK_DELETED_INT);
-	}
-
-	return sm.getJson();
-}
-
-void executePostPonedCommand(){
-	deviceHelper.executePostponedCommand();
-}
-
-
 //-------------------------Thing speak functions---------------------
 void executeThingSpeakPost(){
 	thingSpeakHelper.send();
 }
-//------------------------------MQTT functions-----------------------------------------------------
-
-void sendAbstractItemToHttp(AbstractItem* item){
-	if(espSettingsBox.isHttpPostEnabled){
-		wifiHelper.executeFormPostRequest(espSettingsBox.httpPostIp.toString(), item->getJson());
-	}
-}
-
 //test functions--------------------------------------
 void processThingSpeakPost(){
 	Serial.println("process ThingSpeak post");
@@ -387,6 +289,14 @@ void changeSymbol(){
 	}
 }
 /*
+//------------------------------MQTT functions-----------------------------------------------------
+
+void sendAbstractItemToHttp(AbstractItem* item){
+	if(espSettingsBox.isHttpPostEnabled){
+		wifiHelper.executeFormPostRequest(espSettingsBox.httpPostIp.toString(), item->getJson());
+	}
+}
+
 WiFiEventHandler stationModeConnectedHandler;
 WiFiEventHandler onStationModeDHCPTimeoutHandler;
 WiFiEventHandler onStationModeDisconnectedHandler;

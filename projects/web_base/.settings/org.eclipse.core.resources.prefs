@@ -20,6 +20,7 @@ encoding//html_components/sensors_indexPage/acMeter.html=UTF-8
 encoding//html_components/sensors_indexPage/pirDetector.html=UTF-8
 encoding//js/Confirm.js=UTF-8
 encoding//js/DeviceLibGui.js=UTF-8
+encoding//js/StatusMessage.js=UTF-8
 encoding//testJS/getJson_sensors.json=UTF-8
 encoding//testJS/getJson_settings.json=UTF-8
 encoding//testJS/getJson_settingspage\=device.json=UTF-8

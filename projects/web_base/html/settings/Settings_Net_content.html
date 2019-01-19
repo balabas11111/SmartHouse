@@ -10,7 +10,8 @@
 				
 				<form id="net_form" class="w3-container">
 			  
-			  		<input name="page" type="hidden" value="net"/>
+			  		<input id="net_form_target" type="hidden" value="espSettingsBox"/>
+					<input id="net_form_page" type="hidden" value="net"/>
 			  		
 			  		<div class="w3-row w3-green" style="height: 50px;">
 						<h3>Настройки WiFi</h3>
@@ -147,7 +148,7 @@
 			  
 			  <p>
 		  		<button id="saveNetSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
-						onclick="submitCurrentForm();">Сохранить</button>
+						onclick="submitCurrentSettingsForm();">Сохранить</button>
 			  </p>
 			
 			

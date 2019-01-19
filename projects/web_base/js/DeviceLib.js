@@ -3,6 +3,7 @@ const LBL_MSG_LOC_DEVICE_SMART_HOUSE='Устройство !!!SmartHouse - ';
 const LBL_MSG_LOC_SAVING_DATA='Сохраняю данные...';
 const LBL_MSG_LOC_DATA_SAVED='Данные сохранены!';
 const LBL_MSG_LOC_SERVER_SIDE_ERROR='Ошибка на стороне сервера!';
+const LBL_MSG_LOC_PARSE_ERROR='Ошибка обработки ответа сервера!';
 const LBL_MSG_LOC_VALIDATION_ERROR='Ошибка валидации:';
 const LBL_MSG_LOC_HTTP_STATUS_EQ=' HTTP статус=';
 
@@ -35,6 +36,7 @@ function w3_open(){
 function w3_close(){
 	document.getElementById("leftSidebar").style.display = "none";
 };
+
 /*---------------------------------------------------------------------*/
 
 function markComponentsArrayValidity(compons,valid){
@@ -92,21 +94,6 @@ function markFormAsValid(form,msgComp,valid,cleanValMsg){
 	}
 	
 	showMessage(msgComp,'','w3-green');
-}
-
-function showMessage(msgComp,message,className){
-	if(msgComp!=undefined){
-		if(className!=undefined && className!=''){
-			msgComp.setAttribute('class',className);
-		}
-		
-		if(message!=undefined && message!=''){
-			msgComp.style.display = "block";
-			msgComp.innerHTML = message;
-		}else{
-			msgComp.style.display = "none"; 
-		}
-	}
 }
 
 /*-----------------------------------item name functions----------------*/
@@ -579,6 +566,7 @@ function postForm(form,url,validateFormFunction,constructFormDataFunction,respon
 		request.onreadystatechange  = 
 			function(){
 				if(this.readyState == 4){
+					
 					var errMsg='';
 					
 					if (isHttpStatusOk(this.status)){
@@ -590,13 +578,20 @@ function postForm(form,url,validateFormFunction,constructFormDataFunction,respon
 					}
 					
 					if(errMsg==undefined || errMsg.length==0){
-						var json = JSON.parse(this.responseText);
-						resultProcessHandler(json);
-						
-						showMessage(msgComp,LBL_MSG_LOC_DATA_SAVED,'w3-green');
-						
+						try{
+							var json = JSON.parse(this.responseText);
+							var resultMsg=resultProcessHandler(json);
+							
+							if(resultMsg==undefined || resultMsg==''){
+								resultMsg=LBL_MSG_LOC_DATA_SAVED;
+							}
+							
+							showMessage(msgComp,resultMsg,'w3-green');
+						}catch(err){
+							showMessage(msgComp,LBL_MSG_LOC_PARSE_ERROR+' '+err,'w3-red');
+						}
 					} else {
-						showMessage(msgComp,LBL_MSG_LOC_SERVER_SIDE_ERROR+' '+errMsg,'w3-red');
+						showMessage(msgComp,/*LBL_MSG_LOC_SERVER_SIDE_ERROR+' '+*/errMsg,'w3-red');
 					};
 				};
 			};
@@ -607,6 +602,10 @@ function postForm(form,url,validateFormFunction,constructFormDataFunction,respon
 	}
 }
 /*------------------Validators----------------------------------*/
+function isStatusMessageResponseOk(httpStatus){
+	return (httpStatus>=200 && httpStatus<300);
+}
+
 function validateStatusMessageDefault(statusMessage){
 	try {
 		console.log('formPost response'+statusMessage);
@@ -679,7 +678,7 @@ function constructFormDataDefault(form){
 
 function constructFormData_JSONprocessor(target,page,json){
 	/*--construct standard form to process in device JSONprocessors*/
-	if(page=undefined){page=''};
+	if(page==undefined){page=''};
 	
 	const REMOTE_TARGET='remote_target';
 	const REMOTE_PAGE='remote_page';
@@ -697,10 +696,10 @@ function constructFormData_JSONprocessor(target,page,json){
 
 function constructFormDataAsJson(form){
 	
+	const PAGE_SUF='_page';
 	const TARGET_SUF='_target';
-	const FORM_ID='form_id';
-	const FORM_REMOTE_TARGET='form_remote_target';
-	const FORM_VAL_JSON='form_val_json';
+	const REMOTE_TARGET='remote_target';
+	const VAL_JSON='val_json';
 	
 	var formData = new FormData();
 	
@@ -714,9 +713,11 @@ function constructFormDataAsJson(form){
 				&& child.name!=undefined && child.id!=undefined){
 
 				inputName=child.name;
-				inputValue=getComponentValue(child);
 				
-				str=str+'"'+inputName+'": "'+inputValue+'",';
+				if(inputName!=undefined && inputName!=''){
+					inputValue=getComponentValue(child);
+					str=str+'"'+inputName+'": "'+inputValue+'",';
+				}
 		}
 	}
 	
@@ -726,16 +727,13 @@ function constructFormDataAsJson(form){
 	
 	str+='}';
 	
-	var target=getComponentValueById(form.id+FORM_REMOTE_TARGET);
+	var target=getComponentValueById(form.id+TARGET_SUF);
+	var page=getComponentValueById(form.id+PAGE_SUF);
 	
-	formData.append(FORM_ID,form.id);
-	formData.append(FORM_REMOTE_TARGET,TARGET_SUF);
-	formData.append(FORM_VAL_JSON,str);	
-	
-	return formData;
+	return constructFormData_JSONprocessor(target,page,str);
 }
 
-//-------------------CheckBox list---------------*/
+/*-------------------CheckBox list---------------*/
 
 function arrayToCheckBoxList(component,namePreffix,valArray,nameArray,editable,clazz,style){
 	if(component!=undefined){

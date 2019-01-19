@@ -707,7 +707,8 @@ private:
 		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("dayOfWeekShort"), DAYS_OF_WEEK_SHORT, ARRAY_SIZE(DAYS_OF_WEEK_SHORT))
 		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("dayOfWeek"), DAYS_OF_WEEK, ARRAY_SIZE(DAYS_OF_WEEK))
 #else
-		+ FPSTR(TimeIntervalService_ServVals);
+		+ FPSTR(TimeIntervalService_ServVals)
+		+FPSTR(TimeIntervalService_ServLocalVals);
 #endif
 	}
 

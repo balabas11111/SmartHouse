@@ -78,15 +78,22 @@ public:
 		return item->constructGetUrl("", FPSTR(MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST));
 	}
 
-	StatusMessage recreateThingSpeaChannelskWithCheck(AbstractItem** items,uint8_t size){
+	StatusMessage recreateThingSpeakChannelskWithCheckDefault(){
+		return recreateThingSpeakChannelskWithCheck(getItems(),getItemsSize());
+	}
+
+	StatusMessage recreateThingSpeakChannelskWithCheck(AbstractItem** items,uint8_t size){
+		if(size==0){
+			return StatusMessage(STATUS_CONF_ERROR_INT,FPSTR(MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED));
+		}
 		if(!espSettingsBox->isThingSpeakEnabled){
-			return StatusMessage(STATUS_FAILED_INT,FPSTR(MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED));
+			return StatusMessage(STATUS_CONF_ERROR_INT,FPSTR(MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED));
 		}else
 		if(espSettingsBox->thSkUsrKey=="" || espSettingsBox->thSkUsrKey==FPSTR(MESSAGE_THINGSPEAK_EMPTY_KEY)){
-			return StatusMessage(STATUS_FAILED_INT,FPSTR(MESSAGE_THINGSPEAK_NO_USER_SPECIFIED));
+			return StatusMessage(STATUS_CONF_ERROR_INT,FPSTR(MESSAGE_THINGSPEAK_NO_USER_SPECIFIED));
 		}else{
 			String message=recreateThingSpeak(items,size);
-			return StatusMessage(STATUS_FAILED_INT,message);
+			return StatusMessage(STATUS_OK_ACCEPTED_INT,message);
 		}
 
 	}
@@ -166,6 +173,11 @@ public:
 
 	StatusMessage processJson(String page,String json){
 		printProcessParams(page, json);
+
+		if(page==FPSTR(PAGE_MANAGE) && json==FPSTR(COMMAND_RECREATE_CHANNELS)){
+			return recreateThingSpeakChannelskWithCheckDefault();
+		}
+
 		return StatusMessage(STATUS_UNKNOWN_INT);
 	}
 

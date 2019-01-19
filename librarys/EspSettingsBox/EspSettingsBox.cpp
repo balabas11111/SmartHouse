@@ -276,7 +276,7 @@ void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 	File file = SPIFFS.open(fileName, "r");
 
 	if(!file){
-		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED));
+		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED));
 		saveAbstractItemToFile(item);
 		file = SPIFFS.open(fileName, "r");
 	}
@@ -506,7 +506,7 @@ String EspSettingsBox::getThingSpeakChannelUrl(){
 	return result;
 }
 
-String EspSettingsBox::getSimpleJson(){
+String EspSettingsBox::getJson(){
 	String result="{\"name\":\"espSettingsBox\",\"itemCount\":\"8\",\"settingsKind\":\"simple\",\"items\":[\
 						{\"name\":\"deviceFirmWareVersion\",\"val\":\""+String(DEVICE_FIRMWARE_VER)+"\",\"descr\":\"Версия прошивки\"},\
 						{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\",\"descr\":\"ID устройства\"},\
@@ -526,14 +526,15 @@ String EspSettingsBox::getSimpleJson(){
 return result;
 }
 
+
 String EspSettingsBox::getJson(String page){
 	if(!page || page==""){
-		return getSimpleJson();
+		return getJson();
 	}
 
 	String result="{}";
 
-if(page==FPSTR(SETTINGS_KIND_device)){
+if(page==FPSTR(PAGE_DEVICE)){
 
 result=
 	"{\"name\":\"espSettingsBox\",\"itemCount\":\"17\",\"settingsKind\":\"device\",\"items\":[\
@@ -551,7 +552,7 @@ result=
 	{\"name\":\"settingsPass\",\"val\":\"*****\"},"
 	+getExtraBoxJsonByKind(page)+"]}";
 }
-if(page==FPSTR(SETTINGS_KIND_net)){
+if(page==FPSTR(PAGE_NET)){
 
 result=
 	"{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"settingsKind\":\"net\",\"items\":[\
@@ -569,7 +570,7 @@ result=
 	{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\"},"
 	+getExtraBoxJsonByKind(page)+"]}";
 }
-if(page==FPSTR(SETTINGS_KIND_publish)){
+if(page==FPSTR(PAGE_PUBLISH)){
 
 result=
 	"{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"settingsKind\":\"publish\",\"items\":[\
@@ -593,13 +594,6 @@ result=
 	{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"},"
 		+getExtraBoxJsonByKind(page)+"]}";
 
-/*
-	{\"name\":\"thSkWManageKey\",\"val\":\""+thSkWManageKey+"\"},\
-	{\"name\":\"thSkRManageKey\",\"val\":\""+thSkRManageKey+"\"},\
-	{\"name\":\"thSkManageChId\",\"val\":\""+thSkManageChId+"\"},\
-	{\"name\":\"sendItemsToBaseQUeue\",\"val\":\""+String(sendItemsToBaseQUeue)+"\"},\
-	{\"name\":\"mqtt_TStopic\",\"val\":\""+mqtt_TStopic+"\"},\
-*/
 }
 
 	return result;
@@ -717,6 +711,10 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 			accessPass=fieldValue;
 			saveRequired=true;
 		}
+		return true;
+	}
+	if(fieldName==FPSTR(ESBOX_accessPassConfirm)
+		|| fieldName==FPSTR(ESBOX_settingsPassConfirm)){
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_settingsUser)){

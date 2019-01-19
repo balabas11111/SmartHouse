@@ -9,7 +9,7 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 	var sensorType=sensor.type;
 	var sensorSize=sensor.size;
 	var sensorDescr=sensor.descr;
-		
+	
 	var hr = document.createElement('hr');
 	container.appendChild(hr);
 	container.appendChild(hr);
@@ -37,13 +37,11 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 	var col3h=createDivComponent('','w3-quarter');
 	var col4h=createDivComponent('','w3-quarter');
 	
-	
-	
 	var sName=createHeaderElement('H4','margin-left: 20px;',sensorName);
 	var sType=createHeaderElement('H4','margin-left: 20px;',sensorType);
 	var sSize=createHeaderElement('H4','margin-left: 20px;',sensorSize);
 	var sDescr=createInputComponent(sensorId,255,FIELD_DESCR_ID,'id',sensorDescr,sensorName,itemName,noId,editable);
-	
+
 	if(editable==undefined || !editable){
 		var cellDivButton=createDivComponent('','w3-cell');
 		var editButton=createItemEditButton('name',sensorName,sensorDescr,undefined);
@@ -108,6 +106,9 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 		container.appendChild(div);
 		var items=sensor.items;
 		
+		getComponentById('currentSensor_items').value=items.length;
+		getComponentById('currentSensor_id').value=sensorId;
+		
 		for(var i in items){
 			var itemId=items[i].id;
 			var itemName=items[i].name;
@@ -132,16 +133,24 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 				var col4=createDivComponent('','w3-third');
 				var col5=createDivComponent('','w3-third');
 				
+				var nameId=getInputCompName(sensorId,itemId,FIELD_NAME_ID)+'_'+noId;
+				
 				var text0=document.createElement('div');
 				text0.setAttribute('class','w3-half');
 				text0.setAttribute('style','margin-left: 20px; width: 90%;');
-				text0.innerHTML="<b>"+itemName+"</b>";
+				text0.innerHTML='<b id="'+nameId+'">'+itemName+'</b>';
 	
 				var input1=createInputComponent(sensorId,itemId,FIELD_DESCR_ID,DESCR_SUFFIX,descr,sensorName,itemName,noId,editable);
 				var input2=createInputComponent(sensorId,itemId,FIELD_QUEUE_ID,QUEUE_SUFFIX,queue,sensorName,itemName,noId,editable);
 				var input3=createInputComponent(sensorId,itemId,FIELD_MIN_ID,MIN_VAL_SUFFIX,minVal,sensorName,itemName,noId,editable);
 				var input4=createInputComponent(sensorId,itemId,FIELD_MAX_ID,MAX_VAL_SUFFIX,maxVal,sensorName,itemName,noId,editable);
 				var input5=createInputComponent(sensorId,itemId,FIELD_FIELDID_ID,FIELD_ID_SUFFIX,fieldId,sensorName,itemName,noId,editable);
+				
+				input1.setAttribute('name2','descr');
+				input2.setAttribute('name2','queue');
+				input3.setAttribute('name2','minVal');
+				input4.setAttribute('name2','maxVal');
+				input5.setAttribute('name2','fieldId');
 				
 				input5.setAttribute('type','number');
 				input5.setAttribute('min','0');
@@ -179,6 +188,70 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 	container.appendChild(hr);
 }
 
+function submitSensorsFormAsJsonReloadCurrTab(){
+	showStatusMessage('Сохраняю датчики ...','w3-yellow');
+	postForm(currentForm,submitValuesUrl,validateCurrentSensorForm,constructSensorsFormDataAsJson,validateStatusMessageDefault,getSensorsItemHandler,getStatusMessageComp());
+}
+
+function getSensorsItemHandler(data){
+	var ok=isStatusMessageResponseOk(data.statusHttp);
+	
+	if(ok){
+		hideComponent(currentItemPreffix+'_modal');
+		reloadCurrentSettingsTab();
+		showStatusMessage('Сохранено. Обновляю данные','w3-yellow');
+		/*openCommandRestartPopup();*/
+	}else{
+		var msg='Ошибка '+data.message;
+		showStatusMessage(msg,'w3-red');
+		 throw msg; 
+	}
+}
+
+function constructSensorsFormDataAsJson(form){
+	
+	var formInputs = getComponentChildrenByClass(form,'intervals');
+	
+	var sensorId=getComponentValueById('currentSensor_id');
+	var sensorName=getComponentValueById('currentSensor_name');
+	var itemCount=getComponentValueById('currentSensor_items');
+	
+	var target=getComponentValueById('currentSensor_form_target');
+	var page=getComponentValueById('currentSensor_form_page');
+	
+	var sensDescrId=getInputCompName(sensorId,255,FIELD_DESCR_ID,DESCR_SUFFIX)+'_true';
+	var sensorDescr=getComponentValueById(sensDescrId);
+	
+	var json='{"id": "'+sensorId+'","name": "'+sensorName+'","descr": "'+sensorDescr+'","itemCount": "'+itemCount+'","items":[';
+	
+	for(var i=0;i<itemCount;i++){
+		var nameId=getInputCompName(sensorId,i,FIELD_NAME_ID)+'_true';
+		var descrId=getInputCompName(sensorId,i,FIELD_DESCR_ID)+'_true';
+		var queueId=getInputCompName(sensorId,i,FIELD_QUEUE_ID)+'_true';
+		var minValId=getInputCompName(sensorId,i,FIELD_MIN_ID)+'_true';
+		var maxValId=getInputCompName(sensorId,i,FIELD_MAX_ID)+'_true';
+		var fieldIdId=getInputCompName(sensorId,i,FIELD_FIELDID_ID)+'_true';
+		
+		var name=getComponentValueById(descrId);
+		var descr=getComponentValueById(descrId);
+		var queue=getComponentValueById(queueId);
+		var minVal=getComponentValueById(minValId);
+		var maxVal=getComponentValueById(maxValId);
+		var fieldId=getComponentValueById(fieldIdId);
+		
+		json+='{"id": "'+i+'","name": "'+name+'","descr": "'+descr+'","queue": "'+queue+'","minVal": "'+minVal+'","maxVal": "'+maxVal+'","fieldId": "'+fieldId+'"},';
+	}
+	
+	if(json.substring(json.length - 1)==','){
+		json=json.substring(0,json.length-1);
+	}
+	
+	json+=']}';
+	
+	return constructFormData_JSONprocessor(target,page,json);
+}
+
+/*------------------------validators------------------------------------*/
 function validateCurrentSensorForm(){
 	var errorMessage='';
 		
@@ -190,7 +263,6 @@ function validateCurrentSensorForm(){
 	return errorMessage;
 }
 
-/*------------------------validators------------------------------------*/
 function validateMinMaxValues(){
 	var minValComponents=document.getElementsByClassName(MIN_VAL_SUFFIX);
 	var maxValComponents=document.getElementsByClassName(MAX_VAL_SUFFIX);

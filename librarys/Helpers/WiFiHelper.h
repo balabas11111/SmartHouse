@@ -202,7 +202,6 @@ public:
 		}
 		//printHeap();
 		initDefaultServerHandlers();
-		initEspSettingsBoxHandlers();
 		//printHeap();
 		if(serverPostInitFunc!=nullptr){
 			Serial.println(FPSTR(MESSAGE_WIFIHELPER_POST_INIT_WEB_SERV_HANDLERS));
@@ -457,24 +456,6 @@ protected:
 		server->onNotFound([this](){handleNotFound();});
 
 		Serial.println(FPSTR("Default server handlers...done"));
-	}
-
-	void initEspSettingsBoxHandlers(){
-		Serial.println(FPSTR("Init EspSettingsBoxHandlers"));
-
-		server->on(FPSTR(URL_SUBMIT_FORM_SETTINGS), HTTP_POST, [this](){
-			server->send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), setEspSettingsBoxValues());
-		});
-		server->on(FPSTR(ESPSETTINGSBOX_GET_SIMPLE_JSON_PUBLISH_URL), HTTP_GET, [this](){
-			server->send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), espSettingsBox->getSimpleJson());
-		});
-		server->on(FPSTR(URL_GET_JSON_SETTINGS), HTTP_GET, [this](){
-			checkAuthentication();
-			String page=server->arg(FPSTR(MESSAGE_SERVER_ARG_PAGE));
-			server->send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), espSettingsBox->getJson(page));
-		});
-
-		Serial.println(FPSTR("Init EspSettingsBoxHandlers...done"));
 	}
 
 	boolean startAsAccessPoint(){
@@ -979,7 +960,7 @@ protected:
 	}
 
 	//----------espSettings save-------------------------------------------
-	String setEspSettingsBoxValues(){
+	/*String setEspSettingsBoxValuesC(){
 		checkAuthentication();
 		String page=server->arg(FPSTR(MESSAGE_SERVER_ARG_PAGE));
 
@@ -1000,7 +981,7 @@ protected:
 		espSettingsBox->finishSetSettingsValue(page);
 
 		return espSettingsBox->getJson(page);
-	}
+	}*/
 
 private:
 #ifdef ESP8266

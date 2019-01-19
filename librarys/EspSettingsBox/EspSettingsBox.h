@@ -16,22 +16,24 @@
 #include "IPAddress.h"
 #include "ESPExtraSettingsBox.h"
 #include "projectConsts.h"
+#include "Consts/PagesConsts.h"
+#include "Consts/CommandsConsts.h"
 
 #include "AbstractItem.h"
 #include "interfaces/Initializable.h"
 #include "interfaces/JSONprocessor.h"
+#include "interfaces/JSONprovider.h"
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
 
-const PROGMEM char EspSettingsBox_NAME[] = "EspSettingsBox";
+const PROGMEM char EspSettingsBox_NAME[] = "espSettingsBox";
 
-class EspSettingsBox: public Initializable, public JSONprocessor {
+class EspSettingsBox: public Initializable, public JSONprocessor , public JSONprovider {
 
 public:
 	EspSettingsBox();
 	EspSettingsBox(ESPExtraSettingsBox** boxes,uint8_t boxesCount);
-	//EspSettingsBox(String deviceKind,boolean forceLoad);
 	EspSettingsBox(boolean forceLoad,boolean _initSpiff);
 
 	virtual boolean initialize(boolean _init) override;
@@ -50,12 +52,48 @@ public:
 	}
 
 	String getName(){
-		return FPSTR(ESPSETTINGSBOX_NAME);
+		return FPSTR(EspSettingsBox_NAME);
 	}
 
 	StatusMessage processJson(String page,String json){
 		printProcessParams(page, json);
-		return StatusMessage(STATUS_UNKNOWN_INT);
+
+		if(page==FPSTR(PAGE_MANAGE) && json==FPSTR(COMMAND_DELETE_SETTINGS)){
+			int count=deleteSettingsFiles();
+
+			return StatusMessage(STATUS_OK_DELETED_INT,String(count));
+		}
+
+		if(page==FPSTR(PAGE_DEVICE) || page==FPSTR(PAGE_NET) || page==FPSTR(PAGE_PUBLISH)){
+			beginSetSettingsValue(page);
+
+			DynamicJsonBuffer jsonBuffer;
+			JsonObject& root = jsonBuffer.parseObject(json);
+
+			if(!root.success()){
+				Serial.println(FPSTR("Error parse JSOn"));
+				return StatusMessage(STATUS_PARSE_ERROR_INT);
+			}
+
+			JsonObject::iterator it;
+			  for (it = root.begin(); it != root.end(); ++it ){
+				  String argName=it->key;
+				  String argVal=it->value.asString();
+
+				  if(!setSettingsValue(argName,argVal)){
+				  			  				Serial.print(FPSTR("FAILED find target for argName="));
+				  			  				Serial.print(argName);
+				  			  				Serial.print(FPSTR(" argVal="));
+				  			  				Serial.println(argVal);
+  	  			  }
+			  }
+
+			finishSetSettingsValue(page);
+
+			return StatusMessage(STATUS_OK_SAVED_INT,page,getJson(page));
+		}
+
+		return StatusMessage(STATUS_NOT_FOUND_INT);
 	}
 
 	void beginSetSettingsValue(String page){
@@ -135,7 +173,7 @@ public:
 
 	String getThingSpeakChannelUrl();
 
-	String getSimpleJson();
+	String getJson();
 	String getJson(String page);
 
 	String getFileName(AbstractItem* item);

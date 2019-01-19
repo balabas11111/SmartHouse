@@ -21,7 +21,8 @@ const char* const DAYS_OF_WEEK[] PROGMEM={
 /*----------------------------CommonValues--------------------*/
 
 /*----------------------------StatusMessage--------------------*/
-
+const PROGMEM char MESSAGE_PROV_NOT_FOUND[]  = "Компонент провайдер не найден:";
+const PROGMEM char MESSAGE_PROC_NOT_FOUND[]  = "Компонент процессор не найден:";
 const PROGMEM char STATUS_UNKNOWN_DESCR[]  = "Статус не определен";
 
 const char* const STATUSES_DESCR[] PROGMEM=
@@ -43,8 +44,18 @@ const char* const STATUSES_DESCR[] PROGMEM=
 		"Удалено",
 		"Функция отключена",
 		"Данные отправлены",
-		"Нечего отправлять"
+		"Нечего отправлять",
+		"Ошибка конфигурации"
 };
 /*----------------------------StatusMessage--------------------*/
+
+/*----------------------------ThingSpeak Settings--------------------*/
+
+const PROGMEM char MESSAGE_THINGSPEAK_NO_SENSORS[]="Отсутствуют датчики";
+const PROGMEM char MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED[]="Публикация данных ThingSpeak не разрешена";
+const PROGMEM char MESSAGE_THINGSPEAK_NO_USER_SPECIFIED[]="Пользователь, пароль, ключ ThingSpeak не указаны";
+
+/*----------------------------ThingSpeak Settings--------------------*/
+
 
 #endif /* LIBRARIES_DEVICELIB_LOCALES_CONSTSLOC_RU_H_ */

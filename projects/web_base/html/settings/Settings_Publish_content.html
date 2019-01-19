@@ -14,7 +14,8 @@
 					  		<h3>Отправка в ThingSpeak</h3>
 					  	</div>
 					  	
-					  	<input name="page" type="hidden" value="publish"/>
+					  	<input id="publish_form_target" type="hidden" value="espSettingsBox"/>
+						<input id="publish_form_page" type="hidden" value="publish"/>
 					  	
 					  	<div class="w3-row">
 							<div class="w3-half">
@@ -167,7 +168,7 @@
 				  
 				  <p>
 			  		<button id="savePublishSettingsBtn" class="w3-btn w3-teal" style="margin-left: 20px; margin-bottom: 20px;"
-							onclick="submitCurrentForm();">Сохранить</button>
+							onclick="submitCurrentSettingsForm();">Сохранить</button>
 				  </p>
 				
 				

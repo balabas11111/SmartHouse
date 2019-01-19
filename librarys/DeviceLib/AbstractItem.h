@@ -9,7 +9,6 @@
 #define LIBRARIES_DEVICELIB_AbstractItem_H_
 
 #include "Arduino.h"
-#include "AbstractitemReq.h"
 #include "ESP_Consts.h"
 #include "interfaces/JSONprovider.h"
 
@@ -263,99 +262,12 @@ public:
 		Serial.println();
 	}
 
-	void printAbstractItemRequest(AbstractItemRequest req){
-		Serial.print(FPSTR("AbstractItemRequest(valid="));
-		Serial.print(req.valid);
-		Serial.print(FPSTR(", deviceId="));
-		Serial.print(req.deviceId);
-		Serial.print(FPSTR(", itemId="));
-		Serial.print(req.itemId);
-		Serial.print(FPSTR(", fieldId="));
-		Serial.print(req.fieldId);
-		Serial.print(FPSTR(", fieldVal="));
-		Serial.println(req.fieldVal);
-	}
-
-	boolean setFieldFromRequest(AbstractItemRequest req){
-		//printAbstractItemRequest(req);
-
-		if(this->id!=req.deviceId || !req.valid){
-			return false;
-		}
-		if(req.itemId!=255 && req.itemId>itemCount){
-			return false;
-		}
-
-		if(req.itemId==255){
-			//we can set only abstractItem desciption. All other values belong to its items values
-			if(req.fieldId==FIELD_DESCR_ID){
-				setDescr(req.fieldVal);
-				return true;
-			}
-			return false;
-		}
-
-		SensorValue* targetItem=&items[req.itemId];
-
-		boolean result=false;
-
-		switch(req.fieldId){
-			case FIELD_DESCR_ID:
-				targetItem->descr=req.fieldVal;
-				result=false;
-				break;
-			case FIELD_MIN_ID:
-				targetItem->minVal=req.fieldVal.toFloat();
-				result=false;
-				break;
-			case FIELD_MAX_ID:
-				targetItem->maxVal=req.fieldVal.toFloat();
-				result=false;
-				break;
-			case FIELD_FIELDID_ID:
-				targetItem->fieldId=req.fieldVal.toInt();
-				result=false;
-				break;
-			case FIELD_QUEUE_ID:
-				targetItem->queue=req.fieldVal;
-				result=false;
-				break;
-			default:
-				result=false;
-		}
-
-		return result;
-	}
-
-	//if(ietmId=255 then it is parentItem)
-	boolean setField(String fieldName,String fieldVal){
-		AbstractItemRequest req=AbstractItem::createitemRequest(fieldName,fieldVal);
-		return setFieldFromRequest(req);
-	}
-
-	static AbstractItemRequest createitemRequest(String argName,String argValue){
-		if(argName.startsWith("s_")){
-			int8_t ind1=argName.indexOf("_", 2)+1;
-			int8_t ind2=argName.indexOf("_",ind1+1);
-
-			uint8_t deviceId=argName.substring(2,ind1-1).toInt();
-			uint8_t itemId=argName.substring(ind1,ind2).toInt();
-			uint8_t fieldId=argName.substring(ind2+1).toInt();
-
-			return {1,deviceId,itemId,fieldId,argValue};
-		}
-
-		return {0,0,0,0,""};
-	}
-
 	boolean checkForAlarm(){
 		boolean result=false;
 
 		for(uint8_t i=0;i<itemCount;i++){
 			result=checkItemForAlarm(i) || result;
 		}
-
-		//alarmMode=result;
 
 		return result;
 	}

@@ -239,7 +239,7 @@ const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED_RESULT[]="Ã�Â 
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN[]="Save AbstractItem to file=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SETTINGS_SAVE_BEGIN[]="Save Settings to file=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SAVED[]="...saved";
-const PROGMEM char MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED[]="Default settings will be saved";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED[]="DEFAULT ";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS[]="File not exists";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_BOX_FILE_NOT_EXISTS[]="Box File not exists";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_BOX_FILE_EXISTS[]="Box File EXISTS";
@@ -332,9 +332,11 @@ const PROGMEM char ESBOX_displayAutochange[]="displayAutochange";
 const PROGMEM char ESBOX_refreshInterval[]="refreshInterval";
 const PROGMEM char ESBOX_accessUser[]="accessUser";
 const PROGMEM char ESBOX_accessPass[]="accessPass";
+const PROGMEM char ESBOX_accessPassConfirm[]="accessPassConfirm";
 const PROGMEM char ESBOX_STARS[]="*****";
 const PROGMEM char ESBOX_settingsUser[]="settingsUser";
 const PROGMEM char ESBOX_settingsPass[]="settingsPass";
+const PROGMEM char ESBOX_settingsPassConfirm[]="settingsPassConfirm";
 const PROGMEM char ESBOX_isAccesPoint[]="isAccesPoint";
 const PROGMEM char ESBOX_ssidAP[]="ssidAP";
 const PROGMEM char ESBOX_ssid[]="ssid";
@@ -547,8 +549,6 @@ const PROGMEM char MESSAGE_THINGSPEAK_SUBSCRIBE_FIELDS_FIELD[]="/subscribe/field
 
 const PROGMEM char MESSAGE_THINGSPEAK_FAILED_STATUS[]="Failed";
 const PROGMEM char MESSAGE_THINGSPEAK_OK_STATUS[]="Ok";
-const PROGMEM char MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED[]="Ã�Â Ã‘Å¸Ã�Â¡Ã‘â€œÃ�Â Ã‚Â±Ã�Â Ã‚Â»Ã�Â Ã‘â€˜Ã�Â Ã‘â€�Ã�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Â Ã�Â Ã‘â€˜Ã�Â¡Ã�ï¿½ ThingSpeak Ã�Â Ã�â€¦Ã�Â Ã‚Âµ Ã�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â Ã‚Â·Ã�Â¡Ã�â€šÃ�Â Ã‚ÂµÃ�Â¡Ã¢â€šÂ¬Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‚Â°";
-const PROGMEM char MESSAGE_THINGSPEAK_NO_USER_SPECIFIED[]="Ã�Â Ã‘Å“Ã�Â Ã‚Âµ Ã�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â Ã’â€˜Ã�Â Ã‚Â°Ã�Â Ã�â€¦ Ã�Â Ã‘â€”Ã�Â Ã‘â€¢Ã�Â Ã‚Â»Ã�Â¡Ã�Å Ã�Â Ã‚Â·Ã�Â Ã‘â€¢Ã�Â Ã�â€ Ã�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã‚ÂµÃ�Â Ã‚Â»Ã�Â¡Ã�Å  ThingSpeak";
 const PROGMEM char MESSAGE_THINGSPEAK_EMPTY_KEY[]="EmptyKey";
 
 //Ntp clock client
@@ -617,14 +617,8 @@ const PROGMEM char URL_INDEX[]="/index";
 const PROGMEM char URL_SETTINGS[]="/settings";
 const PROGMEM char URL_EDIT[]="/edit";
 
-const PROGMEM char URL_SUBMIT_FORM_SETTINGS[]="/submitForm_settings";
-const PROGMEM char URL_GET_JSON_SETTINGS[]="/getJson_settings";
 const PROGMEM char URL_GET_JSON_SENSORS[]="/getJson_sensors";
 const PROGMEM char URL_SUBMIT_FORM_SENSORS[]="/submitForm_sensors";
-
-//const PROGMEM char URL_GET_JSON_PROVIDERS[]="/getJson_providers";
-//const PROGMEM char URL_GET_JSON_INTERVALS[]="/getJson_intervals";
-//const PROGMEM char URL_SUBMIT_FORM_INTERVALS[]="/submitForm_intervals";
 
 //use /getJson?name=name
 const PROGMEM char URL_GET_JSON[]="/getJson";

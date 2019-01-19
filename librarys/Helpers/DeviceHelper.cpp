@@ -5,6 +5,8 @@
  *      Author: Vitaliy
  */
 #include "Arduino.h"
+#include "ArduinoJson.h"
+#include "EspSettingsBox.h"
 #include <DeviceHelper.h>
 #include "ESP_Consts.h"
 #ifdef ESP32
@@ -18,7 +20,9 @@
 DeviceHelper::DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
 							JSONprocessor** jsonProcessors,uint8_t jsonProcessorsSize,
 							JSONprovider** jsonProviders,uint8_t jsonProvidersSize,
+							AbstractItem** abstrItems,uint8_t abstrItemsSize,
 							SendAble** senders,uint8_t sendersSize,
+							EspSettingsBox* espSettingsBox,
 							long minAlarmInterval){
 	this->loopItems=loopItems;
 	this->loopItemsSize=loopItemsSize;
@@ -29,11 +33,17 @@ DeviceHelper::DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
 	this->jsonProviders=jsonProviders;
 	this->jsonProvidersSize=jsonProvidersSize;
 
+	this->abstrItems=abstrItems;
+	this->abstrItemsSize=abstrItemsSize;
+
 	this->senders=senders;
 	this->sendersSize=sendersSize;
 
+	this->espSettingsBox=espSettingsBox;
+
 	this->alarmMode=false;
 	this->minAlarmInterval=minAlarmInterval*1000;
+
 	this->lastAlarmTime=0;
 
 	this->triggerInitiated=false;
@@ -209,25 +219,6 @@ StatusMessage DeviceHelper::processJson(String target,String page,String json){
 		return StatusMessage(STATUS_NOT_FOUND_INT);
 	}
 
-String DeviceHelper::getProvidersJson(String provider,String page){
-	yield();
-	if(provider==NULL || provider.length()==0){
-		return StatusMessage(STATUS_INVALID_LENGTH_INT).getJson();
-	}
-
-	if(provider==FPSTR(MESSAGE_SERVER_ARG_VAL_ALL)){
-		return getProvidersJson();
-	}
-
-	for(uint8_t i=0;i<jsonProvidersSize;i++){
-		if(jsonProviders[i]->checkName(provider)){
-			return jsonProviders[i]->getJson(page);
-		}
-	}
-
-	return StatusMessage(STATUS_ITEM_NOT_FOUND_INT).getJson();
-}
-
 String DeviceHelper::getProvidersJson(){
 	yield();
 	String result="{\"sensors\":[";
@@ -242,6 +233,22 @@ String DeviceHelper::getProvidersJson(){
 	result+="]}";
 
 	return result;
+}
+
+String DeviceHelper::getAbstrItemsJson(){
+	yield();
+		String result="{\"sensors\":[";
+
+			for(uint8_t i=0;i<abstrItemsSize;i++){
+				delay(1);
+				result+=abstrItems[i]->getJson();
+				if(i!=abstrItemsSize-1){
+					result+=",";
+				}
+			}
+		result+="]}";
+
+		return result;
 }
 
 String DeviceHelper::getJson(JSONprovider** providers, uint8_t size) {
@@ -274,6 +281,62 @@ String DeviceHelper::getJsonAbstractItems(AbstractItem** sensors, uint8_t size) 
 		result+="]}";
 
 		return result;
+}
+
+StatusMessage DeviceHelper::saveSensorValues(String page,String json){
+	DynamicJsonBuffer jsonBuffer;
+	JsonObject& root = jsonBuffer.parseObject(json);
+
+	if(!root.success()){
+		Serial.println(FPSTR("Error parse JSOn"));
+		return StatusMessage(STATUS_PARSE_ERROR_INT);
+	}
+
+	uint8_t id=root["id"];
+	String name=root["name"];
+	String descr=root["descr"];
+	uint8_t itemCount=root["itemCount"];
+
+	AbstractItem* aitem=NULL;
+
+	Serial.println("id="+String(id)+" name="+name+" descr="+descr+" itemCount="+String(itemCount));
+
+	for(uint8_t i=0;i<abstrItemsSize;i++){
+		if(abstrItems[i]->checkName(name)){
+			aitem=abstrItems[i];
+			break;
+		}
+	}
+
+	if(aitem==NULL){
+		return StatusMessage(STATUS_NOT_FOUND_INT);
+	}
+
+	aitem->setDescr(descr);
+
+	for(uint8_t i=0;i<itemCount;i++){
+		uint8_t idItem=root["items"][i]["id"];
+		String nameItem=root["items"][i]["name"];
+		String descrItem=root["items"][i]["descr"];
+		String queue=root["items"][i]["queue"];
+		float minVal=root["items"][i]["minVal"];
+		float maxVal=root["items"][i]["maxVal"];
+		uint8_t fieldId=root["items"][i]["fieldId"];
+
+		if(aitem->getName(idItem)==nameItem){
+			aitem->setDescr(idItem, descrItem);
+			aitem->setQueue(idItem, queue);
+			aitem->setMinVal(idItem, minVal);
+			aitem->setMaxVal(idItem, maxVal);
+			aitem->setFieldId(id, fieldId);
+		}
+
+		Serial.println("idItem="+String(idItem)+" name="+nameItem+" descr="+descrItem+" queue="+queue+" minVal="+String(minVal)+" maxVal="+String(maxVal)+" fieldId="+String(fieldId));
+	}
+
+	espSettingsBox->saveAbstractItemToFile(aitem);
+
+	return StatusMessage(STATUS_OK_SAVED_INT);
 }
 
 void DeviceHelper::createPostponedCommand(String command) {

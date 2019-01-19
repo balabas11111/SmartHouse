@@ -12,7 +12,7 @@ function createSpanComponent(id,clazz,onclick,innerHtml){
 	return comp;
 }
 
-function createButtonComponent(tag,id,clazz,style,innerHtml,onclick){
+function createButtonComponent(id,clazz,style,innerHtml,onclick){
 	var btn=createHtmlComponent('button',id,undefined,clazz,style,innerHtml);
 	btn.setAttribute('onclick',onclick);
 	return btn;
@@ -21,7 +21,7 @@ function createButtonComponent(tag,id,clazz,style,innerHtml,onclick){
 function createHiddenInput(id,name,value){
 	var inputsDiv=getConfirmInputsDiv();
 	var input=createInputSimple(id,name,'','',value,true);
-	input.setAttribute('type','hidden')
+	input.setAttribute('type','hidden');
 	return input;
 }
 
@@ -64,6 +64,16 @@ function createHtmlComponent(tag,id,name,clazz,style,innerHtml){
 		
 	return comp;
 }
+
+function createTooltipSpan(msg){
+	var innerHtml='<div class="w3-row"><div class="w3-cell"><h2>&#9888</h2></div><div class="w3-cell" ><strong style="margin-left: 20px">Справка</strong></div><div class="w3-cell-top">'+msg+'</div></div>';
+	
+	var tooltipSpan=createHtmlComponent('span','','',
+			'w3-text w3-tag w3-white w3-border w3-border-gray w3-round-large',
+			'position:absolute;left:0;bottom:60px;',innerHtml);
+	
+	return tooltipSpan;
+}
 /*----------------------------------------------------------------------------*/
 function hideComponent(componentId){
 	var comp=document.getElementById(componentId);
@@ -87,4 +97,10 @@ function setVisible(comp,visible){
 			comp.style.display = "none";
 		}
 	}
+}
+/*---------------------Popups------*/
+
+function closePopup(modalName,messageComponentName){
+	hideComponent(modalName);
+	setStatusMessageComp(getComponentById(messageComponentName));
 }

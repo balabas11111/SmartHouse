@@ -32,6 +32,7 @@ const uint8_t STATUS_OK_DELETED_INT        PROGMEM =14;
 const uint8_t STATUS_OK_DISABLED_INT       PROGMEM =15;
 const uint8_t STATUS_OK_SENT_INT           PROGMEM =16;
 const uint8_t STATUS_OK_NO_TO_SEND_INT     PROGMEM =17;
+const uint8_t STATUS_CONF_ERROR_INT        PROGMEM =18;
 
 #ifdef DEVICE_LOCALE_RU
 	#include "projectConstsLoc_Ru.h"
@@ -64,7 +65,8 @@ const char* const STATUSES[] PROGMEM=
 		"Deleted",
 		"Disabled",
 		"Sent",
-		"NoDataToSend"
+		"NoDataToSend",
+		"ConfigError"
 };
 
 const uint STATUSES_HTTP[] PROGMEM=
@@ -86,15 +88,14 @@ const uint STATUSES_HTTP[] PROGMEM=
 		202,
 		202,
 		202,
-		202
+		202,
+		424
 };
 
-const PROGMEM char STATUS_statusInt[] = "{\"statusInt\": \"";
-const PROGMEM char STATUS_statusCode[] = "\",\"statusCode\"\": \"";
-const PROGMEM char STATUS_statusDescr[] = "\",\"statusDescr\"\": \"";
-const PROGMEM char STATUS_statusHttp[] = "\",\"statusHttp\"\": \"";
+const PROGMEM char STATUS_statusHttp[] = "{\"statusHttp\": \"";
+const PROGMEM char STATUS_statusCode[] = "\",\"statusCode\": \"";
 const PROGMEM char STATUS_message[] = "\",\"message\": \"";
-const PROGMEM char STATUS_data[] = "\",\"data\": \"";
-const PROGMEM char STATUS_SUFF[] = "\"}";
+const PROGMEM char STATUS_data[] = "\",\"data\": ";
+const PROGMEM char STATUS_SUFF[] = "}";
 
 #endif /* LIBRARIES_DEVICELIB_STATUSMESSAGECONSTS_H_ */

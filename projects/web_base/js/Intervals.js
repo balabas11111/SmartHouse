@@ -265,12 +265,12 @@ function applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,typeInt){
 	setVisible(timeDiv,isPeriodic);
 	setVisible(kindDiv,isKindVis);
 	
-	markFormAsValid(currentForm,currentMessageComp,true,true);
+	markFormAsValid(currentForm,getStatusMessageComp(),true,true);
 }
 
 function submitIntervalsFormAsJsonReloadCurrTab(){
-	showMessage(currentMessageComp,'Сохраняю настройки ...','w3-yellow');
-	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructIntervalsFormDataAsJson,validateStatusMessageDefault,getCurrentItemHandler,currentMessageComp);
+	showStatusMessage('Сохраняю интервалы ...','w3-yellow');
+	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructIntervalsFormDataAsJson,validateStatusMessageDefault,getCurrentItemHandler,getStatusMessageComp());
 }
 
 function constructIntervalsFormDataAsJson(form){
@@ -312,7 +312,7 @@ function constructIntervalsFormDataAsJson(form){
 }
 
 function validateCurrentIntervalForm(){
-	markFormAsValid(currentForm,currentMessageComp,true,true);
+	markFormAsValid(currentForm,getStatusMessageComp(),true,true);
 	markComponentValidityById('days',true);
 	
 	var errorMessage='';
@@ -386,3 +386,6 @@ function validateCurrentIntervalForm(){
 	return errorMessage;
 }
 
+function closeIntervalsPopup(){
+	
+}
