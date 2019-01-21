@@ -21,7 +21,6 @@ var currentFormList=undefined;
 var getValuesHandler=undefined;
 var validateValuesHandler=undefined;
 
-var preprocessItemsDisplay=undefined;
 var putItemsToContainerHandler=undefined;
 var currentItemPreffix=undefined;
 var itemsTagName=undefined;
@@ -89,6 +88,13 @@ function openTab(tabName,headerName) {
 			getValuesUrl='/getJson?name=espSettingsBox&page=net';
 		}
 		
+		if(tabName=='publish'){
+			getValuesHandler=processDeviceSettingsGet;
+			validateValuesHandler=validateFormFunctionDefault;
+			submitValuesUrl='/processJson?name=espSettingsBox&page=publish';
+			getValuesUrl='/getJson?name=espSettingsBox&page=publish';
+		}
+		
 		if(tabName=='sensors'){
 			getValuesHandler=processItemsJsonGet;
 			putItemsToContainerHandler=putSensorContentToContainer;
@@ -102,21 +108,12 @@ function openTab(tabName,headerName) {
 		
 		if(tabName=='intervals'){
 			getValuesHandler=processIntervalsJsonGet;
-			preprocessItemsDisplay=preprocessIntervalDisplay;
 			putItemsToContainerHandler=putIntervalContentToContainer;
 			currentItemPreffix='currentInterval';
-			itemsTagName='intervals';
 			validateValuesHandler=validateCurrentIntervalForm;
 			submitValuesUrl='/processJson?name=timeIntervalService';
 			getValuesUrl='/getJson?name=timeIntervalService';
 			currentFormId=getComponentIdWithSuffix(currentItemPreffix,FORM_SUFFIX);
-		}
-		
-		if(tabName=='publish'){
-			getValuesHandler=processDeviceSettingsGet;
-			validateValuesHandler=validateFormFunctionDefault;
-			submitValuesUrl='/processJson?name=espSettingsBox&page=publish';
-			getValuesUrl='/getJson?name=espSettingsBox&page=publish';
 		}
 		
 		currentFormList=getComponentById(getComponentIdWithSuffix(tabName,FORM_SUFFIX));
@@ -219,10 +216,6 @@ function processItemsJsonGet(data){
 	var items=data[itemsTagName];
 	
 	currentJson=items;
-	
-	if(preprocessItemsDisplay!=undefined){
-		preprocessItemsDisplay(data);
-	}
 			
 	for(var s in items){
 		var item=items[s];

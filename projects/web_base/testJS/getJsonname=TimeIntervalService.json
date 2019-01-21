@@ -5,7 +5,7 @@
 	"size": "1",
 	"descr": "TimeIntervalService_DESCR",
 	"itemCount": "3",
-	"innactiveIndex": "5",
+	"rescheduleIndex": "5",
 	"multidailyIndex": "3",
 	"periodicIndex": "1",
 	"intervalType": ["Единожды", "Периодически", "Ежедневно", "По дням", "Еженедельно", "Ежемесячно", "Ежеквартально"],

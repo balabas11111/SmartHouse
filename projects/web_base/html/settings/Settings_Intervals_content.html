@@ -64,4 +64,100 @@
 	        
 		  </div>
 		</div>
+		
+		<template id="intervals-template">
+		  <div class="w3-row w3-teal" style="margin-top: 15px; height: 50px;">
+		  	<div class="w3-quarter">Интервал</div>
+		  	<div class="w3-quarter">Тип/Состояние.</div>
+		  	<div class="w3-quarter">Старт/Стоп</div>
+		  	<div class="w3-quarter">Параметры</div>
+		  </div>
+		  <div class="w3-row" style="margin-top: 1px; height: 130px;">
+		  	<div class="w3-quarter">
+		  		<div class="w3-cell">
+		  			<div class="w3-tooltip" style="margin-top: 10px; margin-left: 3px; width: 30px">
+		  				<span class="editTooltip w3-text w3-tag w3-gray w3-round" style="position:absolute;left:0;bottom:45px">➲ Редактирование Новый</span>
+		  				<button class="editBtn w3-border w3-border-red w3-round w3-green" 
+		  					onclick="openIntervalEditPopup(0,'HeaderName');">✍</button>
+		  			</div>
+		  		</div>
+		  		<div class="w3-cell">
+		  			<div class="w3-tooltip" style="margin-top: 10px; margin-left: 3px; width: 30px">
+		  				<span class="deleteTooltip w3-text w3-tag w3-gray w3-round" style="position:absolute;left:0;bottom:45px">✂ Удалить Новый</span>
+		  				<button class="deleteBtn w3-border w3-border-red w3-round w3-green" 
+		  					onclick="openIntervalDeletePopup(0,'HeaderName');">✂</button>
+		  			</div>
+		  		</div>
+		  		
+		  		<div>
+		  			<input name="id" class="intervals id" type="hidden">
+		  			<label class="name">Название</label>
+		  			<input name="name" class="w3-input w3-border intervals name" style="width: 80%;" value="Новый" 
+		  				type="text" required="1" disabled>
+		  		</div>
+		  	</div>
+		  	<div class="w3-quarter">
+		  		<div>
+		  			<label class="type">Периодичность</label>
+		  			<select name="type" class="w3-select intervals type" style="width: 80%;"
+		  				 onchange="handlePeriodTypeChange(this.selectedIndex);" disabled>
+		  				 <option value="0">Единожды</option>
+		  				 <option value="1">Периодически</option>
+		  				 <option value="2">Ежедневно</option>
+		  				 <option value="3">По дням</option>
+		  				 <option value="4">Еженедельно</option>
+		  				 <option value="5">Ежемесячно</option>
+		  				 <option value="6">Ежеквартально</option>
+		  			</select>
+		  		</div>
+		  		<div>
+		  			<label class="state">Состояние</label>
+		  			<select name="state" class="w3-select intervals state" style="width: 80%;" disabled>
+		  				<option value="0">Новый</option>
+		  				<option value="1">Ожидает</option>
+		  				<option value="2">Выполняется</option>
+		  				<option value="3">Окончен</option>
+		  				<option value="4">К удалению</option>
+		  				<option value="5">К изменению</option>	
+		  			</select>
+		  		</div>
+		  	</div>
+		  	<div class="w3-quarter">
+		  		<div>
+		  			<label class="startTime">Старт</label>
+		  			<input name="startTime" class="w3-input w3-border intervals startTime" style="width: 90%;" type="datetime-local" disabled>
+		  		</div>
+		  		<div>
+		  			<label class="endTime">Стоп </label>
+		  			<input name="endTime" class="w3-input w3-border intervals endTime" style="width: 90%;" type="datetime-local" disabled>
+		  		</div>
+		  	</div>
+		  	<div class="w3-quarter">
+		  		<div class="days" style="display: none;">
+		  			<b>Дни выполнения</b>
+
+	  				<label><input name="days_0" class="w3-check intervals days_0" type="checkbox" disabled>Пн</label>
+	  				<label><input name="days_1" class="w3-check intervals days_1" type="checkbox" disabled>Вт</label>
+	  				<label><input name="days_2" class="w3-check intervals days_2" type="checkbox" disabled>Ср</label>
+	  				<label><input name="days_3" class="w3-check intervals days_3" type="checkbox" disabled>Чт</label>
+	  				<label><input name="days_4" class="w3-check intervals days_4" type="checkbox" disabled>Пт</label>
+	  				<label><input name="days_5" class="w3-check intervals days_5" type="checkbox" disabled>Сб</label>
+	  				<label><input name="days_6" class="w3-check intervals days_6" type="checkbox" disabled>Вс</label>
+		  		</div>
+		  		<div class="time" style="display: none;">
+		  			<label class="time">Период (сек) </label>
+		  			<input name="time" class="w3-input w3-border intervals time" style="width: 50%;" type="number" disabled>
+		  		</div>
+		  		<div class="kind" style="display: block;">
+		  			<label class="kind">Тип</label>
+		  			<select name="kind" class="w3-select intervals kind" style="width: 80%;" disabled>
+		  				<option value="0">Будильник</option>
+		  				<option value="1">Розетка 1 - включение</option>
+		  			</select>
+		  		</div>
+		  	</div>
+		  </div>
+		  <div class="w3-row w3-black" style="margin-top: 1px; margin-bottom: 5px; height: 5px;"></div>
+		</template>
+		
 <!-- end intervals tab -->

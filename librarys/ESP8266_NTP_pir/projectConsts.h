@@ -60,14 +60,14 @@
 
 #define ALARM_SIZE 10
 
-#define INNACTIVE_INTERVAL_INDEX 5
+#define RESCHEDULE_INTERVAL_INDEX 5
 #define MULTIDAILY_INTERVAL_INDEX 3
 #define PERIODIC_INTERVAL_INDEX 1
 
 #define TIME_SERV_SERV_VALS 1
 
 const char TimeIntervalService_ServVals[] PROGMEM="\
-,\"innactiveIndex\":\"5\",\"multidailyIndex\":\"3\",\"periodicIndex\":\"1\"\
+,\"rescheduleIndex\":\"5\",\"multidailyIndex\":\"3\",\"periodicIndex\":\"1\"\
 ,\"intervalKindId\": [\"ALARM\", \"SOCKET_1_ON\"]";
 
 const char* const IntervalKind_Ids[] PROGMEM={

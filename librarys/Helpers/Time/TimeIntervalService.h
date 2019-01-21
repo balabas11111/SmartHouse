@@ -46,7 +46,7 @@ typedef enum {
 } IntervalType;
 
 typedef enum {
-  NEW, WAIT, ACTIVE, FINISHED, TO_DELETE, INACTIVE
+  NEW, WAIT, ACTIVE, FINISHED, TO_DELETE, RESCHEDULE
 } IntervalState;
 
 typedef struct timeIntervalDetail{
@@ -158,7 +158,7 @@ public:
 					}
 			}
 
-			result+="],\"now\": \""+timeService->getNow()+"\"}";
+			result+="],\"now\": \""+String(timeService->getNow())+"\"}";
 
 		return result;
 	}
@@ -465,15 +465,6 @@ public:
 	}
 
 	void printTimeInterval(TimeIntervalDetail time){
-		/*Serial.print("type=");
-		Serial.print(time.type);
-		Serial.print(" state=");
-		Serial.print(time.state);
-		Serial.print(" startTime=");
-		printDateTime(time.startTime);
-		Serial.print(" endTime=");
-		printDateTime(time.endTime);
-		*/
 		Serial.println(getItemJson(time));
 	}
 protected:
@@ -816,14 +807,12 @@ private:
 	}
 
 	String getItemJson(TimeIntervalDetail item){
-		boolean disabled=(item.state==INACTIVE);
-
 		return "{\"id\":\""+String(item.id)+"\","
 					+"\"name\":\""+item.name+"\","
 					//+"\"type\":\""+getTypeName(item.type)+"\","
 					+"\"type\":\""+String(item.type)+"\","
 					//+"\"state\":\""+getStateName(item.state)+"\","
-					+"\"disabled\":\""+String(item.state==INNACTIVE_INTERVAL_INDEX)+"\","
+					+"\"rescheduleIndex\":\""+String(item.state==RESCHEDULE_INTERVAL_INDEX)+"\","
 					+"\"state\":\""+(item.state)+"\","
 					+"\"startTime\":\""+String(item.startTime)+"\","
 					+"\"endTime\":\""+String(item.endTime)+"\","

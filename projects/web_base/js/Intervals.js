@@ -1,5 +1,5 @@
 /*-----------------------Sensors values processing--------------------------------*/
-var innactiveIndex=-1;
+var rescheduleIndex=-1;
 var multidailyIndex=-1;
 var periodicIndex=-1;
 var intervalType=[];
@@ -7,11 +7,6 @@ var intervalState=[];
 var dayOfWeekShort=[];
 var dayOfWeek=[];
 var intervalKind=[];
-
-function processIntervalsJsonGet(data){
-	fillParameters(data);
-	processItemsJsonGet(data);
-}
 
 function fillParameters(data){
 	fillParameterArray(intervalType,data.intervalType);
@@ -22,7 +17,7 @@ function fillParameters(data){
 	
 	multidailyIndex=data.multidailyIndex;
 	periodicIndex=data.periodicIndex;
-	innactiveIndex=data.innactiveIndex;
+	rescheduleIndex=data.rescheduleIndex;
 }
 
 function fillParameterArray(targetArray,jsonArray){
@@ -90,227 +85,69 @@ function onIntervalDeletedHandler(data){
 	}
 }
 
-function preprocessIntervalDisplay(items){
-	var count=items.itemCount;
-	var countDiv=document.getElementById('intervalsCountDiv');
-	if(count==0){
-		countDiv.innerHTML='Не задано ни одного интервала';
-	}else{
-		countDiv.innerHTML='Всего интервалов '+count;
+function processIntervalsJsonGet(data){
+	fillParameters(data);
+	var container=document.getElementById('intervals_form');
+
+	container.innerHTML='';
+	var items=data.intervals;
+	
+	var count=data.itemCount;
+	
+	document.getElementById('intervalsCountDiv').innerHTML=(count>0)?('Всего интервалов '+count):'Не задано ни одного интервала';
+			
+	for(var s in items){
+		var item=items[s];
+		putIntervalToForm(container,item,false);
 	}
 	
+	var msg=(customOnGetMessage!=undefined)?customOnGetMessage:('Загружено '+currentHeaderName);
+	
+	showStatusMessage(msg,'w3-green');
+	customOnGetMessage=undefined;
 }
 
-function putIntervalContentToContainer(container,interval,noId,editable){
-	var id=interval.id;
-	var name=interval.name;
-	var typeInt=interval.type;
-	var stateInt=interval.state;
-	var startTime=interval.startTime;
-	var endTime=interval.endTime;
-	var time=interval.time;
-	var days=interval.days.split(',');
-	var kindInt=interval.kind;
-	
-	var hr = document.createElement('hr');
-	container.appendChild(hr);
-	container.appendChild(hr);
-	var divh=document.createElement('div');
-	divh.setAttribute('class','w3-row w3-teal');
-	divh.setAttribute('style','margin-top: 15px; height: 50px;');
-	
-	var div1h=createDivComponent('','w3-quarter','','Интервал');
-	var div2h=createDivComponent('','w3-quarter','','Тип/Состояние.');
-	var div3h=createDivComponent('','w3-quarter','','Старт/Стоп');
-	var div4h=createDivComponent('','w3-quarter','','Параметры');
-	
-	divh.appendChild(div1h);
-	divh.appendChild(div2h);
-	divh.appendChild(div3h);
-	divh.appendChild(div4h);
-	
-	container.appendChild(divh);
-	var divhv=document.createElement('div');
-	divhv.setAttribute('class','w3-row');
-	divhv.setAttribute('style','margin-top: 1px; height: 130px;');
-	
-	var col1h=createDivComponent('','w3-quarter');
-	var col2h=createDivComponent('','w3-quarter');
-	var col3h=createDivComponent('','w3-quarter');
-	var col4h=createDivComponent('','w3-quarter');
-	/* column 1*/
-	
-	var suf='';
-	
-	if(editable==undefined || !editable){
-		suf='_'+id;
-	}
-	
-	var cid='id'+suf;
-	var cname='name'+suf;
-	var ctypeInt='typeInt'+suf;
-	var cstateInt='stateInt'+suf;
-	var cstartTime='startTime'+suf;
-	var cendTime='endTime'+suf;
-	var ctime='time'+suf;
-	var cdays='days'+suf;
-	var ckindInt='kind'+suf;
-	
-	if(editable==undefined || !editable){
-		var cellEditButton=createDivComponent('','w3-cell');
-		var cellDeleteButton=createDivComponent('','w3-cell');
-		var editButton=createItemEditButton('id',id,name,undefined);
-		var deleteButton=createItemDeleteButton('id',id,name,'openConfirmDeleteIntervalForm');
-		
-		cellEditButton.appendChild(editButton);
-		cellDeleteButton.appendChild(deleteButton);
-		
-		col1h.appendChild(cellEditButton);
-		col1h.appendChild(cellDeleteButton);
-	}
-	
-	var inputId=createHiddenInput(cid,'id',id,'intervals');
-	var cellDivId=createDivComponent('','w3-cell w3-container');
-	cellDivId.appendChild(inputId);
-	setVisible(cellDivId,false);
+var intTmpl=undefined;
+var intIdSuf=undefined;
 
-	var lblName=createLabelSimple('lbl'+cname,cname,undefined,undefined,'Название');
-	var inputName=createInputSimple(cname,'name','intervals','width: 80%;',name,editable);
-	inputName.setAttribute('type','text');
-	inputName.setAttribute('required','1');
+function putIntervalToForm(container,interval,editable){
+	intTmpl = document.getElementById('intervals-template').content.cloneNode(true);
 	
-	var cellDivName=createDivComponent();
-	cellDivName.appendChild(lblName);
-	cellDivName.appendChild(inputName);
-		
-	col1h.appendChild(cellDivId);
-	col1h.appendChild(cellDivName);
-	/* column 2*/
+	intTmpl.querySelector('.editTooltip').innerText = '➲ Редактирование '+interval.name;
+	intTmpl.querySelector('.editBtn').setAttribute('onclick',"openIntervalEditPopup('"+interval.id+"','➲ Редактирование "+interval.name+"');");
+	intTmpl.querySelector('.deleteTooltip').innerText = '➲ Редактирование '+interval.name;
+	intTmpl.querySelector('.deleteBtn').setAttribute('onclick','openIntervalDeletePopup('+interval.id+',✂ Подтверждение);');
 	
-	var lblType=createLabelSimple('lbl'+ctypeInt,ctypeInt,undefined,undefined,'Периодичность');
-	var typeSelect=document.createElement("select");
-	var cellDivType=createDivComponent();
+	intIdSuf=(editable)?'':'_'+interval.id;
 	
-	typeSelect.id=ctypeInt;
-	typeSelect.name='type';
-	typeSelect.setAttribute('onChange',"handlePeriodTypeChange(this.selectedIndex);");
-	typeSelect.setAttribute('class','w3-select intervals');
-	typeSelect.setAttribute('style','width: 80%;');
+	var id=getIntEl('id',interval.id);
+	var name=getIntEl('name',interval.name);
+	var type=getIntEl('type',interval.type);
+	var state=getIntEl('state',interval.state);
+	var startTime=getIntEl('startTime',interval.startTime);
+	var endTime=getIntEl('endTime',interval.endTime);
+	var time=getIntEl('time',interval.time);
+	var kind=getIntEl('kind',interval.kind);
 	
-	if(editable==undefined || !editable){typeSelect.setAttribute("disabled","disabled");}
-	putItemsToComboCox(typeSelect,intervalType,typeInt);
+	var days=interval.days.split(',');
 	
-	cellDivType.appendChild(lblType);
-	cellDivType.appendChild(typeSelect);
-	/*--*/
-	var lblState=createLabelSimple('lbl'+cstateInt,cstateInt,undefined,undefined,'Состояние');
-	var stateSelect=document.createElement("select");
-	var cellDivState=createDivComponent();
+	for(var i=0;i<7;i++){
+		getIntEl('days_'+i,days[i]);
+	}
+
+	container.appendChild(intTmpl);
+}
+
+function getIntEl(id,value){
+	var sel='.intervals.'+id;
+	var comp=intTmpl.querySelector(sel);
+	comp.id=id+intIdSuf;
+	setComponentValue(comp,value);
 	
-	stateSelect.id=cstateInt;
-	stateSelect.name='state';
-	stateSelect.setAttribute('class','w3-select intervals');
-	stateSelect.setAttribute('style','width: 80%;');
-	
-	if(editable==undefined || !editable){stateSelect.setAttribute("disabled","disabled");}
-	putItemsToComboCox(stateSelect,intervalState,stateInt);
-	
-	cellDivState.appendChild(lblState);
-	cellDivState.appendChild(stateSelect);
-	
-	col2h.appendChild(cellDivType);
-	col2h.appendChild(cellDivState);
-	
-	/* column 3*/
-	var lblStartTime=createLabelSimple('lbl'+cstartTime,cstartTime,undefined,undefined,'Старт');
-	var inputStartTime=createInputSimple(cstartTime,'startTime','intervals','width: 90%;','',editable);
-	var cellDivStartTime=createDivComponent();
-	
-	inputStartTime.setAttribute('type','datetime-local');
-	inputStartTime.setAttribute('required','1');
-	setComponentValue(inputStartTime,startTime);
-	
-	
-	cellDivStartTime.appendChild(lblStartTime);
-	cellDivStartTime.appendChild(inputStartTime);
-	/*--*/
-	var lblEndTime=createLabelSimple('lbl'+cendTime,cendTime,undefined,undefined,'Стоп ');
-	var inputEndTime=createInputSimple(cendTime,'endTime','intervals','width: 90%;','',editable);
-	var cellDivendTime=createDivComponent();
-	
-	inputEndTime.setAttribute('type','datetime-local');
-	inputStartTime.setAttribute('required','1');
-	setComponentValue(inputEndTime,endTime);
-	
-	cellDivendTime.appendChild(lblEndTime);
-	cellDivendTime.appendChild(inputEndTime);
-	
-	col3h.appendChild(cellDivStartTime);
-	col3h.appendChild(cellDivendTime);
-	
-	/* column 4*/
-		
-		var lblDays=createLabelSimple('lbl'+cdays,undefined,undefined,undefined,'Дни выполнения');
-		var daysDiv=createDivComponent();
-		var daysDivChkBox=createDivComponent();
-		if(editable==undefined || !editable){
-			daysDivChkBox.id=cdays;
-		}
-		else{
-			daysDivChkBox.id='days';
-		}
-		
-		daysDiv.id=cdays+'Div';
-		daysDiv.name=cdays+'Div';
-		
-		arrayToCheckBoxList(daysDivChkBox,cdays,days,dayOfWeekShort,editable);
-		daysDiv.appendChild(lblDays);
-		daysDiv.appendChild(daysDivChkBox);
-		/*--*/
-		var lblTime=createLabelSimple('lbl'+ctime,ctime,undefined,undefined,'Период (сек) ');
-		var inputTime=createInputSimple(ctime,'time','intervals','width: 50%;',time,editable);
-		var timeDiv=createDivComponent();
-		timeDiv.id=ctime+'Div';
-		
-		inputTime.setAttribute('type','number');
-		
-		timeDiv.appendChild(lblTime);
-		timeDiv.appendChild(inputTime);
-		/*--*/
-		var lblKind=createLabelSimple('lbl'+ckindInt,ckindInt,undefined,undefined,'Тип');
-		var kindSelect=document.createElement("select");
-		var kindDiv=createDivComponent();
-		
-		kindSelect.id=ckindInt;
-		kindSelect.name='kind';
-		kindSelect.setAttribute('class','w3-select intervals');
-		kindSelect.setAttribute('style','width: 80%;');
-		
-		if(editable==undefined || !editable){kindSelect.setAttribute("disabled","disabled");}
-		putItemsToComboCox(kindSelect,intervalKind,kindInt);
-		
-		kindDiv.appendChild(lblKind);
-		kindDiv.appendChild(kindSelect);
-		/*--*/
-		applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,typeInt);
-		
-	col4h.appendChild(daysDiv);
-	col4h.appendChild(timeDiv);
-	col4h.appendChild(kindDiv);
-					
-	divhv.appendChild(col1h);
-	divhv.appendChild(col2h);
-	divhv.appendChild(col3h);
-	divhv.appendChild(col4h);
-	
-	container.appendChild(divhv);
-	
-	var divb=document.createElement('div');
-	divb.setAttribute('class','w3-row w3-black');
-	divb.setAttribute('style','margin-top: 1px; margin-bottom: 5px; height: 5px;');
-			
-	container.appendChild(divb);
-	container.appendChild(hr);
+	var lblSel='label.'+id;
+	var lbl=intTmpl.querySelector(lblSel);
+	if(lbl!=undefined){lbl.htmlFor=comp.id;}
+	return comp;
 }
 
 function handlePeriodTypeChange(selectedIndex){
@@ -478,8 +315,4 @@ function validateCurrentIntervalForm(){
 	}
 	
 	return errorMessage;
-}
-
-function closeIntervalsPopup(){
-	
 }
