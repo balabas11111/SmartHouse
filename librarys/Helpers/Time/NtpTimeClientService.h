@@ -204,6 +204,11 @@ public:
 			+"}";
 	}
 
+	String getDateTimeAsTimeStamp(uint32_t unixTime){
+		DateTime dt=DateTime(unixTime);
+		return dt.getFormattedIsoDateTime();
+	}
+
 	virtual String getName(){
 		return FPSTR(NTP_TIME_CLIENT_SERVICE_NAME);
 	}

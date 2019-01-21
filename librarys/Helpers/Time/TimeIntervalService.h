@@ -61,10 +61,6 @@ typedef struct timeIntervalDetail{
   uint8_t kind;
 }TimeIntervalDetail;
 
-const char* const SERVER_ARG_TIME_INTERVAL_SERVICE[] PROGMEM={
-		"id", "name", "type", "startTime", "endTime", "time" "state", "days", "kind"
-};
-
 const PROGMEM char MESSAGE_ERROR_TIME_INTERVAL_SERVICE_UPDATE[]        = "Error update time Interval";
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_OK[]                   = "{\"status\":\"Ok\",\"message\":\"Ok\"}";
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR[]                = "{\"status\":\"Error\",\"item\":\"Error update time Interval\"}";
@@ -74,7 +70,10 @@ class TimeIntervalService: public Initializable, public Loopable, public JSONpro
 public:
 	virtual ~TimeIntervalService(){};
 
-	TimeIntervalService(EspSettingsBox* espSettingsBox,NtpTimeClientService* ntpTimeClientService,std::function<void(TimeIntervalDetail)> externalFunction,std::function<void(void)> defaultValuesFunction,uint8_t fixedItemlength){
+	TimeIntervalService(EspSettingsBox* espSettingsBox,NtpTimeClientService* ntpTimeClientService,
+			std::function<void(TimeIntervalDetail)> externalFunction,
+			std::function<void(void)> defaultValuesFunction,
+			uint8_t fixedItemlength){
 		this->espSettingsBox=espSettingsBox;
 		this->timeService=ntpTimeClientService;
 		this->waitForTimeReceive=false;
@@ -120,9 +119,15 @@ public:
 
 		waitForTimeReceive=false;
 
-		if(!loaded && defaultValuesFunction!=nullptr){
-			Serial.println(FPSTR("Fill time interval service with default values"));
-			defaultValuesFunction();
+		if(!loaded){
+			if(defaultValuesFunction!=nullptr){
+				defaultValuesFunction();
+			}else{
+				Serial.println(FPSTR("Default interval will be added"));
+				uint32_t testTime=timeService->getNow()+120;
+				add("Test interval",ONCE,testTime,testTime+120,0,"",0);
+			}
+
 			saveToFile();
 			Serial.println(FPSTR("Default interval complete"));
 		}
@@ -138,11 +143,11 @@ public:
 		return items[ind];
 	}
 
-	virtual String getName(){
+	virtual String getName() override{
 		return FPSTR(TimeIntervalService_NAME);
 	}
 
-	virtual String getJson(){
+	virtual String getJson() override{
 		String result="{"+getItemJson()
 		+ ",\"intervals\":[";
 
@@ -153,12 +158,16 @@ public:
 					}
 			}
 
-			result+="]}";
+			result+="],\"now\": \""+timeService->getNow()+"\"}";
 
 		return result;
 	}
 
-	virtual void add(String name,IntervalType type,uint32_t start,uint32_t end,uint16_t time,String days,uint8_t kind){
+	boolean isNotIntervalIdValid(uint8_t id){
+		return ((fixedItemlength!=0 && itemCount>fixedItemlength) || id>itemCount);
+	}
+
+	void add(String name,IntervalType type,uint32_t start,uint32_t end,uint16_t time,String days,uint8_t kind){
 		if(fixedItemlength!=0 && itemCount==fixedItemlength){
 			return;
 		}
@@ -166,10 +175,9 @@ public:
 			days=FPSTR(TimeIntervalService_EMPTY_DAYS);
 		}
 		updateInterval(-1,name,type,start,end,time,WAIT,days,kind);
-		itemCount++;
 	}
 
-	virtual boolean updateInterval(int8_t id,String name,uint8_t type,uint32_t start,uint32_t end,uint16_t time,uint8_t state,String days,uint8_t kind){
+	boolean updateInterval(int8_t id,String name,uint8_t type,uint32_t start,uint32_t end,uint16_t time,uint8_t state,String days,uint8_t kind){
 		boolean isNew=false;
 		if(id<0){
 			Serial.println(FPSTR("new Interval add"));
@@ -177,11 +185,13 @@ public:
 			isNew=true;
 		}
 
-		if((fixedItemlength!=0 && itemCount>fixedItemlength) || id>itemCount){
+		if(isNotIntervalIdValid(id)){
 			return false;
 		}
 
 		boolean noerror=validateInterval(id,name,type,start,end,time,state,days,kind);
+
+		ulong now=timeService->getNow();
 
 		if(noerror){
 			items[id].id=id;
@@ -194,12 +204,41 @@ public:
 			items[id].days=type==MULTIDAILY?days:"0,0,0,0,0,0,0";
 			items[id].kind=kind;
 
-			//Serial.println(getItemJson(id));
-			Serial.println(FPSTR("Interval saved"));
+			if(compareIntervalAndNow(now,items[id])==NOW_IN_FUTURE_OF_INTERVAL){
+				Serial.println(FPSTR("state updated to WAIT"));
+				items[id].state=WAIT;
+			}
+			//
+			if(isNew){
+				Serial.print(FPSTR("New Interval "));
+				Serial.println(getItemJson(id));
+				itemCount++;
+			}
 		}
 
 		return noerror;
 
+	}
+
+	boolean deleteInterval(uint8_t id,boolean doSaveToFile){
+		if(id>=itemCount){
+			return false;
+		}
+
+		if(id!=itemCount-1){
+			for(uint8_t i=id;i<itemCount;i++){
+				items[i]=items[i+1];
+				items[i].id=i;
+			}
+		}
+
+		itemCount--;
+
+		if(doSaveToFile){
+			saveToFile();
+		}
+
+		return true;
 	}
 
 	boolean validateInterval(int8_t id,String name,uint8_t type,uint32_t start,uint32_t end,uint16_t time,uint8_t state,String days,uint8_t kind){
@@ -258,13 +297,33 @@ public:
 	}
 
 	StatusMessage processJson(String page,String json){
-
-		Serial.print(FPSTR("Set Interval value page="));
+		Serial.print(FPSTR("timeIntervalService  page="));
 		Serial.print(page);
-		Serial.print(FPSTR(" JSON="));
+		Serial.println(FPSTR(" val="));
 		Serial.println(json);
 
+		if(page==FPSTR("delete")){
+			return deleteIntervalById(json.toInt());
+		}
+
+		if(page==FPSTR("intervals")){
+			return updateIntervalFromJson(json);
+		}
+
+		return StatusMessage(STATUS_NOT_IMPLEMENTED_INT,'Директива не распознана '+page);
+	}
+
+	StatusMessage deleteIntervalById(uint8_t id){
+		if(deleteInterval(id,true)){
+			return StatusMessage(STATUS_OK_DELETED_INT);
+		}
+		return StatusMessage(STATUS_FAILED_INT);
+	}
+
+	StatusMessage updateIntervalFromJson(String json){
+
 		boolean ok=false;
+		boolean isNew=false;
 		StatusMessage sm=StatusMessage(STATUS_UNKNOWN_INT);
 		String name="";
 
@@ -276,7 +335,7 @@ public:
 
 			if(root.success()){
 
-				uint8_t id=root["id"];
+				int8_t id=root["id"];
 				name=root["name"].as<char*>();
 				uint8_t type=root["type"];
 				uint32_t startTime=root["startTime"];
@@ -288,6 +347,8 @@ public:
 
 				ok=updateInterval(id,name,type,startTime,endTime,time,state,days,kind);
 
+				isNew=(id<0);
+
 				if(!ok){
 					sm.setStatusCode(STATUS_UPDATE_ERROR_INT);
 				}
@@ -298,12 +359,14 @@ public:
 			sm.setStatusCode(STATUS_INVALID_LENGTH_INT);
 		}
 
-	    if(ok && saveToFile()){
-	    	sm.setStatusCode(STATUS_OK_INT);
-	    	sm.setMessage(name);
-	    }
+		if(ok && saveToFile()){
+			sm.setStatusCode(STATUS_OK_INT);
+			String msg=(isNew?"Создан новый ":"Обновлен ")+name;
 
-	    return sm;
+			sm.setMessage(msg);
+		}
+
+		return sm;
 	}
 
 	int getActiveAlarms(){
@@ -330,22 +393,6 @@ public:
 			return;
 		}
 		stopBeeper();
-	}
-
-	uint8_t getHttpParamsExpectedLength(){
-		return sizeof(SERVER_ARG_TIME_INTERVAL_SERVICE);
-	}
-
-	String getHttpParamName(uint8_t ind){
-		return FPSTR(SERVER_ARG_TIME_INTERVAL_SERVICE[ind]);
-	}
-
-	String setHttpParams(String* args){
-		boolean saveResult=updateInterval(args[0].toInt(),args[1],args[2].toInt(),args[3].toInt(),args[4].toInt(),args[5].toInt(),args[6].toInt(),args[7],args[8].toInt());
-
-		return saveResult?
-				FPSTR(MESSAGE_TIME_INTERVAL_STATUS_OK)
-				:FPSTR(MESSAGE_TIME_INTERVAL_STATUS_ERROR);
 	}
 
 	boolean loadFromFile(){
@@ -382,7 +429,7 @@ public:
 
 			itemCount=root["itemCount"];
 
-			Serial.print(FPSTR("itemCount="));
+			Serial.print(FPSTR("IntervalCount="));
 			Serial.println(itemCount);
 
 			for(uint8_t i=0;i<itemCount;i++){
@@ -416,81 +463,143 @@ public:
 		Serial.println();
 		return espSettingsBox->saveSettingToFile(FPSTR(TimeIntervalService_FileName_NAME),getJson());
 	}
+
+	void printTimeInterval(TimeIntervalDetail time){
+		/*Serial.print("type=");
+		Serial.print(time.type);
+		Serial.print(" state=");
+		Serial.print(time.state);
+		Serial.print(" startTime=");
+		printDateTime(time.startTime);
+		Serial.print(" endTime=");
+		printDateTime(time.endTime);
+		*/
+		Serial.println(getItemJson(time));
+	}
 protected:
 	void processIntervals(){
+		if(itemCount==0){
+			return;
+		}
 		boolean doSave=false;
 
 		uint8_t dispatched=0;
 		uint8_t rescheduled=0;
 		uint8_t updated=0;
+		uint8_t deleted=0;
 
-		for(uint8_t i=0;i<itemCount;i++){
+		for(int8_t i=(itemCount-1);i>-1;i--){
 			ulong now=timeService->getNow();
 
 			boolean reschedule=false;
 			boolean dispatch=false;
 			boolean update=false;
+			boolean delet=false;
 
+			IntervalCompNow compRes=compareIntervalAndNow(now,items[i]);
 
-			switch(items[i].state){
-				case NEW: reschedule=true; break;
-				case WAIT:
-					{	IntervalCompNow compRes=compareIntervalAndNow(now,items[i]);
-						switch(compRes){
-							case NOW_IN_PAST_OF_INTERVAL:
-									Serial.println(FPSTR("WAIT is in past"));
-									setState(i,FINISHED);
-									reschedule=true;
-									break;
-							case NOW_IN_INTERVAL:
-									Serial.println(FPSTR("WAIT is in interval"));
-									setState(i,ACTIVE);
-									dispatch=true;
-									break;
-						}
-						break;
-					}
-				case ACTIVE:
-					{	IntervalCompNow compRes=compareIntervalAndNow(now,items[i]);
-						switch(compRes){
-							case NOW_IN_PAST_OF_INTERVAL:
-									Serial.println(FPSTR("ACTIVE is in past"));
-									setState(i,FINISHED);
-									reschedule=true;
-									dispatch=true;
-									break;
-						}
-						break;
-					}
-				case FINISHED:
-					{	IntervalCompNow compRes=compareIntervalAndNow(now,items[i]);
-						switch(compRes){
-							case NOW_IN_PAST_OF_INTERVAL:
-									Serial.println(FPSTR("FINISHED is in past"));
-									reschedule=true;
-									break;
-							case NOW_IN_INTERVAL:
-									Serial.println(FPSTR("FINISHED is in interval"));
-									setState(i,ACTIVE);
-									dispatch=true;
-									break;
-							case NOW_IN_FUTURE_OF_INTERVAL:
-									Serial.println(FPSTR("FINISHED is in future"));
-									setState(i,WAIT);
-									update=true;
-									break;
-						}
-						break;
-					}
+			uint8_t state=items[i].state;
 
+			if(compRes==NOW_IN_PAST_OF_INTERVAL && items[i].type==ONCE){
+				if(state==ACTIVE){
+					setState(i,FINISHED);
+					dispatch=true;
+				}
+				delet=true;
+			}else{
+				switch(state){
+					case TO_DELETE:
+						{
+							Serial.print(FPSTR("state TO_DELETE ind="));
+							Serial.println(i);
+							delet=true;
+							break;
+						}
+					case NEW:
+						{	switch(compRes){
+								case NOW_IN_PAST_OF_INTERVAL:
+										Serial.print(FPSTR("NEW is in past ind="));
+										Serial.println(i);
+										setState(i,FINISHED);
+										reschedule=true;
+										break;
+								case NOW_IN_INTERVAL:
+										Serial.print(FPSTR("NEW is in interval ind="));
+										Serial.println(i);
+										setState(i,ACTIVE);
+										dispatch=true;
+										break;
+								case NOW_IN_FUTURE_OF_INTERVAL:
+										Serial.print(FPSTR("NEW is in future ind="));
+										Serial.println(i);
+										setState(i,WAIT);
+										update=true;
+										break;
+							}
+							break;
+						}
+					case WAIT:
+						{	switch(compRes){
+								case NOW_IN_PAST_OF_INTERVAL:
+										Serial.print(FPSTR("WAIT is in past ind="));
+										Serial.println(i);
+										setState(i,FINISHED);
+										reschedule=true;
+										break;
+								case NOW_IN_INTERVAL:
+										Serial.print(FPSTR("WAIT is in interval ind="));
+										Serial.println(i);
+										setState(i,ACTIVE);
+										dispatch=true;
+										break;
+							}
+							break;
+						}
+					case ACTIVE:
+						{	switch(compRes){
+								case NOW_IN_PAST_OF_INTERVAL:
+										Serial.print(FPSTR("ACTIVE is in past ind="));
+										Serial.println(i);
+										setState(i,FINISHED);
+										dispatch=true;
+										reschedule=true;
+										break;
+								case NOW_IN_FUTURE_OF_INTERVAL:
+										Serial.print(FPSTR("ACTIVE is in future ind="));
+										Serial.println(i);
+										setState(i,WAIT);
+										update=true;
+										break;
+							}
+							break;
+						}
+					case FINISHED:
+						{	switch(compRes){
+								case NOW_IN_PAST_OF_INTERVAL:
+										Serial.print(FPSTR("FINISHED is in past ind="));
+										Serial.println(i);
+										reschedule=true;
+										break;
+								case NOW_IN_INTERVAL:
+										Serial.print(FPSTR("FINISHED is in interval ind="));
+										Serial.println(i);
+										setState(i,ACTIVE);
+										dispatch=true;
+										break;
+								case NOW_IN_FUTURE_OF_INTERVAL:
+										Serial.print(FPSTR("FINISHED is in future ind="));
+										Serial.println(i);
+										setState(i,WAIT);
+										update=true;
+										break;
+							}
+							break;
+						}
+
+					}//switch ended
 			}
 
-			doSave= reschedule || update;
-
-			if(dispatch || doSave){
-				Serial.print(FPSTR("check interval "));
-				printTimeInterval(items[i]);
-			}
+			doSave= reschedule || update || delet || doSave;
 
 			if(update){
 				updated++;
@@ -501,11 +610,14 @@ protected:
 				dispatchExternalFunction(i);
 			}
 
+			if(delet){
+				deleteInterval(i, false);
+				deleted++;
+			}
+
 			if(reschedule){
 				doSave=scheduleNextExecution(i) || doSave;
 				rescheduled++;
-				Serial.print(FPSTR("reschedule "));
-				Serial.println(getItemJson(i));
 			}
 
 		}
@@ -513,6 +625,8 @@ protected:
 		if(doSave){
 			saveToFile();
 
+			Serial.print(FPSTR(" deleted="));
+			Serial.print(deleted);
 			Serial.print(FPSTR(" updated="));
 			Serial.print(updated);
 			Serial.print(FPSTR(" rescheduled="));
@@ -522,28 +636,11 @@ protected:
 		}
 	}
 
-	void dispatchExternalFunction(uint8_t ind){
-		Serial.print(FPSTR("dispatch "));
-		Serial.println(getItemJson(ind));
-
-		boolean started=items[ind].state==ACTIVE;
-		beeperActive=started;
-
-		this->alarmSwitcer.setActive(started);
-
-		Serial.print(FPSTR("alarmActive="));
-		Serial.println(beeperActive);
-
-		if(externalFunction!=nullptr){
-			externalFunction(items[ind]);
-		}
-	}
-
 	boolean scheduleNextExecution(uint8_t ind){
 
 		boolean result=false;
 
-		Serial.println("Before change");
+		Serial.print("Before =");
 		printTimeInterval(items[ind]);
 
 		if(items[ind].type==ONCE){
@@ -655,22 +752,24 @@ protected:
 			result= true;
 		}
 
-		Serial.println("After change");
+		Serial.print("After  =");
 		printTimeInterval(items[ind]);
 
 		return result;
 	}
 
-	void printTimeInterval(TimeIntervalDetail time){
-		Serial.print("type=");
-		Serial.print(time.type);
-		Serial.print(" state=");
-		Serial.print(time.state);
-		Serial.print(" startTime=");
-		printDateTime(time.startTime);
-		Serial.print(" endTime=");
-		printDateTime(time.endTime);
-		Serial.println();
+	void dispatchExternalFunction(uint8_t ind){
+		Serial.print(FPSTR("dispatch "));
+		Serial.println(getItemJson(ind));
+
+		boolean started=items[ind].state==ACTIVE;
+		beeperActive=started;
+
+		this->alarmSwitcer.setActive(started);
+
+		if(externalFunction!=nullptr){
+			externalFunction(items[ind]);
+		}
 	}
 
 	void printDateTime(uint32_t interval){
@@ -679,7 +778,7 @@ protected:
 	}
 
 	void onBeeperActiveChange(){
-		Serial.println("alarmActive changed");
+		//Serial.println("alarmActive changed");
 		beeperActive=!beeperActive;
 	}
 
@@ -725,12 +824,15 @@ private:
 					+"\"type\":\""+String(item.type)+"\","
 					//+"\"state\":\""+getStateName(item.state)+"\","
 					+"\"disabled\":\""+String(item.state==INNACTIVE_INTERVAL_INDEX)+"\","
-					+"\"state\":\""+String(item.state)+"\","
+					+"\"state\":\""+(item.state)+"\","
 					+"\"startTime\":\""+String(item.startTime)+"\","
 					+"\"endTime\":\""+String(item.endTime)+"\","
 					+"\"time\":\""+String(item.time)+"\","
 					+"\"days\":\""+item.days+"\","
-					+"\"kind\":\""+item.kind+"\"}";/*,"
+					+"\"kind\":\""+String(item.kind)+"\","
+					+"\"startDateTime\":\""+timeService->getDateTimeAsTimeStamp(item.startTime)+"\","
+					+"\"endDateTime\":\""+timeService->getDateTimeAsTimeStamp(item.endTime)
+					+"\"}";/*,"
 						+"\"startDateTime\":"+timeService->getDateTimeAsJson(item.startTime)+","
 						+"\"endDateTime\":"+timeService->getDateTimeAsJson(item.endTime)
 					+"}";*/

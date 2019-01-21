@@ -18,9 +18,9 @@ function createButtonComponent(id,clazz,style,innerHtml,onclick){
 	return btn;
 }
 
-function createHiddenInput(id,name,value){
-	var inputsDiv=getConfirmInputsDiv();
-	var input=createInputSimple(id,name,'','',value,true);
+function createHiddenInput(id,name,value,clazz){
+	if(clazz==undefined){clazz='';}
+	var input=createInputSimple(id,name,clazz,'',value,true);
 	input.setAttribute('type','hidden');
 	return input;
 }
@@ -40,11 +40,11 @@ function createLabelSimple(id,forVal,clazz,style,value){
 function createInputSimple(id,name,clazz,style,value,editable){
 	var input1=document.createElement("Input");
 	
-	input1.setAttribute("id",id);
+	if(id!=undefined){ input1.setAttribute("id",id);}
 	input1.setAttribute("name",name);
 	if(clazz==undefined){ clazz="w3-input w3-border";}
 	input1.setAttribute("class",clazz);
-	if(style!=undefined){ input1.setAttribute("style",style);}
+	if(style!=undefined && style!=''){ input1.setAttribute("style",style);}
 	input1.setAttribute("value",value);
 	
 	if(editable==undefined || !editable)

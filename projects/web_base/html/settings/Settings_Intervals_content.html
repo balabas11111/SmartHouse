@@ -4,16 +4,30 @@
 				<h2>Интервалы времени</h2>
 			</div>
 			
-			  <p>Настройки интервалов времени. Будильники </p>
+			  <p style="margin-left: 20px;">Настройки интервалов времени. Будильники </p>
 			  
 				<div id="intervals_content">
+					<div class="w3-row">
+						<div class="w3-quarter w3-tooltip w3-animate-opacity"  style="margin-left: 20px; height: 40px; width: 40px;">
+							<span class="w3-text w3-tag w3-white w3-border w3-border-gray w3-round-large" 
+									style="position:absolute;left: 0px;bottom: 60px">
+									<div>Создать новый интервал</div>
+							</span>
+							<button id="currentInterval_addBtn" class="w3-button w3-circle w3-green w3-border w3-border-red" 
+								style="margin-top: 2px; margin-bottom: 2px;"
+								onclick="openNewIntervalForm();">+</button>
+						</div>
+						<div id="intervalsCountDiv" class="w3-quarter" style="margin-left: 20px;">
+							
+						</div>
+					</div>
 					<form id="intervals_form" class="w3-container">
 					
 					</form>  
 				</div>
 				  
 			  
-				<div id="intervals_msg" class="w3-card-4" style="margin-left:20px; margin-right:20px; margin-bottom:20px; display:none;"></div>
+				<div id="intervals_msg" class="w3-card-4" style="margin-top: 20px; margin-left:20px; margin-right:20px; margin-bottom:20px; display:none;"></div>
 				
 				<div style="height:20px;"></div>
 		</div>

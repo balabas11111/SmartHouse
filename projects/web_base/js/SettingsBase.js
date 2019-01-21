@@ -21,7 +21,7 @@ var currentFormList=undefined;
 var getValuesHandler=undefined;
 var validateValuesHandler=undefined;
 
-var putItemsHeaderToContainer=undefined;
+var preprocessItemsDisplay=undefined;
 var putItemsToContainerHandler=undefined;
 var currentItemPreffix=undefined;
 var itemsTagName=undefined;
@@ -31,6 +31,10 @@ var submitValuesUrl='';
 
 var currentJson='';
 
+function openTabGui(tabName,headerName){
+	customOnGetMessage=undefined;
+	openTab(tabName,headerName);
+}
 
 function openTab(tabName,headerName) {
 	restartFunctionHandler=reloadCurrentSettingsTab;
@@ -67,7 +71,7 @@ function openTab(tabName,headerName) {
 	if(containerComponent.classList.contains('reloadableSettingsContainer')){
 				
 		
-		showStatusMessage(loadMessagePreffix+' информацию о датчиках...','w3-yellow');
+		showStatusMessage(loadMessagePreffix+' настройки...','w3-yellow');
 		
 		var handler=undefined;
 		
@@ -87,7 +91,6 @@ function openTab(tabName,headerName) {
 		
 		if(tabName=='sensors'){
 			getValuesHandler=processItemsJsonGet;
-			putItemsHeaderToContainer=undefined;
 			putItemsToContainerHandler=putSensorContentToContainer;
 			currentItemPreffix='currentSensor';
 			itemsTagName='sensors';
@@ -99,7 +102,7 @@ function openTab(tabName,headerName) {
 		
 		if(tabName=='intervals'){
 			getValuesHandler=processIntervalsJsonGet;
-			putItemsHeaderToContainer=putIntervalHeaderToContainer;
+			preprocessItemsDisplay=preprocessIntervalDisplay;
 			putItemsToContainerHandler=putIntervalContentToContainer;
 			currentItemPreffix='currentInterval';
 			itemsTagName='intervals';
@@ -207,6 +210,8 @@ function ValidateIPaddress(ipaddress) {
   return (false)  
 }
 
+var customOnGetMessage=undefined;
+
 function processItemsJsonGet(data){
 	var container=currentFormList;
 
@@ -215,8 +220,8 @@ function processItemsJsonGet(data){
 	
 	currentJson=items;
 	
-	if(putItemsHeaderToContainer!=undefined){
-		putItemsHeaderToContainer(container,items);
+	if(preprocessItemsDisplay!=undefined){
+		preprocessItemsDisplay(data);
 	}
 			
 	for(var s in items){
@@ -225,7 +230,10 @@ function processItemsJsonGet(data){
 		putItemsToContainerHandler(container,item,false,false);
 	}
 	
-	showStatusMessage('Загружено '+currentHeaderName,'w3-green');
+	var msg=(customOnGetMessage!=undefined)?customOnGetMessage:('Загружено '+currentHeaderName);
+	
+	showStatusMessage(msg,'w3-green');
+	customOnGetMessage=undefined;
 }
 
 function getCurrentItemFromCurrentJson(tagName,tagValue){
@@ -251,11 +259,18 @@ function getCurrentItemFromParentItem(parentItem,parentItemTag,tagName,tagValue)
 	return undefined;
 }
 
-function openItemPopup(tagName,sensorName,headerValue){
-	var sensor=getCurrentItemFromCurrentJson(tagName,sensorName);
+function openItemPopup(tagName,sensorName,headerValue,itemC){
+	var item;
+	
+	if(itemC!=undefined){
+		item=itemC;
+	}else if(sensorName!=undefined){
+		item=getCurrentItemFromCurrentJson(tagName,sensorName);
+	}
+	
 	setStatusMessageComp(getComponentById(currentItemPreffix+'_msg'));
 	
-	if(sensor!=undefined){
+	if(item!=undefined){
 		var sensorNameContainer=getComponentById(currentItemPreffix+'_name');
 		var sensorNameHeader=getComponentById(currentItemPreffix+'_header');
 		var container=getComponentById(currentItemPreffix+'_content');
@@ -264,7 +279,7 @@ function openItemPopup(tagName,sensorName,headerValue){
 		sensorNameHeader.innerHTML=headerValue;
 		container.innerHTML='';
 		
-		putItemsToContainerHandler(container,sensor,true,true);
+		putItemsToContainerHandler(container,item,true,true);
 		hideComponent(currentItemPreffix+'_msg');
 		showComponent(currentItemPreffix+'_modal');
 	}
@@ -282,7 +297,7 @@ function getCurrentItemHandler(data){
 	}
 }
 /*--------------------------GUI creation part-----------------------------*/
-function createItemDeleteButton(tagName,tagValue,itemDescr){
+function createItemDeleteButton(tagName,tagValue,itemDescr,handler){
 	var div=document.createElement('div');
 		div.setAttribute('class','w3-tooltip');
 		div.setAttribute('style','margin-top: 10px; margin-left: 3px; width: 30px');
@@ -292,14 +307,14 @@ function createItemDeleteButton(tagName,tagValue,itemDescr){
 		text+=' ';
 		text+=itemDescr;
 	}
-		
+	
 	var span=document.createElement('span');
 		span.setAttribute('class','w3-text w3-tag w3-gray w3-round');
 		span.setAttribute('style','position:absolute;left:0;bottom:45px');
 		span.innerHTML=text;
 	div.appendChild(span);	
 	
-	var onClickText="openItemDeletePopup('"+tagName+"','"+tagValue+"')";
+	var onClickText=handler+"('"+tagName+"','"+tagValue+"','"+itemDescr+"')";
 	
 	var button=document.createElement('button');
 		button.setAttribute('class','w3-border w3-border-red w3-round w3-green');
@@ -382,15 +397,3 @@ function submitCurrentSettingsForm(){
 	showStatusMessage('Сохраняю настройки ...','w3-yellow');
 	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataAsJson,undefined,processDeviceSettingsSave,getStatusMessageComp());
 }
-
-function submitCurrentFormReloadCurrTab(){
-	showStatusMessage('Сохраняю настройки ...','w3-yellow');
-	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataDefault,undefined,getCurrentItemHandler,getStatusMessageComp());
-}
-
-function submitCurrentFormAsJsonReloadCurrTab(){
-	showStatusMessage('Сохраняю настройки ...','w3-yellow');
-	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructFormDataAsJson,undefined,getCurrentItemHandler,getStatusMessageComp());
-}
-
-

@@ -1,4 +1,12 @@
 <!--DS18D20 starts-->
+<style>
+img.temperature-icon {
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJ/SURBVGhD7Zk/aBRBFMafIgGFGPQuEBAVVAzYKFwT7vYS0FjYpLPQMuZEG2tLC0HBwk4UbLSTtCHExCSHJzbZeHcYby/3x1SCrYUI/tnx22E2rPI4b6p9TvKDj4Xbmcf37czs7O7RLjuBWqN7uhp0nr1rtrdw7OD4pLq5ecSc/j9YDzo5mP9SbXZUUgjzea3VOmmayQem/b9DbCtoz5tmsln/8PE4GyBW0P7p+58OmOZy8RutMTZAQv5G95hpLpdas+tx5pOKg4QePQyLtJTQeV1EAlZBilRRRVKxwnG6qotIwCrIOE0pj67HCifolC4iAZsgorGcWjcwpe5vK0/ndBEJ7Mw14sqIiMZqRFy5a7mzRlzZ2UUTLM/l67V6o5feLywcjdpmppdHszMruVgHr709rItIQBXIS857VgXSI5KdKVeGS2UVK1Mqy1kjNkGGS6svsqXVbiwEmdJFJGATRDQ2QTLTbwaHblYOxaLLGwO6iARsgjizRpwJ4szUEo1NEGduvw6tEUceUcSiiPbgneIBaz4hPL7fMl3koc7QAN4nZjnjnBDmcRTcdJcDjD3lDPcSgt813WWA6XSRM/ovIcgvUV9OYOiPd28bRdPRlEkXNUEj+soyJvsR+n4Nx2i/KZceyqNJzqCNwgKdNeXSA4v8CmfOSrgYplx64GpeYs3ZyKOcKZceMHGCNdensEa+h3kaNOXSBWbqnMl+hKm5aMqkT/SpkzPZjxDkgimTPnjU2AtDLzmjvYSRfG5KyEFN0hCMrXGGOaHtK5Ujmf+3RxsbDD7C6PzgzEfCuW/QPWyk+0w3ueAuNArTd2D4NbQFtaEV/HYbQfV3313ch+g3dpTZj2wLjMMAAAAASUVORK5CYII=);
+  width: 50px;  
+  height: 50px;
+}
+</style>
+
 <div>
 	<div class="w3-card-4" style="width: 400px; float:left; min-width: 340px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 			<div class="w3-container w3-teal">
@@ -11,7 +19,7 @@
 			
 			<div id="ds18D20Image header" class="w3-row" style="margin-top: 15px; margin-bottom: 10px;">
 				<div class="w3-quarter">
-					<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJ/SURBVGhD7Zk/aBRBFMafIgGFGPQuEBAVVAzYKFwT7vYS0FjYpLPQMuZEG2tLC0HBwk4UbLSTtCHExCSHJzbZeHcYby/3x1SCrYUI/tnx22E2rPI4b6p9TvKDj4Xbmcf37czs7O7RLjuBWqN7uhp0nr1rtrdw7OD4pLq5ecSc/j9YDzo5mP9SbXZUUgjzea3VOmmayQem/b9DbCtoz5tmsln/8PE4GyBW0P7p+58OmOZy8RutMTZAQv5G95hpLpdas+tx5pOKg4QePQyLtJTQeV1EAlZBilRRRVKxwnG6qotIwCrIOE0pj67HCifolC4iAZsgorGcWjcwpe5vK0/ndBEJ7Mw14sqIiMZqRFy5a7mzRlzZ2UUTLM/l67V6o5feLywcjdpmppdHszMruVgHr709rItIQBXIS857VgXSI5KdKVeGS2UVK1Mqy1kjNkGGS6svsqXVbiwEmdJFJGATRDQ2QTLTbwaHblYOxaLLGwO6iARsgjizRpwJ4szUEo1NEGduvw6tEUceUcSiiPbgneIBaz4hPL7fMl3koc7QAN4nZjnjnBDmcRTcdJcDjD3lDPcSgt813WWA6XSRM/ovIcgvUV9OYOiPd28bRdPRlEkXNUEj+soyJvsR+n4Nx2i/KZceyqNJzqCNwgKdNeXSA4v8CmfOSrgYplx64GpeYs3ZyKOcKZceMHGCNdensEa+h3kaNOXSBWbqnMl+hKm5aMqkT/SpkzPZjxDkgimTPnjU2AtDLzmjvYSRfG5KyEFN0hCMrXGGOaHtK5Ujmf+3RxsbDD7C6PzgzEfCuW/QPWyk+0w3ueAuNArTd2D4NbQFtaEV/HYbQfV3313ch+g3dpTZj2wLjMMAAAAASUVORK5CYII="/>
+					<img class="temperature-icon"/>
 				</div>
 				<div class="w3-rest">
 					<b id="ds18d20Measurer_itemCount">Обновляю</b> - датчик/а/ов

@@ -31,7 +31,73 @@ function fillParameterArray(targetArray,jsonArray){
 	}
 }
 
-function putIntervalHeaderToContainer(container,items){
+function openNewIntervalForm(){
+	var dt=new Date();
+	var tmp = Math.round(dt.getTime()/1000-dt.getTimezoneOffset()*60);
+	
+	var interval={};
+		interval.id=-1;
+		interval.name='Новый';
+		interval.type=0;
+		interval.state=0;
+		interval.startTime=tmp+60;
+		interval.endTime=tmp+120;
+		interval.time='0';
+		interval.days='0,0,0,0,0,0,0';
+		interval.kind=0;
+		
+		openItemPopup('','','Новый интервал',interval);
+}
+
+function openConfirmDeleteIntervalForm(tag,id,name){
+	var message='Подтвердите удаление интервала '+name;
+	
+	var btnNames=['Удалить','Отменить'];
+	var btnToolTips=['',''];
+	var btnClasses=['w3-border-red','w3-border-red'];
+	var btnOnClicks=['confirmDeleteInterval('+id+');','confirmDlgHide();'];
+	
+	confirmDlgInit('Подтверждение',message,'',undefined,undefined,btnNames,btnToolTips,btnClasses,btnOnClicks,false);
+	confirmDlgShow();
+}
+
+function confirmDeleteInterval(id){
+	showStatusMessage('Удаляю интервал ...','w3-yellow');
+	
+    var target = createHiddenInput(undefined,'remote_target','timeIntervalService');
+    var page = createHiddenInput(undefined,'remote_page','delete');
+    var val = createHiddenInput(undefined,'val_json',id);
+
+    var form = document.createElement("form");
+    form.appendChild(target);
+    form.appendChild(page);
+    form.appendChild(val);
+	
+	postForm(form,submitValuesUrl,undefined,undefined,validateStatusMessageDefault,onIntervalDeletedHandler,getStatusMessageComp());
+}
+
+function onIntervalDeletedHandler(data){
+	var ok=isStatusMessageResponseOk(data.statusHttp);
+	
+	if(ok){
+		confirmDlgHide();
+		reloadCurrentSettingsTab();
+		showStatusMessage('Удалено. Обновляю данные','w3-yellow');
+	}else{
+		var msg='Ошибка '+data.message;
+		showStatusMessage(msg,'w3-red');
+		 throw msg; 
+	}
+}
+
+function preprocessIntervalDisplay(items){
+	var count=items.itemCount;
+	var countDiv=document.getElementById('intervalsCountDiv');
+	if(count==0){
+		countDiv.innerHTML='Не задано ни одного интервала';
+	}else{
+		countDiv.innerHTML='Всего интервалов '+count;
+	}
 	
 }
 
@@ -94,7 +160,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 		var cellEditButton=createDivComponent('','w3-cell');
 		var cellDeleteButton=createDivComponent('','w3-cell');
 		var editButton=createItemEditButton('id',id,name,undefined);
-		var deleteButton=createItemDeleteButton('id',id,name);
+		var deleteButton=createItemDeleteButton('id',id,name,'openConfirmDeleteIntervalForm');
 		
 		cellEditButton.appendChild(editButton);
 		cellDeleteButton.appendChild(deleteButton);
@@ -103,7 +169,7 @@ function putIntervalContentToContainer(container,interval,noId,editable){
 		col1h.appendChild(cellDeleteButton);
 	}
 	
-	var inputId=createInputSimple(cid,'id','intervals','',id,false);
+	var inputId=createHiddenInput(cid,'id',id,'intervals');
 	var cellDivId=createDivComponent('','w3-cell w3-container');
 	cellDivId.appendChild(inputId);
 	setVisible(cellDivId,false);
@@ -270,7 +336,21 @@ function applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,typeInt){
 
 function submitIntervalsFormAsJsonReloadCurrTab(){
 	showStatusMessage('Сохраняю интервалы ...','w3-yellow');
-	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructIntervalsFormDataAsJson,validateStatusMessageDefault,getCurrentItemHandler,getStatusMessageComp());
+	postForm(currentForm,submitValuesUrl,validateValuesHandler,constructIntervalsFormDataAsJson,validateStatusMessageDefault,onIntervalSavedHandler,getStatusMessageComp());
+}
+
+function onIntervalSavedHandler(data){
+	var ok=isStatusMessageResponseOk(data.statusHttp);
+	
+	if(ok){
+		hideComponent(currentItemPreffix+'_modal');
+		reloadCurrentSettingsTab();
+		showStatusMessage('Сохранено. Обновляю данные','w3-yellow');
+	}else{
+		var msg='Ошибка '+data.message;
+		showStatusMessage(msg,'w3-red');
+		 throw msg; 
+	}
 }
 
 function constructIntervalsFormDataAsJson(form){
@@ -317,6 +397,7 @@ function validateCurrentIntervalForm(){
 	
 	var errorMessage='';
 	
+	var idInput=getComponentById('id');
 	var nameInput=getComponentById('name');
 	var typeSelect=getComponentById('typeInt');
 	var stateSelect=getComponentById('stateInt');
@@ -335,10 +416,23 @@ function validateCurrentIntervalForm(){
 			|| kindSelect==undefined || kindSelect.selectedIndex==undefined){
 		return 'Общая ошибка приложения <br>';
 	}
-	var msg='';
 	
 	if(nameInput.value==undefined || nameInput.value==''){
 		errorMessage+=markComponentValidityWithMessage(nameInput,false,'Пустое поле имя <br>');
+	}else{
+		var nameComponents=document.getElementById('intervals_form').getElementsByClassName('intervals');
+		
+		if(nameComponents!=undefined){
+			for(var i=0;i<nameComponents.length;i++){
+				if(nameComponents[i]!=undefined && nameComponents[i].name=='name'
+					&& nameComponents[i].value!=undefined && nameComponents[i].id!=nameInput.id
+					&& nameComponents[i].id!='name_'+idInput.value
+					&& nameInput.value==nameComponents[i].value){
+					
+					errorMessage+=markComponentValidityWithMessage(nameInput,false,'Название не уникально <br>');
+				}
+			}
+		}
 	}
 	
 	var typeInt=typeSelect.selectedIndex;

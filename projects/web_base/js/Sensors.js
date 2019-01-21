@@ -190,14 +190,13 @@ function putSensorContentToContainer(container,sensor,noId,editable){
 
 function submitSensorsFormAsJsonReloadCurrTab(){
 	showStatusMessage('Сохраняю датчики ...','w3-yellow');
-	postForm(currentForm,submitValuesUrl,validateCurrentSensorForm,constructSensorsFormDataAsJson,validateStatusMessageDefault,getSensorsItemHandler,getStatusMessageComp());
+	postForm(currentForm,submitValuesUrl,validateCurrentSensorForm,constructSensorsFormDataAsJson,validateStatusMessageDefault,onSensorsSavedHandler,getStatusMessageComp());
 }
 
-function getSensorsItemHandler(data){
+function onSensorsSavedHandler(data){
 	var ok=isStatusMessageResponseOk(data.statusHttp);
 	
 	if(ok){
-		hideComponent(currentItemPreffix+'_modal');
 		reloadCurrentSettingsTab();
 		showStatusMessage('Сохранено. Обновляю данные','w3-yellow');
 		/*openCommandRestartPopup();*/

@@ -68,11 +68,12 @@ function confirmDlgInit(header,content,msg,inputNames,inputValues,btnNames,btnTo
 		}
 	}
 	
-
-	for(var j=0;j<inputNames.length;j++){
-		var name=inputNames[j];
-		var hid=createHiddenInput('confirm_input_'+name,name,inputValues[j]);
-		inputsDiv.appendChild(hid);
+	if(inputNames!=undefined){
+		for(var j=0;j<inputNames.length;j++){
+			var name=inputNames[j];
+			var hid=createHiddenInput('confirm_input_'+name,name,inputValues[j]);
+			inputsDiv.appendChild(hid);
+		}
 	}
 	
 	if(displayCloseBtn==undefined){

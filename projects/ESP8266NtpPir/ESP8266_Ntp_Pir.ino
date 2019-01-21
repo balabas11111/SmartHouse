@@ -70,7 +70,7 @@ DisplayHelper_TM1637_Clock_PIR displayHelper(&timeDisplay,&espSettingsBox,&bmeMe
 WiFiHelper wifiHelper(&espSettingsBox, nullptr, &server,nullptr,postInitWebServer,true);
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 
-TimeIntervalService timeIntervalService(&espSettingsBox,&timeService,nullptr,postInitTimeIntervalService,0);
+TimeIntervalService timeIntervalService(&espSettingsBox,&timeService,onTimeIntervalEvent,nullptr,0);
 
 Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeService,&displayHelper,
 						&pirDetector,&timeIntervalService};
@@ -221,11 +221,10 @@ void printPir(){
 	pirDetector.displayDetails();
 }
 //-------------TimeIntervalService------------------------
-void postInitTimeIntervalService(){
-	uint32_t testTime=timeService.getNow()+10000;
-		timeIntervalService.add("Test interval",DAILY,testTime,testTime+50,0,"",0);
-		timeIntervalService.add("Monthly interval",MONTHLY,testTime+100,testTime+200,0,"",0);
-		timeIntervalService.add("Super interval",MULTIDAILY,testTime+1000,testTime+2000,0,"0,1,0,1,0,1,0",0);
+void onTimeIntervalEvent(TimeIntervalDetail timeInterval){
+	//timeIntervalService.printTimeInterval(timeInterval);
+	Serial.print(FPSTR("BEEPER ="));
+	Serial.println(timeIntervalService.getBeeperActive());
 }
 
 void processTimeIntervals(){

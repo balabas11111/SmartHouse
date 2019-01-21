@@ -499,8 +499,47 @@ function isHttpStatusOk(status){
 	return false;
 }
 
-function updateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout, errorTimeOut){
+var lastOk=true;
+
+function handleHttpRequestStatus(ok,tooltip){
+	if(document.getElementById('httpStatus_div')==undefined){return;}
 	
+	var statImg=document.getElementById('httpStatusImg');
+	var progrImg=document.getElementById('httpProgressImg');
+	var errImg=document.getElementById('httpErrorImg');
+	
+	var tooltipDiv=document.getElementById('httpStatusTooltip');
+	
+	if(!(ok==undefined && tooltip==undefined)){
+	
+		if(ok && (tooltip==undefined || tooltip=='')){tooltip='Подключено ОК';}
+		if(!ok && tooltip==undefined){tooltip='Ошибка подключения';}
+		var imageClass='http-'+(ok?'ok':'error')+'-icon48';
+		
+		statImg.setAttribute('class',imageClass);
+		tooltipDiv.innerHTML=tooltip;
+		
+		statImg.style.display = "block";
+		progrImg.style.display = "none";
+		errImg.style.display = "none";
+		
+		lastOk=ok;
+	}else{
+			statImg.style.display = "none";
+		if(lastOk){
+			tooltipDiv.innerHTML='Соединяюсь с устройством';
+			progrImg.style.display = "block";
+			errImg.style.display = "none";
+		}else{
+			tooltipDiv.innerHTML='Переподключение после ошибки';
+			progrImg.style.display = "none";
+			errImg.style.display = "block";
+		}
+	}
+}
+
+function updateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout, errorTimeOut){
+	handleHttpRequestStatus();
 	var request = new XMLHttpRequest();
 	
 	var formData = new FormData();
@@ -510,26 +549,48 @@ function updateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, tim
 	}
 	
 	request.open(requestmethod, url, true);
+	request.timeout=6000;
+	request.ontimeout = function(){
+		console.log("XHR request timeout "+request.status);
+		handleHttpRequestStatus(false,'Ошибка: Превышен интервал ожидания');
+	};
+	request.onerror = function(){
+		console.log("XHR request error "+request.status);
+		handleHttpRequestStatus(false,'Ошибка запроса устройства');
+	};
+	
 	request.onreadystatechange  = 
 		function() {
 			if(this.readyState == 4){
 								
 				if (isHttpStatusOk(this.status)){
+					var ok=true;
 					
-					var json = JSON.parse(this.responseText);
-							
-					handler(json);
+					try{
+						var json = JSON.parse(this.responseText);
+						handler(json);
+					}catch(err){
+						ok=false;
+						handleHttpRequestStatus(false,'Ошибка: '+err);
+					}
 									
 					if(timeout>0){
 						var reloadTime=timeout;
 						addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout, errorTimeOut,reloadTime);
 					}
 					
+					handleHttpRequestStatus(true);
 				}else{
 					if(errorTimeOut>0){
 						var reloadTime=errorTimeOut;
 						addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout, errorTimeOut, reloadTime);
+					}else{
+						handleHttpRequestStatus(false,'Ошибка запроса устройства');
 					}
+				}
+			}else{
+				if(this.status!=200){
+					handleHttpRequestStatus(false,'Ошибка: статус='+this.status);
 				}
 			};
 		};
