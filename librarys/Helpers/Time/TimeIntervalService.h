@@ -789,17 +789,11 @@ private:
 	TimeIntervalDetail items[ALARM_SIZE];
 
 	String getItemJson(){
-		return "\"id\":\"123\",\"name\":\"TimeIntervalService\",\"type\":\"ScheduleService\",\"size\":\"1\",\
-				\"descr\":\"TimeIntervalService_DESCR\",\"itemCount\":\""+String(itemCount)+"\""
-#ifndef TIME_SERV_SERV_VALS
-		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("intervalType"), IntervalType_Names, ARRAY_SIZE(IntervalType_Names))
-		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("intervalState"), IntervalState_Names, ARRAY_SIZE(IntervalState_Names))
-		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("dayOfWeekShort"), DAYS_OF_WEEK_SHORT, ARRAY_SIZE(DAYS_OF_WEEK_SHORT))
-		+ "," + espSettingsBox->getStringArrayAsJson(FPSTR("dayOfWeek"), DAYS_OF_WEEK, ARRAY_SIZE(DAYS_OF_WEEK))
-#else
-		+ FPSTR(TimeIntervalService_ServVals)
-		+FPSTR(TimeIntervalService_ServLocalVals);
-#endif
+		String result=FPSTR(TimeIntervalService_ServVals);
+			result+=FPSTR(TimeIntervalService_ServLocalVals);
+			result+="\"itemCount\":\""+String(itemCount)+"\",\"now\":\""+String(now())+"\"";
+
+			return result;
 	}
 
 	String getItemJson(uint8_t index){

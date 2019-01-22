@@ -108,12 +108,11 @@ function openTab(tabName,headerName) {
 		
 		if(tabName=='intervals'){
 			getValuesHandler=processIntervalsJsonGet;
-			putItemsToContainerHandler=putIntervalContentToContainer;
 			currentItemPreffix='currentInterval';
 			validateValuesHandler=validateCurrentIntervalForm;
 			submitValuesUrl='/processJson?name=timeIntervalService';
 			getValuesUrl='/getJson?name=timeIntervalService';
-			currentFormId=getComponentIdWithSuffix(currentItemPreffix,FORM_SUFFIX);
+			currentFormId='intervals_form';
 		}
 		
 		currentFormList=getComponentById(getComponentIdWithSuffix(tabName,FORM_SUFFIX));

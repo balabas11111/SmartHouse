@@ -67,8 +67,10 @@
 #define TIME_SERV_SERV_VALS 1
 
 const char TimeIntervalService_ServVals[] PROGMEM="\
+\"id\":\"123\",\"name\":\"TimeIntervalService\",\"type\":\"ScheduleService\",\"size\":\"1\"\
+,\"descr\":\"TimeIntervalService_DESCR\"\
 ,\"rescheduleIndex\":\"5\",\"multidailyIndex\":\"3\",\"periodicIndex\":\"1\"\
-,\"intervalKindId\": [\"ALARM\", \"SOCKET_1_ON\"]";
+,\"intervalKindId\": [\"ALARM\", \"SOCKET_1_ON\"],";
 
 const char* const IntervalKind_Ids[] PROGMEM={
 		"ALARM", "SOCKET_1_ON"

@@ -280,6 +280,7 @@ function setComponentValue(component,val){
 		if (tagName =='label' || tagName=='div' || tagName == 'h1' || tagName == 'h2' || tagName == 'h3' || tagName == 'h4' || tagName == 'h5' || tagName == 'h6'
 			|| tagName == 'b'){
 			component.innerHTML=val;
+			return;
 		};
 		
 		if (tagName == 'input'){
@@ -310,6 +311,10 @@ function setComponentValue(component,val){
 				component.value=val;
 			}
 		};
+		
+		if(tagName == 'select'){
+			component.selectedIndex=val;
+		}
 		
 		if (tagName == 'a'){
 			component.href=val;
