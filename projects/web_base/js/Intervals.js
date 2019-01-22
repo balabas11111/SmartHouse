@@ -113,10 +113,16 @@ var intIdSuf=undefined;
 function putIntervalToForm(container,interval,editable){
 	intTmpl = document.getElementById('intervals-template').content.cloneNode(true);
 	
-	intTmpl.querySelector('.editTooltip').innerText = '➲ Редактирование '+interval.name;
-	intTmpl.querySelector('.editBtn').setAttribute('onclick',"openIntervalEditPopup('"+interval.id+"','➲ Редактирование "+interval.name+"');");
-	intTmpl.querySelector('.deleteTooltip').innerText = '➲ Редактирование '+interval.name;
-	intTmpl.querySelector('.deleteBtn').setAttribute('onclick','openIntervalDeletePopup('+interval.id+',✂ Подтверждение);');
+	if(!editable){
+		var btnTmpl = document.getElementById('intervals-template').content.cloneNode(true);
+		
+		btnTmpl.querySelector('.editTooltip').innerText = '➲ Редактирование '+interval.name;
+		btnTmpl.querySelector('.editBtn').setAttribute('onclick',"openIntervalEditPopup('"+interval.id+"','➲ Редактирование "+interval.name+"');");
+		btnTmpl.querySelector('.deleteTooltip').innerText = '➲ Редактирование '+interval.name;
+		btnTmpl.querySelector('.deleteBtn').setAttribute('onclick',"openIntervalDeletePopup("+interval.id+",'✂ Подтверждение');");
+		
+		intTmpl.querySelector('div.id').appendChild(btnTmpl);
+	}
 	
 	intIdSuf=(editable)?'':'_'+interval.id;
 	

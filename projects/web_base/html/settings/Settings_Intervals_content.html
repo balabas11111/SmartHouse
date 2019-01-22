@@ -65,6 +65,23 @@
 		  </div>
 		</div>
 		
+		<template id="intervalsBtn-template">
+			<div class="w3-cell">
+	  			<div class="w3-tooltip" style="margin-top: 10px; margin-left: 3px; width: 30px">
+	  				<span class="editTooltip w3-text w3-tag w3-gray w3-round" style="position:absolute;left:0;bottom:45px">➲ Редактирование Новый</span>
+	  				<button class="editBtn w3-border w3-border-red w3-round w3-green" 
+	  					onclick="openIntervalEditPopup(0,'HeaderName');">✍</button>
+	  			</div>
+	  		</div>
+	  		<div class="w3-cell">
+	  			<div class="w3-tooltip" style="margin-top: 10px; margin-left: 3px; width: 30px">
+	  				<span class="deleteTooltip w3-text w3-tag w3-gray w3-round" style="position:absolute;left:0;bottom:45px">✂ Удалить Новый</span>
+	  				<button class="deleteBtn w3-border w3-border-red w3-round w3-green" 
+	  					onclick="openIntervalDeletePopup(0,'HeaderName');">✂</button>
+	  			</div>
+	  		</div>
+		</template>
+		
 		<template id="intervals-template">
 		  <div class="w3-row w3-teal" style="margin-top: 15px; height: 50px;">
 		  	<div class="w3-quarter">Интервал</div>
@@ -73,22 +90,7 @@
 		  	<div class="w3-quarter">Параметры</div>
 		  </div>
 		  <div class="w3-row" style="margin-top: 1px; height: 130px;">
-		  	<div class="w3-quarter">
-		  		<div class="w3-cell">
-		  			<div class="w3-tooltip" style="margin-top: 10px; margin-left: 3px; width: 30px">
-		  				<span class="editTooltip w3-text w3-tag w3-gray w3-round" style="position:absolute;left:0;bottom:45px">➲ Редактирование Новый</span>
-		  				<button class="editBtn w3-border w3-border-red w3-round w3-green" 
-		  					onclick="openIntervalEditPopup(0,'HeaderName');">✍</button>
-		  			</div>
-		  		</div>
-		  		<div class="w3-cell">
-		  			<div class="w3-tooltip" style="margin-top: 10px; margin-left: 3px; width: 30px">
-		  				<span class="deleteTooltip w3-text w3-tag w3-gray w3-round" style="position:absolute;left:0;bottom:45px">✂ Удалить Новый</span>
-		  				<button class="deleteBtn w3-border w3-border-red w3-round w3-green" 
-		  					onclick="openIntervalDeletePopup(0,'HeaderName');">✂</button>
-		  			</div>
-		  		</div>
-		  		
+		  	<div class="w3-quarter id">
 		  		<div>
 		  			<input name="id" class="intervals id" type="hidden">
 		  			<label class="name">Название</label>
