@@ -102,7 +102,6 @@ public:
 			finishInit();
 		}
 
-		alarmSwitcer.loop();
 		processIntervals();
 
 		return true;
@@ -310,7 +309,18 @@ public:
 			return updateIntervalFromJson(json);
 		}
 
-		return StatusMessage(STATUS_NOT_IMPLEMENTED_INT,'Директива не распознана '+page);
+		if(page==FPSTR("reschedule")){
+			uint8_t r=stopAndRescheduleInterval(json.toInt());
+			switch (r){
+				case -1:
+					return StatusMessage(STATUS_CONF_ERROR_INT,FPSTR("Неверный индекс"));
+				case 0:
+					return StatusMessage(STATUS_NOT_FOUND_INT,FPSTR("Интервал неактивен"));
+				default:
+					return StatusMessage(STATUS_OK_ACCEPTED_INT);
+			}
+		}
+		return StatusMessage(STATUS_NOT_IMPLEMENTED_INT,page);
 	}
 
 	StatusMessage deleteIntervalById(uint8_t id){
@@ -369,30 +379,48 @@ public:
 		return sm;
 	}
 
-	int getActiveAlarms(){
+	boolean hasActiveAlarms(){
 		for(uint8_t i=0;i<itemCount;i++){
 			if(items[i].state==ACTIVE){
-				return i;
+				return true;
 			}
 		}
-
-		return -1;
+		return false;
 	}
 
-	boolean getBeeperActive(){
-		return beeperActive;
-	}
-
-	void stopBeeper(){
-		alarmSwitcer.stop();
-		beeperActive=false;
-	}
-
-	void stopAlarmsIfActive(){
-		if(getActiveAlarms()==-1){
-			return;
+	uint8_t getActiveAlarmsCount(){
+		uint8_t c=0;
+		for(uint8_t i=0;i<itemCount;i++){
+			if(items[i].state==ACTIVE){
+				c++;
+			}
 		}
-		stopBeeper();
+		return c;
+	}
+
+	int8_t stopAndRescheduleInterval(uint8_t i){
+		if(i>=itemCount){
+			return -1;
+		}
+		if(items[i].state==ACTIVE){
+			items[i].state=RESCHEDULE;
+			return 1;
+		}
+		return 0;
+	}
+
+	uint8_t stopAndRescheduleAll(){
+		uint8_t c=0;
+		for(uint8_t i=0;i<itemCount;i++){
+			if(stopAndRescheduleInterval(i)==1){
+				c++;
+			}
+		}
+		return c;
+	}
+
+	void printTimeInterval(TimeIntervalDetail time){
+		Serial.println(getItemJson(time));
 	}
 
 	boolean loadFromFile(){
@@ -463,10 +491,6 @@ public:
 		Serial.println();
 		return espSettingsBox->saveSettingToFile(FPSTR(TimeIntervalService_FileName_NAME),getJson());
 	}
-
-	void printTimeInterval(TimeIntervalDetail time){
-		Serial.println(getItemJson(time));
-	}
 protected:
 	void processIntervals(){
 		if(itemCount==0){
@@ -499,6 +523,16 @@ protected:
 				delet=true;
 			}else{
 				switch(state){
+					case RESCHEDULE:
+						{
+							Serial.print(FPSTR("state RESCHEDULE ind="));
+							Serial.println(i);
+
+							dispatch=true;
+							reschedule=true;
+
+							break;
+						}
 					case TO_DELETE:
 						{
 							Serial.print(FPSTR("state TO_DELETE ind="));
@@ -754,9 +788,6 @@ protected:
 		Serial.println(getItemJson(ind));
 
 		boolean started=items[ind].state==ACTIVE;
-		beeperActive=started;
-
-		this->alarmSwitcer.setActive(started);
 
 		if(externalFunction!=nullptr){
 			externalFunction(items[ind]);
@@ -767,20 +798,12 @@ protected:
 		DateTime dt1=DateTime(interval);
 		Serial.print(dt1.getFormattedIsoDateTime());
 	}
-
-	void onBeeperActiveChange(){
-		//Serial.println("alarmActive changed");
-		beeperActive=!beeperActive;
-	}
-
 private:
 
 	uint8_t fixedItemlength=0;
-	boolean beeperActive=false;
 	boolean waitForTimeReceive=false;
 	EspSettingsBox* espSettingsBox;
 	NtpTimeClientService* timeService;
-	TimeTrigger alarmSwitcer=TimeTrigger(0,1000,false,[this](){onBeeperActiveChange();});
 
 	std::function<void(TimeIntervalDetail)> externalFunction;
 	std::function<void(void)> defaultValuesFunction;

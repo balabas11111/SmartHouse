@@ -1,29 +1,4 @@
-/*-----------------------Sensors values processing--------------------------------*/
-var rescheduleIndex=-1;
-var multidailyIndex=-1;
-var periodicIndex=-1;
-var intervalType=[];
-var intervalState=[];
-var dayOfWeekShort=[];
-var dayOfWeek=[];
-var intervalKind=[];
-
-function fillParameters(data){
-	fillParameterArray(intervalType,data.intervalType);
-	fillParameterArray(intervalState,data.intervalState);
-	fillParameterArray(dayOfWeekShort,data.dayOfWeekShort);
-	fillParameterArray(dayOfWeek,data.dayOfWeek);
-	fillParameterArray(intervalKind,data.intervalKind);
-	
-	multidailyIndex=data.multidailyIndex;
-	periodicIndex=data.periodicIndex;
-	rescheduleIndex=data.rescheduleIndex;
-}
-function fillParameterArray(targetArray,jsonArray){
-	if(targetArray.length==0){
-		for(var i=0;i<jsonArray.length;i++){targetArray[i]=jsonArray[i];}
-	}
-}
+/*-----------------------Intervals values processing--------------------------------*/
 function showDeleteIntervalForm(id){
 	var message='Подтвердите удаление интервала '+document.getElementById('intervals_name_'+id).value;
 	
@@ -62,8 +37,20 @@ function onIntervalDeletedHandler(data){
 		 throw msg; 
 	}
 }
+
+var intSettings={
+		rescheduleIndex: 5,
+		multidailyIndex: 3,
+		periodicIndex: 1
+};
+
 function processIntervalsJsonGet(data){
-	fillParameters(data);
+	var fields=["rescheduleIndex","multidailyIndex","periodicIndex"];
+	for(var i in fields){
+		if(data[fields[i]]!=undefined){
+			intSettings[fields[i]]=data[fields[i]];
+		}
+	}
 	
 	var container=document.getElementById('intervals_form');
 	var countDiv=document.getElementById('intervals_count');
@@ -181,7 +168,7 @@ function putIntervalToForm(templateName,container,interval,disabled,suffix){
 	timeDiv.id='intervals_timeDiv'+suffix;
 	kindDiv.id='intervals_kindDiv'+suffix;
 	
-	applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,intervalType);
+	applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,interval.type);
 
 	container.appendChild(template);
 }
@@ -202,9 +189,9 @@ function handlePeriodTypeChange(selectedIndex){
 	applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,selectedIndex);
 }
 /*show or hide days interval component based on type*/
-function applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,typeInt){
-	var isMultidaily=(typeInt==multidailyIndex);
-	var isPeriodic=(typeInt==periodicIndex);
+function applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,type){
+	var isMultidaily=(type==intSettings.multidailyIndex);
+	var isPeriodic=(type==intSettings.periodicIndex);
 	var isKindVis=true;
 	
 	setVisible(daysDiv,isMultidaily);
@@ -282,19 +269,22 @@ function validateCurrentIntervalForm(){
 		errorMessage+=markComponentValidityWithMessage(startTimeInput,false,'Время начала больше или равно времени завершения <br>');
 		errorMessage+=markComponentValidityWithMessage(endTimeInput,false,'Время Завершения меньше времени начала <br>');
 	}
-	if(typeInt==multidailyIndex){
+	if(typeInt==intSettings.multidailyIndex){
 		var days=checkBoxListToString('days');
 		
 		if(days.length!=13 || !days.includes('1')){
 			errorMessage+=markComponentValidityWithMessage(daysDiv,false,'Не указан ни один день <br>');
 		}
 	}
-	if(typeInt==periodicIndex){
+	if(typeInt==intSettings.periodicIndex){
 		var time=getComponentValue(timeInput);
 		
 		if(time==undefined || time=='' || time==0 || time=='0' || time<60){
 			errorMessage+=markComponentValidityWithMessage(timeInput,false,'Минимально возможное значение периода 60 сек <br>');
 		}
+	}
+	if((typeInt==intSettings.rescheduleIndex)&&(errorMessage=='')){
+		alert('Поточный будильник будет перепланирован. Время старта и окончания будет изменено автоматически.');
 	}
 	return errorMessage;
 }

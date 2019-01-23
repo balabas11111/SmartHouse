@@ -138,7 +138,7 @@ void loop() {
 	deviceHelper.loop();
 
 	beeper.shortBeep(wifiHelper.getReconnected());
-	beeper.playGenerator(timeIntervalService.getBeeperActive());
+	beeper.playGenerator(timeIntervalService.hasActiveAlarms());
 
 	processTimeIntervals();
 }
@@ -210,7 +210,7 @@ void processJson(){
 //button handling
 void onButtonMenuChanged(){
 	displayHelper.changePageIfTrigger(!buttonMenu.isOn());
-	timeIntervalService.stopAlarmsIfActive();
+	timeIntervalService.stopAndRescheduleAll();
 }
 
 void onPirDetectorChanged(){
@@ -222,9 +222,8 @@ void printPir(){
 }
 //-------------TimeIntervalService------------------------
 void onTimeIntervalEvent(TimeIntervalDetail timeInterval){
-	//timeIntervalService.printTimeInterval(timeInterval);
 	Serial.print(FPSTR("BEEPER ="));
-	Serial.println(timeIntervalService.getBeeperActive());
+	Serial.println(timeInterval.state==ACTIVE);
 }
 
 void processTimeIntervals(){
