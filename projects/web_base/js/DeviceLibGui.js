@@ -2,16 +2,6 @@ function createDivComponent(id,clazz,style,innerHtml){
 	return createHtmlComponent('div',id,'',clazz,style,innerHtml);
 }
 
-function createHeaderComponent(clazz){
-	return createHtmlComponent('header',undefined,undefined,clazz,undefined,undefined);
-}
-
-function createSpanComponent(id,clazz,onclick,innerHtml){
-	var comp= createHtmlComponent('span',id,undefined,clazz,undefined,innerHtml);
-	comp.setAttribute('onclick',onclick);
-	return comp;
-}
-
 function createButtonComponent(id,clazz,style,innerHtml,onclick){
 	var btn=createHtmlComponent('button',id,undefined,clazz,style,innerHtml);
 	btn.setAttribute('onclick',onclick);
@@ -23,18 +13,6 @@ function createHiddenInput(id,name,value,clazz){
 	var input=createInputSimple(id,name,clazz,'',value,true);
 	input.setAttribute('type','hidden');
 	return input;
-}
-
-function createLabelSimple(id,forVal,clazz,style,value){
-	var lbl=document.createElement("label");
-	
-	lbl.setAttribute("id",id);
-	lbl.setAttribute("for",forVal);
-	if(clazz!=undefined){ lbl.setAttribute("class",clazz);}
-	if(style!=undefined){ lbl.setAttribute("style",style);}
-	lbl.innerHTML=value;
-	
-	return lbl; 
 }
 
 function createInputSimple(id,name,clazz,style,value,editable){

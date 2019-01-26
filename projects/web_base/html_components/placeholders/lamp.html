@@ -12,7 +12,22 @@ img.lamp-off-icon {
   height: 64px;
 }
 </style>
-
+<script type="text/javascript">
+	registerJsonHandler('{lampName.txt}',processJsonOnImageComponent);
+	
+	function lampWidgetClick(component){
+		var componentId=component.id;
+		var ind=componentId.indexOf('_');
+		
+		var val=0;
+		
+		if(componentId.endsWith('0')){val=1;};
+		var sensor=componentId.substr(0,ind);
+		var url='/sdpcv';
+		
+		updateComponentsByAjaxCall('POST', url, processJsonOnImageComponent,val,sensor,0);
+	}
+</script>
 <div>
 	<div class="w3-card-4" style="width:170px;  float:left; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 			<div class="w3-container w3-teal">

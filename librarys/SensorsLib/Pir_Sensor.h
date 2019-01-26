@@ -102,6 +102,14 @@ public:
 		}
 	}
 
+	/*virtual String getSensorValForJson(float val) override{
+		return String(humanPresented);
+	}*/
+
+	virtual String getExtraJsonChild(uint8_t ind){
+		return ",\"hp\": \""+String(humanPresented)+"\"";
+	}
+
 	virtual void displayDetails() override{
 		Serial.print(FPSTR("Read pir"));
 		Serial.print(FPSTR(" dR="));

@@ -157,7 +157,7 @@ public:
 					}
 			}
 
-			result+="],\"now\": \""+String(timeService->getNow())+"\"}";
+			result+="]}";
 
 		return result;
 	}
@@ -814,7 +814,7 @@ private:
 	String getItemJson(){
 		String result=FPSTR(TimeIntervalService_ServVals);
 			result+=FPSTR(TimeIntervalService_ServLocalVals);
-			result+="\"itemCount\":\""+String(itemCount)+"\",\"now\":\""+String(now())+"\"";
+			result+=",\"itemCount\":\""+String(itemCount)+"\",\"now\":\""+String(now())+"\"";
 
 			return result;
 	}

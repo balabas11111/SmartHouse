@@ -8,19 +8,9 @@ const LBL_MSG_LOC_VALIDATION_ERROR='Ошибка валидации:';
 const LBL_MSG_LOC_HTTP_STATUS_EQ=' HTTP статус=';
 
 /*-----serv constants---*/
-const FORM_SUFFIX="form";
 const VAL_SUFFIX="";
 const ITEM_COUNT_SUFFIX="itemCount";
-
-const ID_SUFFIX="id";
-const NAME_SUFFIX="name";
-const TYPE_SUFFIX="type";
-const STATE_SUFFIX="state";
 const DESCR_SUFFIX="descr";
-const MIN_VAL_SUFFIX="minVal";
-const MAX_VAL_SUFFIX="maxVal";
-const FIELD_ID_SUFFIX="fieldId";
-const QUEUE_SUFFIX="queue";
 
 const CLASS_AUTO_CREATED_CHILD="autoCreatedChild";
 const LABEL_PREFFIX="Label";
@@ -37,15 +27,6 @@ function w3_close(){
 };
 
 /*---------------------------------------------------------------------*/
-
-function markComponentsArrayValidity(compons,valid){
-	if(compons!=undefined){
-		for (var i in compons) {
-			markComponentValidity(compons[i],valid);
-		}
-	}
-}
-
 function markComponentValidityById(id,valid){
 	var comp=getComponentById(id);
 	
@@ -263,7 +244,7 @@ function getComponentValue(component){
 		};
 		
 		if (tagName == 'h1' || tagName == 'h2' || tagName == 'h3' || tagName == 'h4' || tagName == 'h5'
-			|| tagName == 'b'){
+			|| tagName == 'b' || tagName=='label'){
 			return component.innerHTML;
 		};
 	}
@@ -479,8 +460,11 @@ function processJsonOnImageComponent(data){
 		}
 		var items=data.items;
 		
+		var fieldComp=document.getElementById(data.name+"_valueName");
+		var fieldId=fieldComp==undefined?'val':fieldComp.value;
+		
 		for(var i in items){
-			var val=items[i].val;
+			var val=items[i][fieldId];
 			
 			var ind=val.indexOf('.');
 			
@@ -799,50 +783,6 @@ function constructFormDataAsJson(form){
 }
 
 /*-------------------CheckBox list---------------*/
-
-function arrayToCheckBoxList(component,namePreffix,valArray,nameArray,editable,clazz,style){
-	if(component!=undefined){
-	
-		component.innerHTML = '';
-		var cbx=null;
-		var lbl=null;
-		
-		var itemCount=valArray.length;
-		
-		if(nameArray.length>itemCount){
-			itemCount=nameArray.length;
-		}
-		
-		for(i = 0; i<itemCount; i++){ 
-			
-			var cbxname='cb_'+namePreffix+'_'+i;
-			cbx = document.createElement('input');
-			cbx.setAttribute('id',cbxname);
-			cbx.setAttribute('name',cbxname);
-			cbx.setAttribute('type','checkbox');
-			if(clazz!=undefined && clazz.length>0){
-				cbx.setAttribute('class',clazz);
-			}
-			if(style!=undefined && style.length>0){
-				cbx.setAttribute('style',style);
-			}
-			setComponentValue(cbx,valArray[i]);
-			if(editable==undefined || !editable){
-				cbx.setAttribute("disabled","disabled");
-			}
-			/*cbx.setAttribute('class',className);*/
-			
-			lbl = document.createElement('label');
-			lbl.setAttribute('id','lbl_'+cbxname);
-			lbl.setAttribute('for',cbxname);
-			setComponentValue(lbl,nameArray[i]);
-		    
-		    component.appendChild(cbx);
-		    component.appendChild(lbl);
-		}
-	}
-}
-
 function checkBoxListToString(componentId){
 	var component=getComponentById(componentId);
 	var result = '';	
@@ -866,44 +806,3 @@ function checkBoxListToString(componentId){
 	 
 	 return result;
 }
-
-function checkBoxListToArray(component){
-	var result = [];	
-	
-	var inputs=getComponentChildrenByTag(component,'input');
-	var j=0;
-	
-	 for (var i = 0; i < inputs.length; ++i) {
-		 if(inputs[i]!=undefined && inputs[i].type=='checkbox'){
-			 var val=getComponentValue(inputs[i]);
-			 
-			 if(val=='1' || val=='0'){
-				 result[j]=val;
-				 j++;
-			 }
-		 }
-	 }
-	 
-	 return result;
-}
-
-function putItemsToComboCox(component,items,selectedIndex){
-	if(component==undefined || items==undefined || items.length==undefined){
-		return;
-	}
-	component.innerHTML = '';
-	var opt = null;
-	
-	for(i = 0; i<items.length; i++){ 
-	    opt = document.createElement('option');
-	    opt.value = i;
-	    opt.innerHTML = items[i];
-	    component.appendChild(opt);
-	}
-	
-	if(selectedIndex==undefined || selectedIndex>items.length-1){
-		selectedIndex=-1;
-	}
-	component.selectedIndex=selectedIndex;
-}
-

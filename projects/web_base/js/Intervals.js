@@ -92,7 +92,7 @@ function showEditIntervalForm(id){
 }
 function openIntervalPopup(interval,header){
 	var suffix='';
-	var templateName=(interval.id>0)?'intervals_'+interval.id:'intervals-template';
+	var templateName='intervals-template';
 	
 	var headComp=getComponentById('intervals_cur_header');
 	var container=getComponentById('intervals_cur_content');

@@ -33,10 +33,6 @@
 		      	<div class="w3-container">
    
 		        	<form id="currentSensor_form" class="w3-container">
-		        		<input id="currentSensor_id" name="currentSensor_id" type="hidden">
-		        		<input id="currentSensor_name" name="currentSensor_name" type="hidden">
-		        		<input id="currentSensor_items" name="currentSensor_items" type="hidden">
-		        		<input name="page" type="hidden" value="sensors"/>
 		        		<input id="currentSensor_form_target" type="hidden" value="deviceHelper"/>
 		        		<input id="currentSensor_form_page" type="hidden" value="sensors"/>
 		        		
@@ -110,7 +106,7 @@
 					<div class="w3-quarter">
 						<div class="w3-third sensor_items_header_cell">Миним. значение</div>
 						<div class="w3-third sensor_items_header_cell">Макс значение</div>
-						<div class="w3-third sensor_items_header_cell">Поле ThingSpeak</div>
+						<div class="w3-third sensor_items_header_cell">Канал ThingSpeak</div>
 					</div>
 				</div>
 			</div>
@@ -122,7 +118,11 @@
 					<div class="w3-threequarter">
 						<div class="w3-third">
 							<div class="w3-half" style="margin-left: 20px; width: 90%;">
+								<input class="sensor_item id" type="hidden">
 								<b class="sensor_item name">Temperature</b>
+								<input class="sensor_item type" type="hidden">
+								<input class="sensor_item size" type="hidden">
+								<input class="sensor_item val" type="hidden">
 							</div>
 						</div>
 						<div class="w3-third">

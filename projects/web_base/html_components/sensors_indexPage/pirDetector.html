@@ -12,28 +12,31 @@ img.pir-off-icon {
   height: 64px;
 }
 </style>
+<script type="text/javascript">
+	registerJsonHandler('pirDetector',processJsonOnImageComponent);
+</script>
 <div>
 	<div class="w3-card-4" style="width:270px;  float:left; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 		<div class="w3-container w3-teal">
-			  <h2>Детектор</h2>
+			<div><h4 id="pirDetector_descr">Движение</h4></div>
 		</div>
 		 
-		<form id="pirForm" class="w3-container">
-								
+		<form id="pirDetector" class="w3-container">
+			<input id="pirDetector_valueName" type="hidden" value="hp">					
 			<div id="pirBody" class="w3-row">
 				<div class="w3-half w3-card-4 w3-center" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; width: 92px; height: 120px;">
 					<div style="width: 90%">
 						<b>Движение</b>
 					</div>
-					<img id="pirDetector_Q" class="w3-center lamp-q-icon" 
+					<img id="pirDetector_" class="w3-center pirDetector_Image lamp-q-icon" 
 						style="cursor: pointer; object-fit: contain; margin-top: 10px; "
 						title=""
 						alt="Загружаю"/>
-					<img id="pirDetector_On" class="w3-center pir-on-icon" 
+					<img id="pirDetector_1" class="w3-center pirDetector_Image pir-on-icon" 
 						style="cursor: pointer; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 						title="Движение определено"
 						alt="Загружаю"/>
-					<img id="pirDetector_Off" class="w3-center pir-off-icon" 
+					<img id="pirDetector_0" class="w3-center pirDetector_Image pir-off-icon" 
 						style="cursor: pointer; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
 						title="Нет движения"
 						alt="Загружаю"/>

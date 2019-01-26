@@ -27,22 +27,21 @@ const uint8_t FIELD_QUEUE_ID    =5;
 
 class AbstractItem: public JSONprovider {
 
-struct childRecords{
-	uint8_t id;
-	String name;
-	String type;
-	String size;
-	String descr;
-	float val;
+	struct childRecords{
+			uint8_t id;
+			String name;
+			String type;
+			String size;
+			String descr;
+			float val;
 
-	uint8_t fieldId;
-	float minVal;
-	float maxVal;
-	String queue;
-	boolean setAllowed;
-};
-
-typedef struct childRecords SensorValue;
+			uint8_t fieldId;
+			float minVal;
+			float maxVal;
+			String queue;
+			boolean setAllowed;
+		};
+	typedef struct childRecords SensorValue;
 
 public:
 
@@ -80,7 +79,7 @@ public:
 		String result="{"+getItemJson()+",\"items\":[";
 
 			for(uint8_t i=0;i<itemCount;i++){
-				result+=getSensorValueJson(items[i]);
+				result+=getSensorValueJson(items[i],i);
 				if(i!=itemCount-1){
 					result+=",";
 				}
@@ -107,7 +106,7 @@ public:
 	}
 
 	virtual String getJson(uint8_t id){
-		return getSensorValueJson(items[id]);
+		return getSensorValueJson(items[id],id);
 	}
 
 	uint8_t getId(){
@@ -364,26 +363,38 @@ protected:
 				+"\"type\":\""+type+"\","
 				+"\"size\":\""+size+"\","
 				+"\"descr\":\""+descr+"\","
-				+"\"itemCount\":\""+String(itemCount)+"\"";
+				+"\"itemCount\":\""+String(itemCount)+"\""+getExtraJsonItem();
 	}
 
-	String getSensorValueJson(SensorValue m){
+	String getSensorValueJson(SensorValue m,uint8_t ind){
 		return "{\"id\":\""+String(m.id)+"\","
 				+"\"name\":\""+m.name+"\","
 				+"\"type\":\""+m.type+"\","
 				+"\"size\":\""+m.size+"\","
 				+"\"descr\":\""+m.descr+"\","
-				+"\"val\":\""+String(m.val)+"\","
+				+"\"val\":\""+getSensorValForJson(m.val)+"\","
 				+"\"minVal\":\""+String(m.minVal)+"\","
 				+"\"maxVal\":\""+String(m.maxVal)+"\","
 				+"\"fieldId\":\""+String(m.fieldId)+"\","
-				+"\"queue\":\""+m.queue+"\"}";
+				+"\"queue\":\""+m.queue+"\""+getExtraJsonChild(ind)+"}";
 	}
 
 	String getSensorValueSimpleJson(SensorValue m){
 		return "{\"name\":\""+m.name+"\","
-				+"\"val\":\""+String(m.val)+"\","
+				+"\"val\":\""+getSensorValForJson(m.val)+"\","
 				+"\"fieldId\":\""+String(m.fieldId)+"\"}";
+	}
+
+	virtual String getSensorValForJson(float val){
+		return String(val);
+	}
+
+	virtual String getExtraJsonItem(){
+		return "";
+	}
+
+	virtual String getExtraJsonChild(uint8_t ind){
+		return "";
 	}
 
 	void initializeChildren(){

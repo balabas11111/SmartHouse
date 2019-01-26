@@ -40,119 +40,7 @@ const char MEASURE_PASCAL[] PROGMEM ="Pa";
 const char MEASURE_METER[] PROGMEM ="m";
 const char MEASURE_LIGHT[] PROGMEM ="Lux";
 
-//widget actions
-const PROGMEM char ACTION_GET_STATIC_SETTINGS_DATA[]="getStSettData";       //returns static data from espSettings
-const PROGMEM char ACTION_GET_WIDGET_HTML_OR_VAL[]="getWidgetHtml";       //returns all components text
-const PROGMEM char ACTION_GET_ALL_WIDGET_JSON[]="getAllWidgetsJson";
-const PROGMEM char ACTION_GET_WIDGET_JSON[]="getWidgetJson";       //returns all components text
-const PROGMEM char ACTION_GET_WIDGETS_CHILDREN_AS_JSON[]="getWidgetChildrenAsJson";       //returns all components children as json
-const PROGMEM char ACTION_SUBMIT_FORM_GET_WIDGETS_CHILDREN_AS_JSON[]="submitFormGetChildrenAsJson";       //used to process data from client
-const PROGMEM char ACTION_SUBMIT_WIDGET_GET_VALUE[]="submitAndGetWidget"; //used to process data from client
-//url constants
-const PROGMEM char URL_REMOTE_GET_WIDGETS[]="handleHttpWidget";       //url to reload httpWidgets on client
-const PROGMEM char URL_PROCESS_EVENTS[]="processEvent";       //url to process incoming pin events
-
-const PROGMEM char  URL_REMOTE_GET_WIDGETS_METHOD[]="POST";       //method of remote call
-//base constants
-const PROGMEM char PARAM_ACTION_ID[]="actionName";       //request action, which to be executed on ESP
-const PROGMEM char PARAM_REMOTE_ID[]="widgetName";       //request parameter identifies id of entity on ESP board
-const PROGMEM char PARAM_REMOTE_VAL[]="remoteVal";       //request parameter which remote value is required
-const PROGMEM char PARAM_CLASS_NAME[]="className";       //request parameter identifies class of customers control
-const PROGMEM char PARAM_CHILD_CLASS[]="childClassName";       //request parameter identifies child class of customer control to update
-const PROGMEM char PARAM_CLIENT_DATA[]="clientData";
-//classess
-const PROGMEM char CLASS_REFRESHABLE_SettingsWidgetESP[]="SettingsWidgetESP";       //used to auto update espsettings
-const PROGMEM char CLASS_REFRESHABLE_MeasurerWidgetESP[]="MeasurerWidgetESP";       //used to update whole html
-const PROGMEM char CLASS_REFRESHABLE_CHILDREN_MeasurerWidgetESPJson[]="MeasurerWidgetESPJson"; //used to update form values by json
-const PROGMEM char CLASS_REFRESHABLE_MeasurerWidgetESPJsonStatus[]="MeasurerWidgetESPJsonStatus"; //class for display status of ajax
-const PROGMEM char CLASS_REFRESHABLE_IMAGE[]="refreshableImage";
-
-const PROGMEM char CLASS_REFRESHABLE_CHILD[]="refreshableChild"; //view of returnable json
-//attributes
-const PROGMEM char ATTRIBUTE_REMOTE_ID[]="remoteId";       //remoteId tag. SPecifies widgetName on ESP
-const PROGMEM char ATTRIBUTE_REMOTE_VAL[]="remoteVal";     //whichValueSelect from received JSON
-const PROGMEM char ATTRIBUTE_RELOAD_INTERVAL[]="reloadInterval";       //used to auto reload some component
-const PROGMEM char ATTRIBUTE_TARGET_TAG[]="targetTag";                 //tag which should be updated
-const PROGMEM char ATTRIBUTE_TARGET_TAG_REPLACE_PART[]="targetTagReplacePart";  //if partOf tag should be updated
-//Some stamdard values
-const PROGMEM char REMOTE_VAL_VALUE[]="value";
-const PROGMEM char REMOTE_VAL_IMAGE[]="Image";
-
-const PROGMEM char WS_TAG_ID[]="wsId";
-const PROGMEM char WS_TAG_VALUE[]="wsValue";
-const PROGMEM char WS_TAG_PARENT[]="wsParent";
-const PROGMEM char WS_TAG_CHILD[]="wsChild";
-const PROGMEM char WS_TAG_ITEM[]="wsItem";
-//const PROGMEM char VIEW_NAME_jsonFormView[]="jsonFormView"; //view of returnable json
-//base controls
-const char HTML_B_OPEN[] PROGMEM ="<b>";
-const char HTML_B_CLOSE[] PROGMEM ="</b>";
-
-const char HTML_H2_OPEN[] PROGMEM ="<h2>";
-const char HTML_H2_CLOSE[] PROGMEM ="</h2>";
-
-const char HTML_P_OPEN[] PROGMEM ="<p>";
-const char HTML_p_CLOSE[] PROGMEM ="</p>";
-//base attributes
-const PROGMEM char HTML_ATTR_ID_OPEN[]                = " id=\"";
-const PROGMEM char HTML_ATTR_NAME_OPEN[]              = " name=\"";
-const PROGMEM char HTML_ATTR_TYPE_OPEN[]              = " type=\"";
-const PROGMEM char HTML_ATTR_VALUE_OPEN[]             = " value=\"";
-const PROGMEM char HTML_ATTR_CLASS_OPEN[]             = " class=\"";
-const PROGMEM char HTML_ATTR_STYLE_OPEN[]             = " style=\"";
-const PROGMEM char HTML_ATTR_CLOSE[]                  = "\"";
-const PROGMEM char HTML_ATTR_SPACE[]                  = " ";
-
-//class names W3
-const PROGMEM char HTML_CLASS_W3card4[]               = "w3-card-4";
-const PROGMEM char HTML_CLASS_W3container[]           = "w3-container";
-const PROGMEM char HTML_CLASS_W3teal[]                = "w3-teal";
-const PROGMEM char HTML_CLASS_W3border[]              = "w3-border";
-const PROGMEM char HTML_CLASS_W3input[]               = "w3-input";
-
-const PROGMEM char HTML_CLASS_W3containerTeal[]       = "w3-container w3-teal";
-//styles
-const PROGMEM char HTML_STYLE_width25_perc[]          = "width:25%;";
-const PROGMEM char HTML_STYLE_float_left[]            = "float:left;";
-//DIV section
-const PROGMEM char HTML_DIV_OPEN[]                    = "<div>";
-const PROGMEM char HTML_DIV_OPEN_NO_END_QUOTE[]       = "<div";
-const PROGMEM char HTML_DIV_CLOSE[] PROGMEM           = "</div>";
-//form
-const PROGMEM char HTML_FORM_OPEN[]                   = "<form>";
-const PROGMEM char HTML_FORM_OPEN_NO_END_QUOTE[]      = "<form";
-const PROGMEM char HTML_FORM_CLOSE[]                  = "</form>";
-//label
-const PROGMEM char HTML_LABEL_OPEN[]                  = "<label>";
-const PROGMEM char HTML_LABEL_OPEN_NO_END_QUOTE[]     = "<label";
-const PROGMEM char HTML_LABEL_CLOSE[]                 = "</label>";
-//input
-const PROGMEM char HTML_INPUT_OPEN[]                  = "<input>";
-const PROGMEM char HTML_INPUT_OPEN_NO_END_QUOTE[]     = "<input";
-const PROGMEM char HTML_INPUT_CLOSE[]                 = "</input>";
-//id helper constants
-const PROGMEM char ID_STATUS_SUFFIX[]="_status";
-const PROGMEM char STATUS_OK_CLASS[]="w3-panel w3-green w3-card-4";
-const PROGMEM char STATUS_ERROR_CLASS[]="w3-panel w3-red w3-card-4";
-//Message constants
-const PROGMEM char MESSAGE_REFRESH[]="Ã�Â Ã‘â€ºÃ�Â Ã‚Â±Ã�Â Ã�â€¦Ã�Â Ã‘â€¢Ã�Â Ã�â€ Ã�Â Ã‚Â»Ã�Â¡Ã�ï¿½Ã�Â¡Ã�â€¹";
-const PROGMEM char MESSAGE_NOT_FOUND[]="Ã�Â Ã‘Å“Ã�Â Ã‚Âµ Ã�Â Ã�â€¦Ã�Â Ã‚Â°Ã�Â Ã¢â€žâ€“Ã�Â Ã’â€˜Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‘â€¢";
-const PROGMEM char MESSAGE_ERROR[]="Ã�Â Ã‘â€ºÃ�Â Ã�ï¿½Ã�Â Ã¯Â¿Â½Ã�Â Ã¢â‚¬ËœÃ�Â Ã‘â„¢Ã�Â Ã‘â€™";
-const PROGMEM char MESSAGE_REQUEST_ERROR[]="Ã�Â Ã‘â€ºÃ�Â Ã�ï¿½Ã�Â Ã¯Â¿Â½Ã�Â Ã¢â‚¬ËœÃ�Â Ã‘â„¢Ã�Â Ã‘â€™ Ã�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â Ã‘â€”Ã�Â¡Ã�â€šÃ�Â Ã‘â€¢Ã�Â¡Ã�Æ’Ã�Â Ã‚Â°";
-const PROGMEM char MESSAGE_REMOTE_ERROR[]="Ã�Â Ã�Ë†Ã�Â Ã’â€˜Ã�Â Ã‚Â°Ã�Â Ã‚Â»Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã�â€¦Ã�Â Ã‚Â°Ã�Â¡Ã�ï¿½ Ã�Â Ã‘â€¢Ã�Â¡Ã¢â€šÂ¬Ã�Â Ã‘â€˜Ã�Â Ã‚Â±Ã�Â Ã‘â€�Ã�Â Ã‚Â°";
-const PROGMEM char MESSAGE_SERVER_UNAVAILABLE[]="Ã�Â Ã�Ë†Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã�â€šÃ�Â Ã‘â€¢Ã�Â Ã¢â€žâ€“Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã�â€ Ã�Â Ã‘â€¢ Ã�Â Ã�â€¦Ã�Â Ã‚ÂµÃ�Â Ã’â€˜Ã�Â Ã‘â€¢Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã‘â€œÃ�Â Ã‘â€”Ã�Â Ã�â€¦Ã�Â Ã‘â€¢";
-const PROGMEM char MESSAGE_SENSOR_NOT_FOUND[]="Ã�Â Ã¢â‚¬ï¿½Ã�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã¢â‚¬Â¡Ã�Â Ã‘â€˜Ã�Â Ã‘â€� Ã�Â Ã�â€¦Ã�Â Ã‚Âµ Ã�Â Ã�â€¦Ã�Â Ã‚Â°Ã�Â Ã¢â€žâ€“Ã�Â Ã’â€˜Ã�Â Ã‚ÂµÃ�Â Ã�â€¦";
-const PROGMEM char MESSAGE_SENSOR_BROKEN[]="Ã�Â Ã¢â‚¬ï¿½Ã�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã¢â‚¬Â¡Ã�Â Ã‘â€˜Ã�Â Ã‘â€� Ã�Â Ã�â€¦Ã�Â Ã‚ÂµÃ�Â Ã‘â€˜Ã�Â¡Ã�Æ’Ã�Â Ã‘â€”Ã�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â Ã�â€ Ã�Â Ã‚ÂµÃ�Â Ã�â€¦";
-const PROGMEM char MESSAGE_DEVICE_BROKEN[]="Ã�Â Ã�Ë†Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã�â€šÃ�Â Ã‘â€¢Ã�Â Ã¢â€žâ€“Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã�â€ Ã�Â Ã‘â€¢ Ã�Â Ã�â€¦Ã�Â Ã‚ÂµÃ�Â Ã‘â€˜Ã�Â¡Ã�Æ’Ã�Â Ã‘â€”Ã�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â Ã�â€ Ã�Â Ã�â€¦Ã�Â Ã‘â€¢";
-
-const PROGMEM char MIN_TIMEOUT_VALUE_SENSOR[]="2000";
 //--------------------------------------------------------
-//status messages
-const PROGMEM char MESSAGE_STATUS_JSON_WIDGET_NOT_FOUND[]="{\"status\":\"widgetNotFound\"}";
-const PROGMEM char MESSAGE_STATUS_JSON_ACTION_NOT_ALLOWED[]="{\"status\":\"ACTION_NOT_ALLOWED_On_ThisWidget\"}";
-const PROGMEM char MESSAGE_STATUS_JSON_PARAMETERS_MISSING[]="{\"status\":\"One of req params miss actionName,widgetName\"}";
-const PROGMEM char MESSAGE_STATUS_JSON_EMPTY_REQUIRED_PARAM[]="{\"status\":\"One of req params empty actionName,widgetName\"}";
-
 //content types
 const PROGMEM char CONTENT_TYPE[]="Content-Type";
 const PROGMEM char CONTENT_TYPE_TEXT_HTML[]="text/html";
@@ -233,7 +121,7 @@ const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_NOT_IDENTIFIED[]="No Alarm";
 const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_STARTED[]="Alarm started";
 const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED[]="Alarm finished";
 
-const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED_RESULT[]="Ã�Â Ã‚Â Ã�Â Ã‚ÂµÃ�Â Ã‚Â¶Ã�Â Ã‘â€˜Ã�Â Ã‘Ëœ Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã�â€šÃ�Â Ã‚ÂµÃ�Â Ã�â€ Ã�Â Ã‘â€¢Ã�Â Ã‘â€“Ã�Â Ã‘â€˜ Ã�Â Ã‘â€”Ã�Â¡Ã�â€šÃ�Â Ã‚ÂµÃ�Â Ã‘â€�Ã�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Â°Ã�Â Ã‚ÂµÃ�Â Ã�â€¦. Ã�Â Ã¢â‚¬â„¢Ã�Â¡Ã�Æ’Ã�Â Ã‚Âµ Ã�Â Ã‘â€”Ã�Â Ã‘â€¢Ã�Â Ã‘â€�Ã�Â Ã‚Â°Ã�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã‚ÂµÃ�Â Ã‚Â»Ã�Â Ã‘â€˜ Ã�Â Ã�â€  Ã�Â Ã�â€¦Ã�Â Ã‘â€¢Ã�Â¡Ã�â€šÃ�Â Ã‘ËœÃ�Â Ã‚Âµ";
+const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED_RESULT[]="Режим тревоги прекращен. Все показатели в норме";
 
 //----------EspSettingsBox Messages---------------
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN[]="Save AbstractItem to file=";
@@ -378,9 +266,6 @@ const PROGMEM char ESBOX_NTP_timeTriggerInterval[]="NTP_timeTriggerInterval";
 const PROGMEM char ESBOX_telegramApiKey[]="telegramApiKey";
 const PROGMEM char ESBOX_telegramReceivers[]="telegramReceivers";
 const PROGMEM char ESBOX_telegramSenders[]="telegramSenders";
-
-//const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_MQ_SERVER[]="user";
-//const PROGMEM char ESPSETTINGSBOX_THINGSPEAK_MQ_USERNAME[]="user";
 
 //WiFi deploy folder
 const PROGMEM char ESPSETTINGSBOX_DEFAULT_PAGE[]="/web/index.htm";
@@ -541,8 +426,8 @@ const PROGMEM char MESSAGE_THINGSPEAK_NAME_FOR_REQUEST_EQ[]="&name=";
 const PROGMEM char MESSAGE_THINGSPEAK_DESCRIPTION_FOR_REQUEST[]="&description";
 const PROGMEM char MESSAGE_THINGSPEAK_DESCRIPTION_FOR_REQUEST_EQ[]="&description=";
 
-const PROGMEM char MESSAGE_THINGSPEAK_GET_CHANNELS[]=" Ã�Â Ã‘â€�Ã�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã‚Â°Ã�Â Ã‚Â»Ã�Â Ã‘â€¢Ã�Â Ã�â€  Ã�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â Ã‘â€”Ã�Â Ã‘â€˜Ã�Â¡Ã�Æ’Ã�Â Ã‘â€˜ Ã�Â Ã’â€˜Ã�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã�â€¦Ã�Â¡Ã¢â‚¬Â¹Ã�Â¡Ã¢â‚¬Â¦;";
-const PROGMEM char MESSAGE_THINGSPEAK_SET_CHANNELS[]=" Ã�Â Ã‘â€�Ã�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã‚Â°Ã�Â Ã‚Â»Ã�Â Ã‘â€¢Ã�Â Ã�â€  Ã�Â¡Ã‘â€œÃ�Â Ã‘â€”Ã�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â Ã�â€ Ã�Â Ã‚Â»Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‘â€˜Ã�Â¡Ã�ï¿½;";
+const PROGMEM char MESSAGE_THINGSPEAK_GET_CHANNELS[]=" - каналов чтения было создано";
+const PROGMEM char MESSAGE_THINGSPEAK_SET_CHANNELS[]=" - каналов записи было создано";
 
 const PROGMEM char MESSAGE_THINGSPEAK_CHANNELS_PREF[]="channels/";
 const PROGMEM char MESSAGE_THINGSPEAK_SUBSCRIBE_FIELDS_FIELD[]="/subscribe/fields/field";
@@ -551,40 +436,21 @@ const PROGMEM char MESSAGE_THINGSPEAK_FAILED_STATUS[]="Failed";
 const PROGMEM char MESSAGE_THINGSPEAK_OK_STATUS[]="Ok";
 const PROGMEM char MESSAGE_THINGSPEAK_EMPTY_KEY[]="EmptyKey";
 
-//Ntp clock client
-const PROGMEM char MESSAGE_TIME_CLIENT_JSON_BEFORE_TIME[]="{\"wsId\":\"clock\",\"wsClass\":\"wsItem\",\"wsValue\":\"";
-const PROGMEM char MESSAGE_TIME_CLIENT_JSON_AFTER_TIME[]="\"}";
-
 //device widgets snapshot TODO: add this
 const PROGMEM char DEVICE_WIDGETS_SNAPSHOT[]="----------Device helper----------";
 
-//commands constants
-const PROGMEM char MESSAGE_COMMANDS_EXECUTE_COMMAND[]="----------Execute command----------";
-const PROGMEM char MESSAGE_COMMANDS_ERROR[]="Error";
-const PROGMEM char MESSAGE_COMMANDS_OK[]="Ok";
-const PROGMEM char MESSAGE_COMMANDS_COMMAND_NOT_RECOGNIZED[]="Ã�Â Ã‘â„¢Ã�Â Ã‘â€¢Ã�Â Ã‘ËœÃ�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã’â€˜Ã�Â Ã‚Â° Ã�Â Ã�â€¦Ã�Â Ã‚Âµ Ã�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â¡Ã�Æ’Ã�Â Ã‘â€”Ã�Â Ã‘â€¢Ã�Â Ã‚Â·Ã�Â Ã�â€¦Ã�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã‚Â°";
-const PROGMEM char MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED[]="Device will be restarted";
-const PROGMEM char MESSAGE_COMMANDS_DEVICE_WILL_BE_RESTARTED_MSG[]="Ã�Â Ã�Ë†Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã�â€šÃ�Â Ã‘â€¢Ã�Â Ã¢â€žâ€“Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã�â€ Ã�Â Ã‘â€¢ Ã�Â Ã‚Â±Ã�Â¡Ã‘â€œÃ�Â Ã’â€˜Ã�Â Ã‚ÂµÃ�Â¡Ã¢â‚¬Å¡ Ã�Â Ã‘â€”Ã�Â Ã‚ÂµÃ�Â¡Ã�â€šÃ�Â Ã‚ÂµÃ�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â Ã‘â€”Ã�Â¡Ã‘â€œÃ�Â¡Ã¢â‚¬Â°Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‘â€¢. Ã�Â Ã¢â‚¬ï¿½Ã�Â Ã‘â€¢Ã�Â Ã‚Â¶Ã�Â Ã’â€˜Ã�Â Ã‘â€˜Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã‚ÂµÃ�Â¡Ã�Æ’Ã�Â¡Ã�Å  Ã�Â Ã‘â€”Ã�Â Ã‚ÂµÃ�Â¡Ã�â€šÃ�Â Ã‚ÂµÃ�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â Ã‘â€“Ã�Â¡Ã�â€šÃ�Â¡Ã‘â€œÃ�Â Ã‚Â·Ã�Â Ã‘â€�Ã�Â Ã‘â€˜ Ã�Â¡Ã�Æ’Ã�Â¡Ã¢â‚¬Å¡Ã�Â¡Ã�â€šÃ�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã‘â€˜Ã�Â¡Ã¢â‚¬Â Ã�Â¡Ã¢â‚¬Â¹";
-
-const PROGMEM char MESSAGE_SERVER_ARG_CONFIRM_COMMAND[]="confirm_command";
 const PROGMEM char MESSAGE_SERVER_ARG_PAGE[]="page";
-const PROGMEM char MESSAGE_SERVER_ARG_SENSOR[]="sensor";
-const PROGMEM char MESSAGE_SERVER_ARG_PROVIDER[]="provider";
 const PROGMEM char MESSAGE_SERVER_ARG_NAME[]="name";
 const PROGMEM char MESSAGE_SERVER_ARG_VAL[]="val";
-const PROGMEM char MESSAGE_SERVER_ARG_FORM_ID[]="form_id";
 const PROGMEM char MESSAGE_SERVER_ARG_REMOTE_TARGET[]="remote_target";
 const PROGMEM char MESSAGE_SERVER_ARG_REMOTE_PAGE[]="remote_page";
 const PROGMEM char MESSAGE_SERVER_ARG_VAL_JSON[]="val_json";
-const PROGMEM char MESSAGE_SERVER_ARG_CURRENT_SENSOR_NAME[]="currentSensor_name";
 
 const PROGMEM char MESSAGE_SERVER_ARG_VAL_ALL[]="all";
 const PROGMEM char MESSAGE_SERVER_ARG_VAL_restart[]="restart";
 const PROGMEM char MESSAGE_SERVER_ARG_VAL_recreateThingSpeak[]="recreateThingSpeak";
 const PROGMEM char MESSAGE_SERVER_ARG_VAL_deleteSettings[]="deleteSettings";
 const PROGMEM char MESSAGE_SERVER_ARG_VAL_RESTART[]="restart";
-
-const PROGMEM char MESSAGE_COMMANDS_FILES_DELETED[]="Ã�Â Ã�Ë†Ã�Â Ã’â€˜Ã�Â Ã‚Â°Ã�Â Ã‚Â»Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‘â€¢ Ã�Â¡Ã¢â‚¬Å¾Ã�Â Ã‚Â°Ã�Â Ã¢â€žâ€“Ã�Â Ã‚Â»Ã�Â Ã‘â€¢Ã�Â Ã�â€  :";
 
 //abstract item message
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_NAME_EQ[]="NAME=";
