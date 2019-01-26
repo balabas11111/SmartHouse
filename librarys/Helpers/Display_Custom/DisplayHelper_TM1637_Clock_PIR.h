@@ -414,8 +414,6 @@ public:
 			default: refreshInterval=MODE_OTHER_REFRESH_INTERVAL;
 		}
 
-		Serial.print(FPSTR("refreshInterval="));
-		Serial.print(refreshInterval);
 		displayRefreshTrigger->start(refreshInterval);
 
 		refreshDisplayPage(true);

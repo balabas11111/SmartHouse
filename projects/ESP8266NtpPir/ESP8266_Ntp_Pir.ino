@@ -32,6 +32,7 @@
 #include <PinDigital.h>
 #include <Pir_Sensor.h>
 #include <BeeperB.h>
+#include "BeeperSerial.h"
 
 #include "DS18D20_Sensor.h"
 #include "BME280_Sensor.h"
@@ -45,6 +46,10 @@ ESPExtraSettingsBox* extraBoxes[]={&espSett_Ntp};
 EspSettingsBox espSettingsBox(extraBoxes,ARRAY_SIZE(extraBoxes));
 
 BeeperB beeper(D5,HIGH,LOW,true,false);
+
+uint16_t sounds[]={250,250,250,500};
+uint16_t delays[]={250,250,250,1000};
+BeeperSerial beeperSerial(&beeper,sounds,delays,ARRAY_SIZE(sounds));
 
 I2Chelper i2cHelper(D1,D2,false);
 
@@ -73,7 +78,7 @@ ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 TimeIntervalService timeIntervalService(&espSettingsBox,&timeService,onTimeIntervalEvent,nullptr,0);
 
 Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeService,&displayHelper,
-						&pirDetector,&timeIntervalService};
+						&pirDetector,&timeIntervalService,&beeperSerial};
 
 AbstractItem* sensors[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
 JSONprovider* jsonProviders[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeService,&timeIntervalService,&espSettingsBox};
@@ -138,7 +143,6 @@ void loop() {
 	deviceHelper.loop();
 
 	beeper.shortBeep(wifiHelper.getReconnected());
-	beeper.playGenerator(timeIntervalService.hasActiveAlarms());
 
 	processTimeIntervals();
 }
@@ -209,8 +213,11 @@ void processJson(){
 //---------------------------------------------------------------------
 //button handling
 void onButtonMenuChanged(){
+	if(timeIntervalService.hasActiveAlarms(INTERVAL_KIND_ALARM)){
+		timeIntervalService.stopAndRescheduleAll(INTERVAL_KIND_ALARM);
+		return;
+	}
 	displayHelper.changePageIfTrigger(!buttonMenu.isOn());
-	timeIntervalService.stopAndRescheduleAll();
 }
 
 void onPirDetectorChanged(){
@@ -223,11 +230,21 @@ void printPir(){
 //-------------TimeIntervalService------------------------
 void onTimeIntervalEvent(TimeIntervalDetail timeInterval){
 	Serial.print(FPSTR("BEEPER ="));
-	Serial.println(timeInterval.state==ACTIVE);
+	Serial.println(timeIntervalService.getStateName(timeInterval.state));
+
+	if(timeInterval.kind==INTERVAL_KIND_ALARM){
+		if(timeInterval.state==ACTIVE){
+			beeperSerial.start();
+		}else{
+			beeperSerial.stop();
+		}
+	}
 }
 
 void processTimeIntervals(){
-
+	if(!timeIntervalService.hasActiveAlarms(INTERVAL_KIND_ALARM)){
+		beeperSerial.stop();
+	}
 }
 
 //------------------Sensors func---------------------------------------------------

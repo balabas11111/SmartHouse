@@ -379,9 +379,9 @@ public:
 		return sm;
 	}
 
-	boolean hasActiveAlarms(){
+	boolean hasActiveAlarms(int8_t kind){
 		for(uint8_t i=0;i<itemCount;i++){
-			if(items[i].state==ACTIVE){
+			if(items[i].state==ACTIVE && items[i].kind==kind){
 				return true;
 			}
 		}
@@ -409,11 +409,14 @@ public:
 		return 0;
 	}
 
-	uint8_t stopAndRescheduleAll(){
+	uint8_t stopAndRescheduleAll(int8_t kind){
+		Serial.println(FPSTR("All active alarms will be rescheduled"));
 		uint8_t c=0;
 		for(uint8_t i=0;i<itemCount;i++){
-			if(stopAndRescheduleInterval(i)==1){
-				c++;
+			if(kind<0 || items[i].kind==kind){
+				if(stopAndRescheduleInterval(i)==1){
+					c++;
+				}
 			}
 		}
 		return c;
@@ -490,6 +493,10 @@ public:
 	boolean saveToFile(){
 		Serial.println();
 		return espSettingsBox->saveSettingToFile(FPSTR(TimeIntervalService_FileName_NAME),getJson());
+	}
+
+	String getStateName(uint8_t id){
+		return String(FPSTR(IntervalState_Names[id]));
 	}
 protected:
 	void processIntervals(){
@@ -829,7 +836,7 @@ private:
 					//+"\"type\":\""+getTypeName(item.type)+"\","
 					+"\"type\":\""+String(item.type)+"\","
 					//+"\"state\":\""+getStateName(item.state)+"\","
-					+"\"rescheduleIndex\":\""+String(item.state==RESCHEDULE_INTERVAL_INDEX)+"\","
+					//+"\"rescheduleIndex\":\""+String(item.state==RESCHEDULE_INTERVAL_INDEX)+"\","
 					+"\"state\":\""+(item.state)+"\","
 					+"\"startTime\":\""+String(item.startTime)+"\","
 					+"\"endTime\":\""+String(item.endTime)+"\","
@@ -847,9 +854,6 @@ private:
 
 	String getTypeName(uint8_t id){
 		return String(FPSTR(IntervalType_Names[id]));
-	}
-	String getStateName(uint8_t id){
-		return String(FPSTR(IntervalState_Names[id]));
 	}
 
 	void setState(uint8_t ind,IntervalState newState){

@@ -72,6 +72,9 @@ const char TimeIntervalService_ServVals[] PROGMEM="\
 ,\"rescheduleIndex\":\"5\",\"multidailyIndex\":\"3\",\"periodicIndex\":\"1\"\
 ,\"intervalKindId\": [\"ALARM\", \"SOCKET_1_ON\"]";
 
+#define INTERVAL_KIND_ALARM 0
+#define INTERVAL_KIND_SOCKET_1_ON 1
+
 const char* const IntervalKind_Ids[] PROGMEM={
 		"ALARM", "SOCKET_1_ON"
 };
