@@ -314,13 +314,23 @@ void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 
 					for(uint8_t i=0;i<itemCountJson;i++){
 
-						uint8_t index=item->getChildItemIndexByName(root["items"][i]["name"]);
+						int8_t index=item->getChildItemIndexByName(root["items"][i]["name"]);
 
-						item->setDescr(index, root["items"][i]["descr"]);
-						item->setFieldId(index, root["items"][i]["fieldId"]);
-						item->setMinVal(index, root["items"][i]["minVal"]);
-						item->setMaxVal(index, root["items"][i]["maxVal"]);
-						item->setQueue(index, root["items"][i]["queue"]);
+						if(index>-1){
+							item->setDescr(index, root["items"][i]["descr"]);
+							item->setFieldId(index, root["items"][i]["fieldId"]);
+							item->setMinVal(index, root["items"][i]["minVal"]);
+							item->setMaxVal(index, root["items"][i]["maxVal"]);
+							item->setQueue(index, root["items"][i]["queue"]);
+						}else{
+							item->setNonActiveSensorValue(
+									root["items"][i]["name"],
+									root["items"][i]["descr"],
+									root["items"][i]["fieldId"],
+									root["items"][i]["minVal"],
+									root["items"][i]["maxVal"],
+									root["items"][i]["queue"]);
+						}
 
 						//Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_ITEM_SETTINGS_LOADED));
 						//Serial.println(item->getJson(index));
@@ -344,7 +354,7 @@ void EspSettingsBox::saveAbstractItemToFile(AbstractItem* item){
 
 	File file = SPIFFS.open(fileName, "w");
 
-	file.println(item->getJson());
+	file.println(item->getJsonForSave());
 
 	file.close();
 	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVED));

@@ -75,6 +75,10 @@ public:
 
 	virtual boolean loop(){return false;};
 
+	virtual String getJsonForSave(){
+		return getJson();
+	}
+
 	virtual String getJson(){
 		String result="{"+getItemJson()+",\"items\":[";
 
@@ -120,7 +124,7 @@ public:
 	uint8_t getItemCount(){
 		return itemCount;
 	}
-	uint8_t getChildItemIndexByName(String name){
+	int8_t getChildItemIndexByName(String name){
 		for(uint8_t i=0;i<itemCount;i++){
 			if(items[i].name==name){
 				return i;
@@ -200,6 +204,10 @@ public:
 			return this->items[index].queue;
 		}
 		return "";
+	}
+
+	void setNonActiveSensorValue(String name,String descr,uint8_t fieldId,float minVal,float maxVal,String queue){
+		Serial.println(FPSTR("Non Active value set not activated"));
 	}
 
 	boolean getPeriodicSend(){

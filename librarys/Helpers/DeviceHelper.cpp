@@ -137,20 +137,21 @@ void DeviceHelper::printDeviceDiagnostic(){
 }
 
 
-void DeviceHelper::update(AbstractItem** sensors, uint8_t sensorsSize){
+void DeviceHelper::update(){
 	Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_UPDATE_EXECUTION));
 
-	for(uint8_t i=0;i<sensorsSize;i++){
-		sensors[i]->update();
-		sensors[i]->checkForAlarm();
+	for(uint8_t i=0;i<abstrItemsSize;i++){
+		abstrItems[i]->update();
+		abstrItems[i]->checkForAlarm();
+		Serial.println(abstrItems[i]->getJson());
 	}
 
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+	printDeviceDiagnostic();
 }
 
-String DeviceHelper::processAlarm(AbstractItem** sensors, uint8_t sensorsSize){
+String DeviceHelper::processAlarm(){
 	unsigned long now=millis();
-	//Serial.println("lastAlarmTime="+String(lastAlarmTime)+" minAlarmInterval="+String(minAlarmInterval)+" now="+String(now)+" alarmMode="+String(alarmMode));
 
 	if(minAlarmInterval==0){
 		return "";
@@ -163,15 +164,15 @@ String DeviceHelper::processAlarm(AbstractItem** sensors, uint8_t sensorsSize){
 	String alarmMessage="";
 	boolean alarmStarted=alarmMode;
 
-	for(uint8_t i=0;i<sensorsSize;i++){
-		boolean alarm=sensors[i]->checkForAlarm();
+	for(uint8_t i=0;i<abstrItemsSize;i++){
+		boolean alarm=abstrItems[i]->checkForAlarm();
 
 		if(alarm){
 			if(!alarmStarted){
 				alarmStarted=true;
 			}
 			alarmMode=true;
-			alarmMessage+=sensors[i]->generateAlarmText();
+			alarmMessage+=abstrItems[i]->generateAlarmText();
 		}
 	}
 

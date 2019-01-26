@@ -71,7 +71,7 @@ public:
 		for(uint8_t i=0;i<itemCount;i++){
 
 			String devAddressStr=getDeviceAddress(i);
-			String name=String(FPSTR(TEMPERATURE))+devAddressStr;
+			String name=devAddressStr;
 
 			//uint8_t field=i+1;
 			items[i]={i,name,FPSTR(MEASURE_CELSIUS_DEGREES),FPSTR(MEASURE_CELSIUS_DEGREES_RU),devAddressStr,-127,0,-512,512,"",0};

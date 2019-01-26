@@ -78,7 +78,7 @@ ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
 TimeIntervalService timeIntervalService(&espSettingsBox,&timeService,onTimeIntervalEvent,nullptr,0);
 
 Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeService,&displayHelper,
-						&pirDetector,&timeIntervalService,&beeperSerial};
+						&pirDetector,&timeIntervalService,&beeperSerial,&sensorsTrigger};
 
 AbstractItem* sensors[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
 JSONprovider* jsonProviders[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeService,&timeIntervalService,&espSettingsBox};
@@ -253,14 +253,7 @@ void loadSensors(){
 }
 
 void updateSensors(){
-	deviceHelper.update(sensors, ARRAY_SIZE(sensors));
-
-	for(uint8_t i=0;i<ARRAY_SIZE(sensors);i++){
-		Serial.println();
-		Serial.println(sensors[i]->getJson());
-	}
-
-	deviceHelper.printDeviceDiagnostic();
+	deviceHelper.update();
 }
 
 //-------------------------Thing speak functions---------------------

@@ -41,7 +41,7 @@ public:
 
 	void startDevice(String deviceId);
 	boolean init(Initializable** initItems,uint8_t initItemsSize);
-	void update(AbstractItem** sensors,uint8_t sensorsSize);
+	void update();
 
 	String getProvidersJson();
 	String getAbstrItemsJson();
@@ -54,7 +54,7 @@ public:
 
 	void printDeviceDiagnosticNoSpiff();
 
-	String processAlarm(AbstractItem** sensors, uint8_t sensorsSize);
+	String processAlarm();
 
 	void createPostponedCommand(String command);
 	void prepareTrigger();
