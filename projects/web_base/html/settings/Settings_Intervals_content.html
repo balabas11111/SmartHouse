@@ -1,5 +1,5 @@
 <!-- Begin intervals tab -->
-		<div id="intervals" class="settingsTab reloadableSettingsContainer" style="display:none">
+		<div id="intervals" class="settingsTab intervals" style="display:none">
 			<div class="w3-container w3-teal">
 				<h2>Интервалы времени</h2>
 			</div>
@@ -15,11 +15,12 @@
 				  					onclick="showNewIntervalForm();">+</button>
 				  			</div>
 				  		</div>
+				  		
 						<div id="intervals_count" class="w3-quarter" style="margin-left: 20px;">
 							
 						</div>
 					</div>
-					<form id="intervals_form" class="w3-container">
+					<form id="intervals_form" class="w3-container ">
 					
 					</form>  
 				</div>
@@ -72,14 +73,14 @@
 				  			<div class="w3-tooltip" style="margin-top: 3px; margin-left: 3px; width: 30px">
 				  				<span class="editBtn w3-text w3-tag w3-gray w3-round" style="position:absolute;left:0;bottom:45px">➲ Редактирование Новый</span>
 				  				<button class="editBtn w3-border w3-border-red w3-round w3-green" 
-				  					onclick="openIntervalEditPopup(0,'HeaderName');">✍</button>
+				  					onclick="showEditIntervalForm(0);">✍</button>
 				  			</div>
 				  		</div>
 				  		<div class="w3-cell deleteBtn">
 				  			<div class="w3-tooltip" style="margin-top: 3px; margin-left: 3px; width: 30px">
 				  				<span class="deleteBtn w3-text w3-tag w3-gray w3-round" style="position:absolute;left:0;bottom:45px">✂ Удалить Новый</span>
 				  				<button class="deleteBtn w3-border w3-border-red w3-round w3-green" 
-				  					onclick="openIntervalDeletePopup(0,'HeaderName');">✂</button>
+				  					onclick="openIntervalDeletePopup(0);">✂</button>
 				  			</div>
 				  		</div>
 			  		</div>
@@ -95,14 +96,14 @@
 			  	<div class="w3-quarter id">
 			  		<div>
 			  			<input name="id" class="intervals id" type="hidden">
-			  			<label class="name">Название</label>
+			  			<label class="htmlFor name">Название</label>
 			  			<input name="name" class="w3-input w3-border intervals name" style="width: 80%;" value="Новый" 
 			  				type="text" required="1" >
 			  		</div>
 			  	</div>
 			  	<div class="w3-quarter">
 			  		<div>
-			  			<label class="type">Периодичность</label>
+			  			<label class="htmlFor type">Периодичность</label>
 			  			<select name="type" class="w3-select intervals type" style="width: 80%;"
 			  				 onchange="handlePeriodTypeChange(this.selectedIndex);" >
 			  				 <option value="0">Единожды</option>
@@ -115,7 +116,7 @@
 			  			</select>
 			  		</div>
 			  		<div>
-			  			<label class="state">Состояние</label>
+			  			<label class="htmlFor state">Состояние</label>
 			  			<select name="state" class="w3-select intervals state" style="width: 80%;" >
 			  				<option value="0">Новый</option>
 			  				<option value="1">Ожидает</option>
@@ -128,11 +129,11 @@
 			  	</div>
 			  	<div class="w3-quarter">
 			  		<div>
-			  			<label class="startTime">Старт</label>
+			  			<label class="htmlFor tartTime">Старт</label>
 			  			<input name="startTime" class="w3-input w3-border intervals startTime" style="width: 90%;" type="datetime-local" >
 			  		</div>
 			  		<div>
-			  			<label class="endTime">Стоп </label>
+			  			<label class="htmlFor endTime">Стоп </label>
 			  			<input name="endTime" class="w3-input w3-border intervals endTime" style="width: 90%;" type="datetime-local" >
 			  		</div>
 			  	</div>
@@ -149,11 +150,11 @@
 		  				<label><input name="days_6" class="w3-check intervals days_6" type="checkbox" >Вс</label>
 			  		</div>
 			  		<div class="time" style="display: none;">
-			  			<label class="time">Период (сек) </label>
+			  			<label class="htmlFor time">Период (сек) </label>
 			  			<input name="time" class="w3-input w3-border intervals time" style="width: 50%;" type="number" >
 			  		</div>
 			  		<div class="kind" style="display: block;">
-			  			<label class="kind">Тип</label>
+			  			<label class="htmlFor kind">Тип</label>
 			  			<select name="kind" class="w3-select intervals kind" style="width: 80%;" >
 			  				<option value="0">Будильник</option>
 			  				<option value="1">Розетка 1 - включение</option>
@@ -162,7 +163,7 @@
 			  	</div>
 			  </div>
 			  <div class="w3-row w3-teal" style="margin-top: 1px; margin-bottom: 5px; height: 2px;"></div>
-			  </div>
+			</div>
 		</template>
 		
 <!-- end intervals tab -->

@@ -8,7 +8,6 @@ const LBL_MSG_LOC_VALIDATION_ERROR='Ошибка валидации:';
 const LBL_MSG_LOC_HTTP_STATUS_EQ=' HTTP статус=';
 
 /*-----serv constants---*/
-const MSG_SUFFIX="msg";
 const FORM_SUFFIX="form";
 const VAL_SUFFIX="";
 const ITEM_COUNT_SUFFIX="itemCount";

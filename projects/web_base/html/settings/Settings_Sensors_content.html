@@ -7,6 +7,10 @@
 			  <p>Настройки датчиков. Описание. Режим тревоги. Очереди </p>
 			  
 				<div id="sensors_content">
+					<div id="sensors_count" class="w3-quarter" style="margin-left: 20px;">
+							
+					</div>
+				
 					<form id="sensors_form" class="w3-container">
 					
 					</form>  
@@ -53,4 +57,93 @@
 	        
 		  </div>
 		</div>
+		
+		<template id="sensor-header-template">
+			<div class="sensor">
+				<div class="w3-row w3-teal sensor_header" style="margin-top: 15px; height: 50px;">
+					<div class="w3-third w3-row">
+				  		<div class="w3-cell editBtn">
+				  			<div class="w3-tooltip" style="margin-top: 3px; margin-left: 3px; width: 30px">
+				  				<span class="editBtn w3-text w3-tag w3-gray w3-round" style="position:absolute;left:0;bottom:45px">➲ Редактирование устройства</span>
+				  				<button class="editBtn w3-border w3-border-red w3-round w3-green" 
+				  					onclick="showEditSensorForm(0);">✍</button>
+				  			</div>
+				  		</div>
+						<div class="w3-threequarter"><b>Датчик:</b></div>
+					</div>
+					<div class="w3-third"><label class="sensor name">идентификатор</label> </div>
+					<div class="w3-third"><label class="sensor type">тип</label></div>
+					
+					<input class="sensor id" type="hidden">
+					<input class="sensor kind" type="hidden">
+				</div>
+				
+				<div class="w3-row sensor_info" style="margin-top: 1px; height: 44px;">
+					<div class="w3-third">
+					</div>
+					<div class="w3-third">
+						<h4 style="margin-left: 20px;">Измеряет:</h4>
+					</div>
+					<div class="w3-third">
+						<label class="sensor size">Что меряет датчик</label>
+					</div>
+				</div>
+				<div class="w3-row sensor_info2" style="margin-top: 1px; height: 44px;">
+					<div class="w3-third">
+					</div>
+					<div class="w3-third">
+						<h4 style="margin-left: 20px;">Имя:</h4>
+					</div>
+					<div class="w3-third">
+						<input class="w3-input w3-border sensor descr" type="text">
+					</div>
+				</div>
+				
+				<div class="w3-row w3-teal sensor_items_header" style="margin-top: 2px;">
+					<div class="w3-threequarter">
+						<div class="w3-third sensor_items_header_cell">
+							<b>Измерители: (</b> <label class="sensor itemCount">0</label><b>)</b>
+						</div>
+						<div class="w3-third sensor_items_header_cell">Имя</div>
+						<div class="w3-third sensor_items_header_cell"></div>
+					</div>
+					<div class="w3-quarter">
+						<div class="w3-third sensor_items_header_cell">Миним. значение</div>
+						<div class="w3-third sensor_items_header_cell">Макс значение</div>
+						<div class="w3-third sensor_items_header_cell">Поле ThingSpeak</div>
+					</div>
+				</div>
+			</div>
+		</template>
+		
+		<template id="sensor-item-template">
+			<div class="sensor_item">
+				<div class="w3-row" style="margin-top: 5px;">
+					<div class="w3-threequarter">
+						<div class="w3-third">
+							<div class="w3-half" style="margin-left: 20px; width: 90%;">
+								<b class="sensor_item name">Temperature</b>
+							</div>
+						</div>
+						<div class="w3-third">
+							<input class="w3-input w3-border sensor_item descr">
+						</div>
+						<div class="w3-third">
+							<!--  <input class="w3-input w3-border queue">-->
+						</div>
+					</div>
+					<div class="w3-quarter">
+							<div class="w3-third">
+								<input class="w3-input w3-border sensor_item minVal" style="width: 90%;">
+							</div>
+							<div class="w3-third">
+								<input class="w3-input w3-border sensor_item maxVal" style="width: 90%;">
+							</div>
+							<div class="w3-third">
+								<input class="w3-input w3-border sensor_item fieldId" style="width: 90%;" type="number" min="0" max="8" step="1">
+							</div>
+					</div>
+				   
+			</div>
+		</template>
 <!-- end sensors tab -->

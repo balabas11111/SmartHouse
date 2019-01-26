@@ -1,49 +1,27 @@
 /*-----------------------Intervals values processing--------------------------------*/
-function showDeleteIntervalForm(id){
-	var message='Подтвердите удаление интервала '+document.getElementById('intervals_name_'+id).value;
-	
-	var btnNames=['Удалить','Отменить'];
-	var btnToolTips=['',''];
-	var btnClasses=['w3-border-red','w3-border-red'];
-	var btnOnClicks=['confirmDeleteInterval('+id+');','confirmDlgHide();'];
-	
-	confirmDlgInit('Подтверждение',message,'',undefined,undefined,btnNames,btnToolTips,btnClasses,btnOnClicks,false);
-	confirmDlgShow();
-}
-function confirmDeleteInterval(id){
-	showStatusMessage('Удаляю интервал ...','w3-yellow');
-	
-    var target = createHiddenInput(undefined,'remote_target','timeIntervalService');
-    var page = createHiddenInput(undefined,'remote_page','delete');
-    var val = createHiddenInput(undefined,'val_json',id);
-
-    var form = document.createElement("form");
-    form.appendChild(target);
-    form.appendChild(page);
-    form.appendChild(val);
-	
-	postForm(form,submitValuesUrl,undefined,undefined,validateStatusMessageDefault,onIntervalDeletedHandler,getStatusMessageComp());
-}
-function onIntervalDeletedHandler(data){
-	var ok=isStatusMessageResponseOk(data.statusHttp);
-	
-	if(ok){
-		confirmDlgHide();
-		reloadCurrentSettingsTab();
-		showStatusMessage('Удалено. Обновляю данные','w3-yellow');
-	}else{
-		var msg='Ошибка '+data.message;
-		showStatusMessage(msg,'w3-red');
-		 throw msg; 
-	}
-}
-
 var intSettings={
 		rescheduleIndex: 5,
 		multidailyIndex: 3,
 		periodicIndex: 1
 };
 
+var customIntervalsMessage=undefined;
+
+function openIntervalsTab(){
+	preventFormSubmit('intervals_form');
+	preventFormSubmit('intervals_cur_form');
+	
+	document.title='Установки интервалов времени';
+
+	hideComponentsByClassName('settingsTab');
+	document.getElementById('intervals').style.display = "block";
+	
+	setStatusMessageComp(document.getElementById('intervals_msg'));
+	showStatusMessage('Загружаю интервалы...','w3-yellow');
+	
+	var url='/getJson?name=timeIntervalService';
+	updateComponentsByAjaxCall('GET', url, processIntervalsJsonGet,"",undefined, 0,2000);
+}
 function processIntervalsJsonGet(data){
 	var fields=["rescheduleIndex","multidailyIndex","periodicIndex"];
 	for(var i in fields){
@@ -70,10 +48,10 @@ function processIntervalsJsonGet(data){
 		putIntervalToForm(templateName,container,interval,true,suffix);
 	}
 	
-	var msg=(customOnGetMessage!=undefined)?customOnGetMessage:('Загружено '+currentHeaderName);
+	var msg=(customIntervalsMessage!=undefined)?customIntervalsMessage:('Интервалы загружены');
 	
 	showStatusMessage(msg,'w3-green');
-	customOnGetMessage=undefined;
+	customIntervalsMessage=undefined;
 }
 function showNewIntervalForm(){
 	var dt=new Date();
@@ -153,11 +131,11 @@ function putIntervalToForm(templateName,container,interval,disabled,suffix){
 	var fields=['id','name','type','state','startTime','endTime','time','kind'];
 	
 	for(var i=0;i<fields.length;i++){
-		updateIntervalTemplate(template,fields[i],interval[fields[i]],suffix,disabled);
+		updateTemplateValue(template,'intervals',fields[i],interval[fields[i]],suffix,disabled);
 	}
 	
 	for(var i=0;i<7;i++){
-		updateIntervalTemplate(template,'days_'+i,interval.daysArr[i],suffix,disabled);
+		updateTemplateValue(template,'intervals','days_'+i,interval.daysArr[i],suffix,disabled);
 	}
 	
 	var daysDiv=template.querySelector('div.days');
@@ -172,15 +150,6 @@ function putIntervalToForm(templateName,container,interval,disabled,suffix){
 
 	container.appendChild(template);
 }
-function updateIntervalTemplate(template,field,value,suffix,disabled){
-	var comp=template.querySelector('.intervals.'+field);
-	comp.id='intervals_'+field+suffix;
-	comp.disabled=disabled;
-	setComponentValue(comp,value);
-	
-	var lbl=template.querySelector('label.'+field);
-	if(lbl!=undefined){lbl.htmlFor=comp.id;}
-}
 function handlePeriodTypeChange(selectedIndex){
 	var daysDiv=getComponentById('intervals_daysDiv');
 	var timeDiv=getComponentById('intervals_timeDiv');
@@ -188,7 +157,6 @@ function handlePeriodTypeChange(selectedIndex){
 	
 	applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,selectedIndex);
 }
-/*show or hide days interval component based on type*/
 function applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,type){
 	var isMultidaily=(type==intSettings.multidailyIndex);
 	var isPeriodic=(type==intSettings.periodicIndex);
@@ -197,13 +165,14 @@ function applyIntervalTypeValueToComp(daysDiv,timeDiv,kindDiv,type){
 	setVisible(daysDiv,isMultidaily);
 	setVisible(timeDiv,isPeriodic);
 	setVisible(kindDiv,isKindVis);
-	
-	markFormAsValid(currentForm,getStatusMessageComp(),true,true);
 }
 function submitIntervalsFormAsJsonReloadCurrTab(){
 	showStatusMessage('Сохраняю интервалы ...','w3-yellow');
+	
 	var form=document.getElementById('intervals_cur_form');
-	postForm(form,submitValuesUrl,validateValuesHandler,constructIntervalsFormDataAsJson,validateStatusMessageDefault,onIntervalSavedHandler,getStatusMessageComp());
+	var submitIntervalsUrl='/processJson?name=timeIntervalService';
+	
+	postForm(form,submitIntervalsUrl,validateCurrentIntervalForm,constructIntervalsFormDataAsJson,validateStatusMessageDefault,onIntervalSavedHandler,getStatusMessageComp());
 }
 function validateCurrentIntervalForm(){
 	var form=document.getElementById('intervals_cur_form');
@@ -327,16 +296,60 @@ function constructIntervalsFormDataAsJson(form){
 	json+='}';
 	
 	var target=document.getElementById('intervals_target').value;
+	var page='intervals';
 	
-	return constructFormData_JSONprocessor(target,currentTab,json);
+	return constructFormData_JSONprocessor(target,page,json);
 }
 function onIntervalSavedHandler(data){
 	var ok=isStatusMessageResponseOk(data.statusHttp);
 	
 	if(ok){
 		hideComponent('intervals_cur_modal');
-		reloadCurrentSettingsTab();
+		openIntervalsTab();
 		showStatusMessage('Сохранено. Обновляю данные','w3-yellow');
+		customIntervalsMessage='Интервал был успешно сохранен';
+	}else{
+		var msg='Ошибка '+data.message;
+		showStatusMessage(msg,'w3-red');
+		 throw msg; 
+	}
+}
+/*----------delete intervals---------------*/
+function showDeleteIntervalForm(id){
+	var message='Подтвердите удаление интервала '+document.getElementById('intervals_name_'+id).value;
+	
+	var btnNames=['Удалить','Отменить'];
+	var btnToolTips=['',''];
+	var btnClasses=['w3-border-red','w3-border-red'];
+	var btnOnClicks=['confirmDeleteInterval('+id+');','confirmDlgHide();'];
+	
+	confirmDlgInit('Подтверждение',message,'',undefined,undefined,btnNames,btnToolTips,btnClasses,btnOnClicks,false);
+	confirmDlgShow();
+}
+function confirmDeleteInterval(id){
+	showStatusMessage('Удаляю интервал ...','w3-yellow');
+	
+    var target = createHiddenInput(undefined,'remote_target','timeIntervalService');
+    var page = createHiddenInput(undefined,'remote_page','delete');
+    var val = createHiddenInput(undefined,'val_json',id);
+
+    var deleteUrl='/processJson';
+    
+    var form = document.createElement("form");
+    form.appendChild(target);
+    form.appendChild(page);
+    form.appendChild(val);
+	
+	postForm(form,deleteUrl,undefined,undefined,validateStatusMessageDefault,onIntervalDeletedHandler,getStatusMessageComp());
+}
+function onIntervalDeletedHandler(data){
+	var ok=isStatusMessageResponseOk(data.statusHttp);
+	
+	if(ok){
+		confirmDlgHide();
+		openIntervalsTab();
+		showStatusMessage('Удалено. Обновляю данные','w3-yellow');
+		customIntervalsMessage='Интервал был успешно удален';
 	}else{
 		var msg='Ошибка '+data.message;
 		showStatusMessage(msg,'w3-red');

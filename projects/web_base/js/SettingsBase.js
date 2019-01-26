@@ -46,28 +46,20 @@ function openTab(tabName,headerName) {
 	currentTab=tabName;
 	currentHeaderName=headerName;
 	
-	var headerComponent=document.getElementById('settingsHeaderName');
-	
-	if(headerComponent!=undefined){
-		headerComponent.innerHTML=currentHeaderName;
-	}
-	
-    var i;
-    var x = document.getElementsByClassName("settingsTab");
-    for (i = 0; i < x.length; i++) {
-       x[i].style.display = "none";  
-    }
+    hideComponentsByClassName("settingsTab");
     document.getElementById(tabName).style.display = "block"; 
 
 	var containerComponent=document.getElementById(tabName);
 	
-	setStatusMessageComp(getComponentById(getComponentIdWithSuffix(tabName,MSG_SUFFIX)));
+	setStatusMessageComp(document.getElementById(tabName+'_msg'));
 	
 	var currentFormId=getComponentIdWithSuffix(tabName,FORM_SUFFIX);
 	
 	document.title='Настройки устройства - '+currentHeaderName;
 	
-	if(containerComponent.classList.contains('reloadableSettingsContainer')){
+	getValuesHandler=undefined;
+	
+	if(containerComponent.classList.contains('settingsTab')){
 				
 		
 		showStatusMessage(loadMessagePreffix+' настройки...','w3-yellow');
@@ -95,34 +87,9 @@ function openTab(tabName,headerName) {
 			getValuesUrl='/getJson?name=espSettingsBox&page=publish';
 		}
 		
-		if(tabName=='sensors'){
-			getValuesHandler=processItemsJsonGet;
-			putItemsToContainerHandler=putSensorContentToContainer;
-			currentItemPreffix='currentSensor';
-			itemsTagName='sensors';
-			validateValuesHandler=validateCurrentSensorForm;
-			submitValuesUrl='/processJson?name=deviceHelper&page=sensors';
-			getValuesUrl='/getJson?name=deviceHelper&page=sensors';
-			currentFormId=getComponentIdWithSuffix(currentItemPreffix,FORM_SUFFIX);
-		}
-		
-		if(tabName=='intervals'){
-			getValuesHandler=processIntervalsJsonGet;
-			currentItemPreffix='currentInterval';
-			validateValuesHandler=validateCurrentIntervalForm;
-			submitValuesUrl='/processJson?name=timeIntervalService';
-			getValuesUrl='/getJson?name=timeIntervalService';
-			currentFormId='intervals_form';
-		}
-		
-		currentFormList=getComponentById(getComponentIdWithSuffix(tabName,FORM_SUFFIX));
 		currentForm=getComponentById(currentFormId);
 
 		if(getValuesHandler!=undefined){
-			currentFormList.addEventListener('submit', 
-									function(evt){
-										evt.preventDefault();
-									},false);
 			currentForm.addEventListener('submit', 
 								function(evt){
 									evt.preventDefault();
@@ -137,7 +104,38 @@ function openTab(tabName,headerName) {
 		}
 	}
 }
+/*-----------------to be moved on higher level-------------------*/
+function updateTemplateValue(template,clazz,field,value,suffix,disabled){
+	var comp=template.querySelector('.'+clazz+'.'+field);
+	if(comp!=undefined){
+		comp.id=clazz+'_'+field+suffix;
+		comp.disabled=disabled;
+		setComponentValue(comp,value);
+	
+		var lbl=template.querySelector('label.htmlFor.'+field);
+		if(lbl!=undefined){lbl.htmlFor=comp.id;}
+	}
+}
 
+function hideComponentsByClassName(clazz){
+	var x = document.getElementsByClassName(clazz);
+    for (var i = 0; i < x.length; i++) {
+       x[i].style.display = "none";  
+    }
+}
+
+function preventFormSubmit(formName){
+	var form=document.getElementById(formName);
+	if(form!=undefined){
+		form.addEventListener('submit', 
+			function(evt){
+				evt.preventDefault();
+			},false);
+	}else{
+		console.log('form not found '+formName);
+	}
+}
+/*------------------to be moved on high level-----------------------*/
 function updateUrlEnvironment(url){
 	if(localTest && url.substring(0,1)=='/'){
 		url=url.substring(1,url.length)+'.json';
