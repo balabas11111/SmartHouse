@@ -39,7 +39,7 @@ public:
 	void displayDetails();
 	boolean loop();
 
-	void startDevice(String deviceId);
+	void startDevice(String deviceId,int wifiResetpin);
 	boolean init(Initializable** initItems,uint8_t initItemsSize);
 	void update();
 

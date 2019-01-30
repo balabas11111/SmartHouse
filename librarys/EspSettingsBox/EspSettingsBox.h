@@ -140,7 +140,7 @@ public:
 		Serial.print(FPSTR(" save finished"));
 	}
 
-	void loadAbstractItemsFromFile(AbstractItem** items,uint8_t size){
+	void loadSensorsFromFile(AbstractItem** items,uint8_t size){
 		for(uint8_t i=0;i<size;i++){
 			loadAbstractItemFromFile(items[i]);
 		}
@@ -177,6 +177,14 @@ public:
 	String getJson(String page);
 
 	String getFileName(AbstractItem* item);
+
+	void resetToAp(){
+		Serial.println(FPSTR("Device will be started as AP"));
+		isAccesPoint=true;
+		password="password";
+		saveSettingsJson();
+		Serial.println(FPSTR("---Saved as AP---"));
+	}
 
 	String getDefaultExtraBoxJson(){
 		return "{\"name\":\"extraBoxesCount\",\"val\":\""+String(extraBoxesCount)+"\"}";

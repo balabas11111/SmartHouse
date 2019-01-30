@@ -94,12 +94,12 @@ DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
 						  120000);
 
 void initComponents(){
-	thingSpeakHelper.setItems(sensors, ARRAY_SIZE(sensors));
-	displayHelper.init();
 	beeper.init();
 	i2cHelper.init();
-	httpUpdater.setup(&server,espSettingsBox.settingsUser.c_str(),espSettingsBox.settingsPass.c_str());
+
 	displayHelper.displayConn();
+
+	httpUpdater.setup(&server,espSettingsBox.settingsUser.c_str(),espSettingsBox.settingsPass.c_str());
 	wifiHelper.init();
 
 	timeService.init();
@@ -107,7 +107,9 @@ void initComponents(){
 	ds18d20Measurer.init();
 
 	loadSensors();
+	updateSensors();
 
+	thingSpeakHelper.setItems(sensors, ARRAY_SIZE(sensors));
 	sensorsTrigger.init();
 	timeIntervalService.init();
 }
@@ -115,19 +117,11 @@ void initComponents(){
 void setup() {
   Serial.begin(115200);
 
-  deviceHelper.printDeviceDiagnosticNoSpiff();
-
-  espSettingsBox.init();
-
-  deviceHelper.printDeviceDiagnostic();
-  espSettingsBox.printSpiffsInfo();
-
   displayHelper.init();
 
-  deviceHelper.startDevice(espSettingsBox.DeviceId);
+  deviceHelper.startDevice(espSettingsBox.DeviceId,buttonMenu.getPin());
 
   initComponents();
-  updateSensors();
 
   displayHelper.postProcessConnection(wifiHelper.isAP(),wifiHelper.getIpStr());
 
@@ -249,7 +243,7 @@ void processTimeIntervals(){
 
 //------------------Sensors func---------------------------------------------------
 void loadSensors(){
-	espSettingsBox.loadAbstractItemsFromFile(sensors, ARRAY_SIZE(sensors));
+	espSettingsBox.loadSensorsFromFile(sensors, ARRAY_SIZE(sensors));
 }
 
 void updateSensors(){

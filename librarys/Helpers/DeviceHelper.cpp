@@ -82,9 +82,29 @@ boolean DeviceHelper::loop(){
 	return result;
 }
 
-void DeviceHelper::startDevice(String deviceId){
+void DeviceHelper::startDevice(String deviceId,int wifiResetpin){
   Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_STARTED));
   Serial.print(FPSTR(MESSAGE_DEVICE_START_DEVICE_ID));Serial.println(deviceId);
+
+  printDeviceDiagnostic();
+
+  espSettingsBox->init();
+  espSettingsBox->printSpiffsInfo();
+
+  if(wifiResetpin!=NULL && wifiResetpin>-1){
+	  boolean doReset=(digitalRead(wifiResetpin)==HIGH);
+
+	  if(doReset){
+		  delay(500);
+		  doReset=(digitalRead(wifiResetpin)==HIGH);
+	  }
+
+	  if(doReset){
+		  espSettingsBox->resetToAp();
+	  }else{
+		  Serial.println(FPSTR("No reset to AP is required"));
+	  }
+  }
   Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
 
