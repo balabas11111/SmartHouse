@@ -73,9 +73,9 @@ echo ----------------------------------------------------------------------
 echo   'copy Project htm files to build folder'
 echo ----------------------------------------------------------------------
 
-for %%h in (%PROJECT_HTML_FOLDER%*.htm) do (
+for %%h in (%%*.htm) do (
 	echo copy %%~nxh -- dest=%TEMP_FOLDER_CREATE_PATH%
-	powershell -Command "Copy-Item %PROJECT_HTML_FOLDER%%%~nxh -Destination %TEMP_FOLDER_CREATE_PATH%"
+	powershell -Command "Copy-Item %%%%~nxh -Destination %TEMP_FOLDER_CREATE_PATH%"
 )
 
 echo ======================================================================
@@ -179,7 +179,7 @@ echo     'Replace PROJECT html pages %PROJECT_HTML_FOLDER%%%~nh
 echo ----------------------------------------------------------------------
 
 
-	for %%g in (%PROJECT_HTML_FOLDER%%%~nh\*.html) do (
+	for %%g in (%%%%~nh\*.html) do (
 		find /I "{%%~nxg}" %TEMP_FOLDER%%%~nxh >> %LOG_FILE%  && (
 			echo replace '{%%~nxg}' in %%~nxh content=%PROJECT_HTML_FOLDER%%%~nh%%~nxg
 			powershell -Command "(gc %TEMP_FOLDER%%%~nxh -Encoding UTF8) -replace '{%%~nxg}', (gc %PROJECT_HTML_FOLDER%%%~nh\%%~nxg -Encoding UTF8) | Out-File %TEMP_FOLDER%%%~nxh"
