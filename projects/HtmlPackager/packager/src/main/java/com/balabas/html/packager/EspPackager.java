@@ -15,7 +15,7 @@ public class EspPackager
     public static final String BUILD_INFO="buildInfo";
     public static final String IP="ip";
     public static final String DELETE_HTML="deleteHtml";
-    public static final String UPLOAD_FILES="uploadFiles";
+    public static final String UPLOAD_FILES="upload";
     
     public static void main( String[] args ) throws Exception
     {
@@ -24,20 +24,12 @@ public class EspPackager
         options.addOption(PROJECT_NAME, true, "Project name");
         options.addOption(BUILD_INFO, false, "Build info");
         options.addOption(IP, true, "Device Ip");
-        options.addOption(DELETE_HTML, false, "Delete html files after created gz");
-        options.addOption(UPLOAD_FILES, false, "Upload gz files to device");
+        options.addOption(DELETE_HTML, true, "Delete html files after created gz");
+        options.addOption(UPLOAD_FILES, true, "Upload gz files to device");
         
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse( options, args);
-        /*
-        String baseFolder="D:\\projects\\!!!SmartHouse\\projects\\";
-        String projectName="ESP8266NtpPir";
-        String ip="192.168.0.120";
         
-        String buildInfo="buildInfo";
-        boolean deleteHtml=false;
-        boolean uploadFiles=true;
-        */
         String baseFolder=cmd.getOptionValue(BASE_FOLDER);
         String projectName=cmd.getOptionValue(PROJECT_NAME);
         String ip=cmd.getOptionValue(IP);
@@ -52,6 +44,14 @@ public class EspPackager
                 Boolean.parseBoolean(cmd.getOptionValue(UPLOAD_FILES))
                 :false;
 
+        baseFolder="D:\\projects\\!!!SmartHouse\\projects\\";
+        projectName="ESP8266NtpPir";
+        ip="192.168.0.120";
+        
+        buildInfo="buildInfo";
+        deleteHtml=false;
+        uploadFiles=true;
+                
         System.out.println("------------------------------------------------------------------------");
         System.out.println("PROJECT "+projectName);
         System.out.println("BUILD "+buildInfo);
@@ -62,6 +62,9 @@ public class EspPackager
         for(Option opt:cmd.getOptions()){
             System.out.println(opt.getOpt()+"="+opt.getValue());
         }
+        
+        System.out.println(UPLOAD_FILES+"="+uploadFiles);
+        System.out.println(DELETE_HTML+"="+deleteHtml);
                 
         String targetFolder=baseFolder+projectName+"\\web\\target\\";
                 

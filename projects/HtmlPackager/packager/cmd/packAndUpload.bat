@@ -1,1 +1,1 @@
-java -jar EspHtmlPackager.jar -baseFolder "D:\\projects\\!!!SmartHouse\\projects\\" -projectName "ESP8266NtpPir" -ip "192.168.0.120"
+java -jar EspHtmlPackager.jar -baseFolder "D:\\projects\\!!!SmartHouse\\projects\\" -projectName "ESP8266NtpPir" -ip "192.168.0.120" -upload "True" -deleteHtml "True"

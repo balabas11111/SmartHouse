@@ -29,24 +29,31 @@ public class UploadUtility {
         }
     }
     
-    public static void deleteFile(Path path,String ip)throws Exception{
-        System.out.print("delete "+path);
+    public static boolean deleteFile(Path path,String ip)throws Exception{
+        try{
+            System.out.print("delete "+path);
+            
+            URL url = constructUrl(ip);
+            HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+            httpCon.setDoOutput(true);
+            httpCon.setRequestProperty("filename", path.toString());
+            //httpCon.setRequestProperty("Content-Type", "application/json");
+            httpCon.setRequestMethod("DELETE");
+            OutputStreamWriter out = new OutputStreamWriter(httpCon.getOutputStream());
+            
+            httpCon.connect();
+            
+            System.out.print("...");
+            System.out.println(out.toString());
+        }catch(Exception e){
+            System.out.println("FAILED");
+            return false;
+        }
         
-        URL url = constructUrl(ip);
-        HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-        httpCon.setDoOutput(true);
-        httpCon.setRequestProperty("filename", path.toString());
-        //httpCon.setRequestProperty("Content-Type", "application/json");
-        httpCon.setRequestMethod("DELETE");
-        OutputStreamWriter out = new OutputStreamWriter(httpCon.getOutputStream());
-        
-        httpCon.connect();
-        
-        System.out.print("...");
-        System.out.println(out.toString());
+        return true;
     }
     
-    public static void uploadFile(Path path,String ip)throws Exception{
+    public static boolean uploadFile(Path path,String ip)throws Exception{
         boolean ok=true;
         System.out.print("upload "+path);
         String boundary = Long.toHexString(System.currentTimeMillis());
@@ -81,6 +88,8 @@ public class UploadUtility {
         }
         
         System.out.println("... status="+ok);
+      
+        return ok;
     }
     
     public static URL constructUrl(String ip) throws Exception{
