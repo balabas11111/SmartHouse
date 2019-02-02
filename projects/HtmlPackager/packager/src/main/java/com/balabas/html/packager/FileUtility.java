@@ -3,11 +3,15 @@ package com.balabas.html.packager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class FileUtility {
 	
-	private static List<String> extensions=new ArrayList<String>(){{
+	private static List<String> extensions=new ArrayList<String>(){/**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
+
+    {
 	    add(".htm");
 	    add(".html");
 	    add(".css");
@@ -33,7 +37,8 @@ public class FileUtility {
 		System.out.println("----------------------------------------------");
 	}
 	
-	public static void listf(String directoryName, List<File> files,List<String> excludeFolders) {
+	public static void listf(String directoryName, List<File> files,
+	        List<String> excludeFolders,boolean readSubfolders) {
     File directory = new File(directoryName);
 
     // Get all files from a directory.
@@ -45,8 +50,8 @@ public class FileUtility {
             	if(isHtmlExt(file) && !shouldExcluded(file,excludeFolders)){
             		files.add(file);
             	}
-            } else if (file.isDirectory()) {
-                listf(file.getAbsolutePath(), files,excludeFolders);
+            } else if (file.isDirectory() && readSubfolders) {
+                listf(file.getAbsolutePath(), files,excludeFolders,readSubfolders);
             }
         }
     }
