@@ -48,10 +48,14 @@ const char* const ALARM_EXTRA_DEFAULTS[]      PROGMEM=
 class EspSett_Alarm:public ESPExtraSettingsBox {
 public:
 	EspSett_Alarm(){
-		this->name=FPSTR(ALARM_SETTINGS_BOX_NAME);
-		this->keySize=ARRAY_SIZE(ALARM_EXTRA_KEYS);
+		//this->name=FPSTR(ALARM_SETTINGS_BOX_NAME);
+		//this->keySize=ARRAY_SIZE(ALARM_EXTRA_KEYS);
 	}
-	virtual ~EspSett_Alarm();
+	virtual ~EspSett_Alarm(){};
+
+	virtual String getName() override{
+		return FPSTR(ALARM_SETTINGS_BOX_NAME);
+	}
 
 	virtual const char* const* getKeys() override{
 		return ALARM_EXTRA_KEYS;

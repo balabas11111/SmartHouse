@@ -51,6 +51,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/NTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/TM1637}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/BH1750}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.202221004" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -88,6 +89,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/NTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/TM1637}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/BH1750}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.729829356" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -125,6 +127,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/NTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/TM1637}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/BH1750}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1229660566" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -134,6 +137,7 @@
 							<tool id="io.sloeber.tool.size.2107632259" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="io.sloeber.core.toolChain.release.259892230.788309262" name="projectConstsLoc_Ru.h" rcbsApplicability="disable" resourcePath="libraries/ESP8266_NTP_pir/projectConstsLoc_Ru.h" toolsToInvoke=""/>
 					<fileInfo id="io.sloeber.core.toolChain.release.259892230.1971590628" name="TimeIntervalService.h" rcbsApplicability="disable" resourcePath="libraries/Helpers/Time/TimeIntervalService.h" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry excluding="libraries/Helpers/Display_Pageable|libraries/ArduinoJson/scripts|libraries/?*/**/test*/**|libraries/?*/**/?xamples/**|libraries/Adafruit_BME280/.github|libraries/?*/**/?xtras/**|libraries/DeviceLib/Locales|libraries/Helpers/Display_Custom|libraries/DeviceLib/StatusMessage|libraries/OneWire/util|libraries/?*/**/third-party/**|libraries/NTPClient/3.1.0|libraries/Helpers/Time|libraries/UniversalTelegramBot/scripts|libraries/?*/utility/*/*|libraries/OLED/example|libraries/DeviceLib/interfaces|libraries/UniversalTelegramBot/lib|libraries/ArduinoJson/fuzzing|libraries/**/._*|libraries/DeviceLib/Consts" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>

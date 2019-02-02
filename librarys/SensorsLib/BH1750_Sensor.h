@@ -9,6 +9,7 @@
 #define LIBRARIES_SENSORS_BH1750_SENSOR_H_
 
 #include "Arduino.h"
+#include "interfaces/ItemFieldProvider.h"
 #include "AbstractItem.h"
 #include "Initializable.h"
 #include "Measurable.h"

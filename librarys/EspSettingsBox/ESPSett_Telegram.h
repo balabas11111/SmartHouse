@@ -63,10 +63,14 @@ const char* const TELEGRAM_EXTRA_DEFAULTS[] PROGMEM=
 class ESPSett_Telegram:public ESPExtraSettingsBox {
 public:
 	ESPSett_Telegram(){
-		this->name=FPSTR(TELEGRAM_SETTINGS_BOX_NAME);
-		this->keySize=ARRAY_SIZE(TELEGRAM_EXTRA_KEYS);
+		//this->name=FPSTR(TELEGRAM_SETTINGS_BOX_NAME);
+		//this->keySize=ARRAY_SIZE(TELEGRAM_EXTRA_KEYS);
 	};
 	virtual ~ESPSett_Telegram(){};
+
+	virtual String getName() override{
+		return FPSTR(TELEGRAM_SETTINGS_BOX_NAME);
+	}
 
 	virtual const char* const* getKeys() override{
 		return TELEGRAM_EXTRA_KEYS;

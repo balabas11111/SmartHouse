@@ -9,6 +9,7 @@
 #define LIBRARIES_PINDIGITAL_DeviceHelper_H_
 
 #include <Arduino.h>
+#include <interfaces/ItemFieldDescriptor.h>
 #include "AbstractItem.h"
 
 #include "interfaces/Initializable.h"
@@ -17,6 +18,7 @@
 #include "interfaces/Loopable.h"
 #include "interfaces/Measurable.h"
 #include "interfaces/SendAble.h"
+#include "interfaces/Nameable.h"
 
 #include "Consts/PagesConsts.h"
 #include "Consts/CommandsConsts.h"
@@ -34,6 +36,7 @@ public:
 				JSONprovider** jsonProviders,uint8_t jsonProvidersSize,
 				AbstractItem** abstrItems,uint8_t abstrItemsSize,
 				SendAble** senders,uint8_t sendersSize,
+				/*ItemFieldProvider** itemFieldsProviders,	uint8_t itemFieldsProviderSize,*/
 				EspSettingsBox* espSettingsBox,
 				long minAlarmInterval);
 	void displayDetails();

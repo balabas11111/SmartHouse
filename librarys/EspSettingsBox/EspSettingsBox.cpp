@@ -18,6 +18,7 @@
 #include "AbstractItem.h"
 #include "ESP_Consts.h"
 #include "projectConsts.h"
+#include "EspSettingsUtil.h"
 
 //true values
 const char BOOLEAN_ON[]             PROGMEM ="on";
@@ -25,24 +26,6 @@ const char BOOLEAN_1[]              PROGMEM ="1";
 const char BOOLEAN_true[]           PROGMEM ="true";
 
 const char BOOLEAN_false[]          PROGMEM ="false";
-
-EspSettingsBox::EspSettingsBox(){
-	construct(false,false);
-}
-
-EspSettingsBox::EspSettingsBox(ESPExtraSettingsBox** boxes,uint8_t boxesCount){
-	construct(false,false);
-	this->extraBoxes=boxes;
-	this->extraBoxesCount=boxesCount;
-}
-
-/*EspSettingsBox::EspSettingsBox(boolean forceLoad){
-	construct(forceLoad,false);
-}*/
-
-EspSettingsBox::EspSettingsBox(boolean forceLoad,boolean _initSpiff){
-	construct(forceLoad,_initSpiff);
-}
 
 //Initializable
 	boolean EspSettingsBox::initialize(boolean _init){
@@ -71,26 +54,6 @@ EspSettingsBox::EspSettingsBox(boolean forceLoad,boolean _initSpiff){
 
 		return initialized;
 	}
-
-boolean EspSettingsBox::initExtraBoxes(){
-	if(extraBoxesCount!=0){
-		boolean result=true;
-		Serial.println();
-		Serial.println(FPSTR("----------------Init extra sett boxes---------------"));
-		for(uint8_t i=0;i<extraBoxesCount;i++){
-			result=extraBoxes[i]->init() && result;
-			result=loadExtraBox(i) && result;
-			extraBoxes[i]->printDetails();
-		}
-
-		Serial.print(FPSTR("Init extra sett boxes...result="));
-		Serial.println(result);
-		Serial.print(FPSTR("-----------------------------------------------------"));
-		Serial.println();
-		return result;
-	}
-	return false;
-}
 
 boolean EspSettingsBox::isSpiffInitialized(){
 	return spiffInitialized;
@@ -134,7 +97,7 @@ void EspSettingsBox::loadSettingsJson(){
 	    	    DeviceId = root["dId"].as<char*>();
 	    	  	DeviceDescription =root["DeviceDescription"].as<char*>();
 	    	  	DeviceLocation=root["DeviceLocation"].as<char*>();
-	    	  	isAccesPoint = stringToBoolean(root["iAp"].as<char*>()) ;
+	    	  	isAccesPoint = EspSettingsUtil::stringToBoolean(root["iAp"].as<char*>()) ;
 	    	  	Serial.print("isAccesPoint=");
 	    	  	Serial.println(isAccesPoint);
 	    	  	refreshInterval = root["rin"];
@@ -149,14 +112,14 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	ssid = root["sid"].as<char*>();
 	    	  	password = root["pas"].as<char*>();
 
-	    	  	staticIp=stringToBoolean(root["staticIp"].as<char*>());
-	    	  	localIp=stringToIp(String(root["lip"].as<char*>()));
-	    	  	apIp=stringToIp(String(root["aip"].as<char*>()));
-	    	  	gateIp=stringToIp(String(root["gip"].as<char*>()));
-	    	  	subnetIp=stringToIp(String(root["sip"].as<char*>()));
-	    	  	dnsIp=stringToIp(String(root["dip"].as<char*>()));
-	    	  	dnsIp2=stringToIp(String(root["dip2"].as<char*>()));
-	    	  	serverIp=stringToIp(String(root["serverip"].as<char*>()));
+	    	  	staticIp=EspSettingsUtil::stringToBoolean(root["staticIp"].as<char*>());
+	    	  	localIp=EspSettingsUtil::stringToIp(String(root["lip"].as<char*>()));
+	    	  	apIp=EspSettingsUtil::stringToIp(String(root["aip"].as<char*>()));
+	    	  	gateIp=EspSettingsUtil::stringToIp(String(root["gip"].as<char*>()));
+	    	  	subnetIp=EspSettingsUtil::stringToIp(String(root["sip"].as<char*>()));
+	    	  	dnsIp=EspSettingsUtil::stringToIp(String(root["dip"].as<char*>()));
+	    	  	dnsIp2=EspSettingsUtil::stringToIp(String(root["dip2"].as<char*>()));
+	    	  	serverIp=EspSettingsUtil::stringToIp(String(root["serverip"].as<char*>()));
 
 	    	  	isThingSpeakEnabled=root["ptTsEnabled"];
 	    	  	postDataToTSInterval = root["pdTs"];
@@ -166,16 +129,16 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	thSkTKey = root["sTk"].as<char*>();
 	    	  	thSkChId = root["sCi"];
 
-	    	  	isMqttEnabled=stringToBoolean(root["isMqttEnabled"]);
+	    	  	isMqttEnabled=EspSettingsUtil::stringToBoolean(root["isMqttEnabled"]);
 	    	  	postDataToMqttInterval=root["postDataToMqttInterval"];
 	    	  	mqtt_server=root["mqtt_server"].as<char*>();
 	    	  	mqtt_port=root["mqtt_port"];
 	    	  	mqtt_user=root["mqtt_user"].as<char*>();
 	    	  	mqtt_pass=root["mqtt_pass"].as<char*>();
 
-	    	  	isHttpPostEnabled=stringToBoolean(root["isHttpSendEnabled"]);
+	    	  	isHttpPostEnabled=EspSettingsUtil::stringToBoolean(root["isHttpSendEnabled"]);
 	    	  	postDataToHttpInterval=root["postDataToHttpInterval"];
-	    	  	httpPostIp=stringToIp(String(root["httpPostIp"].as<char*>()));
+	    	  	httpPostIp=EspSettingsUtil::stringToIp(String(root["httpPostIp"].as<char*>()));
 
 	    	  	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_MEMORY));
 	    	  	String vals="";
@@ -269,98 +232,7 @@ void EspSettingsBox::saveSettingsJson(){
 	delay(1);
 }
 
-void EspSettingsBox::loadAbstractItemFromFile(AbstractItem* item){
 
-	String fileName=getFileName(item);
-
-	File file = SPIFFS.open(fileName, "r");
-
-	if(!file){
-		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED));
-		saveAbstractItemToFile(item);
-		file = SPIFFS.open(fileName, "r");
-	}
-
-	  if (!file){
-		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS));
-	  } else {
-		size_t size = file.size();
-		if ( size == 0 ) {
-		  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_FILE_EMPTY));
-		} else {
-
-			StaticJsonBuffer<1024> jsonBuffer;
-			delay(1);
-
-			std::unique_ptr<char[]> buf (new char[size]);
-			file.readBytes(buf.get(), size);
-
-			JsonObject& root = jsonBuffer.parseObject(buf.get());
-
-			if (!root.success()) {
-				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
-			} else {
-				//Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
-				//root.printTo(Serial);
-
-				item->setDescr(root["descr"].as<char*>());
-
-				uint8_t itemCountJson=root["itemCount"];
-
-				if(item->getItemCount()>0 && itemCountJson>0){
-					//JsonArray& arrayJson=root["items"].asArray();
-					//Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_TOTAL_CHILDS_EQ));
-					//Serial.println(itemCountJson);
-
-					for(uint8_t i=0;i<itemCountJson;i++){
-
-						int8_t index=item->getChildItemIndexByName(root["items"][i]["name"]);
-
-						if(index>-1){
-							item->setDescr(index, root["items"][i]["descr"]);
-							item->setFieldId(index, root["items"][i]["fieldId"]);
-							item->setMinVal(index, root["items"][i]["minVal"]);
-							item->setMaxVal(index, root["items"][i]["maxVal"]);
-							item->setQueue(index, root["items"][i]["queue"]);
-						}else{
-							item->setNonActiveSensorValue(
-									root["items"][i]["name"],
-									root["items"][i]["descr"],
-									root["items"][i]["fieldId"],
-									root["items"][i]["minVal"],
-									root["items"][i]["maxVal"],
-									root["items"][i]["queue"]);
-						}
-
-						//Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_ITEM_SETTINGS_LOADED));
-						//Serial.println(item->getJson(index));
-					}
-				}
-				//-----------------------------------------
-			}
-		}
-	  }
-
-	  //Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-}
-
-void EspSettingsBox::saveAbstractItemToFile(AbstractItem* item){
-
-	//String itemStr=item->getJson();
-	String fileName=getFileName(item);
-
-	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN));
-	Serial.print(fileName);
-
-	File file = SPIFFS.open(fileName, "w");
-
-	file.println(item->getJsonForSave());
-
-	file.close();
-	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVED));
-
-	delay(1);
-}
 
 void EspSettingsBox::initSpiff(){
 	Serial.println();
@@ -467,48 +339,6 @@ void EspSettingsBox::construct(boolean forceLoad,boolean _initSpiff){
 
 }
 
-boolean EspSettingsBox::validateIP(String str){
-	IPAddress ip=stringToIp(str);
-	boolean result=str==ip.toString();
-
-	return result;
-}
-
-IPAddress EspSettingsBox::stringToIp(String str){
-	uint8_t pos=0;
-	String tmp="";
-
-	uint8_t ip[4];
-
-	for(unsigned int i=0;i<=str.length();i++){
-		if(str.charAt(i)=='.' || i==(str.length())){
-			ip[pos]=tmp.toInt();
-			pos++;
-			tmp="";
-		}else{
-			tmp+=str[i];
-		}
-	}
-	IPAddress result=IPAddress(ip[0],ip[1],ip[2],ip[3]);
-
-	return result;
-}
-
-String EspSettingsBox::clearNlFromString(String str){
-	String result=str;
-	int index=str.lastIndexOf('\r');
-
-	if(index){
-		result=str.substring(0, index);
-	}
-
-	return result;
-}
-
-String EspSettingsBox::getFileName(AbstractItem* item){
-	return getSettingsFileFileName(item->getName());
-}
-
 String EspSettingsBox::getThingSpeakChannelUrl(){
 	String result=FPSTR(MESSAGE_THINGSPEAK_CURRENT_CHANNEL_URL);
 			result+=String(thSkChId);
@@ -609,36 +439,6 @@ result=
 	return result;
 }
 
-boolean EspSettingsBox::setSettingsValueIfExtra(String fieldName, String fieldValue){
-	if(!hasExtraBoxes()){
-		return false;
-	}
-	if(fieldName.length()<EXTRA_SETT_BOX_NAME_LENGTH ||
-			fieldName.charAt(EXTRA_SETT_BOX_NAME_LENGTH)!='_'){
-		return false;
-	}
-
-	for(uint8_t i=0;i<extraBoxesCount;i++){
-		int keyIndex=extraBoxes[i]->isTargetOfSettingsValue(fieldName);
-
-		if(keyIndex>-1){
-			if(extraBoxes[i]->getValue(keyIndex)!=fieldValue){
-				Serial.print(FPSTR(" - value updated key="));
-				Serial.print(fieldName);
-				Serial.print(FPSTR(" current="));
-				Serial.print(extraBoxes[i]->getValue(keyIndex));
-				Serial.print(FPSTR(" updated="));
-				Serial.println(fieldValue);
-				extraBoxes[i]->setValue(keyIndex, fieldValue);
-				extraBoxes[i]->setSaveRequired(true);
-			}
-			return true;
-		}
-	}
-
-	return false;
-}
-
 boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	String startTag=FPSTR(ESPSETTINGSBOX_START_TAG);
 	int startIndex=startTag.length();
@@ -686,7 +486,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_displayAlvaysOn)){
-		boolean val=stringToBoolean(fieldValue);
+		boolean val=EspSettingsUtil::stringToBoolean(fieldValue);
 		if(displayAlvaysOn!=val){
 			displayAlvaysOn=val;
 			saveRequired=true;
@@ -742,7 +542,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_isAccesPoint)){
-		boolean val=stringToBoolean(fieldValue);
+		boolean val=EspSettingsUtil::stringToBoolean(fieldValue);
 		if(isAccesPoint!=val){
 			isAccesPoint=val;
 			saveRequired=true;
@@ -774,7 +574,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_staticIp)){
-		boolean val=stringToBoolean(fieldValue);
+		boolean val=EspSettingsUtil::stringToBoolean(fieldValue);
 		if(staticIp!=val){
 			staticIp=val;
 			saveRequired=true;
@@ -782,7 +582,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_localIp)){
-		IPAddress val=stringToIp(fieldValue);
+		IPAddress val=EspSettingsUtil::stringToIp(fieldValue);
 		if(localIp!=val){
 			localIp=val;
 			saveRequired=true;
@@ -790,7 +590,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_apIp)){
-		IPAddress val=stringToIp(fieldValue);
+		IPAddress val=EspSettingsUtil::stringToIp(fieldValue);
 		if(apIp!=val){
 			apIp=val;
 			saveRequired=true;
@@ -798,7 +598,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_gateIp)){
-		IPAddress val=stringToIp(fieldValue);
+		IPAddress val=EspSettingsUtil::stringToIp(fieldValue);
 		if(gateIp!=val){
 			gateIp=val;
 			saveRequired=true;
@@ -806,7 +606,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_subnetIp)){
-		IPAddress val=stringToIp(fieldValue);
+		IPAddress val=EspSettingsUtil::stringToIp(fieldValue);
 		if(subnetIp!=val){
 			subnetIp=val;
 			saveRequired=true;
@@ -814,7 +614,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_dnsIp)){
-		IPAddress val=stringToIp(fieldValue);
+		IPAddress val=EspSettingsUtil::stringToIp(fieldValue);
 		if(dnsIp!=val){
 			dnsIp=val;
 			saveRequired=true;
@@ -822,7 +622,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_dnsIp2)){
-		IPAddress val=stringToIp(fieldValue);
+		IPAddress val=EspSettingsUtil::stringToIp(fieldValue);
 		if(dnsIp2!=val){
 			dnsIp2=val;
 			saveRequired=true;
@@ -830,7 +630,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_serverIp)){
-		IPAddress val=stringToIp(fieldValue);
+		IPAddress val=EspSettingsUtil::stringToIp(fieldValue);
 		if(serverIp!=val){
 			serverIp=val;
 			saveRequired=true;
@@ -838,7 +638,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_isThingSpeakEnabled)){
-		boolean val=stringToBoolean(fieldValue);
+		boolean val=EspSettingsUtil::stringToBoolean(fieldValue);
 		if(isThingSpeakEnabled!=val){
 			isThingSpeakEnabled=val;
 			saveRequired=true;
@@ -891,7 +691,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	}
 
 	if(fieldName==FPSTR(ESBOX_isMqttEnabled)){
-		boolean val=stringToBoolean(fieldValue);
+		boolean val=EspSettingsUtil::stringToBoolean(fieldValue);
 		if(isMqttEnabled!=val){
 			isMqttEnabled=val;
 			saveRequired=true;
@@ -936,7 +736,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_isHttpPostEnabled)){
-		boolean val=stringToBoolean(fieldValue);
+		boolean val=EspSettingsUtil::stringToBoolean(fieldValue);
 		if(isHttpPostEnabled!=val){
 			isHttpPostEnabled=val;
 			saveRequired=true;
@@ -952,7 +752,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 	if(fieldName==FPSTR(ESBOX_httpPostIp)){
-		IPAddress val=stringToIp(fieldValue);
+		IPAddress val=EspSettingsUtil::stringToIp(fieldValue);
 		if(httpPostIp!=val){
 			httpPostIp=val;
 			saveRequired=true;

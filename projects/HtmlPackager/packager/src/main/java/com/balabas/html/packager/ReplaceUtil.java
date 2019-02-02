@@ -24,6 +24,7 @@ public class ReplaceUtil {
         String projectComponentsFolder=baseFolder+projectName+"\\web\\!projectPages\\";
                
         String commonComponentsFolder=baseFolder+"web_base\\";
+        String htmlFolder2=baseFolder+"web_base\\";
         
         System.out.println("-----------------------------------------------------");
         System.out.println("html folder="+Paths.get(htmlFolder).toAbsolutePath());
@@ -98,8 +99,15 @@ public class ReplaceUtil {
                 }
             }
             
-            content=content.replace(BUILD_INFO_PLACEHOLDER, buildInfo);
-            
+            int ind=content.indexOf(BUILD_INFO_PLACEHOLDER);
+            if(ind>-1){
+                int ind2=content.indexOf(REPL_END,ind);
+                
+                String before=content.substring(0, ind);
+                String after=content.substring(ind2+1);
+                
+                content = before+buildInfo+after;
+            }
             String targetPathStr=targetFolder+f.getName();
             Path filePath=Paths.get(targetPathStr);
             System.out.println("Save "+filePath);

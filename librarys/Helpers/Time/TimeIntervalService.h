@@ -23,6 +23,8 @@
 #include "TimeTrigger.h"
 #include "projectConsts.h"
 
+#include "EspSettingsUtil.h"
+
 #define SEC_IN_DAY 24*60*60
 #define SEC_IN_WEEK 7*24*60*60
 
@@ -433,7 +435,7 @@ public:
 			return false;
 		}
 
-		String fileName=espSettingsBox->getSettingsFileFileName(FPSTR(TimeIntervalService_FileName_NAME));
+		String fileName=EspSettingsUtil::getSettingsFileFileName(FPSTR(TimeIntervalService_FileName_NAME));
 
 		Serial.print(FPSTR("Load TimeIntervals from file "));
 		Serial.println(fileName);

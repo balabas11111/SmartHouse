@@ -15,15 +15,17 @@
 #ifdef ESP8266
 #include "FS.h"
 #endif
-//#include "ESP8266WebServer.h"
+#include <interfaces/ItemFieldDescriptor.h>
 
 DeviceHelper::DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
 							JSONprocessor** jsonProcessors,uint8_t jsonProcessorsSize,
 							JSONprovider** jsonProviders,uint8_t jsonProvidersSize,
 							AbstractItem** abstrItems,uint8_t abstrItemsSize,
 							SendAble** senders,uint8_t sendersSize,
+							/*ItemFieldProvider** itemFieldsProviders,uint8_t itemFieldsProviderSize,*/
 							EspSettingsBox* espSettingsBox,
 							long minAlarmInterval){
+
 	this->loopItems=loopItems;
 	this->loopItemsSize=loopItemsSize;
 
@@ -45,6 +47,10 @@ DeviceHelper::DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
 	this->minAlarmInterval=minAlarmInterval*1000;
 
 	this->lastAlarmTime=0;
+
+	for(uint8_t i=0;i<abstrItemsSize;i++){
+		abstrItems[i]->setProvider(espSettingsBox);
+	}
 
 	this->triggerInitiated=false;
 	postPonedTrigger=nullptr;

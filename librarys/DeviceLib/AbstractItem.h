@@ -8,24 +8,19 @@
 #ifndef LIBRARIES_DEVICELIB_AbstractItem_H_
 #define LIBRARIES_DEVICELIB_AbstractItem_H_
 
+#include <interfaces/ItemFieldDescriptor.h>
+#include <ItemFieldProviderService.h>
 #include "Arduino.h"
 #include "ESP_Consts.h"
 #include "interfaces/JSONprovider.h"
+#include "interfaces/ItemFieldProvider.h"
 
-const char FIELD_DESCR[] PROGMEM ="descr";
-const char FIELD_MIN_VAL[] PROGMEM ="minVal";
-const char FIELD_MAX_VAL[] PROGMEM ="maxVal";
-const char FIELD_FIELDID[] PROGMEM ="fieldId";
-const char FIELD_QUEUE[] PROGMEM ="queue";
+const uint8_t ITEM_FIELDS_PROVIDERS_DEFAULT[]      PROGMEM=
+{
+		IFP_ThingSpeak_ID
+};
 
-const uint8_t FIELD_DESCR_ID    =1;
-const uint8_t FIELD_MIN_ID      =2;
-const uint8_t FIELD_MAX_ID      =3;
-const uint8_t FIELD_FIELDID_ID  =4;
-const uint8_t FIELD_QUEUE_ID    =5;
-
-
-class AbstractItem: public JSONprovider {
+class AbstractItem: public JSONprovider, public ItemFieldProvider {
 
 	struct childRecords{
 			uint8_t id;
@@ -55,7 +50,7 @@ public:
 
 		initializeChildren();
 
-		//Serial.println("AbstractItem ="+name+" count="+sizeof(items));
+		//Serial.println("AbstractItem ="+name+" count="++(items));
 	}
 	virtual ~AbstractItem(){};
 
@@ -68,8 +63,6 @@ public:
 	SensorValue getItem(uint8_t index){
 		return items[index];
 	}
-
-
 
 	virtual void update(){};
 
@@ -147,7 +140,6 @@ public:
 			this->items[child].minVal=minVal;
 		}
 	}
-
 
 	void setMaxVal(uint8_t child,float maxVal){
 		if(itemCount>child){
@@ -303,7 +295,7 @@ public:
 	}
 
 	int16_t getIntValByIndex(uint8_t index){
-			return (int16_t)items[index].val;
+		return (int16_t)items[index].val;
 	}
 
 	String getIntStringValByIndex(uint8_t index){
@@ -314,6 +306,11 @@ public:
 		uint16_t intVal=(int16_t)valFlt;
 		return String(intVal);
 	}
+
+	virtual const uint8_t* getItemFieldsProviders() override{
+		return ITEM_FIELDS_PROVIDERS_DEFAULT;
+	}
+
 protected:
 
 	uint8_t id;
@@ -323,18 +320,9 @@ protected:
 	String descr;
 	uint8_t itemCount;
 
-	//allows periodic send of value into channel
 	boolean periodicSend=true;
-	//post values only when val was updated (marking PinDigital only)
-	//boolean postValueOnChanged=false;
-	//allows to post item vals to MQ
-	//boolean postValueToMqHttp=false;
-	//allows to process values from bind mqtt
 	boolean processValueFromMqtt=false;
-	//channel could be used as management for current item
 	boolean autoCreateChannel=true;
-
-	//boolean alarmMode=false;
 
 	SensorValue* items;
 	boolean status=false;
@@ -384,7 +372,7 @@ protected:
 				+"\"minVal\":\""+String(m.minVal)+"\","
 				+"\"maxVal\":\""+String(m.maxVal)+"\","
 				+"\"fieldId\":\""+String(m.fieldId)+"\","
-				+"\"queue\":\""+m.queue+"\""+getExtraJsonChild(ind)+"}";
+				+"\"queue\":\""+m.queue+"\""+getExtraJsonChild(ind)+getItemFieldProviderJson(getName(),m.name)+"}";
 	}
 
 	String getSensorValueSimpleJson(SensorValue m){
@@ -409,6 +397,8 @@ protected:
 		if(itemCount>0)
 			items=new SensorValue[itemCount];
 	}
+
+
 };
 
 #endif /* LIBRARIES_DEVICELIB_AbstractItem_H_ */

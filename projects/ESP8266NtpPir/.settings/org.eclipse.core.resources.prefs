@@ -1,6 +1,7 @@
 eclipse.preferences.version=1
 encoding//libraries/DeviceLib/ESP_Consts.h=UTF-8
 encoding//libraries/ESP8266_NTP_pir/projectConsts.h=UTF-8
+encoding//libraries/ESP8266_NTP_pir/projectConstsLoc_Ru.h=UTF-8
 encoding//libraries/EspSettingsBox/ESPSett_Ntp.h=UTF-8
 encoding//libraries/EspSettingsBox/ESPSett_Telegram.h=UTF-8
 encoding//libraries/EspSettingsBox/EspSett_Alarm.h=UTF-8

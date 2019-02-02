@@ -20,10 +20,13 @@ public:
 	JSONprovider(){};
 	virtual ~JSONprovider(){};
 
-	//virtual String getName()=0;
 	virtual String getJson()=0;
 
 	virtual String getJson(String page){
+		return getJson();
+	}
+
+	virtual String getItemJson(uint8_t ind){
 		return getJson();
 	}
 };

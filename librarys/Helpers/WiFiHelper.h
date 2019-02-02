@@ -14,6 +14,7 @@
 #include "interfaces/Loopable.h"
 #include "interfaces/Initializable.h"
 #include "EspSettingsBox.h"
+#include "EspSettingsUtil.h"
 #include "FS.h"
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
@@ -206,7 +207,7 @@ public:
 		if(serverPostInitFunc!=nullptr){
 			Serial.println(FPSTR(MESSAGE_WIFIHELPER_POST_INIT_WEB_SERV_HANDLERS));
 			serverPostInitFunc();
-			printHeap();
+			EspSettingsUtil::printHeap();
 		}
 		server->begin();
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_SERVER_SETUP_COMPLETED));
@@ -366,15 +367,15 @@ public:
 		  else if(filename.endsWith(".gz")) return FPSTR(CONTENT_TYPE_APPLICATION_XGZIP);
 		  return FPSTR(CONTENT_TYPE_TEXT_PLAIN);
 		}
-
+/*
 	void printHeap(){
 		espSettingsBox->printHeap();
 	}
-
+*/
 	void displayDetails(){
 		delay(1);
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_WIFI_DIAGNOSTIC));
-		printHeap();
+		EspSettingsUtil::printHeap();
 #ifdef ESP8266
 		//WiFi.printDiag(Serial);
 #endif

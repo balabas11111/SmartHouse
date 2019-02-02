@@ -12,6 +12,7 @@
 #define VAR_NAME(var) #var
 
 #include "Arduino.h"
+#include "interfaces/Nameable.h"
 //added as suffix in EspSettingsBox getJson
 const char HTML_LABEL_PREFFIX[]             PROGMEM ="lbl_";
 const char SETTINGS_BOX_BASE_NAME[]         PROGMEM ="espSettingsBox_";
@@ -38,7 +39,7 @@ const char* const SETTINGS_KINDS_SAVE_ENABLED[] PROGMEM=
 		SETTINGS_KIND_publish
 };
 
-class ESPExtraSettingsBox {
+class ESPExtraSettingsBox:public Nameable {
 public:
 	ESPExtraSettingsBox(){};
 
@@ -48,10 +49,11 @@ public:
 		Serial.print(FPSTR("-----Init Extra Box---"));
 		Serial.print(getName());
 
-		if(values==nullptr){
-			values=new String[keySize];
+		if(isInMemory()){
+			if(vals==nullptr){
+				vals=new String[getKeySize()];
+			}
 		}
-
 		Serial.println(FPSTR("...done"));
 		return true;
 	}
@@ -67,21 +69,29 @@ public:
 		const char* const* defaults=getDefaults();
 		const char* const* keys=getKeys();
 
-		for(uint8_t i=0;i<keySize;i++){
+		String* values=(isInMemory())?vals:(new String[getKeySize()]);
+
+		for(uint8_t i=0;i<getKeySize();i++){
 			values[i]=String(defaults[i]);
 
 			printKeyDetails(String(keys[i]), String(values[i]), String(defaults[i]));
 		}
 		Serial.println(FPSTR("fill default values...done"));
-		return keySize-1;
+		return getKeySize()-1;
 	}
 
 	virtual String* getValues(){
-		return values;
+		if(isInMemory()){
+			return vals;
+		}
+
+		return getValuesFromFile();
 	}
 
-	String getName(){
-		return name;
+	virtual String getName()=0;
+
+	virtual boolean isInMemory(){
+		return true;
 	}
 
 	boolean hasKey(String key){
@@ -98,7 +108,7 @@ public:
 
 	int getKeyIndex(String key){
 		const char* const* keys=getKeys();
-		for(uint8_t i=0;i<keySize;i++){
+		for(uint8_t i=0;i<getKeySize();i++){
 			if(String(keys[i])==key){
 				return i;
 			}
@@ -106,16 +116,36 @@ public:
 		return -1;
 	}
 
-	String getValue(int index){
-		if(index==-1 || index>=keySize){ return String("");}
+	String* getValuesFromFile(){
 
-		return values[index];
+	}
+
+	String getValueFromFile(int index){
+
+	}
+
+	boolean saveValueToFile(int index,String value){
+
+	}
+
+	String getValue(int index){
+		if(index==-1 || index>=getKeySize()){ return String("");}
+
+		if(isInMemory()){
+			return vals[index];
+		}
+		return getValueFromFile(index);
 	}
 
 	boolean setValue(int index,String value){
-		if(index>-1 && index<keySize){
-			values[index]=value;
-			return true;
+		if(index>-1 && index<getKeySize()){
+
+			if(isInMemory()){
+				vals[index]=value;
+				return true;
+			}
+
+			return saveValueToFile(index,value);
 		}
 		return false;
 	}
@@ -132,7 +162,7 @@ public:
 	void printDetails(){
 		Serial.println(FPSTR(""));
 		Serial.print(FPSTR("-----------KEYS ("));
-		Serial.print(keySize);
+		Serial.print(getKeySize());
 		Serial.print(FPSTR(") name="));
 		Serial.print(getName());
 		Serial.print(FPSTR(" descr="));
@@ -140,7 +170,7 @@ public:
 		Serial.println(FPSTR("------------------"));
 
 		//const char* const* keys=getKeys();
-		for(uint8_t i=0;i<keySize;i++){
+		for(uint8_t i=0;i<getKeySize();i++){
 			//Serial.print(String(keys[i]));
 			//-------------------------------
 			uint expLen=28;
@@ -162,13 +192,13 @@ public:
 
 		Serial.println(FPSTR("---------HTML Labels------------"));
 
-		for(uint8_t i=0;i<keySize;i++){
+		for(uint8_t i=0;i<getKeySize();i++){
 			Serial.print(FPSTR(HTML_LABEL_PREFFIX));
 			Serial.println(getKey(i));
 		}
 		Serial.println(FPSTR("---------HTML Names------------"));
 
-		for(uint8_t i=0;i<keySize;i++){
+		for(uint8_t i=0;i<getKeySize();i++){
 			Serial.print(FPSTR(SETTINGS_BOX_BASE_NAME));
 			Serial.println(getKeyHtmlName(i));
 		}
@@ -179,7 +209,7 @@ public:
 	}
 
 	uint8_t getKeySize(){
-		return keySize;
+		return ARRAY_SIZE(getKeys());
 	}
 
 	int isTargetOfSettingsValue(String keyWithPreffix){
@@ -230,9 +260,9 @@ public:
 	}
 
 protected:
-	String name;
-	String* values;
-	uint8_t keySize=0;
+	//String name;
+	String* vals;
+	//uint8_t keySize1=0;
 	boolean saveRequired=false;
 };
 

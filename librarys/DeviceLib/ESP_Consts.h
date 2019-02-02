@@ -8,6 +8,7 @@
 #ifndef LIBRARIES_MEASURER_MEASURERCONSTS_H_
 #define LIBRARIES_MEASURER_MEASURERCONSTS_H_
 
+#define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
 
 #include "Arduino.h"

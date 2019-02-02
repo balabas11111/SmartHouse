@@ -18,7 +18,6 @@
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/Loopable.h"
 #include "interfaces/SendAble.h"
-
 #include "I2Chelper.h"
 #include "WiFiHelper.h"
 
@@ -32,6 +31,8 @@
 #include <PinDigital.h>
 #include <Pir_Sensor.h>
 #include <BeeperB.h>
+#include <interfaces/ItemFieldDescriptor.h>
+#include <ItemFIeldDescriptors/ItemFieldProviderThingSpeak.h>
 #include "BeeperSerial.h"
 
 #include "DS18D20_Sensor.h"
@@ -43,7 +44,7 @@
 ESPSett_Ntp espSett_Ntp;
 
 ESPExtraSettingsBox* extraBoxes[]={&espSett_Ntp};
-EspSettingsBox espSettingsBox(extraBoxes,ARRAY_SIZE(extraBoxes));
+EspSettingsBox espSettingsBox(extraBoxes);
 
 BeeperB beeper(D5,HIGH,LOW,true,false);
 
@@ -85,11 +86,14 @@ JSONprovider* jsonProviders[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signa
 JSONprocessor* jsonProcessors[]={&timeIntervalService,&thingSpeakHelper,&espSettingsBox};
 SendAble* senders[]={&thingSpeakHelper};
 
+ItemFieldProviderThingSpeak thSpPr;
+
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
 						  jsonProcessors,ARRAY_SIZE(jsonProcessors),
 						  jsonProviders,ARRAY_SIZE(jsonProviders),
 						  sensors,ARRAY_SIZE(sensors),
 						  senders,ARRAY_SIZE(senders),
+						  /*itemFieldsProviders,ARRAY_SIZE(itemFieldsProviders),*/
 						  &espSettingsBox,
 						  120000);
 
@@ -243,7 +247,7 @@ void processTimeIntervals(){
 
 //------------------Sensors func---------------------------------------------------
 void loadSensors(){
-	espSettingsBox.loadSensorsFromFile(sensors, ARRAY_SIZE(sensors));
+	espSettingsBox.loadSensorsFromFile(sensors);
 }
 
 void updateSensors(){
