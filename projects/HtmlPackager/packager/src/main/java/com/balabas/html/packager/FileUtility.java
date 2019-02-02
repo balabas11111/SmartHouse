@@ -17,6 +17,7 @@ public class FileUtility {
 	    add(".css");
 	    add(".js");
 	    add(".txt");
+	    add(".gz");
 	}};
 	
 	public static boolean deleteDirectory(File directoryToBeDeleted) {

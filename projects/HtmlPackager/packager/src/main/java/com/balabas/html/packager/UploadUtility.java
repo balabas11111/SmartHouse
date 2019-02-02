@@ -23,6 +23,8 @@ public class UploadUtility {
 
         FileUtility.listf(folder, files,null,true);
         
+        System.out.println("total "+files.size()+" files in "+folder);
+        
         for(File file:files){
             deleteFile(Paths.get(file.getPath()),ip);
             uploadFile(Paths.get(file.getPath()),ip);
@@ -30,8 +32,9 @@ public class UploadUtility {
     }
     
     public static boolean deleteFile(Path path,String ip)throws Exception{
+        int code =0;
         try{
-            System.out.print("delete "+path);
+            System.out.print("delete "+path.getFileName());
             
             URL url = constructUrl(ip);
             HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
@@ -43,10 +46,11 @@ public class UploadUtility {
             
             httpCon.connect();
             
-            System.out.print("...");
-            System.out.println(out.toString());
+            code = httpCon.getResponseCode();
+            
+            System.out.print("... OK");
         }catch(Exception e){
-            System.out.println("FAILED");
+            System.out.print("...FAILED "+code);
             return false;
         }
         
@@ -55,7 +59,10 @@ public class UploadUtility {
     
     public static boolean uploadFile(Path path,String ip)throws Exception{
         boolean ok=true;
-        System.out.print("upload "+path);
+        int code=0;
+        
+        try{
+        System.out.print("upload "+path.getFileName());
         String boundary = Long.toHexString(System.currentTimeMillis());
         
         URLConnection connection = constructUrl(ip).openConnection();
@@ -83,12 +90,15 @@ public class UploadUtility {
 
             // End of multipart/form-data.
             writer.append("--" + boundary + "--").append(CRLF).flush();
+            code = ((HttpURLConnection) connection).getResponseCode();
+        }catch(Exception e){
+            ok=false;
+        }
         }catch(Exception e){
             ok=false;
         }
         
-        System.out.println("... status="+ok);
-      
+        System.out.println("... "+(ok?"OK ":"FAILED ")+code);
         return ok;
     }
     

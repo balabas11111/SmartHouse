@@ -25,6 +25,12 @@ public class ReplaceUtil {
                
         String commonComponentsFolder=baseFolder+"web_base\\";
         
+        System.out.println("-----------------------------------------------------");
+        System.out.println("html folder="+Paths.get(htmlFolder).toAbsolutePath());
+        System.out.println("project comp folder="+projectComponentsFolder);
+        System.out.println("common  comp folder="+commonComponentsFolder);
+        System.out.println("-----------------------------------------------------");
+        
         List<String> excludeFolders=new ArrayList<String>();
         
         excludeFolders.add(projectComponentsFolder);

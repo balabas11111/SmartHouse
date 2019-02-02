@@ -1,5 +1,7 @@
 package com.balabas.html.packager;
 
+import java.net.InetAddress;
+import java.nio.file.Paths;
 import java.util.Date;
 
 import org.apache.commons.cli.CommandLine;
@@ -43,7 +45,7 @@ public class EspPackager
         boolean uploadFiles=(cmd.hasOption(UPLOAD_FILES))?
                 Boolean.parseBoolean(cmd.getOptionValue(UPLOAD_FILES))
                 :false;
-
+/*
         baseFolder="D:\\projects\\!!!SmartHouse\\projects\\";
         projectName="ESP8266NtpPir";
         ip="192.168.0.120";
@@ -51,7 +53,7 @@ public class EspPackager
         buildInfo="buildInfo";
         deleteHtml=false;
         uploadFiles=true;
-                
+  */              
         System.out.println("------------------------------------------------------------------------");
         System.out.println("PROJECT "+projectName);
         System.out.println("BUILD "+buildInfo);
@@ -71,11 +73,18 @@ public class EspPackager
         ReplaceUtil.replacePlaceHolders(baseFolder, projectName, buildInfo, targetFolder, deleteHtml);
         
         if(uploadFiles){
-            System.out.println("------------------------------------------------------------------------");
-            System.out.println("Upload files");
-            System.out.println("------------------------------------------------------------------------");
-            UploadUtility.deleteAndUpload(targetFolder, ip);
-            System.out.println("------------------------------------------------------------------------");
+            boolean accessible=InetAddress.getByName(ip).isReachable(5000);
+            if(accessible){
+                System.out.println("------------------------------------------------------------------------");
+                System.out.println("Upload files");
+                System.out.println("------------------------------------------------------------------------");
+                UploadUtility.deleteAndUpload(targetFolder, ip);
+                System.out.println("------------------------------------------------------------------------");
+            }else{
+                System.out.println("------------------------------------------------------------------------");
+                System.out.println("IP is unreachable. No upload executed");
+                System.out.println("------------------------------------------------------------------------");
+            }
         }
         
         System.out.println("------------------------------------------------------------------------");
