@@ -16,7 +16,7 @@ SET PROJECT_TARGET=%PROJECT_PATH%\target
 SET PROJECT_COMP=%PROJECT_PATH%\components
 SET COMMON_COMP=%PROJECT_PATH%\..\..\web_base
 
-java -jar %UPLOADER_PATH%\EspHtmlPackager.jar -name "%PROJECT_NAME%" -source "%PROJECT_SOURCE%" -target "%PROJECT_TARGET%" -comp1 "%COMMON_COMP%" -comp2 "%PROJECT_COMP%" -ip "%IP%" -deleteHtml "%DELETE_HTML%"
+java -jar %UPLOADER_PATH%\EspHtmlPackager.jar -name "%PROJECT_NAME%" -source "%PROJECT_SOURCE%" -target "%PROJECT_TARGET%" -comp1 "%COMMON_COMP%" -comp2 "%PROJECT_COMP%" -ip "%IP%"
 
 if "%UPLOAD_GZ%" == "True" ( 
 	call %UPLOADER_PATH%\upload_all.bat

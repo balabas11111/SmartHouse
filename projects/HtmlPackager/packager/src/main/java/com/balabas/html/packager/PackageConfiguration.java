@@ -56,12 +56,8 @@ public class PackageConfiguration {
         
         buildInfo=projectName+" (ver "+new Date()+" ) "+
                     (cmd.hasOption(EspPackager.BUILD_INFO)?cmd.getOptionValue(EspPackager.BUILD_INFO):"");
-        deleteHtml=(cmd.hasOption(EspPackager.DELETE_HTML))?
-                Boolean.parseBoolean(cmd.getOptionValue(EspPackager.DELETE_HTML))
-                :false;
-        uploadFiles=(cmd.hasOption(EspPackager.UPLOAD_FILES))?
-                Boolean.parseBoolean(cmd.getOptionValue(EspPackager.UPLOAD_FILES))
-                :false;
+        deleteHtml=false;
+        uploadFiles=false;
                 
         if(projectName==null || projectName.isEmpty()){
             throw new ConfigurationException("Project name not specified");

@@ -21,8 +21,6 @@ public class ConfigurationUtility {
         options.addOption(EspPackager.PROJECT_NAME, true, "Project name");
         options.addOption(EspPackager.BUILD_INFO, false, "Build info");
         options.addOption(EspPackager.IP, true, "Device Ip");
-        options.addOption(EspPackager.DELETE_HTML, true, "Delete html files after created gz");
-        options.addOption(EspPackager.UPLOAD_FILES, true, "Upload gz files to device");
         
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse( options, args);
