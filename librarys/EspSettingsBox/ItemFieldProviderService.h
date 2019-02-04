@@ -75,7 +75,17 @@ public:
 			String fileName=getAbstractItemExtraSettFileFileName(pName,aName,sName);
 
 			if(!EspSettingsUtil::isFileExists(fileName)){
-				saveStringToFile(fileName,String(itemFieldsDescriptors[pId]->getDefaults()));
+				Serial.print(FPSTR("Save default val pName="));
+				Serial.print(pName);
+				Serial.print(FPSTR(" aName="));
+				Serial.print(aName);
+				Serial.print(FPSTR(" sName="));
+				Serial.print(sName);
+				Serial.print(FPSTR(" fileName="));
+				Serial.println(fileName);
+				Serial.println(itemFieldsDescriptors[pId]->getDefaults());
+
+				EspSettingsUtil::saveStringToFile(fileName,String(itemFieldsDescriptors[pId]->getDefaults()));
 			}
 	}
 
@@ -93,80 +103,36 @@ public:
 		return itemFieldsDescriptors[id];
 	}
 
-	virtual void saveItemFieldProvider(uint8_t pId,String aName,String sName,uint8_t fieldId,String fieldValue){
+	virtual void updateItemFieldValue(uint8_t pId,String aName,String sName,uint8_t fieldId,String fieldValue){
 		String pName=itemFieldsDescriptors[pId]->getName();
 		String fileName=getAbstractItemExtraSettFileFileName(pName,aName,sName);
 
-		String json=loadItemFieldProviderJson(pName, aName, sName);
 		String fieldName=itemFieldsDescriptors[pId]->getKeys()[fieldId];
 
-		DynamicJsonBuffer jsonBuffer;
-		JsonObject& root = jsonBuffer.parseObject(json);
-
-		if(root[fieldName]!=fieldValue){
-			root[fieldName]=fieldValue;
-		}
-
-		root.printTo(json);
-
-		saveStringToFile(fileName, json);
+		EspSettingsUtil::updateFieldValueInFile(fileName, fieldName, fieldValue);
 	}
 
 	String loadItemFieldProviderJsonById(uint8_t pId,String aName,String sName){
 		String pName=getItemFieldsDescriptorById(pId)->getName();
 		String fileName=getAbstractItemExtraSettFileFileName(pName,aName,sName);
-		return loadStringFromFile(fileName);
+		return EspSettingsUtil::loadStringFromFile(fileName);
 	}
 
 	String loadItemFieldProviderJson(String pName,String aName,String sName){
 		String fileName=getAbstractItemExtraSettFileFileName(pName,aName,sName);
-		return loadStringFromFile(fileName);
+		return EspSettingsUtil::loadStringFromFile(fileName);
 	}
 
-	const char* getItemFieldProviderValue(String aName,String sName,uint8_t providerId,uint8_t fieldId){
-		String keyName=itemFieldsDescriptors[providerId]->getKeys()[fieldId];
+	String getItemFieldValue(String aName,String sName,uint8_t providerId,uint8_t fieldId){
+		String fieldName=itemFieldsDescriptors[providerId]->getKeys()[fieldId];
 		String fileName=getAbstractItemExtraSettFileFileName(itemFieldsDescriptors[providerId]->getName(),aName,sName);
-		String json=loadStringFromFile(fileName);
 
-		return getJsonFieldValue(json,keyName);
+		return EspSettingsUtil::getFieldValueFromFile(fileName,fieldName);
 	}
-
 
 	void saveItemFieldProviderJson(String pName,String aName,String sName,String json){
 		String fileName=getAbstractItemExtraSettFileFileName(pName,aName,sName);
-		saveStringToFile(fileName,json);
-	}
-
-	static String loadStringFromFile(String fileName){
-		File file = SPIFFS.open(fileName, "r");
-
-		String result=file.readString();
-		file.close();
-
-		delay(1);
-		Serial.println("LOAD fileName="+fileName+" result="+result);
-		return result;
-	}
-
-	boolean saveStringToFile(String fileName,String data){
-
-		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_SAVE_BEGIN));
-		Serial.println(fileName);
-
-		File file = SPIFFS.open(fileName, "w");
-		if(!file){
-			Serial.println(FPSTR("Error opening file for write"));
-		}
-
-		size_t fileSize=file.print(data);
-
-		file.close();
-		Serial.println(data);
-		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVED));
-		Serial.println(fileSize);
-
-		delay(1);
-		return fileSize>0;
+		EspSettingsUtil::saveStringToFile(fileName,json);
 	}
 
 	/*

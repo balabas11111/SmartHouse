@@ -58,6 +58,10 @@ public:
 		return initialized;
 	}
 
+	virtual const uint8_t* getItemFieldsIds() override{
+		return ITEM_FIELDS_THINGSP_MINMAX_ALARM;
+	}
+
 	void initSensor(){
 
 		bool status=bme.begin();

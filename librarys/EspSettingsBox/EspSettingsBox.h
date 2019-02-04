@@ -21,6 +21,7 @@
 #include "Consts/CommandsConsts.h"
 
 #include "AbstractItem.h"
+#include "interfaces/DeviceLibable.h"
 #include "interfaces/Initializable.h"
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/JSONprovider.h"
@@ -32,7 +33,7 @@
 const PROGMEM char EspSettingsBox_NAME[] = "espSettingsBox";
 
 class EspSettingsBox: public Initializable, public JSONprocessor , public JSONprovider,
-	public ItemFieldProviderService, public ExtraSettingsBoxService, public AbstractItemSettingsService {
+	public ItemFieldProviderService, public ExtraSettingsBoxService, public AbstractItemSettingsService, public DeviceLibable {
 
 public:
 	EspSettingsBox(){
@@ -144,8 +145,8 @@ public:
 	}
 
 	boolean saveSettingToFile(String settingsName,String str){
-		String fileName=EspSettingsUtil::getSettingsFileFileName(settingsName);
-		return saveStringToFile(fileName, str);
+		String fileName=EspSettingsUtil::getSettingsFilePath(settingsName);
+		return EspSettingsUtil::saveStringToFile(fileName, str);
 	}
 
 	String getDeviceNameFull(){
@@ -186,6 +187,10 @@ public:
 
 	virtual void saveDefaultItemFieldProviderValuesIfMissing(uint8_t pId,String aName,String sName) override{
 		ItemFieldProviderService::saveDefaultItemFieldProviderValuesIfMissing(pId, aName, sName);
+	}
+
+	virtual ItemFieldProviderService* getItemProviderService() override{
+		return this;
 	}
 
 //--------------------device settings kind (page)-------------------

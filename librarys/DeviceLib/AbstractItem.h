@@ -8,17 +8,13 @@
 #ifndef LIBRARIES_DEVICELIB_AbstractItem_H_
 #define LIBRARIES_DEVICELIB_AbstractItem_H_
 
-#include <interfaces/ItemFieldDescriptor.h>
 #include <ItemFieldProviderService.h>
 #include "Arduino.h"
 #include "ESP_Consts.h"
 #include "interfaces/JSONprovider.h"
+#include "interfaces/DeviceLibable.h"
+//#include <interfaces/ItemFieldDescriptor.h>
 #include "interfaces/ItemFieldProvider.h"
-
-const uint8_t ITEM_FIELDS_PROVIDERS_DEFAULT[]      PROGMEM=
-{
-		IFP_ThingSpeak_ID
-};
 
 class AbstractItem: public JSONprovider, public ItemFieldProvider {
 
@@ -49,12 +45,14 @@ public:
 		this->itemCount=itemCount;
 
 		initializeChildren();
-
-		//Serial.println("AbstractItem ="+name+" count="++(items));
 	}
 	virtual ~AbstractItem(){};
 
 	virtual String getKind()=0;
+
+	virtual const uint8_t* getItemFieldsIds() override{
+		return ITEM_FIELDS_THINGSPEAK;
+	}
 
 	SensorValue* getItems(){
 		return items;
@@ -114,6 +112,9 @@ public:
 		return this->name;
 	}
 
+	boolean hasNoItems(){
+		return itemCount==0;
+	}
 	uint8_t getItemCount(){
 		return itemCount;
 	}
@@ -307,10 +308,6 @@ public:
 		return String(intVal);
 	}
 
-	virtual const uint8_t* getItemFieldsProviders() override{
-		return ITEM_FIELDS_PROVIDERS_DEFAULT;
-	}
-
 protected:
 
 	uint8_t id;
@@ -372,7 +369,9 @@ protected:
 				+"\"minVal\":\""+String(m.minVal)+"\","
 				+"\"maxVal\":\""+String(m.maxVal)+"\","
 				+"\"fieldId\":\""+String(m.fieldId)+"\","
-				+"\"queue\":\""+m.queue+"\""+getExtraJsonChild(ind)+getItemFieldProviderJson(getName(),m.name)+"}";
+				+"\"queue\":\""+m.queue+"\""
+				+getExtraJsonChild(ind)
+				+getItemFieldProviderJson(getName(),m.name)+"}";
 	}
 
 	String getSensorValueSimpleJson(SensorValue m){

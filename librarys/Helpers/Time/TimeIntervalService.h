@@ -68,7 +68,7 @@ const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_OK[]                   = "{\"sta
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR[]                = "{\"status\":\"Error\",\"item\":\"Error update time Interval\"}";
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR_MISSING_PARAMS[] = "{\"status\":\"Error\",\"item\":\"Required params missing\"}";
 
-class TimeIntervalService: public Initializable, public Loopable, public JSONprovider, public JSONprocessor {
+class TimeIntervalService: public Initializable, public Loopable, public JSONprovider, public JSONprocessor, public DeviceLibable {
 public:
 	virtual ~TimeIntervalService(){};
 
@@ -435,7 +435,7 @@ public:
 			return false;
 		}
 
-		String fileName=EspSettingsUtil::getSettingsFileFileName(FPSTR(TimeIntervalService_FileName_NAME));
+		String fileName=EspSettingsUtil::getSettingsFilePath(FPSTR(TimeIntervalService_FileName_NAME));
 
 		Serial.print(FPSTR("Load TimeIntervals from file "));
 		Serial.println(fileName);

@@ -15,14 +15,20 @@
 #ifdef ESP8266
 #include "FS.h"
 #endif
-#include <interfaces/ItemFieldDescriptor.h>
+#include <interfaces/Initializable.h>
+#include <interfaces/Loopable.h>
+#include <interfaces/JSONprocessor.h>
+#include <interfaces/JSONprovider.h>
+#include <AbstractItem.h>
+#include <interfaces/SendAble.h>
+#include <interfaces/SendAbleAbstractItems.h>
+
 
 DeviceHelper::DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
 							JSONprocessor** jsonProcessors,uint8_t jsonProcessorsSize,
 							JSONprovider** jsonProviders,uint8_t jsonProvidersSize,
 							AbstractItem** abstrItems,uint8_t abstrItemsSize,
 							SendAble** senders,uint8_t sendersSize,
-							/*ItemFieldProvider** itemFieldsProviders,uint8_t itemFieldsProviderSize,*/
 							EspSettingsBox* espSettingsBox,
 							long minAlarmInterval){
 
@@ -47,10 +53,6 @@ DeviceHelper::DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
 	this->minAlarmInterval=minAlarmInterval*1000;
 
 	this->lastAlarmTime=0;
-
-	for(uint8_t i=0;i<abstrItemsSize;i++){
-		abstrItems[i]->setProvider(espSettingsBox);
-	}
 
 	this->triggerInitiated=false;
 	postPonedTrigger=nullptr;
@@ -162,6 +164,66 @@ void DeviceHelper::printDeviceDiagnostic(){
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
 
+void DeviceHelper::printDeviceArrayDetails(){
+	Serial.println(FPSTR("----------Device Items----------"));
+
+	uint8_t size=ARRAY_SIZE(loopItems);
+	Serial.print(FPSTR("Loopable size="));
+	Serial.print(loopItemsSize);
+	Serial.print(FPSTR(" aSize="));
+	Serial.println(size);
+	for(uint8_t i=0;i<size;i++){
+		Serial.print(VAR_NAME(loopItems[i]));
+		Serial.print(FPSTR(" "));
+	}
+	Serial.println();
+
+	size=ARRAY_SIZE(jsonProcessors);
+	Serial.print(FPSTR("jsonProcessors size="));
+	Serial.print(jsonProcessorsSize);
+	Serial.print(FPSTR(" aSize="));
+	Serial.println(size);
+	for(uint8_t i=0;i<size;i++){
+		Serial.print(VAR_NAME(jsonProcessors[i]));
+		Serial.print(FPSTR(" "));
+	}
+	Serial.println();
+
+	size=ARRAY_SIZE(jsonProviders);
+	Serial.print(FPSTR("jsonProviders size="));
+	Serial.print(jsonProvidersSize);
+	Serial.print(FPSTR(" aSize="));
+	Serial.println(size);
+	for(uint8_t i=0;i<size;i++){
+		Serial.print(VAR_NAME(jsonProviders[i]));
+		Serial.print(FPSTR(" "));
+	}
+	Serial.println();
+
+	size=ARRAY_SIZE(abstrItems);
+	Serial.print(FPSTR("abstrItems size="));
+	Serial.print(abstrItemsSize);
+	Serial.print(FPSTR(" aSize="));
+	Serial.println(size);
+	for(uint8_t i=0;i<size;i++){
+		Serial.print(VAR_NAME(abstrItems[i]));
+		Serial.print(FPSTR(" "));
+	}
+	Serial.println();
+
+	size=ARRAY_SIZE(senders);
+	Serial.print(FPSTR("senders size="));
+	Serial.print(sendersSize);
+	Serial.print(FPSTR(" aSize="));
+	Serial.println(size);
+	for(uint8_t i=0;i<size;i++){
+		Serial.print(VAR_NAME(senders[i]));
+		Serial.print(FPSTR(" "));
+	}
+	Serial.println();
+
+	Serial.println(FPSTR("--------------------------------"));
+}
 
 void DeviceHelper::update(){
 	Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_UPDATE_EXECUTION));
@@ -227,90 +289,64 @@ String DeviceHelper::processAlarm(){
 	return alarmMessage;
 }
 
-StatusMessage DeviceHelper::processJson(String target,String page,String json){
-		yield();
-		if(target==NULL || target.length()==0){
-			return StatusMessage(STATUS_INVALID_LENGTH_INT);
-		}
-
-		if(checkNamePage(target, page)){
-			return processJson(page,json);
-		}
-
-		for(uint8_t i=0;i<jsonProcessorsSize;i++){
-			if(jsonProcessors[i]->checkNamePage(target,page)){
-				return jsonProcessors[i]->processJson(page,json);
-			}
-		}
-
-		return StatusMessage(STATUS_NOT_FOUND_INT);
-	}
-
-String DeviceHelper::getProvidersJson(){
-	yield();
+String DeviceHelper::getProvidersAndSensorsJson(){
 	String result="{\"sensors\":[";
 
-		for(uint8_t i=0;i<jsonProvidersSize;i++){
-			delay(1);
-			result+=jsonProviders[i]->getJson();
-			if(i!=jsonProvidersSize-1){
-				result+=",";
-			}
-		}
-	result+="]}";
+	result+=getAbstractItemsAsString(abstrItems,abstrItemsSize);
+	result+=getJSONprovidersAsString(jsonProviders,jsonProvidersSize);
+	result.setCharAt(result.length(), ']');
+	result+="}";
+
+	return result;
+}
+
+String DeviceHelper::getProvidersJson(){
+	String result="{\"sensors\":[";
+
+	result+=getJSONprovidersAsString(jsonProviders,jsonProvidersSize);
+	result.setCharAt(result.length(), ']');
+	result+="}";
 
 	return result;
 }
 
 String DeviceHelper::getAbstrItemsJson(){
-	yield();
-		String result="{\"sensors\":[";
+	String result="{\"sensors\":[";
 
-			for(uint8_t i=0;i<abstrItemsSize;i++){
-				delay(1);
-				result+=abstrItems[i]->getJson();
-				if(i!=abstrItemsSize-1){
-					result+=",";
-				}
-			}
-		result+="]}";
+	result+=getAbstractItemsAsString(abstrItems,abstrItemsSize);
+	result.setCharAt(result.length(), ']');
+	result+="}";
 
-		return result;
+	return result;
 }
 
-String DeviceHelper::getJson(JSONprovider** providers, uint8_t size) {
+String DeviceHelper::getAbstractItemsAsString(AbstractItem** items,uint8_t itemsSize){
 	yield();
-		String result="{\"sensors\":[";
+	String result="";
+	uint8_t size=ARRAY_SIZE(items);
 
-			for(uint8_t i=0;i<size;i++){
-				delay(1);
-				result+=providers[i]->getJson();
-				if(i!=size-1){
-					result+=",";
-				}
-			}
-		result+="]}";
+	for(uint8_t i=0;i<size;i++){
+		result+=items[i]->getJson();
+		result+=",";
+	}
 
-		return result;
+	return result;
 }
 
-String DeviceHelper::getJsonAbstractItems(AbstractItem** sensors, uint8_t size) {
+String DeviceHelper::getJSONprovidersAsString(JSONprovider** items,uint8_t itemsSize){
 	yield();
-		String result="{\"sensors\":[";
+	String result="";
+	uint8_t size=ARRAY_SIZE(items);
 
-			for(uint8_t i=0;i<size;i++){
-				delay(1);
-				result+=sensors[i]->getJson();
-				if(i!=size-1){
-					result+=",";
-				}
-			}
-		result+="]}";
+	for(uint8_t i=0;i<size;i++){
+		result+=items[i]->getJson();
+		result+=",";
+	}
 
-		return result;
+	return result;
 }
 
-StatusMessage DeviceHelper::saveSensorValues(String page,String json){
+StatusMessage DeviceHelper::saveSensorSettings(String page,String json){
 	DynamicJsonBuffer jsonBuffer;
 	JsonObject& root = jsonBuffer.parseObject(json);
 
@@ -357,7 +393,6 @@ StatusMessage DeviceHelper::saveSensorValues(String page,String json){
 			aitem->setMaxVal(idItem, maxVal);
 			aitem->setFieldId(id, fieldId);
 		}
-
 		Serial.println("idItem="+String(idItem)+" name="+nameItem+" descr="+descrItem+" queue="+queue+" minVal="+String(minVal)+" maxVal="+String(maxVal)+" fieldId="+String(fieldId));
 	}
 
@@ -390,3 +425,80 @@ void DeviceHelper::executePostponedCommand() {
 		ESP.restart();
 	}
 }
+
+/*
+	uint8_t initializableCount=0;
+	uint8_t loopableCount=0;
+	uint8_t JSONprocessorCount=0;
+	uint8_t JSONproviderCount=0;
+	uint8_t AbstractItemCount=0;
+	uint8_t SendAbleCount=0;
+	uint8_t SendAbleAbstractItemsCount=0;
+
+	for(uint8_t i=0;i<ARRAY_SIZE(allItems);i++){
+
+		//DeviceLibable* d=allItems[i];
+		//dynamic_cast<Initializable&>(d);
+		//Initializable& init=dynamic_cast<Initializable&>(d);
+		//reinterpret_cast<Initializable&>(d);
+
+		if ( implements( allItems[i], Initializable) ){
+			initializableCount++;
+		}
+		if ( implements( allItems[i], Loopable) ){
+			loopableCount++;
+		}
+		if ( implements( allItems[i], JSONprocessor ) ){
+			JSONprocessorCount++;
+		}
+		if ( implements( allItems[i], JSONprovider ) ){
+			JSONproviderCount++;
+		}
+		if ( implements( allItems[i], AbstractItem ) ){
+			AbstractItemCount++;
+		}
+		if ( implements( allItems[i], SendAble ) ){
+			SendAbleCount++;
+		}
+		if ( implements( allItems[i], SendAbleAbstractItems ) ){
+			SendAbleAbstractItemsCount++;
+		}
+
+	}*/
+
+/*
+String getJson(JSONprovider** sensors,uint8_t size);
+String getJsonAbstractItems(AbstractItem** sensors,uint8_t size);
+
+String DeviceHelper::getJson(JSONprovider** providers, uint8_t size) {
+	yield();
+		String result="{\"sensors\":[";
+
+			for(uint8_t i=0;i<size;i++){
+				delay(1);
+				result+=providers[i]->getJson();
+				if(i!=size-1){
+					result+=",";
+				}
+			}
+		result+="]}";
+
+		return result;
+}
+
+String DeviceHelper::getJsonAbstractItems(AbstractItem** sensors, uint8_t size) {
+	yield();
+		String result="{\"sensors\":[";
+
+			for(uint8_t i=0;i<size;i++){
+				delay(1);
+				result+=sensors[i]->getJson();
+				if(i!=size-1){
+					result+=",";
+				}
+			}
+		result+="]}";
+
+		return result;
+}
+*/

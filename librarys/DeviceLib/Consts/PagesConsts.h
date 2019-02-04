@@ -16,5 +16,6 @@ const PROGMEM char PAGE_MANAGE[]                = "manage";
 const PROGMEM char PAGE_NET[]                   = "net";
 const PROGMEM char PAGE_PUBLISH[]               = "publish";
 const PROGMEM char PAGE_SENSORS[]               = "sensors";
+const PROGMEM char PAGE_PROVIDERS[]             = "providers";
 
 #endif /* LIBRARIES_DEVICELIB_CONSTS_PAGESCONSTS_H_ */

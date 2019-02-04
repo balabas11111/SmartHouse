@@ -32,6 +32,26 @@ public:
 	virtual const char* const* getKeys()=0;
 
 	virtual const char* getDefaults()=0;
+
+	virtual String getJson(){
+		uint8_t size=getSize();
+		const char* const* keys=getKeys();
+
+		String result= "{\"id\":\""+String(getId())+"\","
+				+"\"name\":\""+getName()+"\","
+				+"\"size\":\""+String(size)+"\","
+				+"\"keys\":\" [";
+
+			for(uint8_t i=0;i<size;i++){
+				result+="\""+String(keys[i])+"\",";
+			}
+
+			result.setCharAt(result.length(), ']');
+
+			result+="}";
+
+		return result;
+	}
 };
 
 #endif /* LIBRARIES_DEVICELIB_ABSTRACTITEMEXTRA_ITEMEXTRASETT_H_ */

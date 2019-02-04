@@ -39,11 +39,16 @@ class WiFiHelper:public Initializable,public Loopable {
 
 public:
 	#ifdef ESP8266
-	WiFiHelper(EspSettingsBox *_settingsBox, DisplayHelper *_displayHelper/*, PinDigital *_signalPin*/,
-			ESP8266WebServer *_server,std::function<void(void)> _serverInitEventFunc,std::function<void(void)> _serverPostInitFunc,boolean _disconnectOnStartIfConnected){
+	WiFiHelper(EspSettingsBox *_settingsBox,std::function<void(void)> _serverPostInitFunc,
+				int port=80,boolean _disconnectOnStartIfConnected=true,boolean otaEnabled=true){
 
-		server=_server;
-		construct(_settingsBox, _displayHelper,_serverInitEventFunc,_serverPostInitFunc,_disconnectOnStartIfConnected);
+		serv=new ESP8266WebServer(port);
+
+		if(otaEnabled){
+			updater=new ESP8266HTTPUpdateServer(true);
+		}
+
+		construct(_settingsBox, nullptr,nullptr,_serverPostInitFunc,_disconnectOnStartIfConnected);
 	}
 	#endif
 	#ifdef ESP32
@@ -98,6 +103,7 @@ public:
 			}
 
 			setupServer();
+			initUpdater();
 
 		}
 		initialized=_init;
@@ -107,7 +113,7 @@ public:
 	boolean loop(){
 		if(initialized){
 			connectToWiFiIfNotConnected();
-			server->handleClient();
+			serv->handleClient();
 		}
 		return initialized;
 	}
@@ -137,9 +143,9 @@ public:
 	boolean checkAuthentication(){
 		if(espSettingsBox->settingsUser.length()!=0 && espSettingsBox->settingsPass.length()!=0){
 			//Serial.println("Authentication is REQUIRED for setupPage");
-			if(!server->authenticate(const_cast<char*>(espSettingsBox->settingsUser.c_str()),
+			if(!serv->authenticate(const_cast<char*>(espSettingsBox->settingsUser.c_str()),
 				const_cast<char*>(espSettingsBox->settingsPass.c_str()))){
-				server->requestAuthentication();
+				serv->requestAuthentication();
 				return false;
 			}else{
 				return true;
@@ -152,35 +158,47 @@ public:
 	void printRequestDetails(){
 		Serial.println(FPSTR("---Request details---"));
 		Serial.print(FPSTR("url="));
-		Serial.println(server->uri());
+		Serial.println(serv->uri());
 		Serial.print(FPSTR("args count="));
-		Serial.println(server->args());
-		for(int i=0;i<server->args();i++){
-			Serial.print(server->argName(i));
+		Serial.println(serv->args());
+		for(int i=0;i<serv->args();i++){
+			Serial.print(serv->argName(i));
 			Serial.print(FPSTR("="));
-			Serial.println(server->arg(i));
+			Serial.println(serv->arg(i));
 		}
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 	}
 
 	boolean isValidGetJsonRequest(){
-		return server->hasArg(FPSTR(MESSAGE_SERVER_ARG_NAME));
+		return serv->hasArg(FPSTR(MESSAGE_SERVER_ARG_NAME));
 	}
 
 	boolean isValidProcessJsonRequest(){
-		return server->hasArg(MESSAGE_SERVER_ARG_REMOTE_TARGET)
-				&& server->hasArg(MESSAGE_SERVER_ARG_REMOTE_PAGE)
-				&& server->hasArg(FPSTR(MESSAGE_SERVER_ARG_VAL_JSON));
+		return serv->hasArg(MESSAGE_SERVER_ARG_REMOTE_TARGET)
+				&& serv->hasArg(MESSAGE_SERVER_ARG_REMOTE_PAGE)
+				&& serv->hasArg(FPSTR(MESSAGE_SERVER_ARG_VAL_JSON));
 	}
 
 	String getPageParam(){
-		return server->hasArg(FPSTR(MESSAGE_SERVER_ARG_PAGE))?
-				server->arg(FPSTR(MESSAGE_SERVER_ARG_PAGE)):
+		return serv->hasArg(FPSTR(MESSAGE_SERVER_ARG_PAGE))?
+				serv->arg(FPSTR(MESSAGE_SERVER_ARG_PAGE)):
 				"";
 	}
 
 	String getNameParam(){
-		return server->arg(FPSTR(MESSAGE_SERVER_ARG_NAME));
+		return serv->arg(FPSTR(MESSAGE_SERVER_ARG_NAME));
+	}
+
+	String getRemoteTargetParam(){
+		return serv->arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_TARGET));
+	}
+
+	String getRemotePageParam(){
+		return serv->arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_PAGE));
+	}
+
+	String getValJsonParam(){
+		return serv->arg(FPSTR(MESSAGE_SERVER_ARG_VAL_JSON));
 	}
 
 	void setupServer(){
@@ -209,13 +227,21 @@ public:
 			serverPostInitFunc();
 			EspSettingsUtil::printHeap();
 		}
-		server->begin();
+		serv->begin();
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_SERVER_SETUP_COMPLETED));
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 	}
 
+	void initUpdater(){
+		if(updater!=nullptr){
+			updater->setup(serv,espSettingsBox->settingsUser.c_str(),espSettingsBox->settingsPass.c_str());
+		}else{
+			Serial.println(FPSTR("OTA Update is disabled on this device"));
+		}
+	}
+
 	void returnFail(String msg) {
-	  server->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), msg + "\r\n");
+	  serv->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), msg + "\r\n");
 	}
 	//-------------------------------
 	String executeGetRequest(String url){
@@ -319,8 +345,8 @@ public:
 		return result;
 	}
 
-	ESP8266WebServer* getServer(){
-		return this->server;
+	ESP8266WebServer* server(){
+		return this->serv;
 	}
 
 	//---------------------------------------------------------------------
@@ -352,7 +378,7 @@ public:
 		}
 
 		String getContentType(String filename){
-		  if(server->hasArg("download")) return FPSTR(CONTENT_TYPE_APPLICATION_OCTED_STREAM);
+		  if(serv->hasArg("download")) return FPSTR(CONTENT_TYPE_APPLICATION_OCTED_STREAM);
 		  else if(filename.endsWith(".htm")) return FPSTR(CONTENT_TYPE_TEXT_HTML);
 		  else if(filename.endsWith(".html")) return FPSTR(CONTENT_TYPE_TEXT_HTML);
 		  else if(filename.endsWith(".css")) return FPSTR(CONTENT_TYPE_TEXT_CSS);
@@ -429,34 +455,34 @@ protected:
 
 		Serial.println(FPSTR("Init default server handlers"));
 
-		server->on(FPSTR(URL_LIST), HTTP_GET, [this](){handleFileList();});
-		server->on(FPSTR(URL_VIEW), HTTP_GET, [this](){handleFileView ();});
-		server->on(FPSTR(URL_TEST), HTTP_GET, [this](){handleTest();});
+		serv->on(FPSTR(URL_LIST), HTTP_GET, [this](){handleFileList();});
+		serv->on(FPSTR(URL_VIEW), HTTP_GET, [this](){handleFileView ();});
+		serv->on(FPSTR(URL_TEST), HTTP_GET, [this](){handleTest();});
 
 		//init HTM.GZ files return
-		server->on(FPSTR(URL_INDEX), HTTP_GET, [this](){
+		serv->on(FPSTR(URL_INDEX), HTTP_GET, [this](){
 			if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_INDEX_HTML_PAGE)))
-				server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
+				serv->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
 		});
-		server->on(FPSTR(URL_SETTINGS), HTTP_GET, [this](){
+		serv->on(FPSTR(URL_SETTINGS), HTTP_GET, [this](){
 			if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_SETTINGS_HTML_PAGE)))
-				server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
+				serv->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
 		});
-		server->on(FPSTR(URL_EDIT), HTTP_GET, [this](){
+		serv->on(FPSTR(URL_EDIT), HTTP_GET, [this](){
 			if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_EDIT_HTML_PAGE)))
-				server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
+				serv->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
 		});
-		server->on(FPSTR(URL_ROOT), HTTP_GET, [this](){
+		serv->on(FPSTR(URL_ROOT), HTTP_GET, [this](){
 			if(!handleFileGzRead(FPSTR(MESSAGE_WIFIHELPER_INDEX_HTML_PAGE)))
-				server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
+				serv->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND));
 		});
-		//server->on(FPSTR(URL_EDIT), HTTP_PUT, [this](){handleFileCreate();});
-		server->on(FPSTR(URL_EDIT), HTTP_DELETE, [this](){handleFileDelete();});
-		server->on(FPSTR(URL_EDIT), HTTP_POST, [this](){ server->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), ""); }, [this](){handleFileUpload();});
+		//serv->on(FPSTR(URL_EDIT), HTTP_PUT, [this](){handleFileCreate();});
+		serv->on(FPSTR(URL_EDIT), HTTP_DELETE, [this](){handleFileDelete();});
+		serv->on(FPSTR(URL_EDIT), HTTP_POST, [this](){ serv->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), ""); }, [this](){handleFileUpload();});
 
-		server->onNotFound([this](){handleNotFound();});
+		serv->onNotFound([this](){handleNotFound();});
 
-		Serial.println(FPSTR("Default server handlers...done"));
+		Serial.println(FPSTR("Default serv handlers...done"));
 	}
 
 	boolean startAsAccessPoint(){
@@ -516,23 +542,23 @@ protected:
 	//---------------HTTP handlers-------------------------------------------
 	void handleNotFound(){
 		Serial.print(FPSTR("NOT found uri="));
-		Serial.println(server->uri());
+		Serial.println(serv->uri());
 
-		String corrUrl=getCorrectedUrl(String(server->uri()).substring(1));
+		String corrUrl=getCorrectedUrl(String(serv->uri()).substring(1));
 
 		if(corrUrl!=""){
 			Serial.print(FPSTR("Corrected "));
 			Serial.println(corrUrl);
-			server->sendHeader(FPSTR(HEADER_Location), corrUrl, true);
-			server->send ( 302, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "");
+			serv->sendHeader(FPSTR(HEADER_Location), corrUrl, true);
+			serv->send ( 302, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "");
 		}
 
-		server->send(404,FPSTR(CONTENT_TYPE_TEXT_HTML), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_NOT_FOUND));
+		serv->send(404,FPSTR(CONTENT_TYPE_TEXT_HTML), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_NOT_FOUND));
 	}
 
 	void handleTest(){
 		  //get heap status, analog input value and all GPIO statuses in one json call
-			/*  server->on("/all", HTTP_GET, [this](){
+			/*  serv->on("/all", HTTP_GET, [this](){
 				String json = "{";
 				json += "\"heap\":"+String(ESP.getFreeHeap());
 				json += ", \"analog\":"+String(analogRead(A0));
@@ -540,11 +566,11 @@ protected:
 				json += ", \"gpio\":"+String((uint32_t)(((GPI | GPO) & 0xFFFF) | ((GP16I & 0x01) << 16)));
 			#endif
 				json += "}";
-				server->send(200, "text/json", json);
+				serv->send(200, "text/json", json);
 				json = String();
 			  });
 				*/
-		server->send ( 200, FPSTR(CONTENT_TYPE_TEXT_HTML), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_I_M_HERE));
+		serv->send ( 200, FPSTR(CONTENT_TYPE_TEXT_HTML), FPSTR(MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_I_M_HERE));
 	}
 
 	bool handleFileRead(String path){
@@ -553,7 +579,7 @@ protected:
 			  if(SPIFFS.exists(path)){
 				File file = SPIFFS.open(path, "r");
 				//size_t sent =
-				server->streamFile(file, contentType);
+				serv->streamFile(file, contentType);
 				file.close();
 				return true;
 			  }
@@ -570,7 +596,7 @@ protected:
 		  path += ".gz";
 		File file = SPIFFS.open(path, "r");
 		//size_t sent =
-		server->streamFile(file, contentType);
+		serv->streamFile(file, contentType);
 		file.close();
 		return true;
 	  }
@@ -592,9 +618,9 @@ protected:
 	}
 
 	void handleFileUpload(){
-	  if(server->uri() != FPSTR(URL_EDIT)) return;
+	  if(serv->uri() != FPSTR(URL_EDIT)) return;
 
-	  HTTPUpload& upload = server->upload();
+	  HTTPUpload& upload = serv->upload();
 
 	  if(upload.status == UPLOAD_FILE_START){
 		String filename = upload.filename;
@@ -614,57 +640,57 @@ protected:
 	}
 
 	void handleFileDelete(){
-	  if(server->args() == 0) return server->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "BAD ARGS");
-	  String path = server->arg(0);
+	  if(serv->args() == 0) return serv->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "BAD ARGS");
+	  String path = serv->arg(0);
 	  Serial.print(FPSTR("handleFileDelete: "));
 	  Serial.println(path);
 
 	  if(path == "/")
-		return server->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "BAD PATH");
+		return serv->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "BAD PATH");
 	  if(!SPIFFS.exists(path))
-		return server->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "FileNotFound");
+		return serv->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "FileNotFound");
 	  SPIFFS.remove(path);
-	  server->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "");
+	  serv->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "");
 	  path = String();
 	}
 
 	void handleFileCreate(){
-	  if(server->args() == 0)
-		return server->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "BAD ARGS");
-	  String path = server->arg(0);
+	  if(serv->args() == 0)
+		return serv->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "BAD ARGS");
+	  String path = serv->arg(0);
 	  Serial.println("handleFileCreate: " + path);
 	  if(path == "/")
-		return server->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "BAD PATH");
+		return serv->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "BAD PATH");
 	  if(SPIFFS.exists(path))
-		return server->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "FILE EXISTS");
+		return serv->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "FILE EXISTS");
 	  File file = SPIFFS.open(path, "w");
 	  if(file)
 		file.close();
 	  else
-		return server->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "CREATE FAILED");
-	  server->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "");
+		return serv->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "CREATE FAILED");
+	  serv->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "");
 	  path = String();
 	}
 
 	void handleFileView(){
-	  if(!server->hasArg(FPSTR(SERVER_ARG_file))) {
+	  if(!serv->hasArg(FPSTR(SERVER_ARG_file))) {
 		returnFail("BAD ARGS file is missed in params");
 		return;
 	  }
 
-	  if(server->hasArg(FPSTR(SERVER_ARG_file))){
-		  handleFileRead(server->arg(FPSTR(SERVER_ARG_file)));
+	  if(serv->hasArg(FPSTR(SERVER_ARG_file))){
+		  handleFileRead(serv->arg(FPSTR(SERVER_ARG_file)));
 	  }
 	}
 
 	#ifdef ESP8266
 	void handleFileList() {
 
-	  String path = (server->hasArg(FPSTR(SERVER_ARG_dir)))?
-			  server->arg(FPSTR(SERVER_ARG_dir)):"/";
+	  String path = (serv->hasArg(FPSTR(SERVER_ARG_dir)))?
+			  serv->arg(FPSTR(SERVER_ARG_dir)):"/";
 
-	  String kind = (server->hasArg(FPSTR(SERVER_ARG_kind)))?
-			  server->arg(FPSTR(SERVER_ARG_kind)):FPSTR(SERVER_ARG_list);
+	  String kind = (serv->hasArg(FPSTR(SERVER_ARG_kind)))?
+			  serv->arg(FPSTR(SERVER_ARG_kind)):FPSTR(SERVER_ARG_list);
 
 	  Serial.print(FPSTR("handleFileList: "));
 	  Serial.println(path);
@@ -690,7 +716,7 @@ protected:
 
 		  output += "]}";
 
-		  server->send(200, FPSTR(CONTENT_TYPE_TEXT_JSON), output);
+		  serv->send(200, FPSTR(CONTENT_TYPE_TEXT_JSON), output);
 	  }else{
 		  while(dir.next()){
 			File entry = dir.openFile("r");
@@ -699,17 +725,17 @@ protected:
 			output += FPSTR(NEXT_LINE_RN);
 			entry.close();
 		  }
-		  server->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), output);
+		  serv->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), output);
 	  }
 
 	}
 	#else
 	void handleFileList() {
-	  if(!server->hasArg("dir")) {
+	  if(!serv->hasArg("dir")) {
 		returnFail("BAD ARGS");
 		return;
 	  }
-	  String path = server->arg("dir");
+	  String path = serv->arg("dir");
 	  if(path != "/" && !SPIFFS.exists((char *)path.c_str())) {
 		returnFail("BAD PATH");
 		return;
@@ -742,7 +768,7 @@ protected:
 		entry.close();
 	  }
 	  output += "]";
-	  server->send(200, "text/json", output);
+	  serv->send(200, "text/json", output);
 	  dir.close();
 	}
 
@@ -848,7 +874,7 @@ protected:
 					Serial.print(String(file.name()).substring(start-1).c_str());
 
 
-					server->serveStatic(String(file.name()).substring(start-1).c_str(), SPIFFS, file.name());
+					serv->serveStatic(String(file.name()).substring(start-1).c_str(), SPIFFS, file.name());
 
 					Serial.print(FPSTR("...deployed"));
 				}
@@ -986,7 +1012,8 @@ protected:
 
 private:
 #ifdef ESP8266
-	ESP8266WebServer *server;
+	ESP8266HTTPUpdateServer *updater;
+	ESP8266WebServer *serv;
 #endif
 #ifdef ESP32
 	WebServer *server;

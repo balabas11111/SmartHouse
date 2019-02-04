@@ -18,6 +18,7 @@
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/Loopable.h"
 #include "interfaces/SendAble.h"
+#include "interfaces/DeviceLibable.h"
 #include "I2Chelper.h"
 #include "WiFiHelper.h"
 
@@ -52,8 +53,6 @@ uint16_t sounds[]={250,250,250,500};
 uint16_t delays[]={250,250,250,1000};
 BeeperSerial beeperSerial(&beeper,sounds,delays,ARRAY_SIZE(sounds));
 
-I2Chelper i2cHelper(D1,D2,false);
-
 PinDigital buttonMenu(FPSTR(SENSOR_buttonLeft),D8,onButtonMenuChanged);
 PinDigital signalLed(FPSTR(SENSOR_signalLed),D0,LOW,LOW);
 
@@ -62,8 +61,8 @@ Pir_Sensor pirDetector(VAR_NAME(pirDetector),D4,onPirDetectorChanged,700,30000);
 DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), D3);
 BME280_Sensor bmeMeasurer(FPSTR(SENSOR_bmeMeasurer));
 
-ESP8266WebServer server ( 80 );
-ESP8266HTTPUpdateServer httpUpdater(true);
+//ESP8266WebServer server ( 80 );
+//ESP8266HTTPUpdateServer httpUpdater(true);
 
 TM1637 timeDisplay(D6,D7);
 
@@ -73,12 +72,12 @@ TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),false
 NtpTimeClientService timeService(&espSettingsBox);
 DisplayHelper_TM1637_Clock_PIR displayHelper(&timeDisplay,&espSettingsBox,&bmeMeasurer,&ds18d20Measurer,&timeService);//,);
 
-WiFiHelper wifiHelper(&espSettingsBox, nullptr, &server,nullptr,postInitWebServer,true);
-ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifiHelper);
+WiFiHelper wifi(&espSettingsBox, postInitWebServer);
+ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifi);
 
 TimeIntervalService timeIntervalService(&espSettingsBox,&timeService,onTimeIntervalEvent,nullptr,0);
 
-Loopable* loopArray[]={&wifiHelper,&buttonMenu,&thingSpeakTrigger,&timeService,&displayHelper,
+Loopable* loopArray[]={&wifi,&buttonMenu,&thingSpeakTrigger,&timeService,&displayHelper,
 						&pirDetector,&timeIntervalService,&beeperSerial,&sensorsTrigger};
 
 AbstractItem* sensors[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
@@ -86,31 +85,30 @@ JSONprovider* jsonProviders[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signa
 JSONprocessor* jsonProcessors[]={&timeIntervalService,&thingSpeakHelper,&espSettingsBox};
 SendAble* senders[]={&thingSpeakHelper};
 
-ItemFieldProviderThingSpeak thSpPr;
+//DeviceLibable* allItems[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeIntervalService,&espSettingsBox,&thingSpeakHelper};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
 						  jsonProcessors,ARRAY_SIZE(jsonProcessors),
 						  jsonProviders,ARRAY_SIZE(jsonProviders),
 						  sensors,ARRAY_SIZE(sensors),
 						  senders,ARRAY_SIZE(senders),
-						  /*itemFieldsProviders,ARRAY_SIZE(itemFieldsProviders),*/
 						  &espSettingsBox,
 						  120000);
 
 void initComponents(){
+
 	beeper.init();
-	i2cHelper.init();
 
 	displayHelper.displayConn();
 
-	httpUpdater.setup(&server,espSettingsBox.settingsUser.c_str(),espSettingsBox.settingsPass.c_str());
-	wifiHelper.init();
+	wifi.init();
 
 	timeService.init();
 	bmeMeasurer.init();
 	ds18d20Measurer.init();
 
-	loadSensors();
+	espSettingsBox.loadSensorsFromFile(sensors);
+
 	updateSensors();
 
 	thingSpeakHelper.setItems(sensors, ARRAY_SIZE(sensors));
@@ -121,13 +119,14 @@ void initComponents(){
 void setup() {
   Serial.begin(115200);
 
+  I2Chelper::initStatic(D1,D2);
   displayHelper.init();
 
   deviceHelper.startDevice(espSettingsBox.DeviceId,buttonMenu.getPin());
 
   initComponents();
 
-  displayHelper.postProcessConnection(wifiHelper.isAP(),wifiHelper.getIpStr());
+  displayHelper.postProcessConnection(wifi.isAP(),wifi.getIpStr());
 
   playPostInitSounds();
 
@@ -140,70 +139,67 @@ void setup() {
 void loop() {
 	deviceHelper.loop();
 
-	beeper.shortBeep(wifiHelper.getReconnected());
+	beeper.shortBeep(wifi.getReconnected());
 
 	processTimeIntervals();
 }
 
 //---------------------------------------------------------------------
 void playPostInitSounds(){
-	if(i2cHelper.getDevCount()==0){
-		  beeper.longBeep();
-	  }else if(ds18d20Measurer.getItemCount()==0){
-		  beeper.shortBeep(3);
-	  }else{
-		  beeper.shortBeep();
-	  }
+	beeper.shortBeep(3*ds18d20Measurer.hasNoItems());
 }
 //-------------Web server functions-------------------------------------
 void postInitWebServer(){
-	server.on(FPSTR(URL_GET_JSON), HTTP_GET, [](){getProvidersJson();});
-	server.on(FPSTR(URL_PROCESS_JSON), HTTP_POST, [](){processJson();});
+	wifi.server()->on(FPSTR(URL_GET_JSON), HTTP_GET, [](){getProvidersJson();});
+	wifi.server()->on(FPSTR(URL_PROCESS_JSON), HTTP_POST, [](){processJson();});
 }
 
 void getProvidersJson(){
-	if(!wifiHelper.checkAuthentication()){
+	if(!wifi.checkAuthentication()){
 		return;
 	}
 
-	if(wifiHelper.isValidGetJsonRequest()){
+	if(wifi.isValidGetJsonRequest()){
 
 		deviceHelper.printDeviceDiagnostic();
 
-		server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),
+		wifi.server()->send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),
 							deviceHelper.getProvidersJson(
-									wifiHelper.getNameParam(),
-									wifiHelper.getPageParam())
+									wifi.getNameParam(),
+									wifi.getPageParam())
 								);
 	}else{
 		Serial.println(FPSTR("!!!---JSON provider not found!---!!!"));
-		//wifiHelper.printRequestDetails();
+		//wifi.printRequestDetails();
 		String msg=FPSTR(MESSAGE_PROV_NOT_FOUND);
-							msg+=wifiHelper.getNameParam();
-		server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT,msg).getJson());
+		msg+=wifi.getNameParam();
+		wifi.server()->send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT,msg).getJson());
 	}
 }
 
 void processJson(){
-	if(wifiHelper.checkAuthentication()){
+	if(wifi.checkAuthentication()){
 
-		if(wifiHelper.isValidProcessJsonRequest()){
+		if(wifi.isValidProcessJsonRequest()){
 
 			deviceHelper.printDeviceDiagnostic();
 
-			StatusMessage sm=deviceHelper.processJson(
-					server.arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_TARGET)),
-					server.arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_PAGE)),
-					server.arg(FPSTR(MESSAGE_SERVER_ARG_VAL_JSON))
+			wifi.server()->arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_TARGET));
+
+			StatusMessage sm=deviceHelper.processIncomeJson(
+					wifi.getRemoteTargetParam(),
+					wifi.getRemotePageParam(),
+					wifi.getValJsonParam()
 				  );
 
-			return server.send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), sm.getJson());
+			wifi.server()->send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), sm.getJson());
 		}else{
 			Serial.println(FPSTR("!!!---JSON processor not found! Parameters missing---!!!"));
-			//wifiHelper.printRequestDetails();
+			//wifi.printRequestDetails();
 			String msg=FPSTR(MESSAGE_PROC_NOT_FOUND);
-					msg+=wifiHelper.getNameParam();
-			server.send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT,msg).getJson());
+			msg+=wifi.getNameParam();
+
+			wifi.server()->send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT,msg).getJson());
 		}
 	}
 }
@@ -246,9 +242,6 @@ void processTimeIntervals(){
 }
 
 //------------------Sensors func---------------------------------------------------
-void loadSensors(){
-	espSettingsBox.loadSensorsFromFile(sensors);
-}
 
 void updateSensors(){
 	deviceHelper.update();
@@ -299,7 +292,7 @@ void changeSymbol(){
 
 void sendAbstractItemToHttp(AbstractItem* item){
 	if(espSettingsBox.isHttpPostEnabled){
-		wifiHelper.executeFormPostRequest(espSettingsBox.httpPostIp.toString(), item->getJson());
+		wifi.executeFormPostRequest(espSettingsBox.httpPostIp.toString(), item->getJson());
 	}
 }
 
@@ -311,9 +304,9 @@ WiFiEventHandler onStationModeGotIPHandler;
 void setupWifiEvents(){
 	Serial.println(FPSTR("Init WiFi events"));
 
-	if(wifiHelper.isAP()){
-		WiFi.onSoftAPModeStationConnected([](const WiFiEventSoftAPModeStationConnected& evt){wifiHelper.onSoftAPModeStationConnected(evt);});
-		WiFi.onSoftAPModeStationDisconnected([](const WiFiEventSoftAPModeStationDisconnected& evt){wifiHelper.onSoftAPModeStationDisconnected(evt);});
+	if(wifi.isAP()){
+		WiFi.onSoftAPModeStationConnected([](const WiFiEventSoftAPModeStationConnected& evt){wifi.onSoftAPModeStationConnected(evt);});
+		WiFi.onSoftAPModeStationDisconnected([](const WiFiEventSoftAPModeStationDisconnected& evt){wifi.onSoftAPModeStationDisconnected(evt);});
 	}else{
 		Serial.println(FPSTR("--------setupWifiEvents-------"));
 		stationModeConnectedHandler=WiFi.onStationModeConnected(onStationModeConnected);
@@ -329,7 +322,7 @@ void onStationModeConnected(const WiFiEventStationModeConnected& evt){
 		Serial.print(FPSTR(" ssid="));
 		Serial.print(evt.ssid);
 		Serial.print(FPSTR(" bssid="));
-		Serial.print(wifiHelper.macToString(evt.bssid));
+		Serial.print(wifi.macToString(evt.bssid));
 		Serial.print(FPSTR(" channel="));
 		Serial.println(evt.channel);
 	}
@@ -339,7 +332,7 @@ void onStationModeConnected(const WiFiEventStationModeConnected& evt){
 		Serial.print(FPSTR(" ssid="));
 		Serial.print(evt.ssid);
 		Serial.print(FPSTR(" bssid="));
-		Serial.print(wifiHelper.macToString(evt.bssid));
+		Serial.print(wifi.macToString(evt.bssid));
 		Serial.print(FPSTR(" reason="));
 		Serial.println(evt.reason);
 	}

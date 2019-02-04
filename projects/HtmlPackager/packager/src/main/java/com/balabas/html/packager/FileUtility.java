@@ -1,8 +1,18 @@
 package com.balabas.html.packager;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import javax.naming.ConfigurationException;
+
+import org.apache.commons.io.IOUtils;
 
 public class FileUtility {
 	
@@ -19,6 +29,18 @@ public class FileUtility {
 	    add(".txt");
 	    add(".gz");
 	}};
+	
+	public static void deleteFile(File file) throws IOException{
+	    if(!file.exists()){
+	        return;
+	    }
+	    if(file.isDirectory()){
+	        deleteDirectory(file);
+	        return;
+	    }
+	    
+	    Files.delete(file.toPath());
+	}
 	
 	public static boolean deleteDirectory(File directoryToBeDeleted) {
 	    File[] allContents = directoryToBeDeleted.listFiles();
@@ -38,9 +60,35 @@ public class FileUtility {
 		System.out.println("----------------------------------------------");
 	}
 	
-	public static void listf(String directoryName, List<File> files,
+	public static void listMap(String directoryName, Map<String,File> files,
+            List<String> excludeFolders,List<String> duplicates,boolean subfolders) throws ConfigurationException{
+	    
+	    File directory = new File(directoryName);
+
+	    // Get all files from a directory.
+	    File[] fList = directory.listFiles();
+	    if(fList != null)
+	        for (File file : fList) {      
+	            if (file.isFile()) {
+
+	                if(isHtmlExt(file) && !shouldExcluded(file,excludeFolders)){
+	                    String key=ReplaceUtility.getPlaceHolderKey(file.getName());
+	                    
+	                    if(files.containsKey(key)){
+	                        duplicates.add(key);
+	                    }
+	                    
+	                    files.put(key,file);
+	                    //System.out.println(key+" "+file);
+	                }
+	            } else if (file.isDirectory()  && subfolders) {
+	                listMap(file.getAbsolutePath(), files,excludeFolders, duplicates,subfolders);
+	            }
+	        }
+	}
+	
+	public static void listf(File directory, List<File> files,
 	        List<String> excludeFolders,boolean readSubfolders) {
-    File directory = new File(directoryName);
 
     // Get all files from a directory.
     File[] fList = directory.listFiles();
@@ -52,7 +100,7 @@ public class FileUtility {
             		files.add(file);
             	}
             } else if (file.isDirectory() && readSubfolders) {
-                listf(file.getAbsolutePath(), files,excludeFolders,readSubfolders);
+                listf(file, files,excludeFolders,readSubfolders);
             }
         }
     }
@@ -88,6 +136,21 @@ public class FileUtility {
 		}
 		
 		return false;
+	}
+	
+	 public static String checkFolderName(String folder){
+        if(!folder.endsWith("\\")){
+            folder=folder+"\\";
+        }
+        return folder;
+    }
+	
+	public static String getFileAsString(File sourceFile) throws IOException{
+	    return IOUtils.toString(new FileInputStream(sourceFile),"UTF-8");
+	}
+	
+	public static Path saveStringToFile(Path path,String content) throws UnsupportedEncodingException, IOException{
+        return Files.write(path, content.getBytes("UTF-8"));
 	}
 
 }

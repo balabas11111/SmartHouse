@@ -20,7 +20,7 @@ const char* const THINGSPEAK_FIELDS[]      PROGMEM=
 		"fieldId","periodicSend","autoCreateChannel"
 };
 const char THINGSPEAK_DEFAULT[]      PROGMEM=
-		"\"IFP_ThingSpeak\": {\"id\": \"0\",\"fieldId\": \"0\",\"periodicSend\": \"1\", \"autoCreateChannel\": \"1\"}";
+		"{\"id\": \"0\",\"name\": \"IFP_ThingSpeak\", \"items\": [\"fieldId\": \"0\",\"periodicSend\": \"1\", \"autoCreateChannel\": \"1\"]}";
 
 class ItemFieldProviderThingSpeak: public ItemFieldDescriptor {
 public:

@@ -18,15 +18,14 @@ public class UploadUtility {
     public static final String CRLF = "\r\n";
     public static final String charset = "UTF-8";
     
-    public static void deleteAndUpload(String folder,String ip) throws Exception{
+    public static void uploadBuiltFiles(File folder,String ip) throws Exception{
         List<File> files=new ArrayList<File>();
 
         FileUtility.listf(folder, files,null,true);
         
-        System.out.println("total "+files.size()+" files in "+folder);
+        System.out.println("total "+files.size()+" files in "+folder.getAbsolutePath());
         
         for(File file:files){
-            deleteFile(Paths.get(file.getPath()),ip);
             uploadFile(Paths.get(file.getPath()),ip);
         }
     }
@@ -42,12 +41,16 @@ public class UploadUtility {
             httpCon.setRequestProperty("filename", path.toString());
             //httpCon.setRequestProperty("Content-Type", "application/json");
             httpCon.setRequestMethod("DELETE");
+            
+            @SuppressWarnings("unused")
             OutputStreamWriter out = new OutputStreamWriter(httpCon.getOutputStream());
             
             httpCon.connect();
             
             code = httpCon.getResponseCode();
-            
+            if(code!=200){
+                throw new Exception("Upload error");
+            }
             System.out.print("... OK");
         }catch(Exception e){
             System.out.print("...FAILED "+code);

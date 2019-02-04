@@ -15,12 +15,13 @@
 #include "StatusMessage/StatusMessage.h"
 #include "ESP_Consts.h"
 #include "Consts/CommandsConsts.h"
+#include "interfaces/DeviceLibable.h"
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/SendAbleAbstractItems.h"
 
 const PROGMEM char ThingSpeakHelper_NAME[] = "thingSpeakHelper";
 
-class ThingSpeakHelper: public JSONprocessor, public SendAbleAbstractItems {
+class ThingSpeakHelper: public JSONprocessor, public SendAbleAbstractItems, public DeviceLibable {
 public:
 	ThingSpeakHelper(EspSettingsBox* espSettingsBox,WiFiHelper* wifiHelper){
 		this->espSettingsBox=espSettingsBox;

@@ -75,20 +75,13 @@ public:
 	}
 
 	boolean isSettingsFileExists(String settingsName){
-	   String fileName=EspSettingsUtil::getSettingsFileFileName(settingsName);
+	   String fileName=EspSettingsUtil::getSettingsFilePath(settingsName);
 	   return EspSettingsUtil::isFileExists(fileName);
 	}
 
 	boolean deleteSettingsFile(String settingsName){
-		String fileName=EspSettingsUtil::getSettingsFileFileName(settingsName);
-		boolean result= SPIFFS.remove(fileName);
-
-		Serial.print(FPSTR("Del BOX file ="));
-		Serial.print(fileName);
-		Serial.print(FPSTR(" result ="));
-		Serial.println(result);
-
-		return result;
+		String fileName=EspSettingsUtil::getSettingsFilePath(settingsName);
+		return EspSettingsUtil::deleteFile(fileName);
 	}
 
 	String getDefaultExtraBoxJson(){
@@ -161,7 +154,7 @@ public:
 		JsonObject& root = jsonBuffer.createObject();
 
 		for(uint8_t i=0;i<boxKeySize;i++){
-			String key=extraBoxes[boxIndex]->getKey(i);
+			String key=extraBoxes[boxIndex]->getKeyHtmlName(i);
 			String value=extraBoxes[boxIndex]->getValue(i);
 
 			root[key] = value;
@@ -172,7 +165,7 @@ public:
 		Serial.println(vals);
 		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
 
-		String boxFileName=EspSettingsUtil::getSettingsFileFileName(extraBoxes[boxIndex]->getName());
+		String boxFileName=EspSettingsUtil::getSettingsFilePath(extraBoxes[boxIndex]->getName());
 		File boxFile = SPIFFS.open(boxFileName, "w");
 
 		root.printTo(boxFile);
@@ -194,7 +187,7 @@ public:
 
 	   Serial.println(FPSTR("-------Validate BOX file------"));
 
-	   String boxFileName=EspSettingsUtil::getSettingsFileFileName(extraBoxes[boxIndex]->getName());
+	   String boxFileName=EspSettingsUtil::getSettingsFilePath(extraBoxes[boxIndex]->getName());
 	   boolean fileExists=isSettingsFileExists(extraBoxes[boxIndex]->getName());
 
 	   if(!fileExists && recreate){
@@ -255,7 +248,7 @@ public:
 
 	boolean loadExtraBox(uint8_t boxIndex){
 
-		  String boxFileName=EspSettingsUtil::getSettingsFileFileName(extraBoxes[boxIndex]->getName());
+		  String boxFileName=EspSettingsUtil::getSettingsFilePath(extraBoxes[boxIndex]->getName());
 		  Serial.print(FPSTR("---Load Extra BOX from file "));
 		  Serial.println(boxFileName);
 
@@ -281,7 +274,7 @@ public:
 	    	  uint8_t boxKeySize=extraBoxes[boxIndex]->getKeySize();
 
 	    	  for(uint8_t i=0;i<boxKeySize;i++){
-					String key=extraBoxes[boxIndex]->getKey(i);
+					String key=extraBoxes[boxIndex]->getKeyHtmlName(i);
 					String value=root[key].as<char*>();
 
 					uint8_t keyIndex=i;

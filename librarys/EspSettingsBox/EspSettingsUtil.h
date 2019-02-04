@@ -14,8 +14,6 @@
 
 class EspSettingsUtil {
 public:
-	EspSettingsUtil(){};
-	virtual ~EspSettingsUtil(){};
 
 	static boolean isFileExists(String fileName){
 	   File file = SPIFFS.open(fileName, "r");
@@ -37,7 +35,101 @@ public:
 	   return exists;
 	}
 
-	static String getSettingsFileFileName(String settingsName){
+	static String getFieldValueFromFile(String fileName,String fieldName){
+		String json=loadStringFromFile(fileName);
+
+		if(json==""){
+			return json;
+		}
+
+		DynamicJsonBuffer jsonBuffer;
+		JsonObject& root = jsonBuffer.parseObject(json);
+
+		String fieldValue=root[fieldName];
+
+		Serial.print(fieldName);
+		Serial.print(FPSTR("="));
+		Serial.print(fieldValue);
+		Serial.print(FPSTR(" f="));
+		Serial.println(fileName);
+
+		return fieldValue;
+
+	}
+
+	static boolean updateFieldValueInFile(String fileName,String fieldName,String fieldValue){
+		String json=loadStringFromFile(fileName);
+
+		if(json==""){
+			return false;
+		}
+		DynamicJsonBuffer jsonBuffer;
+		JsonObject& root = jsonBuffer.parseObject(json);
+
+		if(root[fieldName]!=fieldValue){
+			root[fieldName]=fieldValue;
+			json="";
+			root.printTo(json);
+
+			EspSettingsUtil::saveStringToFile(fileName, json);
+		}
+
+		return true;
+	}
+
+	static boolean saveStringToFile(String fileName,String data){
+
+		File file = SPIFFS.open(fileName, "w");
+		if(!file){
+			Serial.println(FPSTR("Error opening file for write"));
+		}
+
+		size_t fileSize=file.print(data);
+
+		file.close();
+		Serial.print(FPSTR("SAVE file="));
+		Serial.println(fileName);
+		Serial.println(data);
+		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVED));
+		Serial.println(fileSize);
+
+		delay(1);
+		return fileSize>0;
+	}
+
+	static String loadStringFromFile(String fileName){
+		File file = SPIFFS.open(fileName, "r");
+
+		if(!file || file.size()==0){
+			Serial.print(FPSTR("not found "));
+			Serial.println(fileName);
+			return "";
+		}
+
+		String data=file.readString();
+		file.close();
+
+		delay(1);
+		Serial.print(FPSTR("LOAD file="));
+		Serial.println(fileName);
+		Serial.println(data);
+		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVED));
+
+		return data;
+	}
+
+	static boolean deleteFile(String fileName){
+		boolean result= SPIFFS.remove(fileName);
+
+		Serial.print(FPSTR("DELETE file ="));
+		Serial.print(fileName);
+		Serial.print(FPSTR(" result ="));
+		Serial.println(result);
+
+		return result;
+	}
+
+	static String getSettingsFilePath(String settingsName){
 		String jsonFileName=FPSTR(ESPSETTINGSBOX_SETTINGS_PATH);
 				jsonFileName+=settingsName;
 				jsonFileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_TXT_EXT);

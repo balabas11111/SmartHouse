@@ -10,6 +10,13 @@
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
+#define implements( C, I ) (    __extension__ ({                   \
+        static bool impl=(dynamic_cast<I*>(&C))? true : false;     \
+        impl;                                                      \
+      }))
+
+//if ( implements( instance, SomeInterface ) ) ...
+
 
 #include "Arduino.h"
 
@@ -127,7 +134,7 @@ const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED_RESULT[]="Режи�
 //----------EspSettingsBox Messages---------------
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN[]="Save AbstractItem to file=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SETTINGS_SAVE_BEGIN[]="Save Settings to file=";
-const PROGMEM char MESSAGE_ESPSETTINGSBOX_SAVED[]="...saved";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_SAVED[]="...saved ";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED[]="DEFAULT ";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_FILE_NOT_EXISTS[]="File not exists";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ERROR_BOX_FILE_NOT_EXISTS[]="Box File not exists";

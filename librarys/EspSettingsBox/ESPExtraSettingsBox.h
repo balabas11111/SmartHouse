@@ -13,6 +13,8 @@
 
 #include "Arduino.h"
 #include "interfaces/Nameable.h"
+#include "EspSettingsUtil.h"
+
 //added as suffix in EspSettingsBox getJson
 const char HTML_LABEL_PREFFIX[]             PROGMEM ="lbl_";
 const char SETTINGS_BOX_BASE_NAME[]         PROGMEM ="espSettingsBox_";
@@ -117,15 +119,19 @@ public:
 	}
 
 	String* getValuesFromFile(){
-
+		return nullptr;
 	}
 
 	String getValueFromFile(int index){
+		String fileName=EspSettingsUtil::getSettingsFilePath(getName());
 
+		return EspSettingsUtil::getFieldValueFromFile(fileName, getKey(index));
 	}
 
-	boolean saveValueToFile(int index,String value){
+	boolean saveValueToFile(int index,String fieldValue){
+		String fileName=EspSettingsUtil::getSettingsFilePath(getName());
 
+		return EspSettingsUtil::updateFieldValueInFile(fileName, getKey(index), fieldValue);
 	}
 
 	String getValue(int index){
@@ -161,13 +167,16 @@ public:
 
 	void printDetails(){
 		Serial.println(FPSTR(""));
-		Serial.print(FPSTR("-----------KEYS ("));
+		Serial.println(FPSTR("-----------KEYS ----------"));
+		Serial.print(FPSTR(" size="));
 		Serial.print(getKeySize());
 		Serial.print(FPSTR(") name="));
 		Serial.print(getName());
 		Serial.print(FPSTR(" descr="));
 		Serial.print(getDescription());
-		Serial.println(FPSTR("------------------"));
+		Serial.print(FPSTR(" inMemory="));
+		Serial.println(isInMemory());
+		Serial.println(FPSTR("---------------------------"));
 
 		//const char* const* keys=getKeys();
 		for(uint8_t i=0;i<getKeySize();i++){
@@ -239,7 +248,18 @@ public:
 		return getKeyPreffix()+getKey(index);
 	}
 
+	String getJsonForNonMemoryBox(){
+		String fileName=EspSettingsUtil::getSettingsFilePath(getName());
+		String result=EspSettingsUtil::loadStringFromFile(fileName);
+
+		return result;
+	}
+
 	String getJson(){
+
+		if(!isInMemory()){
+			return getJsonForNonMemoryBox();
+		}
 		String result="";
 
 		for(uint8_t i=0;i<getKeySize();i++){
@@ -260,9 +280,7 @@ public:
 	}
 
 protected:
-	//String name;
 	String* vals;
-	//uint8_t keySize1=0;
 	boolean saveRequired=false;
 };
 

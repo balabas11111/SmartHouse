@@ -9,10 +9,12 @@
 #define LIBRARIES_PINDIGITAL_DeviceHelper_H_
 
 #include <Arduino.h>
+#include <interfaces/DeviceLibable.h>
 #include <interfaces/ItemFieldDescriptor.h>
 #include "AbstractItem.h"
 
 #include "interfaces/Initializable.h"
+#include "interfaces/ItemFieldProvider.h"
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/JSONprovider.h"
 #include "interfaces/Loopable.h"
@@ -25,6 +27,7 @@
 
 #include "StatusMessage/StatusMessage.h"
 #include "TimeTrigger.h"
+#include "I2Chelper.h"
 
 const PROGMEM char DeviceHelper_NAME[] = "deviceHelper";
 
@@ -36,7 +39,6 @@ public:
 				JSONprovider** jsonProviders,uint8_t jsonProvidersSize,
 				AbstractItem** abstrItems,uint8_t abstrItemsSize,
 				SendAble** senders,uint8_t sendersSize,
-				/*ItemFieldProvider** itemFieldsProviders,	uint8_t itemFieldsProviderSize,*/
 				EspSettingsBox* espSettingsBox,
 				long minAlarmInterval);
 	void displayDetails();
@@ -46,14 +48,12 @@ public:
 	boolean init(Initializable** initItems,uint8_t initItemsSize);
 	void update();
 
+	String getProvidersAndSensorsJson();
 	String getProvidersJson();
 	String getAbstrItemsJson();
 
-	StatusMessage processJson(String target,String page,String json);
-	String getJson(JSONprovider** sensors,uint8_t size);
-	String getJsonAbstractItems(AbstractItem** sensors,uint8_t size);
-
 	void printDeviceDiagnostic();
+	void printDeviceArrayDetails();
 
 	void printDeviceDiagnosticNoSpiff();
 
@@ -63,10 +63,29 @@ public:
 	void prepareTrigger();
 	void executePostponedCommand();
 
-	StatusMessage saveSensorValues(String page,String json);
+	StatusMessage saveSensorSettings(String page,String json);
 
 	String getName(){
 		return FPSTR(DeviceHelper_NAME);
+	}
+
+	StatusMessage processIncomeJson(String target,String page,String json){
+		yield();
+		if(target==NULL || target.length()==0){
+			return StatusMessage(STATUS_INVALID_LENGTH_INT);
+		}
+
+		if(checkNamePage(target, page)){
+			return processJson(page,json);
+		}
+
+		for(uint8_t i=0;i<jsonProcessorsSize;i++){
+			if(jsonProcessors[i]->checkNamePage(target,page)){
+				return jsonProcessors[i]->processJson(page,json);
+			}
+		}
+
+		return StatusMessage(STATUS_NOT_FOUND_INT);
 	}
 
 	StatusMessage processJson(String page,String json){
@@ -80,7 +99,7 @@ public:
 
 		if(page==FPSTR(PAGE_SENSORS)){
 			Serial.println(FPSTR("Process sensors"));
-			return saveSensorValues(page,json);
+			return saveSensorSettings(page,json);
 		}
 
 		return StatusMessage(STATUS_UNKNOWN_INT);
@@ -93,11 +112,16 @@ public:
 		}
 
 		if(provider==FPSTR(MESSAGE_SERVER_ARG_VAL_ALL)){
-			return getProvidersJson();
+			return getProvidersAndSensorsJson();
 		}
 
-		if(provider==FPSTR(DeviceHelper_NAME) && page==FPSTR(PAGE_SENSORS)){
-			return getAbstrItemsJson();
+		if(provider==FPSTR(DeviceHelper_NAME)){
+			if(page==FPSTR(PAGE_SENSORS)){
+				return getAbstrItemsJson();
+			}
+			if(page==FPSTR(PAGE_PROVIDERS)){
+				return getProvidersJson();
+			}
 		}
 
 		for(uint8_t i=0;i<jsonProvidersSize;i++){
@@ -109,6 +133,9 @@ public:
 		return StatusMessage(STATUS_ITEM_NOT_FOUND_INT).getJson();
 	}
 
+protected:
+	String getAbstractItemsAsString(AbstractItem** items,uint8_t size);
+	String getJSONprovidersAsString(JSONprovider** items,uint8_t size);
 private:
 
 	EspSettingsBox* espSettingsBox;

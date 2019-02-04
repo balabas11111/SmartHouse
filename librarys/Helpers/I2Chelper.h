@@ -33,6 +33,11 @@ public:
 
 	virtual ~I2Chelper(){};
 
+	static uint8_t initStatic(uint8_t clockPin,uint8_t dataPin){
+		Wire.begin(dataPin, clockPin);
+		return scan();
+	}
+
 	virtual bool init(){
 		return initialize(true);
 	}
@@ -41,7 +46,7 @@ public:
 		Serial.println(FPSTR(MESSAGE_I2CHELPER_BEGIN_INIT));
 		if(init){
 			initWire();
-			scan();
+			devCount=scan();
 		}
 
 		initialized=init;
@@ -49,7 +54,7 @@ public:
 		return init;
 	}
 
-	void scan(){
+	static uint8_t scan(){
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 		Serial.println(FPSTR(MESSAGE_I2CHELPER_SETUP_I2C_BUS));
 		  byte error, address;
@@ -94,7 +99,7 @@ public:
 		  }
 		  Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
-		  devCount=nDevices;
+		  return nDevices;
 	}
 
 	uint8_t getDevCount(){

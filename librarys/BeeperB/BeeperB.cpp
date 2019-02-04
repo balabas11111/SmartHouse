@@ -26,6 +26,7 @@ const int defaultBeep=500;
 		shortBeep();
 	}
 	void BeeperB::shortBeep(uint8_t count){
+		if(count==0){count=1;}
 		for(uint8_t i=0;i<count;i++){
 			shortBeep();
 		}

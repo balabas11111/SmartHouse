@@ -99,8 +99,12 @@ public:
 	virtual String getDescription() override{
 		return FPSTR(NTP_SETTINGS_BOX_DESCR);
 	}
-	String getSettingsKind()override{
+	String getSettingsKind() override{
 		return FPSTR(SETTINGS_KIND_net);
+	}
+
+	virtual boolean isInMemory() override{
+		return false;
 	}
 };
 

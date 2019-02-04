@@ -20,7 +20,7 @@ const char* const MIN_MAX_ALARM_FIELDS[]      PROGMEM=
 		"alarmEnabled","minVal","maxVal"
 };
 const char MIN_MAX_ALARM_DEFAULTS[]      PROGMEM=
-		"\"IFP_ThingSpeak\": {\"id\": \"1\",\"alarmEnabled\": \"0\",\"minVal\": \"-512\", \"maxVal\": \"512\"}";
+		"{\"id\": \"1\",\"name\": \"IFP_MinMaxAlarm\", \"items\": [\"alarmEnabled\": \"0\",\"minVal\": \"-512\", \"maxVal\": \"512\"]}";
 
 class ItemFieldProviderMinMaxAlarm: public ItemFieldDescriptor {
 public:
