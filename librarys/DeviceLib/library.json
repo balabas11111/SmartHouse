@@ -1,0 +1,19 @@
+{
+  "name": "DeviceLib",
+  "keywords": "json, rest, http, web",
+  "description": "Makes ESP8266 programming more object oriented. work with sensors as with items.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/balabas11111/SmartHouse.git"
+  },
+  "version": "1.0",
+  "authors": {
+    "name": "Vitaliy Vlasov",
+    "url": ""
+  },
+  "exclude": [
+    "examples"
+  ],
+  "frameworks": "arduino",
+  "platforms": "*"
+}

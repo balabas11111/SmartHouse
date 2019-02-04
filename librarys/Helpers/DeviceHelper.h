@@ -18,7 +18,6 @@
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/JSONprovider.h"
 #include "interfaces/Loopable.h"
-#include "interfaces/Measurable.h"
 #include "interfaces/SendAble.h"
 #include "interfaces/Nameable.h"
 

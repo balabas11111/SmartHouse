@@ -12,8 +12,6 @@
 #include "Arduino.h"
 #include "ESP_Consts.h"
 #include "interfaces/JSONprovider.h"
-#include "interfaces/DeviceLibable.h"
-//#include <interfaces/ItemFieldDescriptor.h>
 #include "interfaces/ItemFieldProvider.h"
 
 class AbstractItem: public JSONprovider, public ItemFieldProvider {

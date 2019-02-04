@@ -11,6 +11,9 @@
 #include "Arduino.h"
 #include "FS.h"
 #include "IPAddress.h"
+#include "ArduinoJson.h"
+
+#include "ESP_Consts.h"
 
 class EspSettingsUtil {
 public:

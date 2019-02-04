@@ -14,7 +14,6 @@
 
 #include "AbstractItem.h"
 #include "interfaces/Initializable.h"
-#include "interfaces/Measurable.h"
 
 #include "ESP_Consts.h"
 

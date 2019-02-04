@@ -12,7 +12,6 @@
 
 class Nameable {
 public:
-	Nameable(){};
 	virtual ~Nameable(){};
 
 	virtual String getName()=0;

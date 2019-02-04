@@ -10,10 +10,9 @@
 
 #include "Arduino.h"
 #include "interfaces/ItemFieldProvider.h"
-#include "AbstractItem.h"
-#include "Initializable.h"
-#include "Measurable.h"
+#include "interfaces/Initializable.h"
 
+#include "AbstractItem.h"
 #include "ESP_Consts.h"
 
 #include "BH1750.h"
