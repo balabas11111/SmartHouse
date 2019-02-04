@@ -30,7 +30,7 @@ public class GzipUtility {
     }
 
     public static String compressGzipFile(Path path) {
-        String fileName=path.toString();
+        String fileName=new String(path.toString());
         String gzipFile=fileName+GZ_EXT;
         
         compressGzipFile(fileName, gzipFile);

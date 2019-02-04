@@ -70,7 +70,7 @@ public class EspPackager
             scanFolders(conf);
             recreateTargetFolder(conf);
             resolvePlaceHolders(conf);
-            uploadFiles(conf);
+            //uploadFiles(conf);
             
             ok=conf.isOk();
         
@@ -146,7 +146,7 @@ public class EspPackager
                 
                 Path targetPath=conf.getTargetPath(sourceFile);
                 
-                Path result=FileUtility.saveStringToFile(targetPath, sourceContent);
+                FileUtility.saveStringToFile(targetPath, sourceContent);
                 
                 //System.out.println(" target="+targetPath);
                 //System.out.println(" content="+sourceContent);
@@ -156,7 +156,7 @@ public class EspPackager
                 System.out.println(" saved="+gzipFileName);
                 
                 if(conf.deleteHtml){
-                    //FileUtility.deleteFile(targetPath.toFile()); 
+                    FileUtility.deleteFile(targetPath.toFile()); 
                 }
                 System.out.println("----------------------------------------------");
             }
