@@ -56,18 +56,16 @@ public:
 		uint8_t size=entity->getSize();
 		EntityBase* arr[size];
 
-		for(uint8_t i=0;i<size;i++){
-			uint8_t key=entity->getKeys()[i];
-
-			if(entity->inMemory()){
+		if(entity->inMemory()){
+			for(uint8_t i=0;i<size;i++){
+				uint8_t key=entity->getKeys()[i];
 				EntityBase* cloned=entityBases[key]->clone();
 				arr[i]=cloned;
-			}else{
-				EntityBase* copied=entityBases[key];
-				arr[i]=copied;
 			}
 
 			entity->initEntity(arr,this);
+		}else{
+			entity->initEntity(nullptr,this);
 		}
 	}
 
