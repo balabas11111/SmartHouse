@@ -135,22 +135,38 @@ public:
 		return result;
 	}
 
+	static String getExtraBoxFilePath(String basePath,String boxName){
+		String jsonFileName=basePath;
+				jsonFileName+=boxName;
+				jsonFileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_TXT_EXT);
+		return jsonFileName;
+	}
+
+	static String getExtraBoxKeyFilePath(String basePath,String boxName,String key){
+		String jsonFileName=basePath;
+				jsonFileName+=boxName;
+				jsonFileName+=FPSTR(ESPSETTINGSBOX_FOLDER_DIVIDER);
+				jsonFileName+=key;
+				jsonFileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_TXT_EXT);
+		return jsonFileName;
+	}
+
 	static String getAbstractItemSettingsFilePath(String abstractItemName){
-		String jsonFileName=FPSTR(ESPSETTINGSBOX_EXTRA_SETTINGS_PATH);
+		String jsonFileName=FPSTR(ESPSETTINGSBOX_EXTRA_SETTINGS_BOX_PATH);
 				jsonFileName+=abstractItemName;
 				jsonFileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_TXT_EXT);
 		return jsonFileName;
 	}
 
 	static String getExtraSettingsBoxFilePath(String settingsName){
-		String jsonFileName=FPSTR(ESPSETTINGSBOX_EXTRA_SETTINGS_PATH);
+		String jsonFileName=FPSTR(ESPSETTINGSBOX_EXTRA_SETTINGS_BOX_PATH);
 				jsonFileName+=settingsName;
 				jsonFileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_TXT_EXT);
 		return jsonFileName;
 	}
 
 	static String getExtraSettingsBoxFolderPath(String settingsName){
-		String jsonFileName=FPSTR(ESPSETTINGSBOX_EXTRA_SETTINGS_PATH);
+		String jsonFileName=FPSTR(ESPSETTINGSBOX_EXTRA_SETTINGS_BOX_PATH);
 				jsonFileName+=settingsName;
 				jsonFileName+=FPSTR("/");
 		return jsonFileName;

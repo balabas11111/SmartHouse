@@ -62,8 +62,14 @@ const char* const SETTINGS_KINDS_SAVE_ENABLED[] PROGMEM=
 class ESPExtraSettingsBox:public Nameable, public Identifiable {
 public:
 	ESPExtraSettingsBox(){};
-
 	virtual ~ESPExtraSettingsBox(){};
+
+	virtual String getPath(){return FPSTR(ESPSETTINGSBOX_EXTRA_SETTINGS_BOX_PATH);}
+	virtual boolean isInMemory(){return false;}
+	virtual const char* const* getDefaults()=0;
+	virtual const char* const*  getKeys()=0;
+	virtual String getDescription()=0;
+	virtual String getKind()=0;
 
 	virtual boolean init(){
 		Serial.print(FPSTR("-----Init Extra Box---"));
@@ -77,13 +83,6 @@ public:
 		Serial.println(FPSTR("...done"));
 		return true;
 	}
-
-	virtual String getName()=0;
-	virtual boolean isInMemory(){return false;}
-	virtual const char* const* getDefaults()=0;
-	virtual const char* const*  getKeys()=0;
-	virtual String getDescription()=0;
-	virtual String getKind()=0;
 
 	virtual int fillDefaultValues(){
 		Serial.println(FPSTR("fill default values"));
@@ -100,6 +99,14 @@ public:
 		return getKeySize()-1;
 	}
 
+	String getBoxFilePath(){
+		return getPath()+getName()+".txt";
+	}
+
+	String getKeyFilePath(String key){
+		return getPath()+getName()+"/"+key+".txt";
+	}
+
 	boolean load(){
 
 	  if(!isInMemory()){
@@ -107,7 +114,7 @@ public:
 		  Serial.println(getName());
 	  }
 
-	  String fileName=EspSettingsUtil::getExtraSettingsBoxFilePath(getName());
+	  String fileName=getBoxFilePath();
 	  Serial.print(FPSTR("---Load Extra BOX from file "));
 	  Serial.println(fileName);
 
@@ -154,14 +161,14 @@ public:
 	}
 
 	virtual boolean save(){
-		String fileName=EspSettingsUtil::getExtraSettingsBoxFilePath(getName());
+		String fileName=getBoxFilePath();
 		return EspSettingsUtil::saveStringToFile(fileName, getJsonGenerated());
 	}
 
 	virtual boolean validateFile(){
 		 Serial.println(FPSTR("-------Validate BOX file------"));
 
-	   String boxFileName=EspSettingsUtil::getExtraSettingsBoxFilePath(getName());
+	   String boxFileName=getBoxFilePath();
 	   boolean fileExists=EspSettingsUtil::isFileExists(boxFileName);
 
 	   if(!fileExists){
@@ -239,7 +246,7 @@ public:
 
 	String getValueFromFile(int index){
 		String key=getKey(index);
-		String fileName=EspSettingsUtil::getExtraSettingsBoxFieldPath(getName(), key);
+		String fileName=getKeyFilePath(key);
 
 		if(!EspSettingsUtil::isFileExists(fileName)){
 			return getDefaultValue(index);
@@ -250,7 +257,7 @@ public:
 
 	boolean saveValueToFile(int index,String fieldValue){
 		String key=getKey(index);
-		String fileName=EspSettingsUtil::getExtraSettingsBoxFieldPath(getName(), key);
+		String fileName=getKeyFilePath(key);
 
 		if(EspSettingsUtil::isFileExists(fileName) && fieldValue==EspSettingsUtil::loadStringFromFile(fileName)){
 			return true;
@@ -374,7 +381,7 @@ public:
 	}
 
 	String getJsonFromFile(){
-		String fileName=EspSettingsUtil::getExtraSettingsBoxFilePath(getName());
+		String fileName=getBoxFilePath();
 		String result=EspSettingsUtil::loadStringFromFile(fileName);
 
 		return result;
