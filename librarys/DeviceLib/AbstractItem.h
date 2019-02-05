@@ -8,13 +8,11 @@
 #ifndef LIBRARIES_DEVICELIB_AbstractItem_H_
 #define LIBRARIES_DEVICELIB_AbstractItem_H_
 
-#include <ItemFieldProviderService.h>
 #include "Arduino.h"
 #include "ESP_Consts.h"
 #include "interfaces/JSONprovider.h"
-#include "interfaces/ItemFieldProvider.h"
 
-class AbstractItem: public JSONprovider, public ItemFieldProvider {
+class AbstractItem: public JSONprovider {
 
 	struct childRecords{
 			uint8_t id;
@@ -47,10 +45,6 @@ public:
 	virtual ~AbstractItem(){};
 
 	virtual String getKind()=0;
-
-	virtual const uint8_t* getItemFieldsIds() override{
-		return ITEM_FIELDS_THINGSPEAK;
-	}
 
 	SensorValue* getItems(){
 		return items;
@@ -368,8 +362,7 @@ protected:
 				+"\"maxVal\":\""+String(m.maxVal)+"\","
 				+"\"fieldId\":\""+String(m.fieldId)+"\","
 				+"\"queue\":\""+m.queue+"\""
-				+getExtraJsonChild(ind)
-				+getItemFieldProviderJson(getName(),m.name)+"}";
+				+getExtraJsonChild(ind)+"}";
 	}
 
 	String getSensorValueSimpleJson(SensorValue m){

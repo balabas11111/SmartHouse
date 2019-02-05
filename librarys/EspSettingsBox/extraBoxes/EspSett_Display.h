@@ -10,24 +10,7 @@
 
 #include "Arduino.h"
 #include "ESPExtraSettingsBox.h"
-/*
-const char DISPLAY_SETTINGS_BOX_DESCR[] PROGMEM ="��������� ������";
 
-const char DISPLAY_displayAlvaysOn[]           PROGMEM ="displayAlvaysOn";
-const char DISPLAY_displayAutochange[]         PROGMEM ="displayAutochange";
-
-const uint8_t DISPLAY_displayAlvaysOn_ind      PROGMEM =0;
-const uint8_t DISPLAY_displayAutochange_ind    PROGMEM =1;
-
-const char DISPLAY_displayAlvaysOn_def[]       PROGMEM ="737840576:AAH_9-PM8knquJ3x1GN-sOTX4NGPNdU50iE";
-const char DISPLAY_displayAutochange_def[]     PROGMEM ="JPhZDxJ7MBZV9HPkR0YE6A";
-
-const char* const DISPLAY_EXTRA_KEYS[] PROGMEM={DISPLAY_displayAlvaysOn,
-											DISPLAY_displayAutochange};
-
-const char* const DISPLAY_EXTRA_DEFAULTS[] PROGMEM={DISPLAY_displayAlvaysOn_def,
-												DISPLAY_displayAutochange_def};
-*/
 const char DISPLAY_SETTINGS_BOX_DESCR[] PROGMEM ="Экран";
 
 const uint8_t DISPLAY_alvaysOn                 PROGMEM =0;
@@ -52,6 +35,10 @@ public:
 	}
 	virtual ~EspSett_Display(){};
 
+	virtual uint8_t getId(){
+		return ExtraBox_Display;
+	}
+
 	virtual String getName() override{
 		return FPSTR(DISPLAY_SETTINGS_BOX_NAME);
 	}
@@ -67,7 +54,7 @@ public:
 	virtual String getDescription() override{
 		return FPSTR(DISPLAY_SETTINGS_BOX_DESCR);
 	}
-	virtual String getSettingsKind()override{
+	virtual String getKind()override{
 		return FPSTR(SETTINGS_KIND_device);
 	}
 };

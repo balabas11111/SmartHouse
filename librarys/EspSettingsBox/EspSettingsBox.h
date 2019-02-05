@@ -8,9 +8,7 @@
 #ifndef LIBRARIES_TIMETRIGGER_ESPSETTINGSBOX_H_
 #define LIBRARIES_TIMETRIGGER_ESPSETTINGSBOX_H_
 
-#include <interfaces/ItemFieldDescriptor.h>
 #include "Arduino.h"
-//#include "ESP8266WiFi.h"
 #include "FS.h"
 #include "ArduinoJson.h"
 #include "ESP_Consts.h"
@@ -26,14 +24,13 @@
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/JSONprovider.h"
 
-#include "ItemFieldProviderService.h"
 #include "ExtraSettingsBoxService.h"
 #include "AbstractItemSettingsService.h"
 
 const PROGMEM char EspSettingsBox_NAME[] = "espSettingsBox";
 
 class EspSettingsBox: public Initializable, public JSONprocessor , public JSONprovider,
-	public ItemFieldProviderService, public ExtraSettingsBoxService, public AbstractItemSettingsService, public DeviceLibable {
+	public ExtraSettingsBoxService, public AbstractItemSettingsService, public DeviceLibable {
 
 public:
 	EspSettingsBox(){
@@ -143,12 +140,12 @@ public:
 		saveSettingsJson();
 		Serial.println(FPSTR("---Saved as AP---"));
 	}
-
+/*
 	boolean saveSettingToFile(String settingsName,String str){
 		String fileName=EspSettingsUtil::getSettingsFilePath(settingsName);
 		return EspSettingsUtil::saveStringToFile(fileName, str);
 	}
-
+*/
 	String getDeviceNameFull(){
 		String result=FPSTR(MESSAGE_THINGSPEAK_NAME_FOR_REQUEST_EQ);
 		result+=DeviceLocation;
@@ -184,14 +181,6 @@ public:
 
 	boolean saveThingSpeakChannelCreation(String response/*,boolean manageChannel*/);
 	String getThingSpeakChannelUrl();
-
-	virtual void saveDefaultItemFieldProviderValuesIfMissing(uint8_t pId,String aName,String sName) override{
-		ItemFieldProviderService::saveDefaultItemFieldProviderValuesIfMissing(pId, aName, sName);
-	}
-
-	virtual ItemFieldProviderService* getItemProviderService() override{
-		return this;
-	}
 
 //--------------------device settings kind (page)-------------------
 	#ifdef ESP8266

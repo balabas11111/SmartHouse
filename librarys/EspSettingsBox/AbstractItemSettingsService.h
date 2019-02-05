@@ -27,34 +27,11 @@ public:
 			Serial.println(items[i]->getName());
 
 			loadAbstractItemFromFile(items[i]);
-			items[i]->setItemFieldProviderService(getItemProviderService());
-
-			saveDefaultItemFieldProviderIfMissing(items[i]);
 
 			Serial.println(FPSTR("JSON="));
 			Serial.println(items[i]->getJson());
 		}
 	}
-
-	virtual void saveDefaultItemFieldProviderIfMissing(AbstractItem* abstrItem){
-		if(!abstrItem->hasItemFields()){
-			Serial.print(abstrItem->getName());
-			Serial.println(FPSTR(" has no itemFields"));
-			return;
-		}else{
-			Serial.print(abstrItem->getName());
-			Serial.println(FPSTR(" init itemFields"));
-		}
-
-		for(uint8_t j=0;j<abstrItem->getItemFieldsCount();j++){
-			for(uint8_t i=0;i<abstrItem->getItemCount();i++){
-				saveDefaultItemFieldProviderValuesIfMissing(j,abstrItem->getName(),abstrItem->getName(i));
-			}
-		}
-	}
-
-	virtual ItemFieldProviderService* getItemProviderService()=0;
-	virtual void saveDefaultItemFieldProviderValuesIfMissing(uint8_t pId,String aName,String sName)=0;
 
 	void saveSensorsToFile(AbstractItem** items,uint8_t size){
 		for(uint8_t i=0;i<size;i++){
@@ -64,7 +41,7 @@ public:
 
 	void loadAbstractItemFromFile(AbstractItem* item){
 
-		String fileName=EspSettingsUtil::getSettingsFilePath(item->getName());
+		String fileName=EspSettingsUtil::getAbstractItemSettingsFilePath(item->getName());
 
 		File file = SPIFFS.open(fileName, "r");
 
@@ -139,7 +116,7 @@ public:
 
 	void saveAbstractItemToFile(AbstractItem* item){
 
-		String fileName=EspSettingsUtil::getSettingsFilePath(item->getName());
+		String fileName=EspSettingsUtil::getAbstractItemSettingsFilePath(item->getName());
 
 		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN));
 		Serial.print(fileName);

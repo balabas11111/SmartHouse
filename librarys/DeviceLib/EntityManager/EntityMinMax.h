@@ -8,13 +8,13 @@
 #ifndef LIBRARIES_DEVICELIB_ENTITYMANAGER_ENTITYMINMAX_H_
 #define LIBRARIES_DEVICELIB_ENTITYMANAGER_ENTITYMINMAX_H_
 
+#include <EntityManager/EntityFields.h>
 #include "Arduino.h"
 
 #include "interfaces/Identifiable.h"
 #include "interfaces/Nameable.h"
 
 #include "ESP_Consts.h"
-#include "EntityManager/EntityBase.h"
 
 const uint8_t MinMaxSize PROGMEM =3;
 
@@ -26,12 +26,13 @@ const char* const MinMaxDefaults[]      PROGMEM=
 		"0","0","1"
 };
 
-class EntityMinMax:public EntityBase {
+class EntityMinMax:public EntityFields {
 public:
+	EntityMinMax(){};
 	virtual ~EntityMinMax();
 
-	EntityBase* clone() const {return new EntityMinMax(*this);}
-	virtual uint16_t getId(){return ENTITY_MIN_MAX_INDEX;}
+	EntityFields* clone() const {return new EntityMinMax(*this);}
+	virtual uint8_t getId(){return ENTITY_MIN_MAX_INDEX;}
 	virtual const char* const* getKeys(){return MinMaxKeys;}
 	virtual const char* const* getDefaults(){return MinMaxDefaults;}
 	//virtual uint8_t getSize(){return MinMaxSize;}

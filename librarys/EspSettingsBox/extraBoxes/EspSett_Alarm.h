@@ -10,18 +10,7 @@
 
 #include "Arduino.h"
 #include "ESPExtraSettingsBox.h"
-/*
-const char ALARM_alamSendInterval[]           PROGMEM ="alamSendInterval";
 
-const uint8_t ALARM_alamSendInterval_ind      PROGMEM =0;
-
-const char ALARM_alamSendInterval_def[]       PROGMEM ="737840576:AAH_9-PM8knquJ3x1GN-sOTX4NGPNdU50iE";
-
-
-const char* const ALARM_EXTRA_KEYS[]          PROGMEM={ALARM_alamSendInterval};
-
-const char* const ALARM_EXTRA_DEFAULTS[]      PROGMEM={ALARM_alamSendInterval_def};
-*/
 const char ALARM_SETTINGS_BOX_DESCR[]         PROGMEM ="Режим тревоги";
 
 const uint8_t ALARM_sendInterval_ind            PROGMEM =0;
@@ -47,11 +36,13 @@ const char* const ALARM_EXTRA_DEFAULTS[]      PROGMEM=
 
 class EspSett_Alarm:public ESPExtraSettingsBox {
 public:
-	EspSett_Alarm(){
-		//this->name=FPSTR(ALARM_SETTINGS_BOX_NAME);
-		//this->keySize=ARRAY_SIZE(ALARM_EXTRA_KEYS);
-	}
+	EspSett_Alarm(){}
+
 	virtual ~EspSett_Alarm(){};
+
+	virtual uint8_t getId(){
+		return ExtraBox_Alarm;
+	}
 
 	virtual String getName() override{
 		return FPSTR(ALARM_SETTINGS_BOX_NAME);
@@ -68,7 +59,7 @@ public:
 	virtual String getDescription() override{
 		return FPSTR(ALARM_SETTINGS_BOX_DESCR);
 	}
-	virtual String getSettingsKind()override{
+	virtual String getKind()override{
 		return FPSTR(SETTINGS_KIND_device);
 	}
 };

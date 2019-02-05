@@ -13,7 +13,7 @@
 class Identifiable {
 public:
 	virtual ~Identifiable(){};
-	virtual uint16_t getId()=0;
+	virtual uint8_t getId()=0;
 };
 
 #endif /* LIBRARIES_DEVICELIB_IDENTIFIABLE_H_ */

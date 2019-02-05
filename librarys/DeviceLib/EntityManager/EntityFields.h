@@ -5,8 +5,8 @@
  *      Author: Vitaliy_Vlasov
  */
 
-#ifndef LIBRARIES_DEVICELIB_ENTITYMANAGER_ENTITYBASE_H_
-#define LIBRARIES_DEVICELIB_ENTITYMANAGER_ENTITYBASE_H_
+#ifndef LIBRARIES_DEVICELIB_ENTITYMANAGER_ENTITYFIELDS_H_
+#define LIBRARIES_DEVICELIB_ENTITYMANAGER_ENTITYFIELDS_H_
 
 #include "Arduino.h"
 
@@ -26,15 +26,15 @@ const char* const EntityBaseNames[]      PROGMEM=
 		"MqFields"
 };
 
-class EntityBase: public Nameable,public Identifiable {
+class EntityFields: public Nameable,public Identifiable {
 public:
-	virtual ~EntityBase(){};
+	virtual ~EntityFields(){};
 
 	virtual const char* const* getKeys()=0;
 
 	virtual const char* const* getDefaults()=0;
 
-	virtual EntityBase* clone() const =0;
+	virtual EntityFields* clone() const =0;
 
 
 	virtual uint8_t getSize(){return ARRAY_SIZE(getKeys());}
@@ -63,4 +63,4 @@ protected:
 	String* values;
 };
 
-#endif /* LIBRARIES_DEVICELIB_ENTITYMANAGER_ENTITYBASE_H_ */
+#endif /* LIBRARIES_DEVICELIB_ENTITYMANAGER_ENTITYFIELDS_H_ */

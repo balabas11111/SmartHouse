@@ -356,8 +356,8 @@ String EspSettingsBox::getJson(){
 						\
 						{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
 						{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
-						{\"name\":\"thingSpeakChannelUrl\",\"val\":\""+getThingSpeakChannelUrl()+"\"},"
-						+getExtraBoxJsonByKind(SETTINGS_KIND_all)+"],\
+						{\"name\":\"thingSpeakChannelUrl\",\"val\":\""+getThingSpeakChannelUrl()+"\"}],\
+						\"entity\": {"+getExtraBoxJsonByKind(SETTINGS_KIND_all)+"},\
 						\"DeviceId\":\""+DeviceId+"\",\
 						\"DeviceDescription\":\""+DeviceDescription+"\",\
 						\"DeviceLocation\":\""+DeviceLocation+"\",\
@@ -389,8 +389,8 @@ result=
 	{\"name\":\"accessUser\",\"val\":\""+String(accessUser)+"\"},\
 	{\"name\":\"accessPass\",\"val\":\"*****\"},\
 	{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\"},\
-	{\"name\":\"settingsPass\",\"val\":\"*****\"},"
-	+getExtraBoxJsonByKind(page)+"]}";
+	{\"name\":\"settingsPass\",\"val\":\"*****\"}],\
+	\"entity\": {"+getExtraBoxJsonByKind(page)+"}}";
 }
 if(page==FPSTR(PAGE_NET)){
 
@@ -406,9 +406,8 @@ result=
 	{\"name\":\"gateIp\",\"val\":\""+gateIp.toString()+"\"},\
 	{\"name\":\"subnetIp\",\"val\":\""+subnetIp.toString()+"\"},\
 	{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\"},\
-	{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\"},\
-	{\"name\":\"serverIp\",\"val\":\""+serverIp.toString()+"\"},"
-	+getExtraBoxJsonByKind(page)+"]}";
+	{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\"}],\
+	\"entity\": {"+getExtraBoxJsonByKind(page)+"}}";
 }
 if(page==FPSTR(PAGE_PUBLISH)){
 
@@ -431,8 +430,8 @@ result=
 	{\"name\":\"postDataToHttpInterval\",\"val\":\""+String(postDataToHttpInterval)+"\"},\
 	{\"name\":\"httpPostIp\",\"val\":\""+httpPostIp.toString()+"\"},\
 	{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
-	{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"},"
-		+getExtraBoxJsonByKind(page)+"]}";
+	{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}],\
+	\"entity\": {"+getExtraBoxJsonByKind(page)+"}}";
 
 }
 

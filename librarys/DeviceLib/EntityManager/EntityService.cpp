@@ -46,8 +46,8 @@ EntityService::~EntityService() {
  String EntityService::constructEntityValuePath(String parent,uint8_t eId,uint8_t eBid,uint8_t fId){
 	return parent+FPSTR(DIV)
 			+entities[eId]->getName()+FPSTR(DIV)
-			+entityBases[eBid]->getName()+FPSTR(DIV)
-			+String(entityBases[eBid]->getKeys()[fId])+FPSTR(TXT);
+			+entityFieldsAll[eBid]->getName()+FPSTR(DIV)
+			+String(entityFieldsAll[eBid]->getKeys()[fId])+FPSTR(TXT);
 }
  String EntityService::constructEntityValuePathByNames(String parent,String entityName,String baseEntityName,String fieldName){
 	return parent+FPSTR(DIV)

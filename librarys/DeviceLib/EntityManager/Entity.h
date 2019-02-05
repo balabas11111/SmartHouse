@@ -8,11 +8,11 @@
 #ifndef LIBRARIES_DEVICELIB_ENTITYMANAGER_ENTITY_H_
 #define LIBRARIES_DEVICELIB_ENTITYMANAGER_ENTITY_H_
 
+#include <EntityManager/EntityFields.h>
 #include "Arduino.h"
 
 #include "interfaces/Identifiable.h"
 #include "interfaces/Nameable.h"
-#include "EntityManager/EntityBase.h"
 #include "EntityManager/EntityServiceInt.h"
 
 #include "ESP_Consts.h"
@@ -29,14 +29,14 @@ public:
 
 	virtual boolean inMemory(){return true;}
 
-	void initEntity(EntityBase** entityBases,EntityServiceInt* entityService){
+	void initEntity(EntityFields** entityBases,EntityServiceInt* entityService){
 		this->entityBases=entityBases;
 		this->entityService=entityService;
 	}
 
 private:
 	EntityServiceInt* entityService;
-	EntityBase** entityBases;
+	EntityFields** entityBases;
 	uint16_t index;
 };
 

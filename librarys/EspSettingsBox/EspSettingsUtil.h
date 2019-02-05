@@ -19,6 +19,8 @@ class EspSettingsUtil {
 public:
 
 	static boolean isFileExists(String fileName){
+		return SPIFFS.exists(fileName);
+	/*
 	   File file = SPIFFS.open(fileName, "r");
 
 	   boolean exists=!(!file || file.size()==0);
@@ -36,6 +38,7 @@ public:
 	   file.close();
 
 	   return exists;
+	   */
 	}
 
 	static String getFieldValueFromFile(String fileName,String fieldName){
@@ -132,10 +135,31 @@ public:
 		return result;
 	}
 
-	static String getSettingsFilePath(String settingsName){
-		String jsonFileName=FPSTR(ESPSETTINGSBOX_SETTINGS_PATH);
+	static String getAbstractItemSettingsFilePath(String abstractItemName){
+		String jsonFileName=FPSTR(ESPSETTINGSBOX_EXTRA_SETTINGS_PATH);
+				jsonFileName+=abstractItemName;
+				jsonFileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_TXT_EXT);
+		return jsonFileName;
+	}
+
+	static String getExtraSettingsBoxFilePath(String settingsName){
+		String jsonFileName=FPSTR(ESPSETTINGSBOX_EXTRA_SETTINGS_PATH);
 				jsonFileName+=settingsName;
 				jsonFileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_TXT_EXT);
+		return jsonFileName;
+	}
+
+	static String getExtraSettingsBoxFolderPath(String settingsName){
+		String jsonFileName=FPSTR(ESPSETTINGSBOX_EXTRA_SETTINGS_PATH);
+				jsonFileName+=settingsName;
+				jsonFileName+=FPSTR("/");
+		return jsonFileName;
+	}
+
+	static String getExtraSettingsBoxFieldPath(String settingsName,String fieldName){
+		String jsonFileName=getExtraSettingsBoxFolderPath(settingsName);
+						jsonFileName+=fieldName;
+						jsonFileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_TXT_EXT);
 		return jsonFileName;
 	}
 

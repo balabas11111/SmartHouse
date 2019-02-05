@@ -48,7 +48,7 @@ public:
 
 	void beginSetExtraSettingsValue(String page){
 		for(uint8_t i=0;i<getExtraBoxesCount();i++){
-			if(extraBoxes[i]->getSettingsKind()==page){
+			if(extraBoxes[i]->getKind()==page){
 				extraBoxes[i]->setSaveRequired(false);
 			}
 		}
@@ -75,42 +75,38 @@ public:
 	}
 
 	boolean isSettingsFileExists(String settingsName){
-	   String fileName=EspSettingsUtil::getSettingsFilePath(settingsName);
+	   String fileName=EspSettingsUtil::getExtraSettingsBoxFilePath(settingsName);
 	   return EspSettingsUtil::isFileExists(fileName);
 	}
 
 	boolean deleteSettingsFile(String settingsName){
-		String fileName=EspSettingsUtil::getSettingsFilePath(settingsName);
+		String fileName=EspSettingsUtil::getExtraSettingsBoxFolderPath(settingsName);
+		EspSettingsUtil::deleteFile(fileName);
+
+		fileName=EspSettingsUtil::getExtraSettingsBoxFilePath(settingsName);
 		return EspSettingsUtil::deleteFile(fileName);
 	}
 
-	String getDefaultExtraBoxJson(){
-		return "{\"name\":\"extraBoxesCount\",\"val\":\""+String(getExtraBoxesCount())+"\"}";
-	}
-
 	String getExtraBoxJsonByKind(String extraBoxKind){
-		String result="";
+		uint8_t count=0;;
+
+		String result="{\"items\": [";
 		for(uint8_t i=0;i<getExtraBoxesCount();i++){
-			if(extraBoxKind==FPSTR(SETTINGS_KIND_all) || extraBoxes[i]->getSettingsKind()==extraBoxKind){
+			if(extraBoxKind==FPSTR(SETTINGS_KIND_all) || extraBoxes[i]->getKind()==extraBoxKind){
 				result+=extraBoxes[i]->getJson();
 				result+=",";
+				count++;
 			}
 		}
-
-		result+=getDefaultExtraBoxJson();
-		return result;
-	}
-
-	String getExtraBoxJson(String boxname){
-		return getExtraBoxJson(getExtraBoxIndex(boxname));
-	}
-
-	String getExtraBoxJson(int boxIndex){
-		if(boxIndex>getExtraBoxesCount() || boxIndex<0){
-			return getDefaultExtraBoxJson();
+		if(count!=0){
+			result.setCharAt(result.length(), ']');
+		}else{
+			result+="]";
 		}
 
-		return extraBoxes[boxIndex]->getJson();
+		result+=",\"count\": \""+String(count)+"}";
+
+		return result;
 	}
 
 	boolean isBoxFileExists(uint8_t boxIndex){
@@ -138,43 +134,11 @@ public:
 	}
 
 	boolean saveExtraBox(uint8_t boxIndex){
-	if(boxIndex>getExtraBoxesCount()){
-		return false;
-	}
-
-		uint8_t boxKeySize=extraBoxes[boxIndex]->getKeySize();
-
-
-		Serial.print(FPSTR("ExtraBox "));
-		Serial.print(extraBoxes[boxIndex]->getName());
-		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
-
-		DynamicJsonBuffer jsonBuffer;
-
-		JsonObject& root = jsonBuffer.createObject();
-
-		for(uint8_t i=0;i<boxKeySize;i++){
-			String key=extraBoxes[boxIndex]->getKeyHtmlName(i);
-			String value=extraBoxes[boxIndex]->getValue(i);
-
-			root[key] = value;
+		if(boxIndex>getExtraBoxesCount()){
+			return false;
 		}
 
-		String vals="";
-		root.printTo(vals);
-		Serial.println(vals);
-		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_BEGIN_SAVE));
-
-		String boxFileName=EspSettingsUtil::getSettingsFilePath(extraBoxes[boxIndex]->getName());
-		File boxFile = SPIFFS.open(boxFileName, "w");
-
-		root.printTo(boxFile);
-		boxFile.close();
-		delay(1);
-
-		Serial.println(FPSTR(MESSAGE_DONE));
-
-		return true;
+		return extraBoxes[boxIndex]->save();
 	}
 
 	void deleteExtraBoxesFiles(){
@@ -185,228 +149,130 @@ public:
 
 	boolean validateExtraBoxFile(uint8_t boxIndex,boolean recreate){
 
-	   Serial.println(FPSTR("-------Validate BOX file------"));
-
-	   String boxFileName=EspSettingsUtil::getSettingsFilePath(extraBoxes[boxIndex]->getName());
-	   boolean fileExists=isSettingsFileExists(extraBoxes[boxIndex]->getName());
-
-	   if(!fileExists && recreate){
-		   Serial.println(FPSTR("file NOT exists and will be recreated"));
-		   extraBoxes[boxIndex]->fillDefaultValues();
-		   saveExtraBox(boxIndex);
-	   }else{
-		   //Serial.println(FPSTR("file exists"));
+	   if(boxIndex>getExtraBoxesCount()){
+			return false;
 	   }
 
-	   File boxFile = SPIFFS.open(boxFileName, "r");
-	   size_t size = boxFile.size();
-
-		StaticJsonBuffer<1024> jsonBuffer;
-		std::unique_ptr<char[]> buf (new char[size]);
-		boxFile.readBytes(buf.get(), size);
-		JsonObject& root = jsonBuffer.parseObject(buf.get());
-
-		boxFile.close();
-
-		if (!root.success()) {
-			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
-			return false;
-		} else {
-			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_LINES));
-			root.printTo(Serial);
-			Serial.println(FPSTR("Validate Keys"));
-
-			uint8_t boxKeySize=extraBoxes[boxIndex]->getKeySize();
-			boolean keysValid=true;
-
-			for(uint8_t i=0;i<boxKeySize;i++){
-				String key=extraBoxes[boxIndex]->getKey(i);
-				boolean inFile=root.containsKey(key);
-
-				if(!inFile){
-					keysValid=false;
-					Serial.print(FPSTR("key="));
-					Serial.print(key);
-					Serial.println(FPSTR(" - NOT in file"));
-				}
-			}
-
-			if(!keysValid){
-				Serial.println(FPSTR("RECREATE file"));
-				deleteSettingsFile(extraBoxes[boxIndex]->getName());
-
-				extraBoxes[boxIndex]->fillDefaultValues();
-
-				saveExtraBox(boxIndex);
-			}else{
-				Serial.println(FPSTR("All keys are presented in file"));
-			}
-		}
-
-	   return true;
+	   return extraBoxes[boxIndex]->validateFile();
 	}
 
 	boolean loadExtraBox(uint8_t boxIndex){
-
-		  String boxFileName=EspSettingsUtil::getSettingsFilePath(extraBoxes[boxIndex]->getName());
-		  Serial.print(FPSTR("---Load Extra BOX from file "));
-		  Serial.println(boxFileName);
-
-		  validateExtraBoxFile(boxIndex,true);
-
-	      StaticJsonBuffer<1024> jsonBuffer;
-	      delay(1);
-
-	      File boxFile = SPIFFS.open(boxFileName, "r");
-	      size_t size = boxFile.size();
-
-	      std::unique_ptr<char[]> buf (new char[size]);
-	      boxFile.readBytes(buf.get(), size);
-	      JsonObject& root = jsonBuffer.parseObject(buf.get());
-	      if (!root.success()) {
-	    	  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
-	      } else {
-	    	  //Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_LINES));
-	    	  //root.printTo(Serial);
-	    	  Serial.println();
-	    	  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_READ_FROM_FILE_COMPLETE));
-
-	    	  uint8_t boxKeySize=extraBoxes[boxIndex]->getKeySize();
-
-	    	  for(uint8_t i=0;i<boxKeySize;i++){
-					String key=extraBoxes[boxIndex]->getKeyHtmlName(i);
-					String value=root[key].as<char*>();
-
-					uint8_t keyIndex=i;
-
-					if(extraBoxes[boxIndex]->getKey(i)!=key){
-						keyIndex=extraBoxes[boxIndex]->getKeyIndex(key);
-					}
-
-					extraBoxes[boxIndex]->setValue(keyIndex,value);
-				}
-
-	    	  	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_BOX_MEMORY));
-	    	  	String vals="";
-	    	  	root.printTo(vals);
-	    	  	Serial.println(vals);
-	    	  	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-
-	      	  }
-
-	      boxFile.close();
-		  return true;
+		if(boxIndex>getExtraBoxesCount()){
+			return false;
 		}
 
-		boolean loadExtraBoxDefaultValues(uint8_t boxIndex){
-			if(boxIndex>getExtraBoxesCount()){
-				return false;
-			}
+		return extraBoxes[boxIndex]->load();
+	}
 
-			return extraBoxes[boxIndex]->init();
+	boolean loadExtraBoxDefaultValues(uint8_t boxIndex){
+		if(boxIndex>getExtraBoxesCount()){
+			return false;
 		}
 
-		boolean hasExtraBoxes(){
-			return getExtraBoxesCount()!=0;
-		}
+		return extraBoxes[boxIndex]->init();
+	}
 
-		boolean hasExtraBoxes(int boxIndex){
-			return getExtraBoxesCount()!=0 && boxIndex>-1 && boxIndex<getExtraBoxesCount();
-		}
+	boolean hasExtraBoxes(){
+		return getExtraBoxesCount()!=0;
+	}
 
-		int getExtraBoxIndex(String boxName){
-			if(hasExtraBoxes()){
-				for(uint8_t i=0;i<getExtraBoxesCount();i++){
-					if(extraBoxes[i]->getName()==boxName){
-						return i;
-					}
+	boolean hasExtraBoxes(int boxIndex){
+		return getExtraBoxesCount()!=0 && boxIndex>-1 && boxIndex<getExtraBoxesCount();
+	}
+
+	int getExtraBoxIndex(String boxName){
+		if(hasExtraBoxes()){
+			for(uint8_t i=0;i<getExtraBoxesCount();i++){
+				if(extraBoxes[i]->getName()==boxName){
+					return i;
 				}
 			}
-
-			return -1;
 		}
 
-		ESPExtraSettingsBox* getExtraBox(String boxName){
-			int boxIndex=getExtraBoxIndex(boxName);
+		return -1;
+	}
 
-			if(boxIndex!=-1){
-				return extraBoxes[boxIndex];
-			}
+	ESPExtraSettingsBox* getExtraBox(String boxName){
+		int boxIndex=getExtraBoxIndex(boxName);
 
-			return nullptr;
+		if(boxIndex!=-1){
+			return extraBoxes[boxIndex];
 		}
 
-		int getExtraKeyIndex(int boxIndex,String key){
-			if(!hasExtraBoxes(boxIndex)){return -1;}
+		return nullptr;
+	}
 
-			return extraBoxes[boxIndex]->getKeyIndex(key);
-		}
+	int getExtraKeyIndex(int boxIndex,String key){
+		if(!hasExtraBoxes(boxIndex)){return -1;}
 
-		String getExtraKeyByIndex(int boxIndex,int keyIndex){
-			if(!hasExtraBoxes(boxIndex)){return "";}
+		return extraBoxes[boxIndex]->getKeyIndex(key);
+	}
 
-			return extraBoxes[boxIndex]->getKey(keyIndex);
-		}
+	String getExtraKeyByIndex(int boxIndex,int keyIndex){
+		if(!hasExtraBoxes(boxIndex)){return "";}
 
-		boolean hasExtraKey(int boxIndex,String key){
-			return getExtraKeyIndex(boxIndex, key)>-1;
-		}
+		return extraBoxes[boxIndex]->getKey(keyIndex);
+	}
+
+	boolean hasExtraKey(int boxIndex,String key){
+		return getExtraKeyIndex(boxIndex, key)>-1;
+	}
 
 	//--------------------Get Extra values-----------------------
-		String getExtraValue(int boxIndex,int keyIndex){
-			if(!hasExtraBoxes(boxIndex)){return "";};
+	String getExtraValue(int boxIndex,int keyIndex){
+		if(!hasExtraBoxes(boxIndex)){return "";};
 
-			return extraBoxes[boxIndex]->getValue(keyIndex);
-		}
+		return extraBoxes[boxIndex]->getValue(keyIndex);
+	}
 
-		String getExtraValue(String boxName,int index){
-			int boxIndex=getExtraBoxIndex(boxName);
+	String getExtraValue(String boxName,int index){
+		int boxIndex=getExtraBoxIndex(boxName);
 
-			return getExtraValue(boxIndex,index);
-		}
+		return getExtraValue(boxIndex,index);
+	}
 
-		String getExtraValue(String boxName,String key){
-			int boxIndex=getExtraBoxIndex(boxName);
-			int keyIndex=getExtraKeyIndex(boxIndex, key);
+	String getExtraValue(String boxName,String key){
+		int boxIndex=getExtraBoxIndex(boxName);
+		int keyIndex=getExtraKeyIndex(boxIndex, key);
 
-			return getExtraValue(boxIndex, keyIndex);
-		}
+		return getExtraValue(boxIndex, keyIndex);
+	}
 
-		int getExtraValueInt(int boxIndex,int index){
-			return getExtraValue(boxIndex,index).toInt();
-		}
+	int getExtraValueInt(int boxIndex,int index){
+		return getExtraValue(boxIndex,index).toInt();
+	}
 
-		int getExtraValueInt(String boxName,String key){
-			return getExtraValue(boxName,key).toInt();
-		}
+	int getExtraValueInt(String boxName,String key){
+		return getExtraValue(boxName,key).toInt();
+	}
 
-		int getExtraValueInt(String boxName,int index){
-			return getExtraValue(boxName,index).toInt();
-		}
+	int getExtraValueInt(String boxName,int index){
+		return getExtraValue(boxName,index).toInt();
+	}
 
-		float getExtraValueFloat(int boxIndex,int index){
-			return getExtraValue(boxIndex,index).toFloat();
-		}
+	float getExtraValueFloat(int boxIndex,int index){
+		return getExtraValue(boxIndex,index).toFloat();
+	}
 
-		float getExtraValueFloat(String boxName,String key){
-			return getExtraValue(boxName,key).toFloat();
-		}
+	float getExtraValueFloat(String boxName,String key){
+		return getExtraValue(boxName,key).toFloat();
+	}
 
-		float getExtraValueFloat(String boxName,int index){
-			return getExtraValue(boxName,index).toFloat();
-		}
+	float getExtraValueFloat(String boxName,int index){
+		return getExtraValue(boxName,index).toFloat();
+	}
 
-		boolean getExtraValueBoolean(int boxIndex,int key){
-			return EspSettingsUtil::stringToBoolean(getExtraValue(boxIndex, key));
-		}
+	boolean getExtraValueBoolean(int boxIndex,int key){
+		return EspSettingsUtil::stringToBoolean(getExtraValue(boxIndex, key));
+	}
 
-		boolean getExtraValueBoolean(String boxName,String key){
-			return EspSettingsUtil::stringToBoolean(getExtraValue(boxName, key));
-		}
+	boolean getExtraValueBoolean(String boxName,String key){
+		return EspSettingsUtil::stringToBoolean(getExtraValue(boxName, key));
+	}
 
-		boolean getExtraValueBoolean(String boxName,int index){
-			return EspSettingsUtil::stringToBoolean(getExtraValue(boxName, index));
-		}
+	boolean getExtraValueBoolean(String boxName,int index){
+		return EspSettingsUtil::stringToBoolean(getExtraValue(boxName, index));
+	}
 
 	//-------------------set extra values--------------
 	boolean setExtraValue(int boxIndex,int keyIndex,String value){
@@ -523,7 +389,10 @@ public:
 		}
 		return ARRAY_SIZE(extraBoxes);
 	}
+protected:
+	boolean saveExtraBoxValues(uint8_t boxIndex,String* values){
 
+	}
 private:
 	ESPExtraSettingsBox** extraBoxes;
 };

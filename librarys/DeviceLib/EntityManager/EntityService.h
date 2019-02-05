@@ -8,6 +8,7 @@
 #ifndef LIBRARIES_DEVICELIB_ENTITYMANAGER_ENTITYSERVICE_H_
 #define LIBRARIES_DEVICELIB_ENTITYMANAGER_ENTITYSERVICE_H_
 
+#include <EntityManager/EntityFields.h>
 #include "Arduino.h"
 
 #include "interfaces/Identifiable.h"
@@ -16,8 +17,7 @@
 #include "EspSettingsUtil.h"
 
 #include "EntityManager/Entity.h"
-#include "EntityManager/EntityDescr.h"
-#include "EntityManager/EntityBase.h"
+#include "EntityManager/EntityFields.h"
 #include "EntityManager/EntityServiceInt.h"
 
 #include "EntityManager/EntityMinMax.h"
@@ -30,21 +30,21 @@ class EntityService:public Identifiable, public Nameable, public EntityServiceIn
 public:
 	EntityService(){
 		entityCount=0;
-		entityBases=nullptr;
+		entityFieldsAll=nullptr;
 		entities=nullptr;
 	};
 	virtual ~EntityService();
 
 	void initEntitiesBase(){
-		EntityBase* eb=new EntityMinMax();
-		EntityBase* eb2=new EntityThSp();
+		EntityFields* eb=new EntityMinMax();
+		EntityFields* eb2=new EntityThSp();
 
-		EntityBase* arr[2];
+		EntityFields* arr[2];
 
 		arr[eb->getId()]=eb;
 		arr[eb2->getId()]=eb2;
 
-		entityBases=arr;
+		entityFieldsAll=arr;
 	}
 
 	static void registerEntityCount(Entity* entity){
@@ -54,12 +54,12 @@ public:
 	void registerEntity(Entity* entity){
 
 		uint8_t size=entity->getSize();
-		EntityBase* arr[size];
+		EntityFields* arr[size];
 
 		if(entity->inMemory()){
 			for(uint8_t i=0;i<size;i++){
 				uint8_t key=entity->getKeys()[i];
-				EntityBase* cloned=entityBases[key]->clone();
+				EntityFields* cloned=entityFieldsAll[key]->clone();
 				arr[i]=cloned;
 			}
 
@@ -79,15 +79,15 @@ public:
 		String result="{"+entity->getJson()+", \"entities\": [";
 		for(uint8_t i=0;i<entity->getSize();i++){
 
-			EntityBase* entityBase=entityBases[entity->getKeys()[i]];
+			EntityFields* proto=entityFieldsAll[entity->getKeys()[i]];
 
-			const char* const* keys=entityBase->getKeys();
-			const char* const* values=entityBase->getDefaults();
+			const char* const* keys=proto->getKeys();
+			const char* const* values=proto->getDefaults();
 
-			result+=entityBase->getJsonDefault()+",";
+			result+=proto->getJsonDefault()+",";
 
-			for(uint8_t j=0;j<entityBase->getSize();j++){
-				saveEntityValueCacheByNames(parent, entity->getName(), entityBase->getName(), keys[j], values[j]);
+			for(uint8_t j=0;j<proto->getSize();j++){
+				saveEntityValueCacheByNames(parent, entity->getName(), proto->getName(), keys[j], values[j]);
 			}
 		}
 
@@ -110,8 +110,7 @@ public:
 	virtual String constructEntityValuePath(String parent,uint8_t eId,uint8_t eBid,uint8_t fId);
 	virtual String constructEntityValuePathByNames(String parent,String entityName,String baseEntityName,String fieldName);
 private:
-	EntityBase** entityBases;
-
+	EntityFields** entityFieldsAll;
 	Entity **entities;
 
 	static int entityCount;

@@ -10,11 +10,9 @@
 
 #include <Arduino.h>
 #include <interfaces/DeviceLibable.h>
-#include <interfaces/ItemFieldDescriptor.h>
 #include "AbstractItem.h"
 
 #include "interfaces/Initializable.h"
-#include "interfaces/ItemFieldProvider.h"
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/JSONprovider.h"
 #include "interfaces/Loopable.h"

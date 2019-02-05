@@ -435,7 +435,7 @@ public:
 			return false;
 		}
 
-		String fileName=EspSettingsUtil::getSettingsFilePath(FPSTR(TimeIntervalService_FileName_NAME));
+		String fileName=EspSettingsUtil::getExtraSettingsBoxFilePath(FPSTR(TimeIntervalService_FileName_NAME));
 
 		Serial.print(FPSTR("Load TimeIntervals from file "));
 		Serial.println(fileName);
@@ -494,7 +494,8 @@ public:
 
 	boolean saveToFile(){
 		Serial.println();
-		return espSettingsBox->saveSettingToFile(FPSTR(TimeIntervalService_FileName_NAME),getJson());
+		String fileName=EspSettingsUtil::getExtraSettingsBoxFilePath(FPSTR(TimeIntervalService_FileName_NAME));
+		return EspSettingsUtil::saveStringToFile(fileName,getJson());
 	}
 
 	String getStateName(uint8_t id){

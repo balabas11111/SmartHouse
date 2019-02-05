@@ -8,13 +8,13 @@
 #ifndef LIBRARIES_DEVICELIB_ENTITYMANAGER_ENTITYTHSP_H_
 #define LIBRARIES_DEVICELIB_ENTITYMANAGER_ENTITYTHSP_H_
 
+#include <EntityManager/EntityFields.h>
 #include "Arduino.h"
 
 #include "interfaces/Identifiable.h"
 #include "interfaces/Nameable.h"
 
 #include "ESP_Consts.h"
-#include "EntityManager/EntityBase.h"
 
 const uint8_t ThingSpeakSize PROGMEM =3;
 
@@ -26,12 +26,13 @@ const char* const ThingSpeakDefaults[]      PROGMEM=
 		"0","0","1"
 };
 
-class EntityThSp:public EntityBase {
+class EntityThSp:public EntityFields {
 public:
+	EntityThSp(){};
 	virtual ~EntityThSp();
 
-	EntityBase* clone() const {return new EntityThSp(*this);}
-	virtual uint16_t getId(){return ENTITY_THING_SPEAK_INDEX;}
+	EntityFields* clone() const {return new EntityThSp(*this);}
+	virtual uint8_t getId(){return ENTITY_THING_SPEAK_INDEX;}
 	virtual const char* const* getKeys(){return ThingSpeakKeys;}
 	virtual const char* const* getDefaults(){return ThingSpeakDefaults;}
 	//virtual uint8_t getSize(){return ThingSpeakSize;}

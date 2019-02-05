@@ -2,10 +2,10 @@
 #include <Hash.h>
 
 #include "EspSettingsBox.h"
-#include <ESPSett_Alarm.h>
-#include <ESPSett_Display.h>
-#include <ESPSett_Ntp.h>
-#include <ESPSett_Telegram.h>
+#include <extraBoxes/ESPSett_Alarm.h>
+#include <extraBoxes/ESPSett_Display.h>
+#include <extraBoxes/ESPSett_Ntp.h>
+#include <extraBoxes/ESPSett_Telegram.h>
 
 #include "FS.h"
 #include <Wire.h>
@@ -32,8 +32,6 @@
 #include <PinDigital.h>
 #include <Pir_Sensor.h>
 #include <BeeperB.h>
-#include <interfaces/ItemFieldDescriptor.h>
-#include <ItemFIeldDescriptors/ItemFieldProviderThingSpeak.h>
 #include "BeeperSerial.h"
 
 #include "DS18D20_Sensor.h"
