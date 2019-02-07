@@ -49,10 +49,14 @@ public:
 	String getProvidersJson();
 	String getAbstrItemsJson();
 
-	void printDeviceDiagnostic();
+	static void printHeap(){
+		Serial.print(FPSTR(MESSAGE_DEVICE_FREE_HEAP));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(ESP.getFreeHeap());
+	}
+
+	static void printDeviceDiagnostic();
 	void printDeviceArrayDetails();
 
-	void printDeviceDiagnosticNoSpiff();
+	static void printDeviceDiagnosticNoSpiff();
 
 	String processAlarm();
 

@@ -221,7 +221,7 @@ public:
 		}
 		//printHeap();
 		initDefaultServerHandlers();
-		//printHeap();
+		//
 		if(serverPostInitFunc!=nullptr){
 			Serial.println(FPSTR(MESSAGE_WIFIHELPER_POST_INIT_WEB_SERV_HANDLERS));
 			serverPostInitFunc();
@@ -230,6 +230,7 @@ public:
 		serv->begin();
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_SERVER_SETUP_COMPLETED));
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+		printHeap();
 	}
 
 	void initUpdater(){
@@ -275,6 +276,10 @@ public:
 
 		http.end();
 		return "";
+	}
+
+	void printHeap(){
+		Serial.print(FPSTR(MESSAGE_DEVICE_FREE_HEAP));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(ESP.getFreeHeap());
 	}
 
 	String executeFormPostRequest(String url,String body){

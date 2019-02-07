@@ -19,8 +19,8 @@ class EspSettingsUtil {
 public:
 
 	static boolean isFileExists(String fileName){
-		return SPIFFS.exists(fileName);
-	/*
+		//return SPIFFS.exists(fileName);
+
 	   File file = SPIFFS.open(fileName, "r");
 
 	   boolean exists=!(!file || file.size()==0);
@@ -38,7 +38,6 @@ public:
 	   file.close();
 
 	   return exists;
-	   */
 	}
 
 	static String getFieldValueFromFile(String fileName,String fieldName){
@@ -93,9 +92,10 @@ public:
 		size_t fileSize=file.print(data);
 
 		file.close();
-		Serial.print(FPSTR("SAVE file="));
-		Serial.println(fileName);
-		Serial.println(data);
+		Serial.print(FPSTR("SAVE f("));
+		Serial.print(fileName);
+		Serial.print(FPSTR(")="));
+		Serial.print(data);
 		Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVED));
 		Serial.println(fileSize);
 
@@ -107,7 +107,7 @@ public:
 		File file = SPIFFS.open(fileName, "r");
 
 		if(!file || file.size()==0){
-			Serial.print(FPSTR("not found "));
+			Serial.print(FPSTR("NOT FOUND Load from file= "));
 			Serial.println(fileName);
 			return "";
 		}
@@ -116,10 +116,13 @@ public:
 		file.close();
 
 		delay(1);
-		Serial.print(FPSTR("LOAD file="));
-		Serial.println(fileName);
-		Serial.println(data);
-		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SAVED));
+#ifdef DEBUG_FILE_LOAD
+		Serial.print(FPSTR("LOAD ("));
+		Serial.print(fileName);
+		Serial.print(FPSTR(") ='"));
+		Serial.print(data);
+		Serial.println(FPSTR("'"));
+#endif
 
 		return data;
 	}

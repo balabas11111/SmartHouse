@@ -36,7 +36,9 @@ const char* const ALARM_EXTRA_DEFAULTS[]      PROGMEM=
 
 class EspSett_Alarm:public ESPExtraSettingsBox {
 public:
-	EspSett_Alarm(){}
+	EspSett_Alarm(){
+		keySize=ARRAY_SIZE(ALARM_EXTRA_KEYS);
+	}
 
 	virtual ~EspSett_Alarm(){};
 

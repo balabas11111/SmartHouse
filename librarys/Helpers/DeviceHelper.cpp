@@ -94,6 +94,16 @@ void DeviceHelper::startDevice(String deviceId,int wifiResetpin){
   Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_STARTED));
   Serial.print(FPSTR(MESSAGE_DEVICE_START_DEVICE_ID));Serial.println(deviceId);
 
+  Serial.println(FPSTR("Device count"));
+  Serial.print(FPSTR("Loopable="));
+  Serial.println(ARRAY_SIZE(loopItems));
+  Serial.print(FPSTR("AbstractItems="));
+  Serial.println(ARRAY_SIZE(abstrItems));
+  Serial.print(FPSTR("JSONprovider="));
+Serial.println(ARRAY_SIZE(jsonProviders));
+Serial.print(FPSTR("JSONprovider="));
+Serial.println(ARRAY_SIZE(jsonProviders));
+
   printDeviceDiagnostic();
 
   espSettingsBox->init();

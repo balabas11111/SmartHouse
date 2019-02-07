@@ -173,11 +173,15 @@ public:
 		return  result;
 	}
 
+	void initSpiff();
 	boolean isSpiffInitialized();
 
 	void printSpiffsInfo();
 
+	int deleteWebFiles();
 	int deleteSettingsFiles();
+
+	int deleteFilesByPreffix(String preffix);
 
 	boolean saveThingSpeakChannelCreation(String response/*,boolean manageChannel*/);
 	String getThingSpeakChannelUrl();
@@ -254,7 +258,6 @@ private:
 	String _fileName;
 
 	void construct(boolean forceLoad,boolean initSpiff);
-	void initSpiff();
 	void listDir(fs::FS &fs, const char * dirname, uint8_t levels);
 
 	size_t bufferLength=2048;

@@ -235,6 +235,10 @@ void EspSettingsBox::saveSettingsJson(){
 
 
 void EspSettingsBox::initSpiff(){
+	if(isSpiffInitialized()){
+		return;
+	}
+
 	Serial.println();
 	Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_SYSTEM_BEGIN_INIT));
 #ifdef ESP8266
@@ -761,7 +765,17 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	return false;
 }
 
+int EspSettingsBox::deleteWebFiles() {
+	return deleteFilesByPreffix(FPSTR(ESPSETTINGSBOX_DEFAULT_WEB_FOLDER));
+}
+
 int EspSettingsBox::deleteSettingsFiles() {
+	return deleteFilesByPreffix(FPSTR(ESPSETTINGSBOX_SETTINGS_PATH));
+}
+
+int EspSettingsBox::deleteFilesByPreffix(String preffix){
+	Serial.print(FPSTR("Delete files by preffix"));
+	Serial.print(preffix);
 	int count=0;
 #ifdef ESP8266
 	Dir dir = SPIFFS.openDir("/");
@@ -787,7 +801,7 @@ int EspSettingsBox::deleteSettingsFiles() {
 		String fileName=entry.name();
 #endif
 
-		if(fileName.startsWith(FPSTR(ESPSETTINGSBOX_SETTINGS_PATH))){
+		if(fileName.startsWith(preffix)){
 			SPIFFS.remove(fileName);
 			count++;
 
@@ -797,6 +811,9 @@ int EspSettingsBox::deleteSettingsFiles() {
 
 
 	}
+
+	Serial.print(FPSTR(" removed="));
+	Serial.println(count);
 
 	return count;
 }

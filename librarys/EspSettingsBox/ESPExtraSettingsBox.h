@@ -72,14 +72,19 @@ public:
 	virtual String getKind()=0;
 
 	virtual boolean init(){
-		Serial.print(FPSTR("-----Init Extra Box---"));
+		Serial.print(FPSTR("-----Init Extra Box "));
 		Serial.print(getName());
+		Serial.print(FPSTR(" getKeySize="));
+		Serial.println(getKeySize());
 
 		if(isInMemory()){
 			if(vals==nullptr){
 				vals=new String[getKeySize()];
 			}
 		}
+
+		validateFile();
+
 		Serial.println(FPSTR("...done"));
 		return true;
 	}
@@ -89,8 +94,6 @@ public:
 
 		const char* const* defaults=getDefaults();
 		const char* const* keys=getKeys();
-
-		String* values=(isInMemory())?vals:(new String[getKeySize()]);
 
 		for(uint8_t i=0;i<getKeySize();i++){
 			setValue(i, defaults[i]);
@@ -103,8 +106,8 @@ public:
 		return getPath()+getName()+".txt";
 	}
 
-	String getKeyFilePath(String key){
-		return getPath()+getName()+"/"+key+".txt";
+	String getKeyFilePath(uint8_t key){
+		return getPath()+getName()+"/"+String(key)+".txt";
 	}
 
 	boolean load(){
@@ -112,6 +115,7 @@ public:
 	  if(!isInMemory()){
 		  Serial.print(FPSTR("Box is not in memory Load disabled "));
 		  Serial.println(getName());
+		  return true;
 	  }
 
 	  String fileName=getBoxFilePath();
@@ -133,29 +137,19 @@ public:
 	  std::unique_ptr<char[]> buf (new char[size]);
 	  boxFile.readBytes(buf.get(), size);
 	  JsonObject& root = jsonBuffer.parseObject(buf.get());
+	  JsonArray& items= root["items"];
 
-	  if (!root.success()) {
+	  if (!root.success() || !items.success()) {
 		  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
 	  } else {
 		  Serial.println();
 		  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_READ_FROM_FILE_COMPLETE));
 
-		  JsonObject& items=root["items"];
-
-		  for(uint8_t i=0;i<getKeySize();i++){
-				String key=getKey(i);
-				String value=items[key].as<char*>();
-				setValue(i,value);
-			}
-
-			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_BOX_MEMORY));
-			String vals="";
-			root.printTo(vals);
-			Serial.println(vals);
-			Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-
-		  }
-
+		for(uint8_t i=0;i<items.size();i++){
+			uint8_t ind=getKeyIndex(items[i]["key"]);
+			setValue(ind, items[i]["val"]);
+		}
+	  }
 	  boxFile.close();
 	  return true;
 	}
@@ -184,29 +178,81 @@ public:
 		std::unique_ptr<char[]> buf (new char[size]);
 		boxFile.readBytes(buf.get(), size);
 		JsonObject& root = jsonBuffer.parseObject(buf.get());
-		JsonObject& items=root["items"];
+		JsonObject& items= root["items"];
+
+		/*Serial.print("root=");
+		root.printTo(Serial);
+
+		Serial.println();
+		Serial.print(" items=");
+		items.printTo(Serial);
+*/
 		boxFile.close();
 
 		if (!root.success() || !items.success()) {
 			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
 			return false;
 		} else {
-			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_FILE_LINES));
-			root.printTo(Serial);
 			Serial.println(FPSTR("Validate Keys"));
 
-			uint8_t boxKeySize=getKeySize();
 			boolean keysValid=true;
 
-			for(uint8_t i=0;i<boxKeySize;i++){
-				String key=getKey(i);
-				boolean inFile=items.containsKey(key);
+			uint8_t count=root["count"];
 
-				if(!inFile){
+			if(count!=getKeySize() || count!=items.size()){
+				Serial.println(FPSTR("Key size is invalid"));
+				keysValid=false;
+			}else{
+				Serial.println(FPSTR("key size is valid"));
+			}
+
+			Serial.println(FPSTR("Compare cache and file"));
+
+			JsonObject::iterator it;
+			  for (it = items.begin(); it != items.end(); ++it ){
+				  String key=it->key;
+				  String val=it->value.asString();
+				  uint8_t ind=getKeyIndex(key);
+
+				  if(ind==-1){
+					  Serial.print(FPSTR("Missed in keys key="));
+					  Serial.println(key);
+					  keysValid=false;
+					  break;
+				  }
+
+				  if(!isInMemory()){
+					  String loaded=getValueFromFile(ind);
+					  if(loaded!=val){
+						  Serial.print(FPSTR("Cache and file diff key="));
+						  Serial.println(key);
+						  Serial.print(FPSTR(" cache="));
+						  Serial.println(loaded);
+						  Serial.print(FPSTR(" val="));
+						  Serial.println(val);
+						  keysValid=false;
+						  break;
+					  }
+				  }
+
+			  }
+
+			Serial.println(FPSTR("Check all keys are in file"));
+
+			if(keysValid){
+				for(uint8_t i=0;i<getKeySize();i++){
+					String key=getKey(i);
 					keysValid=false;
-					Serial.print(FPSTR("key="));
-					Serial.print(key);
-					Serial.println(FPSTR(" - NOT in file"));
+
+					if(items.containsKey(key)){
+						keysValid=true;
+					}
+
+					if(!keysValid){
+						Serial.print(FPSTR("Missed in file key="));
+						Serial.print(key);
+						break;
+					}
 				}
 			}
 
@@ -245,29 +291,42 @@ public:
 	}
 
 	String getValueFromFile(int index){
-		String key=getKey(index);
-		String fileName=getKeyFilePath(key);
+		String fileName=getKeyFilePath(index);
 
 		if(!EspSettingsUtil::isFileExists(fileName)){
+			Serial.print(FPSTR("File not exists filename="));
+			Serial.print(fileName);
+			Serial.print(FPSTR(" return default value index="));
+			Serial.println(index);
+
 			return getDefaultValue(index);
 		}
 
 		return EspSettingsUtil::loadStringFromFile(fileName);
 	}
 
-	boolean saveValueToFile(int index,String fieldValue){
-		String key=getKey(index);
-		String fileName=getKeyFilePath(key);
+	boolean saveFieldValueToFile(int index,String fieldValue){
+		String fileName=getKeyFilePath(index);
 
-		if(EspSettingsUtil::isFileExists(fileName) && fieldValue==EspSettingsUtil::loadStringFromFile(fileName)){
-			return true;
+		if(EspSettingsUtil::isFileExists(fileName)){
+			String loaded=EspSettingsUtil::loadStringFromFile(fileName);
+			Serial.print(FPSTR("Loaded="));
+			Serial.println(loaded);
+			if(loaded==fieldValue){
+				Serial.print(FPSTR("File was not changed value="));
+				Serial.println(fieldValue);
+				return true;
+			}
 		}
 
 		return EspSettingsUtil::saveStringToFile(fileName, fieldValue);
 	}
 
 	String getValue(int index){
-		if(index==-1 || index>=getKeySize()){ return String("");}
+		if(index==-1 || index>=getKeySize()){
+			Serial.print(FPSTR("wrong index "));
+			Serial.println(index);
+			return String("");}
 
 		if(isInMemory()){
 			return vals[index];
@@ -283,7 +342,7 @@ public:
 				return true;
 			}
 
-			return saveValueToFile(index,value);
+			return saveFieldValueToFile(index,value);
 		}
 		return false;
 	}
@@ -310,25 +369,11 @@ public:
 		Serial.println(isInMemory());
 		Serial.println(FPSTR("---------------------------"));
 
-		//const char* const* keys=getKeys();
 		for(uint8_t i=0;i<getKeySize();i++){
-			//Serial.print(String(keys[i]));
-			//-------------------------------
-			uint expLen=28;
-			String result=String(getKeys()[i]);
-			if(result.length()>=expLen){
-				result=result.substring(0, expLen);
-			}
-			if(result.length()<expLen){
+			Serial.print(String(getKeys()[i]));
 
-				for(uint8_t j=0;j<expLen-result.length();j++){
-					result+=" ";
-				}
-			}
-			Serial.print(result);
-			//-------------------------------
 			Serial.print(FPSTR(" = "));
-			//Serial.println(getValues()[i]);
+			Serial.println(getValue(i));
 		}
 
 		Serial.println(FPSTR("---------HTML Labels------------"));
@@ -345,12 +390,13 @@ public:
 		}
 
 		Serial.println(FPSTR("----------getJson()-----------"));
-		Serial.println(getJson());
+		//Serial.println(getJson());
+		getJson();
 		Serial.println(FPSTR("------------------------------"));
 	}
 
 	uint8_t getKeySize(){
-		return ARRAY_SIZE(getKeys());
+		return keySize;
 	}
 
 	int isTargetOfSettingsValue(String keyWithPreffix){
@@ -388,16 +434,20 @@ public:
 	}
 
 	String getJsonGenerated(){
-		String result="{\"name\":\""+getName()+"\",\"count\":\""+getKeySize()+"\", \"kind\": \""+String(getKind())+"\", \"items\": [";
+		String result="{\"name\":\""+getName()+"\",\"count\":\""+getKeySize()+"\", \"kind\": \""+String(getKind())+"\", \"items\": {";
 
 		for(uint8_t i=0;i<getKeySize();i++){
-			result+="{\"name\":\""+getKey(i)+"\", \"val\":\""+getValue(i)+"\"}";
+			result+="\""+getKey(i)+"\": \""+getValue(i)+"\"";
 			if(i!=getKeySize()-1){
 				result+=",";
 			}
 		}
 
-		result+="]}";
+		result+="}}";
+
+		Serial.println(FPSTR("Json generated"));
+		Serial.println(result);
+
 		return result;
 	}
 
@@ -412,6 +462,7 @@ public:
 protected:
 	String* vals;
 	boolean saveRequired=false;
+	uint8_t keySize;
 };
 
 #endif /* LIBRARIES_ESPSETTINGSBOX_ESPEXTRASETTINGSBOX_H_ */

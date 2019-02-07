@@ -39,8 +39,7 @@ class ESPSett_Ntp:public ESPExtraSettingsBox {
 public:
 
 	ESPSett_Ntp(){
-		//this->name=FPSTR(NTP_SETTINGS_BOX_NAME);
-		//this->keySize=ARRAY_SIZE(NTP_EXTRA_KEYS);
+		this->keySize=ARRAY_SIZE(NTP_EXTRA_KEYS);
 	};
 
 	virtual ~ESPSett_Ntp(){};

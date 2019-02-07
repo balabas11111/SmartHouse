@@ -95,23 +95,34 @@ DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
 
 void initComponents(){
 
+	deviceHelper.printHeap();
 	beeper.init();
 
+	deviceHelper.printHeap();
 	displayHelper.displayConn();
 
+	deviceHelper.printHeap();
 	wifi.init();
-
+	deviceHelper.printHeap();
 	timeService.init();
+	deviceHelper.printHeap();
 	bmeMeasurer.init();
+	deviceHelper.printHeap();
 	ds18d20Measurer.init();
+	deviceHelper.printHeap();
 
 	espSettingsBox.loadSensorsFromFile(sensors);
+	deviceHelper.printHeap();
 
 	updateSensors();
+	deviceHelper.printHeap();
 
 	thingSpeakHelper.setItems(sensors, ARRAY_SIZE(sensors));
+	deviceHelper.printHeap();
 	sensorsTrigger.init();
+	deviceHelper.printHeap();
 	timeIntervalService.init();
+	deviceHelper.printHeap();
 }
 
 void setup() {
@@ -119,6 +130,9 @@ void setup() {
 
   I2Chelper::initStatic(D1,D2);
   displayHelper.init();
+
+  espSettingsBox.initSpiff();
+  espSettingsBox.deleteFilesByPreffix("/");
 
   deviceHelper.startDevice(espSettingsBox.DeviceId,buttonMenu.getPin());
 
@@ -137,14 +151,17 @@ void setup() {
 void loop() {
 	deviceHelper.loop();
 
-	beeper.shortBeep(wifi.getReconnected());
+	//beeper.shortBeep(wifi.getReconnected());
 
 	processTimeIntervals();
 }
 
 //---------------------------------------------------------------------
 void playPostInitSounds(){
-	beeper.shortBeep(3*ds18d20Measurer.hasNoItems());
+	uint8_t count=3*3*ds18d20Measurer.hasNoItems();
+	Serial.print(FPSTR("Post init sounds="));
+	Serial.println(count);
+	beeper.shortBeep(count);
 }
 //-------------Web server functions-------------------------------------
 void postInitWebServer(){

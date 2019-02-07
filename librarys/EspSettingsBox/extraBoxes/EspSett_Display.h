@@ -30,8 +30,7 @@ const char* const DISPLAY_EXTRA_DEFAULTS[] PROGMEM=
 class EspSett_Display:public ESPExtraSettingsBox {
 public:
 	EspSett_Display(){
-		/*this->name=FPSTR(DISPLAY_SETTINGS_BOX_NAME);
-		this->keySize=ARRAY_SIZE(DISPLAY_EXTRA_KEYS);*/
+		this->keySize=ARRAY_SIZE(DISPLAY_EXTRA_KEYS);
 	}
 	virtual ~EspSett_Display(){};
 

@@ -30,7 +30,9 @@ public:
 		if(getExtraBoxesCount()!=0){
 			boolean result=true;
 			Serial.println();
-			Serial.println(FPSTR("----------------Init extra sett boxes---------------"));
+			Serial.print(FPSTR("----------------Init extra sett boxes count="));
+			Serial.println(getExtraBoxesCount());
+
 			for(uint8_t i=0;i<getExtraBoxesCount();i++){
 				result=extraBoxes[i]->init() && result;
 				result=loadExtraBox(i) && result;
@@ -142,6 +144,9 @@ public:
 	}
 
 	void deleteExtraBoxesFiles(){
+		Serial.print(FPSTR("Delete extra boxes files count="));
+		Serial.println(getExtraBoxesCount());
+
 		for(uint8_t i=0;i<getExtraBoxesCount();i++){
 			deleteSettingsFile(extraBoxes[i]->getName());
 		}
@@ -388,10 +393,6 @@ public:
 			return 0;
 		}
 		return ARRAY_SIZE(extraBoxes);
-	}
-protected:
-	boolean saveExtraBoxValues(uint8_t boxIndex,String* values){
-
 	}
 private:
 	ESPExtraSettingsBox** extraBoxes;
