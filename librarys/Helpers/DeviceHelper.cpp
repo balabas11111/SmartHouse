@@ -391,19 +391,17 @@ StatusMessage DeviceHelper::saveSensorSettings(String page,String json){
 		uint8_t idItem=root["items"][i]["id"];
 		String nameItem=root["items"][i]["name"];
 		String descrItem=root["items"][i]["descr"];
-		String queue=root["items"][i]["queue"];
 		float minVal=root["items"][i]["minVal"];
 		float maxVal=root["items"][i]["maxVal"];
 		uint8_t fieldId=root["items"][i]["fieldId"];
 
 		if(aitem->getName(idItem)==nameItem){
 			aitem->setDescr(idItem, descrItem);
-			aitem->setQueue(idItem, queue);
 			aitem->setMinVal(idItem, minVal);
 			aitem->setMaxVal(idItem, maxVal);
 			aitem->setFieldId(id, fieldId);
 		}
-		Serial.println("idItem="+String(idItem)+" name="+nameItem+" descr="+descrItem+" queue="+queue+" minVal="+String(minVal)+" maxVal="+String(maxVal)+" fieldId="+String(fieldId));
+		Serial.println("idItem="+String(idItem)+" name="+nameItem+" descr="+descrItem+" minVal="+String(minVal)+" maxVal="+String(maxVal)+" fieldId="+String(fieldId));
 	}
 
 	espSettingsBox->saveAbstractItemToFile(aitem);

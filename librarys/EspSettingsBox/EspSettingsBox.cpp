@@ -114,11 +114,6 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	subnetIp=EspSettingsUtil::stringToIp(String(root["sip"].as<char*>()));
 	    	  	dnsIp=EspSettingsUtil::stringToIp(String(root["dip"].as<char*>()));
 	    	  	dnsIp2=EspSettingsUtil::stringToIp(String(root["dip2"].as<char*>()));
-	    	  	serverIp=EspSettingsUtil::stringToIp(String(root["serverip"].as<char*>()));
-
-	    	  	isHttpPostEnabled=EspSettingsUtil::stringToBoolean(root["isHttpSendEnabled"]);
-	    	  	postDataToHttpInterval=root["postDataToHttpInterval"];
-	    	  	httpPostIp=EspSettingsUtil::stringToIp(String(root["httpPostIp"].as<char*>()));
 
 	    	  	Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_TO_MEMORY));
 	    	  	String vals="";
@@ -164,11 +159,6 @@ void EspSettingsBox::saveSettingsJson(){
 		root["sip"] = subnetIp.toString();
 		root["dip"] = dnsIp.toString();
 		root["dip2"] = dnsIp2.toString();
-		root["serverip"] = serverIp.toString();
-
-		root["isHttpSendEnabled"]=isHttpPostEnabled;
-		root["postDataToHttpInterval"]=postDataToHttpInterval;
-		root["httpPostIp"]=httpPostIp.toString();
 
 		Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_SETTINGS_FROM_MEMORY));
 		String vals="";
@@ -342,10 +332,7 @@ return
 if(page==FPSTR(PAGE_PUBLISH)){
 
 return
-"{\"name\":\"espSettingsBox\",\"kind\":\"publish\",\"items\":{\
-\"isHttpPostEnabled\": \""+String(isHttpPostEnabled)+"\",\
-\"postDataToHttpInterval\": \""+String(postDataToHttpInterval)+"\",\
-\"httpPostIp\": \""+httpPostIp.toString()+"\"},\
+"{\"name\":\"espSettingsBox\",\"kind\":\"publish\",\
 \"entity\": "+getExtraBoxJsonByKind(page)+"}";
 }
 
@@ -498,39 +485,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		}
 		return true;
 	}
-	if(fieldName==FPSTR(ESBOX_serverIp)){
-		IPAddress val=EspSettingsUtil::stringToIp(fieldValue);
-		if(serverIp!=val){
-			serverIp=val;
-			saveRequired=true;
-		}
-		return true;
-	}
 
-	if(fieldName==FPSTR(ESBOX_isHttpPostEnabled)){
-		boolean val=EspSettingsUtil::stringToBoolean(fieldValue);
-		if(isHttpPostEnabled!=val){
-			isHttpPostEnabled=val;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_postDataToHttpInterval)){
-		long val=fieldValue.toInt();
-		if(postDataToHttpInterval!=val){
-			postDataToHttpInterval=val;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_httpPostIp)){
-		IPAddress val=EspSettingsUtil::stringToIp(fieldValue);
-		if(httpPostIp!=val){
-			httpPostIp=val;
-			saveRequired=true;
-		}
-		return true;
-	}
 	return false;
 }
 

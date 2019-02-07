@@ -142,7 +142,7 @@ public:
 			saveThingSpeakChannelCreation(getResult);
 			delay(10);
 		}
-
+/*
 		if(countSet!=0){
 				//---------------------------------------------------------------------------
 				for(uint8_t i=0;i<size;i++){
@@ -165,7 +165,7 @@ public:
 				}
 				//---------------------------------------------------------------------------
 		}
-
+*/
 		result+=String(countGet);
 		result+=FPSTR(MESSAGE_THINGSPEAK_GET_CHANNELS);
 		result+=FPSTR(MESSAGE_SPACE);

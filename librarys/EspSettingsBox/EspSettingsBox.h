@@ -161,11 +161,10 @@ public:
 	String settingsUser = "balabas";
 	String settingsPass = "balabas";
 
+	String password = "wuWylKegayg2wu22";//wuWylKegayg2wu22
+
 	uint16_t refreshInterval=60;
-/*
-	boolean displayAlvaysOn=false;
-	uint8_t displayAutochange=15;
-*/
+
 	boolean isAccesPoint=false;
 	#ifdef ESP8266
 		String ssidAP="SENS_"+String(ESP.getChipId());;
@@ -175,8 +174,6 @@ public:
 	#endif
 
 	String ssid = "balabasKiev5";//balabasKiev5
-	String password = "wuWylKegayg2wu22";//wuWylKegayg2wu22
-
 	boolean staticIp=false;
 	IPAddress localIp=IPAddress(192, 168, 0, 120);
 	IPAddress apIp=IPAddress(192, 168, 4, 1);
@@ -184,11 +181,6 @@ public:
 	IPAddress subnetIp=IPAddress(255, 255, 255, 0);
 	IPAddress dnsIp=IPAddress(192, 168, 0, 1);
 	IPAddress dnsIp2=IPAddress(192, 168, 0, 1);
-	IPAddress serverIp=IPAddress(192, 168, 0, 2);
-
-	boolean isHttpPostEnabled=false;
-	uint16_t postDataToHttpInterval=241;
-	IPAddress httpPostIp=IPAddress(192, 168, 0, 2);
 
 private:
 	boolean saveRequired=false;

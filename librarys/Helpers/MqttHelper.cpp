@@ -51,9 +51,9 @@ boolean MqttHelper::begin(AbstractItem** items,uint8_t count){
 	for(uint8_t i=0;i<count;i++){
 		if(items[i]->getAutoCreateChannel()){
 			for(uint8_t j=0;j<items[i]->getItemCount();j++){
-				if(items[i]->getQueue(j)!=""){
+				/*if(items[i]->getQueue(j)!=""){
 					topicCount++;
-				}
+				}*/
 			}
 		}
 	}
@@ -69,12 +69,12 @@ boolean MqttHelper::begin(AbstractItem** items,uint8_t count){
 		for(uint8_t i=0;i<count;i++){
 			if(items[i]->getAutoCreateChannel()){
 				for(uint8_t j=0;j<items[i]->getItemCount();j++){
-					if(items[i]->getQueue(j)!=""){
+					/*if(items[i]->getQueue(j)!=""){
 						subscribeTopics[index]=items[i]->getQueue(j);
 						Serial.print(FPSTR(MESSAGE_MQTTHELPER_TOPIC_ADDED_TO_SUBSCRIBED));
 						Serial.println(subscribeTopics[index]);
 						index++;
-					}
+					}*/
 				}
 			}
 		}
@@ -240,7 +240,7 @@ PubSubClient MqttHelper::getClient(){
 void MqttHelper::senDAbstractItemToMqtt(AbstractItem* item){
 	Serial.println(FPSTR(MESSAGE_MQTTHELPER_SENDING_MESSAGE));
 	for(uint8_t i=0;i<item->getItemCount();i++){
-		String queue=item->getItem(i).queue;
+		/*String queue=item->getItem(i).queue;
 
 		if(queue.length()!=0){
 			String val=item->getValStr(i);
@@ -271,12 +271,8 @@ void MqttHelper::senDAbstractItemToMqtt(AbstractItem* item){
 			}else{
 				Serial.println(FPSTR(MESSAGE_MQTTHELPER_ERR_NOT_ENABLED));
 			}
-			/*
-			if(espSettingsBox.sendItemsToBaseQUeue){
-				mqttHelper.publish(item->getJson());
-			}
-			*/
-		}
+
+		}*/
 	}
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
@@ -294,10 +290,11 @@ void MqttHelper::processMqttEvent(String topic, String message,
 	boolean result=false;
 
 	for(uint8_t i=0;i<count;i++){
-		result=items[i]->processMqValue(topic, message);
+		/*result=items[i]->processMqValue(topic, message);
 		if(result){
 			break;
 		}
+		*/
 	}
 
 	Serial.print(FPSTR(MESSAGE_MQTTHELPER_RESULT_EQ));

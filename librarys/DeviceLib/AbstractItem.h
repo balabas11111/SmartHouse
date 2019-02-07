@@ -25,7 +25,6 @@ class AbstractItem: public JSONprovider {
 			uint8_t fieldId;
 			float minVal;
 			float maxVal;
-			String queue;
 			boolean setAllowed;
 		};
 	typedef struct childRecords SensorValue;
@@ -178,19 +177,6 @@ public:
 		return 	this->items[index].setAllowed;
 	}
 
-	void setQueue(uint8_t child,String queue){
-		if(itemCount>child){
-			this->items[child].queue=queue;
-		}
-	}
-
-	String getQueue(uint8_t index){
-		if(itemCount>index){
-			return this->items[index].queue;
-		}
-		return "";
-	}
-
 	void setNonActiveSensorValue(String name,String descr,uint8_t fieldId,float minVal,float maxVal,String queue){
 		Serial.println(FPSTR("Non Active value set not activated"));
 	}
@@ -225,20 +211,6 @@ public:
 			}
 
 			return "";
-	}
-
-	boolean processMqValue(String topic,String message){
-		for(int i=0;i<itemCount;i++){
-			if(items[i].queue==topic){
-				if(items[i].setAllowed){
-					return processMqVal(i,message);
-				}else{
-					return false;
-				}
-			}
-		}
-
-		return false;
 	}
 
 	void printValues(){
@@ -343,7 +315,7 @@ protected:
 
 	String getItemJson(){
 		return "\"id\":\""+String(id)+"\","
-				+"\"name\":\""+name+"\","
+				+"\"name\":\""+getName()+"\","
 				+"\"kind\":\""+getKind()+"\","
 				+"\"type\":\""+type+"\","
 				+"\"size\":\""+size+"\","
@@ -360,8 +332,7 @@ protected:
 				+"\"val\":\""+getSensorValForJson(m.val)+"\","
 				+"\"minVal\":\""+String(m.minVal)+"\","
 				+"\"maxVal\":\""+String(m.maxVal)+"\","
-				+"\"fieldId\":\""+String(m.fieldId)+"\","
-				+"\"queue\":\""+m.queue+"\""
+				+"\"fieldId\":\""+String(m.fieldId)+"\""
 				+getExtraJsonChild(ind)+"}";
 	}
 

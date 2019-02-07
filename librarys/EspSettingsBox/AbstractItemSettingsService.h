@@ -91,7 +91,6 @@ public:
 								item->setFieldId(index, root["items"][i]["fieldId"]);
 								item->setMinVal(index, root["items"][i]["minVal"]);
 								item->setMaxVal(index, root["items"][i]["maxVal"]);
-								item->setQueue(index, root["items"][i]["queue"]);
 							}else{
 								item->setNonActiveSensorValue(
 										root["items"][i]["name"],

@@ -73,7 +73,7 @@ public:
 			String name=devAddressStr;
 
 			//uint8_t field=i+1;
-			items[i]={i,name,FPSTR(MEASURE_CELSIUS_DEGREES),FPSTR(MEASURE_CELSIUS_DEGREES_RU),devAddressStr,-127,0,-512,512,"",0};
+			items[i]={i,name,FPSTR(MEASURE_CELSIUS_DEGREES),FPSTR(MEASURE_CELSIUS_DEGREES_RU),devAddressStr,-127,0,-512,512,0};
 		}
 
 		if(itemCount>0){
