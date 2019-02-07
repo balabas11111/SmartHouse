@@ -19,6 +19,7 @@ public:
 	virtual ~SendAbleAbstractItems(){};
 
 	void setItems(AbstractItem** items,uint8_t size){
+		Serial.println(FPSTR("Set abstract items TH helper"));
 		this->abstrItems=items;
 		this->abstrItemsSize=size;
 	}

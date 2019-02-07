@@ -50,7 +50,7 @@ public:
 	String getAbstrItemsJson();
 
 	static void printHeap(){
-		Serial.print(FPSTR(MESSAGE_DEVICE_FREE_HEAP));Serial.print(FPSTR(MESSAGE_EQUALS));Serial.print(ESP.getFreeHeap());
+		Serial.print(FPSTR(MESSAGE_DEVICE_FREE_HEAP));Serial.println(ESP.getFreeHeap());
 	}
 
 	static void printDeviceDiagnostic();

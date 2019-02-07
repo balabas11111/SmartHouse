@@ -26,10 +26,11 @@ public:
 	   boolean exists=!(!file || file.size()==0);
 
 	   if(exists){
-		   Serial.print(FPSTR("File exists "));
+		   /*Serial.print(FPSTR("File exists "));
 		   Serial.print(fileName);
 		   Serial.print(FPSTR(" size="));
 		   Serial.println(file.size());
+		   */
 	   }else{
 		   Serial.print(FPSTR("NOT exists "));
 		   Serial.println(fileName);
