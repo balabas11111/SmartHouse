@@ -351,25 +351,24 @@ String EspSettingsBox::getThingSpeakChannelUrl(){
 }
 
 String EspSettingsBox::getJson(){
-	String result="{\"name\":\"espSettingsBox\",\"itemCount\":\"8\",\"settingsKind\":\"simple\",\"items\":[\
-						{\"name\":\"deviceFirmWareVersion\",\"val\":\""+String(DEVICE_FIRMWARE_VER)+"\",\"descr\":\"Версия прошивки\"},\
-						{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\",\"descr\":\"ID устройства\"},\
-						{\"name\":\"DeviceKind\",\"val\":\""+String(DEVICE_KIND)+"\",\"descr\":\"Тип устройства\"},\
-						{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\",\"descr\":\"Описание устройства\"},\
-						{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\",\"descr\":\"Размещение устройства\"},\
-						\
-						{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
-						{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
-						{\"name\":\"thingSpeakChannelUrl\",\"val\":\""+getThingSpeakChannelUrl()+"\"}],\
-						\"entity\": {"+getExtraBoxJsonByKind(SETTINGS_KIND_all)+"},\
-						\"DeviceId\":\""+DeviceId+"\",\
-						\"DeviceDescription\":\""+DeviceDescription+"\",\
-						\"DeviceLocation\":\""+DeviceLocation+"\",\
-						\"thingSpeakChannelUrl\":\""+getThingSpeakChannelUrl()+"\"\
-						}";
+String result="{\"name\":\"espSettingsBox\",\"itemCount\":\"8\",\"settingsKind\":\"simple\",\"items\":[\
+{\"name\":\"deviceFirmWareVersion\",\"val\":\""+String(DEVICE_FIRMWARE_VER)+"\",\"descr\":\"Версия прошивки\"},\
+{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\",\"descr\":\"ID устройства\"},\
+{\"name\":\"DeviceKind\",\"val\":\""+String(DEVICE_KIND)+"\",\"descr\":\"Тип устройства\"},\
+{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\",\"descr\":\"Описание устройства\"},\
+{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\",\"descr\":\"Размещение устройства\"},\
+\
+{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
+{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
+{\"name\":\"thingSpeakChannelUrl\",\"val\":\""+getThingSpeakChannelUrl()+"\"}],\
+\"entity\": {"+getExtraBoxJsonByKind(SETTINGS_KIND_all)+"},\
+\"DeviceId\":\""+DeviceId+"\",\
+\"DeviceDescription\":\""+DeviceDescription+"\",\
+\"DeviceLocation\":\""+DeviceLocation+"\",\
+\"thingSpeakChannelUrl\":\""+getThingSpeakChannelUrl()+"\"\
+}";
 return result;
 }
-
 
 String EspSettingsBox::getJson(String page){
 	if(!page || page==""){
@@ -381,61 +380,61 @@ String EspSettingsBox::getJson(String page){
 if(page==FPSTR(PAGE_DEVICE)){
 
 result=
-	"{\"name\":\"espSettingsBox\",\"itemCount\":\"17\",\"settingsKind\":\"device\",\"items\":[\
-	{\"name\":\"deviceFirmWareVersion\",\"val\":\""+String(DEVICE_FIRMWARE_VER)+"\"},\
-	{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\"},\
-	{\"name\":\"DeviceKind\",\"val\":\""+String(DEVICE_KIND)+"\"},\
-	{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\"},\
-	{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\"},\
-	{\"name\":\"displayAlvaysOn\",\"val\":\""+String(displayAlvaysOn)+"\"},\
-	{\"name\":\"displayAutochange\",\"val\":\""+String(displayAutochange)+"\"},\
-	{\"name\":\"refreshInterval\",\"val\":\""+String(refreshInterval)+"\"},\
-	{\"name\":\"accessUser\",\"val\":\""+String(accessUser)+"\"},\
-	{\"name\":\"accessPass\",\"val\":\"*****\"},\
-	{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\"},\
-	{\"name\":\"settingsPass\",\"val\":\"*****\"}],\
-	\"entity\": {"+getExtraBoxJsonByKind(page)+"}}";
+"{\"name\":\"espSettingsBox\",\"itemCount\":\"17\",\"settingsKind\":\"device\",\"items\":[\
+{\"name\":\"deviceFirmWareVersion\",\"val\":\""+String(DEVICE_FIRMWARE_VER)+"\"},\
+{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\"},\
+{\"name\":\"DeviceKind\",\"val\":\""+String(DEVICE_KIND)+"\"},\
+{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\"},\
+{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\"},\
+{\"name\":\"displayAlvaysOn\",\"val\":\""+String(displayAlvaysOn)+"\"},\
+{\"name\":\"displayAutochange\",\"val\":\""+String(displayAutochange)+"\"},\
+{\"name\":\"refreshInterval\",\"val\":\""+String(refreshInterval)+"\"},\
+{\"name\":\"accessUser\",\"val\":\""+String(accessUser)+"\"},\
+{\"name\":\"accessPass\",\"val\":\"*****\"},\
+{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\"},\
+{\"name\":\"settingsPass\",\"val\":\"*****\"}],\
+\"entity\": {"+getExtraBoxJsonByKind(page)+"}}";
 }
 if(page==FPSTR(PAGE_NET)){
 
 result=
-	"{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"settingsKind\":\"net\",\"items\":[\
-	{\"name\":\"isAccesPoint\",\"val\":\""+String(isAccesPoint)+"\"},\
-	{\"name\":\"ssidAP\",\"val\":\""+ssidAP+"\"},\
-	{\"name\":\"ssid\",\"val\":\""+ssid+"\"},\
-	{\"name\":\"password\",\"val\":\"*****\"},\
-	{\"name\":\"staticIp\",\"val\":\""+String(staticIp)+"\"},\
-	{\"name\":\"localIp\",\"val\":\""+localIp.toString()+"\"},\
-	{\"name\":\"apIp\",\"val\":\""+apIp.toString()+"\"},\
-	{\"name\":\"gateIp\",\"val\":\""+gateIp.toString()+"\"},\
-	{\"name\":\"subnetIp\",\"val\":\""+subnetIp.toString()+"\"},\
-	{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\"},\
-	{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\"}],\
-	\"entity\": {"+getExtraBoxJsonByKind(page)+"}}";
+"{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"settingsKind\":\"net\",\"items\":[\
+{\"name\":\"isAccesPoint\",\"val\":\""+String(isAccesPoint)+"\"},\
+{\"name\":\"ssidAP\",\"val\":\""+ssidAP+"\"},\
+{\"name\":\"ssid\",\"val\":\""+ssid+"\"},\
+{\"name\":\"password\",\"val\":\"*****\"},\
+{\"name\":\"staticIp\",\"val\":\""+String(staticIp)+"\"},\
+{\"name\":\"localIp\",\"val\":\""+localIp.toString()+"\"},\
+{\"name\":\"apIp\",\"val\":\""+apIp.toString()+"\"},\
+{\"name\":\"gateIp\",\"val\":\""+gateIp.toString()+"\"},\
+{\"name\":\"subnetIp\",\"val\":\""+subnetIp.toString()+"\"},\
+{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\"},\
+{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\"}],\
+\"entity\": {"+getExtraBoxJsonByKind(page)+"}}";
 }
 if(page==FPSTR(PAGE_PUBLISH)){
 
 result=
-	"{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"settingsKind\":\"publish\",\"items\":[\
-	{\"name\":\"isThingSpeakEnabled\",\"val\":\""+String(isThingSpeakEnabled)+"\"},\
-	{\"name\":\"postDataToTSInterval\",\"val\":\""+String(postDataToTSInterval)+"\"},\
-	{\"name\":\"thSkUsrKey\",\"val\":\""+thSkUsrKey+"\"},\
-	{\"name\":\"thSkWKey\",\"val\":\""+thSkWKey+"\"},\
-	{\"name\":\"thSkRKey\",\"val\":\""+thSkRKey+"\"},\
-	{\"name\":\"thSkChId\",\"val\":\""+String(thSkChId)+"\"},\
-	{\"name\":\"thSkTKey\",\"val\":\""+thSkTKey+"\"},\
-	{\"name\":\"isMqttEnabled\",\"val\":\""+String(isMqttEnabled)+"\"},\
-	{\"name\":\"postDataToMqttInterval\",\"val\":\""+String(postDataToMqttInterval)+"\"},\
-	{\"name\":\"mqtt_server\",\"val\":\""+mqtt_server+"\"},\
-	{\"name\":\"mqtt_user\",\"val\":\""+mqtt_user+"\"},\
-	{\"name\":\"mqtt_pass\",\"val\":\"*****\"},\
-	{\"name\":\"mqtt_port\",\"val\":\""+String(mqtt_port)+"\"},\
-	{\"name\":\"isHttpPostEnabled\",\"val\":\""+String(isHttpPostEnabled)+"\"},\
-	{\"name\":\"postDataToHttpInterval\",\"val\":\""+String(postDataToHttpInterval)+"\"},\
-	{\"name\":\"httpPostIp\",\"val\":\""+httpPostIp.toString()+"\"},\
-	{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
-	{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}],\
-	\"entity\": {"+getExtraBoxJsonByKind(page)+"}}";
+"{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"settingsKind\":\"publish\",\"items\":[\
+{\"name\":\"isThingSpeakEnabled\",\"val\":\""+String(isThingSpeakEnabled)+"\"},\
+{\"name\":\"postDataToTSInterval\",\"val\":\""+String(postDataToTSInterval)+"\"},\
+{\"name\":\"thSkUsrKey\",\"val\":\""+thSkUsrKey+"\"},\
+{\"name\":\"thSkWKey\",\"val\":\""+thSkWKey+"\"},\
+{\"name\":\"thSkRKey\",\"val\":\""+thSkRKey+"\"},\
+{\"name\":\"thSkChId\",\"val\":\""+String(thSkChId)+"\"},\
+{\"name\":\"thSkTKey\",\"val\":\""+thSkTKey+"\"},\
+{\"name\":\"isMqttEnabled\",\"val\":\""+String(isMqttEnabled)+"\"},\
+{\"name\":\"postDataToMqttInterval\",\"val\":\""+String(postDataToMqttInterval)+"\"},\
+{\"name\":\"mqtt_server\",\"val\":\""+mqtt_server+"\"},\
+{\"name\":\"mqtt_user\",\"val\":\""+mqtt_user+"\"},\
+{\"name\":\"mqtt_pass\",\"val\":\"*****\"},\
+{\"name\":\"mqtt_port\",\"val\":\""+String(mqtt_port)+"\"},\
+{\"name\":\"isHttpPostEnabled\",\"val\":\""+String(isHttpPostEnabled)+"\"},\
+{\"name\":\"postDataToHttpInterval\",\"val\":\""+String(postDataToHttpInterval)+"\"},\
+{\"name\":\"httpPostIp\",\"val\":\""+httpPostIp.toString()+"\"},\
+{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
+{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}],\
+\"entity\": {"+getExtraBoxJsonByKind(page)+"}}";
 
 }
 

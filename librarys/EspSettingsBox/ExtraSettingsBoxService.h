@@ -92,7 +92,7 @@ public:
 	String getExtraBoxJsonByKind(String extraBoxKind){
 		uint8_t count=0;;
 
-		String result="{\"items\": [";
+		String result="{";
 		for(uint8_t i=0;i<getExtraBoxesCount();i++){
 			if(extraBoxKind==FPSTR(SETTINGS_KIND_all) || extraBoxes[i]->getKind()==extraBoxKind){
 				result+=extraBoxes[i]->getJson();
@@ -101,9 +101,9 @@ public:
 			}
 		}
 		if(count!=0){
-			result.setCharAt(result.length(), ']');
+			result.setCharAt(result.length()-1, '}');
 		}else{
-			result+="]";
+			result+="}";
 		}
 
 		result+=",\"count\": \""+String(count)+"}";
