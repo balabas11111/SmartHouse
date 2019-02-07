@@ -389,15 +389,51 @@ function processAllJson(allSensorData){
 }
 
 function processSettingsJson(data){
+	var baseId=data.name;
+	var entity=data.entity;
+	var items=data.items;
 	
-	processSimpleJson(data);
+	if(items!=undefined){
+		for(var key in items){
+			if(items.hasOwnProperty(key)){
+				var id=baseId+"_"+key;
+				var value=items[key];
+				
+				var comp=document.getElementById(id);
+				if(comp!=undefined){
+					setComponentValue(comp,value);
+					if(comp.classList!=undefined && comp.classList.contains('espSettingsBoxAppears')){
+						comp.style.display='block';
+					}
+				}
+			}
+		}
+	}
 	
-	var devId=data.DeviceId;
-	var devLocation=data.DeviceLocation;
-	
-	if(devId!=undefined && devId!='' && devLocation!=undefined && devLocation!=''){
-		pageHeader=LBL_MSG_LOC_DEVICE_SMART_HOUSE+devId+' '+devLocation;
-		document.title=pageHeader;
+	if(entity!=undefined && entity.length>0){
+		for(var i in entity){
+			if(entity[i]!=undefined && entity[i].hasOwnProperty('name') && entity[i].hasOwnProperty('items')){
+				
+				var entBaseId=baseId+'_'+entity[i].name;
+				var items=entity[i].items;
+				
+				for(var key in items){
+					if(items.hasOwnProperty(key)){
+						var id=entBaseId+'_'+key;
+						var value=items[key];
+						
+						var comp=document.getElementById(id);
+						if(comp!=undefined){
+							setComponentValue(comp,value);
+							if(comp.classList!=undefined && comp.classList.contains('espSettingsBoxAppears')){
+								comp.style.display='block';
+							}
+						}
+					}
+					
+				}
+			}
+		}
 	}
 }
 

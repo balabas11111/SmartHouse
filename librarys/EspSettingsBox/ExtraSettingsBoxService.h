@@ -93,7 +93,7 @@ public:
 	String getExtraBoxJsonByKind(String extraBoxKind){
 		uint8_t count=0;;
 
-		String result="{";
+		String result="[";
 		for(uint8_t i=0;i<getExtraBoxesCount();i++){
 			if(extraBoxKind==FPSTR(SETTINGS_KIND_all) || extraBoxes[i]->getKind()==extraBoxKind){
 				result+=extraBoxes[i]->getJson();
@@ -102,9 +102,9 @@ public:
 			}
 		}
 		if(count!=0){
-			result.setCharAt(result.length()-1, '}');
+			result.setCharAt(result.length()-1, ']');
 		}else{
-			result+="}";
+			result+="]";
 		}
 
 		return result;
@@ -235,6 +235,23 @@ public:
 	}
 
 	//--------------------Get Extra values-----------------------
+	String getExtraValueByBoxIndex(int boxIndex,int keyIndex){
+		if(!hasExtraBoxes(boxIndex)){return "";};
+		return extraBoxes[boxIndex]->getValue(keyIndex);
+	}
+
+	boolean getExtraValueBooleanByBoxIndex(int boxIndex,int keyIndex){
+		return EspSettingsUtil::stringToBoolean(getExtraValueByBoxIndex(boxIndex, keyIndex));
+	}
+
+	int getExtraValueIntByBoxIndex(int boxIndex,int keyIndex){
+		return getExtraValueByBoxIndex(boxIndex, keyIndex).toInt();
+	}
+
+	float getExtraValueFloatByBoxIndex(int boxIndex,int keyIndex){
+		return getExtraValueByBoxIndex(boxIndex, keyIndex).toFloat();
+	}
+
 	String getExtraValue(uint8_t boxId,int keyId){
 		int boxIndex=getExtraBoxIndex(boxId);
 
@@ -261,6 +278,8 @@ public:
 	float getExtraValueFloat(String boxName,int index){
 		return getExtraValue(boxName,index).toFloat();
 	}
+
+
 
 	boolean getExtraValueBoolean(uint8_t boxId,int keyId){
 		return EspSettingsUtil::stringToBoolean(getExtraValue(boxId, keyId));
@@ -344,21 +363,9 @@ public:
 		if(extraBoxes==nullptr || extraBoxes==NULL){
 			return 0;
 		}
-		return ARRAY_SIZE(extraBoxes);
+		return extraBoxCount;
 	}
 private:
-	String getExtraValueByBoxIndex(int boxIndex,int keyIndex){
-		if(!hasExtraBoxes(boxIndex)){return "";};
-		return extraBoxes[boxIndex]->getValue(keyIndex);
-	}
-
-	int getExtraValueIntByBoxIndex(int boxIndex,int index){
-		return getExtraValue(boxIndex,index).toInt();
-	}
-
-	float getExtraValueFloatByBoxIndex(int boxIndex,int index){
-		return getExtraValue(boxIndex,index).toFloat();
-	}
 
 	ESPExtraSettingsBox** extraBoxes;
 	uint8_t extraBoxCount;

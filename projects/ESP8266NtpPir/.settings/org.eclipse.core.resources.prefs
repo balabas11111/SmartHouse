@@ -10,6 +10,7 @@ encoding//libraries/EspSettingsBox/extraBoxes/EspSett_Alarm.h=UTF-8
 encoding//libraries/EspSettingsBox/extraBoxes/EspSett_Device.h=UTF-8
 encoding//libraries/EspSettingsBox/extraBoxes/EspSett_Display.h=UTF-8
 encoding//libraries/EspSettingsBox/extraBoxes/EspSett_Mq.h=UTF-8
+encoding//libraries/EspSettingsBox/extraBoxes/EspSett_SmartHouse.h=UTF-8
 encoding//libraries/EspSettingsBox/extraBoxes/EspSett_ThSpeak.h=UTF-8
 encoding//libraries/Helpers/Time/NtpTimeClientService.h=UTF-8
 encoding//libraries/Helpers/Time/TimeIntervalService.h=UTF-8

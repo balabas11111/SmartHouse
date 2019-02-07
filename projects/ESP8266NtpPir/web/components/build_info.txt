@@ -1,1 +1,1 @@
-ESP8266NtpPir (ver Mon Feb 04 04:55:28 EET 2019 ) 
+ESP8266NtpPir (ver Thu Feb 07 23:04:45 EET 2019 ) 

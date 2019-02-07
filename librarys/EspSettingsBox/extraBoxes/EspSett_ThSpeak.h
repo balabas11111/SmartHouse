@@ -49,7 +49,7 @@ public:
 	EspSett_ThSpeak(){
 		this->keySize=ARRAY_SIZE(THINGSPEAK_SETT_BOX_KEYS_NAME);;
 	}
-	virtual ~EspSett_ThSpeak();
+	virtual ~EspSett_ThSpeak(){};
 
 	virtual uint8_t getId(){
 		return ExtraBox_thingSpeak;

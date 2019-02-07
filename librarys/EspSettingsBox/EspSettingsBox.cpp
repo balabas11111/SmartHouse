@@ -314,18 +314,18 @@ String EspSettingsBox::getJson(String page){
 if(page==FPSTR(PAGE_DEVICE)){
 
 return
-"{\"name\":\"espSettingsBox\",\"kind\":\"device\",\"items\":[\
+"{\"name\":\"espSettingsBox\",\"kind\":\"device\",\"items\":{\
 \"refreshInterval\": \""+String(refreshInterval)+"\",\
 \"accessUser\": \""+String(accessUser)+"\",\
 \"accessPass\": \"*****\",\
 \"settingsUser\": \""+String(settingsUser)+"\",\
-\"settingsPass\": \"*****\"],\
+\"settingsPass\": \"*****\"},\
 \"entity\": "+getExtraBoxJsonByKind(page)+"}";
 }
 if(page==FPSTR(PAGE_NET)){
 
 return
-"{\"name\":\"espSettingsBox\",\"kind\":\"net\",\"items\":[\
+"{\"name\":\"espSettingsBox\",\"kind\":\"net\",\"items\":{\
 \"isAccesPoint\": \""+String(isAccesPoint)+"\",\
 \"ssidAP\": \""+ssidAP+"\",\
 \"ssid\": \""+ssid+"\",\
@@ -336,16 +336,16 @@ return
 \"gateIp\": \""+gateIp.toString()+"\",\
 \"subnetIp\": \""+subnetIp.toString()+"\",\
 \"dnsIp\": \""+dnsIp.toString()+"\",\
-\"dnsIp2\": \""+dnsIp2.toString()+"\"],\
+\"dnsIp2\": \""+dnsIp2.toString()+"\"},\
 \"entity\": "+getExtraBoxJsonByKind(page)+"}";
 }
 if(page==FPSTR(PAGE_PUBLISH)){
 
 return
-"{\"name\":\"espSettingsBox\",\"kind\":\"publish\",\"items\":[\
+"{\"name\":\"espSettingsBox\",\"kind\":\"publish\",\"items\":{\
 \"isHttpPostEnabled\": \""+String(isHttpPostEnabled)+"\",\
 \"postDataToHttpInterval\": \""+String(postDataToHttpInterval)+"\",\
-\"httpPostIp\": \""+httpPostIp.toString()+"\"],\
+\"httpPostIp\": \""+httpPostIp.toString()+"\"},\
 \"entity\": "+getExtraBoxJsonByKind(page)+"}";
 }
 

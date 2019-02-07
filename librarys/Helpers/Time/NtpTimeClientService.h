@@ -61,10 +61,11 @@ public:
 			Serial.println(FPSTR(NTP_TIME_CLIENT_INIT_BEGIN));
 
 			int boxIndex=espSettingsBox->getExtraBoxIndex(FPSTR(NTP_SETTINGS_BOX_NAME));
-			String poolServerName=espSettingsBox->getExtraValue(boxIndex, NTP_poolServerName);
-			int timeOffset=espSettingsBox->getExtraValueInt(boxIndex, NTP_timeOffset);
-			int updateInterval=1000*espSettingsBox->getExtraValueInt(boxIndex, NTP_updateInterval);
-			ntpEnabled=espSettingsBox->getExtraValueBoolean(boxIndex, NTP_enabled);
+
+			String poolServerName=espSettingsBox->getExtraValueByBoxIndex(boxIndex, NTP_poolServerName);
+			int timeOffset=espSettingsBox->getExtraValueIntByBoxIndex(boxIndex, NTP_timeOffset);
+			int updateInterval=1000*espSettingsBox->getExtraValueIntByBoxIndex(boxIndex, NTP_updateInterval);
+			ntpEnabled=espSettingsBox->getExtraValueBooleanByBoxIndex(boxIndex, NTP_enabled);
 
 			if(updateInterval<MIN_UPDATE_INTERVAL){
 				updateInterval=MIN_UPDATE_INTERVAL;

@@ -1,0 +1,69 @@
+	<div class="w3-row w3-green" style="height: 50px;">
+  		<h3>Отправка в ThingSpeak</h3>
+  	</div>
+  	
+  	<input id="publish_form_target" type="hidden" value="espSettingsBox"/>
+	<input id="publish_form_page" type="hidden" value="publish"/>
+  	
+  	<div class="w3-row">
+		<div class="w3-half">
+  			<label for="espSettingsBox_TSP_enabled">Отправка разрешена</label>
+  		</div>
+  		<div class="w3-half">
+			<input id="espSettingsBox_TSP_enabled" name="espSettingsBox_TSP_enabled" class="w3-check" type="checkbox">
+		</div>
+  	</div>
+	
+	<div class="w3-row">
+		<div class="w3-half">
+			<label for="espSettingsBox_TSP_interval">Интервал публикации значений (сек)</label>
+		</div>
+  		<div class="w3-half">
+			<input id="espSettingsBox_TSP_interval" name="espSettingsBox_TSP_interval" class="w3-input w3-border" style="width:50%" type="number" min="241" step="1">
+		</div>
+  	</div>
+	
+	<div class="w3-row">
+		<div class="w3-half">		
+			<label for="espSettingsBox_TSP_userKey">Ключ пользователя</label>
+		</div>
+  		<div class="w3-half">
+			<input id="espSettingsBox_TSP_userKey" name="espSettingsBox_TSP_userKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+		</div>
+  	</div>
+	
+	<div class="w3-row">
+		<div class="w3-half">		
+			<label for="espSettingsBox_TSP_writeKey">Ключ записи</label>
+		</div>
+  		<div class="w3-half">
+			<input id="espSettingsBox_TSP_writeKey" name="espSettingsBox_TSP_writeKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+		</div>
+  	</div>
+	
+	<div class="w3-row">
+		<div class="w3-half">		
+			<label for="espSettingsBox_TSP_readKey">Ключ чтения</label>
+		</div>
+  		<div class="w3-half">
+			<input id="espSettingsBox_TSP_readKey" name="espSettingsBox_TSP_readKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+		</div>
+  	</div>
+	
+	<div class="w3-row">
+		<div class="w3-half">		
+			<label for="espSettingsBox_TSP_channel">Канал</label>
+		</div>
+  		<div class="w3-half">
+			<input id="espSettingsBox_TSP_channel" name="espSettingsBox_TSP_channel" class="w3-input w3-border" style="width:50%" type="number" min="1" step="1">
+		</div>
+  	</div>
+			
+	<div class="w3-row">
+		<div class="w3-half">								
+			<label for="espSettingsBox_TSP_sendKey">Ключ твиттер</label>
+		</div>
+  		<div class="w3-half">
+			<input id="espSettingsBox_TSP_sendKey" name="espSettingsBox_TSP_sendKey" class="w3-input w3-border" style="width:50%" type="text" value="обновляю">
+		</div>
+  	</div>

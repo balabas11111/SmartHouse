@@ -126,7 +126,7 @@ function reloadCurrentSettingsTab(){
 
 /*---------------------------------device settings tab----------------------*/
 function processDeviceSettingsGet(data){
-	processSimpleJsonResponse(data,'');
+	processSettingsJson(data);
 	showStatusMessage('Загружено '+currentHeaderName,'w3-green');
 }
 

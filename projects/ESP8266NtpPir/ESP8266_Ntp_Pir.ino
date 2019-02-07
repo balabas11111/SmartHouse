@@ -7,6 +7,7 @@
 #include <extraBoxes/ESPSett_Ntp.h>
 #include <extraBoxes/ESPSett_Device.h>
 #include <extraBoxes/ESPSett_Telegram.h>
+#include <extraBoxes/EspSett_ThSpeak.h>
 
 #include "FS.h"
 #include <Wire.h>
@@ -41,10 +42,12 @@
 #include "Display_Custom/DisplayHelper_TM1637_Clock_PIR.h"
 
 #include "TM1637.h"
+
 ESPSett_Ntp espSett_Ntp;
 EspSett_Device espSett_Dev;
+EspSett_ThSpeak espSett_Ths;
 
-ESPExtraSettingsBox* extraBoxes[]={&espSett_Ntp,&espSett_Dev};
+ESPExtraSettingsBox* extraBoxes[]={&espSett_Ntp,&espSett_Dev,&espSett_Ths};
 EspSettingsBox espSettingsBox(extraBoxes,ARRAY_SIZE(extraBoxes));
 
 BeeperB beeper(D5,HIGH,LOW,true,false);
@@ -94,15 +97,11 @@ DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
 
 void initComponents(){
 
-	deviceHelper.printHeap();
 	beeper.init();
 
-	deviceHelper.printHeap();
 	displayHelper.displayConn();
 
-	deviceHelper.printHeap();
 	wifi.init();
-	deviceHelper.printHeap();
 	timeService.init();
 	deviceHelper.printHeap();
 	bmeMeasurer.init();
@@ -131,7 +130,7 @@ void setup() {
   displayHelper.init();
 
   espSettingsBox.initSpiff();
-  espSettingsBox.deleteFilesByPreffix("/");
+  //espSettingsBox.deleteFilesByPreffix("/");
 
   deviceHelper.startDevice(espSettingsBox.getExtraValue(FPSTR(DEVICE_SETTINGS_BOX_NAME), DEVICE_id),buttonMenu.getPin());
 
@@ -143,7 +142,6 @@ void setup() {
 
   onPirDetectorChanged();
 
-  deviceHelper.printDeviceDiagnostic();
   Serial.println(FPSTR(MESSAGE_DEVICE_STARTED));
 }
 

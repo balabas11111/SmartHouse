@@ -29,6 +29,7 @@ const char TELEGRAM_SETTINGS_BOX_NAME[]     PROGMEM ="TEL";
 const char DEVICE_SETTINGS_BOX_NAME[]       PROGMEM ="DEV";
 const char MQTT_SETTINGS_BOX_NAME[]         PROGMEM ="MQT";
 const char THINGSPEAK_SETTINGS_BOX_NAME[]   PROGMEM ="TSP";
+const char SMARTHOUSE_SETTINGS_BOX_NAME[]   PROGMEM ="SMH";
 
 const char SETTINGS_KIND_all[]   	PROGMEM ="all";
 const char SETTINGS_KIND_device[]   PROGMEM ="device";
@@ -39,7 +40,7 @@ const char SETTINGS_KIND_intervals[]PROGMEM ="intervals";
 const char SETTINGS_KIND_manage[]   PROGMEM ="manage";
 
 enum ExtraSettingsBoxIds: uint8_t{
-	ExtraBox_Alarm, ExtraBox_Display, ExtraBox_Ntp, ExtraBox_Telegram, ExtraBox_Device, ExtraBox_mqtt, ExtraBox_thingSpeak
+	ExtraBox_Alarm, ExtraBox_Display, ExtraBox_Ntp, ExtraBox_Telegram, ExtraBox_Device, ExtraBox_mqtt, ExtraBox_thingSpeak, ExtraBox_SmartHouse
 };
 
 const char* const EXTRA_SETTINGS_BOX_NAMES[] PROGMEM=
@@ -51,7 +52,7 @@ const char* const EXTRA_SETTINGS_BOX_NAMES[] PROGMEM=
 		"DEV",
 		"TSP",
 		"MQT",
-		"TSP"
+		"SMH"
 };
 
 const char* const SETTINGS_KINDS_SAVE_ENABLED[] PROGMEM=
@@ -91,17 +92,14 @@ public:
 		return true;
 	}
 
-	virtual int fillDefaultValues(){
+	virtual void fillDefaultValues(){
 		Serial.println(FPSTR("fill default values"));
-
-		//const char* const* defaults=getDefaults();
-		//const char* const* keys=getKeys();
 
 		for(uint8_t i=0;i<getKeySize();i++){
 			setValue(i, getDefaultValue(i));
 		}
 		Serial.println(FPSTR("fill default values...done"));
-		return getKeySize()-1;
+		//return getKeySize()-1;
 	}
 
 	String getBoxFilePath(){
@@ -182,13 +180,6 @@ public:
 		JsonObject& root = jsonBuffer.parseObject(buf.get());
 		JsonObject& items= root["items"];
 
-		/*Serial.print("root=");
-		root.printTo(Serial);
-
-		Serial.println();
-		Serial.print(" items=");
-		items.printTo(Serial);
-*/
 		boxFile.close();
 
 		if (!root.success() || !items.success()) {
@@ -217,7 +208,7 @@ public:
 				  uint8_t ind=getKeyIndex(key);
 
 				  if(ind==-1){
-					  Serial.print(FPSTR("Missed in keys key="));
+					  Serial.print(FPSTR("Unknown key in file key="));
 					  Serial.println(key);
 					  keysValid=false;
 					  break;
@@ -239,9 +230,9 @@ public:
 
 			  }
 
-			Serial.println(FPSTR("Check all keys are in file"));
-
 			if(keysValid){
+				Serial.println(FPSTR("Check all keys are in file"));
+
 				for(uint8_t i=0;i<getKeySize();i++){
 					String key=getKey(i);
 					keysValid=false;
