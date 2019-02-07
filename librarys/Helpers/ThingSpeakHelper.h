@@ -19,6 +19,8 @@
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/SendAbleAbstractItems.h"
 
+#include "extraBoxes/EspSett_ThSpeak.h"
+
 const PROGMEM char ThingSpeakHelper_NAME[] = "thingSpeakHelper";
 
 class ThingSpeakHelper: public JSONprocessor, public SendAbleAbstractItems, public DeviceLibable {
@@ -35,7 +37,7 @@ public:
 
 	StatusMessage sendItems(AbstractItem** items,uint8_t size) override{
 
-		if(espSettingsBox->isThingSpeakEnabled
+		if(espSettingsBox->getExtraValueBoolean(ExtraBox_thingSpeak,THINGSPEAK_enabled)
 				&& items!=nullptr
 				&& size!=0){
 			Serial.println(FPSTR(MESSAGE_THINGSPEAK_SEND_STARTED));
@@ -53,7 +55,7 @@ public:
 			}
 
 			if(params!=""){
-				String res=wifiHelper->executeGetRequest(baseUrl+espSettingsBox->thSkWKey+params);
+				String res=wifiHelper->executeGetRequest(baseUrl+espSettingsBox->getExtraValue(ExtraBox_thingSpeak,THINGSPEAK_writeKey)+params);
 				Serial.print(count);
 				if(res!=""){
 					return StatusMessage(STATUS_SEND_ERROR_INT,res);
@@ -70,7 +72,7 @@ public:
 
 	void sendAbstractItemToThingSpeak(AbstractItem* item){
 		String baseUrl=FPSTR(MESSAGE_THINGSPEAK_BASE_URL);
-			baseUrl+=espSettingsBox->thSkWKey;
+			baseUrl+=espSettingsBox->getExtraValue(ExtraBox_thingSpeak,THINGSPEAK_writeKey);
 		String url=item->constructGetUrl(baseUrl, FPSTR(MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST_EQ));
 		wifiHelper->executeGetRequest(url);
 	}
@@ -87,10 +89,11 @@ public:
 		if(size==0){
 			return StatusMessage(STATUS_CONF_ERROR_INT,FPSTR(MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED));
 		}
-		if(!espSettingsBox->isThingSpeakEnabled){
+		if(!espSettingsBox->getExtraValueBoolean(ExtraBox_thingSpeak,THINGSPEAK_enabled)){
 			return StatusMessage(STATUS_CONF_ERROR_INT,FPSTR(MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED));
 		}else
-		if(espSettingsBox->thSkUsrKey=="" || espSettingsBox->thSkUsrKey==FPSTR(MESSAGE_THINGSPEAK_EMPTY_KEY)){
+		if(espSettingsBox->getExtraValue(ExtraBox_thingSpeak,THINGSPEAK_userKey)==""
+				|| espSettingsBox->getExtraValue(ExtraBox_thingSpeak,THINGSPEAK_userKey)==FPSTR(MESSAGE_THINGSPEAK_EMPTY_KEY)){
 			return StatusMessage(STATUS_CONF_ERROR_INT,FPSTR(MESSAGE_THINGSPEAK_NO_USER_SPECIFIED));
 		}else{
 			String message=recreateThingSpeak(items,size);
@@ -104,7 +107,7 @@ public:
 		String result="";
 
 		String commandGet=FPSTR(MESSAGE_THINGSPEAK_API_KEY_EQ);
-		commandGet+=espSettingsBox->thSkUsrKey;
+		commandGet+=espSettingsBox->getExtraValue(ExtraBox_thingSpeak,THINGSPEAK_userKey);
 
 		uint8_t countGet=0;
 		uint8_t countSet=0;
@@ -132,11 +135,11 @@ public:
 
 		if(countGet!=0){
 
-			commandGet+=espSettingsBox->getDeviceNameFull();
-			commandGet+=espSettingsBox->getDeviceDescriptionFull();
+			commandGet+=getDeviceNameFull();
+			commandGet+=getDeviceDescriptionFull();
 
 			String getResult=wifiHelper->executeFormPostRequest(FPSTR(MESSAGE_THINGSPEAK_CREATE_CHANNEL_URL),commandGet);
-			espSettingsBox->saveThingSpeakChannelCreation(getResult);
+			saveThingSpeakChannelCreation(getResult);
 			delay(10);
 		}
 
@@ -149,7 +152,7 @@ public:
 					if(item->getAutoCreateChannel()){
 						for(uint8_t j=0;j<item->getItemCount();j++){
 							if(item->getFieldId(j)!=0 && item->getSetAllowed(j)){
-								item->setQueue(j, espSettingsBox->getThingSpeakReadChannelName(item->getFieldIdStr(j)));
+								item->setQueue(j, getThingSpeakReadChannelName(item->getFieldIdStr(j)));
 								doSave=true;
 								delay(10);
 							}
@@ -169,6 +172,90 @@ public:
 		result+=String(countSet);
 		result+=FPSTR(MESSAGE_THINGSPEAK_SET_CHANNELS);
 
+		return result;
+	}
+
+	boolean saveThingSpeakChannelCreation(String response) {
+
+			Serial.println(FPSTR(ESPSETTINGSBOX_THINGSPEAK_PARSE_CHCREATION));
+			Serial.print(FPSTR(ESPSETTINGSBOX_THINGSPEAK_CHANNEL_JSON));
+			Serial.println(response);
+
+			DynamicJsonBuffer jsonBuffer;
+
+			JsonObject& root = jsonBuffer.parseObject(response);
+
+			if (!root.success()) {
+				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
+				return false;
+			} else {
+				Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
+				root.printTo(Serial);
+
+				int channelId=root["id"];
+				String flag1=root["api_keys"][0]["write_flag"];
+
+				flag1.toLowerCase();
+				uint8_t writeKeyFlag=0;
+				uint8_t readKeyFlag=1;
+
+				if(flag1!="true"){
+					writeKeyFlag=1;
+					readKeyFlag=0;
+				}
+				String writeKey=root["api_keys"][writeKeyFlag]["api_key"];
+				String readKey=root["api_keys"][readKeyFlag]["api_key"];
+
+				Serial.print(FPSTR(ESPSETTINGSBOX_THINGSPEAK_CHANNELID));
+				Serial.println(channelId);
+				Serial.print(FPSTR(ESPSETTINGSBOX_THINGSPEAK_WRITEKEY));
+				Serial.println(writeKey);
+				Serial.print(FPSTR(ESPSETTINGSBOX_THINGSPEAK_READKEY));
+				Serial.println(readKey);
+
+					if(channelId>0 && writeKey!="" && readKey!=""){
+							Serial.println(FPSTR(ESPSETTINGSBOX_THINGSPEAK_UPDATE_CHANNEL));
+							espSettingsBox->setExtraValue(ExtraBox_thingSpeak, THINGSPEAK_channel,String(channelId));
+							espSettingsBox->setExtraValue(ExtraBox_thingSpeak, THINGSPEAK_writeKey,writeKey);
+							espSettingsBox->setExtraValue(ExtraBox_thingSpeak, THINGSPEAK_readKey,readKey);
+						//mqtt_TStopic="channels/"+String(thSkChId)+"/subscribe/json/"+thSkRKey;
+
+					}
+				}
+
+			Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+
+			return true;
+	}
+
+	String getThingSpeakReadChannelName(String fieldId){
+		String result=FPSTR(MESSAGE_THINGSPEAK_CHANNELS_PREF);
+				result+=espSettingsBox->getExtraValue(ExtraBox_thingSpeak, THINGSPEAK_channel);
+				result+=FPSTR(MESSAGE_THINGSPEAK_SUBSCRIBE_FIELDS_FIELD);
+				result+=fieldId;
+				result+=FPSTR(MESSAGE_DIVIDE);
+				result+=espSettingsBox->getExtraValue(ExtraBox_thingSpeak, THINGSPEAK_readKey);
+		return  result;
+	}
+
+	String getDeviceNameFull(){
+		uint8_t boxInd=espSettingsBox->getExtraBoxIndex(FPSTR(DEVICE_SETTINGS_BOX_NAME));
+
+		String result=FPSTR(MESSAGE_THINGSPEAK_NAME_FOR_REQUEST_EQ);
+		result+=espSettingsBox->getExtraValue(boxInd, DEVICE_location);
+		result+=FPSTR(MESSAGE_SPACE);
+		result+=espSettingsBox->getExtraValue(boxInd, DEVICE_id);
+
+		return result;
+	}
+
+	String getDeviceDescriptionFull(){
+		uint8_t boxInd=espSettingsBox->getExtraBoxIndex(FPSTR(DEVICE_SETTINGS_BOX_NAME));
+
+		String result= FPSTR(MESSAGE_THINGSPEAK_DESCRIPTION_FOR_REQUEST_EQ);
+				result+=espSettingsBox->getExtraValue(boxInd, DEVICE_descr);
+				result+=FPSTR(MESSAGE_SPACE);
+				result+=DEVICE_KIND;
 		return result;
 	}
 

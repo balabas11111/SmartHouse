@@ -5,6 +5,7 @@
 #include <extraBoxes/ESPSett_Alarm.h>
 #include <extraBoxes/ESPSett_Display.h>
 #include <extraBoxes/ESPSett_Ntp.h>
+#include <extraBoxes/ESPSett_Device.h>
 #include <extraBoxes/ESPSett_Telegram.h>
 
 #include "FS.h"
@@ -41,9 +42,10 @@
 
 #include "TM1637.h"
 ESPSett_Ntp espSett_Ntp;
+EspSett_Device espSett_Dev;
 
-ESPExtraSettingsBox* extraBoxes[]={&espSett_Ntp};
-EspSettingsBox espSettingsBox(extraBoxes);
+ESPExtraSettingsBox* extraBoxes[]={&espSett_Ntp,&espSett_Dev};
+EspSettingsBox espSettingsBox(extraBoxes,ARRAY_SIZE(extraBoxes));
 
 BeeperB beeper(D5,HIGH,LOW,true,false);
 
@@ -59,13 +61,10 @@ Pir_Sensor pirDetector(VAR_NAME(pirDetector),D4,onPirDetectorChanged,700,30000);
 DS18D20_Sensor ds18d20Measurer(FPSTR(SENSOR_ds18d20Measurer), D3);
 BME280_Sensor bmeMeasurer(FPSTR(SENSOR_bmeMeasurer));
 
-//ESP8266WebServer server ( 80 );
-//ESP8266HTTPUpdateServer httpUpdater(true);
-
 TM1637 timeDisplay(D6,D7);
 
 TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,updateSensors);
-TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),false,processThingSpeakPost);
+//TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),false,processThingSpeakPost);
 
 NtpTimeClientService timeService(&espSettingsBox);
 DisplayHelper_TM1637_Clock_PIR displayHelper(&timeDisplay,&espSettingsBox,&bmeMeasurer,&ds18d20Measurer,&timeService);//,);
@@ -75,7 +74,7 @@ ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifi);
 
 TimeIntervalService timeIntervalService(&espSettingsBox,&timeService,onTimeIntervalEvent,nullptr,0);
 
-Loopable* loopArray[]={&wifi,&buttonMenu,&thingSpeakTrigger,&timeService,&displayHelper,
+Loopable* loopArray[]={&wifi,&buttonMenu,&timeService,&displayHelper,
 						&pirDetector,&timeIntervalService,&beeperSerial,&sensorsTrigger};
 
 AbstractItem* sensors[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
@@ -134,7 +133,7 @@ void setup() {
   espSettingsBox.initSpiff();
   espSettingsBox.deleteFilesByPreffix("/");
 
-  deviceHelper.startDevice(espSettingsBox.DeviceId,buttonMenu.getPin());
+  deviceHelper.startDevice(espSettingsBox.getExtraValue(FPSTR(DEVICE_SETTINGS_BOX_NAME), DEVICE_id),buttonMenu.getPin());
 
   initComponents();
 

@@ -50,6 +50,7 @@ private:
 	PubSubClient client;
 
 	EspSettingsBox *espSettingsBox;
+	boolean enabled=false;
 /*
 	char* mqtt_server;
 	uint16_t mqtt_port;

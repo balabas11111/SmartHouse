@@ -13,8 +13,9 @@
 
 const char DISPLAY_SETTINGS_BOX_DESCR[] PROGMEM ="Экран";
 
-const uint8_t DISPLAY_alvaysOn                 PROGMEM =0;
-const uint8_t DISPLAY_autochangeIntervalSec    PROGMEM =1;
+enum DISPLAY_SETT_BOX_KEYS_ID: uint8_t {
+	DISPLAY_alvaysOn, DISPLAY_autochangeIntervalSec
+};
 
 const char* const DISPLAY_EXTRA_KEYS[] PROGMEM=
 {

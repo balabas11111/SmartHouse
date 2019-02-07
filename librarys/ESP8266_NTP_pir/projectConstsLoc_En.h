@@ -10,7 +10,7 @@
 
 #include "Arduino.h"
 
-#define DEVICE_LOCALE 1
+#define DEVICE_LOCALE "En"
 
 //---------------------Device parameters-------------------------
 #define DEVICE_DESCR "NTP clock, Alarm clock, Temperature/Humidity, Movement sensor"

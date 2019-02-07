@@ -20,8 +20,9 @@ public:
 	ExtraSettingsBoxService(){
 	};
 
-	ExtraSettingsBoxService(ESPExtraSettingsBox** extraBoxes){
+	ExtraSettingsBoxService(ESPExtraSettingsBox** extraBoxes,uint8_t boxCount){
 		this->extraBoxes=extraBoxes;
+		this->extraBoxCount=boxCount;
 	};
 
 	virtual ~ExtraSettingsBoxService(){};
@@ -106,8 +107,6 @@ public:
 			result+="}";
 		}
 
-		result+=",\"count\": \""+String(count)+"}";
-
 		return result;
 	}
 
@@ -185,10 +184,10 @@ public:
 		return getExtraBoxesCount()!=0 && boxIndex>-1 && boxIndex<getExtraBoxesCount();
 	}
 
-	int getExtraBoxIndex(String boxName){
+	int getExtraBoxIndex(String name){
 		if(hasExtraBoxes()){
 			for(uint8_t i=0;i<getExtraBoxesCount();i++){
-				if(extraBoxes[i]->getName()==boxName){
+				if(extraBoxes[i]->getName()==name){
 					return i;
 				}
 			}
@@ -197,8 +196,20 @@ public:
 		return -1;
 	}
 
-	ESPExtraSettingsBox* getExtraBox(String boxName){
-		int boxIndex=getExtraBoxIndex(boxName);
+	int getExtraBoxIndex(uint8_t id){
+		if(hasExtraBoxes()){
+			for(uint8_t i=0;i<getExtraBoxesCount();i++){
+				if(extraBoxes[i]->getId()==id){
+					return i;
+				}
+			}
+		}
+
+		return -1;
+	}
+
+	ESPExtraSettingsBox* getExtraBox(uint8_t id){
+		int boxIndex=getExtraBoxIndex(id);
 
 		if(boxIndex!=-1){
 			return extraBoxes[boxIndex];
@@ -224,51 +235,35 @@ public:
 	}
 
 	//--------------------Get Extra values-----------------------
-	String getExtraValue(int boxIndex,int keyIndex){
-		if(!hasExtraBoxes(boxIndex)){return "";};
+	String getExtraValue(uint8_t boxId,int keyId){
+		int boxIndex=getExtraBoxIndex(boxId);
 
-		return extraBoxes[boxIndex]->getValue(keyIndex);
+		return getExtraValueByBoxIndex(boxIndex,keyId);
 	}
 
-	String getExtraValue(String boxName,int index){
+	String getExtraValue(String boxName,int keyId){
 		int boxIndex=getExtraBoxIndex(boxName);
 
-		return getExtraValue(boxIndex,index);
+		return getExtraValueByBoxIndex(boxIndex,keyId);
 	}
 
-	String getExtraValue(String boxName,String key){
+	String getExtraValue(String boxName,String keyName){
 		int boxIndex=getExtraBoxIndex(boxName);
-		int keyIndex=getExtraKeyIndex(boxIndex, key);
+		int keyId=getExtraKeyIndex(boxIndex, keyName);
 
-		return getExtraValue(boxIndex, keyIndex);
+		return getExtraValueByBoxIndex(boxIndex,keyId);
 	}
 
-	int getExtraValueInt(int boxIndex,int index){
-		return getExtraValue(boxIndex,index).toInt();
-	}
-
-	int getExtraValueInt(String boxName,String key){
-		return getExtraValue(boxName,key).toInt();
-	}
-
-	int getExtraValueInt(String boxName,int index){
-		return getExtraValue(boxName,index).toInt();
-	}
-
-	float getExtraValueFloat(int boxIndex,int index){
-		return getExtraValue(boxIndex,index).toFloat();
-	}
-
-	float getExtraValueFloat(String boxName,String key){
-		return getExtraValue(boxName,key).toFloat();
+	int getExtraValueInt(uint8_t boxId,int keyId){
+		return getExtraValue(boxId,keyId).toInt();
 	}
 
 	float getExtraValueFloat(String boxName,int index){
 		return getExtraValue(boxName,index).toFloat();
 	}
 
-	boolean getExtraValueBoolean(int boxIndex,int key){
-		return EspSettingsUtil::stringToBoolean(getExtraValue(boxIndex, key));
+	boolean getExtraValueBoolean(uint8_t boxId,int keyId){
+		return EspSettingsUtil::stringToBoolean(getExtraValue(boxId, keyId));
 	}
 
 	boolean getExtraValueBoolean(String boxName,String key){
@@ -289,9 +284,13 @@ public:
 	boolean setExtraValue(int boxIndex,String key,String value){
 		int keyIndex=getExtraKeyIndex(boxIndex, key);
 
+		if(boxIndex<0 || keyIndex<0 || !extraBoxes[boxIndex]->validateSetValue(key, value)){
+			Serial.println(FPSTR("Invalid value"));
+			return false;
+		}
+
 		return setExtraValue(boxIndex,keyIndex,value);
 	}
-
 
 	boolean setExtraValue(String boxName,String key,String value){
 		int boxIndex=getExtraBoxIndex(boxName);
@@ -299,8 +298,8 @@ public:
 		return setExtraValue(boxIndex,key,value);
 	}
 
-	boolean setExtraValue(String boxName,String key,int value){
-		return setExtraValue(boxName,key,String(value));
+	boolean setExtraValue(uint8_t boxid,uint8_t key,int value){
+		return setExtraValue(boxid,key,String(value));
 	}
 
 	boolean setExtraValue(String boxName,String key,float value){
@@ -309,53 +308,6 @@ public:
 
 	boolean setExtraValue(String boxName,String key,boolean value){
 		return setExtraValue(boxName,key,String(value));
-	}
-
-	void testExtraBoxFunctionality(){
-		if(getExtraBoxesCount()==0){
-			Serial.println(FPSTR("---Test FAILED---"));
-			return;
-		}
-
-		Serial.println(FPSTR("-----------------Test extraBoxes started----------------"));
-
-		int boxIndex=0;
-		int keyIndex=0;
-
-		ESPExtraSettingsBox* box=extraBoxes[boxIndex];
-
-		String boxName=box->getName();
-
-		Serial.println(FPSTR("--------------------------------------------------------"));
-
-		box->printDetails();
-
-		String key=box->getKey(keyIndex);
-		String value=getExtraValue(boxName,keyIndex);
-		String valueByStr=getExtraValue(boxName, key);
-
-		String newValue="newValue";
-
-		Serial.println("key="+key+" value="+value+" valueByStr="+valueByStr);
-
-		Serial.println(FPSTR("-----------------SET NEW VALUE---------------------"));
-		setExtraValue(boxName, key, newValue);
-
-		box->printDetails();
-
-		saveExtraBox(boxIndex);
-		loadExtraBox(boxIndex);
-		box->printDetails();
-
-		Serial.println(FPSTR("-----------------SET OLD VALUE---------------------"));
-		setExtraValue(boxName, key, value);
-
-		saveExtraBox(boxIndex);
-		loadExtraBox(boxIndex);
-		box->printDetails();
-
-		Serial.println(FPSTR("-----------------JSON---------------------"));
-		//Serial.println(getJson(FPSTR(SETTINGS_KIND_device)));
 	}
 
 	boolean setSettingsValueIfExtra(String fieldName, String fieldValue){
@@ -395,7 +347,21 @@ public:
 		return ARRAY_SIZE(extraBoxes);
 	}
 private:
+	String getExtraValueByBoxIndex(int boxIndex,int keyIndex){
+		if(!hasExtraBoxes(boxIndex)){return "";};
+		return extraBoxes[boxIndex]->getValue(keyIndex);
+	}
+
+	int getExtraValueIntByBoxIndex(int boxIndex,int index){
+		return getExtraValue(boxIndex,index).toInt();
+	}
+
+	float getExtraValueFloatByBoxIndex(int boxIndex,int index){
+		return getExtraValue(boxIndex,index).toFloat();
+	}
+
 	ESPExtraSettingsBox** extraBoxes;
+	uint8_t extraBoxCount;
 };
 
 #endif /* LIBRARIES_ESPSETTINGSBOX_EXTRASETTINGSBOXSERVICE_H_ */

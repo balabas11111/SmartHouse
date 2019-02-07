@@ -10,7 +10,7 @@
 
 #include "Arduino.h"
 
-#define DEVICE_LOCALE 1
+#define DEVICE_LOCALE "Ru"
 
 //---------------------Device parameters-------------------------
 #define DEVICE_DESCR "NTP часы, будильник, Температура/Влажность, Датчик движения"

@@ -15,6 +15,8 @@
 #include <interfaces/Initializable.h>
 #include <TimeTrigger.h>
 
+#include "extraBoxes/EspSett_Display.h"
+
 #define TURN_OFF_SECS 15
 
 class DisplayHelperAbstract: public Loopable,public DisplayHelper {
@@ -315,7 +317,7 @@ protected:
 	virtual void preprocessDisplayPower(boolean on){
 		displayOn=on;
 
-		if(espSettingsBox->displayAlvaysOn){
+		if(espSettingsBox->getExtraValueBoolean(ExtraBox_Display, DISPLAY_alvaysOn)){
 			displayOn=true;
 		}
 
@@ -332,11 +334,15 @@ protected:
 		boolean result=false;
 
 		if(espSettingsBox!=nullptr){
-			if(!espSettingsBox->displayAlvaysOn){
+			boolean alwaysOn=espSettingsBox->getExtraValueBoolean(ExtraBox_Display, DISPLAY_alvaysOn);
+			int displayAutoChange=espSettingsBox->getExtraValueInt(ExtraBox_Display, DISPLAY_autochangeIntervalSec);
+
+
+			if(!alwaysOn){
 				turnOffTrigger=new TimeTrigger(0,TURN_OFF_SECS*1000,false,[this](){turnOnOffDisplay(false);});
 			}
-			if(espSettingsBox->displayAlvaysOn && !espSettingsBox->displayAutochange!=0){
-				switchPageTrigger=new TimeTrigger(0,espSettingsBox->displayAutochange,false,[this](){defaultAction();});
+			if(alwaysOn && !displayAutoChange!=0){
+				switchPageTrigger=new TimeTrigger(0,displayAutoChange,false,[this](){defaultAction();});
 			}
 		}
 

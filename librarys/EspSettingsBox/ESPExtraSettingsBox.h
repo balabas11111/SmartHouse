@@ -22,15 +22,13 @@ const char SETTINGS_BOX_BASE_NAME[]         PROGMEM ="espSettingsBox_";
 
 #define EXTRA_SETT_BOX_NAME_LENGTH 3
 
-const uint8_t ALARM_SETTINGS_BOX_ID        PROGMEM =0;
-const uint8_t DISPLAY_SETTINGS_BOX_ID      PROGMEM =1;
-const uint8_t NTP_SETTINGS_BOX_ID          PROGMEM =2;
-const uint8_t TELEGRAM_SETTINGS_BOX_ID     PROGMEM =3;
-
 const char ALARM_SETTINGS_BOX_NAME[]        PROGMEM ="ALM";
 const char DISPLAY_SETTINGS_BOX_NAME[]      PROGMEM ="DIS";
 const char NTP_SETTINGS_BOX_NAME[]          PROGMEM ="NTP";
 const char TELEGRAM_SETTINGS_BOX_NAME[]     PROGMEM ="TEL";
+const char DEVICE_SETTINGS_BOX_NAME[]       PROGMEM ="DEV";
+const char MQTT_SETTINGS_BOX_NAME[]         PROGMEM ="MQT";
+const char THINGSPEAK_SETTINGS_BOX_NAME[]   PROGMEM ="TSP";
 
 const char SETTINGS_KIND_all[]   	PROGMEM ="all";
 const char SETTINGS_KIND_device[]   PROGMEM ="device";
@@ -40,16 +38,20 @@ const char SETTINGS_KIND_publish[]  PROGMEM ="publish";
 const char SETTINGS_KIND_intervals[]PROGMEM ="intervals";
 const char SETTINGS_KIND_manage[]   PROGMEM ="manage";
 
-typedef enum {
-	ExtraBox_Alarm, ExtraBox_Display, ExtraBox_Ntp, ExtraBox_Telegram
-} ExtraSettingsBoxIds;
+enum ExtraSettingsBoxIds: uint8_t{
+	ExtraBox_Alarm, ExtraBox_Display, ExtraBox_Ntp, ExtraBox_Telegram, ExtraBox_Device, ExtraBox_mqtt, ExtraBox_thingSpeak
+};
 
 const char* const EXTRA_SETTINGS_BOX_NAMES[] PROGMEM=
 {
 		"ALM",
 		"DIS",
 		"NTP",
-		"TEL"
+		"TEL",
+		"DEV",
+		"TSP",
+		"MQT",
+		"TSP"
 };
 
 const char* const SETTINGS_KINDS_SAVE_ENABLED[] PROGMEM=
@@ -92,11 +94,11 @@ public:
 	virtual int fillDefaultValues(){
 		Serial.println(FPSTR("fill default values"));
 
-		const char* const* defaults=getDefaults();
-		const char* const* keys=getKeys();
+		//const char* const* defaults=getDefaults();
+		//const char* const* keys=getKeys();
 
 		for(uint8_t i=0;i<getKeySize();i++){
-			setValue(i, defaults[i]);
+			setValue(i, getDefaultValue(i));
 		}
 		Serial.println(FPSTR("fill default values...done"));
 		return getKeySize()-1;
@@ -276,7 +278,7 @@ public:
 		return String(getKeys()[index]);
 	}
 
-	String getDefaultValue(int index){
+	virtual String getDefaultValue(int index){
 		return String(getDefaults()[index]);
 	}
 
@@ -315,10 +317,12 @@ public:
 			if(loaded==fieldValue){
 				Serial.print(FPSTR("File was not changed value="));
 				Serial.println(fieldValue);
+				saveRequired=false;
 				return true;
 			}
 		}
 
+		saveRequired=true;
 		return EspSettingsUtil::saveStringToFile(fileName, fieldValue);
 	}
 
@@ -334,10 +338,17 @@ public:
 		return getValueFromFile(index);
 	}
 
+	virtual boolean validateSetValue(String fieldName,String value){
+		return hasKey(fieldName);
+	}
+
 	boolean setValue(int index,String value){
 		if(index>-1 && index<getKeySize()){
 
 			if(isInMemory()){
+				if(vals[index]!=value){
+					saveRequired=true;
+				}
 				vals[index]=value;
 				return true;
 			}
@@ -434,7 +445,7 @@ public:
 	}
 
 	String getJsonGenerated(){
-		String result="{\"name\":\""+getName()+"\",\"count\":\""+getKeySize()+"\", \"kind\": \""+String(getKind())+"\", \"items\": {";
+		String result="{\"name\":\""+getName()+"\",\"count\":\""+getKeySize()+"\", \"kind\": \""+String(getKind())+"\", \"descr\": \""+getDescription()+"\", \"items\": {";
 
 		for(uint8_t i=0;i<getKeySize();i++){
 			result+="\""+getKey(i)+"\": \""+getValue(i)+"\"";

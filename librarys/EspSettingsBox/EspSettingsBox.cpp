@@ -94,15 +94,10 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  Serial.println();
 	    	  Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_READ_FROM_FILE_COMPLETE));
 
-	    	    DeviceId = root["dId"].as<char*>();
-	    	  	DeviceDescription =root["DeviceDescription"].as<char*>();
-	    	  	DeviceLocation=root["DeviceLocation"].as<char*>();
 	    	  	isAccesPoint = EspSettingsUtil::stringToBoolean(root["iAp"].as<char*>()) ;
 	    	  	Serial.print("isAccesPoint=");
 	    	  	Serial.println(isAccesPoint);
 	    	  	refreshInterval = root["rin"];
-	    	  	displayAlvaysOn = root["dao"];
-	    	  	displayAutochange = root["dac"];
 	    	  	settingsUser = root["sur"].as<char*>();
 	    	  	settingsPass = root["sps"].as<char*>();
 	    	  	accessUser = root["aur"].as<char*>();
@@ -120,21 +115,6 @@ void EspSettingsBox::loadSettingsJson(){
 	    	  	dnsIp=EspSettingsUtil::stringToIp(String(root["dip"].as<char*>()));
 	    	  	dnsIp2=EspSettingsUtil::stringToIp(String(root["dip2"].as<char*>()));
 	    	  	serverIp=EspSettingsUtil::stringToIp(String(root["serverip"].as<char*>()));
-
-	    	  	isThingSpeakEnabled=root["ptTsEnabled"];
-	    	  	postDataToTSInterval = root["pdTs"];
-	    	  	thSkUsrKey=root["sPk"].as<char*>();
-	    	  	thSkWKey = root["sWk"].as<char*>();
-	    	  	thSkRKey = root["sRk"].as<char*>();
-	    	  	thSkTKey = root["sTk"].as<char*>();
-	    	  	thSkChId = root["sCi"];
-
-	    	  	isMqttEnabled=EspSettingsUtil::stringToBoolean(root["isMqttEnabled"]);
-	    	  	postDataToMqttInterval=root["postDataToMqttInterval"];
-	    	  	mqtt_server=root["mqtt_server"].as<char*>();
-	    	  	mqtt_port=root["mqtt_port"];
-	    	  	mqtt_user=root["mqtt_user"].as<char*>();
-	    	  	mqtt_pass=root["mqtt_pass"].as<char*>();
 
 	    	  	isHttpPostEnabled=EspSettingsUtil::stringToBoolean(root["isHttpSendEnabled"]);
 	    	  	postDataToHttpInterval=root["postDataToHttpInterval"];
@@ -164,17 +144,9 @@ void EspSettingsBox::saveSettingsJson(){
 
 		JsonObject& root = jsonBuffer.createObject();
 
-		root["dId"] = DeviceId;
-
-		root["DeviceVersion"] = String(DEVICE_FIRMWARE_VER);
-		root["DeviceKind"] = String(DEVICE_KIND);
-		root["DeviceDescription"] =  DeviceDescription;
-		root["DeviceLocation"] =  DeviceLocation;
 		root["iAp"] = isAccesPoint;
 
 		root["rin"] = refreshInterval;
-		root["dao"] = displayAlvaysOn;
-		root["dac"] = displayAutochange;
 
 		root["sur"] = settingsUser;
 		root["sps"] = settingsPass;
@@ -193,21 +165,6 @@ void EspSettingsBox::saveSettingsJson(){
 		root["dip"] = dnsIp.toString();
 		root["dip2"] = dnsIp2.toString();
 		root["serverip"] = serverIp.toString();
-
-		root["ptTsEnabled"]=isThingSpeakEnabled;
-		root["pdTs"] = postDataToTSInterval;
-		root["sPk"] = thSkUsrKey;
-		root["sWk"] = thSkWKey;
-		root["sRk"] = thSkRKey;
-		root["sCi"] = thSkChId;
-		root["sTk"] = thSkTKey;
-
-		root["isMqttEnabled"]=isMqttEnabled;
-		root["postDataToMqttInterval"]=postDataToMqttInterval;
-		root["mqtt_server"]=mqtt_server;
-		root["mqtt_port"]=mqtt_port;
-		root["mqtt_user"]=mqtt_user;
-		root["mqtt_pass"]=mqtt_pass;
 
 		root["isHttpSendEnabled"]=isHttpPostEnabled;
 		root["postDataToHttpInterval"]=postDataToHttpInterval;
@@ -343,30 +300,9 @@ void EspSettingsBox::construct(boolean forceLoad,boolean _initSpiff){
 
 }
 
-String EspSettingsBox::getThingSpeakChannelUrl(){
-	String result=FPSTR(MESSAGE_THINGSPEAK_CURRENT_CHANNEL_URL);
-			result+=String(thSkChId);
-			result+=FPSTR(MESSAGE_THINGSPEAK_PRIVATE_SHOW);
-	return result;
-}
-
 String EspSettingsBox::getJson(){
-String result="{\"name\":\"espSettingsBox\",\"itemCount\":\"8\",\"settingsKind\":\"simple\",\"items\":[\
-{\"name\":\"deviceFirmWareVersion\",\"val\":\""+String(DEVICE_FIRMWARE_VER)+"\",\"descr\":\"Версия прошивки\"},\
-{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\",\"descr\":\"ID устройства\"},\
-{\"name\":\"DeviceKind\",\"val\":\""+String(DEVICE_KIND)+"\",\"descr\":\"Тип устройства\"},\
-{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\",\"descr\":\"Описание устройства\"},\
-{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\",\"descr\":\"Размещение устройства\"},\
-\
-{\"name\":\"thSkChId\",\"val\":\""+thSkChId+"\"},\
-{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
-{\"name\":\"thingSpeakChannelUrl\",\"val\":\""+getThingSpeakChannelUrl()+"\"}],\
-\"entity\": {"+getExtraBoxJsonByKind(SETTINGS_KIND_all)+"},\
-\"DeviceId\":\""+DeviceId+"\",\
-\"DeviceDescription\":\""+DeviceDescription+"\",\
-\"DeviceLocation\":\""+DeviceLocation+"\",\
-\"thingSpeakChannelUrl\":\""+getThingSpeakChannelUrl()+"\"\
-}";
+String result="{\"name\":\"espSettingsBox\",\"kind\":\"all\",\
+\"entity\": "+getExtraBoxJsonByKind(SETTINGS_KIND_all)+"}";
 return result;
 }
 
@@ -375,83 +311,51 @@ String EspSettingsBox::getJson(String page){
 		return getJson();
 	}
 
-	String result="{}";
-
 if(page==FPSTR(PAGE_DEVICE)){
 
-result=
-"{\"name\":\"espSettingsBox\",\"itemCount\":\"17\",\"settingsKind\":\"device\",\"items\":[\
-{\"name\":\"deviceFirmWareVersion\",\"val\":\""+String(DEVICE_FIRMWARE_VER)+"\"},\
-{\"name\":\"DeviceId\",\"val\":\""+DeviceId+"\"},\
-{\"name\":\"DeviceKind\",\"val\":\""+String(DEVICE_KIND)+"\"},\
-{\"name\":\"DeviceDescription\",\"val\":\""+DeviceDescription+"\"},\
-{\"name\":\"DeviceLocation\",\"val\":\""+DeviceLocation+"\"},\
-{\"name\":\"displayAlvaysOn\",\"val\":\""+String(displayAlvaysOn)+"\"},\
-{\"name\":\"displayAutochange\",\"val\":\""+String(displayAutochange)+"\"},\
-{\"name\":\"refreshInterval\",\"val\":\""+String(refreshInterval)+"\"},\
-{\"name\":\"accessUser\",\"val\":\""+String(accessUser)+"\"},\
-{\"name\":\"accessPass\",\"val\":\"*****\"},\
-{\"name\":\"settingsUser\",\"val\":\""+String(settingsUser)+"\"},\
-{\"name\":\"settingsPass\",\"val\":\"*****\"}],\
-\"entity\": {"+getExtraBoxJsonByKind(page)+"}}";
+return
+"{\"name\":\"espSettingsBox\",\"kind\":\"device\",\"items\":[\
+\"refreshInterval\": \""+String(refreshInterval)+"\",\
+\"accessUser\": \""+String(accessUser)+"\",\
+\"accessPass\": \"*****\",\
+\"settingsUser\": \""+String(settingsUser)+"\",\
+\"settingsPass\": \"*****\"],\
+\"entity\": "+getExtraBoxJsonByKind(page)+"}";
 }
 if(page==FPSTR(PAGE_NET)){
 
-result=
-"{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"settingsKind\":\"net\",\"items\":[\
-{\"name\":\"isAccesPoint\",\"val\":\""+String(isAccesPoint)+"\"},\
-{\"name\":\"ssidAP\",\"val\":\""+ssidAP+"\"},\
-{\"name\":\"ssid\",\"val\":\""+ssid+"\"},\
-{\"name\":\"password\",\"val\":\"*****\"},\
-{\"name\":\"staticIp\",\"val\":\""+String(staticIp)+"\"},\
-{\"name\":\"localIp\",\"val\":\""+localIp.toString()+"\"},\
-{\"name\":\"apIp\",\"val\":\""+apIp.toString()+"\"},\
-{\"name\":\"gateIp\",\"val\":\""+gateIp.toString()+"\"},\
-{\"name\":\"subnetIp\",\"val\":\""+subnetIp.toString()+"\"},\
-{\"name\":\"dnsIp\",\"val\":\""+dnsIp.toString()+"\"},\
-{\"name\":\"dnsIp2\",\"val\":\""+dnsIp2.toString()+"\"}],\
-\"entity\": {"+getExtraBoxJsonByKind(page)+"}}";
+return
+"{\"name\":\"espSettingsBox\",\"kind\":\"net\",\"items\":[\
+\"isAccesPoint\": \""+String(isAccesPoint)+"\",\
+\"ssidAP\": \""+ssidAP+"\",\
+\"ssid\": \""+ssid+"\",\
+\"password\": \"*****\",\
+\"staticIp\": \""+String(staticIp)+"\",\
+\"localIp\": \""+localIp.toString()+"\",\
+\"apIp\": \""+apIp.toString()+"\",\
+\"gateIp\": \""+gateIp.toString()+"\",\
+\"subnetIp\": \""+subnetIp.toString()+"\",\
+\"dnsIp\": \""+dnsIp.toString()+"\",\
+\"dnsIp2\": \""+dnsIp2.toString()+"\"],\
+\"entity\": "+getExtraBoxJsonByKind(page)+"}";
 }
 if(page==FPSTR(PAGE_PUBLISH)){
 
-result=
-"{\"name\":\"espSettingsBox\",\"itemCount\":\"48\",\"settingsKind\":\"publish\",\"items\":[\
-{\"name\":\"isThingSpeakEnabled\",\"val\":\""+String(isThingSpeakEnabled)+"\"},\
-{\"name\":\"postDataToTSInterval\",\"val\":\""+String(postDataToTSInterval)+"\"},\
-{\"name\":\"thSkUsrKey\",\"val\":\""+thSkUsrKey+"\"},\
-{\"name\":\"thSkWKey\",\"val\":\""+thSkWKey+"\"},\
-{\"name\":\"thSkRKey\",\"val\":\""+thSkRKey+"\"},\
-{\"name\":\"thSkChId\",\"val\":\""+String(thSkChId)+"\"},\
-{\"name\":\"thSkTKey\",\"val\":\""+thSkTKey+"\"},\
-{\"name\":\"isMqttEnabled\",\"val\":\""+String(isMqttEnabled)+"\"},\
-{\"name\":\"postDataToMqttInterval\",\"val\":\""+String(postDataToMqttInterval)+"\"},\
-{\"name\":\"mqtt_server\",\"val\":\""+mqtt_server+"\"},\
-{\"name\":\"mqtt_user\",\"val\":\""+mqtt_user+"\"},\
-{\"name\":\"mqtt_pass\",\"val\":\"*****\"},\
-{\"name\":\"mqtt_port\",\"val\":\""+String(mqtt_port)+"\"},\
-{\"name\":\"isHttpPostEnabled\",\"val\":\""+String(isHttpPostEnabled)+"\"},\
-{\"name\":\"postDataToHttpInterval\",\"val\":\""+String(postDataToHttpInterval)+"\"},\
-{\"name\":\"httpPostIp\",\"val\":\""+httpPostIp.toString()+"\"},\
-{\"name\":\"currentLocalIp\",\"val\":\""+String(WiFi.localIP())+"\"},\
-{\"name\":\"thingSpeakChannelUrl\",\"val\":\"https://thingspeak.com/channels/"+thSkChId+"/private_show\"}],\
-\"entity\": {"+getExtraBoxJsonByKind(page)+"}}";
-
+return
+"{\"name\":\"espSettingsBox\",\"kind\":\"publish\",\"items\":[\
+\"isHttpPostEnabled\": \""+String(isHttpPostEnabled)+"\",\
+\"postDataToHttpInterval\": \""+String(postDataToHttpInterval)+"\",\
+\"httpPostIp\": \""+httpPostIp.toString()+"\"],\
+\"entity\": "+getExtraBoxJsonByKind(page)+"}";
 }
 
-	return result;
+return "{}";
 }
 
 boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 	String startTag=FPSTR(ESPSETTINGSBOX_START_TAG);
 	int startIndex=startTag.length();
-/*
-	Serial.print(fieldName);
-	Serial.print(FPSTR(MESSAGE_EQUALS));
-	Serial.print(fieldValue);
-	Serial.print(FPSTR(MESSAGE_OPEN_BRACE));
-	Serial.print(fieldName.substring(startIndex));
-	Serial.println(FPSTR(MESSAGE_CLOSE_BRACE));
-*/
+
 	if(fieldName==FPSTR(MESSAGE_SERVER_ARG_PAGE)){
 		return true;
 	}
@@ -466,43 +370,6 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		return true;
 	}
 
-	if(fieldName==FPSTR(ESBOX_DeviceId)){
-		if(DeviceId!=fieldValue){
-			DeviceId=fieldValue;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_DeviceDescription)){
-		if(DeviceDescription!=fieldValue){
-			DeviceDescription=fieldValue;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_DeviceLocation)){
-		if(DeviceLocation!=fieldValue){
-			DeviceLocation=fieldValue;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_displayAlvaysOn)){
-		boolean val=EspSettingsUtil::stringToBoolean(fieldValue);
-		if(displayAlvaysOn!=val){
-			displayAlvaysOn=val;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_displayAutochange)){
-		long val=fieldValue.toInt();
-		if(displayAutochange!=val){
-			displayAutochange=val;
-			saveRequired=true;
-		}
-		return true;
-	}
 	if(fieldName==FPSTR(ESBOX_refreshInterval)){
 		long val=fieldValue.toInt();
 		if(refreshInterval!=val){
@@ -639,104 +506,7 @@ boolean EspSettingsBox::setSettingsValue(String fieldName, String fieldValue) {
 		}
 		return true;
 	}
-	if(fieldName==FPSTR(ESBOX_isThingSpeakEnabled)){
-		boolean val=EspSettingsUtil::stringToBoolean(fieldValue);
-		if(isThingSpeakEnabled!=val){
-			isThingSpeakEnabled=val;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_postDataToTSInterval)){
-		long val=fieldValue.toInt();
-		if(postDataToTSInterval!=val){
-			postDataToTSInterval=val;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_thSkUsrKey)){
-		if(thSkUsrKey!=fieldValue){
-			thSkUsrKey=fieldValue;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_thSkWKey)){
-		if(thSkWKey!=fieldValue){
-			thSkWKey=fieldValue;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_thSkRKey)){
-		if(thSkRKey!=fieldValue){
-			thSkRKey=fieldValue;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_thSkChId)){
-		long val=fieldValue.toInt();
-		if(thSkChId!=val){
-			thSkChId=val;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_thSkTKey)){
-		if(thSkTKey!=fieldValue){
-			thSkTKey=fieldValue;
-			saveRequired=true;
-		}
-		return true;
-	}
 
-	if(fieldName==FPSTR(ESBOX_isMqttEnabled)){
-		boolean val=EspSettingsUtil::stringToBoolean(fieldValue);
-		if(isMqttEnabled!=val){
-			isMqttEnabled=val;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_postDataToMqttInterval)){
-		uint16_t val=fieldValue.toInt();
-		if(postDataToMqttInterval!=val){
-			postDataToMqttInterval=val;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_mqtt_server)){
-		if(mqtt_server!=fieldValue){
-			mqtt_server=fieldValue;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_mqtt_user)){
-		if(mqtt_user!=fieldValue){
-			mqtt_user=fieldValue;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_mqtt_pass)){
-		if(fieldValue!=FPSTR(ESBOX_STARS) && mqtt_pass!=fieldValue){
-			mqtt_pass=fieldValue;
-			saveRequired=true;
-		}
-		return true;
-	}
-	if(fieldName==FPSTR(ESBOX_mqtt_port)){
-		long val=fieldValue.toInt();
-		if(mqtt_port!=val){
-			mqtt_port=val;
-			saveRequired=true;
-		}
-		return true;
-	}
 	if(fieldName==FPSTR(ESBOX_isHttpPostEnabled)){
 		boolean val=EspSettingsUtil::stringToBoolean(fieldValue);
 		if(isHttpPostEnabled!=val){
@@ -815,66 +585,4 @@ int EspSettingsBox::deleteFilesByPreffix(String preffix){
 	Serial.println(count);
 
 	return count;
-}
-
-boolean EspSettingsBox::saveThingSpeakChannelCreation(String response/*,
-		boolean manageChannel*/) {
-
-		Serial.println(FPSTR(ESPSETTINGSBOX_THINGSPEAK_PARSE_CHCREATION));
-		Serial.print(FPSTR(ESPSETTINGSBOX_THINGSPEAK_CHANNEL_JSON));
-		Serial.println(response);
-
-		DynamicJsonBuffer jsonBuffer;
-
-		JsonObject& root = jsonBuffer.parseObject(response);
-
-		if (!root.success()) {
-			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_ERROR_PARSE_JSON));
-			return false;
-		} else {
-			Serial.println(FPSTR(MESSAGE_ESPSETTINGSBOX_VALUE_PARSED));
-			root.printTo(Serial);
-
-			int channelId=root["id"];
-			String flag1=root["api_keys"][0]["write_flag"];
-
-			flag1.toLowerCase();
-			uint8_t writeKeyFlag=0;
-			uint8_t readKeyFlag=1;
-
-			if(flag1!="true"){
-				writeKeyFlag=1;
-				readKeyFlag=0;
-			}
-			String writeKey=root["api_keys"][writeKeyFlag]["api_key"];
-			String readKey=root["api_keys"][readKeyFlag]["api_key"];
-
-			Serial.print(FPSTR(ESPSETTINGSBOX_THINGSPEAK_CHANNELID));
-			Serial.println(channelId);
-			Serial.print(FPSTR(ESPSETTINGSBOX_THINGSPEAK_WRITEKEY));
-			Serial.println(writeKey);
-			Serial.print(FPSTR(ESPSETTINGSBOX_THINGSPEAK_READKEY));
-			Serial.println(readKey);
-
-				if(channelId>0 && writeKey!="" && readKey!=""){
-					/*if(manageChannel){
-						Serial.println(FPSTR(ESPSETTINGSBOX_THINGSPEAK_UPDATE_MANAGECHANNEL));
-						thSkManageChId=channelId;
-						thSkWManageKey=writeKey;
-						thSkRManageKey=readKey;
-					}else{*/
-						Serial.println(FPSTR(ESPSETTINGSBOX_THINGSPEAK_UPDATE_CHANNEL));
-						thSkChId=channelId;
-						thSkWKey=writeKey;
-						thSkRKey=readKey;
-					//}
-					//mqtt_TStopic="channels/"+String(thSkChId)+"/subscribe/json/"+thSkRKey;
-
-					saveSettingsJson();
-				}
-			}
-
-		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-
-		return true;
 }

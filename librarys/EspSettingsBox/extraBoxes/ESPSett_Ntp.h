@@ -15,11 +15,9 @@
 
 const char NTP_SETTINGS_BOX_DESCR[] PROGMEM ="Синхронизация времени по NTP";
 
-const uint8_t NTP_enabled             PROGMEM =0;
-const uint8_t NTP_poolServerName      PROGMEM =1;
-const uint8_t NTP_timeOffset          PROGMEM =2;
-const uint8_t NTP_updateInterval      PROGMEM =3;
-const uint8_t NTP_timeTriggerInterval PROGMEM =4;
+enum NTP_SETT_BOX_KEYS_ID: uint8_t {
+	NTP_enabled, NTP_poolServerName, NTP_timeOffset, NTP_updateInterval, NTP_timeTriggerInterval
+};
 
 const char* const NTP_EXTRA_KEYS[] PROGMEM={
 												"enabled",
@@ -63,10 +61,6 @@ public:
 	}
 	String getKind() override{
 		return FPSTR(SETTINGS_KIND_net);
-	}
-
-	virtual boolean isInMemory() override{
-		return false;
 	}
 };
 

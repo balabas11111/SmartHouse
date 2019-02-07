@@ -8,7 +8,8 @@
 #ifndef PROJECTCONSTS_H_
 #define PROJECTCONSTS_H_
 
-#define DEVICE_LOCALE_RU
+#define DEVICE_LOCALE_RU "Ru"
+//#define DEVICE_LOCALE_EN "En"
 
 #ifdef DEVICE_LOCALE_RU
 	#include <projectConstsLoc_Ru.h>
@@ -20,6 +21,7 @@
 	#include <ConstsLoc_En.h>
 #endif
 
+#define DEVICE_ID "Sens_ESP8266_Device"
 #define DEVICE_FIRMWARE_VER "v 2.0"
 #define DEVICE_KIND "NTPclock Alarm BME-280 PIR 4D_display ThingSpeak"
 

@@ -37,8 +37,8 @@ public:
 		construct(false,false);
 	}
 
-	EspSettingsBox(ESPExtraSettingsBox** extraBoxes)
-				:ExtraSettingsBoxService(extraBoxes){
+	EspSettingsBox(ESPExtraSettingsBox** extraBoxes,uint8_t boxCount)
+				:ExtraSettingsBoxService(extraBoxes,boxCount){
 			construct(false,false);
 	}
 
@@ -140,38 +140,6 @@ public:
 		saveSettingsJson();
 		Serial.println(FPSTR("---Saved as AP---"));
 	}
-/*
-	boolean saveSettingToFile(String settingsName,String str){
-		String fileName=EspSettingsUtil::getSettingsFilePath(settingsName);
-		return EspSettingsUtil::saveStringToFile(fileName, str);
-	}
-*/
-	String getDeviceNameFull(){
-		String result=FPSTR(MESSAGE_THINGSPEAK_NAME_FOR_REQUEST_EQ);
-		result+=DeviceLocation;
-		result+=FPSTR(MESSAGE_SPACE);
-		result+=DeviceId;
-
-		return result;
-	}
-
-	String getDeviceDescriptionFull(){
-		String result= FPSTR(MESSAGE_THINGSPEAK_DESCRIPTION_FOR_REQUEST_EQ);
-				result+=DeviceDescription;
-				result+=FPSTR(MESSAGE_SPACE);
-				result+=DEVICE_KIND;
-		return result;
-	}
-
-	String getThingSpeakReadChannelName(String fieldId){
-		String result=FPSTR(MESSAGE_THINGSPEAK_CHANNELS_PREF);
-				result+=String(thSkChId);
-				result+=FPSTR(MESSAGE_THINGSPEAK_SUBSCRIBE_FIELDS_FIELD);
-				result+=fieldId;
-				result+=FPSTR(MESSAGE_DIVIDE);
-				result+=thSkRKey;
-		return  result;
-	}
 
 	void initSpiff();
 	boolean isSpiffInitialized();
@@ -183,19 +151,10 @@ public:
 
 	int deleteFilesByPreffix(String preffix);
 
-	boolean saveThingSpeakChannelCreation(String response/*,boolean manageChannel*/);
+	//boolean saveThingSpeakChannelCreation(String response);
 	String getThingSpeakChannelUrl();
 
 //--------------------device settings kind (page)-------------------
-	#ifdef ESP8266
-		String DeviceId = "SENS_"+String(ESP.getChipId());
-	#endif
-	#ifdef ESP32
-		String DeviceId = "SENS_"+String(ESP.getChipRevision());
-	#endif
-	String DeviceDescription = DEVICE_DESCR;
-	String DeviceLocation = DEVICE_LOCATION;
-
 	String accessUser = "";
 	String accessPass = "";
 
@@ -203,10 +162,10 @@ public:
 	String settingsPass = "balabas";
 
 	uint16_t refreshInterval=60;
-
+/*
 	boolean displayAlvaysOn=false;
 	uint8_t displayAutochange=15;
-
+*/
 	boolean isAccesPoint=false;
 	#ifdef ESP8266
 		String ssidAP="SENS_"+String(ESP.getChipId());;
@@ -219,7 +178,6 @@ public:
 	String password = "wuWylKegayg2wu22";//wuWylKegayg2wu22
 
 	boolean staticIp=false;
-
 	IPAddress localIp=IPAddress(192, 168, 0, 120);
 	IPAddress apIp=IPAddress(192, 168, 4, 1);
 	IPAddress gateIp=IPAddress(192, 168, 0, 1);
@@ -227,24 +185,6 @@ public:
 	IPAddress dnsIp=IPAddress(192, 168, 0, 1);
 	IPAddress dnsIp2=IPAddress(192, 168, 0, 1);
 	IPAddress serverIp=IPAddress(192, 168, 0, 2);
-
-	//thingspeak settings
-	boolean isThingSpeakEnabled=false;
-	uint16_t postDataToTSInterval=241;
-	String thSkUsrKey="YV1SA7H87PS8RFMU";
-
-	int thSkChId=612324;
-	String thSkWKey="V8V5G1W2CACCQOMV";
-	String thSkRKey="SPH0UG4JJZC7GDDH";
-
-	String thSkTKey="ZSFBN9V1K2QMB9M1";
-
-	boolean isMqttEnabled=false;
-	uint16_t postDataToMqttInterval=241;
-	String mqtt_server = "mqtt.thingspeak.com";
-	String mqtt_user = "user";
-	String mqtt_pass = "HM4A48J6A926FL81";
-	int mqtt_port = 1883;
 
 	boolean isHttpPostEnabled=false;
 	uint16_t postDataToHttpInterval=241;

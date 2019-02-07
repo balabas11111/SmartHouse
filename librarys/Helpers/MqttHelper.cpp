@@ -5,6 +5,8 @@
 #include "ESP_Consts.h"
 #include <FunctionalInterrupt.h>
 #include <EspSettingsBox.h>
+#include "extraBoxes/EspSett_Device.h"
+#include "extraBoxes/EspSett_Mq.h"
 
 #ifdef ESP8266
 	#include <ESP8266WiFi.h>
@@ -25,7 +27,8 @@ MqttHelper::MqttHelper(EspSettingsBox *_settingsBox,Client& _client,std::functio
 
 	espSettingsBox=_settingsBox;
 
-	client=PubSubClient((char*)_settingsBox->mqtt_server.c_str(), _settingsBox->mqtt_port, [this](char* topic, uint8_t* payload, unsigned int length){callback(topic,payload,length);}, _client);
+	client=PubSubClient((char*)espSettingsBox->getExtraValue(ExtraBox_mqtt, MQTT_server).c_str(),espSettingsBox->getExtraValueInt(ExtraBox_mqtt, MQTT_port), [this](char* topic, uint8_t* payload, unsigned int length){callback(topic,payload,length);}, _client);
+	enabled=espSettingsBox->getExtraValueBoolean(ExtraBox_mqtt, MQTTE_enabled);
 
 	initialized=false;
 	displayDetails();
@@ -39,7 +42,7 @@ MqttHelper::~MqttHelper(){
 boolean MqttHelper::begin(AbstractItem** items,uint8_t count){
 	topicCount=0;
 
-	if(!espSettingsBox->isMqttEnabled){
+	if(!espSettingsBox->getExtraValueBoolean(ExtraBox_mqtt, MQTTE_enabled)){
 		Serial.println(FPSTR(MESSAGE_MQTTHELPER_SEND_IS_DISABLED));
 		return false;
 	}
@@ -101,11 +104,11 @@ void MqttHelper::displayDetails(){
 	Serial.print(FPSTR(MESSAGE_MQTTHELPER_NAME));
 
 	Serial.print(FPSTR(MESSAGE_MQTTHELPER_MQTT_USER_EQ));
-	Serial.print(espSettingsBox->mqtt_user);
+	Serial.print(espSettingsBox->getExtraValue(ExtraBox_mqtt, MQTT_user));
 	Serial.print(FPSTR(MESSAGE_SPACE));
 
 	Serial.print(FPSTR(MESSAGE_MQTTHELPER_MQTT_PASS_EQ));
-	Serial.print(espSettingsBox->mqtt_pass);
+	Serial.print(espSettingsBox->getExtraValue(ExtraBox_mqtt, MQTT_password));
 	Serial.print(FPSTR(MESSAGE_SPACE));
 
 	Serial.print(FPSTR(MESSAGE_MQTTHELPER_TOPIC_COUNT));
@@ -126,9 +129,9 @@ void MqttHelper::connect(){
 	if (!client.connected()) {
 	  Serial.println(FPSTR(MESSAGE_MQTTHELPER_MQTT_START_CONNECT_EQ));
 	  String clientName;
-	  clientName += String(espSettingsBox->DeviceId)+millis();
+	  clientName += espSettingsBox->getExtraValue(FPSTR(DEVICE_SETTINGS_BOX_NAME), DEVICE_id)+millis();
 
-	if (client.connect((char*) clientName.c_str(),(char*)espSettingsBox->mqtt_user.c_str(),(char*)espSettingsBox->mqtt_pass.c_str())) {
+	if (client.connect((char*) clientName.c_str(),(char*)espSettingsBox->getExtraValue(ExtraBox_mqtt, MQTT_user).c_str(),(char*)espSettingsBox->getExtraValue(ExtraBox_mqtt, MQTT_password).c_str())) {
 		Serial.println(FPSTR(MESSAGE_MQTTHELPER_MQTT_CONNECTED_EQ));
 		Serial.print(client.connected());
 
@@ -194,7 +197,7 @@ boolean MqttHelper::publish(String topicName,String message){
 }
 
 String MqttHelper::getName(){
-	return espSettingsBox->DeviceId;
+	return FPSTR("MqttHelper");
 }
 
 boolean MqttHelper::loop(){
@@ -245,7 +248,10 @@ void MqttHelper::senDAbstractItemToMqtt(AbstractItem* item){
 			Serial.print(FPSTR(MESSAGE_ESPSETTINGSBOX_QUEUE_EQ));
 			Serial.println(queue);
 
-			queue.replace(espSettingsBox->thSkRKey, espSettingsBox->thSkWKey);
+			String wKey=espSettingsBox->getExtraValue(ExtraBox_thingSpeak, 3);
+			String rKey=espSettingsBox->getExtraValue(ExtraBox_thingSpeak, 4);
+
+			queue.replace(wKey, rKey);
 			queue.replace("subscribe", "publish");
 
 			//channels/623698/subscribe/fields/field2/N9EQ8RTYQ7ZXYR8T
@@ -258,7 +264,7 @@ void MqttHelper::senDAbstractItemToMqtt(AbstractItem* item){
 			Serial.print(FPSTR(MESSAGE_MQTTHELPER_VAL_EQ));
 			Serial.println(val);
 
-			if(espSettingsBox->isMqttEnabled){
+			if(enabled){
 				boolean res=publish(queue, val);
 				Serial.print(FPSTR(MESSAGE_MQTTHELPER_RESULT_EQ));
 				Serial.println(res);
