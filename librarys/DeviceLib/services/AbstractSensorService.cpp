@@ -234,13 +234,11 @@ boolean AbstractSensorService::saveAbstractSensorToFile(AbstractSensor* sensor) 
 }
 
 String AbstractSensorService::getAbstractSensorFilePath(AbstractSensor* sensor) {
-	return ((sensor->getPath()!=NULL)?sensor->getPath():FPSTR(ABSTRACT_SENSORS_BASE_PATH)) + sensor->getName() + FPSTR(TXT);
-	//return getAbstractSensorFilePreffix(sensor)+FPSTR(TXT);
+	return getAbstractSensorFilePreffix(sensor)+FPSTR(TXT);
 }
 
 String AbstractSensorService::getAbstractSensorFileFolder(AbstractSensor* sensor) {
-	return ((sensor->getPath()!=NULL)?sensor->getPath():FPSTR(ABSTRACT_SENSORS_BASE_PATH)) + sensor->getName() + FPSTR(SLASH);
-	//return getAbstractSensorFilePreffix(sensor)+FPSTR(SLASH);
+	return getAbstractSensorFilePreffix(sensor)+FPSTR(SLASH);
 }
 
 void AbstractSensorService::updateSensors(){

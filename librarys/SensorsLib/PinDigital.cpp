@@ -9,6 +9,7 @@
 #include "PinDigital.h"
 #include "TimeTrigger.h"
 #include <FunctionalInterrupt.h>
+#include "AbstractSensor.h"
 
 PinDigital::~PinDigital(){}
 
@@ -26,10 +27,11 @@ void PinDigital::construct(uint8_t pin,std::function<void(void)> onChanged,uint8
 	this->oldVal=getVal();
 	this->turnOffLevel=turnOffLevel;
 
-	this->processValueFromMqtt=(pinModeInOut==OUTPUT);
+	boolean setAllowed=(pinModeInOut==OUTPUT);
 
 	float val=isOn();
-	items[0]={0,name,type,size,descr,val,0,-2,2,processValueFromMqtt};
+
+	items[0]={0,getName(),type,size,descr,val,0,-2,2,setAllowed};
 
 	if((pinModeInOut==INPUT) && clickMaxTime!=0){
 		isClick=true;

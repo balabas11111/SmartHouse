@@ -50,7 +50,7 @@ protected:
 	boolean loadSensorSettingsFromFile(AbstractSensor** sensors,uint8_t size);
 	boolean saveSensorSettingsToFile(AbstractSensor** sensors,uint8_t size);
 
-	String getAbstractSensorFilePreffix(AbstractSensor* sensor);
+	static String getAbstractSensorFilePreffix(AbstractSensor* sensor);
 
 	String getAbstractSensorsAsString();
 

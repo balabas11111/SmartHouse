@@ -201,7 +201,7 @@ public:
 		return 	this->items[index].val;
 	}
 
-	float getVal(uint8_t index){
+	float getValFloat(uint8_t index){
 		return this->items[index].val;
 	}
 
@@ -330,7 +330,7 @@ public:
 			return false;
 		}
 
-		if(getVal(index)!=val){
+		if(getValFloat(index)!=val){
 			dispatch=true;
 			this->items[index].val=val;
 		}
