@@ -359,15 +359,6 @@ protected:
 
 	boolean dispatch=false;
 
-	virtual boolean processMqVal(uint8_t index,String value){
-		Serial.print(FPSTR(MESSAGE_ABSTRACT_ITEM_INDEX_EQ));
-		Serial.print(index);
-		Serial.print(FPSTR(MESSAGE_ABSTRACT_ITEM_VAL_EQ));
-		Serial.print(value);
-		Serial.println(FPSTR(MESSAGE_ABSTRACT_ITEM_METHOD_NOT_IMPLEMENTED));
-		return true;
-	}
-
 	String constructAlarmMessage(String preffix,String currValueStr,float val,String overValueStr,float overVal){
 		return " "+preffix+currValueStr+String(val)+overValueStr+String(overVal)+"<br>";
 	}
