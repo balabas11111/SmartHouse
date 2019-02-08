@@ -13,7 +13,7 @@
 #include "Adafruit_Sensor.h"
 
 #include "interfaces/Initializable.h"
-#include "AbstractItem.h"
+#include "AbstractSensor.h"
 #include "ESP_Consts.h"
 
 #define BME280_ID 200
@@ -31,12 +31,12 @@ const char SENSOR_BME280_DESCRIPTION_RU[] PROGMEM ="Климат BME280";
 const char HEADER_BME280[] PROGMEM ="-------BME280_SENSOR initialize------------";
 const char INIT_STR_BME280[] PROGMEM ="Init BME-280";
 
-class BME280_Sensor: public AbstractItem, public Initializable{
+class BME280_Sensor: public AbstractSensor, public Initializable{
 
 public:
 
 	BME280_Sensor(String name)
-		: AbstractItem(BME280_ID,name,FPSTR(SENSOR_BME280_DESCRIPTION),FPSTR(SENSOR_BME280_SIZE),FPSTR(SENSOR_BME280_DESCRIPTION_RU),4){
+		: AbstractSensor(BME280_ID,name,FPSTR(SENSOR_BME280_DESCRIPTION),FPSTR(SENSOR_BME280_SIZE),FPSTR(SENSOR_BME280_DESCRIPTION_RU),4){
 	}
 
 	~BME280_Sensor(){}

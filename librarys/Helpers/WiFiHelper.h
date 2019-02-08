@@ -29,7 +29,7 @@
 #endif
 
 #include <PinDigital.h>
-#include <AbstractItem.h>
+#include <AbstractSensor.h>
 #include <Display_Pageable/DisplayHelper.h>
 
 #define NOT_CONNECT_ITERATIONS 20

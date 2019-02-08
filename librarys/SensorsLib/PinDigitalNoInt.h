@@ -11,7 +11,7 @@
 #include "Arduino.h"
 #include "TimeTrigger.h"
 #include <FunctionalInterrupt.h>
-#include <AbstractItem.h>
+#include <AbstractSensor.h>
 #include <Loopable.h>
 #include "PinDigital.h"
 
@@ -50,7 +50,7 @@ public:
 
 	virtual ~PinDigitalNoInt(){};
 
-	//AbstractItem functions
+	//AbstractSensor functions
 	virtual boolean loop() override{
 		return updateVal();
 	}

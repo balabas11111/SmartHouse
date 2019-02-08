@@ -11,19 +11,19 @@
 #include "Arduino.h"
 #include "EspSettingsBox.h"
 #include "WiFiHelper.h"
-#include "AbstractItem.h"
+#include "AbstractSensor.h"
 #include "StatusMessage/StatusMessage.h"
 #include "ESP_Consts.h"
 #include "Consts/CommandsConsts.h"
 #include "interfaces/DeviceLibable.h"
 #include "interfaces/JSONprocessor.h"
-#include "interfaces/SendAbleAbstractItems.h"
+#include "interfaces/SendAbleAbstractSensors.h"
 
 #include "extraBoxes/EspSett_ThSpeak.h"
 
 const PROGMEM char ThingSpeakHelper_NAME[] = "thingSpeakHelper";
 
-class ThingSpeakHelper: public JSONprocessor, public SendAbleAbstractItems, public DeviceLibable {
+class ThingSpeakHelper: public JSONprocessor, public SendAbleAbstractSensors, public DeviceLibable {
 public:
 	ThingSpeakHelper(EspSettingsBox* espSettingsBox,WiFiHelper* wifiHelper){
 		this->espSettingsBox=espSettingsBox;
@@ -35,7 +35,7 @@ public:
 		return FPSTR(ThingSpeakHelper_NAME);
 	}
 
-	StatusMessage sendItems(AbstractItem** items,uint8_t size) override{
+	StatusMessage sendItems(AbstractSensor** items,uint8_t size) override{
 
 		if(espSettingsBox->getExtraValueBoolean(ExtraBox_thingSpeak,THINGSPEAK_enabled)
 				&& items!=nullptr
@@ -70,14 +70,14 @@ public:
 		}
 	}
 
-	void sendAbstractItemToThingSpeak(AbstractItem* item){
+	void sendAbstractSensorToThingSpeak(AbstractSensor* item){
 		String baseUrl=FPSTR(MESSAGE_THINGSPEAK_BASE_URL);
 			baseUrl+=espSettingsBox->getExtraValue(ExtraBox_thingSpeak,THINGSPEAK_writeKey);
 		String url=item->constructGetUrl(baseUrl, FPSTR(MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST_EQ));
 		wifiHelper->executeGetRequest(url);
 	}
 
-	String constructThingSpeakParameters(AbstractItem* item){
+	String constructThingSpeakParameters(AbstractSensor* item){
 		return item->constructGetUrl("", FPSTR(MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST));
 	}
 
@@ -85,7 +85,7 @@ public:
 		return recreateThingSpeakChannelskWithCheck(getItems(),getItemsSize());
 	}
 
-	StatusMessage recreateThingSpeakChannelskWithCheck(AbstractItem** items,uint8_t size){
+	StatusMessage recreateThingSpeakChannelskWithCheck(AbstractSensor** items,uint8_t size){
 		if(size==0){
 			return StatusMessage(STATUS_CONF_ERROR_INT,FPSTR(MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED));
 		}
@@ -102,7 +102,7 @@ public:
 
 	}
 
-	String recreateThingSpeak(AbstractItem** items,uint8_t size){
+	String recreateThingSpeak(AbstractSensor** items,uint8_t size){
 		Serial.println(FPSTR(MESSAGE_THINGSPEAK_CHANNEL_CREATE_STARTED));
 		String result="";
 
@@ -113,7 +113,7 @@ public:
 		uint8_t countSet=0;
 
 		for(uint8_t i=0;i<size;i++){
-			AbstractItem* item=items[i];
+			AbstractSensor* item=items[i];
 
 			if(item->getAutoCreateChannel()){
 				for(uint8_t j=0;j<item->getItemCount();j++){
@@ -146,7 +146,7 @@ public:
 		if(countSet!=0){
 				//---------------------------------------------------------------------------
 				for(uint8_t i=0;i<size;i++){
-					AbstractItem* item=items[i];
+					AbstractSensor* item=items[i];
 					boolean doSave=false;
 
 					if(item->getAutoCreateChannel()){
@@ -159,7 +159,7 @@ public:
 						}
 
 						if(doSave){
-							espSettingsBox->saveAbstractItemToFile(item);
+							espSettingsBox->saveAbstractSensorToFile(item);
 						}
 					}
 				}
@@ -272,6 +272,7 @@ public:
 private:
 	EspSettingsBox* espSettingsBox;
 	WiFiHelper* wifiHelper;
+	AbstractSensor** sensors;
 };
 
 #endif /* LIBRARIES_HELPERS_THINGSPEAKHELPER_H_ */

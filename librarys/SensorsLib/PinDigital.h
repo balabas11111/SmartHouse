@@ -11,50 +11,50 @@
 #include "Arduino.h"
 #include "TimeTrigger.h"
 #include <FunctionalInterrupt.h>
-#include <AbstractItem.h>
+#include <AbstractSensor.h>
 #include <interfaces/Loopable.h>
 
 const PROGMEM char PinDigital_name[]="PinDigital";
 const PROGMEM char PinDigital_highLow[]="HIGH/LOW";
 
-class PinDigital:  public AbstractItem, public Loopable {
+class PinDigital:  public AbstractSensor, public Loopable {
 
 public:
 
 	PinDigital(String _name,uint8_t _pin)
-		:AbstractItem(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
+		:AbstractSensor(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
 		construct(_pin, nullptr, OUTPUT, CHANGE, HIGH, HIGH,0);
 	}
 
 	PinDigital(String _name,uint8_t _pin, uint8_t pinVal,uint8_t turnOffLevel)
-			:AbstractItem(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
+			:AbstractSensor(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
 			construct(_pin, nullptr, OUTPUT, CHANGE, pinVal, turnOffLevel,0);
 		}
 
 	PinDigital(String _name,uint8_t _pin,std::function<void(void)> onChanged)
-		:AbstractItem(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
+		:AbstractSensor(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
 		construct(_pin, onChanged, INPUT, CHANGE, LOW, LOW,0);
 	}
 
 	PinDigital(String _name,uint8_t _pin,std::function<void(void)> onChanged,long clickMaxTime)
-		:AbstractItem(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
+		:AbstractSensor(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
 		construct(_pin, onChanged, INPUT, CHANGE, LOW, LOW,clickMaxTime);
 	}
 /*
  * String _name,uint8_t _pin,std::function<void(void)> _onChanged,uint8_t _pinMode,uint8_t _changeMode,uint8_t _pinVal,uint8_t _turnOffLevel
  */
 	PinDigital(String _name,uint8_t _pin,std::function<void(void)> _onChanged,uint8_t _pinMode,uint8_t _changeMode,uint8_t _pinVal,uint8_t _turnOffLevel)
-		:AbstractItem(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
+		:AbstractSensor(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
 		construct(_pin, _onChanged, _pinMode, _changeMode, _pinVal, _turnOffLevel,0);
 	}
 
 	PinDigital(String _name,uint8_t _pin,std::function<void(void)> _onChanged,uint8_t _pinMode,uint8_t _changeMode,uint8_t _pinVal,uint8_t _turnOffLevel,long clickMaxTime)
-		:AbstractItem(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
+		:AbstractSensor(_pin,_name,FPSTR(PinDigital_name),FPSTR(PinDigital_highLow),_name,1){
 		construct(_pin, _onChanged, _pinMode, _changeMode, _pinVal, _turnOffLevel,clickMaxTime);
 	}
 
 	PinDigital(String _name,uint8_t _pin,std::function<void(void)> _onChanged,uint8_t _pinMode,uint8_t _changeMode,uint8_t _pinVal,uint8_t _turnOffLevel,long clickMaxTime,String abstractItemName,String abstractItemSize,String abstractItemDescr)
-		:AbstractItem(_pin,_name,abstractItemName,abstractItemSize,abstractItemDescr,1){
+		:AbstractSensor(_pin,_name,abstractItemName,abstractItemSize,abstractItemDescr,1){
 		construct(_pin, _onChanged, _pinMode, _changeMode, _pinVal, _turnOffLevel,clickMaxTime);
 	}
 
@@ -69,7 +69,7 @@ public:
 	boolean isOn();
 	void setTurnOffLevel(uint8_t turnOffLevel);
 
-	//AbstractItem functions
+	//AbstractSensor functions
 	virtual boolean loop() override{
 		return handleLoop();
 	}

@@ -18,19 +18,17 @@
 #include "Consts/PagesConsts.h"
 #include "Consts/CommandsConsts.h"
 
-#include "AbstractItem.h"
 #include "interfaces/DeviceLibable.h"
 #include "interfaces/Initializable.h"
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/JSONprovider.h"
 
 #include "ExtraSettingsBoxService.h"
-#include "AbstractItemSettingsService.h"
 
 const PROGMEM char EspSettingsBox_NAME[] = "espSettingsBox";
 
 class EspSettingsBox: public Initializable, public JSONprocessor , public JSONprovider,
-	public ExtraSettingsBoxService, public AbstractItemSettingsService, public DeviceLibable {
+	public ExtraSettingsBoxService {
 
 public:
 	EspSettingsBox(){

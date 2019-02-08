@@ -1,5 +1,5 @@
 /*
- * AbstractItemReq.h
+ *
  *
  *  Created on: Nov 5, 2018
  *      Author: Vitaliy_Vlasov
@@ -27,15 +27,15 @@ public:
 	}
 
 	StatusMessage(int8_t status){
-		this->set(status, "", "");
+		set(status, "", "");
 	}
 
 	StatusMessage(int8_t status,String message){
-		this->set(status, message, "");
+		set(status, message, "");
 	}
 
 	StatusMessage(int8_t status,String message,String data){
-		this->set(status, message, data);
+		set(status, message, data);
 	}
 
 	static String constructJSON(int8_t status,String message,String data){

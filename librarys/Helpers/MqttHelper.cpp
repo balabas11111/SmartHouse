@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "MqttHelper.h"
 #include <PubSubClient.h>
-#include "AbstractItem.h"
+#include "AbstractSensor.h"
 #include "ESP_Consts.h"
 #include <FunctionalInterrupt.h>
 #include <EspSettingsBox.h>
@@ -39,7 +39,7 @@ MqttHelper::MqttHelper(EspSettingsBox *_settingsBox,Client& _client,std::functio
 MqttHelper::~MqttHelper(){
 }
 
-boolean MqttHelper::begin(AbstractItem** items,uint8_t count){
+boolean MqttHelper::begin(AbstractSensor** items,uint8_t count){
 	topicCount=0;
 
 	if(!espSettingsBox->getExtraValueBoolean(ExtraBox_mqtt, MQTTE_enabled)){
@@ -237,7 +237,7 @@ PubSubClient MqttHelper::getClient(){
 	return getClient();
 }
 
-void MqttHelper::senDAbstractItemToMqtt(AbstractItem* item){
+void MqttHelper::senDAbstractSensorToMqtt(AbstractSensor* item){
 	Serial.println(FPSTR(MESSAGE_MQTTHELPER_SENDING_MESSAGE));
 	for(uint8_t i=0;i<item->getItemCount();i++){
 		/*String queue=item->getItem(i).queue;
@@ -278,7 +278,7 @@ void MqttHelper::senDAbstractItemToMqtt(AbstractItem* item){
 }
 
 void MqttHelper::processMqttEvent(String topic, String message,
-		AbstractItem** items, uint8_t count) {
+		AbstractSensor** items, uint8_t count) {
 
 	Serial.println(FPSTR(MESSAGE_MQTTHELPER_PROCESS_ABSTRACT_ITEM_MESSAGE_RECEIVED));
 	Serial.print(FPSTR(MESSAGE_MQTTHELPER_TOPIC_EQ));

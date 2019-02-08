@@ -1,7 +1,7 @@
 /*
  * EspSettingsUtil.h
  *
- *  Created on: 2 февр. 2019 г.
+ *  Created on: 2 пїЅпїЅпїЅпїЅ. 2019 пїЅ.
  *      Author: Vitaliy
  */
 
@@ -155,7 +155,7 @@ public:
 		return jsonFileName;
 	}
 
-	static String getAbstractItemSettingsFilePath(String abstractItemName){
+	static String getAbstractSensorSettingsFilePath(String abstractItemName){
 		String jsonFileName=FPSTR(ESPSETTINGSBOX_EXTRA_SETTINGS_BOX_PATH);
 				jsonFileName+=abstractItemName;
 				jsonFileName+=FPSTR(ESPSETTINGSBOX_SETTINGS_TXT_EXT);

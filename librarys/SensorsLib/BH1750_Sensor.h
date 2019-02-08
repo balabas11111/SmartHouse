@@ -12,7 +12,7 @@
 #include "interfaces/ItemFieldProvider.h"
 #include "interfaces/Initializable.h"
 
-#include "AbstractItem.h"
+#include "AbstractSensor.h"
 #include "ESP_Consts.h"
 
 #include "BH1750.h"
@@ -27,12 +27,12 @@ const char SENSOR_BH1750_DESCRIPTION_RU[] PROGMEM ="Освещенность BH1
 const char HEADER_BH1750[] PROGMEM ="-------BH1750_SENSOR initialize------------";
 const char INIT_STR_BH1750[] PROGMEM ="Init luxmeter";
 
-class BH1750_Sensor: public AbstractItem, public Initializable{
+class BH1750_Sensor: public AbstractSensor, public Initializable{
 
 public:
 
 	BH1750_Sensor(String name)
-	: AbstractItem(BH1750_ID,name,FPSTR(SENSOR_BH1750_DESCRIPTION),FPSTR(SENSOR_BH1750_SIZE),FPSTR(SENSOR_BH1750_DESCRIPTION_RU),1){
+	: AbstractSensor(BH1750_ID,name,FPSTR(SENSOR_BH1750_DESCRIPTION),FPSTR(SENSOR_BH1750_SIZE),FPSTR(SENSOR_BH1750_DESCRIPTION_RU),1){
 	}
 
 	~BH1750_Sensor(){}

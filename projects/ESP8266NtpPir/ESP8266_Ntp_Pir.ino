@@ -16,11 +16,14 @@
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266WiFi.h>
 
+#include "AbstractSensor.h"
+
 #include "interfaces/JSONprovider.h"
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/Loopable.h"
 #include "interfaces/SendAble.h"
 #include "interfaces/DeviceLibable.h"
+
 #include "I2Chelper.h"
 #include "WiFiHelper.h"
 
@@ -80,7 +83,7 @@ TimeIntervalService timeIntervalService(&espSettingsBox,&timeService,onTimeInter
 Loopable* loopArray[]={&wifi,&buttonMenu,&timeService,&displayHelper,
 						&pirDetector,&timeIntervalService,&beeperSerial,&sensorsTrigger};
 
-AbstractItem* sensors[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
+AbstractSensor* sensors[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
 JSONprovider* jsonProviders[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeService,&timeIntervalService,&espSettingsBox};
 JSONprocessor* jsonProcessors[]={&timeIntervalService,&thingSpeakHelper,&espSettingsBox};
 SendAble* senders[]={&thingSpeakHelper};
@@ -109,13 +112,12 @@ void initComponents(){
 	ds18d20Measurer.init();
 	deviceHelper.printHeap();
 
-	espSettingsBox.loadSensorsFromFile(sensors);
+	deviceHelper.loadSensors();
 	deviceHelper.printHeap();
 
 	updateSensors();
 	deviceHelper.printHeap();
 
-	thingSpeakHelper.setItems(sensors, ARRAY_SIZE(sensors));
 	deviceHelper.printHeap();
 	sensorsTrigger.init();
 	deviceHelper.printHeap();
@@ -254,9 +256,8 @@ void processTimeIntervals(){
 }
 
 //------------------Sensors func---------------------------------------------------
-
 void updateSensors(){
-	deviceHelper.update();
+	deviceHelper.updateSensors();
 }
 
 //-------------------------Thing speak functions---------------------
@@ -268,6 +269,7 @@ void processThingSpeakPost(){
 	Serial.println("process ThingSpeak post");
 }
 
+/*
 int8_t symbolKey=0;
 
 void changeSymbol(){
@@ -299,10 +301,10 @@ void changeSymbol(){
 		}
 	}
 }
-/*
+
 //------------------------------MQTT functions-----------------------------------------------------
 
-void sendAbstractItemToHttp(AbstractItem* item){
+void sendAbstractSensorToHttp(AbstractSensor* item){
 	if(espSettingsBox.isHttpPostEnabled){
 		wifi.executeFormPostRequest(espSettingsBox.httpPostIp.toString(), item->getJson());
 	}

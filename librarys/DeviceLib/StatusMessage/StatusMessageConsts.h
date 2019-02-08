@@ -33,6 +33,7 @@ const uint8_t STATUS_OK_DISABLED_INT       PROGMEM =15;
 const uint8_t STATUS_OK_SENT_INT           PROGMEM =16;
 const uint8_t STATUS_OK_NO_TO_SEND_INT     PROGMEM =17;
 const uint8_t STATUS_CONF_ERROR_INT        PROGMEM =18;
+const uint8_t STATUS_BAD_PARAMS_ERROR_INT  PROGMEM =19;
 
 #ifdef DEVICE_LOCALE_RU
 	#include "projectConstsLoc_Ru.h"
@@ -66,7 +67,8 @@ const char* const STATUSES[] PROGMEM=
 		"Disabled",
 		"Sent",
 		"NoDataToSend",
-		"ConfigError"
+		"ConfigError",
+		"BadParameters"
 };
 
 const uint STATUSES_HTTP[] PROGMEM=
@@ -89,7 +91,8 @@ const uint STATUSES_HTTP[] PROGMEM=
 		202,
 		202,
 		202,
-		424
+		424,
+		400
 };
 
 const PROGMEM char STATUS_statusHttp[] = "{\"statusHttp\": \"";

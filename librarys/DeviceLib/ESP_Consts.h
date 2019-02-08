@@ -132,7 +132,7 @@ const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED[]="Alarm finished";
 const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED_RESULT[]="Режим тревоги прекращен. Все показатели в норме";
 
 //----------EspSettingsBox Messages---------------
-const PROGMEM char MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN[]="Save AbstractItem to file=";
+const PROGMEM char MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN[]="Save AbstractSensor to file=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SETTINGS_SAVE_BEGIN[]="Save Settings to file=";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_SAVED[]="...saved ";
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_DEFAULT_VALUES_SAVED[]="DEFAULT ";

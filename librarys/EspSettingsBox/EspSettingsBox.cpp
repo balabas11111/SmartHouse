@@ -15,7 +15,6 @@
 
 #include "ArduinoJson.h"
 #include "FS.h"
-#include "AbstractItem.h"
 #include "ESP_Consts.h"
 #include "projectConsts.h"
 #include "EspSettingsUtil.h"

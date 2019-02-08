@@ -5,21 +5,21 @@
  *      Author: Vitaliy_Vlasov
  */
 
-#ifndef LIBRARIES_HELPERS_DisplayHelperPage_OLED_AbstractItem_H_
-#define LIBRARIES_HELPERS_DisplayHelperPage_OLED_AbstractItem_H_
+#ifndef LIBRARIES_HELPERS_DisplayHelperPage_OLED_AbstractSensor_H_
+#define LIBRARIES_HELPERS_DisplayHelperPage_OLED_AbstractSensor_H_
 
 #include <DisplayHelper.h>
 #include "Arduino.h"
-#include "AbstractItem.h"
+#include "AbstractSensor.h"
 #include "DisplayHelperPage.h"
 
 
-class DisplayHelperPage_OLED_AbstractItem:public DisplayHelperPage {
+class DisplayHelperPage_OLED_AbstractSensor:public DisplayHelperPage {
 public:
-	DisplayHelperPage_OLED_AbstractItem(AbstractItem* item){
+	DisplayHelperPage_OLED_AbstractSensor(AbstractSensor* item){
 		this->item=item;
 	}
-	virtual ~DisplayHelperPage_OLED_AbstractItem(){};
+	virtual ~DisplayHelperPage_OLED_AbstractSensor(){};
 
 	String getName(){
 		return item->getName();
@@ -65,7 +65,7 @@ protected:
 		return true;
 	}
 private:
-	AbstractItem* item;
+	AbstractSensor* item;
 };
 
 #endif /* LIBRARIES_HELPERS_DISPLAYHELPERPAGE_H_ */

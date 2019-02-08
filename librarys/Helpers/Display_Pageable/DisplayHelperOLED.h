@@ -12,7 +12,7 @@
 #include "Arduino.h"
 #include "OLED.h"
 #include "EspSettingsBox.h"
-#include "AbstractItem.h"
+#include "AbstractSensor.h"
 
 #define TURN_OFF_SECS 15
 

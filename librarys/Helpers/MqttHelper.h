@@ -11,6 +11,7 @@
 #include "Arduino.h"
 #include <EspSettingsBox.h>
 #include <PubSubClient.h>
+#include "AbstractSensor.h"
 #include "interfaces/Loopable.h"
 #include "interfaces/Initializable.h"
 #include <functional>
@@ -22,7 +23,7 @@ public:
 
 	virtual ~MqttHelper();
 
-	boolean begin(AbstractItem** items,uint8_t count);
+	boolean begin(AbstractSensor** items,uint8_t count);
 
 	virtual boolean initialize();
 
@@ -38,9 +39,9 @@ public:
 	void callback(char* topic, uint8_t* payload, unsigned int length);
 	PubSubClient getClient();
 
-	void senDAbstractItemToMqtt(AbstractItem* item);
+	void senDAbstractSensorToMqtt(AbstractSensor* item);
 
-	void processMqttEvent(String topic,String message,AbstractItem** items,uint8_t count);
+	void processMqttEvent(String topic,String message,AbstractSensor** items,uint8_t count);
 
 private:
 	boolean initialized;

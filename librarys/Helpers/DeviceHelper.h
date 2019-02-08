@@ -9,8 +9,11 @@
 #define LIBRARIES_PINDIGITAL_DeviceHelper_H_
 
 #include <Arduino.h>
-#include <interfaces/DeviceLibable.h>
-#include "AbstractItem.h"
+
+#include "AbstractSensor.h"
+
+#include "Consts/PagesConsts.h"
+#include "Consts/CommandsConsts.h"
 
 #include "interfaces/Initializable.h"
 #include "interfaces/JSONprocessor.h"
@@ -19,22 +22,22 @@
 #include "interfaces/SendAble.h"
 #include "interfaces/Nameable.h"
 
-#include "Consts/PagesConsts.h"
-#include "Consts/CommandsConsts.h"
+#include "services/AbstractSensorService.h"
 
 #include "StatusMessage/StatusMessage.h"
 #include "TimeTrigger.h"
-#include "I2Chelper.h"
+
+
 
 const PROGMEM char DeviceHelper_NAME[] = "deviceHelper";
 
-class DeviceHelper:public Loopable, public JSONprocessor{
+class DeviceHelper:public Loopable, public AbstractSensorService, public JSONprocessor{
 
 public:
 	DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
 				JSONprocessor** jsonProcessors,uint8_t jsonProcessorsSize,
 				JSONprovider** jsonProviders,uint8_t jsonProvidersSize,
-				AbstractItem** abstrItems,uint8_t abstrItemsSize,
+				AbstractSensor** abstrItems,uint8_t abstrItemsSize,
 				SendAble** senders,uint8_t sendersSize,
 				EspSettingsBox* espSettingsBox,
 				long minAlarmInterval);
@@ -43,11 +46,9 @@ public:
 
 	void startDevice(String deviceId,int wifiResetpin);
 	boolean init(Initializable** initItems,uint8_t initItemsSize);
-	void update();
 
 	String getProvidersAndSensorsJson();
 	String getProvidersJson();
-	String getAbstrItemsJson();
 
 	static void printHeap(){
 		Serial.print(FPSTR(MESSAGE_DEVICE_FREE_HEAP));Serial.println(ESP.getFreeHeap());
@@ -63,8 +64,6 @@ public:
 	void createPostponedCommand(String command);
 	void prepareTrigger();
 	void executePostponedCommand();
-
-	StatusMessage saveSensorSettings(String page,String json);
 
 	String getName(){
 		return FPSTR(DeviceHelper_NAME);
@@ -100,7 +99,7 @@ public:
 
 		if(page==FPSTR(PAGE_SENSORS)){
 			Serial.println(FPSTR("Process sensors"));
-			return saveSensorSettings(page,json);
+			return putAbstractSensorFromJson(json,true,false,true);
 		}
 
 		return StatusMessage(STATUS_UNKNOWN_INT);
@@ -118,7 +117,7 @@ public:
 
 		if(provider==FPSTR(DeviceHelper_NAME)){
 			if(page==FPSTR(PAGE_SENSORS)){
-				return getAbstrItemsJson();
+				return getAbstractSensorsAsString();
 			}
 			if(page==FPSTR(PAGE_PROVIDERS)){
 				return getProvidersJson();
@@ -135,7 +134,6 @@ public:
 	}
 
 protected:
-	String getAbstractItemsAsString(AbstractItem** items,uint8_t size);
 	String getJSONprovidersAsString(JSONprovider** items,uint8_t size);
 private:
 
@@ -149,10 +147,10 @@ private:
 
 	JSONprovider** jsonProviders;
 	uint8_t jsonProvidersSize;
-
-	AbstractItem** abstrItems;
+/*
+	AbstractSensor** abstrItems;
 	uint8_t abstrItemsSize;
-
+*/
 	SendAble** senders;
 	uint8_t sendersSize;
 

@@ -5,14 +5,32 @@
  *      Author: Vitaliy
  */
 
-#ifndef LIBRARIES_DEVICELIB_AbstractItem_H_
-#define LIBRARIES_DEVICELIB_AbstractItem_H_
+#ifndef LIBRARIES_DEVICELIB_AbstractSensor_H_
+#define LIBRARIES_DEVICELIB_AbstractSensor_H_
 
 #include "Arduino.h"
 #include "ESP_Consts.h"
 #include "interfaces/JSONprovider.h"
 
-class AbstractItem: public JSONprovider {
+//Abstract sensor constants
+
+const char FIELD_FIELDS[] PROGMEM = "items"; //Json tag to be used as sensorValue array tag
+
+const char FIELD_id[]    PROGMEM = "id";
+const char FIELD_name[]  PROGMEM = "name";
+const char FIELD_type[]  PROGMEM = "type";
+const char FIELD_size[]  PROGMEM = "size";
+const char FIELD_descr[] PROGMEM = "descr";
+const char FIELD_val[]   PROGMEM = "val";
+
+const char FIELD_fieldId[]    PROGMEM = "fieldId";
+const char FIELD_minVal[]     PROGMEM = "minVal";
+const char FIELD_maxVal[]     PROGMEM = "minVal";
+const char FIELD_setAllowed[] PROGMEM = "setAllowed";
+
+const char* const ABSTRACT_SENSOR_FIELDS_SET_ALLOWED[] PROGMEM = {"items"};
+
+class AbstractSensor: public JSONprovider {
 
 	struct childRecords{
 			uint8_t id;
@@ -31,17 +49,18 @@ class AbstractItem: public JSONprovider {
 
 public:
 
-	AbstractItem(uint8_t id,String name,String type,String size,String descr, uint8_t itemCount){
+	AbstractSensor(uint8_t id,String name,String type,String size,String descr, uint8_t itemCount,float val=NULL){
 		this->id=id;
 		this->name=name;
 		this->type=type;
 		this->size=size;
 		this->descr=descr;
 		this->itemCount=itemCount;
+		this->val=val;
 
 		initializeChildren();
 	}
-	virtual ~AbstractItem(){};
+	virtual ~AbstractSensor(){};
 
 	virtual String getKind()=0;
 
@@ -49,8 +68,8 @@ public:
 		return items;
 	}
 
-	SensorValue getItem(uint8_t index){
-		return items[index];
+	SensorValue* getItem(uint8_t index){
+		return &items[index];
 	}
 
 	virtual void update(){};
@@ -99,6 +118,10 @@ public:
 		return this->id;
 	}
 
+	void setId(uint8_t){
+		this->id=id;
+	}
+
 	virtual String getName() override{
 		return this->name;
 	}
@@ -139,10 +162,15 @@ public:
 		}
 	}
 
-	void setFieldId(uint8_t child,int8_t fieldId){
-		if(itemCount>child){
-			this->items[child].fieldId=fieldId;
+	void setFieldId(uint8_t itemIndex,int8_t fieldId){
+		if(!isItemIndexValid(itemIndex)){
+			return;
 		}
+		this->items[itemIndex].fieldId=fieldId;
+	}
+
+	boolean isItemIndexValid(uint8_t index){
+		return itemCount>index;
 	}
 
 	String getName(uint8_t index){
@@ -173,11 +201,19 @@ public:
 		return 	this->items[index].val;
 	}
 
+	float getVal(uint8_t index){
+		return this->items[index].val;
+	}
+
+	boolean getSetAllowed(){
+		return 	this->setAllowed;
+	}
+
 	boolean getSetAllowed(uint8_t index){
 		return 	this->items[index].setAllowed;
 	}
 
-	void setNonActiveSensorValue(String name,String descr,uint8_t fieldId,float minVal,float maxVal,String queue){
+	void setNonActiveSensorValue(String name,String descr,uint8_t fieldId,float minVal,float maxVal){
 		Serial.println(FPSTR("Non Active value set not activated"));
 	}
 
@@ -272,6 +308,36 @@ public:
 		return String(intVal);
 	}
 
+	virtual String getPath(){
+		return String(NULL);
+	}
+
+	virtual boolean setVal(float val){
+		if(!getSetAllowed()){
+			return false;
+		}
+
+		if(this->val!=val){
+			dispatch=true;
+			this->val=val;
+		}
+
+		return true;
+	}
+
+	virtual boolean setVal(uint8_t index,float val){
+		if(!getSetAllowed(index)){
+			return false;
+		}
+
+		if(getVal(index)!=val){
+			dispatch=true;
+			this->items[index].val=val;
+		}
+
+		return true;
+	}
+
 protected:
 
 	uint8_t id;
@@ -279,6 +345,9 @@ protected:
 	String type;
 	String size;
 	String descr;
+	float val;
+	boolean setAllowed=false;
+
 	uint8_t itemCount;
 
 	boolean periodicSend=true;
@@ -287,6 +356,8 @@ protected:
 
 	SensorValue* items;
 	boolean status=false;
+
+	boolean dispatch=false;
 
 	virtual boolean processMqVal(uint8_t index,String value){
 		Serial.print(FPSTR(MESSAGE_ABSTRACT_ITEM_INDEX_EQ));
@@ -362,4 +433,4 @@ protected:
 
 };
 
-#endif /* LIBRARIES_DEVICELIB_AbstractItem_H_ */
+#endif /* LIBRARIES_DEVICELIB_AbstractSensor_H_ */

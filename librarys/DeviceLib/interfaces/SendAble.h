@@ -10,7 +10,7 @@
 
 #include "Arduino.h"
 #include "StatusMessage/StatusMessage.h"
-#include "AbstractItem.h"
+#include "AbstractSensor.h"
 
 #include "interfaces/Nameable.h"
 
