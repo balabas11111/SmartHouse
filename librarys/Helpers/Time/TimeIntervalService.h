@@ -17,6 +17,7 @@
 #include "interfaces/JSONprovider.h"
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/Loopable.h"
+#include "interfaces/EntityProcessor.h"
 
 #include "FunctionalInterrupt.h"
 #include "DS3231.h"
@@ -68,7 +69,7 @@ const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_OK[]                   = "{\"sta
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR[]                = "{\"status\":\"Error\",\"item\":\"Error update time Interval\"}";
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR_MISSING_PARAMS[] = "{\"status\":\"Error\",\"item\":\"Required params missing\"}";
 
-class TimeIntervalService: public Initializable, public Loopable, public JSONprovider, public JSONprocessor, public DeviceLibable {
+class TimeIntervalService: public Initializable, public Loopable, public JSONprovider, public JSONprocessor, public EntityProcessor {
 public:
 	virtual ~TimeIntervalService(){};
 
@@ -167,6 +168,39 @@ public:
 	boolean isNotIntervalIdValid(uint8_t id){
 		return ((fixedItemlength!=0 && itemCount>fixedItemlength) || id>itemCount);
 	}
+
+	virtual JsonArray& getAbstractItems(JsonArray& itemsJson,uint8_t pageId){
+
+		JsonObject& item=itemsJson.createNestedObject();
+
+		switch(pageId){
+			case Page_listVal:
+			case Page_list:{
+				item["id"]=TimeIntervalService_ID;
+				item["name"]=TimeIntervalService_NAME;
+				break;
+			}
+		}
+
+		JsonArray& itemChilds=item.createNestedArray(SENSOR_VALUES_OBJECTS_ARRAY_TAG);
+
+		for(uint8_t i=0;i<itemCount;i++){
+			JsonObject& child=itemChilds.createNestedObject();
+
+			child["id"]=items[i].id;
+			child["name"]=items[i].name;
+			child["type"]=items[i].type;
+			child["startTime"]=items[i].startTime;
+			child["endTime"]=items[i].endTime;
+			child["time"]=items[i].time;
+			child["state"]=items[i].state;
+			child["days"]=items[i].days;
+			child["kind"]=items[i].kind;
+		}
+
+		return itemsJson;
+	}
+	virtual JsonArray& postAbstractItems(JsonArray& items,uint8_t pageId);
 
 	void add(String name,IntervalType type,uint32_t start,uint32_t end,uint16_t time,String days,uint8_t kind){
 		if(fixedItemlength!=0 && itemCount==fixedItemlength){

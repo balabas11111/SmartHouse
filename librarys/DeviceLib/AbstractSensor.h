@@ -185,12 +185,28 @@ public:
 		return 	String(this->items[index].fieldId);
 	}
 
+	String getDescr(){
+		return 	this->descr;
+	}
+
+	String getType(){
+		return 	this->type;
+	}
+
+	String getSize(){
+		return 	this->size;
+	}
+
 	String getDescr(uint8_t index){
-		return 	String(this->items[index].descr);
+		return 	this->items[index].descr;
 	}
 
 	String getValStr(uint8_t index){
 		return 	String(this->items[index].val);
+	}
+
+	float getVal(){
+		return 	this->val;
 	}
 
 	uint8_t getValInt(){

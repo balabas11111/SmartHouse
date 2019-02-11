@@ -1,7 +1,7 @@
 /*
  * ExtraSettingsBoxService.h
  *
- *  Created on: 2 февр. 2019 г.
+ *  Created on: 2 пїЅпїЅпїЅпїЅ. 2019 пїЅ.
  *      Author: Vitaliy
  */
 
@@ -250,6 +250,10 @@ public:
 
 	float getExtraValueFloatByBoxIndex(int boxIndex,int keyIndex){
 		return getExtraValueByBoxIndex(boxIndex, keyIndex).toFloat();
+	}
+
+	IPAddress getExtraValueIpAdress(uint8_t boxId,int keyId){
+
 	}
 
 	String getExtraValue(uint8_t boxId,int keyId){

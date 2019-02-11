@@ -1,7 +1,7 @@
 /*
  * ESPExtraSettingsBox.h
  *
- *  Created on: 22 дек. 2018 г.
+ *  Created on: 22 пїЅпїЅпїЅ. 2018 пїЅ.
  *      Author: Vitaliy
  */
 
@@ -30,6 +30,7 @@ const char DEVICE_SETTINGS_BOX_NAME[]       PROGMEM ="DEV";
 const char MQTT_SETTINGS_BOX_NAME[]         PROGMEM ="MQT";
 const char THINGSPEAK_SETTINGS_BOX_NAME[]   PROGMEM ="TSP";
 const char SMARTHOUSE_SETTINGS_BOX_NAME[]   PROGMEM ="SMH";
+const char OWN_SETTINGS_BOX_NAME[]          PROGMEM ="OWN";
 
 const char SETTINGS_KIND_all[]   	PROGMEM ="all";
 const char SETTINGS_KIND_device[]   PROGMEM ="device";
@@ -38,9 +39,10 @@ const char SETTINGS_KIND_sensors[]  PROGMEM ="sensors";
 const char SETTINGS_KIND_publish[]  PROGMEM ="publish";
 const char SETTINGS_KIND_intervals[]PROGMEM ="intervals";
 const char SETTINGS_KIND_manage[]   PROGMEM ="manage";
+const char SETTINGS_KIND_own[]   PROGMEM ="own";
 
 enum ExtraSettingsBoxIds: uint8_t{
-	ExtraBox_Alarm, ExtraBox_Display, ExtraBox_Ntp, ExtraBox_Telegram, ExtraBox_Device, ExtraBox_mqtt, ExtraBox_thingSpeak, ExtraBox_SmartHouse
+	ExtraBox_Alarm, ExtraBox_Display, ExtraBox_Ntp, ExtraBox_Telegram, ExtraBox_Device, ExtraBox_mqtt, ExtraBox_thingSpeak, ExtraBox_SmartHouse, ExtraBox_Own
 };
 
 const char* const EXTRA_SETTINGS_BOX_NAMES[] PROGMEM=
@@ -52,14 +54,16 @@ const char* const EXTRA_SETTINGS_BOX_NAMES[] PROGMEM=
 		"DEV",
 		"TSP",
 		"MQT",
-		"SMH"
+		"SMH",
+		"OWN"
 };
 
 const char* const SETTINGS_KINDS_SAVE_ENABLED[] PROGMEM=
 {
 		SETTINGS_KIND_device,
 		SETTINGS_KIND_net,
-		SETTINGS_KIND_publish
+		SETTINGS_KIND_publish,
+		SETTINGS_KIND_own
 };
 
 class ESPExtraSettingsBox:public Nameable, public Identifiable {
@@ -274,9 +278,8 @@ public:
 	}
 
 	int getKeyIndex(String key){
-		const char* const* keys=getKeys();
 		for(uint8_t i=0;i<getKeySize();i++){
-			if(String(keys[i])==key){
+			if(getKey(i)==key){
 				return i;
 			}
 		}
@@ -340,13 +343,24 @@ public:
 				if(vals[index]!=value){
 					saveRequired=true;
 				}
-				vals[index]=value;
+
+				setInternalValueByIndex(index,value);
+
 				return true;
 			}
 
 			return saveFieldValueToFile(index,value);
 		}
 		return false;
+	}
+
+	virtual boolean setInternalValueByIndex(int index,String value){
+		vals[index]=value;
+		return true;
+	}
+
+	virtual String getInternalValueByIndex(int index,String value){
+		return vals[index];
 	}
 
 	void printKeyDetails(String key,String value,String defaultVal){

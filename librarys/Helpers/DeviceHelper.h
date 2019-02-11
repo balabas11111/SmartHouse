@@ -69,6 +69,8 @@ public:
 		return FPSTR(DeviceHelper_NAME);
 	}
 
+	String processJsonAsEntity(String json);
+
 	StatusMessage processIncomeJson(String target,String page,String json){
 		yield();
 		if(target==NULL || target.length()==0){
@@ -138,6 +140,8 @@ protected:
 private:
 
 	EspSettingsBox* espSettingsBox;
+
+
 
 	Loopable** loopItems;
 	uint8_t loopItemsSize;

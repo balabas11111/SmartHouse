@@ -23,6 +23,7 @@
 #include "interfaces/Loopable.h"
 #include "interfaces/SendAble.h"
 #include "interfaces/DeviceLibable.h"
+#include "interfaces/EntityProcessor.h"
 
 #include "I2Chelper.h"
 #include "WiFiHelper.h"
@@ -69,7 +70,7 @@ BME280_Sensor bmeMeasurer(FPSTR(SENSOR_bmeMeasurer));
 
 TM1637 timeDisplay(D6,D7);
 
-TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,updateSensors);
+//TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,updateSensors);
 //TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),false,processThingSpeakPost);
 
 NtpTimeClientService timeService(&espSettingsBox);
@@ -81,11 +82,11 @@ ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifi);
 TimeIntervalService timeIntervalService(&espSettingsBox,&timeService,onTimeIntervalEvent,nullptr,0);
 
 Loopable* loopArray[]={&wifi,&buttonMenu,&timeService,&displayHelper,
-						&pirDetector,&timeIntervalService,&beeperSerial,&sensorsTrigger};
+						&pirDetector,&timeIntervalService,&beeperSerial};
 
 AbstractSensor* sensors[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
-JSONprovider* jsonProviders[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeService,&timeIntervalService,&espSettingsBox};
-JSONprocessor* jsonProcessors[]={&timeIntervalService,&thingSpeakHelper,&espSettingsBox};
+JSONprovider* jsonProviders[]={&timeIntervalService};
+JSONprocessor* jsonProcessors[]={&timeIntervalService};
 SendAble* senders[]={&thingSpeakHelper};
 
 //DeviceLibable* allItems[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeIntervalService,&espSettingsBox,&thingSpeakHelper};

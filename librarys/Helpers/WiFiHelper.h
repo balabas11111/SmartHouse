@@ -32,6 +32,8 @@
 #include <AbstractSensor.h>
 #include <Display_Pageable/DisplayHelper.h>
 
+#include "extraBoxes/EspSett_Own.h"
+
 #define NOT_CONNECT_ITERATIONS 20
 #define RE_CONNECT_DELAY 250
 
@@ -96,7 +98,7 @@ public:
 #endif
 			}
 
-			if(espSettingsBox->isAccesPoint){
+			if(espSettingsBox->getExtraValueBoolean(ExtraBox_Own, OWN_isAccesPoint)){
 				startAsAccessPoint();
 			}else{
 				startAsClient();
@@ -141,10 +143,14 @@ public:
 	}
 
 	boolean checkAuthentication(){
-		if(espSettingsBox->settingsUser.length()!=0 && espSettingsBox->settingsPass.length()!=0){
+
+
+//	&& espSettingsBox->getExtraValue(ExtraBox_Own, OWN_settingsPass.length()!=0
+		if(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_settingsUser).length()!=0
+				&& espSettingsBox->getExtraValue(ExtraBox_Own, OWN_settingsPass).length()){
 			//Serial.println("Authentication is REQUIRED for setupPage");
-			if(!serv->authenticate(const_cast<char*>(espSettingsBox->settingsUser.c_str()),
-				const_cast<char*>(espSettingsBox->settingsPass.c_str()))){
+			if(!serv->authenticate(const_cast<char*>(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_settingsUser).c_str()),
+				const_cast<char*>(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_settingsPass).c_str()))){
 				serv->requestAuthentication();
 				return false;
 			}else{
@@ -235,7 +241,8 @@ public:
 
 	void initUpdater(){
 		if(updater!=nullptr){
-			updater->setup(serv,espSettingsBox->settingsUser.c_str(),espSettingsBox->settingsPass.c_str());
+			updater->setup(serv,espSettingsBox->getExtraValue(ExtraBox_Own,OWN_settingsUser).c_str(),
+					espSettingsBox->getExtraValue(ExtraBox_Own, OWN_settingsPass).c_str());
 		}else{
 			Serial.println(FPSTR("OTA Update is disabled on this device"));
 		}
@@ -328,7 +335,7 @@ public:
 	}
 
 	IPAddress getIp(){
-		if(espSettingsBox->isAccesPoint){
+		if(espSettingsBox->getExtraValueBoolean(ExtraBox_Own, OWN_isAccesPoint)){
 	#ifdef ESP8266
 				return  WiFi.softAPIP();
 	#endif
@@ -438,7 +445,7 @@ public:
 
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_WIFI_IP_TYPE_EQ));
 
-		if(espSettingsBox->staticIp){
+		if(espSettingsBox->getExtraValueBoolean(ExtraBox_Own, OWN_staticIp)){
 			Serial.println ( FPSTR(MESSAGE_WIFIHELPER_WIFI_STATIC_IP_TYPE));
 		}else{
 			Serial.println ( FPSTR(MESSAGE_WIFIHELPER_WIFI_DNS_IP_TYPE));
@@ -500,10 +507,10 @@ protected:
 		initWiFiApEventFunctions();
 
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_STARTING_ACCESS_POINT));
-		WiFi.softAP(const_cast<char*>(espSettingsBox->ssidAP.c_str()),const_cast<char*>(espSettingsBox->password.c_str()));
+		WiFi.softAP(const_cast<char*>(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_ssidAP).c_str()),const_cast<char*>(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_password).c_str()));
 
 		Serial.print (FPSTR(MESSAGE_WIFIHELPER_SOFT_AP));
-		Serial.println ( espSettingsBox->ssidAP);
+		Serial.println ( espSettingsBox->getExtraValue(ExtraBox_Own, OWN_ssidAP));
 		Serial.print ( FPSTR(MESSAGE_WIFIHELPER_WIFI_IP));
 		Serial.println ( WiFi.softAPIP() );
 
@@ -518,11 +525,11 @@ protected:
 		startedAsAP=false;
 
 		displayLine(FPSTR(MESSAGE_WIFIHELPER_CONNECT_TO),2,0);
-		displayLine(espSettingsBox->ssid,5,0);
+		//displayLine(espSettingsBox->ssid,5,0);
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_SSID));
-		Serial.println(espSettingsBox->ssid);
+		//Serial.println(espSettingsBox->ssid);
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_PASSWORD));
-		Serial.println(espSettingsBox->password);
+		//Serial.println(espSettingsBox->password);
 
 		WiFi.disconnect(0);
 		WiFi.persistent(false);
@@ -530,15 +537,21 @@ protected:
 
 		initWifiStaEventFunctions();
 
-		if(espSettingsBox->staticIp){
-			WiFi.config(espSettingsBox->localIp,espSettingsBox->gateIp,
-							espSettingsBox->subnetIp,espSettingsBox->dnsIp,espSettingsBox->dnsIp2);
+		if(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_staticIp)){
+			WiFi.config(
+					espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_localIp),
+					espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_gateIp),
+					espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_subnetIp),
+					espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_dnsIp),
+					espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_dnsIp2)
+					);
 		}else{
-			WiFi.config(0U,0U,0U,espSettingsBox->dnsIp,espSettingsBox->dnsIp2);
+			WiFi.config(0U,0U,0U,espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_dnsIp),
+					espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_dnsIp2));
 		}
 
-		WiFi.begin ( const_cast<char*>(espSettingsBox->ssid.c_str()),
-				const_cast<char*>(espSettingsBox->password.c_str()) );
+		WiFi.begin ( const_cast<char*>(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_ssid).c_str()),
+				const_cast<char*>(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_password).c_str()) );
 
 		connectToWiFiIfNotConnected();
 

@@ -22,13 +22,17 @@
 #include "interfaces/Initializable.h"
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/JSONprovider.h"
+#include <interfaces/EntityProcessor.h>
+
+#include "services/AbstractSensorService.h"
+#include "extraBoxes/EspSett_Own.h"
 
 #include "ExtraSettingsBoxService.h"
 
 const PROGMEM char EspSettingsBox_NAME[] = "espSettingsBox";
 
 class EspSettingsBox: public Initializable, public JSONprocessor , public JSONprovider,
-	public ExtraSettingsBoxService {
+	public ExtraSettingsBoxService, public EntityProcessor {
 
 public:
 	EspSettingsBox(){
@@ -46,18 +50,24 @@ public:
 
 	virtual boolean initialize(boolean _init) override;
 
-	void loadSettingsJson();
-	void saveSettingsJson();
-
 	boolean setSettingsValue(String fieldName,String fieldValue);
 
 	boolean getSaveRequired(){
-		return saveRequired;
+		boolean result=false;
+
+		for(uint8_t i=0;i<getExtraBoxesCount();i++){
+			result=getExtraBox(i)->getSaveRequired() || result;
+		}
+		return result;
 	}
 
 	String getName(){
 		return FPSTR(EspSettingsBox_NAME);
 	}
+
+
+	virtual JsonArray& getAbstractItems(JsonArray& items,uint8_t pageId);
+	virtual JsonArray& postAbstractItems(JsonArray& items,uint8_t pageId);
 
 	StatusMessage processJson(String page,String json){
 		printProcessParams(page, json);
@@ -105,21 +115,10 @@ public:
 		Serial.print(page);
 		Serial.println(FPSTR(" save Started"));
 
-		saveRequired=false;
-
 		beginSetExtraSettingsValue(page);
 	}
 
 	void finishSetSettingsValue(String page){
-		Serial.print(FPSTR("EspSettingsBox saveRequired="));
-		Serial.print(saveRequired);
-		Serial.print(FPSTR("  "));
-
-		if(saveRequired){
-			saveSettingsJson();
-		}
-
-		saveRequired=false;
 
 		boolean ebsr=finishSetExtraSettingsValue();
 
@@ -133,9 +132,9 @@ public:
 
 	void resetToAp(){
 		Serial.println(FPSTR("Device will be started as AP"));
-		isAccesPoint=true;
-		password="password";
-		saveSettingsJson();
+		setExtraValue(ExtraBox_Own, OWN_isAccesPoint, "true");
+		setExtraValue(ExtraBox_Own, OWN_password, "password");
+		saveExtraBox(ExtraBox_Own);
 		Serial.println(FPSTR("---Saved as AP---"));
 	}
 
@@ -153,35 +152,7 @@ public:
 	String getThingSpeakChannelUrl();
 
 //--------------------device settings kind (page)-------------------
-	String accessUser = "";
-	String accessPass = "";
-
-	String settingsUser = "balabas";
-	String settingsPass = "balabas";
-
-	String password = "wuWylKegayg2wu22";//wuWylKegayg2wu22
-
-	uint16_t refreshInterval=60;
-
-	boolean isAccesPoint=false;
-	#ifdef ESP8266
-		String ssidAP="SENS_"+String(ESP.getChipId());;
-	#endif
-	#ifdef ESP32
-		String ssidAP="SENS_"+String(ESP.getChipRevision());;
-	#endif
-
-	String ssid = "balabasKiev5";//balabasKiev5
-	boolean staticIp=false;
-	IPAddress localIp=IPAddress(192, 168, 0, 120);
-	IPAddress apIp=IPAddress(192, 168, 4, 1);
-	IPAddress gateIp=IPAddress(192, 168, 0, 1);
-	IPAddress subnetIp=IPAddress(255, 255, 255, 0);
-	IPAddress dnsIp=IPAddress(192, 168, 0, 1);
-	IPAddress dnsIp2=IPAddress(192, 168, 0, 1);
-
 private:
-	boolean saveRequired=false;
 	boolean loaded=false;
 
 	boolean spiffInitialized;

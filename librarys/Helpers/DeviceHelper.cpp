@@ -22,6 +22,7 @@
 #include <AbstractSensor.h>
 #include <interfaces/SendAble.h>
 #include <interfaces/SendAbleAbstractSensors.h>
+#include <interfaces/EntityProcessor.h>
 
 
 DeviceHelper::DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
@@ -340,6 +341,79 @@ void DeviceHelper::executePostponedCommand() {
 	}
 }
 
+String DeviceHelper::processJsonAsEntity(String json) {
+		DynamicJsonBuffer jsonBuffer;
+		delay(1);
+		JsonObject& root = jsonBuffer.parse(json);
+
+		if(root.containsKey("Entity")){
+			JsonObject& entity = root["Entity"];
+			JsonObject& data = root["data"];
+
+			uint8_t id;
+			const char* nestedArrayName;
+
+			uint8_t pageId;
+			const char* pageName;
+
+			nestedArrayName = entity["name"].as<char*>();
+
+			if(entity.containsKey("id")){
+				id = entity["id"];
+			}else{
+				id = getEntityIdByName(nestedArrayName);
+			}
+
+			pageId=entity["pageId"];
+			pageName=entity["pageName"].as<char*>();
+
+			EntityProcessor* processor;
+			uint8_t pageIdRes=0;
+
+			switch (id){
+				case Entity_sensors:{
+					processor = this;
+					break;
+				}
+				case Entity_settings:{
+					processor = espSettingsBox;
+					break;
+				}
+			}
+			//process request
+			switch (pageId){
+				case Page_listVal:
+				case Page_list:{
+					pageIdRes=pageId;
+					break;
+				}
+
+				case Page_save:{
+					pageIdRes=Page_list;
+					processor->postAbstractItems(data[nestedArrayName], pageId);
+					break;
+				}
+				case Page_saveVal:{
+					pageIdRes=Page_listVal;
+					processor->postAbstractItems(data[nestedArrayName], pageId);
+					break;
+				}
+			}
+			//generate result
+			if(root.containsKey(nestedArrayName)){
+				root.remove(nestedArrayName);
+			}
+
+			JsonArray& items=root.createNestedArray(nestedArrayName);
+			processor->getAbstractItems(items, pageIdRes);
+
+			entity["httpStatus"]=200;
+		}
+		String result;
+		root.printTo(result);
+
+		return result;
+}
 /*
 	uint8_t initializableCount=0;
 	uint8_t loopableCount=0;
