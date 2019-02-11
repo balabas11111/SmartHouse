@@ -431,6 +431,7 @@ const PROGMEM char MESSAGE_THINGSPEAK_EMPTY_KEY[]="EmptyKey";
 //device widgets snapshot TODO: add this
 const PROGMEM char DEVICE_WIDGETS_SNAPSHOT[]="----------Device helper----------";
 
+const PROGMEM char MESSAGE_SERVER_ARG_ENTITY[]="entity";
 const PROGMEM char MESSAGE_SERVER_ARG_PAGE[]="page";
 const PROGMEM char MESSAGE_SERVER_ARG_NAME[]="name";
 const PROGMEM char MESSAGE_SERVER_ARG_VAL[]="val";
@@ -479,6 +480,7 @@ const PROGMEM char URL_GET_JSON_SENSORS[]="/getJson_sensors";
 const PROGMEM char URL_SUBMIT_FORM_SENSORS[]="/submitForm_sensors";
 
 //use /getJson?name=name
+const PROGMEM char URL_ENTITY[]="/entity";
 const PROGMEM char URL_GET_JSON[]="/getJson";
 const PROGMEM char URL_PROCESS_JSON[]="/processJson";
 

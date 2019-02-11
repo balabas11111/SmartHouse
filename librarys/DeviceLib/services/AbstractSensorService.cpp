@@ -432,7 +432,7 @@ JsonObject& AbstractSensorService::postAbstractSensorChildValues(
 
 uint8_t AbstractSensorService::getEntityIdByName(String name) {
 	for(uint8_t i=0;i<2;i++){
-		if(ENTITY_NAME[i]==name){
+		if(ENTITY_NAME[i]==name.c_str()){
 			return i;
 		}
 	}

@@ -191,6 +191,12 @@ public:
 				"";
 	}
 
+	String getEntityParam(){
+		return serv->hasArg(FPSTR(MESSAGE_SERVER_ARG_ENTITY))?
+				serv->arg(FPSTR(MESSAGE_SERVER_ARG_ENTITY)):
+				"";
+	}
+
 	String getNameParam(){
 		return serv->arg(FPSTR(MESSAGE_SERVER_ARG_NAME));
 	}

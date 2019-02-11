@@ -12,7 +12,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
-#include <interfaces/EntityProcessor.h>
+#include <interfaces/EntityService.h>
 
 #include <ESP_Consts.h>
 #include <StatusMessage/StatusMessage.h>
@@ -32,14 +32,14 @@ const char* const ENTITY_NAME[] = {
 const char SENSOR_VALUES_OBJECTS_ARRAY_TAG[]="items";
 
 enum Page: uint8_t {
-	Page_list, Page_listVal, Page_save, Page_saveVal
+	Page_list, Page_listVal, Page_save, Page_saveVal, Page_delete
 };
 const char* const PAGE_NAME[] = {
-	"list","getVal","save","saveVal"
+	"list","getVal","save","saveVal","delete"
 };
 
 
-class AbstractSensorService: public EntityProcessor {
+class AbstractSensorService: public EntityService {
 public:
 	AbstractSensorService(AbstractSensor** sensors,uint8_t sensorsSize);
 	virtual ~AbstractSensorService();

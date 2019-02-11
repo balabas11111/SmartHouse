@@ -22,8 +22,7 @@
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/Loopable.h"
 #include "interfaces/SendAble.h"
-#include "interfaces/DeviceLibable.h"
-#include "interfaces/EntityProcessor.h"
+#include "interfaces/EntityService.h"
 
 #include "I2Chelper.h"
 #include "WiFiHelper.h"
@@ -85,15 +84,14 @@ Loopable* loopArray[]={&wifi,&buttonMenu,&timeService,&displayHelper,
 						&pirDetector,&timeIntervalService,&beeperSerial};
 
 AbstractSensor* sensors[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
-JSONprovider* jsonProviders[]={&timeIntervalService};
-JSONprocessor* jsonProcessors[]={&timeIntervalService};
+EntityService* services[]={&timeIntervalService};
+
 SendAble* senders[]={&thingSpeakHelper};
 
 //DeviceLibable* allItems[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeIntervalService,&espSettingsBox,&thingSpeakHelper};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
-						  jsonProcessors,ARRAY_SIZE(jsonProcessors),
-						  jsonProviders,ARRAY_SIZE(jsonProviders),
+						  services,ARRAY_SIZE(services),
 						  sensors,ARRAY_SIZE(sensors),
 						  senders,ARRAY_SIZE(senders),
 						  &espSettingsBox,
@@ -120,7 +118,7 @@ void initComponents(){
 	deviceHelper.printHeap();
 
 	deviceHelper.printHeap();
-	sensorsTrigger.init();
+	//sensorsTrigger.init();
 	deviceHelper.printHeap();
 	timeIntervalService.init();
 	deviceHelper.printHeap();
@@ -165,57 +163,25 @@ void playPostInitSounds(){
 }
 //-------------Web server functions-------------------------------------
 void postInitWebServer(){
-	wifi.server()->on(FPSTR(URL_GET_JSON), HTTP_GET, [](){getProvidersJson();});
-	wifi.server()->on(FPSTR(URL_PROCESS_JSON), HTTP_POST, [](){processJson();});
+	wifi.server()->on(FPSTR(URL_ENTITY), HTTP_ANY, [](){getEntityJson();});
 }
 
-void getProvidersJson(){
+void getEntityJson(){
 	if(!wifi.checkAuthentication()){
 		return;
 	}
 
-	if(wifi.isValidGetJsonRequest()){
+	if(wifi.getEntityParam()!=""){
 
 		deviceHelper.printDeviceDiagnostic();
 
-		wifi.server()->send(200, FPSTR(CONTENT_TYPE_JSON_UTF8),
-							deviceHelper.getProvidersJson(
-									wifi.getNameParam(),
-									wifi.getPageParam())
-								);
+		wifi.server()->send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), deviceHelper.processJsonAsEntity(wifi.getEntityParam()));
 	}else{
 		Serial.println(FPSTR("!!!---JSON provider not found!---!!!"));
 		//wifi.printRequestDetails();
 		String msg=FPSTR(MESSAGE_PROV_NOT_FOUND);
 		msg+=wifi.getNameParam();
 		wifi.server()->send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT,msg).getJson());
-	}
-}
-
-void processJson(){
-	if(wifi.checkAuthentication()){
-
-		if(wifi.isValidProcessJsonRequest()){
-
-			deviceHelper.printDeviceDiagnostic();
-
-			wifi.server()->arg(FPSTR(MESSAGE_SERVER_ARG_REMOTE_TARGET));
-
-			StatusMessage sm=deviceHelper.processIncomeJson(
-					wifi.getRemoteTargetParam(),
-					wifi.getRemotePageParam(),
-					wifi.getValJsonParam()
-				  );
-
-			wifi.server()->send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), sm.getJson());
-		}else{
-			Serial.println(FPSTR("!!!---JSON processor not found! Parameters missing---!!!"));
-			//wifi.printRequestDetails();
-			String msg=FPSTR(MESSAGE_PROC_NOT_FOUND);
-			msg+=wifi.getNameParam();
-
-			wifi.server()->send(404, FPSTR(CONTENT_TYPE_JSON_UTF8), StatusMessage(STATUS_PARAM_NOT_FOUND_INT,msg).getJson());
-		}
 	}
 }
 

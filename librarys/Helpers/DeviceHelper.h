@@ -21,23 +21,21 @@
 #include "interfaces/Loopable.h"
 #include "interfaces/SendAble.h"
 #include "interfaces/Nameable.h"
+#include "interfaces/EntityService.h"
 
 #include "services/AbstractSensorService.h"
 
 #include "StatusMessage/StatusMessage.h"
 #include "TimeTrigger.h"
 
-
-
 const PROGMEM char DeviceHelper_NAME[] = "deviceHelper";
 
-class DeviceHelper:public Loopable, public AbstractSensorService, public JSONprocessor{
+class DeviceHelper:public Loopable, public AbstractSensorService{
 
 public:
 	DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
-				JSONprocessor** jsonProcessors,uint8_t jsonProcessorsSize,
-				JSONprovider** jsonProviders,uint8_t jsonProvidersSize,
-				AbstractSensor** abstrItems,uint8_t abstrItemsSize,
+				EntityService** services,uint8_t servicesSize,
+				AbstractSensor** sensors,uint8_t sensorsSize,
 				SendAble** senders,uint8_t sendersSize,
 				EspSettingsBox* espSettingsBox,
 				long minAlarmInterval);
@@ -46,9 +44,6 @@ public:
 
 	void startDevice(String deviceId,int wifiResetpin);
 	boolean init(Initializable** initItems,uint8_t initItemsSize);
-
-	String getProvidersAndSensorsJson();
-	String getProvidersJson();
 
 	static void printHeap(){
 		Serial.print(FPSTR(MESSAGE_DEVICE_FREE_HEAP));Serial.println(ESP.getFreeHeap());
@@ -71,6 +66,10 @@ public:
 
 	String processJsonAsEntity(String json);
 
+	String processEntityServiceError(String json);
+
+	EntityService* getEntityServiceByName(String name);
+/*
 	StatusMessage processIncomeJson(String target,String page,String json){
 		yield();
 		if(target==NULL || target.length()==0){
@@ -86,6 +85,7 @@ public:
 				return jsonProcessors[i]->processJson(page,json);
 			}
 		}
+
 
 		return StatusMessage(STATUS_NOT_FOUND_INT);
 	}
@@ -107,54 +107,19 @@ public:
 		return StatusMessage(STATUS_UNKNOWN_INT);
 	}
 
-	String getProvidersJson(String provider,String page){
-		yield();
-		if(provider==NULL || provider.length()==0){
-			return StatusMessage(STATUS_INVALID_LENGTH_INT).getJson();
-		}
-
-		if(provider==FPSTR(MESSAGE_SERVER_ARG_VAL_ALL)){
-			return getProvidersAndSensorsJson();
-		}
-
-		if(provider==FPSTR(DeviceHelper_NAME)){
-			if(page==FPSTR(PAGE_SENSORS)){
-				return getAbstractSensorsAsString();
-			}
-			if(page==FPSTR(PAGE_PROVIDERS)){
-				return getProvidersJson();
-			}
-		}
-
-		for(uint8_t i=0;i<jsonProvidersSize;i++){
-			if(jsonProviders[i]->checkName(provider)){
-				return jsonProviders[i]->getJson(page);
-			}
-		}
-
-		return StatusMessage(STATUS_ITEM_NOT_FOUND_INT).getJson();
-	}
-
+*/
 protected:
-	String getJSONprovidersAsString(JSONprovider** items,uint8_t size);
+	//String getJSONprovidersAsString(JSONprovider** items,uint8_t size);
 private:
 
 	EspSettingsBox* espSettingsBox;
 
-
-
 	Loopable** loopItems;
 	uint8_t loopItemsSize;
 
-	JSONprocessor** jsonProcessors;
-	uint8_t jsonProcessorsSize;
+	EntityService** services;
+	uint8_t servicesSize;
 
-	JSONprovider** jsonProviders;
-	uint8_t jsonProvidersSize;
-/*
-	AbstractSensor** abstrItems;
-	uint8_t abstrItemsSize;
-*/
 	SendAble** senders;
 	uint8_t sendersSize;
 
@@ -165,7 +130,6 @@ private:
 	boolean triggerInitiated;
 	String postponedCommand;
 	TimeTrigger* postPonedTrigger;
-	//void executePostPonedCommand();
 };
 
 #endif /* LIBRARIES_PINDIGITAL_DeviceHelper_H_ */

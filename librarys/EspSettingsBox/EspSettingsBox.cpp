@@ -252,3 +252,11 @@ int EspSettingsBox::deleteFilesByPreffix(String preffix){
 
 	return count;
 }
+
+JsonArray& EspSettingsBox::getAbstractItems(JsonArray& items, uint8_t pageId) {
+	return items;
+}
+
+JsonArray& EspSettingsBox::postAbstractItems(JsonArray& items, uint8_t pageId) {
+	return items;
+}

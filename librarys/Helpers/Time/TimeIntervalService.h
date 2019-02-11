@@ -17,7 +17,7 @@
 #include "interfaces/JSONprovider.h"
 #include "interfaces/JSONprocessor.h"
 #include "interfaces/Loopable.h"
-#include "interfaces/EntityProcessor.h"
+#include "interfaces/EntityService.h"
 
 #include "FunctionalInterrupt.h"
 #include "DS3231.h"
@@ -69,7 +69,7 @@ const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_OK[]                   = "{\"sta
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR[]                = "{\"status\":\"Error\",\"item\":\"Error update time Interval\"}";
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR_MISSING_PARAMS[] = "{\"status\":\"Error\",\"item\":\"Required params missing\"}";
 
-class TimeIntervalService: public Initializable, public Loopable, public JSONprovider, public JSONprocessor, public EntityProcessor {
+class TimeIntervalService: public Initializable, public Loopable, public JSONprovider, public JSONprocessor, public EntityService {
 public:
 	virtual ~TimeIntervalService(){};
 
@@ -169,7 +169,7 @@ public:
 		return ((fixedItemlength!=0 && itemCount>fixedItemlength) || id>itemCount);
 	}
 
-	virtual JsonArray& getAbstractItems(JsonArray& itemsJson,uint8_t pageId){
+	virtual JsonArray& getAbstractItems(JsonArray& itemsJson,uint8_t pageId) override{
 
 		JsonObject& item=itemsJson.createNestedObject();
 
@@ -200,7 +200,10 @@ public:
 
 		return itemsJson;
 	}
-	virtual JsonArray& postAbstractItems(JsonArray& items,uint8_t pageId);
+
+	virtual JsonArray& postAbstractItems(JsonArray& items,uint8_t pageId){
+		return items;
+	}
 
 	void add(String name,IntervalType type,uint32_t start,uint32_t end,uint16_t time,String days,uint8_t kind){
 		if(fixedItemlength!=0 && itemCount==fixedItemlength){
