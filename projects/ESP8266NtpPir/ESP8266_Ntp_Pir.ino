@@ -8,6 +8,7 @@
 #include <extraBoxes/ESPSett_Device.h>
 #include <extraBoxes/ESPSett_Telegram.h>
 #include <extraBoxes/EspSett_ThSpeak.h>
+#include <extraBoxes/EspSett_Own.h>
 
 #include "FS.h"
 #include <Wire.h>

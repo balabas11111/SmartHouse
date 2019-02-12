@@ -34,11 +34,22 @@ class DeviceHelper:public Loopable, public AbstractSensorService{
 
 public:
 	DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
-				EntityService** services,uint8_t servicesSize,
-				AbstractSensor** sensors,uint8_t sensorsSize,
-				SendAble** senders,uint8_t sendersSize,
-				EspSettingsBox* espSettingsBox,
-				long minAlarmInterval);
+			EntityService** services,uint8_t servicesSize,
+			AbstractSensor** sensors,uint8_t sensorsSize,
+			SendAble** senders,uint8_t sendersSize,
+			EspSettingsBox* espSettingsBox,
+			long minAlarmInterval)
+		:AbstractSensorService(sensors,sensorsSize){
+
+		constr( loopItems,loopItemsSize,services,servicesSize,
+				sensors, sensorsSize,
+				 senders,sendersSize,
+				espSettingsBox,
+				minAlarmInterval);
+
+	}
+
+	void constr (Loopable** loopItems,uint8_t loopItemsSize, EntityService** services,uint8_t servicesSize, AbstractSensor** sensors,uint8_t sensorsSize, SendAble** senders,uint8_t sendersSize, EspSettingsBox* espSettingsBox,	long minAlarmInterval);
 	void displayDetails();
 	boolean loop();
 

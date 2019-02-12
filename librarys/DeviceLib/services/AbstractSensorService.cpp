@@ -9,6 +9,7 @@
 
 #include <ArduinoJson.h>
 #include <utils/FileUtils.h>
+#include <FS.h>
 
 AbstractSensorService::AbstractSensorService(AbstractSensor** sensors,uint8_t sensorsSize) {
 	this->sensors=sensors;
@@ -430,12 +431,13 @@ JsonObject& AbstractSensorService::postAbstractSensorChildValues(
 	return child;
 }
 
-uint8_t AbstractSensorService::getEntityIdByName(String name) {
+int AbstractSensorService::getEntityIdByName(String name) {
 	for(uint8_t i=0;i<2;i++){
 		if(ENTITY_NAME[i]==name.c_str()){
 			return i;
 		}
 	}
+	return -1;
 }
 
 String AbstractSensorService::getAbstractSensorsAsString(){

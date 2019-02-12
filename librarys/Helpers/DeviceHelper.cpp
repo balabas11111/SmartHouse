@@ -23,15 +23,15 @@
 #include <interfaces/SendAble.h>
 #include <interfaces/SendAbleAbstractSensors.h>
 #include <interfaces/EntityService.h>
+#include <services/AbstractSensorService.h>
 
 
-DeviceHelper::DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
+void DeviceHelper::constr(Loopable** loopItems,uint8_t loopItemsSize,
 							EntityService** services,uint8_t servicesSize,
 							AbstractSensor** sensors,uint8_t sensorsSize,
 							SendAble** senders,uint8_t sendersSize,
 							EspSettingsBox* espSettingsBox,
-							long minAlarmInterval):
-	AbstractSensorService(sensors,sensorsSize){
+							long minAlarmInterval){
 
 	this->loopItems=loopItems;
 	this->loopItemsSize=loopItemsSize;
@@ -282,16 +282,16 @@ String DeviceHelper::processJsonAsEntity(String json) {
 
 			entityName = entity["name"].as<char*>();
 
+			EntityService* service;
+
 			if(entity.containsKey("id")){
 				id = entity["id"];
-			}else{
-				id = getEntityIdByName(entityName);
 			}
 
 			pageId=entity["pageId"];
 			pageName=entity["pageName"].as<char*>();
 
-			EntityService* service;
+
 			uint8_t pageIdRes=0;
 
 			switch (id){

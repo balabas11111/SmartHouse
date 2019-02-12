@@ -44,7 +44,7 @@ public:
 	AbstractSensorService(AbstractSensor** sensors,uint8_t sensorsSize);
 	virtual ~AbstractSensorService();
 
-	uint8_t getEntityIdByName(String name);
+	virtual EntityService* getEntityServiceByName(String name);
 
 	AbstractSensor** getSensors();
 	uint8_t getSensorsCount();
@@ -53,6 +53,8 @@ public:
 
 	AbstractSensor* getSensorByName(String sensorName);
 	AbstractSensor* getSensorById(uint8_t sensorId);
+
+	int getEntityIdByName(String name);
 
 	void updateSensors();
 
