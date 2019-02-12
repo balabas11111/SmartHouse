@@ -326,7 +326,7 @@ JsonArray& AbstractSensorService::getAbstractItems(JsonArray& items, uint8_t pag
 			}
 		}
 
-		JsonArray& itemChilds=item.createNestedArray(SENSOR_VALUES_OBJECTS_ARRAY_TAG);
+		JsonArray& itemChilds=item.createNestedArray(DEFAULT_CHILDREN_TAG);
 
 		for(uint8_t j=0;j<sens->getItemCount();j++){
 			JsonObject& child=itemChilds.createNestedObject();
@@ -368,8 +368,8 @@ JsonArray& AbstractSensorService::postAbstractItems(JsonArray& items,
 					}
 				}
 
-				if(item.containsKey(SENSOR_VALUES_OBJECTS_ARRAY_TAG)){
-					JsonArray& itemChilds = item[SENSOR_VALUES_OBJECTS_ARRAY_TAG];
+				if(item.containsKey(DEFAULT_CHILDREN_TAG)){
+					JsonArray& itemChilds = item[DEFAULT_CHILDREN_TAG];
 
 					for(uint8_t j=0;j<itemChilds.size();j++){
 
@@ -438,6 +438,10 @@ int AbstractSensorService::getEntityIdByName(String name) {
 		}
 	}
 	return -1;
+}
+
+uint8_t AbstractSensorService::getEntityId() {
+	return Entity_sensors;
 }
 
 String AbstractSensorService::getAbstractSensorsAsString(){

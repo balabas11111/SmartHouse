@@ -89,14 +89,11 @@ EntityService* services[]={&timeIntervalService};
 
 SendAble* senders[]={&thingSpeakHelper};
 
-//DeviceLibable* allItems[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed,&timeIntervalService,&espSettingsBox,&thingSpeakHelper};
-
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
 						  services,ARRAY_SIZE(services),
 						  sensors,ARRAY_SIZE(sensors),
 						  senders,ARRAY_SIZE(senders),
-						  &espSettingsBox,
-						  120000);
+						  &espSettingsBox);
 
 void initComponents(){
 

@@ -22,32 +22,15 @@ const PROGMEM char ABSTRACT_SENSORS_BASE_PATH[]="/settings/sensors/";
 const PROGMEM char TXT[]=".txt";
 const PROGMEM char SLASH[]="/";
 
-enum Entity: uint8_t {
-	Entity_sensors, Entity_settings
-};
-const char* const ENTITY_NAME[] = {
-	"sensors","settings"
-};
-
-const char SENSOR_VALUES_OBJECTS_ARRAY_TAG[]="items";
-
-enum Page: uint8_t {
-	Page_list, Page_listVal, Page_save, Page_saveVal, Page_delete
-};
-const char* const PAGE_NAME[] = {
-	"list","getVal","save","saveVal","delete"
-};
-
-
 class AbstractSensorService: public EntityService {
 public:
 	AbstractSensorService(AbstractSensor** sensors,uint8_t sensorsSize);
 	virtual ~AbstractSensorService();
 
-	virtual EntityService* getEntityServiceByName(String name);
-
 	AbstractSensor** getSensors();
 	uint8_t getSensorsCount();
+
+	uint8_t getEntityId();
 
 	void printAbstractSensorServiceDetails();
 

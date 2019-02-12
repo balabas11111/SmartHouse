@@ -64,6 +64,9 @@ public:
 		return FPSTR(EspSettingsBox_NAME);
 	}
 
+	uint8_t getEntityId(){
+		return Entity_settings;
+	}
 
 	virtual JsonArray& getAbstractItems(JsonArray& items,uint8_t pageId);
 	virtual JsonArray& postAbstractItems(JsonArray& items,uint8_t pageId);

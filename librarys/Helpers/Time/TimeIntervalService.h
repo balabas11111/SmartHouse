@@ -100,6 +100,10 @@ public:
 		return initialized;
 	}
 
+	uint8_t getEntityId(){
+		return Entity_timeIntervals;
+	}
+
 	virtual boolean loop(){
 		if(waitForTimeReceive && isTimeServiceHasTime()){
 			finishInit();
@@ -182,7 +186,7 @@ public:
 			}
 		}
 
-		JsonArray& itemChilds=item.createNestedArray(SENSOR_VALUES_OBJECTS_ARRAY_TAG);
+		JsonArray& itemChilds=item.createNestedArray(DEFAULT_CHILDREN_TAG);
 
 		for(uint8_t i=0;i<itemCount;i++){
 			JsonObject& child=itemChilds.createNestedObject();

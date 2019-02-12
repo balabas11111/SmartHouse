@@ -30,8 +30,7 @@ void DeviceHelper::constr(Loopable** loopItems,uint8_t loopItemsSize,
 							EntityService** services,uint8_t servicesSize,
 							AbstractSensor** sensors,uint8_t sensorsSize,
 							SendAble** senders,uint8_t sendersSize,
-							EspSettingsBox* espSettingsBox,
-							long minAlarmInterval){
+							EspSettingsBox* espSettingsBox){
 
 	this->loopItems=loopItems;
 	this->loopItemsSize=loopItemsSize;
@@ -43,14 +42,6 @@ void DeviceHelper::constr(Loopable** loopItems,uint8_t loopItemsSize,
 	this->sendersSize=sendersSize;
 
 	this->espSettingsBox=espSettingsBox;
-
-	this->alarmMode=false;
-	this->minAlarmInterval=minAlarmInterval*1000;
-
-	this->lastAlarmTime=0;
-
-	this->triggerInitiated=false;
-	postPonedTrigger=nullptr;
 }
 
 void DeviceHelper::displayDetails(){
@@ -75,9 +66,6 @@ boolean DeviceHelper::loop(){
 		result=result | currentLoop;
 	}
 
-	if(triggerInitiated){
-		postPonedTrigger->loop();
-	}
 	#ifdef DISPLAY_LOOPS
 		Serial.println("DeviceHelper loop="+String(result));
 	#endif
@@ -187,83 +175,16 @@ void DeviceHelper::printDeviceArrayDetails(){
 	Serial.println(FPSTR("--------------------------------"));
 }
 
-String DeviceHelper::processAlarm(){
-	unsigned long now=millis();
-
-	if(minAlarmInterval==0){
-		return "";
-	}
-
-	if(alarmMode && (lastAlarmTime+minAlarmInterval>now)){
-		return "";
-	}
-
-	String alarmMessage="";
-	boolean alarmStarted=alarmMode;
-
-	AbstractSensor** sensors=getSensors();
-
-	for(uint8_t i=0;i<getSensorsCount();i++){
-		boolean alarm=sensors[i]->checkForAlarm();
-
-		if(alarm){
-			if(!alarmStarted){
-				alarmStarted=true;
-			}
-			alarmMode=true;
-			alarmMessage+=sensors[i]->generateAlarmText();
-		}
-	}
-
-	if(alarmMessage!=""){
-		if(alarmStarted){
-			Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_ALARM_MODE_STARTED));
-		}else{
-			Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_ALARM_MODE_IDENTIFIED));
-		}
-		Serial.println(alarmMessage);
-		lastAlarmTime=now;
-	}else{
-		Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_ALARM_MODE_NOT_IDENTIFIED));
-
-		if(alarmMode){
-			Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED));
-			alarmMode=false;
-			alarmMessage=FPSTR(MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED_RESULT);
-			lastAlarmTime=now;
-		}
-	}
-	if(alarmMessage!=""){
-		Serial.println(alarmMessage);
-	}
-
-	return alarmMessage;
-}
-
-void DeviceHelper::createPostponedCommand(String command) {
-	prepareTrigger();
-	postponedCommand=command;
-	postPonedTrigger->start();
-	Serial.println(FPSTR("post poned restart trigger started"));
-}
-
-void DeviceHelper::prepareTrigger() {
-	if(!triggerInitiated){
-		postPonedTrigger=new TimeTrigger(0,5000,false,[this](){executePostponedCommand();});
-		triggerInitiated=true;
-	}
-}
-
-void DeviceHelper::executePostponedCommand() {
-	if(triggerInitiated){
-		postPonedTrigger->stop();
-	}
-
-	if(postponedCommand=="restart"){
-		Serial.print("Executing restart");
-		ESP.restart();
-	}
-}
+/*
+ * { "Entity":{
+ * 			"id":"0",
+ *	 		"name":"sensors",
+ * 			"pageId":"0",
+ * 			"pageName":"list"
+ * 			},
+ * 	 "data":{}
+ * }
+ */
 
 String DeviceHelper::processJsonAsEntity(String json) {
 		DynamicJsonBuffer jsonBuffer;
@@ -352,11 +273,20 @@ String DeviceHelper::processEntityServiceError(String json) {
 	return json;
 }
 
+EntityService* DeviceHelper::getEntityServiceById(uint8_t id) {
+	for(uint8_t i=0;i<servicesSize;i++){
+			if(services[i]->getEntityId()==id){
+				return services[i];
+			}
+		}
+		return NULL;
+}
+
 EntityService* DeviceHelper::getEntityServiceByName(String name) {
 	for(uint8_t i=0;i<servicesSize;i++){
-		/*if(services[i]->getName()==name){
+		if(services[i]->getEntityName()==name.c_str()){
 			return services[i];
-		}*/
+		}
 	}
 	return NULL;
 }

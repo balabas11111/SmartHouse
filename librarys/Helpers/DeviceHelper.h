@@ -37,19 +37,17 @@ public:
 			EntityService** services,uint8_t servicesSize,
 			AbstractSensor** sensors,uint8_t sensorsSize,
 			SendAble** senders,uint8_t sendersSize,
-			EspSettingsBox* espSettingsBox,
-			long minAlarmInterval)
+			EspSettingsBox* espSettingsBox)
 		:AbstractSensorService(sensors,sensorsSize){
 
 		constr( loopItems,loopItemsSize,services,servicesSize,
 				sensors, sensorsSize,
 				 senders,sendersSize,
-				espSettingsBox,
-				minAlarmInterval);
+				espSettingsBox);
 
 	}
 
-	void constr (Loopable** loopItems,uint8_t loopItemsSize, EntityService** services,uint8_t servicesSize, AbstractSensor** sensors,uint8_t sensorsSize, SendAble** senders,uint8_t sendersSize, EspSettingsBox* espSettingsBox,	long minAlarmInterval);
+	void constr (Loopable** loopItems,uint8_t loopItemsSize, EntityService** services,uint8_t servicesSize, AbstractSensor** sensors,uint8_t sensorsSize, SendAble** senders,uint8_t sendersSize, EspSettingsBox* espSettingsBox);
 	void displayDetails();
 	boolean loop();
 
@@ -65,21 +63,11 @@ public:
 
 	static void printDeviceDiagnosticNoSpiff();
 
-	String processAlarm();
-
-	void createPostponedCommand(String command);
-	void prepareTrigger();
-	void executePostponedCommand();
-
-	String getName(){
-		return FPSTR(DeviceHelper_NAME);
-	}
-
 	String processJsonAsEntity(String json);
-
 	String processEntityServiceError(String json);
 
-	EntityService* getEntityServiceByName(String name);
+	virtual EntityService* getEntityServiceById(uint8_t id);
+	virtual EntityService* getEntityServiceByName(String name);
 /*
 	StatusMessage processIncomeJson(String target,String page,String json){
 		yield();
@@ -119,8 +107,6 @@ public:
 	}
 
 */
-protected:
-	//String getJSONprovidersAsString(JSONprovider** items,uint8_t size);
 private:
 
 	EspSettingsBox* espSettingsBox;
@@ -134,13 +120,7 @@ private:
 	SendAble** senders;
 	uint8_t sendersSize;
 
-	boolean alarmMode;
-	unsigned long minAlarmInterval;
-	unsigned long lastAlarmTime;
 
-	boolean triggerInitiated;
-	String postponedCommand;
-	TimeTrigger* postPonedTrigger;
 };
 
 #endif /* LIBRARIES_PINDIGITAL_DeviceHelper_H_ */
