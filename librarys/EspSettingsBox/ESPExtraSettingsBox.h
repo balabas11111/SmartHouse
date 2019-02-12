@@ -384,7 +384,7 @@ public:
 		Serial.print(FPSTR(" inMemory="));
 		Serial.println(isInMemory());
 		Serial.println(FPSTR("---------------------------"));
-
+/*
 		for(uint8_t i=0;i<getKeySize();i++){
 			Serial.print(String(getKeys()[i]));
 
@@ -409,6 +409,7 @@ public:
 		//Serial.println(getJson());
 		getJson();
 		Serial.println(FPSTR("------------------------------"));
+		*/
 	}
 
 	uint8_t getKeySize(){

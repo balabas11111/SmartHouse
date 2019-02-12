@@ -254,6 +254,34 @@ int EspSettingsBox::deleteFilesByPreffix(String preffix){
 }
 
 JsonArray& EspSettingsBox::getAbstractItems(JsonArray& items, uint8_t pageId) {
+
+	Serial.print(FPSTR("Settings get pageId="));
+	Serial.println(pageId);
+
+	for(uint8_t i=0;i<getExtraBoxesCount();i++){
+		JsonObject& box=items.createNestedObject();
+		ESPExtraSettingsBox* eb=getExtraBox(i);
+
+		if(eb==NULL || eb==nullptr){
+			Serial.println(FPSTR("Extra box not found "));
+		}
+
+		box["id"] = eb->getId();
+		box["name"] = eb->getName();
+		box["descr"] = eb->getDescription();
+		delay(1);
+
+		Serial.println(FPSTR("process settings"));
+
+		for(uint8_t j=0;j<eb->getKeySize();j++){
+			delay(1);
+			JsonArray& settings=box.createNestedArray(DEFAULT_CHILDREN_TAG);
+			JsonObject& values = settings.createNestedObject();
+
+			values[eb->getKey(j)] = eb->getValue(j);
+		}
+
+	}
 	return items;
 }
 

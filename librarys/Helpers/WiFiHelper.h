@@ -513,7 +513,12 @@ protected:
 		initWiFiApEventFunctions();
 
 		Serial.println(FPSTR(MESSAGE_WIFIHELPER_STARTING_ACCESS_POINT));
-		WiFi.softAP(const_cast<char*>(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_ssidAP).c_str()),const_cast<char*>(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_password).c_str()));
+		Serial.print(FPSTR("OWN_ssidAP="));
+		Serial.print(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_ssidAP).c_str());
+		Serial.print(FPSTR("OWN_password="));
+		Serial.println(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_password).c_str());
+
+		WiFi.softAP((espSettingsBox->getExtraValue(ExtraBox_Own, OWN_ssidAP).c_str()),(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_password).c_str()));
 
 		Serial.print (FPSTR(MESSAGE_WIFIHELPER_SOFT_AP));
 		Serial.println ( espSettingsBox->getExtraValue(ExtraBox_Own, OWN_ssidAP));
@@ -530,12 +535,13 @@ protected:
 	boolean startAsClient(){
 		startedAsAP=false;
 
-		displayLine(FPSTR(MESSAGE_WIFIHELPER_CONNECT_TO),2,0);
-		//displayLine(espSettingsBox->ssid,5,0);
+		/*displayLine(FPSTR(MESSAGE_WIFIHELPER_CONNECT_TO),2,0);
+		displayLine(espSettingsBox->ssid,5,0);
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_SSID));
-		//Serial.println(espSettingsBox->ssid);
+		Serial.println(espSettingsBox->ssid);
 		Serial.print(FPSTR(MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_PASSWORD));
-		//Serial.println(espSettingsBox->password);
+		Serial.println(espSettingsBox->password);
+		*/
 
 		WiFi.disconnect(0);
 		WiFi.persistent(false);
@@ -543,7 +549,26 @@ protected:
 
 		initWifiStaEventFunctions();
 
-		if(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_staticIp)){
+		//espSettingsBox->getExtraBox(ExtraBox_Own)->printDetails();
+
+		Serial.print(FPSTR(" is_staticIp="));
+		Serial.print(espSettingsBox->getExtraValueBoolean(ExtraBox_Own, OWN_staticIp));
+		Serial.print(FPSTR(" OWN_ssid="));
+		Serial.print(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_ssid).c_str());
+		Serial.print(FPSTR(" OWN_password="));
+		Serial.println(espSettingsBox->getExtraValue(ExtraBox_Own, OWN_password).c_str());
+		Serial.print(FPSTR(" OWN_localIp="));
+		Serial.print(espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_localIp));
+		Serial.print(FPSTR(" OWN_gateIp="));
+		Serial.print(espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_gateIp));
+		Serial.print(FPSTR(" OWN_subnetIp="));
+		Serial.print(espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_subnetIp));
+		Serial.print(FPSTR(" dnsIp="));
+		Serial.print(espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_dnsIp));
+		Serial.print(FPSTR(" dnsIp2="));
+		Serial.println(espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_dnsIp2));
+
+		if(espSettingsBox->getExtraValueBoolean(ExtraBox_Own, OWN_staticIp)){
 			WiFi.config(
 					espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_localIp),
 					espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_gateIp),
@@ -552,6 +577,7 @@ protected:
 					espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_dnsIp2)
 					);
 		}else{
+
 			WiFi.config(0U,0U,0U,espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_dnsIp),
 					espSettingsBox->getExtraValueIpAdress(ExtraBox_Own, OWN_dnsIp2));
 		}

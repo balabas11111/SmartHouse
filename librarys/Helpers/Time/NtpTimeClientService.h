@@ -131,7 +131,11 @@ public:
 
 		if(!result){
 			Serial.println(FPSTR(NTP_TIME_CLIENT_UPDATE_FAILED));
-			timeClient->printDetails();
+			failureCount++;
+			if(failureCount>20){
+				failureCount=0;
+				timeClient->printDetails();
+			}
 			return false;
 		}
 		if(timeClient->udpStarted()){
@@ -239,6 +243,7 @@ public:
 	}
 protected:
 	void onNtpTimeReceived(){
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 		Serial.println(FPSTR(NTP_TIME_CLIENT_NTP_SYNC_COMPLETE));
 		timeClient->end();
 
@@ -277,6 +282,7 @@ private:
 #endif
 
 	WiFiUDP ntpUDP;
+	int failureCount=0;
 
 	EspSettingsBox* espSettingsBox;
 	NTPClient* timeClient;

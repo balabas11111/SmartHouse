@@ -28,7 +28,20 @@ enum Page: uint8_t {
 const char* const PAGE_NAME[] PROGMEM = {
 	"list","getVal","save","saveVal","delete", "execute"
 };
-
+/* Entity request Is deployed at /entity HTTP_ANY param=entity
+ *
+ * entity?entity={"Entity":{"id":"0","name":"sensors","pageId":"0","pageName":"list"},"data":{}}
+ * entity?entity={"Entity":{"id":"0","name":"sensors","pageId":"0","pageName":"getVal"},"data":{}}
+ *
+ * { "Entity":{
+ * 			"id":"0",
+ *	 		"name":"sensors",
+ * 			"pageId":"0",
+ * 			"pageName":"list"
+ * 			},
+ * 	 "data":{}
+ * }
+ */
 class EntityService{
 public:
 

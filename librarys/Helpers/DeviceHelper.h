@@ -37,14 +37,8 @@ public:
 			EntityService** services,uint8_t servicesSize,
 			AbstractSensor** sensors,uint8_t sensorsSize,
 			SendAble** senders,uint8_t sendersSize,
-			EspSettingsBox* espSettingsBox)
-		:AbstractSensorService(sensors,sensorsSize){
-
-		constr( loopItems,loopItemsSize,services,servicesSize,
-				sensors, sensorsSize,
-				 senders,sendersSize,
-				espSettingsBox);
-
+			EspSettingsBox* espSettingsBox):AbstractSensorService(sensors,sensorsSize){
+		constr( loopItems,loopItemsSize,services,servicesSize,sensors, sensorsSize,senders,sendersSize,espSettingsBox);
 	}
 
 	void constr (Loopable** loopItems,uint8_t loopItemsSize, EntityService** services,uint8_t servicesSize, AbstractSensor** sensors,uint8_t sensorsSize, SendAble** senders,uint8_t sendersSize, EspSettingsBox* espSettingsBox);
@@ -68,6 +62,12 @@ public:
 
 	virtual EntityService* getEntityServiceById(uint8_t id);
 	virtual EntityService* getEntityServiceByName(String name);
+
+	virtual const char*  getEntityNameById(uint8_t id);
+	virtual int getEntityIdByName(const char*  name);
+
+	virtual const char*  getPageNameById(uint8_t id);
+	virtual int getPageIdByName(const char*  name);
 /*
 	StatusMessage processIncomeJson(String target,String page,String json){
 		yield();

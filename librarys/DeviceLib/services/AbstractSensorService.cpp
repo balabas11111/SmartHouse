@@ -310,6 +310,12 @@ JsonObject& AbstractSensorService::getAbstractSensorChildValues(
 }
 
 JsonArray& AbstractSensorService::getAbstractItems(JsonArray& items, uint8_t pageId) {
+	Serial.print(FPSTR("Get Abstract Sensors pageId="));
+	Serial.print(pageId);
+	Serial.print(FPSTR(" pageName="));
+	Serial.println(PAGE_NAME[pageId]);
+	long start=millis();
+
 	for(uint8_t i=0;i<getSensorsCount();i++){
 
 		JsonObject& item=items.createNestedObject();
@@ -344,6 +350,10 @@ JsonArray& AbstractSensorService::getAbstractItems(JsonArray& items, uint8_t pag
 		}
 	}
 
+	long total=millis()-start;
+
+	Serial.print(FPSTR("totalTime get="));
+	Serial.println(total);
 	return items;
 }
 

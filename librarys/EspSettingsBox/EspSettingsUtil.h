@@ -218,6 +218,9 @@ public:
 	}
 
 	static IPAddress stringToIp(String str){
+		Serial.print(FPSTR("stringToIp="));
+		Serial.print(str);
+
 		uint8_t pos=0;
 		String tmp="";
 
@@ -233,6 +236,14 @@ public:
 			}
 		}
 		IPAddress result=IPAddress(ip[0],ip[1],ip[2],ip[3]);
+		IPAddress res2=IPAddress(result);
+
+		res2.fromString(str);
+
+		Serial.print(FPSTR(" result="));
+		Serial.print(result.toString());
+		Serial.print(FPSTR(" result="));
+		Serial.print(res2.toString());
 
 		return result;
 	}

@@ -28,6 +28,7 @@ public:
 	virtual ~ExtraSettingsBoxService(){};
 
 	boolean initExtraBoxes(){
+		long start=millis();
 		if(getExtraBoxesCount()!=0){
 			boolean result=true;
 			Serial.println();
@@ -42,6 +43,12 @@ public:
 
 			Serial.print(FPSTR("Init extra sett boxes...result="));
 			Serial.println(result);
+
+			long total=millis()-start;
+
+			Serial.print(FPSTR("-----------------------------------------------------"));
+			Serial.print(FPSTR("TotalTime ms ="));
+			Serial.println(total);
 			Serial.print(FPSTR("-----------------------------------------------------"));
 			Serial.println();
 			return result;
@@ -253,7 +260,7 @@ public:
 	}
 
 	IPAddress getExtraValueIpAdress(uint8_t boxId,int keyId){
-
+		return EspSettingsUtil::stringToIp(getExtraValueByBoxIndex(boxId,keyId));
 	}
 
 	String getExtraValue(uint8_t boxId,int keyId){

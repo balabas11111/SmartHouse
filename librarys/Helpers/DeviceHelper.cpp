@@ -175,7 +175,10 @@ void DeviceHelper::printDeviceArrayDetails(){
 	Serial.println(FPSTR("--------------------------------"));
 }
 
-/*
+/* Entity request Is deployed at /entity HTTP_ANY param=entity
+ *
+ * //entity?entity={"Entity":{"id":"0","name":"sensors","pageId":"0","pageName":"list"},"data":{}}
+ *
  * { "Entity":{
  * 			"id":"0",
  *	 		"name":"sensors",
@@ -187,18 +190,37 @@ void DeviceHelper::printDeviceArrayDetails(){
  */
 
 String DeviceHelper::processJsonAsEntity(String json) {
+		long startParse=millis();
+
+		Serial.println(FPSTR("-----------Process Entity----------"));
+		Serial.println(json);
+		printHeap();
+
+		long endParse=0;
+		long startPost=0;
+		long startGet=0;
+		long endGet=0;
+		long endPrint=0;
+
 		DynamicJsonBuffer jsonBuffer;
 		delay(1);
 		JsonObject& root = jsonBuffer.parse(json);
+
+		if(!root.success()){
+			return FPSTR("Not parsed");
+		}
 
 		if(root.containsKey("Entity")){
 			JsonObject& entity = root["Entity"];
 			JsonObject& data = root["data"];
 
-			uint8_t id;
+			if(!entity.success()){
+				return FPSTR("Entity not parsed");
+			}
+			int id;
 			const char* entityName;
 
-			uint8_t pageId;
+			int pageId;
 			const char* pageName;
 
 			entityName = entity["name"].as<char*>();
@@ -212,8 +234,47 @@ String DeviceHelper::processJsonAsEntity(String json) {
 			pageId=entity["pageId"];
 			pageName=entity["pageName"].as<char*>();
 
+			if(getEntityNameById(id)!=entityName){
+				Serial.print(FPSTR("Entity id dismiss income id="));
+				Serial.print(id);
+				Serial.print(FPSTR(" name="));
+				Serial.print(entityName);
+
+				id = getEntityIdByName(entityName);
+				Serial.print(FPSTR(" found id="));
+				Serial.println(id);
+
+				if(id==-1){
+					Serial.println(FPSTR("WRONG Entity id name config"));
+				}
+			}
+
+			if(getPageNameById(pageId)!=pageName){
+				Serial.print(FPSTR("Page id dismiss income id="));
+				Serial.print(pageId);
+				Serial.print(FPSTR(" name="));
+				Serial.print(pageName);
+
+				pageId=getPageIdByName(pageName);
+
+				Serial.print(FPSTR(" found id="));
+				Serial.println(pageId);
+
+				if(pageId==-1){
+					Serial.println(FPSTR("WRONG page id name config"));
+				}
+			}
 
 			uint8_t pageIdRes=0;
+
+			Serial.print(FPSTR("entityId="));
+			Serial.print(id);
+			Serial.print(FPSTR(" entityName="));
+			Serial.print(getEntityNameById(id));
+			Serial.print(FPSTR(" pageId="));
+			Serial.print(pageId);
+			Serial.print(FPSTR(" pageName="));
+			Serial.println(getPageNameById(id));
 
 			switch (id){
 				case Entity_sensors:{
@@ -229,10 +290,16 @@ String DeviceHelper::processJsonAsEntity(String json) {
 				}
 			}
 
+			endParse=millis();
+
 			if(service==NULL || service==nullptr){
 				return processEntityServiceError("Not found");
 			}
 			//process request
+			Serial.print(FPSTR("Entity="));
+			Serial.println(service->getEntityName());
+
+			startPost=millis();
 			switch (pageId){
 				case Page_listVal:
 				case Page_list:{
@@ -252,6 +319,8 @@ String DeviceHelper::processJsonAsEntity(String json) {
 					break;
 				}
 			}
+			startGet=millis();
+
 			//generate result
 			if(root.containsKey(entityName)){
 				root.remove(entityName);
@@ -261,9 +330,31 @@ String DeviceHelper::processJsonAsEntity(String json) {
 			service->getAbstractItems(items, pageIdRes);
 
 			entity["httpStatus"]=200;
+
+			endGet=millis();
+		}else{
+
 		}
+
 		String result;
 		root.printTo(result);
+		endPrint=millis();
+
+		Serial.println(FPSTR("Entity ...done"));
+		Serial.print(" ParseTime=");
+		Serial.print(endParse-startParse);
+		Serial.print(" PostTime=");
+		Serial.print(startGet-startParse);
+		Serial.print(" GetTime=");
+		Serial.print(endGet-startParse);
+		Serial.print(" PrintTime=");
+		Serial.println(endPrint-startParse);
+		Serial.println(result);
+
+		Serial.print(FPSTR("TotalTime ="));
+		Serial.println(millis()-startParse);
+		printHeap();
+		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
 		return result;
 }
@@ -284,11 +375,45 @@ EntityService* DeviceHelper::getEntityServiceById(uint8_t id) {
 
 EntityService* DeviceHelper::getEntityServiceByName(String name) {
 	for(uint8_t i=0;i<servicesSize;i++){
-		if(services[i]->getEntityName()==name.c_str()){
+		if(strcmp(services[i]->getEntityName(),name.c_str())==0){
 			return services[i];
 		}
 	}
 	return NULL;
+}
+
+const char*  DeviceHelper::getEntityNameById(uint8_t id) {
+	return ENTITY_NAME[id];
+}
+
+int DeviceHelper::getEntityIdByName(const char*  name) {
+	for(uint8_t i=0;i<3;i++){
+		/*Serial.print(FPSTR("name="));
+		Serial.print(name);
+		Serial.print(FPSTR(" ENTITY_NAME[i]"));
+		Serial.println(ENTITY_NAME[i]);
+*/
+
+		if(strcmp(ENTITY_NAME[i],name)==0){
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+const char* DeviceHelper::getPageNameById(uint8_t id) {
+	return PAGE_NAME[id];
+}
+
+int DeviceHelper::getPageIdByName(const char*  name) {
+	for(uint8_t i=0;i<6;i++){
+		if(strcmp(PAGE_NAME[i],name)==0){
+			return i;
+		}
+	}
+
+	return -1;
 }
 /*
 	uint8_t initializableCount=0;

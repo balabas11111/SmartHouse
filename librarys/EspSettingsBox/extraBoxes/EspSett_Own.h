@@ -57,7 +57,7 @@ const char* const OWN_SETT_BOX_DEFAULTS[]      PROGMEM=
 	"192.168.0.120",
 	"192.168.4.1",
 	"192.168.0.1",
-	"255.255.255.0"
+	"255.255.255.0",
 	"192.168.0.1",
 	"192.168.0.1"
 };
@@ -78,7 +78,7 @@ public:
 	}
 
 	virtual boolean isInMemory() override{
-		return true;
+		return false;
 	}
 
 	virtual String getDefaultValue(int index) override{

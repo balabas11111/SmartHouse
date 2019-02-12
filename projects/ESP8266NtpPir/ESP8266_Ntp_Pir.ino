@@ -50,8 +50,9 @@
 ESPSett_Ntp espSett_Ntp;
 EspSett_Device espSett_Dev;
 EspSett_ThSpeak espSett_Ths;
+EspSett_Own espSettOwn;
 
-ESPExtraSettingsBox* extraBoxes[]={&espSett_Ntp,&espSett_Dev,&espSett_Ths};
+ESPExtraSettingsBox* extraBoxes[]={&espSettOwn, &espSett_Ntp,&espSett_Dev,&espSett_Ths};
 EspSettingsBox espSettingsBox(extraBoxes,ARRAY_SIZE(extraBoxes));
 
 BeeperB beeper(D5,HIGH,LOW,true,false);
@@ -171,7 +172,7 @@ void getEntityJson(){
 
 	if(wifi.getEntityParam()!=""){
 
-		deviceHelper.printDeviceDiagnostic();
+		deviceHelper.printHeap();
 
 		wifi.server()->send(200, FPSTR(CONTENT_TYPE_JSON_UTF8), deviceHelper.processJsonAsEntity(wifi.getEntityParam()));
 	}else{
