@@ -75,13 +75,13 @@ public:
 
 	TimeIntervalService(EspSettingsBox* espSettingsBox,NtpTimeClientService* ntpTimeClientService,
 			std::function<void(TimeIntervalDetail)> externalFunction,
-			std::function<void(void)> defaultValuesFunction,
+			std::function<void(void)> onTimeReceivedFunction,
 			uint8_t fixedItemlength){
 		this->espSettingsBox=espSettingsBox;
 		this->timeService=ntpTimeClientService;
 		this->waitForTimeReceive=false;
 		this->externalFunction=externalFunction;
-		this->defaultValuesFunction=defaultValuesFunction;
+		this->onTimeReceivedFunction=onTimeReceivedFunction;
 		this->fixedItemlength=fixedItemlength;
 	}
 
@@ -121,24 +121,29 @@ public:
 	boolean finishInit(){
 		Serial.println(FPSTR("---Finish TimeIntervalService initialization"));
 		boolean loaded=loadFromFile();
+
+		if(onTimeReceivedFunction!=nullptr){
+			onTimeReceivedFunction();
+		}
+
 		processIntervals();
 
 		waitForTimeReceive=false;
 
 		if(!loaded){
-			if(defaultValuesFunction!=nullptr){
-				defaultValuesFunction();
-			}else{
-				Serial.println(FPSTR("Default interval will be added"));
-				uint32_t testTime=timeService->getNow()+120;
-				add("Test interval",ONCE,testTime,testTime+120,0,"",0);
-			}
 
+			addDefaultTestInterval();
 			saveToFile();
 			Serial.println(FPSTR("Default interval complete"));
 		}
 
 		return true;
+	}
+
+	void addDefaultTestInterval(){
+		Serial.println(FPSTR("Default interval will be added"));
+		uint32_t testTime=timeService->getNow()+120;
+		add("Test interval",ONCE,testTime,testTime+120,0,"",0);
 	}
 
 	TimeIntervalDetail getInterval(uint8_t ind){
@@ -175,21 +180,42 @@ public:
 
 	virtual int getAbstractItems(JsonArray& itemsJson,uint8_t pageId) override{
 
+		Serial.print(FPSTR("TimeIntervalService::getAbstractItems pageId="));
+		Serial.print(pageId);
+		Serial.print(FPSTR(" pageName="));
+		Serial.println(PAGE_NAME[pageId]);
+
+		long start=millis();
+
+		Serial.println();
 		JsonObject& item=itemsJson.createNestedObject();
 
 		switch(pageId){
 			case Page_listVal:
 			case Page_list:{
-				item["id"]=TimeIntervalService_ID;
-				item["name"]=TimeIntervalService_NAME;
+				item["id"]=3;
+				item["name"]=FPSTR(TimeIntervalService_NAME);
 				break;
+			}
+			default:{
+				return HTTP_CODE_NOT_IMPLEMENTED;
 			}
 		}
 
-		JsonArray& itemChilds=item.createNestedArray(DEFAULT_CHILDREN_TAG);
+		if(itemCount==0){
+			return HTTP_CODE_OK;
+		}
+
+		Serial.print(FPSTR("Process timeIntervals count="));
+		JsonArray& itemChilds=item.createNestedArray(FPSTR(DEFAULT_CHILDREN_TAG));
+
+		Serial.println(itemCount);
 
 		for(uint8_t i=0;i<itemCount;i++){
 			JsonObject& child=itemChilds.createNestedObject();
+
+			Serial.print(FPSTR("child = "));
+			Serial.println(i);
 
 			child["id"]=items[i].id;
 			child["name"]=items[i].name;
@@ -201,6 +227,11 @@ public:
 			child["days"]=items[i].days;
 			child["kind"]=items[i].kind;
 		}
+
+		long total=millis()-start;
+
+		Serial.print(FPSTR("timeIntervalService::getAbstractItems get="));
+		Serial.println(total);
 
 		return HTTP_CODE_OK;
 	}
@@ -857,7 +888,7 @@ private:
 	NtpTimeClientService* timeService;
 
 	std::function<void(TimeIntervalDetail)> externalFunction;
-	std::function<void(void)> defaultValuesFunction;
+	std::function<void(void)> onTimeReceivedFunction;
 
 	uint8_t itemCount=0;
 	TimeIntervalDetail items[ALARM_SIZE];

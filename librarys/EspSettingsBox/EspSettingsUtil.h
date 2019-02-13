@@ -19,19 +19,13 @@ class EspSettingsUtil {
 public:
 
 	static boolean isFileExists(String fileName){
-		//return SPIFFS.exists(fileName);
-
+	   return SPIFFS.exists(fileName);
+/*
 	   File file = SPIFFS.open(fileName, "r");
 
 	   boolean exists=!(!file || file.size()==0);
 
-	   if(exists){
-		   /*Serial.print(FPSTR("File exists "));
-		   Serial.print(fileName);
-		   Serial.print(FPSTR(" size="));
-		   Serial.println(file.size());
-		   */
-	   }else{
+	   if(!exists){
 		   Serial.print(FPSTR("NOT exists "));
 		   Serial.println(fileName);
 	   }
@@ -39,6 +33,7 @@ public:
 	   file.close();
 
 	   return exists;
+	   */
 	}
 
 	static String getFieldValueFromFile(String fileName,String fieldName){
@@ -107,13 +102,13 @@ public:
 	static String loadStringFromFile(String fileName){
 		File file = SPIFFS.open(fileName, "r");
 
-		if(!file || file.size()==0){
+		if(!file){
 			Serial.print(FPSTR("NOT FOUND Load from file= "));
 			Serial.println(fileName);
 			return "";
 		}
 
-		String data=file.readString();
+		String data=(file.size()!=0)?file.readString():"";
 		file.close();
 
 		delay(1);

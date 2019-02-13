@@ -181,7 +181,7 @@ String DeviceHelper::processJsonAsEntity(String json) {
 		long startParse=millis();
 
 		Serial.println(FPSTR("-----------Process Entity----------"));
-		Serial.println(json);
+		//Serial.println(json);
 		printHeap();
 
 		long endParse=0;
@@ -258,7 +258,7 @@ String DeviceHelper::processJsonAsEntity(String json) {
 			}
 
 			uint8_t pageIdRes=0;
-
+/*
 			Serial.print(FPSTR("entityId="));
 			Serial.print(id);
 			Serial.print(FPSTR(" entityName="));
@@ -267,14 +267,14 @@ String DeviceHelper::processJsonAsEntity(String json) {
 			Serial.print(pageId);
 			Serial.print(FPSTR(" pageName="));
 			Serial.println(getPageNameById(id));
-
+*/
 			service = getEntityServiceByIdName(id, entityName);
 
 			endParse=millis();
 
 			if(service==NULL || service==nullptr){
 				requestStatus = HTTP_CODE_BAD_REQUEST;
-				requestText = STATUS_WRONG_SERVICE;
+				requestText = FPSTR(STATUS_WRONG_SERVICE);
 			}else{
 				//process request
 				Serial.print(FPSTR("Entity="));
@@ -301,21 +301,22 @@ String DeviceHelper::processJsonAsEntity(String json) {
 					}
 					default:{
 						requestStatus = HTTP_CODE_BAD_REQUEST;
-						requestText = STATUS_WRONG_PAGE;
+						requestText = FPSTR(STATUS_WRONG_PAGE);
 					}
 				}
 				startGet=millis();
 
 				if(requestStatus<300){
 					//generate result
-					if(root.containsKey(entityName)){
-						root.remove(entityName);
+					if(root.containsKey(FPSTR(DEFAULT_RESULT_TAG))){
+						root.remove(FPSTR(DEFAULT_RESULT_TAG));
 					}
 
-					JsonArray& items=root.createNestedArray(entityName);
+					JsonArray& items=root.createNestedArray(FPSTR(DEFAULT_RESULT_TAG));
 					requestStatus = service->getAbstractItems(items, pageIdRes);
 				}
 			}
+			Serial.println(FPSTR("post process request"));
 			entity[FPSTR(HTTP_STATUS_TAG)]=requestStatus;
 			entity[FPSTR(HTTP_STATUS_DETAILS_TAG)]=requestText;
 
@@ -325,20 +326,12 @@ String DeviceHelper::processJsonAsEntity(String json) {
 			requestText = FPSTR(STATUS_NO_ENTITY);
 		}
 
+		Serial.println(FPSTR("Build result"));
 		String result;
 		root.printTo(result);
 		endPrint=millis();
 
 		Serial.print(FPSTR("Entity ...done"));
-		/*Serial.print(" ParseTime=");
-		Serial.print(endParse-startParse);
-		Serial.print(" PostTime=");
-		Serial.print(startGet-startParse);
-		Serial.print(" GetTime=");
-		Serial.print(endGet-startParse);
-		Serial.print(" PrintTime=");
-		Serial.println(endPrint-startParse);
-		Serial.println(result);*/
 		Serial.print(FPSTR(" TotalTime ="));
 		Serial.print(millis()-startParse);
 
@@ -361,7 +354,13 @@ EntityService* DeviceHelper::getEntityServiceById(uint8_t id) {
 }
 
 EntityService* DeviceHelper::getEntityServiceByName(String name) {
+	Serial.print(FPSTR("getEntityServiceByName name="));
+	Serial.println(name);
+
 	for(uint8_t i=0;i<servicesSize;i++){
+		Serial.print(FPSTR("CHECK service"));
+		Serial.println(services[i]->getEntityName());
+
 		if(strcmp(services[i]->getEntityName(),name.c_str())==0){
 			return services[i];
 		}

@@ -28,6 +28,9 @@ uint8_t AbstractSensorService::getSensorsCount() {
 
 AbstractSensor* AbstractSensorService::getSensorById(uint8_t sensorId){
 	if(getSensorsCount()<1 || sensorId>getSensorsCount()-1){
+		Serial.print(FPSTR("Bad Sensor index="));
+		Serial.println(sensorId);
+
 		return NULL;
 	}
 
@@ -265,44 +268,73 @@ void AbstractSensorService::printAbstractSensorServiceDetails(){
 
 
 int AbstractSensorService::getAbstractItems(JsonArray& items, uint8_t pageId) {
+
+	boolean itemsOk=items.success();
+
 	Serial.print(FPSTR("AbstractSensorService::getAbstractItems pageId="));
 	Serial.print(pageId);
 	Serial.print(FPSTR(" pageName="));
 	Serial.println(PAGE_NAME[pageId]);
+
 	long start=millis();
 
 	boolean allFields=false;
 
 	switch(pageId){
 		case Page_listVal:{
-			allFields=true;
+			allFields=false;
 			break;
 		}
 		case Page_list:{
-			allFields=false;
+			allFields=true;
 			break;
 		}
 		default:{
 			return HTTP_CODE_NOT_IMPLEMENTED;
 		}
 	}
+/*
+	Serial.print(FPSTR("Execute sensors GET count="));
+	Serial.print(getSensorsCount());
+	Serial.print(FPSTR(" allFields="));
+	Serial.println(allFields);
+*/
 
 	for(uint8_t i=0;i<getSensorsCount();i++){
 
 		JsonObject& item=items.createNestedObject();
 		AbstractSensor* sens=getSensorById(i);
 
+		if(sens==NULL || sens==nullptr){
+			Serial.print(FPSTR("sensor not found id="));
+			Serial.println(i);
+			continue;
+		}/*else{
+			Serial.print(FPSTR("sensor="));
+			Serial.println(sens->getName());
+		}*/
+
+		if(!item.success()){
+			Serial.println(FPSTR("Json item is invalid"));
+		}
+
 		item["id"] = sens->getId();
 		item["name"] = sens->getName();
 		item["val"] = sens->getVal();
 
 		if(allFields){
+			//Serial.println(FPSTR("Get all fields"));
+
 			item["descr"] = sens->getDescr();
 			item["type"] = sens->getType();
 			item["size"] = sens->getSize();
-		}
 
-		JsonArray& itemChilds=item.createNestedArray(DEFAULT_CHILDREN_TAG);
+		}/*else{
+			Serial.println(FPSTR("Only base fields"));
+		}
+		Serial.println(FPSTR("process children"));
+		*/
+		JsonArray& itemChilds=item.createNestedArray(FPSTR(DEFAULT_CHILDREN_TAG));
 
 		for(uint8_t childId=0;childId<sens->getItemCount();childId++){
 			JsonObject& child=itemChilds.createNestedObject();
@@ -370,8 +402,8 @@ int AbstractSensorService::postAbstractItems(JsonArray& items,uint8_t pageId) {
 					sens->setDescr(item["descr"]);
 				}
 
-				if(item.containsKey(DEFAULT_CHILDREN_TAG)){
-					JsonArray& itemChilds = item[DEFAULT_CHILDREN_TAG];
+				if(item.containsKey(FPSTR(DEFAULT_CHILDREN_TAG))){
+					JsonArray& itemChilds = item[FPSTR(DEFAULT_CHILDREN_TAG)];
 
 					for(uint8_t childId=0;childId<itemChilds.size();childId++){
 

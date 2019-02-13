@@ -80,7 +80,7 @@ DisplayHelper_TM1637_Clock_PIR displayHelper(&timeDisplay,&espSettingsBox,&bmeMe
 WiFiHelper wifi(&espSettingsBox, postInitWebServer);
 ThingSpeakHelper thingSpeakHelper(&espSettingsBox,&wifi);
 
-TimeIntervalService timeIntervalService(&espSettingsBox,&timeService,onTimeIntervalEvent,nullptr,0);
+TimeIntervalService timeIntervalService(&espSettingsBox,&timeService,onTimeIntervalEvent,onTimeReceived,0);
 
 Loopable* loopArray[]={&wifi,&buttonMenu,&timeService,&displayHelper,
 						&pirDetector,&timeIntervalService,&beeperSerial};
@@ -152,7 +152,10 @@ void loop() {
 
 	processTimeIntervals();
 }
-
+//---------------------------------------------------------------------
+void onTimeReceived(){
+	timeIntervalService.addDefaultTestInterval();
+}
 //---------------------------------------------------------------------
 void playPostInitSounds(){
 	uint8_t count=3*3*ds18d20Measurer.hasNoItems();

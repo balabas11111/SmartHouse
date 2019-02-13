@@ -243,8 +243,6 @@ int EspSettingsBox::deleteFilesByPreffix(String preffix){
 			Serial.print(FPSTR(ESPSETTINGSBOX_SETTINGS_REMOVED));
 			Serial.println(fileName);
 		}
-
-
 	}
 
 	Serial.print(FPSTR(" removed="));
@@ -255,8 +253,11 @@ int EspSettingsBox::deleteFilesByPreffix(String preffix){
 
 int EspSettingsBox::getAbstractItems(JsonArray& items, uint8_t pageId) {
 
-	Serial.print(FPSTR("Settings get pageId="));
-	Serial.println(pageId);
+	Serial.print(FPSTR("EspSettingsBox::getAbstractItems( pageId="));
+	Serial.print(pageId);
+	Serial.print(FPSTR(" pageName="));
+	Serial.println(PAGE_NAME[pageId]);
+	long start=millis();
 
 	for(uint8_t i=0;i<getExtraBoxesCount();i++){
 		JsonObject& box=items.createNestedObject();
@@ -272,17 +273,21 @@ int EspSettingsBox::getAbstractItems(JsonArray& items, uint8_t pageId) {
 		box["descr"] = eb->getDescription();
 		delay(1);
 
-		Serial.println(FPSTR("process settings"));
+		JsonArray& settings=box.createNestedArray(FPSTR(DEFAULT_CHILDREN_TAG));
 
 		for(uint8_t j=0;j<eb->getKeySize();j++){
-			delay(1);
-			JsonArray& settings=box.createNestedArray(DEFAULT_CHILDREN_TAG);
-			JsonObject& values = settings.createNestedObject();
 
+			JsonObject& values = settings.createNestedObject();
 			values[eb->getKey(j)] = eb->getValue(j);
 		}
 
 	}
+
+	long total=millis()-start;
+
+	Serial.print(FPSTR("EspSettingsBox::getAbstractItems time="));
+	Serial.println(total);
+
 	return HTTP_CODE_OK;
 }
 
