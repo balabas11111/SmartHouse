@@ -253,17 +253,18 @@ int EspSettingsBox::deleteFilesByPreffix(String preffix){
 	return count;
 }
 
-JsonArray& EspSettingsBox::getAbstractItems(JsonArray& items, uint8_t pageId) {
+int EspSettingsBox::getAbstractItems(JsonArray& items, uint8_t pageId) {
 
 	Serial.print(FPSTR("Settings get pageId="));
 	Serial.println(pageId);
 
 	for(uint8_t i=0;i<getExtraBoxesCount();i++){
 		JsonObject& box=items.createNestedObject();
-		ESPExtraSettingsBox* eb=getExtraBox(i);
+		ESPExtraSettingsBox* eb=extraBoxes[i];
 
 		if(eb==NULL || eb==nullptr){
 			Serial.println(FPSTR("Extra box not found "));
+			continue;
 		}
 
 		box["id"] = eb->getId();
@@ -282,9 +283,9 @@ JsonArray& EspSettingsBox::getAbstractItems(JsonArray& items, uint8_t pageId) {
 		}
 
 	}
-	return items;
+	return HTTP_CODE_OK;
 }
 
-JsonArray& EspSettingsBox::postAbstractItems(JsonArray& items, uint8_t pageId) {
-	return items;
+int EspSettingsBox::postAbstractItems(JsonArray& items, uint8_t pageId) {
+	return HTTP_CODE_NOT_IMPLEMENTED;
 }

@@ -173,7 +173,7 @@ public:
 		return ((fixedItemlength!=0 && itemCount>fixedItemlength) || id>itemCount);
 	}
 
-	virtual JsonArray& getAbstractItems(JsonArray& itemsJson,uint8_t pageId) override{
+	virtual int getAbstractItems(JsonArray& itemsJson,uint8_t pageId) override{
 
 		JsonObject& item=itemsJson.createNestedObject();
 
@@ -202,11 +202,11 @@ public:
 			child["kind"]=items[i].kind;
 		}
 
-		return itemsJson;
+		return HTTP_CODE_OK;
 	}
 
-	virtual JsonArray& postAbstractItems(JsonArray& items,uint8_t pageId){
-		return items;
+	virtual int postAbstractItems(JsonArray& items,uint8_t pageId) override{
+		return HTTP_CODE_NOT_IMPLEMENTED;
 	}
 
 	void add(String name,IntervalType type,uint32_t start,uint32_t end,uint16_t time,String days,uint8_t kind){

@@ -45,7 +45,7 @@ public:
 	void displayDetails();
 	boolean loop();
 
-	void startDevice(String deviceId,int wifiResetpin);
+	void startDevice(String deviceId,int wifiResetPin);
 	boolean init(Initializable** initItems,uint8_t initItemsSize);
 
 	static void printHeap(){
@@ -107,6 +107,9 @@ public:
 	}
 
 */
+protected:
+	void checkResetPin(int resetPin);
+
 private:
 
 	EspSettingsBox* espSettingsBox;

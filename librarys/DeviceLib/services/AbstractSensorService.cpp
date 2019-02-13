@@ -262,103 +262,100 @@ void AbstractSensorService::printAbstractSensorServiceDetails(){
 	Serial.println(sensorsCount);
 }
 
-JsonObject& AbstractSensorService::getAbstractSensorAllValues(
-		JsonObject& item, AbstractSensor* sens) {
 
-	getAbstractSensorValues(item,sens);
 
-	item["descr"] = sens->getDescr();
-	item["type"] = sens->getType();
-	item["size"] = sens->getSize();
-
-	return item;
-}
-
-JsonObject& AbstractSensorService::getAbstractSensorValues(JsonObject& item,AbstractSensor* sens) {
-
-	item["id"] = sens->getId();
-	item["name"] = sens->getName();
-	item["val"] = sens->getVal();
-
-	return item;
-}
-
-JsonObject& AbstractSensorService::getAbstractSensorAllChildValues(
-		JsonObject& child, AbstractSensor* sens, uint8_t childId) {
-
-	getAbstractSensorChildValues(child, sens, childId);
-
-	child["descr"] = sens->getItem(childId)->descr;
-	child["type"] = sens->getItem(childId)->type;
-	child["size"] = sens->getItem(childId)->size;
-
-	child["minVal"] = sens->getItem(childId)->minVal;
-	child["maxVal"] = sens->getItem(childId)->maxVal;
-	child["fieldId"] = sens->getItem(childId)->fieldId;
-
-	return child;
-}
-
-JsonObject& AbstractSensorService::getAbstractSensorChildValues(
-		JsonObject& child, AbstractSensor* sens, uint8_t childId) {
-
-	child["id"] = sens->getItem(childId)->id;
-	child["name"] = sens->getItem(childId)->name;
-	child["val"] = sens->getItem(childId)->val;
-
-	return child;
-}
-
-JsonArray& AbstractSensorService::getAbstractItems(JsonArray& items, uint8_t pageId) {
-	Serial.print(FPSTR("Get Abstract Sensors pageId="));
+int AbstractSensorService::getAbstractItems(JsonArray& items, uint8_t pageId) {
+	Serial.print(FPSTR("AbstractSensorService::getAbstractItems pageId="));
 	Serial.print(pageId);
 	Serial.print(FPSTR(" pageName="));
 	Serial.println(PAGE_NAME[pageId]);
 	long start=millis();
+
+	boolean allFields=false;
+
+	switch(pageId){
+		case Page_listVal:{
+			allFields=true;
+			break;
+		}
+		case Page_list:{
+			allFields=false;
+			break;
+		}
+		default:{
+			return HTTP_CODE_NOT_IMPLEMENTED;
+		}
+	}
 
 	for(uint8_t i=0;i<getSensorsCount();i++){
 
 		JsonObject& item=items.createNestedObject();
 		AbstractSensor* sens=getSensorById(i);
 
-		switch(pageId){
-			case Page_listVal:{
-				getAbstractSensorValues(item, sens);
-				break;
-			}
-			case Page_list:{
-				getAbstractSensorAllValues(item, sens);
-				break;
-			}
+		item["id"] = sens->getId();
+		item["name"] = sens->getName();
+		item["val"] = sens->getVal();
+
+		if(allFields){
+			item["descr"] = sens->getDescr();
+			item["type"] = sens->getType();
+			item["size"] = sens->getSize();
 		}
 
 		JsonArray& itemChilds=item.createNestedArray(DEFAULT_CHILDREN_TAG);
 
-		for(uint8_t j=0;j<sens->getItemCount();j++){
+		for(uint8_t childId=0;childId<sens->getItemCount();childId++){
 			JsonObject& child=itemChilds.createNestedObject();
 
-			switch(pageId){
-				case Page_listVal:{
-					getAbstractSensorChildValues(child, sens, j);
-					break;
-				}
-				case Page_list:{
-					getAbstractSensorAllChildValues(child, sens, j);
-					break;
-				}
+			child["id"] = sens->getItem(childId)->id;
+			child["name"] = sens->getItem(childId)->name;
+			child["val"] = sens->getItem(childId)->val;
+
+			if(allFields){
+				child["descr"] = sens->getItem(childId)->descr;
+				child["type"] = sens->getItem(childId)->type;
+				child["size"] = sens->getItem(childId)->size;
+
+				child["minVal"] = sens->getItem(childId)->minVal;
+				child["maxVal"] = sens->getItem(childId)->maxVal;
+				child["fieldId"] = sens->getItem(childId)->fieldId;
 			}
 		}
 	}
 
 	long total=millis()-start;
 
-	Serial.print(FPSTR("totalTime get="));
+	Serial.print(FPSTR("AbstractSensorService::getAbstractItems get="));
 	Serial.println(total);
-	return items;
+
+	return HTTP_CODE_OK;
 }
 
-JsonArray& AbstractSensorService::postAbstractItems(JsonArray& items,
-		uint8_t pageId) {
+int AbstractSensorService::postAbstractItems(JsonArray& items,uint8_t pageId) {
+
+	Serial.print(FPSTR("AbstractSensorService::postAbstractItems pageId="));
+	Serial.print(pageId);
+	Serial.print(FPSTR(" pageName="));
+	Serial.println(PAGE_NAME[pageId]);
+	long start=millis();
+
+	boolean allFields=false;
+
+	switch(pageId){
+		case Page_save:{
+			allFields=true;
+			break;
+		}
+		case Page_saveVal:{
+			allFields=false;
+			break;
+		}
+		default:{
+			return HTTP_CODE_NOT_IMPLEMENTED;
+		}
+
+	}
+
 	for(uint8_t i=0;i<items.size();i++){
 		JsonObject& item=items[i].asObject();
 
@@ -367,34 +364,24 @@ JsonArray& AbstractSensorService::postAbstractItems(JsonArray& items,
 		if(sens!=NULL && sens!=nullptr){
 			if(sens->checkName(item["name"])){
 
-				switch(pageId){
-					case Page_save:{
-						postAbstractSensorAllValues(item, sens);
-						break;
-					}
-					case Page_saveVal:{
-						postAbstractSensorValues(item, sens);
-						break;
-					}
+				sens->setVal(item["val"]);
+
+				if(allFields){
+					sens->setDescr(item["descr"]);
 				}
 
 				if(item.containsKey(DEFAULT_CHILDREN_TAG)){
 					JsonArray& itemChilds = item[DEFAULT_CHILDREN_TAG];
 
-					for(uint8_t j=0;j<itemChilds.size();j++){
+					for(uint8_t childId=0;childId<itemChilds.size();childId++){
 
-						JsonObject& child=itemChilds[j].asObject();
+						JsonObject& child=itemChilds[childId].asObject();
 
-						switch(pageId){
-							case Page_save:{
-								postAbstractSensorAllChildValues(child, sens, child["id"]);
-								break;
-							}
-							case Page_saveVal:{
-								postAbstractSensorChildValues(child, sens, child["id"]);
-								break;
-							}
+						sens->setVal(childId, child["val"]);
+						if(allFields){
+							sens->setDescr(childId, child["descr"]);
 						}
+
 					}
 
 				}
@@ -404,41 +391,12 @@ JsonArray& AbstractSensorService::postAbstractItems(JsonArray& items,
 
 	}
 
-	return items;
-}
+	long total=millis()-start;
 
-JsonObject& AbstractSensorService::postAbstractSensorValues(JsonObject& item,
-		AbstractSensor* sens) {
+	Serial.print(FPSTR("AbstractSensorService::postAbstractItems totalTime="));
+	Serial.println(total);
 
-	sens->setVal(item["val"]);
-
-	return item;
-}
-
-JsonObject& AbstractSensorService::postAbstractSensorAllValues(JsonObject& item,
-		AbstractSensor* sens) {
-
-	sens->setVal(item["val"]);
-	sens->setDescr(item["descr"]);
-
-	return item;
-}
-
-JsonObject& AbstractSensorService::postAbstractSensorAllChildValues(
-		JsonObject& child, AbstractSensor* sens, uint8_t childId) {
-
-	sens->setDescr(childId, child["descr"]);
-	sens->setVal(childId, child["val"]);
-
-	return child;
-}
-
-JsonObject& AbstractSensorService::postAbstractSensorChildValues(
-		JsonObject& child, AbstractSensor* sens, uint8_t childId) {
-
-	sens->setVal(childId, child["val"]);
-
-	return child;
+	return HTTP_CODE_OK;
 }
 
 int AbstractSensorService::getEntityIdByName(String name) {
@@ -452,16 +410,4 @@ int AbstractSensorService::getEntityIdByName(String name) {
 
 uint8_t AbstractSensorService::getEntityId() {
 	return Entity_sensors;
-}
-
-String AbstractSensorService::getAbstractSensorsAsString(){
-	yield();
-	String result="";
-
-	for(uint8_t i=0;i<sensorsCount;i++){
-		result+=sensors[i]->getJson();
-		result+=",";
-	}
-
-	return result;
 }

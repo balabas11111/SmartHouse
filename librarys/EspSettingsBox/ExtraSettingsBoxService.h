@@ -376,10 +376,10 @@ public:
 		}
 		return extraBoxCount;
 	}
-private:
+protected:
 
 	ESPExtraSettingsBox** extraBoxes;
-	uint8_t extraBoxCount;
+	uint8_t extraBoxCount=0;
 };
 
 #endif /* LIBRARIES_ESPSETTINGSBOX_EXTRASETTINGSBOXSERVICE_H_ */

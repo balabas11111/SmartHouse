@@ -9,9 +9,18 @@
 #define LIBRARIES_DEVICELIB_INTERFACES_ENTITYSERVICE_H_
 
 #include <ArduinoJson.h>
+#include "src/ESP8266HTTPClient.h"
+
+#ifdef ESP8266
+	#include "FunctionalInterrupt.h"
+#endif
+#ifdef ESP32
+	#include <functional>
+#endif
+
 #include <interfaces/Nameable.h>
 
-const char DEFAULT_CHILDREN_TAG[]="items";
+const char DEFAULT_CHILDREN_TAG[] PROGMEM="items";
 
 //ids of all possible entity services
 enum Entity: uint8_t {
@@ -52,15 +61,15 @@ public:
 	}
 
 	//All generated items will be inserted into &items data is income data from customer
-	virtual JsonArray& getAbstractItems(JsonArray& data,JsonArray& items,uint8_t pageId){
+	virtual int getAbstractItems(JsonArray& data,JsonArray& items,uint8_t pageId){
 		return getAbstractItems(items,pageId);
 	}
 
 	//All generated items will be inserted into &items
-	virtual JsonArray& getAbstractItems(JsonArray& items,uint8_t pageId)=0;
+	virtual int getAbstractItems(JsonArray& items,uint8_t pageId)=0;
 
 	//All items from &items array will be processed by service
-	virtual JsonArray& postAbstractItems(JsonArray& items,uint8_t pageId)=0;
+	virtual int postAbstractItems(JsonArray& items,uint8_t pageId)=0;
 };
 
 

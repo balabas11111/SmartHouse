@@ -36,18 +36,20 @@ uint8_t Device_CommandsService::getEntityId() {
 	return Entity_commands;
 }
 
-JsonArray& Device_CommandsService::postAbstractItems(JsonArray& items,
-		uint8_t pageId) {
+int Device_CommandsService::postAbstractItems(JsonArray& items, uint8_t pageId) {
 
 	if(pageId==Page_execute && items.size()>0){
 		for(uint8_t i=0;i<items.size();i++){
 			createPostponedCommand(items[i]["name"]);
 		}
+
+		return HTTP_CODE_OK;
 	}
-	return items;
+
+	return HTTP_CODE_NOT_IMPLEMENTED;
 }
 
-JsonArray& Device_CommandsService::getAbstractItems(JsonArray& items,
+int Device_CommandsService::getAbstractItems(JsonArray& items,
 		uint8_t pageId) {
 
 	for(uint8_t i=0;i < sizeof(COMMAND_NAME);i++){
@@ -55,6 +57,8 @@ JsonArray& Device_CommandsService::getAbstractItems(JsonArray& items,
 		item["id"] = i;
 		item["name"] = COMMAND_NAME[i];
 	}
+
+	return HTTP_CODE_OK;
 }
 
 void Device_CommandsService::executePostponedCommand() {

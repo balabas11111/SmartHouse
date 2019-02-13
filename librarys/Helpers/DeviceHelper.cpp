@@ -73,7 +73,7 @@ boolean DeviceHelper::loop(){
 	return result;
 }
 
-void DeviceHelper::startDevice(String deviceId,int wifiResetpin){
+void DeviceHelper::startDevice(String deviceId,int wifiResetPin){
   Serial.println(FPSTR(MESSAGE_DEVICE_HELPER_STARTED));
   Serial.print(FPSTR(MESSAGE_DEVICE_START_DEVICE_ID));Serial.println(deviceId);
 
@@ -88,20 +88,8 @@ void DeviceHelper::startDevice(String deviceId,int wifiResetpin){
   espSettingsBox->init();
   espSettingsBox->printSpiffsInfo();
 
-  if(wifiResetpin!=NULL && wifiResetpin>-1){
-	  boolean doReset=(digitalRead(wifiResetpin)==HIGH);
+  checkResetPin(wifiResetPin);
 
-	  if(doReset){
-		  delay(500);
-		  doReset=(digitalRead(wifiResetpin)==HIGH);
-	  }
-
-	  if(doReset){
-		  espSettingsBox->resetToAp();
-	  }else{
-		  Serial.println(FPSTR("No reset to AP is required"));
-	  }
-  }
   Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
 
@@ -414,6 +402,23 @@ int DeviceHelper::getPageIdByName(const char*  name) {
 	}
 
 	return -1;
+}
+
+void DeviceHelper::checkResetPin(int resetPin) {
+	if(resetPin!=NULL && resetPin>-1){
+		  boolean doReset=(digitalRead(resetPin)==HIGH);
+
+		  if(doReset){
+			  delay(500);
+			  doReset=(digitalRead(resetPin)==HIGH);
+		  }
+
+		  if(doReset){
+			  espSettingsBox->resetToAp();
+		  }else{
+			  Serial.println(FPSTR("No reset to AP is required"));
+		  }
+	  }
 }
 /*
 	uint8_t initializableCount=0;

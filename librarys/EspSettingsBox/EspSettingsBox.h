@@ -11,8 +11,9 @@
 #include "Arduino.h"
 #include "FS.h"
 #include "ArduinoJson.h"
-#include "ESP_Consts.h"
 #include "IPAddress.h"
+
+#include "ESP_Consts.h"
 #include "ESPExtraSettingsBox.h"
 #include "projectConsts.h"
 #include "Consts/PagesConsts.h"
@@ -68,8 +69,8 @@ public:
 		return Entity_settings;
 	}
 
-	virtual JsonArray& getAbstractItems(JsonArray& items,uint8_t pageId);
-	virtual JsonArray& postAbstractItems(JsonArray& items,uint8_t pageId);
+	virtual int getAbstractItems(JsonArray& items,uint8_t pageId);
+	virtual int postAbstractItems(JsonArray& items,uint8_t pageId);
 
 	StatusMessage processJson(String page,String json){
 		printProcessParams(page, json);

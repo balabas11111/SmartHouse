@@ -36,8 +36,8 @@ public:
 
 	boolean loop();
 
-	virtual JsonArray& postAbstractItems(JsonArray& items,uint8_t pageId);
-	virtual JsonArray& getAbstractItems(JsonArray& items,uint8_t pageId);
+	virtual int postAbstractItems(JsonArray& items,uint8_t pageId);
+	virtual int getAbstractItems(JsonArray& items,uint8_t pageId);
 
 private:
 	void createPostponedCommand(String command);

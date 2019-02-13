@@ -27,6 +27,8 @@ public:
 	AbstractSensorService(AbstractSensor** sensors,uint8_t sensorsSize);
 	virtual ~AbstractSensorService();
 
+	//boolean startSensors();
+
 	AbstractSensor** getSensors();
 	uint8_t getSensorsCount();
 
@@ -52,31 +54,14 @@ public:
 	static String getAbstractSensorFileFolder(AbstractSensor* sensor);
 
 	//Json operation functions
-	virtual JsonArray& getAbstractItems(JsonArray& items,uint8_t pageId) override;
-	virtual JsonArray& postAbstractItems(JsonArray& items,uint8_t pageId) override;
-
-	//Json get values
-	JsonObject& getAbstractSensorAllValues(JsonObject& item,AbstractSensor* sens);
-	JsonObject& getAbstractSensorValues(JsonObject& item,AbstractSensor* sens);
-
-	JsonObject& getAbstractSensorAllChildValues(JsonObject& child,AbstractSensor* sens,uint8_t childId);
-	JsonObject& getAbstractSensorChildValues(JsonObject& child,AbstractSensor* sens,uint8_t childId);
-
-	//Json post values
-	JsonObject& postAbstractSensorAllValues(JsonObject& item,AbstractSensor* sens);
-	JsonObject& postAbstractSensorValues(JsonObject& item,AbstractSensor* sens);
-
-	JsonObject& postAbstractSensorAllChildValues(JsonObject& child,AbstractSensor* sens,uint8_t childId);
-	JsonObject& postAbstractSensorChildValues(JsonObject& child,AbstractSensor* sens,uint8_t childId);
-
+	virtual int getAbstractItems(JsonArray& items,uint8_t pageId) override;
+	virtual int postAbstractItems(JsonArray& items,uint8_t pageId) override;
 
 protected:
 	boolean loadSensorSettingsFromFile(AbstractSensor** sensors,uint8_t size);
 	boolean saveSensorSettingsToFile(AbstractSensor** sensors,uint8_t size);
 
 	static String getAbstractSensorFilePreffix(AbstractSensor* sensor);
-
-	String getAbstractSensorsAsString();
 
 private:
 	AbstractSensor** sensors;
