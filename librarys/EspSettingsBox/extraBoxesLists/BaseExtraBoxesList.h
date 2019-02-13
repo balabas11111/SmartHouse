@@ -21,11 +21,13 @@ public:
 	BaseExtraBoxesList();
 	virtual ~BaseExtraBoxesList(){};
 
+	virtual void construct();
+
 private:
 	ESPSett_Ntp espSett_Ntp;
 	EspSett_Device espSett_Dev;
 	EspSett_ThSpeak espSett_Ths;
-	EspSett_Own espSettOwn;
+	EspSett_Own espSett_Own;
 };
 
 #endif /* LIBRARIES_ESPSETTINGSBOX_EXTRABOXESLISTS_BASEEXTRABOXESLIST_H_ */

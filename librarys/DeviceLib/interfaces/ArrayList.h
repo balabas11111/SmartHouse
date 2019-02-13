@@ -15,20 +15,51 @@ template <typename T>
 class ArrayList {
 public:
 
-	ArrayList();
-	ArrayList(T* items[]);
-	ArrayList(T* items[], uint8_t size);
+	ArrayList(){
+		this->size=0;
+	};
 
-	virtual ~ArrayList();
+	ArrayList(T* items[]){
+		constructList(items,ARRAY_SIZE(items));
+	}
 
-	uint8_t getSize();
-	T** getItems();
+	ArrayList(T* items[], uint8_t size){
+		constructList(items,size);
+	}
 
-	T* getItem(uint8_t index);
+	virtual ~ArrayList(){};
+
+	uint8_t getSize(){
+		return size;
+	}
+
+	T** getItems(){
+		return items;
+	}
+
+	T* getItem(uint8_t index){
+		if(index>=this->size){
+			return NULL;
+		}
+
+		return this->items[index];
+	}
 protected:
-	void constructList(T* items[], uint8_t size);
+	void constructList(T** items, uint8_t size){
+		this->items=items;
+		this->size=size;
+	}
+	boolean checkNonNull(T* box) {
+		if(box==NULL || box==nullptr){
+			Serial.print(FPSTR("Object is NULL"));
+			return false;
+		}else{
+			return true;
+		}
+	}
+
 private:
-	T* items[];
+	T** items;
 	uint8_t size=0;
 };
 

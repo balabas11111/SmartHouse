@@ -10,6 +10,8 @@
 #include <extraBoxes/EspSett_ThSpeak.h>
 #include <extraBoxes/EspSett_Own.h>
 
+#include <extraBoxesLists/BaseExtraBoxesList.h>
+
 #include "FS.h"
 #include <Wire.h>
 
@@ -51,6 +53,8 @@ ESPSett_Ntp espSett_Ntp;
 EspSett_Device espSett_Dev;
 EspSett_ThSpeak espSett_Ths;
 EspSett_Own espSettOwn;
+
+BaseExtraBoxesList settingsList;
 
 ESPExtraSettingsBox* extraBoxes[]={&espSettOwn, &espSett_Ntp,&espSett_Dev,&espSett_Ths};
 EspSettingsBox espSettingsBox(extraBoxes,ARRAY_SIZE(extraBoxes));
@@ -130,6 +134,7 @@ void setup() {
   displayHelper.init();
 
   espSettingsBox.initSpiff();
+  settingsList.construct();
   //espSettingsBox.deleteFilesByPreffix("/");
 
   deviceHelper.startDevice(espSettingsBox.getExtraValue(FPSTR(DEVICE_SETTINGS_BOX_NAME), DEVICE_id),buttonMenu.getPin());
