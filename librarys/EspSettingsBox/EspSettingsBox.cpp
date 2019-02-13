@@ -264,7 +264,7 @@ int EspSettingsBox::getAbstractItems(JsonArray& items, uint8_t pageId) {
 
 		if(eb==NULL || eb==nullptr){
 			Serial.println(FPSTR("Extra box not found "));
-			continue;
+			return HTTP_CODE_INTERNAL_SERVER_ERROR;
 		}
 
 		box["id"] = eb->getId();

@@ -20,7 +20,16 @@
 
 #include <interfaces/Nameable.h>
 
-const char DEFAULT_CHILDREN_TAG[] PROGMEM="items";
+//tags for Json parsing/constructing
+const char DEFAULT_CHILDREN_TAG[]    PROGMEM="items";
+const char HTTP_STATUS_TAG[]         PROGMEM="httpStatus";
+const char HTTP_STATUS_DETAILS_TAG[] PROGMEM="httpDetails";
+
+//default status details text
+const char STATUS_WRONG_SERVICE[] PROGMEM="Entity Service not found";
+const char STATUS_WRONG_PAGE[]    PROGMEM="Page not found";
+const char STATUS_WRONG_JSON[]    PROGMEM="Bad income Json";
+const char STATUS_NO_ENTITY[]     PROGMEM="No Entity in Json";
 
 //ids of all possible entity services
 enum Entity: uint8_t {

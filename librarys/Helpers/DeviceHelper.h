@@ -58,58 +58,18 @@ public:
 	static void printDeviceDiagnosticNoSpiff();
 
 	String processJsonAsEntity(String json);
-	String processEntityServiceError(String json);
-
-	virtual EntityService* getEntityServiceById(uint8_t id);
-	virtual EntityService* getEntityServiceByName(String name);
 
 	virtual const char*  getEntityNameById(uint8_t id);
 	virtual int getEntityIdByName(const char*  name);
 
 	virtual const char*  getPageNameById(uint8_t id);
 	virtual int getPageIdByName(const char*  name);
-/*
-	StatusMessage processIncomeJson(String target,String page,String json){
-		yield();
-		if(target==NULL || target.length()==0){
-			return StatusMessage(STATUS_INVALID_LENGTH_INT);
-		}
-
-		if(checkNamePage(target, page)){
-			return processJson(page,json);
-		}
-
-		for(uint8_t i=0;i<jsonProcessorsSize;i++){
-			if(jsonProcessors[i]->checkNamePage(target,page)){
-				return jsonProcessors[i]->processJson(page,json);
-			}
-		}
-
-
-		return StatusMessage(STATUS_NOT_FOUND_INT);
-	}
-
-	StatusMessage processJson(String page,String json){
-		printProcessParams(page, json);
-
-		if(page==FPSTR(PAGE_MANAGE) && json==FPSTR(COMMAND_RESTART)){
-			createPostponedCommand(json);
-
-			return StatusMessage(STATUS_OK_ACCEPTED_INT);
-		}
-
-		if(page==FPSTR(PAGE_SENSORS)){
-			Serial.println(FPSTR("Process sensors"));
-			return putAbstractSensorFromJson(json,true,false,true);
-		}
-
-		return StatusMessage(STATUS_UNKNOWN_INT);
-	}
-
-*/
 protected:
 	void checkResetPin(int resetPin);
+	EntityService* getEntityServiceByIdName(uint8_t id,String entityName);
 
+	EntityService* getEntityServiceById(uint8_t id);
+	EntityService* getEntityServiceByName(String name);
 private:
 
 	EspSettingsBox* espSettingsBox;
@@ -122,8 +82,6 @@ private:
 
 	SendAble** senders;
 	uint8_t sendersSize;
-
-
 };
 
 #endif /* LIBRARIES_PINDIGITAL_DeviceHelper_H_ */

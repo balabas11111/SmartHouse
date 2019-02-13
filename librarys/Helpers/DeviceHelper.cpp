@@ -190,12 +190,16 @@ String DeviceHelper::processJsonAsEntity(String json) {
 		long endGet=0;
 		long endPrint=0;
 
+		int requestStatus=0;
+		String requestText="OK";
+
 		DynamicJsonBuffer jsonBuffer;
 		delay(1);
 		JsonObject& root = jsonBuffer.parse(json);
 
 		if(!root.success()){
-			return FPSTR("Not parsed");
+			requestStatus = HTTP_CODE_BAD_REQUEST;
+			requestText = FPSTR(STATUS_WRONG_JSON);
 		}
 
 		if(root.containsKey("Entity")){
@@ -264,72 +268,69 @@ String DeviceHelper::processJsonAsEntity(String json) {
 			Serial.print(FPSTR(" pageName="));
 			Serial.println(getPageNameById(id));
 
-			switch (id){
-				case Entity_sensors:{
-					service = this;
-					break;
-				}
-				case Entity_settings:{
-					service = espSettingsBox;
-					break;
-				}
-				default:{
-					service = getEntityServiceByName(entityName);
-				}
-			}
+			service = getEntityServiceByIdName(id, entityName);
 
 			endParse=millis();
 
 			if(service==NULL || service==nullptr){
-				return processEntityServiceError("Not found");
-			}
-			//process request
-			Serial.print(FPSTR("Entity="));
-			Serial.println(service->getEntityName());
+				requestStatus = HTTP_CODE_BAD_REQUEST;
+				requestText = STATUS_WRONG_SERVICE;
+			}else{
+				//process request
+				Serial.print(FPSTR("Entity="));
+				Serial.println(service->getEntityName());
 
-			startPost=millis();
-			switch (pageId){
-				case Page_listVal:
-				case Page_list:{
-					pageIdRes=pageId;
-					break;
+				startPost=millis();
+				switch (pageId){
+					case Page_listVal:
+					case Page_list:{
+						pageIdRes=pageId;
+						break;
+					}
+
+					case Page_delete:
+					case Page_save:{
+						pageIdRes=Page_list;
+						requestStatus = service->postAbstractItems(data[entityName], pageId);
+						break;
+					}
+					case Page_saveVal:{
+						pageIdRes=Page_listVal;
+						requestStatus = service->postAbstractItems(data[entityName], pageId);
+						break;
+					}
+					default:{
+						requestStatus = HTTP_CODE_BAD_REQUEST;
+						requestText = STATUS_WRONG_PAGE;
+					}
 				}
+				startGet=millis();
 
-				case Page_delete:
-				case Page_save:{
-					pageIdRes=Page_list;
-					service->postAbstractItems(data[entityName], pageId);
-					break;
-				}
-				case Page_saveVal:{
-					pageIdRes=Page_listVal;
-					service->postAbstractItems(data[entityName], pageId);
-					break;
+				if(requestStatus<300){
+					//generate result
+					if(root.containsKey(entityName)){
+						root.remove(entityName);
+					}
+
+					JsonArray& items=root.createNestedArray(entityName);
+					requestStatus = service->getAbstractItems(items, pageIdRes);
 				}
 			}
-			startGet=millis();
-
-			//generate result
-			if(root.containsKey(entityName)){
-				root.remove(entityName);
-			}
-
-			JsonArray& items=root.createNestedArray(entityName);
-			service->getAbstractItems(items, pageIdRes);
-
-			entity["httpStatus"]=200;
+			entity[FPSTR(HTTP_STATUS_TAG)]=requestStatus;
+			entity[FPSTR(HTTP_STATUS_DETAILS_TAG)]=requestText;
 
 			endGet=millis();
 		}else{
-
+			requestStatus = HTTP_CODE_BAD_REQUEST;
+			requestText = FPSTR(STATUS_NO_ENTITY);
 		}
 
 		String result;
 		root.printTo(result);
 		endPrint=millis();
 
-		Serial.println(FPSTR("Entity ...done"));
-		Serial.print(" ParseTime=");
+		Serial.print(FPSTR("Entity ...done"));
+		/*Serial.print(" ParseTime=");
 		Serial.print(endParse-startParse);
 		Serial.print(" PostTime=");
 		Serial.print(startGet-startParse);
@@ -337,19 +338,17 @@ String DeviceHelper::processJsonAsEntity(String json) {
 		Serial.print(endGet-startParse);
 		Serial.print(" PrintTime=");
 		Serial.println(endPrint-startParse);
-		Serial.println(result);
+		Serial.println(result);*/
+		Serial.print(FPSTR(" TotalTime ="));
+		Serial.print(millis()-startParse);
 
-		Serial.print(FPSTR("TotalTime ="));
-		Serial.println(millis()-startParse);
+		Serial.print(FPSTR(" status ="));
+		Serial.print(requestStatus);
+
 		printHeap();
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 
 		return result;
-}
-
-String DeviceHelper::processEntityServiceError(String json) {
-	//TODO: construct detailed error JSON here; Better return StatusMessage
-	return json;
 }
 
 EntityService* DeviceHelper::getEntityServiceById(uint8_t id) {
@@ -376,12 +375,6 @@ const char*  DeviceHelper::getEntityNameById(uint8_t id) {
 
 int DeviceHelper::getEntityIdByName(const char*  name) {
 	for(uint8_t i=0;i<3;i++){
-		/*Serial.print(FPSTR("name="));
-		Serial.print(name);
-		Serial.print(FPSTR(" ENTITY_NAME[i]"));
-		Serial.println(ENTITY_NAME[i]);
-*/
-
 		if(strcmp(ENTITY_NAME[i],name)==0){
 			return i;
 		}
@@ -420,79 +413,19 @@ void DeviceHelper::checkResetPin(int resetPin) {
 		  }
 	  }
 }
-/*
-	uint8_t initializableCount=0;
-	uint8_t loopableCount=0;
-	uint8_t JSONprocessorCount=0;
-	uint8_t JSONproviderCount=0;
-	uint8_t AbstractSensorCount=0;
-	uint8_t SendAbleCount=0;
-	uint8_t SendAbleAbstractSensorsCount=0;
 
-	for(uint8_t i=0;i<ARRAY_SIZE(allItems);i++){
-
-		//DeviceLibable* d=allItems[i];
-		//dynamic_cast<Initializable&>(d);
-		//Initializable& init=dynamic_cast<Initializable&>(d);
-		//reinterpret_cast<Initializable&>(d);
-
-		if ( implements( allItems[i], Initializable) ){
-			initializableCount++;
+EntityService* DeviceHelper::getEntityServiceByIdName(uint8_t id, String entityName) {
+	switch (id){
+		case Entity_sensors:{
+			return this;
+			break;
 		}
-		if ( implements( allItems[i], Loopable) ){
-			loopableCount++;
+		case Entity_settings:{
+			return espSettingsBox;
+			break;
 		}
-		if ( implements( allItems[i], JSONprocessor ) ){
-			JSONprocessorCount++;
+		default:{
+			return getEntityServiceByName(entityName);
 		}
-		if ( implements( allItems[i], JSONprovider ) ){
-			JSONproviderCount++;
-		}
-		if ( implements( allItems[i], AbstractSensor ) ){
-			AbstractSensorCount++;
-		}
-		if ( implements( allItems[i], SendAble ) ){
-			SendAbleCount++;
-		}
-		if ( implements( allItems[i], SendAbleAbstractSensors ) ){
-			SendAbleAbstractSensorsCount++;
-		}
-
-	}*/
-
-/*
-String getJson(JSONprovider** sensors,uint8_t size);
-String getJsonAbstractSensors(AbstractSensor** sensors,uint8_t size);
-
-String DeviceHelper::getJson(JSONprovider** providers, uint8_t size) {
-	yield();
-		String result="{\"sensors\":[";
-
-			for(uint8_t i=0;i<size;i++){
-				delay(1);
-				result+=providers[i]->getJson();
-				if(i!=size-1){
-					result+=",";
-				}
-			}
-		result+="]}";
-
-		return result;
+	}
 }
-
-String DeviceHelper::getJsonAbstractSensors(AbstractSensor** sensors, uint8_t size) {
-	yield();
-		String result="{\"sensors\":[";
-
-			for(uint8_t i=0;i<size;i++){
-				delay(1);
-				result+=sensors[i]->getJson();
-				if(i!=size-1){
-					result+=",";
-				}
-			}
-		result+="]}";
-
-		return result;
-}
-*/
