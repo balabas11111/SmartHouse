@@ -9,7 +9,6 @@
 #define LIBRARIES_HELPERS_NTPTIMECLIENTSERVICE_H_
 
 #include "interfaces/Initializable.h"
-#include "interfaces/JSONprovider.h"
 #include "interfaces/Loopable.h"
 
 #include "EspSettingsBox.h"

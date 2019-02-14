@@ -10,8 +10,6 @@
 
 #include "Arduino.h"
 #include "StatusMessage/StatusMessage.h"
-#include "AbstractSensor.h"
-
 #include "interfaces/Nameable.h"
 
 class SendAble:public Nameable {

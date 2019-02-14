@@ -27,6 +27,8 @@ public:
 	virtual boolean checkNamePage(String name,String page){
 		return checkName(name) && checkPage(page);
 	}
+protected:
+	String name;
 };
 
 #endif /* LIBRARIES_DEVICELIB_NAMEABLE_H_ */

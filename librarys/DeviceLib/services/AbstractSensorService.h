@@ -8,7 +8,7 @@
 #ifndef LIBRARIES_DEVICELIB_SERVICES_ABSTRACTSENSORSERVICE_H_
 #define LIBRARIES_DEVICELIB_SERVICES_ABSTRACTSENSORSERVICE_H_
 
-#include <AbstractSensor.h>
+#include <sensors/AbstractSensorList.h>
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
@@ -24,20 +24,20 @@ const PROGMEM char SLASH[]="/";
 
 class AbstractSensorService: public EntityService {
 public:
-	AbstractSensorService(AbstractSensor** sensors,uint8_t sensorsSize);
+	AbstractSensorService(AbstractSensorList* sensors);
 	virtual ~AbstractSensorService();
 
 	//boolean startSensors();
 
-	AbstractSensor** getSensors();
+	AbstractSensorList* getSensors();
 	uint8_t getSensorsCount();
 
 	uint8_t getEntityId();
 
 	void printAbstractSensorServiceDetails();
 
-	AbstractSensor* getSensorByName(String sensorName);
-	AbstractSensor* getSensorById(uint8_t sensorId);
+	//AbstractSensor* getSensorByName(String sensorName);
+	//AbstractSensor* getSensorById(uint8_t sensorId);
 
 	int getEntityIdByName(String name);
 
@@ -58,15 +58,13 @@ public:
 	virtual int postAbstractItems(JsonArray& items,uint8_t pageId) override;
 
 protected:
-	boolean loadSensorSettingsFromFile(AbstractSensor** sensors,uint8_t size);
-	boolean saveSensorSettingsToFile(AbstractSensor** sensors,uint8_t size);
+	boolean loadSensorListFromFile(AbstractSensorList*);
+	boolean saveSensorListToFile(AbstractSensorList*);
 
 	static String getAbstractSensorFilePreffix(AbstractSensor* sensor);
 
 private:
-	AbstractSensor** sensors;
-	uint8_t sensorsCount;
-
+	AbstractSensorList* sensors;
 };
 
 #endif /* LIBRARIES_DEVICELIB_SERVICES_ABSTRACTSENSORSERVICE_H_ */

@@ -8,11 +8,11 @@
 #ifndef LIBRARIES_SENSORSLIB_DS18D20_SENSOR_H_
 #define LIBRARIES_SENSORSLIB_DS18D20_SENSOR_H_
 
+#include <AbstractSensorOld.h>
 #include "Arduino.h"
 #include "OneWire.h"
 #include "DallasTemperature.h"
 
-#include "AbstractSensor.h"
 #include "interfaces/Initializable.h"
 
 #include "ESP_Consts.h"

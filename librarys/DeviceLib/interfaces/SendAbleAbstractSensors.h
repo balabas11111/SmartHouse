@@ -8,9 +8,9 @@
 #ifndef LIBRARIES_DEVICELIB_INTERFACES_SENDABLEABSTRACTSENSORS_H_
 #define LIBRARIES_DEVICELIB_INTERFACES_SENDABLEABSTRACTSENSORS_H_
 
+#include <sensors/AbstractSensorList.h>
 #include "Arduino.h"
 #include "interfaces/SendAble.h"
-#include "AbstractSensor.h"
 #include "StatusMessage/StatusMessage.h"
 
 class SendAbleAbstractSensors: public SendAble {
@@ -18,29 +18,27 @@ public:
 	SendAbleAbstractSensors(){};
 	virtual ~SendAbleAbstractSensors(){};
 
-	void setItems(AbstractSensor** items,uint8_t size){
+	void setItems(AbstractSensorList* sensors){
 		Serial.println(FPSTR("Set abstract items TH helper"));
-		this->abstrItems=items;
-		this->abstrItemsSize=size;
+		this->sensors=sensors;
 	}
 
 	virtual StatusMessage send() override{
-		return sendItems(getItems(), getItemsSize());
+		return sendItems(getItems());
 	}
 
-	virtual StatusMessage sendItems(AbstractSensor** items,uint8_t size)=0;
+	virtual StatusMessage sendItems(AbstractSensorList*)=0;
 
 protected:
-	AbstractSensor** getItems(){
-		return this->abstrItems;
+	AbstractSensorList* getItems(){
+		return this->sensors;
 	}
 
 	uint8_t getItemsSize(){
-		return abstrItemsSize;
+		return sensors->getSize();
 	}
 private:
-	AbstractSensor** abstrItems;
-	uint8_t abstrItemsSize;
+	AbstractSensorList* sensors;
 };
 
 #endif /* LIBRARIES_DEVICELIB_INTERFACES_SENDABLEABSTRACTSENSORS_H_ */

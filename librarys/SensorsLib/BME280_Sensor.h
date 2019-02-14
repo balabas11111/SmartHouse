@@ -8,12 +8,12 @@
 #ifndef LIBRARIES_SENSOR_BME280_SENSOR_H_
 #define LIBRARIES_SENSOR_BME280_SENSOR_H_
 
+#include <AbstractSensorOld.h>
 #include "Arduino.h"
 #include "Adafruit_BME280.h"
 #include "Adafruit_Sensor.h"
 
 #include "interfaces/Initializable.h"
-#include "AbstractSensor.h"
 #include "ESP_Consts.h"
 
 #define BME280_ID 200

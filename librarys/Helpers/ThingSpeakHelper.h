@@ -8,10 +8,10 @@
 #ifndef LIBRARIES_HELPERS_THINGSPEAKHELPER_H_
 #define LIBRARIES_HELPERS_THINGSPEAKHELPER_H_
 
+#include <AbstractSensorOld.h>
 #include "Arduino.h"
 #include "EspSettingsBox.h"
 #include "WiFiHelper.h"
-#include "AbstractSensor.h"
 #include "StatusMessage/StatusMessage.h"
 #include "ESP_Consts.h"
 #include "Consts/CommandsConsts.h"

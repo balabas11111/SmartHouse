@@ -8,10 +8,10 @@
 #ifndef LIBRARIES_TIMETRIGGER_MQTTHELPER_H_
 #define LIBRARIES_TIMETRIGGER_MQTTHELPER_H_
 
+#include <AbstractSensorOld.h>
 #include "Arduino.h"
 #include <EspSettingsBox.h>
 #include <PubSubClient.h>
-#include "AbstractSensor.h"
 #include "interfaces/Loopable.h"
 #include "interfaces/Initializable.h"
 #include <functional>

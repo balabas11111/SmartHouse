@@ -20,8 +20,6 @@
 #include "Consts/CommandsConsts.h"
 
 #include "interfaces/Initializable.h"
-#include "interfaces/JSONprocessor.h"
-#include "interfaces/JSONprovider.h"
 #include "interfaces/EntityService.h"
 
 #include "services/AbstractSensorService.h"
@@ -31,7 +29,7 @@
 
 const PROGMEM char EspSettingsBox_NAME[] = "espSettingsBox";
 
-class EspSettingsBox: public Initializable, public JSONprocessor , public JSONprovider,
+class EspSettingsBox: public Initializable,
 	public ExtraSettingsBoxService, public EntityService {
 
 public:

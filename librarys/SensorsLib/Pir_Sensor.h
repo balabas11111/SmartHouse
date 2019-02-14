@@ -14,7 +14,7 @@
 #include "Arduino.h"
 #include "TimeTrigger.h"
 #include "interfaces/Loopable.h"
-#include "AbstractSensor.h"
+#include <AbstractSensorOld.h>
 
 const PROGMEM char PirSensor_name[]="PirSensor";
 const PROGMEM char PirSensor_descr[]="Датчик движения";

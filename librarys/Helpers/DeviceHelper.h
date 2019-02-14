@@ -8,9 +8,8 @@
 #ifndef LIBRARIES_PINDIGITAL_DeviceHelper_H_
 #define LIBRARIES_PINDIGITAL_DeviceHelper_H_
 
+#include <AbstractSensorOld.h>
 #include <Arduino.h>
-
-#include "AbstractSensor.h"
 
 #include "Consts/PagesConsts.h"
 #include "Consts/CommandsConsts.h"

@@ -5,11 +5,11 @@
  *      Author: Vitaliy
  */
 
+#include <AbstractSensorOld.h>
 #include "Arduino.h"
 #include "PinDigital.h"
 #include "TimeTrigger.h"
 #include <FunctionalInterrupt.h>
-#include "AbstractSensor.h"
 
 PinDigital::~PinDigital(){}
 

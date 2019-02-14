@@ -8,8 +8,8 @@
 #ifndef LIBRARIES_DEVICELIB_SERVICES_ALARM_ABSTRACTSENSOR_ALARMSERVICE_H_
 #define LIBRARIES_DEVICELIB_SERVICES_ALARM_ABSTRACTSENSOR_ALARMSERVICE_H_
 
+#include <AbstractSensorOld.h>
 #include <Arduino.h>
-#include <AbstractSensor.h>
 
 
 class AbstractSensor_AlarmService {

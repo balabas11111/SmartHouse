@@ -10,28 +10,29 @@
 
 #include "Arduino.h"
 #include "ESP_Consts.h"
-#include "interfaces/JSONprovider.h"
 
-//Abstract sensor constants
+#include "interfaces/Nameable.h"
 
-const char FIELD_FIELDS[] PROGMEM = "items"; //Json tag to be used as sensorValue array tag
+//Abstract sensor fields
+const char SENSOR_FIELD_id[]    PROGMEM = "id";
+const char SENSOR_FIELD_name[]  PROGMEM = "name";
+const char SENSOR_FIELD_type[]  PROGMEM = "type";
+const char SENSOR_FIELD_size[]  PROGMEM = "size";
+const char SENSOR_FIELD_descr[] PROGMEM = "descr";
+const char SENSOR_FIELD_val[]   PROGMEM = "val";
 
-const char FIELD_id[]    PROGMEM = "id";
-const char FIELD_name[]  PROGMEM = "name";
-const char FIELD_type[]  PROGMEM = "type";
-const char FIELD_size[]  PROGMEM = "size";
-const char FIELD_descr[] PROGMEM = "descr";
-const char FIELD_val[]   PROGMEM = "val";
+const char SENSOR_FIELD_fieldId[]    PROGMEM = "fieldId";
+const char SENSOR_FIELD_minVal[]     PROGMEM = "minVal";
+const char SENSOR_FIELD_maxVal[]     PROGMEM = "minVal";
+const char SENSOR_FIELD_setAllowed[] PROGMEM = "setAllowed";
 
-const char FIELD_fieldId[]    PROGMEM = "fieldId";
-const char FIELD_minVal[]     PROGMEM = "minVal";
-const char FIELD_maxVal[]     PROGMEM = "minVal";
-const char FIELD_setAllowed[] PROGMEM = "setAllowed";
+//Abstract sensor Kinds
+const char SENSOR_KIND_pinDigital[] PROGMEM = "pinDigital";
+const char SENSOR_KIND_sensor[]     PROGMEM = "sensor";
 
-const char* const ABSTRACT_SENSOR_FIELDS_SET_ALLOWED[] PROGMEM = {"items"};
+class AbstractSensorOld:public Nameable{
 
-class AbstractSensor: public JSONprovider {
-
+public:
 	struct childRecords{
 			uint8_t id;
 			String name;
@@ -47,9 +48,7 @@ class AbstractSensor: public JSONprovider {
 		};
 	typedef struct childRecords SensorValue;
 
-public:
-
-	AbstractSensor(uint8_t id,String name,String type,String size,String descr, uint8_t itemCount,float val=NULL){
+	AbstractSensorOld(uint8_t id,String name,String type,String size,String descr, uint8_t itemCount,float val=NULL){
 		this->id=id;
 		this->name=name;
 		this->type=type;
@@ -60,7 +59,7 @@ public:
 
 		initializeChildren();
 	}
-	virtual ~AbstractSensor(){};
+	virtual ~AbstractSensorOld(){};
 
 	virtual String getKind()=0;
 
@@ -75,40 +74,6 @@ public:
 	virtual void update(){};
 
 	virtual boolean loop(){return false;};
-
-	virtual String getJsonForSave(){
-		return getJson();
-	}
-
-	virtual String getJson(){
-		String result="{"+getItemJson()+",\"items\":[";
-
-			for(uint8_t i=0;i<itemCount;i++){
-				result+=getSensorValueJson(items[i],i);
-				if(i!=itemCount-1){
-					result+=",";
-				}
-			}
-
-			result+="]}";
-
-		return result;
-	}
-
-	virtual String getSimpleJson(){
-		String result="{"+getItemJson()+",\"items\":[";
-
-					for(uint8_t i=0;i<itemCount;i++){
-						result+=getSensorValueSimpleJson(items[i]);
-						if(i!=itemCount-1){
-							result+=",";
-						}
-					}
-
-					result+="]}";
-
-			return result;
-	}
 
 	virtual String getJson(uint8_t id){
 		return getSensorValueJson(items[id],id);
@@ -237,14 +202,10 @@ public:
 		return periodicSend;
 	}
 
-	boolean getProcessValueFromMqtt(){
-		return processValueFromMqtt;
-	}
-
 	boolean getAutoCreateChannel(){
 		return autoCreateChannel;
 	}
-
+/*
 	String constructGetUrl(String baseUrl,String paramVal){
 		if(!this->periodicSend){
 				return "";
@@ -264,7 +225,7 @@ public:
 
 			return "";
 	}
-
+*/
 	void printValues(){
 		Serial.print(FPSTR(MESSAGE_ABSTRACT_ITEM_NAME_EQ));
 		Serial.print(name);
@@ -276,35 +237,6 @@ public:
 			Serial.print(FPSTR(MESSAGE_DOT_COMMA_SPACE));
 		}
 		Serial.println();
-	}
-
-	boolean checkForAlarm(){
-		boolean result=false;
-
-		for(uint8_t i=0;i<itemCount;i++){
-			result=checkItemForAlarm(i) || result;
-		}
-
-		return result;
-	}
-
-	String generateAlarmText(){
-		if(!checkForAlarm()){
-			return "";
-		}
-
-		String result="";
-
-		for(uint8_t i=0;i<itemCount;i++){
-			if(items[i].val>=items[i].maxVal){
-				result+=constructAlarmMessage(" "+items[i].descr,FPSTR(MESSAGE_ABSTRACT_ITEM_CURRENT_VAL_EQ),items[i].val,FPSTR(MESSAGE_ABSTRACT_ITEM_MAX_SPECIFIED_VAL_EQ),items[i].maxVal);
-			}
-			if(items[i].val<=items[i].minVal){
-				result+=constructAlarmMessage(" "+items[i].descr,FPSTR(MESSAGE_ABSTRACT_ITEM_CURRENT_VAL_EQ),items[i].val,FPSTR(MESSAGE_ABSTRACT_ITEM_MIN_SPECIFIED_VAL_EQ),items[i].maxVal);
-			}
-		}
-
-		return result;
 	}
 
 	boolean getStatus(){
@@ -367,7 +299,6 @@ protected:
 	uint8_t itemCount;
 
 	boolean periodicSend=true;
-	boolean processValueFromMqtt=false;
 	boolean autoCreateChannel=true;
 
 	SensorValue* items;

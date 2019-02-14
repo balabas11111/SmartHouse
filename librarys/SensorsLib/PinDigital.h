@@ -8,10 +8,10 @@
 #ifndef LIBRARIES_PINEVENT_PINDIGITAL_H_
 #define LIBRARIES_PINEVENT_PINDIGITAL_H_
 
+#include <AbstractSensorOld.h>
 #include "Arduino.h"
 #include "TimeTrigger.h"
 #include <FunctionalInterrupt.h>
-#include <AbstractSensor.h>
 #include <interfaces/Loopable.h>
 
 const PROGMEM char PinDigital_name[]="PinDigital";

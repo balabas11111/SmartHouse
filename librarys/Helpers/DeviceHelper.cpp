@@ -19,7 +19,7 @@
 #include <interfaces/Loopable.h>
 #include <interfaces/JSONprocessor.h>
 #include <interfaces/JSONprovider.h>
-#include <AbstractSensor.h>
+#include <AbstractSensorOld.h>
 #include <interfaces/SendAble.h>
 #include <interfaces/SendAbleAbstractSensors.h>
 #include <interfaces/EntityService.h>

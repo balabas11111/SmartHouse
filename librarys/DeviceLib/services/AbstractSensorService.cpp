@@ -11,55 +11,37 @@
 #include <utils/FileUtils.h>
 #include <FS.h>
 
-AbstractSensorService::AbstractSensorService(AbstractSensor** sensors,uint8_t sensorsSize) {
+AbstractSensorService::AbstractSensorService(AbstractSensorList* sensors) {
 	this->sensors=sensors;
-	this->sensorsCount=sensorsSize;
 }
 
 AbstractSensorService::~AbstractSensorService(){}
 
-AbstractSensor** AbstractSensorService::getSensors(){
-	return sensors;
+AbstractSensorList* AbstractSensorService::getSensors(){
+	return this->sensors;
 }
 
 uint8_t AbstractSensorService::getSensorsCount() {
-	return sensorsCount;
+	return this->sensors->getSize();
 }
-
+/*
 AbstractSensor* AbstractSensorService::getSensorById(uint8_t sensorId){
-	if(getSensorsCount()<1 || sensorId>getSensorsCount()-1){
-		Serial.print(FPSTR("Bad Sensor index="));
-		Serial.println(sensorId);
-
-		return NULL;
-	}
-
-	return sensors[sensorId];
+	return sensors->getItemById(sensorId);
 }
 
 AbstractSensor* AbstractSensorService::getSensorByName(String sensorName){
-	if(getSensorsCount()<1){
-		return NULL;
-	}
-
-	for(uint8_t i=0;i<getSensorsCount();i++){
-		if(sensors[i]->getName()==sensorName){
-			return sensors[i];
-		}
-	}
-
-	return NULL;
+	return sensors->getItemByName(sensorName);
 }
-
+*/
 boolean AbstractSensorService::loadSensors() {
-	return loadSensorSettingsFromFile(sensors, sensorsCount);
+	return loadSensorListFromFile(sensors);
 }
 
 boolean AbstractSensorService::saveSensors() {
-	return saveSensorSettingsToFile(sensors, sensorsCount);
+	return saveSensorListToFile(sensors);
 }
 
-boolean AbstractSensorService::loadSensorSettingsFromFile(AbstractSensor** sensors,uint8_t size) {
+boolean AbstractSensorService::loadSensorListFromFile(AbstractSensorList* list) {
 	boolean result=true;
 
 	for(uint8_t i=0;i<size;i++){
@@ -74,7 +56,7 @@ boolean AbstractSensorService::loadSensorSettingsFromFile(AbstractSensor** senso
 	return result;
 }
 
-boolean AbstractSensorService::saveSensorSettingsToFile(AbstractSensor** sensors,uint8_t size) {
+boolean AbstractSensorService::saveSensorListToFile(AbstractSensorList* list) {
 	boolean result=true;
 	for(uint8_t i=0;i<size;i++){
 		result=saveAbstractSensorToFile(sensors[i]) && result;
@@ -293,12 +275,6 @@ int AbstractSensorService::getAbstractItems(JsonArray& items, uint8_t pageId) {
 			return HTTP_CODE_NOT_IMPLEMENTED;
 		}
 	}
-/*
-	Serial.print(FPSTR("Execute sensors GET count="));
-	Serial.print(getSensorsCount());
-	Serial.print(FPSTR(" allFields="));
-	Serial.println(allFields);
-*/
 
 	for(uint8_t i=0;i<getSensorsCount();i++){
 
@@ -309,10 +285,7 @@ int AbstractSensorService::getAbstractItems(JsonArray& items, uint8_t pageId) {
 			Serial.print(FPSTR("sensor not found id="));
 			Serial.println(i);
 			continue;
-		}/*else{
-			Serial.print(FPSTR("sensor="));
-			Serial.println(sens->getName());
-		}*/
+		}
 
 		if(!item.success()){
 			Serial.println(FPSTR("Json item is invalid"));

@@ -88,6 +88,7 @@ public:
 
 	//All items from &items array will be processed by service
 	virtual int postAbstractItems(JsonArray& items,uint8_t pageId)=0;
+
 };
 
 
