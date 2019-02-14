@@ -10,21 +10,21 @@
 
 #include <Arduino.h>
 
-#include <interfaces/ArrayList.h>
+#include <interfaces/ArrayListSearchAble.h>
 #include <interfaces/ChangeDispatchable.h>
 
 #include <sensors/AbstractSensor.h>
 
-class AbstractSensorList: public ArrayList<AbstractSensor>, public ChangeDispatchable {
+class AbstractSensorList: public ArrayListSearchAble<AbstractSensor>, public ChangeDispatchable {
 public:
 
 	AbstractSensorList();
 	AbstractSensorList(uint8_t initSize);
 	virtual ~AbstractSensorList(){};
 
-	AbstractSensor* getItemById(int id);
-	AbstractSensor* getItemByName(String name);
-	AbstractSensor* getItemByHash(String hash);
+	AbstractSensor* getItemById(int id) override;
+	AbstractSensor* getItemByName(String name) override;
+	AbstractSensor* getItemByHash(String hash) override;
 
 	boolean getChanged() override;
 };
