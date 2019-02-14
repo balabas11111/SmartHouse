@@ -10,13 +10,8 @@
 
 #include <Arduino.h>
 
-#include <interfaces/ArrayList.h>
-#include <interfaces/ChangeDispatchable.h>
-#include <interfaces/Identifiable.h>
+#include <interfaces/Entity.h>
 #include <interfaces/Loopable.h>
-#include <interfaces/Nameable.h>
-#include <interfaces/Updateable.h>
-
 
 #include <sensors/AbstractSensorValue.h>
 #include <sensors/AbstractSensorValueList.h>
@@ -35,8 +30,7 @@ enum SensorStatus: uint8_t {
 const char SENSOR_KIND_pinDigital[] PROGMEM = "pinDigital";
 const char SENSOR_KIND_sensor[]     PROGMEM = "sensor";
 
-class AbstractSensor: public Identifiable, public Nameable, public HashAble,
-						   public JsonSetGetAble, public ChangeDispatchable  {
+class AbstractSensor: public Entity, public JsonSetGetAble  {
 public:
 	AbstractSensor(uint8_t id,String name,String type,String size,String descr, uint8_t childCount,float val=NULL);
 	virtual ~AbstractSensor(){};
@@ -52,7 +46,7 @@ public:
 
 	AbstractSensorValueList* getChilds();
 
-	uint8_t getStatus() const;
+	uint8_t getStatus();
 
 	virtual int set(JsonObject& item);
 	virtual int get(JsonObject& item);
@@ -61,7 +55,7 @@ protected:
 	void initChildren(int childCount);
 
 private:
-	uint8_t status=SensorStatus_notInit;
+	uint8_t curStatus;
 	AbstractSensorValue* header;
 
 	AbstractSensorValueList* childs;

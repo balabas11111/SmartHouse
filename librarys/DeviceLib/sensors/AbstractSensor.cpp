@@ -15,14 +15,14 @@ AbstractSensor::AbstractSensor(uint8_t id, String name, String type,
 	Serial.print(FPSTR(" childCount="));
 	Serial.print(childCount);
 
-	this->status=SensorStatus_init;
+	curStatus=SensorStatus_init;
 
 	this->header=new AbstractSensorValue(id,name,type,size,descr,val);
 	this->childs=new AbstractSensorValueList(childCount);
 
 	initChildren(childCount);
 
-	this->status=SensorStatus_initComplete;
+	curStatus=SensorStatus_initComplete;
 }
 
 uint8_t AbstractSensor::getId() {
@@ -52,8 +52,8 @@ AbstractSensorValueList* AbstractSensor::getChilds() {
 	return this->childs;
 }
 
-uint8_t AbstractSensor::getStatus() const {
-	return this->status;
+uint8_t AbstractSensor::getStatus(){
+	return this->curStatus;
 }
 
 String AbstractSensor::getHashableString() {

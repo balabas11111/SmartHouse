@@ -23,7 +23,7 @@ uint8_t AbstractSensorValue::getId(){
 	return id;
 }
 
-String& AbstractSensorValue::getName(){
+String AbstractSensorValue::getName(){
 	return name;
 }
 
@@ -161,7 +161,7 @@ boolean AbstractSensorValue::setByFieldName(String fieldName, String fieldVal) {
 }
 
 //HashAble impl
-String& AbstractSensorValue::getHashableString() {
+String AbstractSensorValue::getHashableString() {
 	return getName();
 }
 //JsonSetGetAble implementations

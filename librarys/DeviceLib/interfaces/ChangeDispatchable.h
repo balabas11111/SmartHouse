@@ -12,6 +12,7 @@
 
 class ChangeDispatchable {
 public:
+	virtual ~ChangeDispatchable(){};
 
 	virtual boolean getChanged(){
 		return this->changed;

@@ -10,7 +10,7 @@
 
 #include <Arduino.h>
 
-#include <interfaces/ArrayListSearchAble.h>
+#include <list/ArrayListSearchAble.h>
 #include <interfaces/ChangeDispatchable.h>
 
 #include <sensors/AbstractSensorValue.h>
@@ -19,13 +19,7 @@ class AbstractSensorValueList: public ArrayListSearchAble<AbstractSensorValue>, 
 public:
 	AbstractSensorValueList();
 	AbstractSensorValueList(uint8_t initSize);
-	virtual ~AbstractSensorValueList(){};
-
-	AbstractSensorValue* getItemById(int id) override;
-	AbstractSensorValue* getItemByName(String name) override;
-	AbstractSensorValue* getItemByHash(String hash) override;
-
-	boolean getChanged() override;
+	//virtual ~AbstractSensorValueList(){};
 };
 
 #endif /* LIBRARIES_DEVICELIB_SENSORS_ABSTRACTSENSORVALUELIST_H_ */

@@ -14,8 +14,7 @@
 #include "EspSettingsBox.h"
 
 #include "interfaces/Initializable.h"
-#include "interfaces/JSONprovider.h"
-#include "interfaces/JSONprocessor.h"
+
 #include "interfaces/Loopable.h"
 #include "interfaces/EntityService.h"
 
@@ -69,7 +68,7 @@ const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_OK[]                   = "{\"sta
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR[]                = "{\"status\":\"Error\",\"item\":\"Error update time Interval\"}";
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR_MISSING_PARAMS[] = "{\"status\":\"Error\",\"item\":\"Required params missing\"}";
 
-class TimeIntervalService: public Initializable, public Loopable, public JSONprovider, public JSONprocessor, public EntityService {
+class TimeIntervalService: public Initializable, public Loopable, public EntityService {
 public:
 	virtual ~TimeIntervalService(){};
 
@@ -100,7 +99,7 @@ public:
 		return initialized;
 	}
 
-	uint8_t getEntityId(){
+	uint8_t getEntityId() override{
 		return Entity_timeIntervals;
 	}
 
@@ -152,26 +151,6 @@ public:
 		}
 
 		return items[ind];
-	}
-
-	virtual String getName() override{
-		return FPSTR(TimeIntervalService_NAME);
-	}
-
-	virtual String getJson() override{
-		String result="{"+getItemJson()
-		+ ",\"intervals\":[";
-
-			for(uint8_t i=0;i<itemCount;i++){
-					result+=getItemJson(i);
-					if(i!=itemCount-1){
-						result+=",";
-					}
-			}
-
-			result+="]}";
-
-		return result;
 	}
 
 	boolean isNotIntervalIdValid(uint8_t id){
@@ -567,7 +546,7 @@ public:
 	boolean saveToFile(){
 		Serial.println();
 		String fileName=EspSettingsUtil::getExtraSettingsBoxFilePath(FPSTR(TimeIntervalService_FileName_NAME));
-		return EspSettingsUtil::saveStringToFile(fileName,getJson());
+		return false;//EspSettingsUtil::saveStringToFile(fileName,getJson());
 	}
 
 	String getStateName(uint8_t id){

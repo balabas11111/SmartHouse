@@ -8,21 +8,19 @@
 #ifndef LIBRARIES_HELPERS_THINGSPEAKHELPER_H_
 #define LIBRARIES_HELPERS_THINGSPEAKHELPER_H_
 
-#include <AbstractSensorOld.h>
 #include "Arduino.h"
 #include "EspSettingsBox.h"
 #include "WiFiHelper.h"
 #include "StatusMessage/StatusMessage.h"
 #include "ESP_Consts.h"
 #include "Consts/CommandsConsts.h"
-#include "interfaces/JSONprocessor.h"
 #include "interfaces/SendAbleAbstractSensors.h"
 
 #include "extraBoxes/EspSett_ThSpeak.h"
 
 const PROGMEM char ThingSpeakHelper_NAME[] = "thingSpeakHelper";
 
-class ThingSpeakHelper: public JSONprocessor, public SendAbleAbstractSensors{
+class ThingSpeakHelper: public SendAbleAbstractSensors{
 public:
 	ThingSpeakHelper(EspSettingsBox* espSettingsBox,WiFiHelper* wifiHelper){
 		this->espSettingsBox=espSettingsBox;
@@ -34,11 +32,11 @@ public:
 		return FPSTR(ThingSpeakHelper_NAME);
 	}
 
-	StatusMessage sendItems(AbstractSensor** items,uint8_t size) override{
+	StatusMessage sendItems(AbstractSensorList* list) override{
 
 		if(espSettingsBox->getExtraValueBoolean(ExtraBox_thingSpeak,THINGSPEAK_enabled)
-				&& items!=nullptr
-				&& size!=0){
+				&& list!=nullptr
+				&& list->getSize()!=0){
 			Serial.println(FPSTR(MESSAGE_THINGSPEAK_SEND_STARTED));
 
 			uint8_t count=0;
@@ -46,8 +44,8 @@ public:
 			String baseUrl=FPSTR(MESSAGE_THINGSPEAK_BASE_URL);
 			String params="";
 
-			for(uint8_t i=0;i<size;i++){
-				params+=constructThingSpeakParameters(items[i]);
+			for(uint8_t i=0;i<list->getSize();i++){
+				params+=constructThingSpeakParameters(list->getItem(i));
 				if(params!=""){
 					count++;
 				}
@@ -72,20 +70,45 @@ public:
 	void sendAbstractSensorToThingSpeak(AbstractSensor* item){
 		String baseUrl=FPSTR(MESSAGE_THINGSPEAK_BASE_URL);
 			baseUrl+=espSettingsBox->getExtraValue(ExtraBox_thingSpeak,THINGSPEAK_writeKey);
-		String url=item->constructGetUrl(baseUrl, FPSTR(MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST_EQ));
+		String url=constructGetUrl(item,baseUrl, FPSTR(MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST_EQ));
 		wifiHelper->executeGetRequest(url);
 	}
 
 	String constructThingSpeakParameters(AbstractSensor* item){
-		return item->constructGetUrl("", FPSTR(MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST));
+		return constructGetUrl(item,"", FPSTR(MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST));
 	}
 
 	StatusMessage recreateThingSpeakChannelskWithCheckDefault(){
-		return recreateThingSpeakChannelskWithCheck(getItems(),getItemsSize());
+		return recreateThingSpeakChannelskWithCheck(sensors);
 	}
 
-	StatusMessage recreateThingSpeakChannelskWithCheck(AbstractSensor** items,uint8_t size){
-		if(size==0){
+	String constructGetUrl(AbstractSensor* sensor,String baseUrl,String paramValue){
+		return "";
+		/*
+			String constructGetUrl(String baseUrl,String paramVal){
+				if(!this->periodicSend){
+						return "";
+				}
+					String result="";
+
+					for(uint8_t i=0;i<this->itemCount;i++){
+						uint8_t fieldId=this->getFieldId(i);
+						if(fieldId!=0){
+							result+=paramVal+this->getFieldIdStr(i)+"="+this->getValStr(i);
+						}
+					}
+
+					if(result!=""){
+						return baseUrl+result;
+					}
+
+					return "";
+			}
+		*/
+	}
+
+	StatusMessage recreateThingSpeakChannelskWithCheck(AbstractSensorList* list){
+		if(list->getSize()==0){
 			return StatusMessage(STATUS_CONF_ERROR_INT,FPSTR(MESSAGE_THINGSPEAK_PUBLISH_NOT_ALLOWED));
 		}
 		if(!espSettingsBox->getExtraValueBoolean(ExtraBox_thingSpeak,THINGSPEAK_enabled)){
@@ -95,13 +118,23 @@ public:
 				|| espSettingsBox->getExtraValue(ExtraBox_thingSpeak,THINGSPEAK_userKey)==FPSTR(MESSAGE_THINGSPEAK_EMPTY_KEY)){
 			return StatusMessage(STATUS_CONF_ERROR_INT,FPSTR(MESSAGE_THINGSPEAK_NO_USER_SPECIFIED));
 		}else{
-			String message=recreateThingSpeak(items,size);
+			String message=recreateThingSpeak(list);
 			return StatusMessage(STATUS_OK_ACCEPTED_INT,message);
 		}
 
 	}
 
-	String recreateThingSpeak(AbstractSensor** items,uint8_t size){
+	boolean getCreateAutoChannel(AbstractSensor* sensor){
+		//TODO: implement this method
+		return false;
+	}
+
+	uint8_t getFieldId(AbstractSensor* sensor){
+		//TODO: implement this method
+		return 0;
+	}
+
+	String recreateThingSpeak(AbstractSensorList* sensors){
 		Serial.println(FPSTR(MESSAGE_THINGSPEAK_CHANNEL_CREATE_STARTED));
 		String result="";
 
@@ -111,20 +144,22 @@ public:
 		uint8_t countGet=0;
 		uint8_t countSet=0;
 
-		for(uint8_t i=0;i<size;i++){
-			AbstractSensor* item=items[i];
+		for(uint8_t i=0;i<sensors->getSize();i++){
+			AbstractSensor* item=sensors->getItem(i);
 
-			if(item->getAutoCreateChannel()){
-				for(uint8_t j=0;j<item->getItemCount();j++){
-					if(item->getFieldId(j)!=0){
+			if(getCreateAutoChannel(item)){
+				for(uint8_t j=0;j<item->getChilds()->getSize();j++){
+					uint8_t fieldId =getFieldId(item);
+
+					if(fieldId!=0){
 
 						countGet++;
 						commandGet+=FPSTR(MESSAGE_THINGSPEAK_FIELD_FOR_REQUEST);
-						commandGet+=item->getFieldIdStr(j);
+						commandGet+=String(fieldId);
 						commandGet+=FPSTR(MESSAGE_EQUALS);
-						commandGet+=item->getDescr(j);
+						commandGet+=item->getHeader()->getDescr();
 
-						if(item->getSetAllowed(j)){
+						if(item->getHeader()->getSetValAllowed()){
 							countSet++;
 						}
 					}
@@ -259,7 +294,10 @@ public:
 	}
 
 	StatusMessage processJson(String page,String json){
-		printProcessParams(page, json);
+		Serial.print(FPSTR("Page="));
+		Serial.print(page);
+		Serial.print(FPSTR(" json="));
+		Serial.print(json);
 
 		if(page==FPSTR(PAGE_MANAGE) && json==FPSTR(COMMAND_RECREATE_CHANNELS)){
 			return recreateThingSpeakChannelskWithCheckDefault();
@@ -268,10 +306,12 @@ public:
 		return StatusMessage(STATUS_UNKNOWN_INT);
 	}
 
+
+
 private:
 	EspSettingsBox* espSettingsBox;
 	WiFiHelper* wifiHelper;
-	AbstractSensor** sensors;
+	AbstractSensorList* sensors;
 };
 
 #endif /* LIBRARIES_HELPERS_THINGSPEAKHELPER_H_ */

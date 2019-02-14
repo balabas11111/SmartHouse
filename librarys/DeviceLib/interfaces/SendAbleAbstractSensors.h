@@ -24,13 +24,13 @@ public:
 	}
 
 	virtual StatusMessage send() override{
-		return sendItems(getItems());
+		return sendItems(getSensors());
 	}
 
 	virtual StatusMessage sendItems(AbstractSensorList*)=0;
 
 protected:
-	AbstractSensorList* getItems(){
+	AbstractSensorList* getSensors(){
 		return this->sensors;
 	}
 

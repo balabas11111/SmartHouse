@@ -10,9 +10,7 @@
 
 #include <Arduino.h>
 #include <interfaces/ChangeDispatchable.h>
-#include <interfaces/Identifiable.h>
-#include <interfaces/Nameable.h>
-#include <interfaces/HashAble.h>
+#include <interfaces/Entity.h>
 #include <interfaces/JsonSetGetAble.h>
 
 //Abstract SensorValue fields
@@ -25,30 +23,30 @@ const char SENSOR_FIELD_val[]   PROGMEM = "val";
 
 const char SENSOR_FIELD_hash[]   PROGMEM = "hash";
 
-const char* const SENSOR_VALUE_ALL_FIELDS_GET ={
+const char* const SENSOR_VALUE_ALL_FIELDS_GET[] PROGMEM = {
 		SENSOR_FIELD_id,SENSOR_FIELD_name,SENSOR_FIELD_type,SENSOR_FIELD_size,SENSOR_FIELD_descr,SENSOR_FIELD_val,SENSOR_FIELD_hash
 };
 
-const char* const SENSOR_VALUE_STATIC_FIELDS_GET ={
+const char* const SENSOR_VALUE_STATIC_FIELDS_GET[] PROGMEM = {
 		SENSOR_FIELD_id,SENSOR_FIELD_name,SENSOR_FIELD_type,SENSOR_FIELD_size,SENSOR_FIELD_descr
 };
 
-const char* const SENSOR_VALUE_VAL_FIELDS_GET ={
+const char* const SENSOR_VALUE_VAL_FIELDS_GET[] PROGMEM = {
 		SENSOR_FIELD_id,SENSOR_FIELD_name,SENSOR_FIELD_val,SENSOR_FIELD_hash
 };
-const char* const SENSOR_VALUE_FIELDS_SET ={
+const char* const SENSOR_VALUE_FIELDS_SET[] PROGMEM ={
 		SENSOR_FIELD_descr,SENSOR_FIELD_val
 };
 
 
-class AbstractSensorValue: public Identifiable,public Nameable,public HashAble,public JsonSetGetAble, public ChangeDispatchable{
+class AbstractSensorValue: public Entity,public JsonSetGetAble{
 public:
 	AbstractSensorValue(uint8_t id,String name,String type,String size,String descr,float val);
 	virtual ~AbstractSensorValue(){};
 
 	//getters
 	uint8_t getId() override;
-	String& getName() override;
+	String getName() override;
 
 	const String& getType() const;
 	const String& getSize() const;
@@ -73,7 +71,7 @@ public:
 	boolean setByFieldName(String fieldName,String fieldVal);
 
 	//HashAble impl
-	virtual String& getHashableString();
+	virtual String getHashableString();
 
 	//JsonSetGetAble implementations
 	virtual int set(JsonObject& item) override;

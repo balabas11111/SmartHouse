@@ -17,7 +17,9 @@
 
 class HashAble {
 public:
-	virtual String& getHashableString()=0;
+	virtual ~HashAble(){};
+
+	virtual String getHashableString()=0;
 
 	boolean checkHash(String hash){
 		return sha1(hash)==getHash();

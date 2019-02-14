@@ -9,7 +9,7 @@
 #define LIBRARIES_ESPSETTINGSBOX_EXTRABOXESLISTS_BASEEXTRABOXESLIST_H_
 
 #include <Arduino.h>
-#include <interfaces/ArrayList.h>
+#include <list/ArrayList.h>
 #include <ESPExtraSettingsBox.h>
 #include <extraBoxes/ESPSett_Ntp.h>
 #include <extraBoxes/ESPSett_Device.h>

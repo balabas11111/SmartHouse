@@ -71,8 +71,6 @@ public:
 	virtual int postAbstractItems(JsonArray& items,uint8_t pageId);
 
 	StatusMessage processJson(String page,String json){
-		printProcessParams(page, json);
-
 		if(page==FPSTR(PAGE_MANAGE) && json==FPSTR(COMMAND_DELETE_SETTINGS)){
 			int count=deleteSettingsFiles();
 

@@ -1,4 +1,3 @@
-#include <AbstractSensorOld.h>
 #include "Arduino.h"
 #include <Hash.h>
 
@@ -20,8 +19,7 @@
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266WiFi.h>
 
-#include "interfaces/JSONprovider.h"
-#include "interfaces/JSONprocessor.h"
+
 #include "interfaces/Loopable.h"
 #include "interfaces/SendAble.h"
 #include "interfaces/EntityService.h"
@@ -88,14 +86,16 @@ TimeIntervalService timeIntervalService(&espSettingsBox,&timeService,onTimeInter
 Loopable* loopArray[]={&wifi,&buttonMenu,&timeService,&displayHelper,
 						&pirDetector,&timeIntervalService,&beeperSerial};
 
-AbstractSensor* sensors[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
+AbstractSensor* sensorsArray[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
+AbstractSensorList sensors(sensorsArray);
+
 EntityService* services[]={&timeIntervalService};
 
 SendAble* senders[]={&thingSpeakHelper};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
 						  services,ARRAY_SIZE(services),
-						  sensors,ARRAY_SIZE(sensors),
+						  &sensors,
 						  senders,ARRAY_SIZE(senders),
 						  &espSettingsBox);
 

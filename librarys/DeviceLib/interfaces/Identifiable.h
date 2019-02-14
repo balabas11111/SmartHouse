@@ -12,6 +12,8 @@
 
 class Identifiable {
 public:
+	virtual ~Identifiable(){};
+
 	virtual uint8_t getId(){
 		return id;
 	}

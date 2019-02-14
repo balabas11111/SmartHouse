@@ -35,7 +35,7 @@ const char STATUS_WRONG_JSON[]    PROGMEM="Bad income Json";
 const char STATUS_NO_ENTITY[]     PROGMEM="No Entity in Json";
 
 //ids of all possible entity services
-enum Entity: uint8_t {
+enum EntityIds: uint8_t {
 	Entity_sensors, Entity_settings, Entity_commands, Entity_timeIntervals
 };
 const char* const ENTITY_NAME[] PROGMEM = {
@@ -71,6 +71,8 @@ const char* const PAGE_NAME[] PROGMEM = {
  */
 class EntityService{
 public:
+
+	virtual ~EntityService(){};
 
 	virtual uint8_t getEntityId()=0;
 

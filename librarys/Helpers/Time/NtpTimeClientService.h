@@ -41,7 +41,7 @@ const char NTP_TIME_CLIENT_RTC_DETAILS[] PROGMEM = "---RTC details---";
 const char NTP_TIME_CLIENT_UNIX_TIME_EQ[] PROGMEM = " unixTime=";
 const char NTP_TIME_CLIENT_DATE_TIME_EQ[] PROGMEM = " DateTime=";
 
-class NtpTimeClientService: public Initializable, public Loopable,public JSONprovider {
+class NtpTimeClientService: public Initializable, public Loopable {
 public:
 
 	NtpTimeClientService(EspSettingsBox* _espSettingsBox){

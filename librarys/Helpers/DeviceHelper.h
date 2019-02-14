@@ -8,15 +8,12 @@
 #ifndef LIBRARIES_PINDIGITAL_DeviceHelper_H_
 #define LIBRARIES_PINDIGITAL_DeviceHelper_H_
 
-#include <AbstractSensorOld.h>
 #include <Arduino.h>
 
 #include "Consts/PagesConsts.h"
 #include "Consts/CommandsConsts.h"
 
 #include "interfaces/Initializable.h"
-#include "interfaces/JSONprocessor.h"
-#include "interfaces/JSONprovider.h"
 #include "interfaces/Loopable.h"
 #include "interfaces/SendAble.h"
 #include "interfaces/Nameable.h"
@@ -34,13 +31,13 @@ class DeviceHelper:public Loopable, public AbstractSensorService{
 public:
 	DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
 			EntityService** services,uint8_t servicesSize,
-			AbstractSensor** sensors,uint8_t sensorsSize,
+			AbstractSensorList* sensors,
 			SendAble** senders,uint8_t sendersSize,
-			EspSettingsBox* espSettingsBox):AbstractSensorService(sensors,sensorsSize){
-		constr( loopItems,loopItemsSize,services,servicesSize,sensors, sensorsSize,senders,sendersSize,espSettingsBox);
+			EspSettingsBox* espSettingsBox):AbstractSensorService(sensors){
+		constr( loopItems,loopItemsSize,services,servicesSize,sensors, senders,sendersSize,espSettingsBox);
 	}
 
-	void constr (Loopable** loopItems,uint8_t loopItemsSize, EntityService** services,uint8_t servicesSize, AbstractSensor** sensors,uint8_t sensorsSize, SendAble** senders,uint8_t sendersSize, EspSettingsBox* espSettingsBox);
+	void constr (Loopable** loopItems,uint8_t loopItemsSize, EntityService** services,uint8_t servicesSize, AbstractSensorList* sensors, SendAble** senders,uint8_t sendersSize, EspSettingsBox* espSettingsBox);
 	void displayDetails();
 	boolean loop();
 

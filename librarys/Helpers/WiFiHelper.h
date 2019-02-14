@@ -29,7 +29,6 @@
 #endif
 
 #include <PinDigital.h>
-#include <AbstractSensorOld.h>
 #include <Display_Pageable/DisplayHelper.h>
 
 #include "extraBoxes/EspSett_Own.h"

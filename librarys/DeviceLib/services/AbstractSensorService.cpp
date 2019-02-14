@@ -302,11 +302,7 @@ int AbstractSensorService::getAbstractItems(JsonArray& items, uint8_t pageId) {
 			item["type"] = sens->getType();
 			item["size"] = sens->getSize();
 
-		}/*else{
-			Serial.println(FPSTR("Only base fields"));
 		}
-		Serial.println(FPSTR("process children"));
-		*/
 		JsonArray& itemChilds=item.createNestedArray(FPSTR(DEFAULT_CHILDREN_TAG));
 
 		for(uint8_t childId=0;childId<sens->getItemCount();childId++){
