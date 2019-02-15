@@ -11,10 +11,11 @@
 #include  <interfaces/ChangeDispatchable.h>
 #include  <interfaces/HashAble.h>
 #include  <interfaces/Identifiable.h>
+#include  <interfaces/JsonSetGetAble.h>
 #include  <interfaces/Nameable.h>
 
 
-class Entity: public Identifiable, public Nameable, public HashAble, public ChangeDispatchable {
+class Entity: public Identifiable, public Nameable, public HashAble, public ChangeDispatchable, public JsonSetGetAble {
 
 };
 

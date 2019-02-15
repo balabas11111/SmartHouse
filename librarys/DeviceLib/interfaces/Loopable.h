@@ -13,6 +13,8 @@
 class Loopable{
 
 public:
+	virtual ~Loopable(){};
+
 	virtual boolean loop(){return false;};
 	//virtual void displayDetails(){};
 };

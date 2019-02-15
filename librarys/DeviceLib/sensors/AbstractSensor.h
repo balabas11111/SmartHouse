@@ -9,6 +9,7 @@
 #define LIBRARIES_DEVICELIB_SENSORS_ABSTRACTSENSOR_H_
 
 #include <Arduino.h>
+#include <ArduinoJson.h>
 
 #include <interfaces/Entity.h>
 #include <interfaces/Loopable.h>
@@ -30,7 +31,7 @@ enum SensorStatus: uint8_t {
 const char SENSOR_KIND_pinDigital[] PROGMEM = "pinDigital";
 const char SENSOR_KIND_sensor[]     PROGMEM = "sensor";
 
-class AbstractSensor: public Entity, public JsonSetGetAble  {
+class AbstractSensor: public Entity{
 public:
 	AbstractSensor(uint8_t id,String name,String type,String size,String descr, uint8_t childCount,float val=NULL);
 	virtual ~AbstractSensor(){};
@@ -48,8 +49,8 @@ public:
 
 	uint8_t getStatus();
 
-	virtual int set(JsonObject& item);
-	virtual int get(JsonObject& item);
+	virtual int set(JsonObject& item) override;
+	virtual int get(JsonObject& item) override;
 
 protected:
 	void initChildren(int childCount);

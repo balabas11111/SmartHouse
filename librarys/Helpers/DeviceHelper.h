@@ -9,6 +9,7 @@
 #define LIBRARIES_PINDIGITAL_DeviceHelper_H_
 
 #include <Arduino.h>
+#include <interfaces/EntityServiceBase.h>
 
 #include "Consts/PagesConsts.h"
 #include "Consts/CommandsConsts.h"
@@ -17,8 +18,6 @@
 #include "interfaces/Loopable.h"
 #include "interfaces/SendAble.h"
 #include "interfaces/Nameable.h"
-#include "interfaces/EntityService.h"
-
 #include "services/AbstractSensorService.h"
 
 #include "StatusMessage/StatusMessage.h"

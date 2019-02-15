@@ -8,6 +8,7 @@
 #ifndef LIBRARIES_TIMETRIGGER_ESPSETTINGSBOX_H_
 #define LIBRARIES_TIMETRIGGER_ESPSETTINGSBOX_H_
 
+#include <interfaces/EntityServiceBase.h>
 #include "Arduino.h"
 #include "FS.h"
 #include "ArduinoJson.h"
@@ -20,8 +21,6 @@
 #include "Consts/CommandsConsts.h"
 
 #include "interfaces/Initializable.h"
-#include "interfaces/EntityService.h"
-
 #include "services/AbstractSensorService.h"
 #include "extraBoxes/EspSett_Own.h"
 
@@ -30,7 +29,7 @@
 const PROGMEM char EspSettingsBox_NAME[] = "espSettingsBox";
 
 class EspSettingsBox: public Initializable,
-	public ExtraSettingsBoxService, public EntityService {
+	public ExtraSettingsBoxService, public EntityServiceBase {
 
 public:
 	EspSettingsBox(){

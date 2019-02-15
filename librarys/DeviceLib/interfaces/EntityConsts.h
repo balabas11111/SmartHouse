@@ -1,24 +1,14 @@
 /*
- * EntityService.h
+ * EntityConsts.h
  *
- *  Created on: 11 февр. 2019 г.
- *      Author: Vitaliy
+ *  Created on: Feb 15, 2019
+ *      Author: Vitaliy_Vlasov
  */
 
-#ifndef LIBRARIES_DEVICELIB_INTERFACES_ENTITYSERVICE_H_
-#define LIBRARIES_DEVICELIB_INTERFACES_ENTITYSERVICE_H_
+#ifndef LIBRARIES_DEVICELIB_INTERFACES_ENTITYCONSTS_H_
+#define LIBRARIES_DEVICELIB_INTERFACES_ENTITYCONSTS_H_
 
-#include <ArduinoJson.h>
-#include "src/ESP8266HTTPClient.h"
-
-#ifdef ESP8266
-	#include "FunctionalInterrupt.h"
-#endif
-#ifdef ESP32
-	#include <functional>
-#endif
-
-#include <interfaces/Nameable.h>
+#include <Arduino.h>
 
 //tags for Json parsing/constructing
 const char DEFAULT_RESULT_TAG[]      PROGMEM = "result";
@@ -44,7 +34,7 @@ const char* const ENTITY_NAME[] PROGMEM = {
 
 //ids of all possible pages(operations), which could be executed on EntityService
 enum Page: uint8_t {
-	Page_list, Page_listVal, Page_save, Page_saveVal, Page_delete, Page_execute
+	Page_list, Page_listVal, Page_save, Page_saveVal, Page_delete, Page_execute, Page_add
 };
 const char* const PAGE_NAME[] PROGMEM = {
 	"list","getVal","save","saveVal","delete", "execute"
@@ -69,29 +59,5 @@ const char* const PAGE_NAME[] PROGMEM = {
  * 	 "data":{}
  * }
  */
-class EntityService{
-public:
 
-	virtual ~EntityService(){};
-
-	virtual uint8_t getEntityId()=0;
-
-	virtual const char* getEntityName(){
-		return ENTITY_NAME[getEntityId()];
-	}
-
-	//All generated items will be inserted into &items data is income data from customer
-	virtual int getAbstractItems(JsonArray& data,JsonArray& items,uint8_t pageId){
-		return getAbstractItems(items,pageId);
-	}
-
-	//All generated items will be inserted into &items
-	virtual int getAbstractItems(JsonArray& items,uint8_t pageId)=0;
-
-	//All items from &items array will be processed by service
-	virtual int postAbstractItems(JsonArray& items,uint8_t pageId)=0;
-
-};
-
-
-#endif /* LIBRARIES_DEVICELIB_INTERFACES_ENTITYSERVICE_H_ */
+#endif /* LIBRARIES_DEVICELIB_INTERFACES_ENTITYCONSTS_H_ */

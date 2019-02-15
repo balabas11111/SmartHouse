@@ -15,7 +15,9 @@
 
 class SendAbleAbstractSensors: public SendAble {
 public:
-	SendAbleAbstractSensors(){};
+	SendAbleAbstractSensors(){
+		sensors=nullptr;
+	};
 	virtual ~SendAbleAbstractSensors(){};
 
 	void setItems(AbstractSensorList* sensors){

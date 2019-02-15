@@ -22,8 +22,6 @@
 
 #include "interfaces/Loopable.h"
 #include "interfaces/SendAble.h"
-#include "interfaces/EntityService.h"
-
 #include "I2Chelper.h"
 #include "WiFiHelper.h"
 
@@ -37,6 +35,7 @@
 #include <PinDigital.h>
 #include <Pir_Sensor.h>
 #include <BeeperB.h>
+#include <interfaces/EntityServiceBase.h>
 #include "BeeperSerial.h"
 
 #include "DS18D20_Sensor.h"

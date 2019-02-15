@@ -22,7 +22,7 @@
 #include <AbstractSensorOld.h>
 #include <interfaces/SendAble.h>
 #include <interfaces/SendAbleAbstractSensors.h>
-#include <interfaces/EntityService.h>
+#include <interfaces/EntityServiceBase.h>
 #include <services/AbstractSensorService.h>
 
 

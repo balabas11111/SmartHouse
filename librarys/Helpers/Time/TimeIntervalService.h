@@ -16,7 +16,7 @@
 #include "interfaces/Initializable.h"
 
 #include "interfaces/Loopable.h"
-#include "interfaces/EntityService.h"
+#include "interfaces/EntityServiceBase.h"
 
 #include "FunctionalInterrupt.h"
 #include "DS3231.h"
@@ -68,7 +68,7 @@ const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_OK[]                   = "{\"sta
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR[]                = "{\"status\":\"Error\",\"item\":\"Error update time Interval\"}";
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR_MISSING_PARAMS[] = "{\"status\":\"Error\",\"item\":\"Required params missing\"}";
 
-class TimeIntervalService: public Initializable, public Loopable, public EntityService {
+class TimeIntervalService: public Initializable, public Loopable, public EntityServiceBase {
 public:
 	virtual ~TimeIntervalService(){};
 

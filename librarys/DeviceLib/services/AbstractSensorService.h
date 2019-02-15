@@ -12,9 +12,8 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
-#include <interfaces/EntityService.h>
-
 #include <ESP_Consts.h>
+#include <interfaces/EntityServiceBase.h>
 #include <StatusMessage/StatusMessage.h>
 
 //File path constants
@@ -22,7 +21,7 @@ const PROGMEM char ABSTRACT_SENSORS_BASE_PATH[]="/settings/sensors/";
 const PROGMEM char TXT[]=".txt";
 const PROGMEM char SLASH[]="/";
 
-class AbstractSensorService: public EntityService {
+class AbstractSensorService: public EntityServiceBase {
 public:
 	AbstractSensorService(AbstractSensorList* sensors);
 	virtual ~AbstractSensorService();

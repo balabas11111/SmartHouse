@@ -11,11 +11,10 @@
 #include <Arduino.h>
 
 #include <list/ArrayListSearchAble.h>
-#include <interfaces/ChangeDispatchable.h>
 
 #include <sensors/AbstractSensorValue.h>
 
-class AbstractSensorValueList: public ArrayListSearchAble<AbstractSensorValue>, public ChangeDispatchable {
+class AbstractSensorValueList: public ArrayListSearchAble<AbstractSensorValue> {
 public:
 	AbstractSensorValueList();
 	AbstractSensorValueList(uint8_t initSize);

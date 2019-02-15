@@ -291,35 +291,31 @@ int AbstractSensorService::getAbstractItems(JsonArray& items, uint8_t pageId) {
 			Serial.println(FPSTR("Json item is invalid"));
 		}
 
-		item["id"] = sens->getId();
-		item["name"] = sens->getName();
-		item["val"] = sens->getVal();
+		item["id"] = sens->getHeader()->getId();
+		item["name"] = sens->getHeader()->getName();
+		item["val"] = sens->getHeader()->getVal();
 
 		if(allFields){
 			//Serial.println(FPSTR("Get all fields"));
 
-			item["descr"] = sens->getDescr();
-			item["type"] = sens->getType();
-			item["size"] = sens->getSize();
+			item["descr"] = sens->getHeader()->getDescr();
+			item["type"] = sens->getHeader()->getType();
+			item["size"] = sens->getHeader()->getSize();
 
 		}
 		JsonArray& itemChilds=item.createNestedArray(FPSTR(DEFAULT_CHILDREN_TAG));
 
-		for(uint8_t childId=0;childId<sens->getItemCount();childId++){
+		for(uint8_t childId=0;childId<sens->getChilds()->getSize();childId++){
 			JsonObject& child=itemChilds.createNestedObject();
 
-			child["id"] = sens->getItem(childId)->id;
-			child["name"] = sens->getItem(childId)->name;
-			child["val"] = sens->getItem(childId)->val;
+			child["id"] = sens->getChild(i)->getId();
+			child["name"] = sens->getChild(i)->getName()
+			child["val"] = sens->getChild(i)->getVal(item);
 
 			if(allFields){
-				child["descr"] = sens->getItem(childId)->descr;
-				child["type"] = sens->getItem(childId)->type;
-				child["size"] = sens->getItem(childId)->size;
-
-				child["minVal"] = sens->getItem(childId)->minVal;
-				child["maxVal"] = sens->getItem(childId)->maxVal;
-				child["fieldId"] = sens->getItem(childId)->fieldId;
+				child["descr"] = sens->getChild(i)->getDescr();
+				child["type"] = sens->getChild(i)->getType();
+				child["size"] = sens->getChild(i)->getSize();
 			}
 		}
 	}

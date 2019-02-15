@@ -12,6 +12,8 @@
 
 class JsonSetGetAble {
 public:
+
+	virtual ~JsonSetGetAble(){};
 	//sets object properties from JsonObject
 	virtual int set(JsonObject& item)=0;
 	//get object properties to Jsonobject

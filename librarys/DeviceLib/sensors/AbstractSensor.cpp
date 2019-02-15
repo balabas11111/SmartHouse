@@ -6,6 +6,7 @@
  */
 
 #include <sensors/AbstractSensor.h>
+#include <ArduinoJson.h>
 
 AbstractSensor::AbstractSensor(uint8_t id, String name, String type,
 		String size, String descr, uint8_t childCount, float val) {
@@ -60,15 +61,13 @@ String AbstractSensor::getHashableString() {
 	return getName();
 }
 
-int AbstractSensor::set(JsonObject& item) {
+void AbstractSensor::initChildren(int childCount) {
+}
 
-	return false;
+int AbstractSensor::set(JsonObject& item) {
+	return 0;
 }
 
 int AbstractSensor::get(JsonObject& item) {
-
-	return false;
-}
-
-void AbstractSensor::initChildren(int childCount) {
+	return 0;
 }

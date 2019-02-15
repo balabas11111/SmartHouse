@@ -13,10 +13,10 @@
 #define LIBRARIES_DEVICELIB_SERVICES_COMMANDS_DEVICE_COMMANDSSERVICE_H_
 
 #include <Arduino.h>
+#include <interfaces/EntityServiceBase.h>
 #include <TimeTrigger.h>
 
 #include <interfaces/Loopable.h>
-#include <interfaces/EntityService.h>
 
 const char COMMAND_RESTART[] PROGMEM ="restart";
 
@@ -27,7 +27,7 @@ const char* const COMMAND_NAME[] PROGMEM = {
 		COMMAND_RESTART
 };
 
-class Device_CommandsService:public Loopable, public EntityService{
+class Device_CommandsService:public Loopable, public EntityServiceBase{
 public:
 	uint8_t getEntityId();
 

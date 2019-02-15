@@ -14,7 +14,7 @@
 #include <interfaces/Entity.h>
 
 template <typename T, typename std::enable_if<std::is_base_of<Entity, T>::value>::type* = nullptr>
-class ArrayListSearchAble: public ArrayList<T> {
+class ArrayListSearchAble: public ArrayList<T>, public ChangeDispatchable {
 public:
 	virtual ~ArrayListSearchAble(){};
 
@@ -51,7 +51,7 @@ public:
 		}
 		return NULL;
 	}
-	virtual boolean getChanged(){
+	virtual boolean getChanged() override{
 		if(this->getSize()==0){
 			return false;
 		}
@@ -61,6 +61,16 @@ public:
 			}
 		}
 		return false;
+	}
+	virtual void setChanged(boolean changed) override{
+		if(this->getSize()==0){
+			return;
+		}
+		for(uint8_t i=0;i<this->getSize();i++){
+			if(this->getItem(i)->getChanged()){
+				this->getItem(i)->setChanged(changed);
+			}
+		}
 	}
 };
 
