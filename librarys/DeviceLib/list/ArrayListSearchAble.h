@@ -11,7 +11,7 @@
 #include <Arduino.h>
 #include <utility>
 #include <list/ArrayList.h>
-#include <interfaces/Entity.h>
+#include <entity/Entity.h>
 
 template <typename T, typename std::enable_if<std::is_base_of<Entity, T>::value>::type* = nullptr>
 class ArrayListSearchAble: public ArrayList<T>, public ChangeDispatchable {

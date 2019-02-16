@@ -11,7 +11,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
-#include <interfaces/Entity.h>
+#include <entity/Entity.h>
 #include <interfaces/Loopable.h>
 
 #include <sensors/AbstractSensorValue.h>
@@ -48,10 +48,10 @@ public:
 	AbstractSensorValueList* getChilds();
 
 	uint8_t getStatus();
-
+/*
 	virtual int set(JsonObject& item) override;
 	virtual int get(JsonObject& item) override;
-
+*/
 protected:
 	void initChildren(int childCount);
 

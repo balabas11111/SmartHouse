@@ -10,7 +10,7 @@
 
 #include <Arduino.h>
 #include <interfaces/ChangeDispatchable.h>
-#include <interfaces/Entity.h>
+#include <entity/Entity.h>
 #include <interfaces/JsonSetGetAble.h>
 
 //Abstract SensorValue fields

@@ -15,9 +15,13 @@ public:
 
 	virtual ~JsonSetGetAble(){};
 	//sets object properties from JsonObject
-	virtual int set(JsonObject& item)=0;
+	virtual int set(JsonObject& item){
+		return 0;
+	}
 	//get object properties to Jsonobject
-	virtual int get(JsonObject& item)=0;
+	virtual int get(JsonObject& item){
+		return 0;
+	}
 
 	//
 	virtual int setStatic(JsonObject& item){

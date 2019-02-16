@@ -25,7 +25,7 @@ public:
 		return sha1(hash)==getHash();
 	}
 
-	virtual String& getHash(){
+	virtual String getHash(){
 		//if(hash==NULL || hash==nullptr || hash.length()==0){setHash();}
 		return this->hash;
 	}
@@ -39,6 +39,10 @@ public:
 	virtual void setHash(HashAble* parent){
 		String data=parent->getHashableString()+"_"+getHashableString();
 		this->hash = sha1(data);
+	}
+
+	static String constructHash(String hashStr){
+		return sha1(hashStr);
 	}
 protected:
 	String hash;
