@@ -57,9 +57,9 @@
 	"render": {
 		"views": [{
 			"render": "defaultRenderer",
-			"action": ["cache","list"],
-		    "templ": "defaultModelTmpl",
-		    "selector": "", 
+			
+		    "templ": { "cache":"defaultModelTmpl", "list": "defaultModelTmpl", "vals": "defaultModelTmpl"},
+		    "selector": { "cache": "by cache selector "}, 
 		 	"fields": { 
 						"id":{     "templ":"hiddenInputTmpl",
 								"selector": "field_id selector from template"

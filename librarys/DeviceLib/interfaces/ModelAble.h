@@ -41,7 +41,7 @@ const PROGMEM char PATH_TAG[]  = "path";
 
 const PROGMEM char DEFAULT_MODEL_JSON[] = "{\"mod:\":{}}";
 const PROGMEM char DEFAULT_DESCRIPTOR_JSON[] = "{\
-\"name\": \"defModel\",\
+\"name\": \"\",\
 \"hash\": \"\",\
 \"descr\": \"Default Model\",\
 \"path\": \"\",\ 
@@ -53,14 +53,14 @@ const PROGMEM char DEFAULT_DESCRIPTOR_JSON[] = "{\
    				\"set\": {\"descr\":\"\"},\
    				\"put\": {\"val\":\"\"},\
    				\"load\": {\"descr\": \"\"},\
-   				\"save\": {\"id\": \"\",\"descr\": \"\", \"items\": \"\"},\
+   				\"save\": {\"id\": \"\",\"descr\": \"\"},\
    				\"cache\": {\"id\": \"\",\"name\": \"\",\"descr\": \"\"},\
    				\"dict\": {\"descr\": \"name\"},\
    				\"descr\": {\"save\": \"1\", \"load\": \"1\", \"cache\": \"0\", \"init\": \"0\"}\
    			},\
    \"compare\": {\"id\":\"\", \"name\":\"\", \"hash\":\"\" },\
    \"dict\": {\"descr\": \"name\"},\
-   \"default\": {\"descr\": \"Default descr field value\", \"name\": \"\"},\
+   \"default\": {\"descr\": \"defaultDescr\", \"name\": \"\"},\
    \"fields\": {\
 				\"id\": \"int\",\
 				\"name\": \"String\",\
@@ -68,6 +68,7 @@ const PROGMEM char DEFAULT_DESCRIPTOR_JSON[] = "{\
 				\"val\": \"float\",\
 				\"hash\": \"String\"\
 			  },\
+	\"render\": {\"id\":{\"\":\"\"}},\
 	\"list\": {\"items\": [],\"items2\": []}\
   }\
  ";

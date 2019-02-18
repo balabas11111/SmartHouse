@@ -37,69 +37,15 @@
  * 	 		}
  * }
  *
- *  { "Response": {
- *					"mod:": { items models here -> "itemHash1": {item1}, "itemHash2": "{item2}", ...},
- *					"descr:": { all descriptors here "descrHash": {descr1}, ...},
- *					"res": {"status":"200", "str": "Ok", "dao": "sensors", "action": "cache", "hashid":"hashId"}
- *  			  }
- *  }
- *
  *{"ItemHash": {
  *		"mod:": {},
  *		"descr:": {}
  *}
  *
  *
- *{ "mod": { "descr": "descriptorName", "descrHash": "",
- * 				"fields": {
- *							"id": "0",
- *							"name": "ADDR01",
- *							"descr": "Some address1",
- *							"val": "10",
- *							"hash": "aw1245",
- *							"items": []
- * 				          },
- * 				"dict": {
- *						"descr": { "ADDR01": "Some address1", "ADDR02": "SomeAdredd 22"}
- * 						}
  *
- * 		     }
  *
- * {"descr": {"name": "descriptorName", "descrHash": "descrHash", "save": "1", "cache": "0",
- *              "hash": { "keys":{"id":"","name":""},"val": "hash"},
- * 				"provide": {"thingSpeakService":"","timeIntervalService": ""},
- *              "persist": {
- *              			<!--
- *              			     set     - apply another model to current a/e external set from json
- *              			     put     - put value from local device
- *              				 load    - load field from file
- *              				 save    - save field to file
- *              				 dict    - allows set from dictionary value is key column name
- *              			-->
- *              				"set": {"descr":""},
- *              				"put": {"val":""}
- *              				"load": {"descr": ""},
- *              				"save": {"id":"","descr": "", "items": ""},
- *              				"descr": {"save": "1"},
- *              				"dictSet": {"descr - target field": "name - keyField"}
- *              			},
- *              "compare": {"id":"", "name":"", "hash":"" },
- *              "dict": {"descr": "name"},
- *
- *              "default": {"descr": "Default descr field value", "name": ""},
- *
- * 				"fields": {
-		 					"id": "int",
-		 					"name": "String",
-							"descr": "String",
-							"val": "float",
-							"hash": "String",
-							"items": "List"
- * 						  },
- * 				"childs": ["items"]
- * 				}
- *
- * }
+
  */
 
 class AbstractItemService {
