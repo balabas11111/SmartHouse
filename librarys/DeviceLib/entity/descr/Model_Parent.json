@@ -1,0 +1,11 @@
+{ "name": "sensors", "model": "sensors", "path": "/services/sensors/",
+  				"fields": {
+ 							"id": "0",
+ 							"name": "ADDR01",
+ 							"descr": "Some address1",
+ 							"val": "10",
+ 							"hash": "aw1245",
+ 							"sensors": [ {"name": "sensors", "model": "sensors"}]
+  				          },
+  				"dict": {}
+  		     }

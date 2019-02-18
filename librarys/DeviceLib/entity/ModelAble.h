@@ -38,6 +38,7 @@ const PROGMEM char DEFAULT_TAG[]  = "default";
 const PROGMEM char FIELDS_TAG[]  = "fields";
 const PROGMEM char LIST_TAG[]  = "list";
 const PROGMEM char PATH_TAG[]  = "path";
+const PROGMEM char MODEL_TAG[]  = "model";
 
 const PROGMEM char DEFAULT_MODEL_JSON[] = "{\"mod:\":{}}";
 const PROGMEM char DEFAULT_DESCRIPTOR_JSON[] = "{\
@@ -68,40 +69,57 @@ const PROGMEM char DEFAULT_DESCRIPTOR_JSON[] = "{\
 				\"val\": \"float\",\
 				\"hash\": \"String\"\
 			  },\
-	\"render\": {\"id\":{\"\":\"\"}},\
-	\"list\": {\"items\": [],\"items2\": []}\
+	\"render\": {},\
+	\"list\": {}\
   }\
  ";
 
 const PROGMEM char DEFAULT_EMPTY_JSON[] = "{}";
 
-const PROGMEM char DEFAULT_PATH_TAG_VAL[]  = "/services/descr/";
+const PROGMEM char DEFAULT_PATH_TAG_VAL[]  = "/services/sensors/";
 
 class ModelAble: public Nameable {
 public:
 	ModelAble(String name){
 		this->name = name;
+		this->model=nullptr;
+		this->descriptor=nullptr;
+		this->started=false;
 	};
 	virtual ~ModelAble(){};
 
-	int startModel(JsonObject* holder){
-		this->holder=holder;
+	//current model path, current descriptor
+	int startModel(JsonObject& model,JsonObject& descriptor){
+		this->model=model;
+		this->descriptor=descriptor;
 
-		if(this->hasDescriptor()){
+		JsonObject& fields=descriptor.get<JsonObject>(FPSTR(FIELDS_TAG));
 
+		if(!model.containsKey(FPSTR(FIELDS_TAG))){
+			model.createNestedObject(FPSTR(FIELDS_TAG));
+		}
+
+		JsonObject& modelFields = descriptor.get<JsonObject>(FPSTR(FIELDS_TAG));
+
+		JsonObject::iterator it;
+
+		for (it = fields.begin(); it != fields.end(); ++it ){
+			if(!modelFields.containsKey(it->key)){
+
+			}
 		}
 
 		return 1;
 	}
 
 	boolean hasDescriptor(){
-		return this->holder->success()
-				&& this->holder->containsKey(FPSTR(DESCRIPTOR_TAG))
-				&& (this->holder->is<JsonObject>(FPSTR(DESCRIPTOR_TAG)));
+		return this->descriptor!=nullptr
+				&& this->descriptor->success();
 	}
 
 	boolean hasModel(){
-		return this->holder->success() && this->holder->containsKey(FPSTR(MODEL_TAG));
+		return this->model!=nullptr
+				&& this->model->success();
 	}
 
 	JsonObject& getDescriptor(){
@@ -149,7 +167,8 @@ public:
 	}
 
 protected:
-	JsonObject* holder;
+	JsonObject* model;
+	JsonObject* descriptor;
 
 	bool buildModelByDescriptor(JsonObject& holder){
 		if(!hasDescriptor()){
@@ -182,7 +201,7 @@ protected:
 
 		if(!d.containsKey(FPSTR(PATH_TAG))){
 			String path = FPSTR(DEFAULT_PATH_TAG_VAL);
-				path+=getName();
+				path+=getName()+"/";
 				path+="/"+descrHash+"/";
 			d.set(FPSTR(PATH_TAG),path);
 		}

@@ -1,12 +1,11 @@
  {
- 	"name": "descriptorName",
- 	"hash": "descriptorHash",
-   "descr": "descriptor explaination",
- 	"path": "descriptors base save path", 
+ 	"name": "bmeSensor",
+ 	"hash": "",
+   "descr": "bmeSensor Descriptor",
+ 	"path": "/services/sensors/", 
    "class": "ModelAble",
      "hashInfo": { "keys":{"id":"","name":""},"val": "hash"},
 	  "openFor": {"thingSpeakService":"","timeIntervalService": ""},
-	   "holder": {"keys": {"id":"","name":""}},
 	   "action": { 
 	   						"_comment_action":	
 		   						{ "q":   "allowed action names for current model, if overrided then value specified",
@@ -49,11 +48,9 @@
 				"descr": "String",
 				"val": "float",
 				"checked": "boolean",
-				"hash": "String",
-				"items": "List",
-				"items2": "List"
+				"hash": "String"
 			  },
-	"list": {"items": [],"items2": []},
+	"list": {},
 	"render": {
 		"views": [{
 			"render": "defaultRenderer",

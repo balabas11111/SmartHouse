@@ -1,4 +1,4 @@
-{ "descr": "descriptorName", "descrHash": "",
+{ "name": "bmeSensor", "model": "bmeSensor", "path": "/services/sensors/bmeSensor/",
   				"fields": {
  							"id": "0",
  							"name": "ADDR01",
