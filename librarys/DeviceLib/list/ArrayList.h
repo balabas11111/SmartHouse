@@ -57,6 +57,15 @@ public:
 		return this->items[index];
 	}
 
+	int getItemIndex(T* item){
+		for(uint8_t i=0;i<getSize();i++){
+			if(this->getItem(i)==item){
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	boolean setItem(T* item,int index){
 		if(!checkIndex(index) || items==NULL || items==nullptr){
 			return false;

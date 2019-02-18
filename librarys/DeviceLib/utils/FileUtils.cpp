@@ -6,6 +6,7 @@
  */
 
 #include <utils/FileUtils.h>
+#include <ArduinoJson.h>
 
 FileUtils::FileUtils(){}
 
@@ -40,4 +41,25 @@ String FileUtils::loadStringFromFile(String fileName){
 	file.close();
 
 	return data;
+}
+
+boolean FileUtils::saveJsonToFile(String fileName, JsonObject* obj) {
+	File file = SPIFFS.open(fileName, "w");
+	if(!file){
+		return false;
+	}
+	return (obj->printTo(file));
+}
+
+boolean FileUtils::loadJsonFromFile(String fileName, JsonObject* obj) {
+	File file = SPIFFS.open(fileName, "r");
+
+	DynamicJsonBuffer buf;
+
+	JsonObject& loaded=buf.parse(file);
+
+	if(!file){
+		return false;
+	}
+	return (loaded.printTo(obj)>0);
 }

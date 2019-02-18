@@ -1,0 +1,10 @@
+{ "Response": { "_comment":{
+							"mod:":     "all items models without descriptor itemHash: {item as Object}",
+							"descr:":   "all available descriptors descrHash: {descr-r as Object}",
+							"res:":     "response details"
+							},
+					"mod:": { "itemHash1": "{item1}", "itemHash2": "{item2}"},
+ 					"descr:": {"descrHash": "{descr1}"},
+ 					"res": {"status":"200", "str": "Ok", "dao": "sensors", "action": "cache", "hashid":"hashId"}
+   			  }
+}

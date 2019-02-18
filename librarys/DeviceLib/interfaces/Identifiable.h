@@ -14,11 +14,11 @@ class Identifiable {
 public:
 	virtual ~Identifiable(){};
 
-	virtual uint8_t getId(){
+	virtual int getId(){
 		return id;
 	}
 protected:
-	uint8_t id;
+	int id=-1;
 };
 
 #endif /* LIBRARIES_DEVICELIB_IDENTIFIABLE_H_ */

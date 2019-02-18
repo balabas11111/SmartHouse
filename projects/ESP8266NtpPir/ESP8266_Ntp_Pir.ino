@@ -42,6 +42,7 @@
 #include "BME280_Sensor.h"
 #include "StatusMessage/StatusMessage.h"
 #include "Display_Custom/DisplayHelper_TM1637_Clock_PIR.h"
+#include <list/AbstractItemList.h>
 
 #include "TM1637.h"
 
@@ -88,13 +89,14 @@ Loopable* loopArray[]={&wifi,&buttonMenu,&timeService,&displayHelper,
 AbstractSensor* sensorsArray[]={&bmeMeasurer,&ds18d20Measurer,&pirDetector,&signalLed};
 AbstractSensorList sensors(sensorsArray);
 
-EntityService* services[]={&timeIntervalService};
+//EntityService* services[]={&timeIntervalService};
 
 SendAble* senders[]={&thingSpeakHelper};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
-						  services,ARRAY_SIZE(services),
-						  &sensors,
+							nullptr,0,
+						  //services,ARRAY_SIZE(services),
+						  nullptr,
 						  senders,ARRAY_SIZE(senders),
 						  &espSettingsBox);
 

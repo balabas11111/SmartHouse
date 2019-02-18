@@ -50,7 +50,7 @@ const char* const PAGE_NAME[] PROGMEM = {
  * entity?entity={"Entity":{"id":"3","name":"timeIntervalService","pageId":"0","pageName":"list"},"data":{}}
  * entity?entity={"Entity":{"id":"3","name":"timeIntervalService","pageId":"1","pageName":"getVal"},"data":{}}
  *
- * { "Entity":{
+ * { "Request":{
  * 			"id":"0",
  *	 		"name":"sensors",
  * 			"pageId":"0",

@@ -1,0 +1,13 @@
+{ "descr": "descriptorName", "descrHash": "",
+  				"fields": {
+ 							"id": "0",
+ 							"name": "ADDR01",
+ 							"descr": "Some address1",
+ 							"val": "10",
+ 							"hash": "aw1245",
+ 							"items": []
+  				          },
+  				"dict": {
+ 						"descr": { "ADDR01": "Some address1", "ADDR02": "SomeAdredd 22"}
+  						}
+  		     }
