@@ -1,0 +1,13 @@
+{
+ 	"name": "bmeSensor",
+ 	 "dao": "sensors",
+   "class": "Object",
+  	"data": {
+ 		  	   "temp": "10.05",
+				"hum": "45",
+				"press": "100500",
+				"descr": "Street sensor",
+				"checked": "true"
+  			 }
+}
+ 
