@@ -42,7 +42,7 @@ public:
 
 	virtual ~EspSett_Alarm(){};
 
-	virtual uint8_t getId(){
+	virtual int getId(){
 		return ExtraBox_Alarm;
 	}
 

@@ -16,7 +16,6 @@
 #include "interfaces/Initializable.h"
 
 #include "interfaces/Loopable.h"
-#include "interfaces/EntityServiceBase.h"
 
 #include "FunctionalInterrupt.h"
 #include "DS3231.h"
@@ -68,7 +67,7 @@ const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_OK[]                   = "{\"sta
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR[]                = "{\"status\":\"Error\",\"item\":\"Error update time Interval\"}";
 const PROGMEM char MESSAGE_TIME_INTERVAL_STATUS_ERROR_MISSING_PARAMS[] = "{\"status\":\"Error\",\"item\":\"Required params missing\"}";
 
-class TimeIntervalService: public Initializable, public Loopable, public EntityServiceBase {
+class TimeIntervalService: public Initializable, public Loopable {
 public:
 	virtual ~TimeIntervalService(){};
 
@@ -97,10 +96,6 @@ public:
 		}
 
 		return initialized;
-	}
-
-	uint8_t getEntityId() override{
-		return Entity_timeIntervals;
 	}
 
 	virtual boolean loop(){
@@ -162,31 +157,18 @@ public:
 		Serial.print(FPSTR("TimeIntervalService::getAbstractItems pageId="));
 		Serial.print(pageId);
 		Serial.print(FPSTR(" pageName="));
-		Serial.println(PAGE_NAME[pageId]);
 
 		long start=millis();
 
 		Serial.println();
 		JsonObject& item=itemsJson.createNestedObject();
 
-		switch(pageId){
-			case Page_listVal:
-			case Page_list:{
-				item["id"]=3;
-				item["name"]=FPSTR(TimeIntervalService_NAME);
-				break;
-			}
-			default:{
-				return HTTP_CODE_NOT_IMPLEMENTED;
-			}
-		}
-
 		if(itemCount==0){
 			return HTTP_CODE_OK;
 		}
 
 		Serial.print(FPSTR("Process timeIntervals count="));
-		JsonArray& itemChilds=item.createNestedArray(FPSTR(DEFAULT_CHILDREN_TAG));
+		JsonArray& itemChilds=item.createNestedArray("items");
 
 		Serial.println(itemCount);
 

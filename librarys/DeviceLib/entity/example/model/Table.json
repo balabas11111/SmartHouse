@@ -1,0 +1,53 @@
+ {
+ 	"name": "ds18d20",
+   "descr": "Dallas temp",
+ 	"path": "sensors", 
+   "class": "Table",
+    "hash": ["descr"],
+	
+ "openFor": {"thingSpeakService":"","timeIntervalService": ""},
+  "action": { 
+			   "cache":"","list":"","get": ""
+		    },
+"security": {
+               	"list": ["descr"],	
+   				"set": ["descr"],
+   				"put": [],
+   				"load": ["descr"],
+   				"save": ["descr","checked"]
+   			},
+ 
+  "default": {"descr": "Default descr field value"},
+ 
+   "fields": {
+				"descr": "String"
+			  },
+	"table": {
+				 	"name": "table",
+				    "hash": ["name","descr"],
+				    "length": 0,
+					
+				 "openFor": {"thingSpeakService":"","timeIntervalService": ""},
+				  "action": { 
+							   "cache":"","list":"","get": ""
+						    },
+				       "security": {
+				               	"list": ["temp","name","descr","checked"],	
+				   				"set": ["descr"],
+				   				"put": ["temp","descr"],
+				   				"load": [],
+				   				"save": ["temp","name","descr","checked"]
+				   			},
+				 
+				   "default": {"descr": "Default descr field value"},
+				 
+				   "fields": {
+								"name": "String",
+								"temp": "float",
+								"descr": "String",
+								"checked": "boolean"
+							  },
+				   "dict": {"name": "descr"}
+			}
+}
+ 

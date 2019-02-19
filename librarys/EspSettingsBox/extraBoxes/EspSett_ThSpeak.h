@@ -51,7 +51,7 @@ public:
 	}
 	virtual ~EspSett_ThSpeak(){};
 
-	virtual uint8_t getId(){
+	virtual int getId(){
 		return ExtraBox_thingSpeak;
 	}
 

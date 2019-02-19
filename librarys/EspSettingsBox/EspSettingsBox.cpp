@@ -250,7 +250,7 @@ int EspSettingsBox::deleteFilesByPreffix(String preffix){
 
 	return count;
 }
-
+/*
 int EspSettingsBox::getAbstractItems(JsonArray& items, uint8_t pageId) {
 
 	Serial.print(FPSTR("EspSettingsBox::getAbstractItems( pageId="));
@@ -294,3 +294,4 @@ int EspSettingsBox::getAbstractItems(JsonArray& items, uint8_t pageId) {
 int EspSettingsBox::postAbstractItems(JsonArray& items, uint8_t pageId) {
 	return HTTP_CODE_NOT_IMPLEMENTED;
 }
+*/

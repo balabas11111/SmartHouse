@@ -45,7 +45,7 @@ public:
 	}
 	virtual ~EspSett_Device(){};
 
-	virtual uint8_t getId(){
+	virtual int getId(){
 		return ExtraBox_Device;
 	}
 

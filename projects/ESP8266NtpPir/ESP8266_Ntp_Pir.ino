@@ -20,6 +20,13 @@
 #include <ESP8266WiFi.h>
 
 
+void setup() {
+}
+
+void loop() {
+
+}
+/*
 #include "interfaces/Loopable.h"
 #include "interfaces/SendAble.h"
 #include "I2Chelper.h"
@@ -35,14 +42,12 @@
 #include <PinDigital.h>
 #include <Pir_Sensor.h>
 #include <BeeperB.h>
-#include <interfaces/EntityServiceBase.h>
 #include "BeeperSerial.h"
 
 #include "DS18D20_Sensor.h"
 #include "BME280_Sensor.h"
 #include "StatusMessage/StatusMessage.h"
 #include "Display_Custom/DisplayHelper_TM1637_Clock_PIR.h"
-#include <list/AbstractItemList.h>
 
 #include "TM1637.h"
 
@@ -72,8 +77,6 @@ BME280_Sensor bmeMeasurer(FPSTR(SENSOR_bmeMeasurer));
 
 TM1637 timeDisplay(D6,D7);
 
-//TimeTrigger sensorsTrigger(0,(espSettingsBox.refreshInterval*1000),true,updateSensors);
-//TimeTrigger thingSpeakTrigger(0,(espSettingsBox.postDataToTSInterval*1000),false,processThingSpeakPost);
 
 NtpTimeClientService timeService(&espSettingsBox);
 DisplayHelper_TM1637_Clock_PIR displayHelper(&timeDisplay,&espSettingsBox,&bmeMeasurer,&ds18d20Measurer,&timeService);//,);
@@ -95,7 +98,6 @@ SendAble* senders[]={&thingSpeakHelper};
 
 DeviceHelper deviceHelper(loopArray,ARRAY_SIZE(loopArray),
 							nullptr,0,
-						  //services,ARRAY_SIZE(services),
 						  nullptr,
 						  senders,ARRAY_SIZE(senders),
 						  &espSettingsBox);
@@ -109,12 +111,12 @@ void initComponents(){
 	wifi.init();
 	timeService.init();
 	deviceHelper.printHeap();
-	bmeMeasurer.init();
+	//bmeMeasurer.init();
 	deviceHelper.printHeap();
-	ds18d20Measurer.init();
+	//ds18d20Measurer.init();
 	deviceHelper.printHeap();
 
-	deviceHelper.loadSensors();
+	//deviceHelper.loadSensors();
 	deviceHelper.printHeap();
 
 	updateSensors();
@@ -242,7 +244,7 @@ void executeThingSpeakPost(){
 void processThingSpeakPost(){
 	Serial.println("process ThingSpeak post");
 }
-
+*/
 /*
 int8_t symbolKey=0;
 

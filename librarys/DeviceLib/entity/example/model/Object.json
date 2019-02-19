@@ -1,0 +1,31 @@
+ {
+    
+ 	"name": "bmeSensor",
+   "descr": "bmeSensor Descriptor",
+ 	 "dao": "sensors", 
+   "class": "Object",
+    "hash": ["name","descr"],
+	
+ "openFor": {"thingSpeakService":"","timeIntervalService": ""},
+  "action": { 
+			   "cache":"","list":"","get": ""
+		    },
+       "security": {
+               	"list": ["temp","hum","press","descr","checked"],	
+   				"set": ["descr"],
+   				"put": ["temp","hum","press"],
+   				"load": ["descr"],
+   				"save": ["descr","val","checked","hash"]
+   			},
+ 
+   "default": {"descr": "Default descr field value"},
+ 
+   "fields": {
+				"temp": "float",
+				"hum": "float",
+				"press": "float",
+				"descr": "String",
+				"checked": "boolean"
+			  }
+}
+ 

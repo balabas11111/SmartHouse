@@ -40,7 +40,7 @@ public:
 	};
 	virtual ~ESPSett_Telegram(){};
 
-	virtual uint8_t getId(){
+	virtual int getId(){
 		return ExtraBox_Ntp;
 	}
 

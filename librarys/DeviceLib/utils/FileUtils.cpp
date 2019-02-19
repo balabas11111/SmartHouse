@@ -26,6 +26,10 @@ boolean FileUtils::saveStringToFile(String fileName, String value) {
 	return fileSize>0;
 }
 
+boolean FileUtils::exists(String fileName) {
+	return SPIFFS.exists(fileName);
+}
+
 String FileUtils::loadStringFromFile(String fileName){
 	if(!SPIFFS.exists(fileName)){
 		return String(NULL);
@@ -43,23 +47,36 @@ String FileUtils::loadStringFromFile(String fileName){
 	return data;
 }
 
-boolean FileUtils::saveJsonToFile(String fileName, JsonObject* obj) {
+boolean FileUtils::saveJsonToFile(String fileName, JsonObject& obj) {
 	File file = SPIFFS.open(fileName, "w");
 	if(!file){
 		return false;
 	}
-	return (obj->printTo(file));
+	return (obj.printTo(file));
 }
 
-boolean FileUtils::loadJsonFromFile(String fileName, JsonObject* obj) {
+boolean FileUtils::loadJsonFromFile(String fileName, JsonObject& obj) {
 	File file = SPIFFS.open(fileName, "r");
 
 	DynamicJsonBuffer buf;
-
 	JsonObject& loaded=buf.parse(file);
 
 	if(!file){
 		return false;
 	}
-	return (loaded.printTo(obj)>0);
+	return (obj.set(fileName, loaded));
+}
+
+boolean FileUtils::existsAndHasSize(String fileName) {
+	File file = SPIFFS.open(fileName, "r");
+
+	return file && file.size()>0;
+}
+
+bool FileUtils::init() {
+	return SPIFFS.begin();
+}
+
+File FileUtils::getFile(String fileName,const char* mode) {
+	return SPIFFS.open(fileName, mode);
 }

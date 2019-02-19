@@ -17,25 +17,18 @@
 #endif
 #include <interfaces/Initializable.h>
 #include <interfaces/Loopable.h>
-#include <interfaces/JSONprocessor.h>
-#include <interfaces/JSONprovider.h>
-#include <AbstractSensorOld.h>
 #include <interfaces/SendAble.h>
 #include <interfaces/SendAbleAbstractSensors.h>
-#include <interfaces/EntityServiceBase.h>
 #include <services/AbstractSensorService.h>
 
 
 void DeviceHelper::constr(Loopable** loopItems,uint8_t loopItemsSize,
-							EntityService** services,uint8_t servicesSize,
-							AbstractSensor** sensors,uint8_t sensorsSize,
 							SendAble** senders,uint8_t sendersSize,
 							EspSettingsBox* espSettingsBox){
 
 	this->loopItems=loopItems;
 	this->loopItemsSize=loopItemsSize;
 
-	this->services=services;
 	this->servicesSize=servicesSize;
 
 	this->senders=senders;
@@ -49,10 +42,6 @@ void DeviceHelper::displayDetails(){
 
 	Serial.print(FPSTR(MESSAGE_DEVICE_HELPER_LOOP_SIZE));
 	Serial.println(loopItemsSize);
-
-	for(uint8_t i=0;i<loopItemsSize;i++){
-		loopItems[i]->displayDetails();
-	}
 
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
@@ -178,6 +167,7 @@ void DeviceHelper::printDeviceArrayDetails(){
  */
 
 String DeviceHelper::processJsonAsEntity(String json) {
+	/*
 		long startParse=millis();
 
 		Serial.println(FPSTR("-----------Process Entity----------"));
@@ -197,11 +187,6 @@ String DeviceHelper::processJsonAsEntity(String json) {
 		delay(1);
 		JsonObject& root = jsonBuffer.parse(json);
 
-		if(!root.success()){
-			requestStatus = HTTP_CODE_BAD_REQUEST;
-			requestText = FPSTR(STATUS_WRONG_JSON);
-		}
-
 		if(root.containsKey("Entity")){
 			JsonObject& entity = root["Entity"];
 			JsonObject& data = root["data"];
@@ -216,8 +201,6 @@ String DeviceHelper::processJsonAsEntity(String json) {
 			const char* pageName;
 
 			entityName = entity["name"].as<char*>();
-
-			EntityService* service;
 
 			if(entity.containsKey("id")){
 				id = entity["id"];
@@ -258,7 +241,7 @@ String DeviceHelper::processJsonAsEntity(String json) {
 			}
 
 			uint8_t pageIdRes=0;
-/*
+
 			Serial.print(FPSTR("entityId="));
 			Serial.print(id);
 			Serial.print(FPSTR(" entityName="));
@@ -267,7 +250,7 @@ String DeviceHelper::processJsonAsEntity(String json) {
 			Serial.print(pageId);
 			Serial.print(FPSTR(" pageName="));
 			Serial.println(getPageNameById(id));
-*/
+
 			service = getEntityServiceByIdName(id, entityName);
 
 			endParse=millis();
@@ -340,61 +323,11 @@ String DeviceHelper::processJsonAsEntity(String json) {
 
 		printHeap();
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
-
-		return result;
+*/
+		return "";
 }
 
-EntityService* DeviceHelper::getEntityServiceById(uint8_t id) {
-	for(uint8_t i=0;i<servicesSize;i++){
-			if(services[i]->getEntityId()==id){
-				return services[i];
-			}
-		}
-		return NULL;
-}
 
-EntityService* DeviceHelper::getEntityServiceByName(String name) {
-	Serial.print(FPSTR("getEntityServiceByName name="));
-	Serial.println(name);
-
-	for(uint8_t i=0;i<servicesSize;i++){
-		Serial.print(FPSTR("CHECK service"));
-		Serial.println(services[i]->getEntityName());
-
-		if(strcmp(services[i]->getEntityName(),name.c_str())==0){
-			return services[i];
-		}
-	}
-	return NULL;
-}
-
-const char*  DeviceHelper::getEntityNameById(uint8_t id) {
-	return ENTITY_NAME[id];
-}
-
-int DeviceHelper::getEntityIdByName(const char*  name) {
-	for(uint8_t i=0;i<3;i++){
-		if(strcmp(ENTITY_NAME[i],name)==0){
-			return i;
-		}
-	}
-
-	return -1;
-}
-
-const char* DeviceHelper::getPageNameById(uint8_t id) {
-	return PAGE_NAME[id];
-}
-
-int DeviceHelper::getPageIdByName(const char*  name) {
-	for(uint8_t i=0;i<6;i++){
-		if(strcmp(PAGE_NAME[i],name)==0){
-			return i;
-		}
-	}
-
-	return -1;
-}
 
 void DeviceHelper::checkResetPin(int resetPin) {
 	if(resetPin!=NULL && resetPin>-1){
@@ -413,18 +346,3 @@ void DeviceHelper::checkResetPin(int resetPin) {
 	  }
 }
 
-EntityService* DeviceHelper::getEntityServiceByIdName(uint8_t id, String entityName) {
-	switch (id){
-		case Entity_sensors:{
-			return this;
-			break;
-		}
-		case Entity_settings:{
-			return espSettingsBox;
-			break;
-		}
-		default:{
-			return getEntityServiceByName(entityName);
-		}
-	}
-}

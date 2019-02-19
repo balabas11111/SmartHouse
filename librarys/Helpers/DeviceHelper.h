@@ -9,7 +9,6 @@
 #define LIBRARIES_PINDIGITAL_DeviceHelper_H_
 
 #include <Arduino.h>
-#include <interfaces/EntityServiceBase.h>
 
 #include "Consts/PagesConsts.h"
 #include "Consts/CommandsConsts.h"
@@ -25,18 +24,18 @@
 
 const PROGMEM char DeviceHelper_NAME[] = "deviceHelper";
 
-class DeviceHelper:public Loopable, public AbstractSensorService{
+class DeviceHelper:public Loopable{
 
 public:
 	DeviceHelper(Loopable** loopItems,uint8_t loopItemsSize,
-			EntityService** services,uint8_t servicesSize,
-			AbstractSensorList* sensors,
 			SendAble** senders,uint8_t sendersSize,
-			EspSettingsBox* espSettingsBox):AbstractSensorService(sensors){
-		constr( loopItems,loopItemsSize,services,servicesSize,sensors, senders,sendersSize,espSettingsBox);
+			EspSettingsBox* espSettingsBox){
+		constr( loopItems,loopItemsSize,nullptr,0, espSettingsBox);
 	}
 
-	void constr (Loopable** loopItems,uint8_t loopItemsSize, EntityService** services,uint8_t servicesSize, AbstractSensorList* sensors, SendAble** senders,uint8_t sendersSize, EspSettingsBox* espSettingsBox);
+	void constr (Loopable** loopItems,uint8_t loopItemsSize,
+			SendAble** senders,uint8_t sendersSize,
+			EspSettingsBox* espSettingsBox);
 	void displayDetails();
 	boolean loop();
 
@@ -61,10 +60,6 @@ public:
 	virtual int getPageIdByName(const char*  name);
 protected:
 	void checkResetPin(int resetPin);
-	EntityService* getEntityServiceByIdName(uint8_t id,String entityName);
-
-	EntityService* getEntityServiceById(uint8_t id);
-	EntityService* getEntityServiceByName(String name);
 private:
 
 	EspSettingsBox* espSettingsBox;
@@ -72,7 +67,6 @@ private:
 	Loopable** loopItems;
 	uint8_t loopItemsSize;
 
-	EntityService** services;
 	uint8_t servicesSize;
 
 	SendAble** senders;

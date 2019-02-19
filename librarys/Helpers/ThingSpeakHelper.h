@@ -14,13 +14,13 @@
 #include "StatusMessage/StatusMessage.h"
 #include "ESP_Consts.h"
 #include "Consts/CommandsConsts.h"
-#include "interfaces/SendAbleAbstractSensors.h"
 
 #include "extraBoxes/EspSett_ThSpeak.h"
 
 const PROGMEM char ThingSpeakHelper_NAME[] = "thingSpeakHelper";
 
-class ThingSpeakHelper: public SendAbleAbstractSensors{
+class ThingSpeakHelper{
+	/*
 public:
 	ThingSpeakHelper(EspSettingsBox* espSettingsBox,WiFiHelper* wifiHelper){
 		this->espSettingsBox=espSettingsBox;
@@ -105,6 +105,7 @@ public:
 					return "";
 			}
 		*/
+	/*
 	}
 
 	StatusMessage recreateThingSpeakChannelskWithCheck(AbstractSensorList* list){
@@ -176,30 +177,7 @@ public:
 			saveThingSpeakChannelCreation(getResult);
 			delay(10);
 		}
-/*
-		if(countSet!=0){
-				//---------------------------------------------------------------------------
-				for(uint8_t i=0;i<size;i++){
-					AbstractSensor* item=items[i];
-					boolean doSave=false;
 
-					if(item->getAutoCreateChannel()){
-						for(uint8_t j=0;j<item->getItemCount();j++){
-							if(item->getFieldId(j)!=0 && item->getSetAllowed(j)){
-								item->setQueue(j, getThingSpeakReadChannelName(item->getFieldIdStr(j)));
-								doSave=true;
-								delay(10);
-							}
-						}
-
-						if(doSave){
-							espSettingsBox->saveAbstractSensorToFile(item);
-						}
-					}
-				}
-				//---------------------------------------------------------------------------
-		}
-*/
 		result+=String(countGet);
 		result+=FPSTR(MESSAGE_THINGSPEAK_GET_CHANNELS);
 		result+=FPSTR(MESSAGE_SPACE);
@@ -311,7 +289,7 @@ public:
 private:
 	EspSettingsBox* espSettingsBox;
 	WiFiHelper* wifiHelper;
-	AbstractSensorList* sensors;
+	AbstractSensorList* sensors;*/
 };
 
 #endif /* LIBRARIES_HELPERS_THINGSPEAKHELPER_H_ */

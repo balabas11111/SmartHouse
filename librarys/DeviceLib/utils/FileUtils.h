@@ -17,10 +17,19 @@ public:
 	FileUtils();
 	virtual ~FileUtils();
 
-	static boolean saveJsonToFile(String fileName,JsonObject* obj);
-	static boolean loadJsonFromFile(String fileName, JsonObject* obj);
+	static bool init();
+	static boolean exists(String fileName);
+	static boolean existsAndHasSize(String fileName);
+
+	static boolean saveJsonToFile(String fileName,JsonObject& obj);
+	static boolean loadJsonFromFile(String fileName, JsonObject& obj);
 	static boolean saveStringToFile(String fileName,String value);
 	static String loadStringFromFile(String fileName);
+
+	static File getFile(String fileName,const char* mode);
+	//static boolean loadJsonFromFile(String fileName, JsonObject& obj, DynamicJsonBuffer* buf);
+protected:
+	//static bool checkSpiff();
 };
 
 #endif /* LIBRARIES_DEVICELIB_UTILS_FILEUTILS_H_ */

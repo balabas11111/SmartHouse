@@ -42,7 +42,7 @@ public:
 	EspSett_Mq();
 	virtual ~EspSett_Mq();
 
-	virtual uint8_t getId(){
+	virtual int getId(){
 		return ExtraBox_mqtt;
 	}
 

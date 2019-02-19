@@ -44,7 +44,7 @@ public:
 	}
 	virtual ~EspSett_SmartHouse(){};
 
-	virtual uint8_t getId(){
+	virtual int getId(){
 		return ExtraBox_SmartHouse;
 	}
 

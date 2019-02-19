@@ -42,7 +42,7 @@ public:
 
 	virtual ~ESPSett_Ntp(){};
 
-	virtual uint8_t getId(){
+	virtual int getId(){
 		return ExtraBox_Ntp;
 	}
 

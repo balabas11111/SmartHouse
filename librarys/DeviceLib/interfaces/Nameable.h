@@ -12,6 +12,12 @@
 
 class Nameable {
 public:
+	Nameable(){};
+
+	Nameable(String name){
+		this->name=name;
+	};
+
 	virtual ~Nameable(){};
 
 	virtual String getName()=0;

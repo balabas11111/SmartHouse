@@ -69,7 +69,7 @@ public:
 	}
 	virtual ~EspSett_Own(){};
 
-	virtual uint8_t getId() override{
+	virtual int getId() override{
 		return ExtraBox_Own;
 	}
 

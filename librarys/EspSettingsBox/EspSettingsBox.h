@@ -8,7 +8,6 @@
 #ifndef LIBRARIES_TIMETRIGGER_ESPSETTINGSBOX_H_
 #define LIBRARIES_TIMETRIGGER_ESPSETTINGSBOX_H_
 
-#include <interfaces/EntityServiceBase.h>
 #include "Arduino.h"
 #include "FS.h"
 #include "ArduinoJson.h"
@@ -21,15 +20,16 @@
 #include "Consts/CommandsConsts.h"
 
 #include "interfaces/Initializable.h"
-#include "services/AbstractSensorService.h"
 #include "extraBoxes/EspSett_Own.h"
+#include "StatusMessage/StatusMessage.h"
+#include "StatusMessage/StatusMessageConsts.h"
 
 #include "ExtraSettingsBoxService.h"
 
 const PROGMEM char EspSettingsBox_NAME[] = "espSettingsBox";
 
 class EspSettingsBox: public Initializable,
-	public ExtraSettingsBoxService, public EntityServiceBase {
+	public ExtraSettingsBoxService {
 
 public:
 	EspSettingsBox(){
@@ -61,13 +61,6 @@ public:
 	String getName(){
 		return FPSTR(EspSettingsBox_NAME);
 	}
-
-	uint8_t getEntityId(){
-		return Entity_settings;
-	}
-
-	virtual int getAbstractItems(JsonArray& items,uint8_t pageId);
-	virtual int postAbstractItems(JsonArray& items,uint8_t pageId);
 
 	StatusMessage processJson(String page,String json){
 		if(page==FPSTR(PAGE_MANAGE) && json==FPSTR(COMMAND_DELETE_SETTINGS)){

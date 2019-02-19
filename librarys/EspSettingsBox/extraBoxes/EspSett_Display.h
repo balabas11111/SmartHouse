@@ -35,7 +35,7 @@ public:
 	}
 	virtual ~EspSett_Display(){};
 
-	virtual uint8_t getId(){
+	virtual int getId(){
 		return ExtraBox_Display;
 	}
 
