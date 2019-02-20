@@ -44,12 +44,12 @@
 		<link>
 			<name>libraries/Adafruit_BME280</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/Adafruit_BME280</location>
+			<location>D:/projects/!!SmartHouse/librarys/Adafruit_BME280</location>
 		</link>
 		<link>
 			<name>libraries/Adafruit_Sensor</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/Adafruit_Sensor</location>
+			<location>D:/projects/!!SmartHouse/librarys/Adafruit_Sensor</location>
 		</link>
 		<link>
 			<name>libraries/ArduinoJson</name>
@@ -59,17 +59,17 @@
 		<link>
 			<name>libraries/BH1750</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/BH1750</location>
+			<location>D:/projects/!!SmartHouse/librarys/BH1750</location>
 		</link>
 		<link>
 			<name>libraries/BeeperB</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/BeeperB</location>
+			<location>D:/projects/!!SmartHouse/librarys/BeeperB</location>
 		</link>
 		<link>
 			<name>libraries/DHT_sensor_library</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DHT_sensor_library/1.2.2</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DHT_sensor_library/1.3.0</locationURI>
 		</link>
 		<link>
 			<name>libraries/DS3231</name>
@@ -79,12 +79,12 @@
 		<link>
 			<name>libraries/DallasTemperature</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DallasTemperature/3.7.6</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DallasTemperature/3.8.0</locationURI>
 		</link>
 		<link>
 			<name>libraries/DeviceLib</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/DeviceLib</location>
+			<location>D:/projects/!!SmartHouse/librarys/DeviceLib</location>
 		</link>
 		<link>
 			<name>libraries/ESP8266HTTPClient</name>
@@ -109,12 +109,12 @@
 		<link>
 			<name>libraries/ESP8266_NTP_pir</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/ESP8266_NTP_pir</location>
+			<location>D:/projects/!!SmartHouse/librarys/ESP8266_NTP_pir</location>
 		</link>
 		<link>
 			<name>libraries/EspSettingsBox</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/EspSettingsBox</location>
+			<location>D:/projects/!!SmartHouse/librarys/EspSettingsBox</location>
 		</link>
 		<link>
 			<name>libraries/Hash</name>
@@ -124,17 +124,17 @@
 		<link>
 			<name>libraries/NTPClient</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/NTPClient</location>
+			<location>D:/projects/!!SmartHouse/librarys/NTPClient</location>
 		</link>
 		<link>
 			<name>libraries/OLED</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/OLED</location>
+			<location>D:/projects/!!SmartHouse/librarys/OLED</location>
 		</link>
 		<link>
 			<name>libraries/OneWire</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire/2.3.3</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire/2.3.4</locationURI>
 		</link>
 		<link>
 			<name>libraries/PubSubClient</name>
@@ -149,12 +149,12 @@
 		<link>
 			<name>libraries/TM1637</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/TM1637</location>
+			<location>D:/projects/!!SmartHouse/librarys/TM1637</location>
 		</link>
 		<link>
 			<name>libraries/TimeTrigger</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/TimeTrigger</location>
+			<location>D:/projects/!!SmartHouse/librarys/TimeTrigger</location>
 		</link>
 		<link>
 			<name>libraries/Wire</name>

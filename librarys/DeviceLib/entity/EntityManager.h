@@ -11,7 +11,7 @@
 #include  <Arduino.h>
 #include <ArduinoJson.h>
 #include <entity/EntityConsts.h>
-#include <entity/Entity.h>
+#include <entity/model/base/Entity.h>
 #include <list>
 #include <utils/FileUtils.h>
 //Storage paths
@@ -50,8 +50,8 @@ public:
 	JsonObject& getEntityModel(const char* daoName,const char* entityName);
 	JsonObject& getEntityData(const char* daoName,const char* entityName);
 
-	JsonObject& getEntityModel_field(const char* daoName,const char* entityName,const char* fieldName);
-	JsonObject& getEntityData_field(const char* daoName,const char* entityName);
+	JsonObject& getEntityModel_node(const char* daoName,const char* entityName,const char* nodeName);
+	JsonObject& getEntityData_node(const char* daoName,const char* entityName,const char* nodeName);
 /*
 	template <typename T>
 	T getEntityModel_RootVal(const char* daoName,const char* entityName,const char* keyName){

@@ -9,7 +9,7 @@
 #define LIBRARIES_DEVICELIB_ENTITY_ENTITYCONSTS_H_
 
 #include <Arduino.h>
-//Entity classes
+
 const PROGMEM char ENTITY_CLASS_object[] = "object";
 const PROGMEM char ENTITY_CLASS_table[]  = "table";
 //JsonKeys
@@ -47,6 +47,7 @@ const PROGMEM char dict[]            = "dict";
 
 //default field values and non cached vars
 const PROGMEM char JSONKEY_default[] = "default";
+const PROGMEM char JSONKEY_tvar[]     = "tvar";
 const PROGMEM char JSONKEY_var[]     = "var";
 
 //base field values
@@ -60,5 +61,7 @@ const PROGMEM char JSONKEY_light[]    = "light";
 const PROGMEM char JSON_SERVICE_ThingSpeakService[]    = "ThingSpeakService";
 const PROGMEM char JSON_SERVICE_MinMaxALarmService[]   = "MinMaxALarmService";
 
+//base daos
 
+const PROGMEM char JSON_DAO_sensors[]   = "sensors";
 #endif /* LIBRARIES_DEVICELIB_ENTITY_ENTITYCONSTS_H_ */
