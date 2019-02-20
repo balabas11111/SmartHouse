@@ -24,12 +24,14 @@ public:
 	virtual const char* const* fields_Var() =0;
 	virtual const char* const* fields_TVar() =0;
 
+	virtual const char* const* fields_Persist() =0;
 	virtual const char* const* fields_WithDefault() =0;
 	virtual const char* const* fields_DefaultValues() =0;
 
 	virtual const uint8_t fields_Size()=0;
 	virtual const uint8_t fields_Var_Size()=0;
 	virtual const uint8_t fields_TVar_Size()=0;
+	virtual const uint8_t fields_Persist_Size()=0;
 	virtual const uint8_t fields_WithDefault_Size()=0;
 
 	virtual boolean isTable() = 0;
