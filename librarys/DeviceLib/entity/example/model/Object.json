@@ -1,5 +1,4 @@
  {
-    
  	"name": "bmeSensor",
    "descr": "bmeSensor Descriptor",
  	 "dao": "sensors", 
@@ -10,15 +9,13 @@
   "action": { 
 			   "cache":"","list":"","get": ""
 		    },
-       "security": {
-               	"list": ["temp","hum","press","descr","checked"],	
-   				"set": ["descr"],
-   				"put": ["temp","hum","press"],
-   				"load": ["descr"],
-   				"save": ["descr","val","checked","hash"]
+"security": {
+	           	"list": ["temp","hum","press","descr","checked"],	
+				"set": ["descr"],
+				"put": ["temp","hum","press"],
+				"load": ["descr"],
+				"save": ["descr","val","checked","hash"]
    			},
- 
-   "default": {"descr": "Default descr field value"},
  
    "fields": {
 				"temp": "float",
@@ -26,6 +23,9 @@
 				"press": "float",
 				"descr": "String",
 				"checked": "boolean"
-			  }
+			  },
+			  
+  "default": {"descr": "Default descr field value"},
+      "var": {"temp":"", "hum": "", "press": ""}
 }
  

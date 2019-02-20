@@ -1,53 +1,13 @@
  {
  	"name": "ds18d20",
-   "descr": "Dallas temp",
- 	"path": "sensors", 
-   "class": "Table",
-    "hash": ["descr"],
+ 	"dao": "sensors", 
+   "class": "table",
 	
- "openFor": {"thingSpeakService":"","timeIntervalService": ""},
-  "action": { 
-			   "cache":"","list":"","get": ""
-		    },
-"security": {
-               	"list": ["descr"],	
-   				"set": ["descr"],
-   				"put": [],
-   				"load": ["descr"],
-   				"save": ["descr","checked"]
-   			},
- 
-  "default": {"descr": "Default descr field value"},
- 
-   "fields": {
-				"descr": "String"
-			  },
-	"table": {
-				 	"name": "table",
-				    "hash": ["name","descr"],
-				    "length": 0,
-					
-				 "openFor": {"thingSpeakService":"","timeIntervalService": ""},
-				  "action": { 
-							   "cache":"","list":"","get": ""
-						    },
-				       "security": {
-				               	"list": ["temp","name","descr","checked"],	
-				   				"set": ["descr"],
-				   				"put": ["temp","descr"],
-				   				"load": [],
-				   				"save": ["temp","name","descr","checked"]
-				   			},
-				 
-				   "default": {"descr": "Default descr field value"},
-				 
-				   "fields": {
-								"name": "String",
-								"temp": "float",
-								"descr": "String",
-								"checked": "boolean"
-							  },
-				   "dict": {"name": "descr"}
-			}
+   "data": {"descr": "Some DS18D20 description"},
+  "table": [
+				{"id": 0, "name": "name0", "temp": "10.2", "descr": "tempMiddle","checked": "1"},
+				{"id": 1, "name": "name1", "temp": "10.3", "descr": "tempUp",    "checked": "1"},
+				{"id": 2, "name": "name2", "temp": "10",   "descr": "tempDown",  "checked": "1"}
+		   ]
 }
  

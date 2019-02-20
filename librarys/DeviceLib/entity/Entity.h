@@ -11,6 +11,7 @@
 #include  <Arduino.h>
 #include <ArduinoJson.h>
 
+#include <entity/EntityConsts.h>
 #include  <interfaces/Nameable.h>
 
 class Entity:public Nameable{

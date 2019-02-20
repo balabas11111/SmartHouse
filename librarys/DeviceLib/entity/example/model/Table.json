@@ -1,11 +1,11 @@
  {
  	"name": "ds18d20",
    "descr": "Dallas temp",
- 	"path": "sensors", 
-   "class": "Table",
+ 	"dao": "sensors", 
+   "class": "table",
     "hash": ["descr"],
 	
- "openFor": {"thingSpeakService":"","timeIntervalService": ""},
+    "open": {},
   "action": { 
 			   "cache":"","list":"","get": ""
 		    },
@@ -23,31 +23,32 @@
 				"descr": "String"
 			  },
 	"table": {
-				 	"name": "table",
-				    "hash": ["name","descr"],
-				    "length": 0,
-					
-				 "openFor": {"thingSpeakService":"","timeIntervalService": ""},
-				  "action": { 
-							   "cache":"","list":"","get": ""
-						    },
-				       "security": {
-				               	"list": ["temp","name","descr","checked"],	
-				   				"set": ["descr"],
-				   				"put": ["temp","descr"],
-				   				"load": [],
-				   				"save": ["temp","name","descr","checked"]
-				   			},
-				 
-				   "default": {"descr": "Default descr field value"},
-				 
-				   "fields": {
-								"name": "String",
-								"temp": "float",
-								"descr": "String",
-								"checked": "boolean"
-							  },
-				   "dict": {"name": "descr"}
+			 	"name": "table",
+			    "hash": ["name","descr"],
+			   "empty": 1,
+			 "autoinc": "id",
+				
+			 "open": {"thingSpeakService":"","timeIntervalService": ""},
+			  "action": { 
+						   "cache":"","list":"","get": ""
+					    },
+			       "security": {
+			               	"list": ["temp","name","descr","checked"],	
+			   				"set": ["descr"],
+			   				"put": ["temp","descr"],
+			   				"load": [],
+			   				"save": ["temp","name","descr","checked"]
+			   			},
+			 
+			   "default": {"descr": "Default descr field value"},
+			 
+			   "fields": {
+							"name": "String",
+							"temp": "float",
+							"descr": "String",
+							"checked": "boolean"
+						  },
+			   "dict": {"name": "descr"}
 			}
 }
  

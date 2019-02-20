@@ -6,6 +6,7 @@
  */
 
 #include <entity/EntityManager.h>
+#include <entity/EntityConsts.h>
 
 EntityManager::EntityManager(Entity* items[]) {
 	this->entities = std::list<Entity*>(items, items + sizeof(items)/sizeof(Entity*));
@@ -32,15 +33,15 @@ int EntityManager::begin(){
 		Serial.println(FPSTR("New data"));
 		this->root = this->rootBuf.createObject();
 
-		getRoot().createNestedObject(FPSTR(MODEL_KEY));
-		getRoot().createNestedObject(FPSTR(DATA_KEY));
+		getRoot().createNestedObject(FPSTR(JSONKEY_model));
+		getRoot().createNestedObject(FPSTR(JSONKEY_data));
 	}
 
 	Serial.print(FPSTR("Root success="));
 	Serial.print(root.success());
 
 	//Validate and init Entity descriptors
-	initModels();
+	init();
 
 	return entities.size();
 }
@@ -54,19 +55,11 @@ DynamicJsonBuffer& EntityManager::getRootBuf() {
 }
 
 JsonObject& EntityManager::getModel() {
-	return getRoot().get<JsonObject>(FPSTR(MODEL_KEY));
+	return getRoot().get<JsonObject>(FPSTR(JSONKEY_model));
 }
 
 JsonObject& EntityManager::getData() {
-	return getRoot().get<JsonObject>(FPSTR(DATA_KEY));
-}
-
-JsonObject& EntityManager::getEntityModel(String name) {
-	return getModel().get<JsonObject>(name);
-}
-
-JsonObject& EntityManager::getEntityData(String name) {
-	return getData().get<JsonObject>(name);
+	return getRoot().get<JsonObject>(FPSTR(JSONKEY_data));
 }
 
 int EntityManager::copyJsonObjects(JsonObject& from, JsonObject& to,bool over) {
@@ -105,11 +98,33 @@ int EntityManager::copyJsonObjects(JsonObject& from, JsonObject& to,bool over) {
 	return result;
 }
 
-int EntityManager::initModels() {
-	Serial.println(FPSTR("Init entity models"));
+int EntityManager::constructDataModel() {
+}
 
-	for (std::list<Entity*>::iterator it=this->entities.begin(); it != this->entities.end(); ++it){
-		Entity* e=*it;
+JsonObject& EntityManager::getDaoModel(const char* daoName) {
+}
+
+JsonObject& EntityManager::getDaoData(const char* daoName) {
+}
+
+JsonObject& EntityManager::getEntityModel_field(const char* daoName,
+		const char* entityName, const char* fieldName) {
+}
+
+JsonObject& EntityManager::getEntityData_field(const char* daoName,
+		const char* entityName) {
+}
+
+JsonObject& EntityManager::getEntityModel(const char* daoName,
+		const char* entityName) {
+}
+
+JsonObject& EntityManager::getEntityData(const char* daoName,
+		const char* entityName) {
+}
+/*
+int EntityManager::initModels() {
+
 
 		Serial.print(e->getDao());
 		Serial.print(FPSTR("."));
@@ -127,7 +142,7 @@ int EntityManager::initModels() {
 
 		this->tmpBuf.clear();
 		JsonObject& from=this->tmpBuf.parse(e->getModel());
-		JsonObject& target = getEntityModel(e->getName());
+		JsonObject& target = getEntityModel("",e->getName().c_str());
 
 		copyJsonObjects(from, target, true);
 		this->tmpBuf.clear();
@@ -138,7 +153,30 @@ int EntityManager::initModels() {
 
 		//check if data pass current model
 
+	return 1;
+}
+*/
+
+int EntityManager::init() {
+	int result=0;
+	Serial.println(FPSTR("Init entity models"));
+
+	for (std::list<Entity*>::iterator it=this->entities.begin(); it != this->entities.end(); ++it){
+		Entity* e=*it;
+
+		//Init Model. Create models and Data keys in root.
+
+		initEntitysModel(e);
+
+		//load overrided Entity Model details from file. Process Model and Entity here
+		loadEntitysModel(e);
+
+		//load data values from file
+		loadEntitysData(e);
+
+		//fields which should be included as placeHolders. Should be saved by directLink into Json by full path key
+		prepareTemplateFields(e);
 	}
 
-	return 1;
+	return result;
 }
