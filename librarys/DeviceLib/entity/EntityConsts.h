@@ -15,6 +15,7 @@ const PROGMEM char ENTITY_CLASS_table[]  = "table";
 //JsonKeys
 const PROGMEM char JSONKEY_model[] = "model";
 const PROGMEM char JSONKEY_data[]  = "data";
+const PROGMEM char JSONKEY_template[]  = "template";
 
 const PROGMEM char JSONKEY_id[]      = "id";
 const PROGMEM char JSONKEY_name[]    = "name";
@@ -49,6 +50,7 @@ const PROGMEM char dict[]            = "dict";
 const PROGMEM char JSONKEY_default[] = "default";
 const PROGMEM char JSONKEY_tvar[]     = "tvar";
 const PROGMEM char JSONKEY_var[]     = "var";
+const PROGMEM char JSONKEY_persist[]     = "persist";
 
 //base field values
 const PROGMEM char JSONKEY_temp[]     = "temp";
@@ -62,6 +64,9 @@ const PROGMEM char JSON_SERVICE_ThingSpeakService[]    = "ThingSpeakService";
 const PROGMEM char JSON_SERVICE_MinMaxALarmService[]   = "MinMaxALarmService";
 
 //base daos
-
 const PROGMEM char JSON_DAO_sensors[]   = "sensors";
+//defaults
+const char* JSONKEY_null  = (char*)0;
+const char* JSONKEY_PERCENT  = "%";
+
 #endif /* LIBRARIES_DEVICELIB_ENTITY_ENTITYCONSTS_H_ */

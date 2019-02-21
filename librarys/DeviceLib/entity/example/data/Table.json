@@ -3,7 +3,7 @@
  	"dao": "sensors", 
    "class": "table",
 	
-   "data": {"descr": "Some DS18D20 description"},
+   "fields": {"descr": "Some DS18D20 description"},
   "table": [
 				{"id": 0, "name": "name0", "temp": "10.2", "descr": "tempMiddle","checked": "1"},
 				{"id": 1, "name": "name1", "temp": "10.3", "descr": "tempUp",    "checked": "1"},

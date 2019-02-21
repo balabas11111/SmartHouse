@@ -16,19 +16,15 @@
 #include <utils/FileUtils.h>
 //Storage paths
 //filenames
-const PROGMEM char BASE_PATH[]   ="/Store/EntityDao/";
-const PROGMEM char MODEL_FILE[]   ="Model.json";
-const PROGMEM char DATA_FILE[]   ="Data.json";
 
-const PROGMEM char STORAGE_PATH[]= "/Store/EntityDao/Data.json";
+const PROGMEM char ENTITY_MANAGER_STORAGE_FILE_PATH[]= "/Store/Entity/store.json";
 
-const PROGMEM char MODEL_PATH[]  ="/Store/EntityDao/Model/";
-const PROGMEM char DATA_PATH[]   ="/Store/EntityDao/Data/";
-const PROGMEM char TEMP_PATH[]   ="/Store/EntityDao/Temp/";
-const PROGMEM char CACHE_PATH[]  ="/Store/EntityDao/Cache/";
 /*
- //root/model/dao/entityName/Model - description of model
- //root/data/dao/entityName/Data  - data fields/tables
+const PROGMEM char TEMP_PATH[]   ="/Store/Entity/Temp/";
+const PROGMEM char CACHE_PATH[]  ="/Store/Entity/Cache/";
+
+ //root/model/dao/entityName - description of model
+ //root/data/dao/entityName  - data fields/tables
  */
 class EntityManager {
 public:
@@ -40,10 +36,14 @@ public:
 	int begin();
 
 	JsonObject& getRoot();
+	JsonObject& getTmp();
 
 	JsonObject& getModel();
 	JsonObject& getData();
 
+	JsonObject& getTmpModel();
+	JsonObject& getTmpData();
+/*
 	JsonObject& getDaoModel(const char* daoName);
 	JsonObject& getDaoData(const char* daoName);
 
@@ -52,12 +52,21 @@ public:
 
 	JsonObject& getEntityModel_node(const char* daoName,const char* entityName,const char* nodeName);
 	JsonObject& getEntityData_node(const char* daoName,const char* entityName,const char* nodeName);
-/*
+
 	template <typename T>
-	T getEntityModel_RootVal(const char* daoName,const char* entityName,const char* keyName){
-		return getEntityModel(entityName).get<T>(keyName);
+	T getEntity_Val(const char* daoName,const char* entityName,const char* field){
+		return getEntityModel_node(daoName,entityName,JSONKEY_data).get<T>(field);
 	}
 
+	template <typename T>
+	T setEntity_Val(const char* daoName,const char* entityName,const char* field,T value){
+		return getEntityModel_node(daoName,entityName,JSONKEY_data).set<T>(field,value);
+	}
+
+	bool containsKey(JsonObject& obj,const char* key);
+*/
+
+/*
 	template <typename T>
 	T getEntityData_RootVal(const char* daoName,const char* entityName,const char* keyName){
 		return getEntityData(entityName).get<T>(keyName);
@@ -73,10 +82,11 @@ public:
 	int copyJsonObjects(JsonObject& from, JsonObject& to,bool over);
 
 protected:
-	int initEntitysModel(Entity* entity);
-	int loadEntitysModel(Entity* entity);
-	int loadEntitysData(Entity* entity);
+	int initEntity(Entity* entity);
+	int loadEntity(Entity* entity);
 	int prepareTemplateFields(Entity* entity);
+
+	int copyObjFields(JsonObject& from, JsonObject& to);
 
 	int init();
 
@@ -85,7 +95,11 @@ protected:
 
 	DynamicJsonBuffer tmpBuf;
 	DynamicJsonBuffer rootBuf;
+	JsonVariant tmp;
 	JsonVariant root;
+
+	bool entFileExists=false;
+	int templFields=0;
 };
 
 #endif /* LIBRARIES_DEVICELIB_ENTITY_ENTITYMANAGER_H_ */

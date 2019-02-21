@@ -12,6 +12,9 @@
 #include <ArduinoJson.h>
 #include <FS.h>
 
+const PROGMEM char FILE_MODE_READ[]= "r";
+const PROGMEM char FILE_MODE_WRITE[]= "w";
+
 class FileUtils {
 public:
 	FileUtils();

@@ -15,9 +15,10 @@ class AbstractCLassDescr: public HashableItem {
 public:
 	virtual ~AbstractCLassDescr(){};
 
-	virtual const char* getName() = 0;
-	virtual const char* getDao() = 0;
-	virtual const char* getClass() = 0;
+	virtual const char* getName(){return this->name;};
+	virtual const char* getDao(){return this->dao;};
+	virtual const char* getClass(){return this->clazz;};
+	virtual const char* getDescr(){return this->descr;};
 
 	//description and variables
 	virtual const char* const*  fields() =0;
@@ -49,7 +50,11 @@ public:
 	virtual const char** getPut_Fields() =0;
 	virtual const char** getGet_Fields() =0;
 */
-
+protected:
+		const char* name;
+		const char* dao;
+		const char* clazz;
+		const char* descr;
 };
 
 #endif /* LIBRARIES_DEVICELIB_ENTITY_MODEL_ABSTRACTCLASSDESCR_H_ */

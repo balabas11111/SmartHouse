@@ -30,6 +30,7 @@ int EntityManager::begin(){
 
 	getRoot().createNestedObject(FPSTR(JSONKEY_model));
 	getRoot().createNestedObject(FPSTR(JSONKEY_data));
+	getRoot().createNestedObject(FPSTR(JSONKEY_template));
 
 	Serial.print(FPSTR("Root success="));
 	Serial.print(root.success());
@@ -41,6 +42,9 @@ int EntityManager::begin(){
 
 JsonObject& EntityManager::getRoot() {
 	return this->root;
+}
+JsonObject& EntityManager::getTmp() {
+	return this->tmp;
 }
 
 DynamicJsonBuffer& EntityManager::getRootBuf() {
@@ -55,48 +59,238 @@ JsonObject& EntityManager::getData() {
 	return getRoot().get<JsonObject>(FPSTR(JSONKEY_data));
 }
 
-JsonObject& EntityManager::getDaoModel(const char* daoName) {
-	return getModel().get<JsonObject>(daoName);
+JsonObject& EntityManager::getTmpModel() {
+	return getTmp().get<JsonObject>(FPSTR(JSONKEY_model));
 }
 
-JsonObject& EntityManager::getDaoData(const char* daoName) {
-	return getData().get<JsonObject>(daoName);
-}
-
-JsonObject& EntityManager::getEntityModel(const char* daoName,const char* entityName) {
-	return getDaoModel(daoName).get<JsonObject>(entityName);
-}
-
-JsonObject& EntityManager::getEntityData(const char* daoName,const char* entityName) {
-	return getDaoData(daoName).get<JsonObject>(entityName);
-}
-
-JsonObject& EntityManager::getEntityModel_node(const char* daoName,const char* entityName, const char* nodeName) {
-	return getEntityModel(daoName, entityName).get<JsonObject>(nodeName);
-}
-
-JsonObject& EntityManager::getEntityData_node(const char* daoName,const char* entityName, const char* nodeName) {
-	return getEntityData(daoName, entityName).get<JsonObject>(nodeName);
+JsonObject& EntityManager::getTmpData() {
+	return getTmp().get<JsonObject>(FPSTR(JSONKEY_data));
 }
 
 int EntityManager::init() {
 	int result=0;
 	Serial.println(FPSTR("Init entity models"));
 
+	if(FileUtils::existsAndHasSize(FPSTR(ENTITY_MANAGER_STORAGE_FILE_PATH))){
+		File store=FileUtils::getFile(FPSTR(ENTITY_MANAGER_STORAGE_FILE_PATH), FILE_MODE_READ);
+		tmpBuf.clear();
+
+		tmp=tmpBuf.parse(store);
+		entFileExists=tmp.success()
+						&& getTmp().containsKey(FPSTR(JSONKEY_model))
+						&& getTmp().containsKey(FPSTR(JSONKEY_data));
+
+		Serial.println(FPSTR("Entities file exists"));
+	}else{
+		Serial.println(FPSTR("Entities file not found. Default"));
+	}
+
 	for (std::list<Entity*>::iterator it=this->entities.begin(); it != this->entities.end(); ++it){
 		Entity* e=*it;
 
-		//Init Model. Create models and Data keys in root.
-		initEntitysModel(e);
-
-		//load overrided Entity Model details from file. Process Model and Entity here
-		loadEntitysModel(e);
-
-		//load data values from file
-		loadEntitysData(e);
+		initEntity(e);
+		loadEntity(e);
 
 		//fields which should be included as placeHolders. Should be saved by directLink into Json by full path key
 		prepareTemplateFields(e);
+	}
+
+	return result;
+}
+
+int EntityManager::initEntity(Entity* entity) {
+	//Init Model. Create default models and Data keys in root.
+	int result=0;
+	const char* daoName= entity->getDao();
+	const char* entityName= entity->getName();
+
+	Serial.print(FPSTR("init dao="));
+	Serial.print(daoName);
+
+	JsonObject& model = getModel();
+	JsonObject& data  = getData();
+	JsonObject& templ  = getRoot().get<JsonObject>(FPSTR(JSONKEY_template));
+
+	if(!model.containsKey(FPSTR(daoName))){
+		Serial.print(FPSTR(".m"));
+		model.createNestedObject(FPSTR(daoName));
+	}
+	if(!data.containsKey(FPSTR(daoName))){
+		Serial.print(FPSTR(".d"));
+		data.createNestedObject(FPSTR(daoName));
+	}
+	if(!templ.containsKey(FPSTR(daoName))){
+		Serial.print(FPSTR(".t"));
+		templ.createNestedObject(FPSTR(daoName));
+	}
+
+	JsonObject& modelDao = model.get<JsonObject>(FPSTR(daoName));
+	JsonObject& dataDao  = data.get<JsonObject>(FPSTR(daoName));
+	JsonObject& templDao  = templ.get<JsonObject>(FPSTR(daoName));
+
+	if(!modelDao.containsKey(FPSTR(entityName))){
+		Serial.print(FPSTR(".m dao"));
+		modelDao.createNestedObject(FPSTR(entityName));
+	}
+	if(!dataDao.containsKey(FPSTR(entityName))){
+		Serial.print(FPSTR(".d dao"));
+		dataDao.createNestedObject(FPSTR(entityName));
+	}
+	if(!templDao.containsKey(FPSTR(entityName))){
+		Serial.print(FPSTR(".t dao"));
+		templDao.createNestedObject(FPSTR(entityName));
+	}
+
+	Serial.println(FPSTR("."));
+
+	JsonObject& modelEntity = modelDao.get<JsonObject>(FPSTR(entityName));
+	JsonObject& dataEntity  = dataDao.get<JsonObject>(FPSTR(entityName));
+	JsonObject& tempEntity  = templDao.get<JsonObject>(FPSTR(entityName));
+
+	Serial.print(FPSTR("m d structure"));
+
+	modelEntity.set(FPSTR(JSONKEY_name),FPSTR(entity->getName()));
+	modelEntity.set(FPSTR(JSONKEY_descr),FPSTR(entity->getDescr()));
+	modelEntity.set(FPSTR(JSONKEY_class),FPSTR(entity->getClass()));
+
+	dataEntity.set(FPSTR(JSONKEY_name),FPSTR(entity->getName()));
+	dataEntity.set(FPSTR(JSONKEY_descr),FPSTR(entity->getDescr()));
+	dataEntity.set(FPSTR(JSONKEY_class),FPSTR(entity->getClass()));
+
+	tempEntity.set(FPSTR(JSONKEY_name),FPSTR(entity->getName()));
+	tempEntity.set(FPSTR(JSONKEY_descr),FPSTR(entity->getDescr()));
+	tempEntity.set(FPSTR(JSONKEY_class),FPSTR(entity->getClass()));
+
+	JsonObject& fieldsM=modelEntity.createNestedObject(FPSTR(JSONKEY_fields));
+	JsonObject& varM=modelEntity.createNestedObject(FPSTR(JSONKEY_var));
+	JsonObject& tvarM=modelEntity.createNestedObject(FPSTR(JSONKEY_tvar));
+	JsonObject& persistM=modelEntity.createNestedObject(FPSTR(JSONKEY_persist));
+	JsonObject& defaulTM=modelEntity.createNestedObject(FPSTR(JSONKEY_default));
+
+	JsonObject& dataD=modelEntity.createNestedObject(FPSTR(JSONKEY_fields));
+
+	if(entity->fields_Size()>0){
+		for(uint8_t i=0;i<entity->fields_Size();i++){
+			fieldsM.set(FPSTR(entity->fields()[i]),JSONKEY_null);
+			dataD.set(FPSTR(entity->fields()[i]),JSONKEY_null);
+		}
+		for(uint8_t i=0;i<entity->fields_Var_Size();i++){
+			varM.set(FPSTR(entity->fields_Var()[i]),JSONKEY_null);
+		}
+		for(uint8_t i=0;i<entity->fields_Var_Size();i++){
+			tvarM.set(FPSTR(entity->fields_Var()[i]),JSONKEY_null);
+		}
+		for(uint8_t i=0;i<entity->fields_Persist_Size();i++){
+			persistM.set(FPSTR(entity->fields_Persist()[i]),JSONKEY_null);
+		}
+		for(uint8_t i=0;i<entity->fields_WithDefault_Size();i++){
+			defaulTM.set(FPSTR(entity->fields_WithDefault()[i]),FPSTR(entity->fields_DefaultValues()[i]));
+			dataD.set(FPSTR(entity->fields()[i]),FPSTR(entity->fields_DefaultValues()[i]));
+		}
+
+		Serial.println(FPSTR("Entity default="));
+		getRoot().prettyPrintTo(Serial);
+	}
+	return entity->fields_Size();
+}
+
+int EntityManager::loadEntity(Entity* entity) {
+	//load overrided Entity Model details from temp . Process Model and Entity here
+	if(!entFileExists){	return 0;}
+
+	int result = 0;
+
+	const char* daoName= entity->getDao();
+	const char* entityName= entity->getName();
+
+	if(!(getTmpModel().containsKey(FPSTR(daoName)) && getTmpData().containsKey(FPSTR(daoName)))){return 0;}
+	if(!(getTmpModel().get<JsonObject>(FPSTR(daoName)).containsKey(FPSTR(entityName))
+			&& getTmpData().get<JsonObject>(FPSTR(daoName)).containsKey(FPSTR(entityName)))){return 0;}
+
+	Serial.println(FPSTR("Compare base <--> save"));
+
+	JsonObject& modelEntity = getModel().get<JsonObject>(FPSTR(daoName)).get<JsonObject>(FPSTR(entityName));
+	JsonObject& dataEntity  = getData().get<JsonObject>(FPSTR(daoName)).get<JsonObject>(FPSTR(entityName));
+
+	JsonObject& modelTmp = getTmpModel().get<JsonObject>(FPSTR(daoName)).get<JsonObject>(FPSTR(entityName));
+	JsonObject& dataTmp  = getTmpData().get<JsonObject>(FPSTR(daoName)).get<JsonObject>(FPSTR(entityName));
+
+	result=copyObjFields(modelTmp.get<JsonObject>(JSONKEY_fields),modelEntity.get<JsonObject>(JSONKEY_fields));
+	result=copyObjFields(modelTmp.get<JsonObject>(JSONKEY_var),modelEntity.get<JsonObject>(JSONKEY_var));
+	result=copyObjFields(modelTmp.get<JsonObject>(JSONKEY_tvar),modelEntity.get<JsonObject>(JSONKEY_tvar));
+	result=copyObjFields(modelTmp.get<JsonObject>(JSONKEY_persist),modelEntity.get<JsonObject>(JSONKEY_persist));
+
+	result=copyObjFields(dataTmp.get<JsonObject>(JSONKEY_fields),dataEntity.get<JsonObject>(JSONKEY_fields));
+
+	Serial.print(FPSTR("Entity change="));
+	Serial.println(result);
+	Serial.print(FPSTR(" root="));
+
+	getRoot().prettyPrintTo(Serial);
+
+	return result;
+}
+
+int EntityManager::prepareTemplateFields(Entity* entity) {
+	Serial.println(FPSTR("template"));
+	int result=0;
+	const char* daoName= entity->getDao();
+	const char* entityName= entity->getName();
+
+	JsonObject& templ  = getRoot().get<JsonObject>(FPSTR(JSONKEY_template))
+								.get<JsonObject>(FPSTR(daoName))
+								.get<JsonObject>(FPSTR(entityName));
+
+	JsonObject& model  = getRoot().get<JsonObject>(FPSTR(JSONKEY_model))
+									.get<JsonObject>(FPSTR(daoName))
+									.get<JsonObject>(FPSTR(entityName));
+
+	JsonObject& data  = getRoot().get<JsonObject>(FPSTR(JSONKEY_data))
+										.get<JsonObject>(FPSTR(daoName))
+										.get<JsonObject>(FPSTR(entityName));
+
+	JsonObject& fields=data.get<JsonObject>(FPSTR(JSONKEY_fields));
+	JsonObject& tvar=model.get<JsonObject>(FPSTR(JSONKEY_tvar));
+
+	if(tvar.size()>0){
+		data.createNestedObject(FPSTR(JSONKEY_template));
+	}
+
+	templ.set(FPSTR(JSONKEY_descr), model.get<const char*>(FPSTR(JSONKEY_descr)));
+
+	JsonObject& dataTmpl=templ.createNestedObject(FPSTR(JSONKEY_fields));
+
+	for(JsonObject::iterator it = fields.begin(); it!=fields.end(); ++it){
+		if(!tvar.containsKey(it->key)){
+			JsonObject& mapping=data.get<JsonObject>(FPSTR(JSONKEY_template));
+			mapping.set(it->key, templFields);
+			String templVal=JSONKEY_PERCENT+String(templFields)+JSONKEY_PERCENT;
+
+			//const char* templVal=FPSTR("%");
+			dataTmpl.set(it->key, templVal);
+			result++;
+		}else{
+			dataTmpl.set(it->key, it->value);
+		}
+	}
+
+	Serial.print(FPSTR("Entity fields="));
+	Serial.println(result);
+	Serial.print(FPSTR(" root="));
+
+	getRoot().prettyPrintTo(Serial);
+
+	return result;
+}
+
+int EntityManager::copyObjFields(JsonObject& from, JsonObject& to){
+	int result=0;
+
+	for(JsonObject::iterator it = from.begin(); it!=from.end(); ++it){
+		if(!to.containsKey(it->key)){
+			to.set(it->key,it->value);
+			result++;
+		}
 	}
 
 	return result;

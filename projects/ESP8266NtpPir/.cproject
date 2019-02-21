@@ -143,19 +143,19 @@
 							<tool id="io.sloeber.tool.size.2107632259" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="io.sloeber.core.toolChain.release.259892230.1195752758" name="/" resourcePath="libraries/DeviceLib/interfaces">
-						<toolChain id="io.sloeber.core.toolChain.release.1259846605" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
-							<tool id="io.sloeber.tool.sketch.compiler.cpp.303187934" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1586124013"/>
-							<tool id="io.sloeber.tool.compiler.c.524669406" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.2133280619"/>
-							<tool id="io.sloeber.tool.sketch.compiler.s.1999213608" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.1933180951"/>
-							<tool id="io.sloeber.tool.ar.367889534" name="Arduino archiver" superClass="io.sloeber.tool.ar.760627273"/>
-							<tool id="io.sloeber.tool.combine.1825123710" name="Arduino combiner" superClass="io.sloeber.tool.combine.1252554952"/>
-							<tool id="io.sloeber.tool.objcopy.eep.1643151857" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.65561401"/>
-							<tool id="io.sloeber.tool.size.208946405" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.2107632259"/>
+					<folderInfo id="io.sloeber.core.toolChain.release.259892230.1461642207" name="/" resourcePath="libraries/DeviceLib/utils">
+						<toolChain id="io.sloeber.core.toolChain.release.1700566956" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.2017516392" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1586124013"/>
+							<tool id="io.sloeber.tool.compiler.c.64116644" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.2133280619"/>
+							<tool id="io.sloeber.tool.sketch.compiler.s.874196286" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.1933180951"/>
+							<tool id="io.sloeber.tool.ar.147748412" name="Arduino archiver" superClass="io.sloeber.tool.ar.760627273"/>
+							<tool id="io.sloeber.tool.combine.677431882" name="Arduino combiner" superClass="io.sloeber.tool.combine.1252554952"/>
+							<tool id="io.sloeber.tool.objcopy.eep.844848666" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.65561401"/>
+							<tool id="io.sloeber.tool.size.1096055523" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.2107632259"/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="libraries/DeviceLib/sensors|libraries/EspSettingsBox/extraBoxesLists|libraries/DeviceLib/utils|libraries/DeviceLib/StatusMessage|libraries/DeviceLib/services|libraries/DeviceLib/Locales|libraries/DeviceLib/list|libraries/DeviceLib/Consts|libraries/EspSettingsBox/extraBoxes|libraries/DeviceLib/EntityLib|libraries/Helpers/Display_Pageable|libraries/ArduinoJson/scripts|libraries/?*/**/test*/**|libraries/?*/**/?xamples/**|libraries/Adafruit_BME280/.github|libraries/?*/**/?xtras/**|libraries/Helpers/Display_Custom|libraries/OneWire/util|libraries/?*/**/third-party/**|libraries/NTPClient/3.1.0|libraries/Helpers/Time|libraries/UniversalTelegramBot/scripts|libraries/?*/utility/*/*|libraries/OLED/example|libraries/UniversalTelegramBot/lib|libraries/ArduinoJson/fuzzing|libraries/**/._*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="libraries/DeviceLib/sensors|libraries/EspSettingsBox/extraBoxesLists|libraries/DeviceLib/StatusMessage|libraries/DeviceLib/services|libraries/DeviceLib/Locales|libraries/DeviceLib/list|libraries/DeviceLib/Consts|libraries/EspSettingsBox/extraBoxes|libraries/DeviceLib/EntityLib|libraries/Helpers/Display_Pageable|libraries/ArduinoJson/scripts|libraries/?*/**/test*/**|libraries/?*/**/?xamples/**|libraries/Adafruit_BME280/.github|libraries/?*/**/?xtras/**|libraries/Helpers/Display_Custom|libraries/OneWire/util|libraries/?*/**/third-party/**|libraries/NTPClient/3.1.0|libraries/Helpers/Time|libraries/UniversalTelegramBot/scripts|libraries/?*/utility/*/*|libraries/OLED/example|libraries/UniversalTelegramBot/lib|libraries/ArduinoJson/fuzzing|libraries/**/._*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

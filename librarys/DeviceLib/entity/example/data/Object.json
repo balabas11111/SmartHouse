@@ -3,7 +3,7 @@
    "descr": "bmeSensor Descriptor",
  	 "dao": "sensors",
    "class": "obj",
-  	"data": {
+  	"fields": {
  		  	   "temp": "10.05",
 				"hum": "45",
 				"press": "100500",

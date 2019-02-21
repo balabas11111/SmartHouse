@@ -14,6 +14,7 @@ class Entity: public AbstractCLassDescr {
 public:
 	Entity(const char* name,
 			const char* dao,
+			const char* descr,
 			const char* const* fields,
 			const char* const* fields_Var,
 			const char* const* fields_TVar,
@@ -29,6 +30,7 @@ public:
 
 		this->name=name;
 		this->dao=dao;
+		this->descr=descr;
 		this->clazz=clazz;
 		this->_fields=fields;
 		this->_fields_Var=fields_Var;
@@ -61,10 +63,6 @@ public:
 		virtual const uint8_t fields_WithDefault_Size() override{ return this->_fields_WithDefault_Size;}
 
 	protected:
-		const char* name;
-		const char* dao;
-		const char* clazz;
-
 		const char* const* _fields;
 		const char* const* _fields_Var;
 		const char* const* _fields_TVar;
