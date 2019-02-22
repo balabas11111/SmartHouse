@@ -44,9 +44,33 @@ public:
 		this->_fields_TVar_Size=_fields_TVar_Size;
 		this->_fields_Persist_Size=_fields_Persist_Size;
 		this->_fields_WithDefault_Size=_fields_WithDefault_Size;
+
+		this->isinit=true;
+	}
+
+	Entity( const char* json){
+		int size=sizeof(json);
+		this->json=json;
+		this->hasJson=true;
+
+		this->isinit=true;
 	}
 
 	virtual ~Entity(){};
+
+		virtual void init(){};
+
+		virtual bool isInit(){
+			return this->isinit;
+		}
+
+		virtual bool isJson(){
+			return this->hasJson;
+		}
+
+		virtual const char* getJson(){
+			return this->json;
+		}
 
 		virtual const char* const* fields() override{ return this->_fields;}
 		virtual const char* const* fields_Var() override{ return this->_fields_Var;}
@@ -63,18 +87,23 @@ public:
 		virtual const uint8_t fields_WithDefault_Size() override{ return this->_fields_WithDefault_Size;}
 
 	protected:
-		const char* const* _fields;
-		const char* const* _fields_Var;
-		const char* const* _fields_TVar;
-		const char* const* _fields_Persist;
-		const char* const* _fields_WithDefault;
-		const char* const* _fields_DefaultValues;
+		const char* const* _fields=nullptr;
+		const char* const* _fields_Var=nullptr;
+		const char* const* _fields_TVar=nullptr;
+		const char* const* _fields_Persist=nullptr;
+		const char* const* _fields_WithDefault=nullptr;
+		const char* const* _fields_DefaultValues=nullptr;
 
-		uint8_t _fields_Size;
-		uint8_t _fields_Var_Size;
-		uint8_t _fields_TVar_Size;
-		uint8_t _fields_Persist_Size;
-		uint8_t _fields_WithDefault_Size;
+		uint8_t _fields_Size=0;
+		uint8_t _fields_Var_Size=0;
+		uint8_t _fields_TVar_Size=0;
+		uint8_t _fields_Persist_Size=0;
+		uint8_t _fields_WithDefault_Size=0;
+
+		const char* const json=nullptr;
+
+		bool isinit=false;
+		bool hasJson=false;
 };
 
 #endif /* LIBRARIES_DEVICELIB_ENTITY_MODEL_BASE_ENTITY_H_ */

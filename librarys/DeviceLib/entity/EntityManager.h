@@ -40,6 +40,7 @@ public:
 
 	JsonObject& getModel();
 	JsonObject& getData();
+	JsonObject& getWebTempl();
 
 	JsonObject& getTmpModel();
 	JsonObject& getTmpData();
@@ -89,6 +90,7 @@ protected:
 	int copyObjFields(JsonObject& from, JsonObject& to);
 
 	int init();
+	const char* getProgmemKey(String key);
 
 	bool ok=false;
 	std::list<Entity*> entities;

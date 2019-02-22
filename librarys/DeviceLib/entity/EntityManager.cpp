@@ -30,7 +30,7 @@ int EntityManager::begin(){
 
 	getRoot().createNestedObject(FPSTR(JSONKEY_model));
 	getRoot().createNestedObject(FPSTR(JSONKEY_data));
-	getRoot().createNestedObject(FPSTR(JSONKEY_template));
+	getRoot().createNestedObject(FPSTR(JSONKEY_web));
 
 	Serial.print(FPSTR("Root success="));
 	Serial.print(root.success());
@@ -54,9 +54,11 @@ DynamicJsonBuffer& EntityManager::getRootBuf() {
 JsonObject& EntityManager::getModel() {
 	return getRoot().get<JsonObject>(FPSTR(JSONKEY_model));
 }
-
 JsonObject& EntityManager::getData() {
 	return getRoot().get<JsonObject>(FPSTR(JSONKEY_data));
+}
+JsonObject& EntityManager::getWebTempl(){
+	return getRoot().get<JsonObject>(FPSTR(JSONKEY_web));
 }
 
 JsonObject& EntityManager::getTmpModel() {
@@ -104,12 +106,16 @@ int EntityManager::initEntity(Entity* entity) {
 	const char* daoName= entity->getDao();
 	const char* entityName= entity->getName();
 
+	if(!entity->isInit()){
+		entity->init();
+	}
+
 	Serial.print(FPSTR("init dao="));
 	Serial.print(daoName);
 
 	JsonObject& model = getModel();
 	JsonObject& data  = getData();
-	JsonObject& templ  = getRoot().get<JsonObject>(FPSTR(JSONKEY_template));
+	JsonObject& webTempl  = getWebTempl();
 
 	if(!model.containsKey(FPSTR(daoName))){
 		Serial.print(FPSTR(".m"));
@@ -119,14 +125,14 @@ int EntityManager::initEntity(Entity* entity) {
 		Serial.print(FPSTR(".d"));
 		data.createNestedObject(FPSTR(daoName));
 	}
-	if(!templ.containsKey(FPSTR(daoName))){
+	if(!webTempl.containsKey(FPSTR(daoName))){
 		Serial.print(FPSTR(".t"));
-		templ.createNestedObject(FPSTR(daoName));
+		webTempl.createNestedObject(FPSTR(daoName));
 	}
 
 	JsonObject& modelDao = model.get<JsonObject>(FPSTR(daoName));
 	JsonObject& dataDao  = data.get<JsonObject>(FPSTR(daoName));
-	JsonObject& templDao  = templ.get<JsonObject>(FPSTR(daoName));
+	JsonObject& templDao  = webTempl.get<JsonObject>(FPSTR(daoName));
 
 	if(!modelDao.containsKey(FPSTR(entityName))){
 		Serial.print(FPSTR(".m dao"));
@@ -169,7 +175,19 @@ int EntityManager::initEntity(Entity* entity) {
 
 	JsonObject& dataD=modelEntity.createNestedObject(FPSTR(JSONKEY_fields));
 
-	if(entity->fields_Size()>0){
+	//fields specified as json
+	if(entity->isJson()){
+		DynamicJsonBuffer bufJson;
+
+		JsonObject& prototype=bufJson.parse(entity->getJson());
+		if(!prototype.success()){
+			return 0;
+		}
+
+	}
+
+//fields specified as arrays
+	if(!entity->isJson() && entity->fields_Size()>0){
 		for(uint8_t i=0;i<entity->fields_Size();i++){
 			fieldsM.set(FPSTR(entity->fields()[i]),JSONKEY_null);
 			dataD.set(FPSTR(entity->fields()[i]),JSONKEY_null);
@@ -232,12 +250,12 @@ int EntityManager::loadEntity(Entity* entity) {
 }
 
 int EntityManager::prepareTemplateFields(Entity* entity) {
-	Serial.println(FPSTR("template"));
+	Serial.println(FPSTR("webTemplate"));
 	int result=0;
 	const char* daoName= entity->getDao();
 	const char* entityName= entity->getName();
 
-	JsonObject& templ  = getRoot().get<JsonObject>(FPSTR(JSONKEY_template))
+	JsonObject& webTempl  = getRoot().get<JsonObject>(FPSTR(JSONKEY_web))
 								.get<JsonObject>(FPSTR(daoName))
 								.get<JsonObject>(FPSTR(entityName));
 
@@ -253,16 +271,16 @@ int EntityManager::prepareTemplateFields(Entity* entity) {
 	JsonObject& tvar=model.get<JsonObject>(FPSTR(JSONKEY_tvar));
 
 	if(tvar.size()>0){
-		data.createNestedObject(FPSTR(JSONKEY_template));
+		data.createNestedObject(FPSTR(JSONKEY_web));
 	}
 
-	templ.set(FPSTR(JSONKEY_descr), model.get<const char*>(FPSTR(JSONKEY_descr)));
+	webTempl.set(FPSTR(JSONKEY_descr), model.get<const char*>(FPSTR(JSONKEY_descr)));
 
-	JsonObject& dataTmpl=templ.createNestedObject(FPSTR(JSONKEY_fields));
+	JsonObject& dataTmpl=webTempl.createNestedObject(FPSTR(JSONKEY_fields));
 
 	for(JsonObject::iterator it = fields.begin(); it!=fields.end(); ++it){
 		if(!tvar.containsKey(it->key)){
-			JsonObject& mapping=data.get<JsonObject>(FPSTR(JSONKEY_template));
+			JsonObject& mapping=data.get<JsonObject>(FPSTR(JSONKEY_web));
 			mapping.set(it->key, templFields);
 			String templVal=JSONKEY_PERCENT+String(templFields)+JSONKEY_PERCENT;
 
@@ -294,6 +312,17 @@ int EntityManager::copyObjFields(JsonObject& from, JsonObject& to){
 	}
 
 	return result;
+}
+
+const char* EntityManager::getProgmemKey(String key){
+	//get
+	for(uint8_t i=0;i<KEY_SIZE;i++){
+		if(strcmp(key.c_str(),JSONKEY_ALL_KEYS[i])==0){
+			return JSONKEY_ALL_KEYS[i];
+		}
+	}
+
+	return key.c_str();
 }
 
 int EntityManager::copyJsonObjects(JsonObject& from, JsonObject& to,bool over) {
