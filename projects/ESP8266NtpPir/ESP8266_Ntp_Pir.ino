@@ -1,17 +1,6 @@
 #include "Arduino.h"
 #include <Hash.h>
 
-#include "EspSettingsBox.h"
-#include <extraBoxes/ESPSett_Alarm.h>
-#include <extraBoxes/ESPSett_Display.h>
-#include <extraBoxes/ESPSett_Ntp.h>
-#include <extraBoxes/ESPSett_Device.h>
-#include <extraBoxes/ESPSett_Telegram.h>
-#include <extraBoxes/EspSett_ThSpeak.h>
-#include <extraBoxes/EspSett_Own.h>
-
-#include <extraBoxesLists/BaseExtraBoxesList.h>
-
 #include "FS.h"
 #include <Wire.h>
 
@@ -19,12 +8,26 @@
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266WiFi.h>
 
+#include <entity/sensors/BME280Entity.h>
+#include <entity/sensors/BH1750Entity.h>
+#include <entity/EntityDao.h>
+
+BME280_Entity bme;
+BH1750_Entity bh;
+
+Entity* sensors[]={&bme,&bh};
+EntityDao dao(sensors, 2);
+//EntityManager entityManager(sensors,ARRAY_SIZE(sensors));
 
 void setup() {
+	Serial.begin(115200);
+	Serial.println(FPSTR("Init setup"));
+	dao.init();
 }
 
 void loop() {
-
+	delay(10000);
+	dao.printJson();
 }
 /*
 #include "interfaces/Loopable.h"
@@ -337,3 +340,4 @@ void onStationModeConnected(const WiFiEventStationModeConnected& evt){
 		reconnected=true;
 	}
 */
+

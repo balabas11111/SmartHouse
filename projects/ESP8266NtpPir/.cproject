@@ -35,7 +35,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/PubSubClient/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DeviceLib}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/SensorsLib}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/TimeTrigger}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/EspSettingsBox}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Hash}&quot;"/>
@@ -47,13 +46,16 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DallasTemperature}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DS3231}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESP8266_NTP_pir}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Helpers}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/NTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/TM1637}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/BH1750}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/OLED}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.202221004" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -75,7 +77,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/PubSubClient/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DeviceLib}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/SensorsLib}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/TimeTrigger}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/EspSettingsBox}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Hash}&quot;"/>
@@ -87,13 +88,16 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DallasTemperature}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DS3231}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESP8266_NTP_pir}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Helpers}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/NTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/TM1637}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/BH1750}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/OLED}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.729829356" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -115,7 +119,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/PubSubClient/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DeviceLib}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/SensorsLib}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/TimeTrigger}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/EspSettingsBox}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Hash}&quot;"/>
@@ -127,13 +130,16 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DallasTemperature}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DS3231}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESP8266_NTP_pir}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Helpers}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/NTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/TM1637}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/BH1750}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/OLED}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1229660566" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -143,19 +149,19 @@
 							<tool id="io.sloeber.tool.size.2107632259" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="io.sloeber.core.toolChain.release.259892230.1461642207" name="/" resourcePath="libraries/DeviceLib/utils">
-						<toolChain id="io.sloeber.core.toolChain.release.1700566956" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
-							<tool id="io.sloeber.tool.sketch.compiler.cpp.2017516392" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1586124013"/>
-							<tool id="io.sloeber.tool.compiler.c.64116644" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.2133280619"/>
-							<tool id="io.sloeber.tool.sketch.compiler.s.874196286" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.1933180951"/>
-							<tool id="io.sloeber.tool.ar.147748412" name="Arduino archiver" superClass="io.sloeber.tool.ar.760627273"/>
-							<tool id="io.sloeber.tool.combine.677431882" name="Arduino combiner" superClass="io.sloeber.tool.combine.1252554952"/>
-							<tool id="io.sloeber.tool.objcopy.eep.844848666" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.65561401"/>
-							<tool id="io.sloeber.tool.size.1096055523" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.2107632259"/>
+					<folderInfo id="io.sloeber.core.toolChain.release.259892230.1659012660" name="/" resourcePath="libraries/DeviceLib/StatusMessage">
+						<toolChain id="io.sloeber.core.toolChain.release.1557748985" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.232127268" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1586124013"/>
+							<tool id="io.sloeber.tool.compiler.c.78778780" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.2133280619"/>
+							<tool id="io.sloeber.tool.sketch.compiler.s.1470350623" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.1933180951"/>
+							<tool id="io.sloeber.tool.ar.1690845706" name="Arduino archiver" superClass="io.sloeber.tool.ar.760627273"/>
+							<tool id="io.sloeber.tool.combine.1753961245" name="Arduino combiner" superClass="io.sloeber.tool.combine.1252554952"/>
+							<tool id="io.sloeber.tool.objcopy.eep.2074177452" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.65561401"/>
+							<tool id="io.sloeber.tool.size.1693789011" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.2107632259"/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="libraries/DeviceLib/sensors|libraries/EspSettingsBox/extraBoxesLists|libraries/DeviceLib/StatusMessage|libraries/DeviceLib/services|libraries/DeviceLib/Locales|libraries/DeviceLib/list|libraries/DeviceLib/Consts|libraries/EspSettingsBox/extraBoxes|libraries/DeviceLib/EntityLib|libraries/Helpers/Display_Pageable|libraries/ArduinoJson/scripts|libraries/?*/**/test*/**|libraries/?*/**/?xamples/**|libraries/Adafruit_BME280/.github|libraries/?*/**/?xtras/**|libraries/Helpers/Display_Custom|libraries/OneWire/util|libraries/?*/**/third-party/**|libraries/NTPClient/3.1.0|libraries/Helpers/Time|libraries/UniversalTelegramBot/scripts|libraries/?*/utility/*/*|libraries/OLED/example|libraries/UniversalTelegramBot/lib|libraries/ArduinoJson/fuzzing|libraries/**/._*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="libraries/ESPAsyncWebServer/travis|libraries/ESPAsyncTCP-master/travis|libraries/ESPAsyncTCP-master/ssl|libraries/DeviceLib/sensors|libraries/EspSettingsBox/extraBoxesLists|libraries/EspSettingsBox/extraBoxes|libraries/DeviceLib/EntityLib|libraries/Helpers/Display_Pageable|libraries/ArduinoJson/scripts|libraries/?*/**/test*/**|libraries/?*/**/?xamples/**|libraries/Adafruit_BME280/.github|libraries/?*/**/?xtras/**|libraries/Helpers/Display_Custom|libraries/OneWire/util|libraries/?*/**/third-party/**|libraries/NTPClient/3.1.0|libraries/Helpers/Time|libraries/UniversalTelegramBot/scripts|libraries/?*/utility/*/*|libraries/OLED/example|libraries/UniversalTelegramBot/lib|libraries/ArduinoJson/fuzzing|libraries/**/._*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

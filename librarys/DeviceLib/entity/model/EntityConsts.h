@@ -13,12 +13,16 @@
 const PROGMEM char ENTITY_CLASS_object[] = "object";
 const PROGMEM char ENTITY_CLASS_table[]  = "table";
 //JsonKeys
+const PROGMEM char JSONKEY_entities[] = "entities";
+const PROGMEM char JSONKEY_deployTemplate[]="deployTemplate";
+
 const PROGMEM char JSONKEY_model[] = "model";
 const PROGMEM char JSONKEY_data[]  = "data";
 const PROGMEM char JSONKEY_web[]   = "web";
 
 const PROGMEM char JSONKEY_id[]      = "id";
 const PROGMEM char JSONKEY_name[]    = "name";
+const PROGMEM char JSONKEY_group[]   = "group";
 const PROGMEM char JSONKEY_descr[]   = "descr";
 const PROGMEM char JSONKEY_path[]    = "path";
 const PROGMEM char JSONKEY_dao[]     = "dao";
@@ -36,6 +40,7 @@ const PROGMEM char JSONKEY_set[]     = "set";
 const PROGMEM char JSONKEY_put[]     = "put";
 const PROGMEM char JSONKEY_save[]    = "save";
 const PROGMEM char JSONKEY_load[]    = "load";
+const PROGMEM char JSONKEY_get[]    = "get";
 
 //descr -default field values
 const PROGMEM char JSONKEY_fields[]  = "fields";
@@ -106,11 +111,5 @@ const uint8_t KEY_SIZE=34;
 //entity is open for change for abstractServices
 const PROGMEM char JSON_SERVICE_ThingSpeakService[]    = "ThingSpeakService";
 const PROGMEM char JSON_SERVICE_MinMaxALarmService[]   = "MinMaxALarmService";
-
-//base daos
-const PROGMEM char JSON_DAO_sensors[]   = "sensors";
-//defaults
-const char* JSONKEY_null  = (char*)0;
-const char* JSONKEY_PERCENT  = "%";
 
 #endif /* LIBRARIES_DEVICELIB_ENTITY_ENTITYCONSTS_H_ */
