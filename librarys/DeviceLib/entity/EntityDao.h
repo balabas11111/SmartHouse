@@ -60,21 +60,25 @@ protected:
 
 	void saveTemplateToDeployPath(JsonObject& root);
 
-	void putEntity_VarValues_ToTarget(JsonObject& target,std::list<int>& lst);
-	void putEntity_TemplateKeys_ToTarget(JsonObject& target,std::list<int>& lst);
+	void setEntity_all_FromJson(JsonObject& json,std::list<int>& lst);
+	void setEntity_all_ToJson(JsonObject& json,std::list<int>& lst);
+	void setEntity_stat_ToJson(JsonObject& json,std::list<int>& lst);
+	void setEntity_var_ToJson(JsonObject& json,std::list<int>& lst);
+	void setEntity_TemplateKeys_ToJson(JsonObject& json,std::list<int>& lst);
 
-	void putEntityStatToModelTemplate(JsonObject& model,Entity* e);
+	void setEntity_const_ToJson(JsonObject& json,const char* constVal,std::list<int>& lst);
+
+	void putEntityStatToModelTemplate(JsonObject& json,Entity* e);
 	void putEntityVarsToModel(JsonObject& model,Entity* e);
 	void putEntityVarsToTemplate(JsonObject& templ,Entity* e);
 
-	void loadEntityStatVarToModel(JsonObject& loaded,JsonObject& model,Entity* e);
-	void loadEntityStatVarToTemplate(JsonObject& loaded,JsonObject& templ,Entity* e);
+	void putHiddenVarsToTemplate(JsonObject& templ,Entity* e);
 
-	void saveEntityStatVarFromModel(JsonObject& save,JsonObject& model,Entity* e);
-	void saveEntityStatVarFromTemplate(JsonObject& save,JsonObject& templ,Entity* e);
+	void loadEntityStatVar(JsonObject& loaded,JsonObject& model,Entity* e);
 
-	void setEntityStatVarToModel(JsonObject& loaded,JsonObject& model,Entity* e);
-	void setEntityStatVarToTemplate(JsonObject& loaded,JsonObject& templ,Entity* e);
+	void saveEntityStatVar(JsonObject& save,JsonObject& model,Entity* e);
+
+	void setEntityStatVar(JsonObject& set,JsonObject& model,Entity* e);
 
 	EntityFieldDao entityFieldDao;
 

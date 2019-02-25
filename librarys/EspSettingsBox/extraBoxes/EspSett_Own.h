@@ -26,6 +26,7 @@ const char* const OWN_SETT_BOX_KEYS_NAME[]          PROGMEM=
 	"accessPass",
 	"settingsUser",
 	"settingsPass",
+
 	"password",
 	"refreshInterval",
 	"isAccesPoint",

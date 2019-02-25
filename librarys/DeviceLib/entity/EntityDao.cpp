@@ -83,12 +83,9 @@ void EntityDao::init() {
 			JsonObject& loadedTemplate = tmp.get<JsonObject>(this->templateDeployPath)
 											.get<JsonObject>(e->getGroup()).get<JsonObject>(e->getName());;
 
-			loadEntityStatVarToModel(loadedModel,entityModel,e);
-			loadEntityStatVarToTemplate(loadedTemplate,entityTemplate,e);
+			loadEntityStatVar(loadedModel,entityModel,e);
 
-
-			saveEntityStatVarFromModel(loadedModel,entityModel,e);
-			saveEntityStatVarFromTemplate(loadedTemplate,entityTemplate,e);
+			saveEntityStatVar(loadedModel,entityModel,e);
 
 			Serial.println(FPSTR("...done"));
 			id++;
@@ -117,48 +114,6 @@ void EntityDao::init() {
 
 	saveTemplateToDeployPath(root);
 }
-
-virtual int addStaticFielda(JsonObject& from,JsonObject& to,const char* key){
-		if(from.containsKey(key) && !isFieldVar(key)){
-			if(from.is<int>(key)){
-				int val = from.get<int>(key);
-				to.set(key, val);
-
-			}else if(from.is<const char*>(key)){
-					const char* val = from.get<const char*>(key);
-					to.set(key, val);
-			}else{
-				String val = from.get<String>(key);
-				to.set(key, val);
-
-				Serial.print(FPSTR(" key="));
-				Serial.print(key);
-				Serial.print(FPSTR(" val="));
-				Serial.println(val);
-			}
-		}else{
-			Serial.print(FPSTR(" ignored key="));
-			Serial.println(key);
-		}
-
-		return 1;
-	}
-
-	virtual int addVariableFielda(JsonObject& from,JsonObject& to,const char* key){
-		if(from.containsKey(key) && isFieldVar(key)){
-			if(from.is<int>(key)){
-				int val = getVal<int>(key);
-				to.set(key, val);
-			}else if(from.is<const char*>(key)){
-				const char* val = getVal<const char*>(key);
-				to.set(key, val);
-			}else{
-				String val=getValString(key);
-				to.set(key, val);
-			}
-		}
-		return 1;
-	}
 
 void EntityDao::printJson() {
 	Serial.println(FPSTR("----------ROOT--------------"));
@@ -330,39 +285,94 @@ void EntityDao::saveTemplateToDeployPath(JsonObject& root) {
 			f.close();
 		}
 	}
-
 }
 
-void EntityDao::putEntity_VarValues_ToTarget(JsonObject& target,
-		std::list<int>& lst) {
+void EntityDao::setEntity_all_FromJson(JsonObject& json, std::list<int>& lst) {
 	for (std::list<int>::iterator it = lst.begin(); it != lst.end(); it++){
 		EntityField* ef = entityFieldDao.getEntityField(*it);
-		ef->getFromField(target);
+		if(ef!=NULL){
+			ef->setToField(json);
+		}
 	}
 }
-
-void EntityDao::putEntity_TemplateKeys_ToTarget(JsonObject& target,
-		std::list<int>& lst) {
+void EntityDao::setEntity_all_ToJson(JsonObject& json, std::list<int>& lst) {
 	for (std::list<int>::iterator it = lst.begin(); it != lst.end(); it++){
 		EntityField* ef = entityFieldDao.getEntityField(*it);
-		ef->getFromFieldTemplateKey(target);
+		if(ef!=NULL){
+			ef->getFromField(json);
+		}
+	}
+}
+void EntityDao::setEntity_stat_ToJson(JsonObject& json, std::list<int>& lst) {
+	for (std::list<int>::iterator it = lst.begin(); it != lst.end(); it++){
+		EntityField* ef = entityFieldDao.getEntityField(*it);
+		if(ef!=NULL && !ef->isChangeAble()){
+			ef->getFromField(json);
+		}
+	}
+}
+void EntityDao::setEntity_var_ToJson(JsonObject& json, std::list<int>& lst) {
+	for (std::list<int>::iterator it = lst.begin(); it != lst.end(); it++){
+		EntityField* ef = entityFieldDao.getEntityField(*it);
+		if(ef!=NULL && ef->isChangeAble()){
+			ef->getFromField(json);
+		}
+	}
+}
+void EntityDao::setEntity_TemplateKeys_ToJson(JsonObject& json, std::list<int>& lst) {
+	for (std::list<int>::iterator it = lst.begin(); it != lst.end(); it++){
+		EntityField* ef = entityFieldDao.getEntityField(*it);
+		if(ef!=NULL){
+			ef->getFromFieldTemplateKey(json);
+		}
+	}
+}
+void EntityDao::setEntity_const_ToJson(JsonObject& json, const char* value,std::list<int>& lst) {
+	for (std::list<int>::iterator it = lst.begin(); it != lst.end(); it++){
+		EntityField* ef = entityFieldDao.getEntityField(*it);
+		if(ef!=NULL){
+			json.set(ef->getKey(), value);
+		}
 	}
 }
 
 void EntityDao::putEntityStatToModelTemplate(JsonObject& target, Entity* e) {
-	std::list<int>& lst =e->getStatFields();
+	std::list<int> lst =e->descriptor().getStatFields();
 
-	putEntity_VarValues_ToTarget(target,lst);
+	setEntity_stat_ToJson(target,lst);
 }
 
-void EntityDao::putEntityVarsToModel(JsonObject& model, Entity* e) {
-	std::list<int>& lst =e->getVarFields();
+void EntityDao::putEntityVarsToModel(JsonObject& target, Entity* e) {
+	std::list<int> lst =e->descriptor().getVarFields();
 
-	putEntity_VarValues_ToTarget(model,lst);
+	setEntity_var_ToJson(target,lst);
 }
 
-void EntityDao::putEntityVarsToTemplate(JsonObject& templ, Entity* e) {
-	std::list<int>& lst =e->getVarFields();
-
-	putEntity_TemplateKeys_ToTarget(templ,lst);
+void EntityDao::putEntityVarsToTemplate(JsonObject& target, Entity* e) {
+	std::list<int> lst =e->descriptor().getVarFields();
+	setEntity_TemplateKeys_ToJson(target,lst);
 }
+void EntityDao::putHiddenVarsToTemplate(JsonObject& templ, Entity* e) {
+	std::list<int> lst =e->descriptor().getHiddenFields();
+	setEntity_const_ToJson(templ, HIDDEN_VAlUE_DEFAULT, lst);
+}
+
+void EntityDao::loadEntityStatVar(JsonObject& loaded, JsonObject& model, Entity* e) {
+	std::list<int> lst =e->descriptor().getLoadFields();
+
+	setEntity_all_FromJson(loaded,lst);
+	setEntity_all_ToJson(model,lst);
+}
+
+void EntityDao::saveEntityStatVar(JsonObject& save, JsonObject& model, Entity* e) {
+	std::list<int> lst =e->descriptor().getSaveFields();
+	setEntity_all_ToJson(save,lst);
+}
+
+void EntityDao::setEntityStatVar(JsonObject& source, JsonObject& model,Entity* e) {
+	std::list<int> lst =e->descriptor().getSetFields();
+	setEntity_all_FromJson(source,lst);
+	setEntity_all_ToJson(model,lst);
+}
+
+

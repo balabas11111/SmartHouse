@@ -8,16 +8,21 @@
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266WiFi.h>
 
+#include <entity/settings/ServerSettingsBox.h>
 #include <entity/sensors/BME280Entity.h>
 #include <entity/sensors/BH1750Entity.h>
 #include <entity/EntityDao.h>
 
+#define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
+#define VAR_NAME(var) #var
+
+ServerSettingsBox conf("Abstract project");
+
 BME280_Entity bme;
 BH1750_Entity bh;
 
-Entity* sensors[]={&bme,&bh};
-EntityDao dao(sensors, 2);
-//EntityManager entityManager(sensors,ARRAY_SIZE(sensors));
+Entity* entities[]={&bme,&bh, &conf};
+EntityDao dao(entities, ARRAY_SIZE(entities));
 
 void setup() {
 	Serial.begin(115200);

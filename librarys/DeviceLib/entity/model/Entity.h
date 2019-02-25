@@ -12,8 +12,11 @@
 #include "ArduinoJson.h"
 #include "EntityConsts.h"
 
+#include "Entity_Descriptor.h"
 #include <entity/model/EntityFieldDao.h>
 #include <list>
+
+#define HIDDEN_VAlUE_DEFAULT "**********"
 
 class Entity {
 public:
@@ -21,7 +24,7 @@ public:
 	Entity(const char* group,const char* name,const char* descr){
 		this->group=group;
 		this->name=name;
-		this->descr=descr;
+		this->description=descr;
 	};
 
 	virtual ~Entity(){};
@@ -32,7 +35,6 @@ public:
 		this->id=id;
 		this->entityFieldDao=entityFieldDao;
 
-		this->isinit=true;
 	};
 
 	virtual void initModel()=0;
@@ -41,7 +43,7 @@ public:
 		Serial.println(FPSTR("Init template and dataModel Default"));
 
 		registerStatField<int>(Key_id,id);
-		registerVariableField<const char*>(Key_descr,descr);
+		registerVariableField<const char*>(Key_descr,description);
 
 		registerField_loadable(Key_descr);
 
@@ -64,17 +66,32 @@ public:
 	template<typename T>
 	void registerStatField(const char* key,T value){
 		EntityField* f = entityFieldDao->registerEntityField(id, key, value, false);
-		this->statFields.push_back(f->getEntityFieldIndex());
+		this->descr.getStatFields().push_back(f->getEntityFieldIndex());
 	}
 
 	template<typename T>
 	void registerVariableField(const char* key,T value){
 		EntityField* f = entityFieldDao->registerEntityField(id, key, value, true);
-		this->varFields.push_back(f->getEntityFieldIndex());
+		this->descr.getVarFields().push_back(f->getEntityFieldIndex());
+	}
+
+	template<typename T>
+	EntityFieldHolder<T>* getRegisteredFieldHolderByKeyName(const char* key){
+		for (std::list<int>::iterator it = descr.getVarFields().begin(); it != descr.getVarFields().end(); it++){
+			EntityField* ef = entityFieldDao->getEntityField((*it));
+			if(ef!=NULL && strcmp(ef->getKey(),key)==0){
+				EntityFieldHolder<T>* res = static_cast<EntityFieldHolder<T>*>(ef);
+				if(res!=NULL){
+					return res;
+				}
+			}
+		}
+
+		return NULL;
 	}
 
 	EntityField* getRegisteredFieldByKeyName(const char* key){
-		for (std::list<int>::iterator it = varFields.begin(); it != varFields.end(); it++){
+		for (std::list<int>::iterator it = descr.getVarFields().begin(); it != descr.getVarFields().end(); it++){
 			EntityField* ef = entityFieldDao->getEntityField(*it);
 			if(strcmp(ef->getKey(),key)==0){
 				return ef;
@@ -84,37 +101,62 @@ public:
 		return NULL;
 	}
 
+	void registerField_loadableAllVar(){
+		for (std::list<int>::iterator it = descr.getVarFields().begin(); it != descr.getVarFields().end(); it++){
+			this->descr.getLoadFields().push_back((*it));
+		}
+	}
+
+	void registerField_saveableAllVar(){
+		for (std::list<int>::iterator it = descr.getVarFields().begin(); it != descr.getVarFields().end(); it++){
+			this->descr.getSaveFields().push_back((*it));
+		}
+	}
+	void registerField_setableAllVar(){
+		for (std::list<int>::iterator it = descr.getVarFields().begin(); it != descr.getVarFields().end(); it++){
+			this->descr.getSetFields().push_back((*it));
+		}
+	}
+
 	void registerField_templable(const char* key){
 		EntityField* f = getRegisteredFieldByKeyName(key);
 		if(f!=NULL){
-			this->templFields.push_back(f->getEntityFieldIndex());
+			this->descr.getTemplFields().push_back(f->getEntityFieldIndex());
 		}
 	}
 
 	void registerField_loadable(const char* key){
 		EntityField* f = getRegisteredFieldByKeyName(key);
 		if(f!=NULL){
-			this->loadFields.push_back(f->getEntityFieldIndex());
+			this->descr.getLoadFields().push_back(f->getEntityFieldIndex());
+		}
+	}
+
+	void registerField_hidden(const char* key){
+		EntityField* f = getRegisteredFieldByKeyName(key);
+		if(f!=NULL){
+			this->descr.getHiddenFields().push_back(f->getEntityFieldIndex());
 		}
 	}
 
 	void registerField_saveable(const char* key){
 		EntityField* f = getRegisteredFieldByKeyName(key);
 		if(f!=NULL){
-			this->saveFields.push_back(f->getEntityFieldIndex());
+			this->descr.getSaveFields().push_back(f->getEntityFieldIndex());
 		}
 	}
 
 	void registerField_setable(const char* key){
 		EntityField* f = getRegisteredFieldByKeyName(key);
 		if(f!=NULL){
-			this->setFields.push_back(f->getEntityFieldIndex());
+			this->descr.getSetFields().push_back(f->getEntityFieldIndex());
 		}
 	}
 
 	template<typename T>
 	T getVal(const char* key){
-		return entityFieldDao->getValByEntityIdKey<T>(id, key);
+		//return entityFieldDao->getValByEntityIdKey<T>(id, key);
+		return getRegisteredFieldHolderByKeyName<T>(key)->getValue();
 	}
 
 	String getValString(const char* key){
@@ -126,46 +168,25 @@ public:
 		entityFieldDao->setValByEntityIdKey(id, key, value);
 	}
 
+	const Entity_Descriptor& descriptor() const {
+		return descr;
+	}
+/*
 	bool isFieldVar(const char* key){
 		return entityFieldDao->isExistsEntityFieldByEntityIdKey(id, key);
 	}
-
-	const std::list<int>& getLoadFields() const {
-		return loadFields;
-	}
-
-	const std::list<int>& getSaveFields() const {
-		return saveFields;
-	}
-
-	const std::list<int>& getSetFields() const {
-		return setFields;
-	}
-
-	const std::list<int>& getStatFields() const {
-		return statFields;
-	}
-
-	const std::list<int>& getTemplFields() const {
-		return templFields;
-	}
-
-	const std::list<int>& getVarFields() const {
-		return varFields;
-	}
-
-	protected:
-		boolean inMemory=true;
+*/
+protected:
 		int id=-1;
 		const char*  name;
 		const char* group;
-		const char*  descr;
+		const char*  description;
 
 		bool isinit=false;
-		bool hasJson=false;
 		bool changed=false;
 
 		EntityFieldDao* entityFieldDao;
+		Entity_Descriptor descr;
 
 		/* field name constants*/
 		const char* Key_id="id";
@@ -178,13 +199,6 @@ public:
 		const char* Key_humidity="humidity";
 		const char* Key_pressure="pressure";
 		const char* Key_coordinate="coordinate";
-
-		std::list<int> statFields;
-		std::list<int> varFields;
-		std::list<int> templFields;
-		std::list<int> loadFields;
-		std::list<int> saveFields;
-		std::list<int> setFields;
 };
 
 #endif /* LIBRARIES_DEVICELIB_ENTITY_MODEL_BASE_ENTITY_H_ */

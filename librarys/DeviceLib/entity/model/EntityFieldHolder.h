@@ -10,6 +10,7 @@
 
 #include <Arduino.h>
 #include <string>
+#include <sstream>
 
 #include <utils/CompareUtils.h>
 
@@ -63,13 +64,16 @@ public:
 		this->key=key;
 		this->value=value;
 
+		std::ostringstream sstream;
+		sstream << PERSENT_STR << entFieldIndex << PERSENT_STR;
+		keyTemplate=sstream.str().c_str();
+		sstream.clear();
+
+		/*std::string query = sstream.str();
 		std::string buf= PERSENT_STR;
-		buf.append(key);
+		buf.append(entFieldIndex);
 		buf.append(PERSENT_STR);
-
-		keyTemplate=buf.c_str();
-
-		buf.clear();
+		*/
 	};
 	virtual ~EntityFieldHolder() {}
 

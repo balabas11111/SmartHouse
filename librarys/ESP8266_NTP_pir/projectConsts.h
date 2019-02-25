@@ -21,9 +21,7 @@
 	#include <ConstsLoc_En.h>
 #endif
 
-#define DEVICE_ID "Sens_ESP8266_Device"
-#define DEVICE_FIRMWARE_VER "v 2.0"
-#define DEVICE_KIND "NTPclock Alarm BME-280 PIR 4D_display ThingSpeak"
+#define DEVICE_FIRMWARE "NTPclock Alarm BME-280 PIR 4_display ThingSpeak"
 
 #ifndef DEVICE_LOCALE
 	#define DEVICE_DESCR "NTP часы, будильник, Температура/Влажность, Датчик движения"
