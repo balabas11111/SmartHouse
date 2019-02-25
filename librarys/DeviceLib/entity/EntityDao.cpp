@@ -45,49 +45,8 @@ void EntityDao::init() {
 									[this](int eId,const char* key,const char* val){processStaticEntityFieldChangeEvent(eId,key,val);});
 
 	for (std::list<Entity*>::iterator it = entities.begin(); it != entities.end(); it++){
-			Entity* e=*it;
-			Serial.print(e->getGroup());
-			Serial.print(FPSTR("."));
-			Serial.print(e->getName());
-			Serial.println();
+			initEntity(id,*it);
 
-			e->init(id,&entityFieldDao);
-
-			existsOrCreateEntityPath(root,this->modelPath,e);
-			existsOrCreateEntityPath(root,this->templateDeployPath,e);
-
-			JsonObject& entityModel = root.get<JsonObject>(this->modelPath)
-											.get<JsonObject>(e->getGroup()).get<JsonObject>(e->getName());
-
-			JsonObject& entityTemplate = root.get<JsonObject>(this->templateDeployPath)
-											.get<JsonObject>(e->getGroup()).get<JsonObject>(e->getName());;
-
-			e->initModelDefault();
-			e->initModel();
-			//e->init_Default_fields(entityModel, entityTemplate);
-			putEntityStatToModelTemplate(entityModel,e);
-			putEntityStatToModelTemplate(entityTemplate,e);
-
-			putEntityVarsToModel(entityModel,e);
-			putEntityVarsToTemplate(entityTemplate,e);
-
-			Serial.println();
-			Serial.println(FPSTR("Load data"));
-
-			existsOrCreateEntityPath(tmp,this->modelPath,e);
-			existsOrCreateEntityPath(tmp,this->templateDeployPath,e);
-
-			JsonObject& loadedModel = tmp.get<JsonObject>(this->modelPath)
-											.get<JsonObject>(e->getGroup()).get<JsonObject>(e->getName());
-
-			JsonObject& loadedTemplate = tmp.get<JsonObject>(this->templateDeployPath)
-											.get<JsonObject>(e->getGroup()).get<JsonObject>(e->getName());;
-
-			loadEntityStatVar(loadedModel,entityModel,e);
-
-			saveEntityStatVar(loadedModel,entityModel,e);
-
-			Serial.println(FPSTR("...done"));
 			id++;
 	}
 
@@ -113,6 +72,51 @@ void EntityDao::init() {
 	Serial.println(entities.size());
 
 	saveTemplateToDeployPath(root);
+}
+
+void EntityDao::initEntity(int id,Entity* e) {
+	Serial.print(e->getGroup());
+	Serial.print(FPSTR("."));
+	Serial.print(e->getName());
+	Serial.println();
+
+	e->init(id,&entityFieldDao);
+
+	existsOrCreateEntityPath(root,this->modelPath,e);
+	existsOrCreateEntityPath(root,this->templateDeployPath,e);
+
+	JsonObject& entityModel = root.get<JsonObject>(this->modelPath)
+									.get<JsonObject>(e->getGroup()).get<JsonObject>(e->getName());
+
+	JsonObject& entityTemplate = root.get<JsonObject>(this->templateDeployPath)
+									.get<JsonObject>(e->getGroup()).get<JsonObject>(e->getName());;
+
+	e->initModelDefault();
+	e->initModel();
+
+	putEntityStatToModelTemplate(entityModel,e);
+	putEntityStatToModelTemplate(entityTemplate,e);
+
+	putEntityVarsToModel(entityModel,e);
+	putEntityVarsToTemplate(entityTemplate,e);
+
+	Serial.println();
+	Serial.println(FPSTR("Load data"));
+
+	existsOrCreateEntityPath(tmp,this->modelPath,e);
+	existsOrCreateEntityPath(tmp,this->templateDeployPath,e);
+
+	JsonObject& loadedModel = tmp.get<JsonObject>(this->modelPath)
+									.get<JsonObject>(e->getGroup()).get<JsonObject>(e->getName());
+
+	JsonObject& loadedTemplate = tmp.get<JsonObject>(this->templateDeployPath)
+									.get<JsonObject>(e->getGroup()).get<JsonObject>(e->getName());;
+
+	loadEntityStatVar(loadedModel,entityModel,e);
+
+	saveEntityStatVar(loadedModel,entityModel,e);
+
+	Serial.println(FPSTR("...done"));
 }
 
 void EntityDao::printJson() {

@@ -21,6 +21,7 @@ public:
 	virtual ~EntityDao();
 
 	void init();
+	void initEntity(int id,Entity* e);
 
 	void processEntityFieldChangeEvent(EntityField* field);
 	void processStaticEntityFieldChangeEvent(int entityId,const char* key,const char* val);
