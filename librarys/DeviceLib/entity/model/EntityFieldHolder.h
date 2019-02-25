@@ -9,35 +9,78 @@
 #define LIBRARIES_DEVICELIB_ENTITY_MODEL_ENTITYFIELDHOLDER_H_
 
 #include <Arduino.h>
+#include <string>
 
-class EntityFieldHolderBase{
+#include <utils/CompareUtils.h>
+
+#define PERSENT_STR "%"
+
+class EntityField{
 public:
-	virtual ~EntityFieldHolderBase(){};
+	virtual ~EntityField(){};
 
 	virtual void print()=0;
 
 	virtual String getValStr()=0;
+
+	virtual int getEntityFieldIndex(){
+		return this->entFieldIndex;
+	}
+
+	virtual int getEntityId()=0;
+
+	virtual const char* getKey(){
+		return this->key;
+	}
+
+	virtual const char* getKeyTemplate(){
+		return this->keyTemplate;
+	}
+
+	virtual bool isChangeAble(){
+		return this->ch;
+	}
+
+	virtual void getFromField(JsonObject& target)=0;
+	virtual void getFromFieldTemplateKey(JsonObject& target)=0;
+	virtual void setToField(JsonObject& source)=0;
+
+protected:
+	bool ch;
+	int entFieldIndex;
+	int entityId;
+	const char* key;
+	const char* keyTemplate;
 };
 
 template<typename T>
-class EntityFieldHolder: public EntityFieldHolderBase {
+class EntityFieldHolder: public EntityField {
 public:
-	EntityFieldHolder(int entityId,T value){
+	EntityFieldHolder(int entFieldIndex,int entityId,const char* key,T value,bool changeAbleField){
+		this->ch;
+		this->entFieldIndex=entFieldIndex;
 		this->entityId=entityId;
+		this->key=key;
 		this->value=value;
+
+		std::string buf= PERSENT_STR;
+		buf.append(key);
+		buf.append(PERSENT_STR);
+
+		keyTemplate=buf.c_str();
+
+		buf.clear();
 	};
 	virtual ~EntityFieldHolder() {}
 
-	int getEntityId() const {
-		return entityId;
-	}
-
 	T getValue() const {
-		return value;
+		return this->value;
 	}
 
-	void setValue(T value) {
+	bool setValue(T value) {
+		bool changed = this->value!=value;
 		this->value = value;
+		return changed;
 	}
 
 	virtual String getValStr(){
@@ -52,9 +95,34 @@ public:
 		Serial.print(FPSTR(") "));
 	}
 
+	virtual void getFromField(JsonObject& target) override{
+		target.set(this->key, this->value);
+	}
+	virtual void getFromFieldTemplateKey(JsonObject& target) override{
+		target.set(this->key, this->keyTemplate);
+	}
+	virtual void setToField(JsonObject& source) override{
+		if(source.is<T>(this->key) && isChangeAble()){
+			if(source.get<T>(this->key)!=this->getValue()){
+				setValue(source.get<T>(this->key));
+			}
+		}
+	}
+
+	virtual int getEntityId() override{
+		return this->entityId;
+	}
+
+	virtual bool isChangeAble() override{
+		return this->ch;
+	}
+
+	virtual bool compare(T val){
+		return CompareUtils::compareValues<T>(val,this->getValue());
+	}
+
 protected:
 	T value;
-	int entityId;
 };
 
 #endif /* LIBRARIES_DEVICELIB_ENTITY_MODEL_ENTITYFIELDHOLDER_H_ */

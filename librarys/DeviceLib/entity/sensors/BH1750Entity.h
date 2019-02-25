@@ -15,9 +15,8 @@ public:
 	BH1750_Entity():Entity("sensors","BME1750","BME1750 lights Lm"){};
 	virtual ~BH1750_Entity(){};
 
-	virtual void init_fields(JsonObject& entityModel,JsonObject& entityTemplate) override{
-		registerVarBase<const char*>(entityModel,entityTemplate,Key_light,"light N/A");
-
+	virtual void initModel() override{
+		registerVariableField(Key_light, "light N/A");
 	}
 };
 

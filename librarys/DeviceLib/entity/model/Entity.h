@@ -11,14 +11,10 @@
 #include "Arduino.h"
 #include "ArduinoJson.h"
 #include "EntityConsts.h"
-#include <entity/model/EntityTable.h>
-#include <entity/model/EntityField.h>
-/*
-const char* ENTITYKEY_ID         = "id";
-const char* ENTITYKEY_NAME       = "name";
-const char* ENTITYKEY_DESCR      = "descr";
-const char* ENTITYKEY_GROUP      = "group";
-*/
+
+#include <entity/model/EntityFieldDao.h>
+#include <list>
+
 class Entity {
 public:
 
@@ -30,224 +26,134 @@ public:
 
 	virtual ~Entity(){};
 
-	virtual void init(int id,EntityTable* table){
+	virtual void init(int id,EntityFieldDao* entityFieldDao){
 		Serial.print(FPSTR(" id="));
 		Serial.println(id);
 		this->id=id;
-		this->table=table;
+		this->entityFieldDao=entityFieldDao;
+
+		this->isinit=true;
 	};
 
-	virtual int init_Default_fields(JsonObject& entityModel,JsonObject& entityTemplate){
+	virtual void initModel()=0;
+
+	virtual void initModelDefault(){
 		Serial.println(FPSTR("Init template and dataModel Default"));
 
-		registerStaticField(entityModel,entityTemplate,Key_id,id);
-		registerVarBase<const char*>(entityModel,entityTemplate,Key_descr,descr);
+		registerStatField<int>(Key_id,id);
+		registerVariableField<const char*>(Key_descr,descr);
 
-		return box.size();
-	}
+		registerField_loadable(Key_descr);
 
-	virtual int save_Default_fields(JsonObject& entityTemplate, JsonObject& saveModel){
-		addStaticField(entityTemplate, saveModel, Key_id);
-		addVariableField(entityTemplate, saveModel, Key_descr);
-
-		return box.size();
+		registerField_saveable(Key_id);
+		registerField_saveable(Key_descr);
 	}
 
 	virtual bool isInit(){
 		return this->isinit;
 	}
 
-	const char* getName(){
-		return this->name;
-	}
+	const char* getName(){	return this->name;	}
 
-	const char* getGroup(){
-		return this->group;
+	const char* getGroup(){	return this->group;	}
+
+	bool isChanged() const { return changed; }
+
+	void setChanged(bool changed = true) {	this->changed = changed; }
+
+	template<typename T>
+	void registerStatField(const char* key,T value){
+		EntityField* f = entityFieldDao->registerEntityField(id, key, value, false);
+		this->statFields.push_back(f->getEntityFieldIndex());
 	}
 
 	template<typename T>
-	void setEntityVarValue(JsonObject& obj,const char* key,T value){
-		obj.set(key, value);
+	void registerVariableField(const char* key,T value){
+		EntityField* f = entityFieldDao->registerEntityField(id, key, value, true);
+		this->varFields.push_back(f->getEntityFieldIndex());
 	}
 
-	template<typename T>
-	int registerStaticField(JsonObject& entityModel,JsonObject& entityTemplate,const char* key,T value){
-		entityTemplate.set<T>(key, value);
-		entityModel.set<T>(key, value);
-		return 0;
+	EntityField* getRegisteredFieldByKeyName(const char* key){
+		for (std::list<int>::iterator it = varFields.begin(); it != varFields.end(); it++){
+			EntityField* ef = entityFieldDao->getEntityField(*it);
+			if(strcmp(ef->getKey(),key)==0){
+				return ef;
+			}
+		}
+
+		return NULL;
 	}
 
+	void registerField_templable(const char* key){
+		EntityField* f = getRegisteredFieldByKeyName(key);
+		if(f!=NULL){
+			this->templFields.push_back(f->getEntityFieldIndex());
+		}
+	}
 
-	template<typename T>
-	int registerVarBase(JsonObject& entityModel,JsonObject& entityTemplate,const char* key,T value){
-		int ind = table->registerEntityField(id, value);
-		table->setValByEntityId(ind, value);
+	void registerField_loadable(const char* key){
+		EntityField* f = getRegisteredFieldByKeyName(key);
+		if(f!=NULL){
+			this->loadFields.push_back(f->getEntityFieldIndex());
+		}
+	}
 
-		EntityField* f=new EntityField(key,ind);
-		box.push_back(f);
+	void registerField_saveable(const char* key){
+		EntityField* f = getRegisteredFieldByKeyName(key);
+		if(f!=NULL){
+			this->saveFields.push_back(f->getEntityFieldIndex());
+		}
+	}
 
-		String tmplParamKey=getTemplateKey(ind);
-
-		entityModel.set(key, value);
-		entityTemplate.set<String>(key, tmplParamKey);
-
-		f->print();
-		Serial.print(FPSTR(" ; getVal="));
-		Serial.println(getVal<T>(key));
-
-
-		return 1;
+	void registerField_setable(const char* key){
+		EntityField* f = getRegisteredFieldByKeyName(key);
+		if(f!=NULL){
+			this->setFields.push_back(f->getEntityFieldIndex());
+		}
 	}
 
 	template<typename T>
 	T getVal(const char* key){
-
-		int ind = getIndexByKeyName(key);
-		if(ind==-1){
-			return NULL;
-		}
-
-		return table->getValByEntityId<T>(ind);
+		return entityFieldDao->getValByEntityIdKey<T>(id, key);
 	}
 
-	String getValStr(const char* key){
-
-		int ind = getIndexByKeyName(key);
-		if(ind==-1){
-			return String(NULL);
-		}
-
-		return table->getTemplateValueByEntityId(ind);
+	String getValString(const char* key){
+		return entityFieldDao->getValByEntityIdKeyString(id, key);
 	}
 
 	template<typename T>
 	void setVar(const char* key,T value){
-
-		int ind = getIndexByKeyName(key);
-		if(ind==-1){
-			return;
-		}
-
-		if(getVal<T>(key)!=value){
-			changed=true;
-		}
-		if(changed){
-			table->setValByEntityId(ind, value);
-		}
-	}
-
-	String getTemplateKey(int value){
-		return String("%")+String(value)+String("%");
-	}
-	//get value to insert into deployed template
-	int getIndexByKeyName(const char* key){
-		for (std::list<EntityField*>::iterator it = box.begin(); it != box.end(); it++){
-			EntityField* f =*it;
-			if(strcmp(f->getKey(),key)==0){
-				return f->getEntityIndexId();
-			}
-		}
-		Serial.println();
-
-		return -1;
+		entityFieldDao->setValByEntityIdKey(id, key, value);
 	}
 
 	bool isFieldVar(const char* key){
-		return getIndexByKeyName(key)>-1;
+		return entityFieldDao->isExistsEntityFieldByEntityIdKey(id, key);
 	}
 
-
-	std::list<EntityField*>* getBox(){
-		return &box;
+	const std::list<int>& getLoadFields() const {
+		return loadFields;
 	}
 
-	bool isChanged() const {
-		return changed;
+	const std::list<int>& getSaveFields() const {
+		return saveFields;
 	}
 
-	void setChanged(bool changed = false) {
-		this->changed = changed;
+	const std::list<int>& getSetFields() const {
+		return setFields;
 	}
 
-	virtual void init_fields(JsonObject& entityModel,JsonObject& entityTemplate){
-
+	const std::list<int>& getStatFields() const {
+		return statFields;
 	}
 
-	virtual void prepare_fields_load(JsonObject& loadModel, JsonObject& entityTemplate){
-
-	}
-	virtual void prepare_fields_save(JsonObject& entityTemplate, JsonObject& saveModel){
-
-	}
-	virtual void prepare_fields_set(JsonObject& setTemplate, JsonObject& entityModel){
-
+	const std::list<int>& getTemplFields() const {
+		return templFields;
 	}
 
-
-	int getVarCount(){
-		return box.size();
+	const std::list<int>& getVarFields() const {
+		return varFields;
 	}
 
-	virtual int addStaticField(JsonObject& from,JsonObject& to,const char* key){
-		if(from.containsKey(key) && !isFieldVar(key)){
-			if(from.is<int>(key)){
-				int val = from.get<int>(key);
-				to.set(key, val);
-
-				Serial.print(FPSTR(" key="));
-				Serial.print(key);
-				Serial.print(FPSTR(" val="));
-				Serial.println(val);
-
-			}else if(from.is<const char*>(key)){
-					const char* val = from.get<const char*>(key);
-					to.set(key, val);
-
-					Serial.print(FPSTR(" key="));
-					Serial.print(key);
-					Serial.print(FPSTR(" val="));
-					Serial.println(val);
-
-				}else{
-					String val = from.get<String>(key);
-					to.set(key, val);
-
-					Serial.print(FPSTR(" key="));
-					Serial.print(key);
-					Serial.print(FPSTR(" val="));
-					Serial.println(val);
-				}
-		}else{
-			Serial.print(FPSTR(" ignored key="));
-			Serial.println(key);
-		}
-
-		return 1;
-	}
-
-	virtual int addVariableField(JsonObject& from,JsonObject& to,const char* key){
-		if(from.containsKey(key) && isFieldVar(key)){
-			if(from.is<int>(key)){
-				int val = getVal<int>(key);
-				to.set(key, val);
-			}else if(from.is<const char*>(key)){
-				const char* val = getVal<const char*>(key);
-				to.set(key, val);
-			}else{
-				String val=getValStr(key);
-				to.set(key, val);
-			}
-		}
-		return 1;
-	}
-	/*
-	virtual int tempWeb_Json(JsonObject& obj)=0;
-
-	virtual int save_Json(JsonObject& obj)=0;
-	virtual int load_Json(JsonObject& obj)=0;
-
-	virtual int get_Json(JsonObject& obj)=0;
-*/
 	protected:
 		boolean inMemory=true;
 		int id=-1;
@@ -259,9 +165,7 @@ public:
 		bool hasJson=false;
 		bool changed=false;
 
-		EntityTable* table;
-
-		std::list<EntityField*> box;
+		EntityFieldDao* entityFieldDao;
 
 		/* field name constants*/
 		const char* Key_id="id";
@@ -274,6 +178,13 @@ public:
 		const char* Key_humidity="humidity";
 		const char* Key_pressure="pressure";
 		const char* Key_coordinate="coordinate";
+
+		std::list<int> statFields;
+		std::list<int> varFields;
+		std::list<int> templFields;
+		std::list<int> loadFields;
+		std::list<int> saveFields;
+		std::list<int> setFields;
 };
 
 #endif /* LIBRARIES_DEVICELIB_ENTITY_MODEL_BASE_ENTITY_H_ */

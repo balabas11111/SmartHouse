@@ -16,7 +16,14 @@ public:
 		:Entity(groupIn, nameIn, descrIn){
 		this->jsonConf=jsonConf;
 	};
-	virtual ~AbstractSettingsBox();
+	virtual ~AbstractSettingsBox(){};
+
+	virtual const char* getVar_char(const char* key){
+		return getVal<const char*>(key);
+	}
+	virtual int getVar_int(const char* key){
+		return getVal<int>(key);
+	}
 protected:
 	const char* jsonConf;
 };
