@@ -56,6 +56,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Helpers}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.202221004" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -98,6 +99,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Helpers}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.729829356" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -140,6 +142,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/Helpers}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1229660566" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -149,19 +152,19 @@
 							<tool id="io.sloeber.tool.size.2107632259" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="io.sloeber.core.toolChain.release.259892230.903397515" name="/" resourcePath="libraries/DeviceLib/StatusMessage">
-						<toolChain id="io.sloeber.core.toolChain.release.1799726660" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
-							<tool id="io.sloeber.tool.sketch.compiler.cpp.509129926" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1586124013"/>
-							<tool id="io.sloeber.tool.compiler.c.302604391" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.2133280619"/>
-							<tool id="io.sloeber.tool.sketch.compiler.s.554181016" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.1933180951"/>
-							<tool id="io.sloeber.tool.ar.892889128" name="Arduino archiver" superClass="io.sloeber.tool.ar.760627273"/>
-							<tool id="io.sloeber.tool.combine.1401182228" name="Arduino combiner" superClass="io.sloeber.tool.combine.1252554952"/>
-							<tool id="io.sloeber.tool.objcopy.eep.1061948820" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.65561401"/>
-							<tool id="io.sloeber.tool.size.1074399024" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.2107632259"/>
+					<folderInfo id="io.sloeber.core.toolChain.release.259892230.2034916143" name="/" resourcePath="libraries/DeviceLib/utils">
+						<toolChain id="io.sloeber.core.toolChain.release.570749114" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.1496835590" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1586124013"/>
+							<tool id="io.sloeber.tool.compiler.c.53501565" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.2133280619"/>
+							<tool id="io.sloeber.tool.sketch.compiler.s.2077856216" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.1933180951"/>
+							<tool id="io.sloeber.tool.ar.342516628" name="Arduino archiver" superClass="io.sloeber.tool.ar.760627273"/>
+							<tool id="io.sloeber.tool.combine.2048175663" name="Arduino combiner" superClass="io.sloeber.tool.combine.1252554952"/>
+							<tool id="io.sloeber.tool.objcopy.eep.328715062" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.65561401"/>
+							<tool id="io.sloeber.tool.size.1154276296" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.2107632259"/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="libraries/DeviceLib/modelsImpl|libraries/ESPAsyncWebServer/travis|libraries/ESPAsyncTCP-master/travis|libraries/ESPAsyncTCP-master/ssl|libraries/EspSettingsBox/extraBoxesLists|libraries/EspSettingsBox/extraBoxes|libraries/DeviceLib/EntityLib|libraries/Helpers/Display_Pageable|libraries/ArduinoJson/scripts|libraries/?*/**/test*/**|libraries/?*/**/?xamples/**|libraries/Adafruit_BME280/.github|libraries/?*/**/?xtras/**|libraries/Helpers/Display_Custom|libraries/OneWire/util|libraries/?*/**/third-party/**|libraries/NTPClient/3.1.0|libraries/Helpers/Time|libraries/UniversalTelegramBot/scripts|libraries/?*/utility/*/*|libraries/OLED/example|libraries/UniversalTelegramBot/lib|libraries/ArduinoJson/fuzzing|libraries/**/._*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="libraries/DeviceLib/StatusMessage|libraries/DeviceLib/services|libraries/DeviceLib/sensors|libraries/DeviceLib/Locales|libraries/DeviceLib/list|libraries/DeviceLib/modelsImpl|libraries/ESPAsyncWebServer/travis|libraries/ESPAsyncTCP-master/travis|libraries/ESPAsyncTCP-master/ssl|libraries/EspSettingsBox/extraBoxesLists|libraries/EspSettingsBox/extraBoxes|libraries/DeviceLib/EntityLib|libraries/Helpers/Display_Pageable|libraries/ArduinoJson/scripts|libraries/?*/**/test*/**|libraries/?*/**/?xamples/**|libraries/Adafruit_BME280/.github|libraries/?*/**/?xtras/**|libraries/Helpers/Display_Custom|libraries/OneWire/util|libraries/?*/**/third-party/**|libraries/NTPClient/3.1.0|libraries/Helpers/Time|libraries/UniversalTelegramBot/scripts|libraries/?*/utility/*/*|libraries/OLED/example|libraries/UniversalTelegramBot/lib|libraries/ArduinoJson/fuzzing|libraries/**/._*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

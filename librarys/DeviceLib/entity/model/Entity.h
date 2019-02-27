@@ -43,7 +43,7 @@ public:
 		Serial.println(FPSTR("Init template and dataModel Default"));
 
 		registerStatField<int>(Key_id,id);
-		registerVariableField<const char*>(Key_descr,description);
+		registerVariableField<const char*>(Key_descr,description,true);
 
 		registerField_loadable(Key_descr);
 
@@ -70,9 +70,16 @@ public:
 	}
 
 	template<typename T>
-	void registerVariableField(const char* key,T value){
+	void registerVariableField(const char* key,T value,bool loadable = false,bool saveable = false){
 		EntityField* f = entityFieldDao->registerEntityField(id, key, value, true);
 		this->descr.getVarFields().push_back(f->getEntityFieldIndex());
+
+		if(loadable){
+			this->descr.getLoadFields().push_back(f->getEntityFieldIndex());
+		}
+		if(saveable){
+			this->descr.getSaveFields().push_back(f->getEntityFieldIndex());
+		}
 	}
 
 	template<typename T>
