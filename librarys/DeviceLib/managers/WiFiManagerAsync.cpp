@@ -148,12 +148,12 @@ void WiFiManagerAsync::waitForConnect() {
 	uint8_t count=0;
 
 	while(!isConnected() ){
-		if(count==0 || count>=20 || oldWiFistatus!=WiFi.status()){
+		if(count==0 || count>=1000 || oldWiFistatus!=WiFi.status()){
 			WiFiUtils::printWiFiDetails();
 			count=1;
 		}else{
-			Serial.print(FPSTR("."));
-			delay(RE_CONNECT_DELAY);
+			//Serial.print(FPSTR("."));
+			//delay(RE_CONNECT_DELAY);
 			count++;
 		}
 
@@ -174,7 +174,7 @@ void WiFiManagerAsync::startUpdater() {
 #ifdef ESP8266
 	Serial.println(FPSTR("Init OTA update"));
 	if(updater!=nullptr){
-		//updater->setup(this->server,conf->adminLogin(),conf->adminPassword());
+		updater->setup(this->server,conf->adminLogin(),conf->adminPassword());
 	}else{
 		Serial.println(FPSTR("OTA Update is disabled on this device"));
 	}

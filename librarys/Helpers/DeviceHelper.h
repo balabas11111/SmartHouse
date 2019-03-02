@@ -5,7 +5,7 @@
  *      Author: Vitaliy
  */
 
-#ifndef LIBRARIES_PINDIGITAL_DeviceHelper_H_
+#ifdef LIBRARIES_PINDIGITAL_DeviceHelper_H_
 #define LIBRARIES_PINDIGITAL_DeviceHelper_H_
 
 #include <Arduino.h>

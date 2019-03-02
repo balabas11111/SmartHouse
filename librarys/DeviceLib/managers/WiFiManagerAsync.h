@@ -12,8 +12,9 @@
 #include <ESP8266WiFi.h>
 #include <functional>
 #include <Hash.h>
-#include <ESPAsyncTCP.h>
-#include <ESPAsyncWebServer.h>
+//#include <ESPAsyncTCP.h>
+//#include <ESPAsyncWebServer.h>
+#include <ESP8266WebServer.h>
 #include <ESP8266HTTPUpdateServer.h>
 
 #include <utils/WiFiUtils.h>
@@ -26,7 +27,7 @@ public:
 		this->conf=conf;
 		this->oldWiFistatus = WiFi.status();
 
-		this->server = new AsyncWebServer(port);
+		this->server = new ESP8266WebServer(port);
 #ifdef ESP8266
 		this->updater = (otaEnabled)?new ESP8266HTTPUpdateServer(true):nullptr;
 #endif
@@ -66,7 +67,7 @@ protected:
 	void deployServices();
 
 	ServerSettingsBox* conf;
-	AsyncWebServer* server;
+	ESP8266WebServer* server;
 
 #ifdef ESP8266
 	ESP8266HTTPUpdateServer* updater;

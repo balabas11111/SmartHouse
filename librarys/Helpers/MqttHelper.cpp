@@ -1,3 +1,4 @@
+/*
 #include <AbstractSensorOld.h>
 #include "Arduino.h"
 #include "MqttHelper.h"
@@ -54,7 +55,7 @@ boolean MqttHelper::begin(AbstractSensor** items,uint8_t count){
 				/*if(items[i]->getQueue(j)!=""){
 					topicCount++;
 				}*/
-			}
+			/*}
 		}
 	}
 
@@ -75,7 +76,7 @@ boolean MqttHelper::begin(AbstractSensor** items,uint8_t count){
 						Serial.println(subscribeTopics[index]);
 						index++;
 					}*/
-				}
+				/*}
 			}
 		}
 	}
@@ -273,7 +274,7 @@ void MqttHelper::senDAbstractSensorToMqtt(AbstractSensor* item){
 			}
 
 		}*/
-	}
+	/*}
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
 
@@ -295,10 +296,11 @@ void MqttHelper::processMqttEvent(String topic, String message,
 			break;
 		}
 		*/
-	}
+	/*}
 
 	Serial.print(FPSTR(MESSAGE_MQTTHELPER_RESULT_EQ));
 	Serial.println(result);
 
 	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 }
+*/

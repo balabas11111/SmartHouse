@@ -4,6 +4,7 @@
  *  Created on: 13 ���. 2018 �.
  *      Author: Vitaliy
  */
+/*
 #include "Arduino.h"
 #include "ArduinoJson.h"
 #include "EspSettingsBox.h"
@@ -151,7 +152,7 @@ void DeviceHelper::printDeviceArrayDetails(){
 
 	Serial.println(FPSTR("--------------------------------"));
 }
-
+*/
 /* Entity request Is deployed at /entity HTTP_ANY param=entity
  *
  * //entity?entity={"Entity":{"id":"0","name":"sensors","pageId":"0","pageName":"list"},"data":{}}
@@ -165,7 +166,7 @@ void DeviceHelper::printDeviceArrayDetails(){
  * 	 "data":{}
  * }
  */
-
+/*
 String DeviceHelper::processJsonAsEntity(String json) {
 	/*
 		long startParse=millis();
@@ -324,6 +325,7 @@ String DeviceHelper::processJsonAsEntity(String json) {
 		printHeap();
 		Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
 */
+/*
 		return "";
 }
 
@@ -346,3 +348,4 @@ void DeviceHelper::checkResetPin(int resetPin) {
 	  }
 }
 
+*/

@@ -20,14 +20,7 @@ const PROGMEM char JSONKEY_model[] = "model";
 const PROGMEM char JSONKEY_data[]  = "data";
 const PROGMEM char JSONKEY_web[]   = "web";
 
-const PROGMEM char JSONKEY_id[]      = "id";
-const PROGMEM char JSONKEY_name[]    = "name";
-const PROGMEM char JSONKEY_group[]   = "group";
-const PROGMEM char JSONKEY_descr[]   = "descr";
-const PROGMEM char JSONKEY_path[]    = "path";
-const PROGMEM char JSONKEY_dao[]     = "dao";
-const PROGMEM char JSONKEY_class[]   = "class";
-const PROGMEM char JSONKEY_open[]    = "open";
+
 //action object and allowed actions
 const PROGMEM char JSONKEY_action[]  = "action";
 
