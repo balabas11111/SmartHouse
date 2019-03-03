@@ -10,6 +10,8 @@
 
 #include <list>
 #include <utility>
+#include <string>
+#include <sstream>
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
@@ -18,6 +20,8 @@
 #include <MathUtils.h>
 #include <FileUtils.h>
 #include <JsonObjectUtil.h>
+
+#define PERSENT_STR "%"
 
 #define ROOT_PATH_MODEL "model"
 #define ROOT_PATH_DATA "data"
@@ -30,6 +34,7 @@
 
 #define JSONKEY_stat "stat"
 #define JSONKEY_var "var"
+#define JSONKEY_templateVar "templateVar"
 #define JSONKEY_load "load"
 #define JSONKEY_save "save"
 #define JSONKEY_deploy "deploy"
@@ -118,6 +123,7 @@ public:
 	JsonObject& getObjectOrCreate(JsonObject& parent,const char* key);
 	JsonArray& getArrayOrCreate(JsonObject& parent,const char* key);
 
+	void registerModels();
 	void registerEntityModel(EntityJson* ent);
 
 	void loadEntityModelFile();
@@ -125,6 +131,9 @@ public:
 
 	void initDataByModel();
 	void initTemplateByModel();
+
+	const char* generateTemplateKey(EntityJson* ent,const char* key);
+	String getByTemplateKey(const char* key);
 
 	template<typename T>
 	void registerEntityModelField(JsonObject& model,const char* key,T defValue,bool stat,bool var,bool load, bool save, bool deploy,bool set){

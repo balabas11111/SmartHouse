@@ -5,10 +5,10 @@
 #include <JsonDao.h>
 
 #define BME280Descriptor "{\"fields\": {\"temp\":\"-1\",\"hum\":\"-1\",\"press\":\"-1\"},\
-\"actions\":{\"stat\":[],\"var\":[\"temp\",\"hum\",\"press\"],\"load\":[],\"save\":[],\"set\":[]}  }"
+\"actions\":{\"stat\":[],\"var\":[\"temp\",\"hum\",\"press\"],\"load\":[],\"save\":[],\"set\":[],\"templateVar\":[\"temp\",\"hum\"],\"eventListeners\":[]}  }"
 
 #define BH1750Descriptor "{\"fields\": {\"light\":\"-1\"},\
-\"actions\":{\"stat\":[],\"var\":[\"light\"],\"load\":[],\"save\":[],\"set\":[]}  }"
+\"actions\":{\"stat\":[],\"var\":[\"light\"],\"load\":[],\"save\":[],\"set\":[],\"templateVar\":[\"light\"],\"eventListeners\":[]}  }"
 
 EntityAbstract bme280("sensors","bme280","Temperature/Humidity/AtmPressure",BME280Descriptor);
 EntityAbstract bh1750("sensors","bh1750","Light level",BH1750Descriptor);

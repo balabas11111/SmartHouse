@@ -24,10 +24,6 @@ public:
 	virtual ~EntityJson(){};
 
 	void init(){
-		registerFields();
-	}
-
-	virtual void registerFields(){
 
 	}
 

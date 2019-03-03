@@ -156,6 +156,16 @@ public:
 		return result;
 	}
 
+	static int getIndexOfKeyInObject(JsonObject& obj,const char* key){
+		int ind=0;
+		for (const auto& kvp : obj) {
+			if(strcmp(kvp.key,key)==0){
+				return ind;
+			}
+			ind++;
+		}
+		return -1;
+	}
 
 };
 

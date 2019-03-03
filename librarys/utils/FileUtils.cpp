@@ -51,9 +51,13 @@ String FileUtils::loadStringFromFile(String fileName){
 boolean FileUtils::saveJsonToFile(String fileName,JsonObject& obj) {
 	File file = SPIFFS.open(fileName, "w");
 	if(!file){
+		file.close();
 		return false;
 	}
-	return (obj.printTo(file));
+	bool result= (obj.printTo(file)>0 && file.size()>0);
+	file.close();
+
+	return result;
 }
 
 boolean FileUtils::loadJsonFromFile(String fileName, JsonObject& obj) {
