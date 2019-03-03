@@ -330,11 +330,10 @@ void JsonDao::initTemplateByModel() {
 
 		for (const auto& kvp : tmplFields) {
 			const char* key = kvp.as<const char*>();
-			const char* templKey = generateTemplateKey(entity, key);
-			Serial.print(FPSTR("tmplKey"));
-			Serial.println(templKey);
 
-			dataFields.set(key, templKey);
+			generateTemplateKey(entity, key);
+
+			//dataFields.set(key, templKey);
 			templCount++;
 		}
 		Serial.println(FPSTR("Tmpl completed"));
@@ -347,14 +346,20 @@ void JsonDao::initTemplateByModel() {
 	JsonObjectUtil::print("ROOT=", root);
 }
 
-const char* JsonDao::generateTemplateKey(EntityJson* ent, const char* key) {
+void JsonDao::generateTemplateKey(EntityJson* ent, const char* key) {
 	String result=PERSENT_STR;
 	result+=ent->getId();
 	result+=":";
 	result+=key;
 	result+=PERSENT_STR;
 
-	return result.c_str();
+	Serial.println(result);
+
+	root.get<JsonObject>(ROOT_PATH_DEPLOYED)
+		.get<JsonObject>(ent->getGroup())
+		.get<JsonObject>(ent->getName())
+		.set(key, result);
+
 }
 
 String JsonDao::getByTemplateKey(const char* key) {

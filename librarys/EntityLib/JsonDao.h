@@ -132,7 +132,7 @@ public:
 	void initDataByModel();
 	void initTemplateByModel();
 
-	const char* generateTemplateKey(EntityJson* ent,const char* key);
+	void generateTemplateKey(EntityJson* ent,const char* key);
 	String getByTemplateKey(const char* key);
 
 	template<typename T>
