@@ -2,13 +2,14 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2019-03-03 22:18:29
+//This file has been generated on 2019-03-04 03:37:42
 
 #include "Arduino.h"
 #include "Arduino.h"
 #include <ArduinoJson.h>
 #include <EntityAbstract.h>
 #include <JsonDao.h>
+#include <EntityConsts.h>
 
 void setup() ;
 void loop() ;

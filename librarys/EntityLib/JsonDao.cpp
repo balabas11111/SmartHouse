@@ -102,7 +102,7 @@ void JsonDao::initModels(){
 		(*ent)->attachParams(id, this);
 		(*ent)->init();
 		id++;
-		initEntityModel((*it));
+		initEntityModel((*ent));
 	}
 
 	Serial.print(id);
