@@ -13,7 +13,8 @@
 #define PERSENT_STR "%"
 
 #define ROOT_PATH_MODEL "model"
-#define ROOT_PATH_DATA "data"
+#define ROOT_PATH_DESCRPTOR "descrr"
+//#define ROOT_PATH_DATA "data"
 #define ROOT_PATH_DEPLOYED "deploy"
 #define ROOT_PATH_TEMP "temp"
 
@@ -23,7 +24,7 @@
 
 #define JSONKEY_stat "stat"
 #define JSONKEY_var "var"
-#define JSONKEY_templateVar "templateVar"
+#define JSONKEY_tvar "tvar"
 #define JSONKEY_load "load"
 #define JSONKEY_save "save"
 #define JSONKEY_deploy "deploy"
@@ -32,9 +33,10 @@
 #define JSONKEY_id      "id"
 #define JSONKEY_name    "name"
 #define JSONKEY_group   "group"
+#define JSONKEY_descr   "descr"
+
 #define JSONKEY_fields  "fields"
 #define JSONKEY_actions "actions"
-#define JSONKEY_descr   "descr"
 #define JSONKEY_path    "path"
 #define JSONKEY_dao     "dao"
 #define JSONKEY_class   "class"
@@ -55,7 +57,6 @@ const char* const ROOT_PATHS[] PROGMEM = {
 		ROOT_PATH_MODEL,
 		ROOT_PATH_DEPLOYED
 };
-
 const int ROOT_PATHS_TOTAL PROGMEM = 2;
 
 const char* const ROOT_PATHS_GROUPS[] PROGMEM = {
@@ -63,8 +64,20 @@ const char* const ROOT_PATHS_GROUPS[] PROGMEM = {
 		ROOT_GROUP_SETTINGS,
 		ROOT_GROUP_SERVICES
 };
-
 const int ROOT_PATHS_GROUPS_TOTAL PROGMEM = 3;
+
+const char* const ENTITY_MANDATORY_STAT[] PROGMEM = {
+		JSONKEY_id,
+		JSONKEY_name,
+		JSONKEY_group
+};
+const int ENTITY_MANDATORY_STAT_TOTAL PROGMEM = 3;
+
+const char* const ENTITY_MANDATORY_VAR[] PROGMEM = {
+		JSONKEY_descr
+};
+const int ENTITY_MANDATORY_VAR_TOTAL PROGMEM = 1;
+
 
 class EntityConsts {
 public:

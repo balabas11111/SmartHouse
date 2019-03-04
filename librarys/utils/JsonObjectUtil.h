@@ -203,6 +203,10 @@ public:
 		return (obj.containsKey(key))?obj.get<JsonObject>(key):obj.createNestedObject(key);
 	}
 
+	static JsonObject& getObjectChildOrCreateNewDup(JsonObject& obj,const char* key){
+		return (obj.containsKey(key))?obj.get<JsonObject>(key):obj.createNestedObject(strdup(key));
+	}
+
 	static JsonObject& getObjectChildOrCreateNew(JsonObject& obj,const char* key){
 		return (obj.containsKey(key))?obj.get<JsonObject>(key):obj.createNestedObject(key);
 	}
@@ -216,6 +220,10 @@ public:
 
 	static JsonArray& getObjectChildArrayOrCreateNew(JsonObject& obj,const char* key){
 		return (obj.containsKey(key))?obj.get<JsonArray>(key):obj.createNestedArray(key);
+	}
+
+	static JsonArray& getObjectChildArrayOrCreateNewDup(JsonObject& obj,const char* key){
+		return (obj.containsKey(key))?obj.get<JsonArray>(key):obj.createNestedArray(strdup(key));
 	}
 
 	static unsigned int getCrc(JsonObject& obj){

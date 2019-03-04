@@ -62,11 +62,17 @@ public:
 	JsonObject& getRoot();
 	JsonObject& getRootPath(const char* rootPath);
 	JsonObject& getRootPathGroup(const char* rootPath,const char* group);
-	JsonObject& getRootPathGroupEntity(const char* rootPath,const char* group,const char* entName);
+	//JsonObject& getRootPathGroupEntity(const char* rootPath,const char* group,const char* entName);
+
+	void clearTmpBuf();
+	JsonObject& loadFileToTempBuf(const char* fileName);
+	JsonObject& loadStringToTempBuf(const char* stringJson);
 
 	void createEntityJson(const char* rootPath,EntityJson* ent);
 
 	void printEntities();
+
+	void putEntityMandatoryFields(JsonObject& target,EntityJson* ent);
 
 	void initEntityModel(EntityJson* ent);
 
@@ -74,9 +80,11 @@ public:
 	void persistModels();
 	void saveModels();
 
+	/*
 	void initDatas();
 	void persistDatas();
 	void saveDatas();
+	*/
 
 	void initTemplates();
 	void persistTemplates();
@@ -101,11 +109,21 @@ public:
 	virtual const char* getFieldConstChar(int entityId,const char* key) override;
 	virtual char* getFieldChar(int entityId,const char* key) override;
 
+	JsonObject& getEntitysJson(const char* rootPathJson,EntityJson* entity);
+	JsonObject& getEntitysJson(const char* rootPathJson,int entityId);
+
 	virtual JsonObject& getEntityModel(int entityId) override;
-	virtual JsonObject& getEntityData(int entityId) override;
+	virtual JsonObject& getEntityDescriptor(int entityId) override;
+
+	JsonObject& getEntityInitializeParsedDescriptor(EntityJson* e,bool forceLoad=false);
+	JsonObject& getEntityInitializeParsedDescriptorFields(EntityJson* e,bool forceLoad=false);
+	JsonObject& getEntityInitializeParsedDescriptorActions(EntityJson* e,bool forceLoad=false);
+
+	JsonObject& getEntityDescriptor(EntityJson* e);
+	JsonObject& getEntityDescriptorFields(EntityJson* e);
+	JsonObject& getEntityDescriptorActions(EntityJson* e);
 
 	JsonObject& getEntityModel(EntityJson* e);
-	JsonObject& getEntityData(EntityJson* e);
 	JsonObject& getEntityDeployed(EntityJson* e);
 
 	JsonObject& getEntityModelAllFields(EntityJson* e);
@@ -123,13 +141,13 @@ public:
 
 	template<typename T>
 	bool hasField(int entityId,const char* key){
-		JsonObject& obj = getEntityData(getEntity(entityId));
+		JsonObject& obj = getEntityModel(getEntity(entityId));
 		return JsonObjectUtil::hasField<T>(obj,key);
 	}
 	template<typename T>
 	bool setField(int entityId,const char* key,T value){
 		EntityJson* ent = getEntity(entityId);
-		JsonObject& obj = getEntityData(ent);
+		JsonObject& obj = getEntityModel(ent);
 		bool changed = JsonObjectUtil::setField<T>(obj,key,value);
 
 		ent->setChanged(changed);
@@ -139,7 +157,7 @@ public:
 	}
 	template<typename T>
 	T getField(int entityId,const char* key){
-		JsonObject& obj = getEntityData(getEntity(entityId));
+		JsonObject& obj = getEntityModel(getEntity(entityId));
 		return JsonObjectUtil::getField<T>(obj,key);
 	}
 
@@ -177,13 +195,10 @@ public:
 	}
 
 protected:
-	bool isDefaultField(const char* name);
-	void addFieldToActions(JsonObject& actions, const char* kind, const char* key);
+	bool isMandatoryStaticField(const char* name);
+	//void addFieldToActions(JsonObject& actions, const char* kind, const char* key);
 	int loadedModelToModel(EntityJson* model,JsonObject& loaded);
-	int loadedDataToData(EntityJson* data,JsonObject& loaded);
-
-	JsonObject& getEntitysJson(const char* rootPathJson,EntityJson* entity);
-	JsonObject& getEntitysJson(const char* rootPathJson,int entityId);
+	//int loadedDataToData(EntityJson* data,JsonObject& loaded);
 
 	std::list<EntityJson*> entities;
 	DynamicJsonBuffer buf;
@@ -191,7 +206,7 @@ protected:
 	JsonObject& root = this->buf.parse("{}").as<JsonObject>();
 	DynamicJsonBuffer bufTmp;
 
-	JsonObject& rootTmp = this->bufTmp.parse("{}").as<JsonObject>();
+	JsonVariant rootTmp = this->bufTmp.parse("{}").as<JsonObject>();
 };
 
 #endif /* LIBRARIES_ENTITYLIB_JSONDAO_H_ */

@@ -16,7 +16,7 @@ public:
 	virtual ~EntityModelDataProvider(){};
 
 	virtual JsonObject& getEntityModel(int entityId)=0;
-	virtual JsonObject& getEntityData(int entityId)=0;
+	virtual JsonObject& getEntityDescriptor(int entityId)=0;
 
 	virtual bool hasFieldInt(int entityId,const char* key)=0;
 	virtual bool hasFieldFloat(int entityId,const char* key)=0;
