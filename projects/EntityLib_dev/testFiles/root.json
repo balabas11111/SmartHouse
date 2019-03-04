@@ -1,4 +1,8 @@
 {"model":{
+
+			"data":{},
+			"descriptor":{},
+
 	"sensors":{
 			"bme280":{
 					"fields":{
@@ -18,6 +22,7 @@
 			         }
 			  }
 		 },
+"descriptor":{},
 "deploy":{
 	"sensors":{
 				"bme280":{"id":0,"name":"bme280","group":"sensors","temp":"%0:temp%","hum":"%0:hum%"},

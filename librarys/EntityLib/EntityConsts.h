@@ -12,8 +12,9 @@
 
 #define PERSENT_STR "%"
 
+#define ROOT_PATH "/-/"
 #define ROOT_PATH_MODEL "model"
-#define ROOT_PATH_DESCRPTOR "descrr"
+#define ROOT_PATH_DESCRPTOR "descr"
 //#define ROOT_PATH_DATA "data"
 #define ROOT_PATH_DEPLOYED "deploy"
 #define ROOT_PATH_TEMP "temp"
@@ -46,7 +47,7 @@
 #define JSONKEY_declaredActions "declaredActions"
 
 #define PATH_MODEL_file   "/data/entity/model.json"
-#define PATH_DATA_file    "/data/entity/data.json"
+#define PATH_DESCRPTOR_file    "/data/entity/descr.json"
 #define PATH_DEPLOY_file   "/data/entity/deploy.json"
 #define PATH_DEPLOY_folder "/deploy/"
 

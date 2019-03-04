@@ -207,8 +207,8 @@ bool FileUtils::saveRootJson(const char* fileName,const char* rootPath,JsonObjec
 	Serial.print(FPSTR(" save "));
 	//Serial.print(rootPath);
 	//Serial.print(FPSTR("..."));
-
-	bool res=FileUtils::saveJsonToFile(fileName, root.get<JsonObject>(rootPath));
+	JsonObject& toSave=(strcmp(rootPath,ROOT_PATH)==0)?root:root.get<JsonObject>(rootPath);
+	bool res=FileUtils::saveJsonToFile(fileName, toSave);
 	if(res){
 		Serial.println(FPSTR(" OK."));
 	}else{

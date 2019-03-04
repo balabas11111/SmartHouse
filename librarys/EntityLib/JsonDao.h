@@ -68,6 +68,8 @@ public:
 	JsonObject& loadFileToTempBuf(const char* fileName);
 	JsonObject& loadStringToTempBuf(const char* stringJson);
 
+	//JsonObject& loadFileToBuf(DynamicJsonBuffer bufIn,const char* fileName);
+
 	void createEntityJson(const char* rootPath,EntityJson* ent);
 
 	void printEntities();
@@ -109,6 +111,7 @@ public:
 	virtual const char* getFieldConstChar(int entityId,const char* key) override;
 	virtual char* getFieldChar(int entityId,const char* key) override;
 
+	JsonObject& getEntitysJson(JsonObject& from,const char* rootPathJson,EntityJson* entity);
 	JsonObject& getEntitysJson(const char* rootPathJson,EntityJson* entity);
 	JsonObject& getEntitysJson(const char* rootPathJson,int entityId);
 
@@ -119,15 +122,22 @@ public:
 	JsonObject& getEntityInitializeParsedDescriptorFields(EntityJson* e,bool forceLoad=false);
 	JsonObject& getEntityInitializeParsedDescriptorActions(EntityJson* e,bool forceLoad=false);
 
-	JsonObject& getEntityDescriptor(EntityJson* e);
-	JsonObject& getEntityDescriptorFields(EntityJson* e);
-	JsonObject& getEntityDescriptorActions(EntityJson* e);
+	JsonObject& getEntityModel(JsonObject& from,EntityJson* e);
+	JsonObject& getEntityDeployed(JsonObject& from,EntityJson* e);
+
+	JsonObject& getEntityDescriptor(JsonObject& from, EntityJson* e);
+	JsonObject& getEntityDescriptorFields(JsonObject& from,EntityJson* e);
+	JsonObject& getEntityDescriptorActions(JsonObject& from,EntityJson* e);
 
 	JsonObject& getEntityModel(EntityJson* e);
 	JsonObject& getEntityDeployed(EntityJson* e);
 
-	JsonObject& getEntityModelAllFields(EntityJson* e);
-	JsonObject& getEntityModelActions(EntityJson* e);
+	JsonObject& getEntityDescriptor(EntityJson* e);
+	JsonObject& getEntityDescriptorFields(EntityJson* e);
+	JsonObject& getEntityDescriptorActions(EntityJson* e);
+
+	//JsonObject& getEntityModelAllFields(EntityJson* e);
+	//JsonObject& getEntityModelActions(EntityJson* e);
 
 	JsonArray& getEntityModelStatFields(EntityJson* e);
 	JsonArray& getEntityModelVarFields(EntityJson* e);
