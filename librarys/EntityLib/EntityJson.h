@@ -12,6 +12,8 @@
 #include <ArduinoJson.h>
 #include <functional>
 
+#include "EntityModelDataProvider.h"
+
 class EntityJson {
 public:
 	EntityJson(const char* group,const char* name,const char* descr,const char* descriptor){
@@ -23,7 +25,12 @@ public:
 	};
 	virtual ~EntityJson(){};
 
-	void init(){
+	void attachParams(int id,EntityModelDataProvider* modelDataProvider){
+		this->id=id;
+		this->modelDataProvider=modelDataProvider;
+	}
+
+	virtual void init(){
 
 	}
 
@@ -31,16 +38,16 @@ public:
 		return this->id;
 	}
 
-	bool isChanged() const {
-		return changed;
+	bool isChanged() {
+		return this->changed;
 	}
 
 	bool setDescr(char* descr){
 		if(!strcmp(this->descr,descr)==0){
-			changed=true;
+			this->changed=true;
 			this->descr=descr;
 		}
-		return changed;
+		return this->changed;
 	}
 
 	char* getDescr() {
@@ -48,19 +55,15 @@ public:
 	}
 
 	const char* getGroup() {
-		return group;
+		return this->group;
 	}
 
 	const char* getName() {
-		return name;
+		return this->name;
 	}
 
 	void setChanged(bool changed = false) {
 		this->changed = changed;
-	}
-
-	void setId(int id) {
-		this->id = id;
 	}
 
 	void print(){
@@ -81,8 +84,12 @@ public:
 		return descriptor;
 	}
 
+	EntityModelDataProvider* getModelDataProvider() {
+		return modelDataProvider;
+	}
+
 protected:
-	//std::function<void(EntityJson*,const char*)> registerEntityModelFunction;
+	EntityModelDataProvider* modelDataProvider;
 
 	bool changed=false;
 	int id;

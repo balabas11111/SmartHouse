@@ -12,8 +12,8 @@
 #include <ArduinoJson.h>
 #include <FS.h>
 
-const PROGMEM char FILE_MODE_READ[]= "r";
-const PROGMEM char FILE_MODE_WRITE[]= "w";
+#define FILE_MODE_READ "r"
+#define FILE_MODE_WRITE "w"
 
 class FileUtils {
 public:
@@ -21,20 +21,27 @@ public:
 	virtual ~FileUtils();
 
 	static bool init();
-	static boolean exists(String fileName);
-	static boolean existsAndHasSize(String fileName);
-	static boolean existsAndHasSizeChar(const char* fileName);
+	static bool exists(String fileName);
+	static bool existsAndHasSize(String fileName);
+	static bool existsAndHasSizeChar(const char* fileName);
 
-	static boolean saveJsonToFile(String fileName,JsonObject& obj);
-	static boolean loadJsonFromFile(String fileName, JsonObject& obj);
-	static boolean saveStringToFile(String fileName,String value);
+	static bool saveJsonToFile(String fileName,JsonObject& obj);
+	static bool loadJsonFromFile(String fileName, JsonObject& obj);
+	static bool saveStringToFile(String fileName,String value);
 	static String loadStringFromFile(String fileName);
 
 	static File getFile(String fileName,const char* mode);
 	static File getFileChar(const char* fileName,const char* mode);
-	//static boolean loadJsonFromFile(String fileName, JsonObject& obj, DynamicJsonBuffer* buf);
-protected:
-	//static bool checkSpiff();
+
+	static unsigned int getCrc(const char* fileName);
+	static unsigned int getCrc(JsonObject& obj);
+
+	static bool compareCrs(const char* fileName,JsonObject& obj);
+
+	static void dir();
+	static void dir(const char* path);
+
+	static bool saveRootJson(const char* fileName,const char* rootPath,JsonObject& root);
 };
 
 #endif /* LIBRARIES_DEVICELIB_UTILS_FILEUTILS_H_ */

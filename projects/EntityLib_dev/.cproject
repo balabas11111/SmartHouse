@@ -33,6 +33,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WiFi}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/utils}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Wire}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/FastCRC}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.392278783" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -52,6 +54,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WiFi}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/utils}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Wire}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/FastCRC}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1644733984" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -71,6 +75,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WiFi}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/utils}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Wire}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/FastCRC}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.2126147630" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>

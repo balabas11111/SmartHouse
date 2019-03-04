@@ -10,9 +10,11 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include <HashPrint.h>
 
 #include <utility>
 #include <CompareUtils.h>
+#include "EntityConsts.h"
 
 class JsonObjectUtil {
 public:
@@ -80,6 +82,16 @@ public:
 		Serial.println(FPSTR(";"));
 	}
 
+	static void printAllJson(JsonObject& root){
+		Serial.println(FPSTR("-------------------ROOT-------------------"));
+
+		for(int i=0;i<ROOT_PATHS_TOTAL;i++){
+			const char* currRoot = ROOT_PATHS[i];
+
+			print(currRoot,root.get<JsonObject>(currRoot));
+		}
+	}
+
 	static JsonVariant clone(JsonVariant jb, JsonVariant prototype, const char* protoKey)
 	{
 		Serial.println(FPSTR("Prototype="));
@@ -129,14 +141,12 @@ public:
 	  return prototype;
 	}
 
-	static bool copyArray(JsonArray& a,JsonArray& b){
-		bool result=false;
+	static int copyArray(JsonArray& a,JsonArray& b){
+		int result=0;
 
 		for (const auto& kvp : a) {
 			if(!isInArray(kvp, b)){
-				Serial.print(FPSTR("add "));
-				Serial.println(kvp.as<char*>());
-
+				result++;
 				b.add(strdup(kvp));
 			}
 		}
@@ -165,6 +175,75 @@ public:
 			ind++;
 		}
 		return -1;
+	}
+
+	static String getObjectValueAsString(JsonObject& obj,const char* keyName){
+		String str=FPSTR("N/A");
+
+		if(obj.is<char*>(keyName)){
+			str = obj.get<char*>(keyName);
+		}else if(obj.is<const char*>(keyName)){
+			str = obj.get<const char*>(keyName);
+		}else if(obj.is<bool>(keyName)){
+			str = obj.get<bool>(keyName);
+		}else if(obj.is<short>(keyName)){
+			str = obj.get<short>(keyName);
+		}else if(obj.is<int>(keyName)){
+			str = obj.get<int>(keyName);
+		}else if(obj.is<long>(keyName)){
+			str = obj.get<long>(keyName);
+		}else if(obj.is<float>(keyName)){
+			str = obj.get<float>(keyName);
+		}
+
+		return str;
+	}
+
+	static JsonObject& getObjectChildOrCreateNew(JsonObject& obj,String key){
+		return (obj.containsKey(key))?obj.get<JsonObject>(key):obj.createNestedObject(key);
+	}
+
+	static JsonObject& getObjectChildOrCreateNew(JsonObject& obj,const char* key){
+		return (obj.containsKey(key))?obj.get<JsonObject>(key):obj.createNestedObject(key);
+	}
+
+	static bool getObjectFieldExistsAndEquals(JsonObject& obj,const char* key,JsonVariant val){
+		if(!obj.containsKey(key)){
+			return false;
+		}
+		return CompareUtils::compareValues(obj.get<JsonVariant>(key), val);
+	}
+
+	static JsonArray& getObjectChildArrayOrCreateNew(JsonObject& obj,const char* key){
+		return (obj.containsKey(key))?obj.get<JsonArray>(key):obj.createNestedArray(key);
+	}
+
+	static unsigned int getCrc(JsonObject& obj){
+		HashPrint hashPrint;
+		obj.printTo(hashPrint);
+		return hashPrint.hash();
+	}
+
+	static bool compareByCrc(JsonObject& obj1,JsonObject& obj2){
+		return getCrc(obj1)==getCrc(obj2);
+	}
+
+	template<typename T>
+	static bool hasField(JsonObject& obj,const char* key){
+		return (obj.containsKey(key) && obj.is<T>(key));
+	}
+
+	template<typename T>
+	static bool setField(JsonObject& parent,const char* key,T value){
+		if(!JsonObjectUtil::getObjectFieldExistsAndEquals(parent,key,value)){
+			parent.set<T>(key, value);
+			return true;
+		}
+		return false;
+	}
+	template<typename T>
+	static T getField(JsonObject& parent,const char* key){
+		return parent.get<T>(key);
 	}
 
 };
