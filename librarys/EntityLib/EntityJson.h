@@ -21,7 +21,8 @@ public:
 		this->group=group;
 		this->name=name;
 		this->descr=strdup(descr);
-		this->descriptor = descriptor;
+		//this->descriptor = descriptor;
+		this->modelDataProvider=nullptr;
 	};
 	virtual ~EntityJson(){};
 
@@ -75,17 +76,27 @@ public:
 		Serial.print(name);
 		Serial.print(FPSTR(", descr="));
 		Serial.print(descr);
-		Serial.print(FPSTR(", descriptor="));
-		Serial.print(descriptor);
+		Serial.print(FPSTR(", modelDefault="));
+		Serial.print(modelDefault);
+		Serial.print(FPSTR(", dataDefault="));
+		Serial.print(dataDefault);
 		Serial.println(FPSTR(")"));
-	}
-
-	const char* getDescriptor() const {
-		return descriptor;
 	}
 
 	EntityModelDataProvider* getModelDataProvider() {
 		return modelDataProvider;
+	}
+
+	bool hasPrimFields() const {
+		return primFields;
+	}
+
+	const char* getDataDefault() const {
+		return dataDefault;
+	}
+
+	const char* getModelDefault() const {
+		return modelDefault;
 	}
 
 protected:
@@ -96,8 +107,10 @@ protected:
 	const char* group;
 	const char* name;
 	char* descr;
-	const char* descriptor;
+	const char* modelDefault;
+	const char* dataDefault;
 
+	bool primFields=true;
 
 };
 

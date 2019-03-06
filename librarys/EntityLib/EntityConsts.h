@@ -32,6 +32,7 @@
 #define JSONKEY_id      "id"
 #define JSONKEY_name    "name"
 #define JSONKEY_group   "group"
+#define JSONKEY_data    "data"
 #define JSONKEY_fields  "fields"
 #define JSONKEY_actions "actions"
 #define JSONKEY_descr   "descr"

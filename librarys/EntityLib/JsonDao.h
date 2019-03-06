@@ -69,6 +69,7 @@ public:
 	void printEntities();
 
 	void initEntityModel(EntityJson* ent);
+	void createEntityPrimaryFields(EntityJson* ent,JsonObject& data);
 
 	void initModels();
 	void persistModels();
@@ -181,6 +182,8 @@ protected:
 	void addFieldToActions(JsonObject& actions, const char* kind, const char* key);
 	int loadedModelToModel(EntityJson* model,JsonObject& loaded);
 	int loadedDataToData(EntityJson* data,JsonObject& loaded);
+
+	int mergeModels(JsonObject& from,JsonObject& to);
 
 	JsonObject& getEntitysJson(const char* rootPathJson,EntityJson* entity);
 	JsonObject& getEntitysJson(const char* rootPathJson,int entityId);

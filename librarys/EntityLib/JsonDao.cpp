@@ -95,10 +95,6 @@ void JsonDao::initModels(){
 
 	for (std::list<EntityJson*>::iterator ent = entities.begin(); ent != entities.end(); ent++){
 
-		createEntityJson(ROOT_PATH_MODEL,(*ent));
-		//JsonObjectUtil::getObjectChildOrCreateNew(root.get<JsonObject>(ROOT_PATH_MODEL),(*it)->getGroup());
-		//JsonObjectUtil::getObjectChildOrCreateNew(root.get<JsonObject>(ROOT_PATH_MODEL).get<JsonObject>((*it)->getGroup()),(*it)->getName());
-
 		(*ent)->attachParams(id, this);
 		(*ent)->init();
 		id++;
@@ -112,47 +108,36 @@ void JsonDao::initModels(){
 	Serial.println(FPSTR("------------------------------------------"));
 }
 
-void JsonDao::initEntityModel(EntityJson* ent) {
-	Serial.println(ent->getName());
+void JsonDao::createEntityPrimaryFields(EntityJson* e,JsonObject& data) {
+	if(e->hasPrimFields()){
+		data.set(JSONKEY_id,e->getId());
+		data.set(JSONKEY_group,e->getGroup());
+		data.set(JSONKEY_name,e->getName());
+		data.set(JSONKEY_descr,e->getDescr());
+	}
+}
 
-	createEntityJson(ROOT_PATH_MODEL,ent);
-	JsonObject& json = getEntityModel(ent);
+void JsonDao::initEntityModel(EntityJson* e) {
+	Serial.println(e->getName());
+	createEntityJson(ROOT_PATH_MODEL,e);
 
-	DynamicJsonBuffer b;
+	JsonObject& modelActions = JsonObjectUtil::getObjectChildOrCreateNew(getEntityModel(e),JSONKEY_actions);
+	JsonObject& modelActionsTmp = JsonObjectUtil::getObjectChildFromStringOrCreateNew(&bufTmp,e->getModelDefault(),JSONKEY_actions);
 
-	JsonObject& modelFields = (json.containsKey(JSONKEY_fields))?json.get<JsonObject>(JSONKEY_fields):json.createNestedObject(JSONKEY_fields);
-	JsonObject& modelActions = (json.containsKey(JSONKEY_actions))?json.get<JsonObject>(JSONKEY_actions):json.createNestedObject(JSONKEY_actions);
+	mergeModels(modelActionsTmp,modelActions);
 
-	modelFields.set(JSONKEY_id,ent->getId());
-	modelFields.set(JSONKEY_group,ent->getGroup());
-	modelFields.set(JSONKEY_name,ent->getName());
-	modelFields.set(JSONKEY_descr,ent->getDescr());
+	JsonObjectUtil::print("root =",root);
+	bufTmp.clear();
 
-	for (const auto& kvp : b.parse(ent->getDescriptor()).as<JsonObject>().get<JsonObject>(JSONKEY_fields)) {
+	createEntityJson(ROOT_PATH_DATA,e);
+	JsonObject& data = getEntityData(e);
+	JsonObject& dataTmp = JsonObjectUtil::getObjectChildOrCreateNew(entityDescriptor,JSONKEY_fields);
+
+	for (const auto& kvp : dataTmp) {
 		if(!isDefaultField(kvp.key)){
-			modelFields.set(strdup(kvp.key), strdup(kvp.value));
+			data.set(strdup(kvp.key), strdup(kvp.value));
 		}
 	}
-
-	addFieldToActions(modelActions,JSONKEY_stat,JSONKEY_id);
-	addFieldToActions(modelActions,JSONKEY_stat,JSONKEY_name);
-	addFieldToActions(modelActions,JSONKEY_stat,JSONKEY_group);
-
-	addFieldToActions(modelActions,JSONKEY_var,JSONKEY_descr);
-	addFieldToActions(modelActions,JSONKEY_load,JSONKEY_descr);
-	addFieldToActions(modelActions,JSONKEY_save,JSONKEY_descr);
-
-	for (const auto& kvp : b.parse(ent->getDescriptor()).as<JsonObject>().get<JsonObject>(JSONKEY_actions)) {
-		JsonArray& currArr =
-		(!modelActions.containsKey(kvp.key))?
-			modelActions.createNestedArray(strdup(kvp.key)):
-			modelActions.get<JsonArray>(kvp.key);
-
-		JsonObjectUtil::copyArray(kvp.value, currArr);
-	}
-
-	//JsonObjectUtil::print("result =",json);
-	b.clear();
 }
 
 void JsonDao::persistModels() {
@@ -210,9 +195,8 @@ int JsonDao::loadedModelToModel(EntityJson* ent,JsonObject& loadedModel) {
 	Serial.println(ent->getName());
 	int i=0;
 	JsonObject& modelFields = getEntityModelAllFields(ent);
-	JsonObject& modelActions = getEntityModelActions(ent);
 	JsonObject& loadedFields = loadedModel.get<JsonObject>(ent->getGroup()).get<JsonObject>(ent->getName()).get<JsonObject>(JSONKEY_fields);
-	JsonObject& loadedActions = loadedModel.get<JsonObject>(ent->getGroup()).get<JsonObject>(ent->getName()).get<JsonObject>(JSONKEY_actions);
+
 
 	for (const auto& kvp : loadedFields) {
 		if(!isDefaultField(kvp.key) && strcmp(kvp.value,modelFields.get<const char*>(kvp.key))!=0){
@@ -220,27 +204,35 @@ int JsonDao::loadedModelToModel(EntityJson* ent,JsonObject& loadedModel) {
 			i++;
 		}
 	}
-	for (const auto& kvp : loadedActions) {
-		if(!modelActions.containsKey(kvp.key)){
-			i++;
-		}
 
-		JsonArray& currArr =
-		(!modelActions.containsKey(kvp.key))?
-			modelActions.createNestedArray(kvp.key):
-			modelActions.get<JsonArray>(kvp.key);
+	JsonObject& modelActions = getEntityModelActions(ent);
+	JsonObject& loadedActions = loadedModel.get<JsonObject>(ent->getGroup()).get<JsonObject>(ent->getName()).get<JsonObject>(JSONKEY_actions);
 
-		i+=JsonObjectUtil::copyArray(kvp.value, currArr);
-	}
+	i=mergeModels(loadedActions,modelActions);
 
-	if(i>0){
-		Serial.print(FPSTR(" updated="));
-		Serial.println(i);
-	}else{
-		Serial.println(FPSTR(" All values on place"));
-	}
 	return i;
 }
+
+int JsonDao::mergeModels(JsonObject& from, JsonObject& to) {
+
+	int changed=0;
+
+	for (const auto& kvp : from) {
+		if(!to.containsKey(kvp.key)){
+			changed++;
+		}
+		JsonArray& currArr = JsonObjectUtil::getObjectChildArrayOrCreateNew(to, kvp.key);
+		changed+=JsonObjectUtil::copyArray(kvp.value, currArr);
+	}
+
+	if(changed>0){
+		Serial.print(FPSTR(" merged="));
+		Serial.println(changed);
+	}
+
+	return changed;
+}
+
 
 void JsonDao::initDatas() {
 	Serial.println(FPSTR("---> Init Data"));
@@ -354,8 +346,6 @@ void JsonDao::initTemplates() {
 
 	for (std::list<EntityJson*>::iterator ent = entities.begin(); ent != entities.end(); ent++){
 		createEntityJson(ROOT_PATH_DEPLOYED,(*ent));
-		//JsonObjectUtil::getObjectChildOrCreateNew(root.get<JsonObject>(ROOT_PATH_DEPLOYED),(*ent)->getGroup());
-		//JsonObjectUtil::getObjectChildOrCreateNew(root.get<JsonObject>(ROOT_PATH_DEPLOYED).get<JsonObject>((*ent)->getGroup()),(*ent)->getName());
 
 		int entityTemplateVars = 0;
 		int entityStat = 0;
@@ -389,14 +379,8 @@ void JsonDao::initTemplates() {
 		Serial.print(FPSTR(" templVars = "));
 		Serial.println(entityTemplateVars);
 	}
-		/*Serial.println();
-		Serial.print(FPSTR("Total stat ="));
-		Serial.print(add);
-		Serial.print(FPSTR(" templVars ="));
-		Serial.println(templCount);
 
-	JsonObjectUtil::print("root=", root);
-	*/
+	//JsonObjectUtil::print("root=", root);
 	Serial.println(FPSTR("------------------------------------------"));
 }
 
@@ -647,3 +631,4 @@ JsonObject& JsonDao::getEntitysJson(const char* rootPathJson, int entityId) {
 	EntityJson* entity = getEntity(entityId);
 	return getEntitysJson(rootPathJson, entity);
 }
+

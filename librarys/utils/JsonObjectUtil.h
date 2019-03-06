@@ -207,15 +207,15 @@ public:
 		return (obj.containsKey(key))?obj.get<JsonObject>(key):obj.createNestedObject(key);
 	}
 
+	static JsonArray& getObjectChildArrayOrCreateNew(JsonObject& obj,const char* key){
+		return (obj.containsKey(key))?obj.get<JsonArray>(key):obj.createNestedArray(key);
+	}
+
 	static bool getObjectFieldExistsAndEquals(JsonObject& obj,const char* key,JsonVariant val){
 		if(!obj.containsKey(key)){
 			return false;
 		}
 		return CompareUtils::compareValues(obj.get<JsonVariant>(key), val);
-	}
-
-	static JsonArray& getObjectChildArrayOrCreateNew(JsonObject& obj,const char* key){
-		return (obj.containsKey(key))?obj.get<JsonArray>(key):obj.createNestedArray(key);
 	}
 
 	static unsigned int getCrc(JsonObject& obj){
@@ -226,6 +226,16 @@ public:
 
 	static bool compareByCrc(JsonObject& obj1,JsonObject& obj2){
 		return getCrc(obj1)==getCrc(obj2);
+	}
+
+	static JsonObject& getObjectFromString(DynamicJsonBuffer* b,const char* jsonStr){
+		b->clear();
+		JsonObject& res = b->parseObject(jsonStr);
+		return (res.success())?res:b->createObject();
+	}
+
+	static JsonObject& getObjectChildFromStringOrCreateNew(DynamicJsonBuffer* b,const char* jsonStr,const char* key){
+		return getObjectChildOrCreateNew(getObjectFromString(b,jsonStr),key);
 	}
 
 	template<typename T>

@@ -6,11 +6,11 @@
 
 #include <EntityConsts.h>
 
-#define BME280Descriptor "{\"fields\": {\"temp\":\"-1\",\"hum\":\"-1\",\"press\":\"-1\"},\
-\"actions\":{\"stat\":[],\"var\":[\"temp\",\"hum\",\"press\"],\"load\":[],\"save\":[],\"set\":[],\"templateVar\":[\"temp\",\"hum\"],\"eventListeners\":[]}  }"
+#define BME280Descriptor "{\"data\": {\"temp\":\"-1\",\"hum\":\"-1\",\"press\":\"-1\"},\
+\"actions\":{\"stat\":[],\"var\":[\"temp\",\"hum\",\"press\"],\"load\":[],\"save\":[],\"set\":[],\"tvar\":[\"temp\",\"hum\"]}  }"
 
-#define BH1750Descriptor "{\"fields\": {\"light\":\"-1\"},\
-\"actions\":{\"stat\":[],\"var\":[\"light\"],\"load\":[],\"save\":[],\"set\":[],\"templateVar\":[\"light\"],\"eventListeners\":[]}  }"
+#define BH1750Descriptor "{\"data\": {\"light\":\"-1\"},\
+\"actions\":{\"stat\":[],\"var\":[\"light\"],\"load\":[],\"save\":[],\"set\":[],\"tvar\":[\"light\"]}  }"
 
 EntityAbstract bme280(ROOT_GROUP_SENSORS,"bme280","Temperature/Humidity/AtmPressure",BME280Descriptor);
 EntityAbstract bh1750(ROOT_GROUP_SENSORS,"bh1750","Light level",BH1750Descriptor);
