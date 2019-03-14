@@ -78,6 +78,11 @@ public:
 		Serial.print(descr);
 		Serial.print(FPSTR(", descriptor="));
 		Serial.println(descriptor);
+
+		if(modelDataProvider!=nullptr){
+			JsonObjectUtil::print("Data --->", modelDataProvider->getEntityData(getId()));
+			JsonObjectUtil::print("Model --->", modelDataProvider->getEntityModel(getId()));
+		}
 	}
 
 	EntityModelDataProvider* getModelDataProvider() {
@@ -93,6 +98,8 @@ public:
 	}
 
 protected:
+
+
 	EntityModelDataProvider* modelDataProvider;
 
 	bool changed=false;

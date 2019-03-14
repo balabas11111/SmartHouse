@@ -75,12 +75,12 @@ public:
 	bool saveJsonObjectToFile(const char* fileName,JsonObject& json);
 
 	void initEntitiesModelData();
-	void persistModels();
-	void saveModels();
+	//void persistModels();
+	//void saveModels();
 
-	void initDatas();
-	void persistDatas();
-	void saveDatas();
+	//void initDatas();
+	//void persistDatas();
+	//void saveDatas();
 
 	void initTemplates();
 	void persistTemplates();
@@ -183,8 +183,8 @@ public:
 protected:
 	bool isDefaultField(const char* name);
 	void addFieldToActions(JsonObject& actions, const char* kind, const char* key);
-	int loadedModelToModel(EntityJson* model,JsonObject& loaded);
-	int loadedDataToData(EntityJson* data,JsonObject& loaded);
+	//int loadedModelToModel(EntityJson* model,JsonObject& loaded);
+	//int loadedDataToData(EntityJson* data,JsonObject& loaded);
 
 	int mergeModels(JsonObject& from,JsonObject& to);
 	int mergeDatas(JsonObject& from, JsonObject& to);
