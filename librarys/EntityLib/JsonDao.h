@@ -68,13 +68,13 @@ public:
 
 	void printEntities();
 
-	void initEntityModel(EntityJson* ent);
+	void initEntityModel(EntityJson* ent,JsonObject& loaded);
 	void createEntityPrimaryFields(EntityJson* ent,JsonObject& data);
 
 	JsonObject& loadRootIfExists();
 	bool saveJsonObjectToFile(const char* fileName,JsonObject& json);
 
-	void initModels();
+	void initEntitiesModelData();
 	void persistModels();
 	void saveModels();
 
@@ -187,9 +187,10 @@ protected:
 	int loadedDataToData(EntityJson* data,JsonObject& loaded);
 
 	int mergeModels(JsonObject& from,JsonObject& to);
+	int mergeDatas(JsonObject& from, JsonObject& to);
 
-	JsonObject& getEntitysJson(const char* rootPathJson,EntityJson* entity);
-	JsonObject& getEntitysJson(const char* rootPathJson,int entityId);
+	JsonObject& getEntitysJson(JsonObject& obj,const char* rootPathJson,EntityJson* entity);
+	JsonObject& getEntitysJson(JsonObject& obj,const char* rootPathJson,int entityId);
 
 	std::list<EntityJson*> entities;
 
