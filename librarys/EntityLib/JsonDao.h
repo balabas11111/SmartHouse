@@ -71,6 +71,9 @@ public:
 	void initEntityModel(EntityJson* ent);
 	void createEntityPrimaryFields(EntityJson* ent,JsonObject& data);
 
+	JsonObject& loadRootIfExists();
+	bool saveJsonObjectToFile(const char* fileName,JsonObject& json);
+
 	void initModels();
 	void persistModels();
 	void saveModels();
@@ -189,11 +192,11 @@ protected:
 	JsonObject& getEntitysJson(const char* rootPathJson,int entityId);
 
 	std::list<EntityJson*> entities;
-	DynamicJsonBuffer buf;
 
-	JsonObject& root = this->buf.parse("{}").as<JsonObject>();
+	DynamicJsonBuffer buf;
 	DynamicJsonBuffer bufTmp;
 
+	JsonObject& root = this->buf.parse("{}").as<JsonObject>();
 	JsonObject& rootTmp = this->bufTmp.parse("{}").as<JsonObject>();
 };
 

@@ -35,6 +35,7 @@
 #define JSONKEY_data    "data"
 #define JSONKEY_fields  "fields"
 #define JSONKEY_actions "actions"
+#define JSONKEY_model   "model"
 #define JSONKEY_descr   "descr"
 #define JSONKEY_path    "path"
 #define JSONKEY_dao     "dao"
@@ -44,6 +45,7 @@
 #define JSONKEY_declaredFields  "declaredFields"
 #define JSONKEY_declaredActions "declaredActions"
 
+#define PATH_ROOT_file   "/data/entity/root.json"
 #define PATH_MODEL_file   "/data/entity/model.json"
 #define PATH_DATA_file    "/data/entity/data.json"
 #define PATH_DEPLOY_file   "/data/entity/deploy.json"

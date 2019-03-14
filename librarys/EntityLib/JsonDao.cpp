@@ -87,11 +87,52 @@ bool JsonDao::isDefaultField(const char* key) {
 	return (strcmp(key,JSONKEY_id)==0 || strcmp(key,JSONKEY_name)==0 || strcmp(key,JSONKEY_group)==0);
 }
 
+JsonObject& JsonDao::loadRootIfExists(){
+	const char* fileName = PATH_ROOT_file;
+
+	Serial.print(FPSTR("Load root storage ="));
+	Serial.print(fileName);
+
+	bufTmp.clear();
+
+	if(!FileUtils::existsAndHasSizeChar(fileName)){
+		Serial.println(FPSTR("NO Root file. Empty obj returned"));
+		bufTmp.createObject();
+	}else{
+		Serial.println(FPSTR(" Root file exists. Load into tmpBuffer"));
+
+		File f =FileUtils::getFile(fileName, FILE_MODE_READ);
+		bufTmp.parse(f).as<JsonObject>();
+	}
+
+	//rootTmp.List(bufTmp);
+
+	rootTmp.printTo(Serial);
+	Serial.println();
+
+	return rootTmp;
+}
+
+bool JsonDao::saveJsonObjectToFile(const char* fileName,JsonObject& json) {
+	if(!FileUtils::existsAndHasSizeChar(fileName) || !FileUtils::compareCrs(fileName, json)){
+
+		bool res=FileUtils::saveJsonToFile(PATH_ROOT_file, json);
+		if(res){
+			Serial.println(FPSTR("Root saved OK."));
+		}else{
+			Serial.println(FPSTR("Root saved ERROR"));
+		}
+		return res;
+	}
+	return true;
+}
+
 void JsonDao::initModels(){
 	Serial.println(FPSTR("---> Init models"));
 	int id=0;
 
 	JsonObjectUtil::getObjectChildOrCreateNew(root,ROOT_PATH_MODEL);
+	loadRootIfExists();
 
 	for (std::list<EntityJson*>::iterator ent = entities.begin(); ent != entities.end(); ent++){
 
@@ -121,13 +162,14 @@ void JsonDao::initEntityModel(EntityJson* e) {
 	Serial.println(e->getName());
 	createEntityJson(ROOT_PATH_MODEL,e);
 
-	JsonObject& modelActions = JsonObjectUtil::getObjectChildOrCreateNew(getEntityModel(e),JSONKEY_actions);
-	JsonObject& modelActionsTmp = JsonObjectUtil::getObjectChildFromStringOrCreateNew(&bufTmp,e->getModelDefault(),JSONKEY_actions);
+	JsonObject& model = JsonObjectUtil::getObjectChildOrCreateNew(getEntityModel(e),JSONKEY_model);
+	JsonObject& modelLoaded = bufTmp.
 
-	mergeModels(modelActionsTmp,modelActions);
+	JsonObject& modelLoaded = JsonObjectUtil::getObjectChildFromStringOrCreateNew(&bufTmp,e->getModelDefault(),JSONKEY_actions);
+
+	mergeModels(modelTmp,model);
 
 	JsonObjectUtil::print("root =",root);
-	bufTmp.clear();
 
 	createEntityJson(ROOT_PATH_DATA,e);
 	JsonObject& data = getEntityData(e);
@@ -631,4 +673,3 @@ JsonObject& JsonDao::getEntitysJson(const char* rootPathJson, int entityId) {
 	EntityJson* entity = getEntity(entityId);
 	return getEntitysJson(rootPathJson, entity);
 }
-
