@@ -52,10 +52,24 @@ public:
 
 	}
 
-	static void print(const char* head,JsonVariant json){
-		Serial.println();
+	static void print(const char* head,JsonVariant json,boolean plnBefore=true){
+		if(plnBefore){Serial.println();}
 		Serial.println(head);
 		json.printTo(Serial);
+		Serial.println();
+	}
+
+	static void print(const char* head,JsonVariant descriptor,JsonVariant loaded,JsonVariant current){
+		Serial.println();
+		Serial.println(head);
+		Serial.println(FPSTR("Descriptor="));
+		descriptor.printTo(Serial);
+		Serial.println();
+		Serial.println(FPSTR("loaded="));
+		loaded.printTo(Serial);
+		Serial.println();
+		Serial.println(FPSTR("current="));
+		current.printTo(Serial);
 		Serial.println();
 	}
 
@@ -256,6 +270,18 @@ public:
 		return parent.get<T>(key);
 	}
 
+	static bool hasFieldInt(JsonObject& obj,const char* key){
+		return hasField<int>(obj, key);
+	}
+	static bool hasFieldFloat(JsonObject& obj,const char* key){
+		return hasField<float>(obj, key);
+	}
+	static bool hasFieldConstChar(JsonObject& obj,const char* key){
+		return hasField<const char*>(obj, key);
+	}
+	static bool hasFieldChar(JsonObject& obj,const char* key){
+		return hasField<char*>(obj, key);
+	}
 };
 
 #endif /* LIBRARIES_DEVICELIB_UTILS_JSONOBJECTUTIL_H_ */

@@ -151,6 +151,7 @@ sloeber.ino.cpp.o: ..\sloeber.ino.cpp \
  D:\projects\!!SmartHouse\librarys\utils/FileUtils.h \
  D:\projects\sloeber4.2\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\cores\esp8266/FS.h \
  D:\projects\!!SmartHouse\librarys\EntityLib/EntityConsts.h \
+ D:\projects\!!SmartHouse\librarys\utils/ObjectUtils.h \
  ..\EntityLib_dev.ino
 
 D:\projects\sloeber4.2\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\cores\esp8266/Arduino.h:
@@ -456,5 +457,7 @@ D:\projects\!!SmartHouse\librarys\utils/FileUtils.h:
 D:\projects\sloeber4.2\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\cores\esp8266/FS.h:
 
 D:\projects\!!SmartHouse\librarys\EntityLib/EntityConsts.h:
+
+D:\projects\!!SmartHouse\librarys\utils/ObjectUtils.h:
 
 ..\EntityLib_dev.ino:

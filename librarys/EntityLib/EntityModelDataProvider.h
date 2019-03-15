@@ -19,10 +19,10 @@ public:
 	virtual JsonObject& getEntityModel(int entityId)=0;
 	virtual JsonObject& getEntityData(int entityId)=0;
 
-	virtual bool hasFieldInt(int entityId,const char* key)=0;
-	virtual bool hasFieldFloat(int entityId,const char* key)=0;
-	virtual bool hasFieldConstChar(int entityId,const char* key)=0;
-	virtual bool hasFieldChar(int entityId, const char* key)=0;
+	virtual bool hasFieldInt(int entityId,const char* key){return JsonObjectUtil::hasField<int>(getEntityData(entityId), key);}
+	virtual bool hasFieldFloat(int entityId,const char* key){return JsonObjectUtil::hasField<float>(getEntityData(entityId), key);}
+	virtual bool hasFieldConstChar(int entityId,const char* key){return JsonObjectUtil::hasField<const char*>(getEntityData(entityId), key);}
+	virtual bool hasFieldChar(int entityId, const char* key){return JsonObjectUtil::hasField<char*>(getEntityData(entityId), key);}
 
 	virtual bool setField(int entityId,const char* key,int value)=0;
 	virtual bool setField(int entityId,const char* key,float value)=0;

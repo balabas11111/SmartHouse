@@ -82,6 +82,8 @@ public:
 		if(modelDataProvider!=nullptr){
 			JsonObjectUtil::print("Data --->", modelDataProvider->getEntityData(getId()));
 			JsonObjectUtil::print("Model --->", modelDataProvider->getEntityModel(getId()));
+		}else{
+			Serial.println(FPSTR("NO data provider bind"));
 		}
 	}
 
@@ -89,17 +91,23 @@ public:
 		return modelDataProvider;
 	}
 
-	bool hasPrimFields() const {
-		return primFields;
-	}
-
 	const char* getDescriptor() const {
 		return descriptor;
 	}
 
+	bool hasPrimFields() const {
+		return primFields;
+	}
+
+	bool isDeployedAsTemplate() const {
+		return deployedAsTemplate;
+	}
+
+	bool isDeployedAsData() const {
+		return deployedAsData;
+	}
+
 protected:
-
-
 	EntityModelDataProvider* modelDataProvider;
 
 	bool changed=false;
@@ -110,6 +118,8 @@ protected:
 	const char* descriptor;
 
 	bool primFields=true;
+	bool deployedAsTemplate = true;
+	bool deployedAsData = true;
 
 };
 

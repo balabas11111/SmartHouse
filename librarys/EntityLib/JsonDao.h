@@ -59,41 +59,34 @@ public:
 	std::list<EntityJson*>* getEntities();
 	EntityJson* getEntity(int i);
 
-	JsonObject& getRoot();
-	JsonObject& getRootPath(const char* rootPath);
-	JsonObject& getRootPathGroup(const char* rootPath,const char* group);
-	JsonObject& getRootPathGroupEntity(const char* rootPath,const char* group,const char* entName);
-
-	void createEntityJson(const char* rootPath,EntityJson* ent);
+	JsonObject& getEntitysJson_ByPath_OrCreateNew(JsonObject& container,const char* path,EntityJson* entity);
+	JsonObject& getEntitysJson_ByPath(JsonObject& container,const char* path,EntityJson* entity);
+	JsonObject& getEntitysJson_ByPath_entId(JsonObject& container,const char* path,int entityId);
 
 	void printEntities();
 
-	void initEntityModel(EntityJson* ent,JsonObject& loaded);
-	void createEntityPrimaryFields(EntityJson* ent,JsonObject& data);
+	void initEntityModelData(EntityJson* entity,JsonObject& loaded);
+	int createEntityDataPrimaryFields(EntityJson* entity,JsonObject& data);
 
 	JsonObject& loadRootIfExists();
 	bool saveJsonObjectToFile(const char* fileName,JsonObject& json);
 
 	void initEntitiesModelData();
-	//void persistModels();
-	//void saveModels();
-
-	//void initDatas();
-	//void persistDatas();
-	//void saveDatas();
 
 	void initTemplates();
 	void persistTemplates();
 	void saveTemplates();
 	void cleanTemplates();
 
-	void generateTemplateKey(EntityJson* ent,const char* key);
+	void generateTemplateKey(EntityJson* entity,const char* key);
 	String getByTemplateKey(const char* key);
 
-	virtual bool hasFieldInt(int entityId,const char* key) override;
-	virtual bool hasFieldFloat(int entityId,const char* key) override;
-	virtual bool hasFieldConstChar(int entityId,const char* key) override;
-	virtual bool hasFieldChar(int entityId,const char* key) override;
+	virtual JsonObject& getEntityModel(int entityId) override;
+	virtual JsonObject& getEntityData(int entityId) override;
+
+	bool getEntityHasAction(EntityJson* entity,const char* action);
+	bool getEntityDataFieldHasAction(EntityJson* entity,const char* dataFieldName,const char* action);
+	JsonArray& getEntityDataFieldsByAction(EntityJson* entity,const char* action);
 
 	virtual bool setField(int entityId,const char* key,int value) override;
 	virtual bool setField(int entityId,const char* key,float value) override;
@@ -105,50 +98,35 @@ public:
 	virtual const char* getFieldConstChar(int entityId,const char* key) override;
 	virtual char* getFieldChar(int entityId,const char* key) override;
 
-	virtual JsonObject& getEntityModel(int entityId) override;
-	virtual JsonObject& getEntityData(int entityId) override;
-
-	JsonObject& getEntityModel(EntityJson* e);
-	JsonObject& getEntityData(EntityJson* e);
-	JsonObject& getEntityDeployed(EntityJson* e);
-
-	JsonObject& getEntityModelAllFields(EntityJson* e);
-	JsonObject& getEntityModelActions(EntityJson* e);
-
-	JsonArray& getEntityModelStatFields(EntityJson* e);
-	JsonArray& getEntityModelVarFields(EntityJson* e);
-	JsonArray& getEntityModelTemplateVarFields(EntityJson* e);
-
-	JsonArray& getEntityDataLoadFields(EntityJson* e);
-	JsonArray& getEntityDataSaveFields(EntityJson* e);
-	JsonArray& getEntityDataSetFields(EntityJson* e);
-
-	bool getFieldHasAction(EntityJson* e,const char* key,const char* action);
-
 	template<typename T>
 	bool hasField(int entityId,const char* key){
-		JsonObject& obj = getEntityData(getEntity(entityId));
+		JsonObject& obj = getEntityData(entityId);
 		return JsonObjectUtil::hasField<T>(obj,key);
 	}
 	template<typename T>
 	bool setField(int entityId,const char* key,T value){
-		EntityJson* ent = getEntity(entityId);
-		JsonObject& obj = getEntityData(ent);
-		bool changed = JsonObjectUtil::setField<T>(obj,key,value);
+		EntityJson* entity = getEntity(entityId);
+		JsonObject& data = getEntityData(entityId);
+		bool changed = JsonObjectUtil::setField<T>(data,key,value);
 
-		ent->setChanged(changed);
-		dispatchFieldChange(ent, key);
+		entity->setChanged(changed);
+		dispatchFieldChange(entity, key);
 
 		return changed;
 	}
 	template<typename T>
 	T getField(int entityId,const char* key){
-		JsonObject& obj = getEntityData(getEntity(entityId));
+		JsonObject& obj = getEntityData(entityId);
 		return JsonObjectUtil::getField<T>(obj,key);
 	}
+/*
+	virtual bool hasFieldInt(int entityId,const char* key) override;
+	virtual bool hasFieldFloat(int entityId,const char* key) override;
+	virtual bool hasFieldConstChar(int entityId,const char* key) override;
+	virtual bool hasFieldChar(int entityId,const char* key) override;
 
 	template<typename T>
-	void registerEntityModelField(JsonObject& model,const char* key,T defValue,bool stat,bool var,bool load, bool save, bool deploy,bool set){
+	void registerEntityField(JsonObject& model,const char* key,T defValue,bool stat,bool var,bool load, bool save, bool deploy,bool set){
 		JsonObjectUtil::getObjectChildOrCreateNew(model, JSONKEY_fields);
 		JsonObjectUtil::getObjectChildOrCreateNew(model, JSONKEY_actions);
 
@@ -171,7 +149,7 @@ public:
 		if(deploy){actions.get<JsonArray>(JSONKEY_deploy).add(key);}
 		if(set){actions.get<JsonArray>(JSONKEY_set).add(key);}
 	}
-
+*/
 	void dispatchFieldChange(EntityJson* entity,const char* key){
 		Serial.print(FPSTR("Field changed Entity="));
 		Serial.print(entity->getName());
@@ -182,15 +160,9 @@ public:
 
 protected:
 	bool isDefaultField(const char* name);
-	void addFieldToActions(JsonObject& actions, const char* kind, const char* key);
-	//int loadedModelToModel(EntityJson* model,JsonObject& loaded);
-	//int loadedDataToData(EntityJson* data,JsonObject& loaded);
 
 	int mergeModels(JsonObject& from,JsonObject& to);
 	int mergeDatas(JsonObject& from, JsonObject& to);
-
-	JsonObject& getEntitysJson(JsonObject& obj,const char* rootPathJson,EntityJson* entity);
-	JsonObject& getEntitysJson(JsonObject& obj,const char* rootPathJson,int entityId);
 
 	std::list<EntityJson*> entities;
 
@@ -199,6 +171,8 @@ protected:
 
 	JsonObject& root = this->buf.parse("{}").as<JsonObject>();
 	JsonObject& rootTmp = this->bufTmp.parse("{}").as<JsonObject>();
+
+	int incomeEntities;
 };
 
 #endif /* LIBRARIES_ENTITYLIB_JSONDAO_H_ */
