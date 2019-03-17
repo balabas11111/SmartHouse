@@ -21,7 +21,8 @@
 #ifndef ASYNC
 #include <ESP8266WebServer.h>
 #endif
-
+#include "AsyncJson.h"
+#include "ArduinoJson.h"
 #include <WiFiUtils.h>
 #include <FileUtils.h>
 #include <ServerSettingsBox.h>
@@ -81,10 +82,14 @@ protected:
 	void onCat(AsyncWebServerRequest *request);
 	void onDelete(AsyncWebServerRequest *request);
 	void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final);
+	void onFileRead(AsyncWebServerRequest *request);
 
 	virtual void sendAsEventSource(const char* event,const char* msg) override;
 
 	void notFound(AsyncWebServerRequest *request);
+	bool handleFileRead(String path,AsyncWebServerRequest* request);
+	bool handleFileGzRead(String path,AsyncWebServerRequest* request);
+	String getContentType(String filename,AsyncWebServerRequest* request);
 
 	String processor(const String& var)
 	{
@@ -106,6 +111,8 @@ protected:
 
 	wl_status_t oldWiFistatus;
 	bool reconnected=false;
+
+	File fsUploadFile;
 
 	WiFiEventHandler wiFiEventSoftAPModeProbeRequestReceivedHandler;
 	WiFiEventHandler onSoftAPModeStationConnectedHandler;

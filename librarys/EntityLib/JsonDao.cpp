@@ -89,7 +89,7 @@ bool JsonDao::isDefaultField(const char* key) {
 }
 
 JsonObject& JsonDao::loadRootIfExists(){
-	const char* fileName = PATH_ROOT_file;
+	const char* fileName = (PATH_MODEL_DATA_JSON_FILE);
 
 	Serial.print(FPSTR("Load root storage ="));
 	Serial.print(fileName);
@@ -97,10 +97,10 @@ JsonObject& JsonDao::loadRootIfExists(){
 	bufTmp.clear();
 
 	if(!FileUtils::existsAndHasSizeChar(fileName)){
-		Serial.println(FPSTR("NO Root file. Empty obj returned"));
+		Serial.println(FPSTR(" - NO Root file. Empty obj returned"));
 		return bufTmp.createObject();
 	}else{
-		Serial.println(FPSTR(" Root file exists. Load into tmpBuffer"));
+		Serial.println(FPSTR(" - Root file exists. Load into tmpBuffer"));
 
 		File f =FileUtils::getFile(fileName, FILE_MODE_READ);
 		return bufTmp.parse(f).as<JsonObject>();
@@ -114,7 +114,7 @@ JsonObject& JsonDao::loadRootIfExists(){
 bool JsonDao::saveJsonObjectToFile(const char* fileName,JsonObject& json) {
 	if(!FileUtils::existsAndHasSizeChar(fileName) || !FileUtils::compareCrs(fileName, json)){
 
-		bool res=FileUtils::saveJsonToFile(PATH_ROOT_file, json);
+		bool res=FileUtils::saveJsonToFile(PATH_MODEL_DATA_JSON_FILE, json);
 		if(res){
 			Serial.println(FPSTR("Root saved OK."));
 		}else{
@@ -150,7 +150,7 @@ void JsonDao::initEntitiesModelData(){
 
 	//JsonObjectUtil::print("root=", root);
 
-	saveJsonObjectToFile(PATH_ROOT_file, root);
+	saveJsonObjectToFile(PATH_MODEL_DATA_JSON_FILE, root);
 
 	Serial.println(FPSTR("------------------------------------------"));
 }
@@ -313,7 +313,7 @@ void JsonDao::saveTemplates() {
 	int ok=0;
 	int er=0;
 
-	const char* baseFileName = PATH_DEPLOY_file;
+	const char* baseFileName = PATH_MODEL_DATA_JSON_FILE;
 	const char* rootPath = ROOT_PATH_DEPLOYED;
 
 	Serial.println(FPSTR("---> Persist Deploy Templates"));
@@ -347,7 +347,7 @@ void JsonDao::saveTemplates() {
 
 	for(int j=0;j<ROOT_PATHS_GROUPS_TOTAL;j++){
 		const char* groupName = ROOT_PATHS_GROUPS[j];
-		String fileNameStr = PATH_DEPLOY_folder;
+		String fileNameStr = PATH_MODEL_DATA_JSON_BY_GROUP;
 				fileNameStr+=groupName;
 				fileNameStr+=JSON_EXT;
 
@@ -481,182 +481,7 @@ void JsonDao::printEntities() {
 	}
 }
 
-/*
-void JsonDao::persistModels() {
-	Serial.println(FPSTR("---> Persist Models"));
-	const char* fileName = PATH_MODEL_file;
-	const char* rootPath = ROOT_PATH_MODEL;
-
-	Serial.print(rootPath);
-	Serial.print(FPSTR(" storage ="));
-	Serial.print(fileName);
-
-	if(!FileUtils::existsAndHasSizeChar(fileName)){
-		FileUtils::saveRootJson(fileName, rootPath, root);
-	}else{
-		bool fileEqModel=FileUtils::compareCrs(fileName, root.get<JsonObject>(rootPath));
-
-		if(!fileEqModel){
-			Serial.println(FPSTR(" File different rewrite"));
-			bufTmp.clear();
-			File f =FileUtils::getFile(fileName, FILE_MODE_READ);
-
-			JsonObject& fromFile = bufTmp.parse(f).as<JsonObject>();
-
-			int t=0;
-			for (std::list<EntityJson*>::iterator it = entities.begin(); it != entities.end(); it++){
-				t+=loadedModelToModel((*it),fromFile);
-			}
-
-			f.close();
-			bufTmp.clear();
-
-			if(t!=0){
-				Serial.print(t);
-				Serial.println(FPSTR(" changes done"));
-
-				saveModels();
-			}else{
-				Serial.println(FPSTR(" no model changes"));
-			}
-		}else{
-			Serial.println(FPSTR(" file is actual"));
-		}
-	}
-
-	JsonObjectUtil::print("root=", root);
-	Serial.println(FPSTR("------------------------------------------"));
+JsonObject& JsonDao::getEntityRoot() {
+	root.printTo(Serial);
+	return root;
 }
-
-void JsonDao::saveModels() {
-	FileUtils::saveRootJson(PATH_MODEL_file, ROOT_PATH_MODEL, root);
-}
-
-int JsonDao::loadedModelToModel(EntityJson* ent,JsonObject& loadedModel) {
-	Serial.print(FPSTR("Loading "));
-	Serial.println(ent->getName());
-	int i=0;
-	JsonObject& modelFields = getEntityModelAllFields(ent);
-	JsonObject& loadedFields = loadedModel.get<JsonObject>(ent->getGroup()).get<JsonObject>(ent->getName()).get<JsonObject>(JSONKEY_fields);
-
-
-	for (const auto& kvp : loadedFields) {
-		if(!isDefaultField(kvp.key) && strcmp(kvp.value,modelFields.get<const char*>(kvp.key))!=0){
-			modelFields.set(strdup(kvp.key), strdup(kvp.value));
-			i++;
-		}
-	}
-
-	JsonObject& modelActions = getEntityModelActions(ent);
-	JsonObject& loadedActions = loadedModel.get<JsonObject>(ent->getGroup()).get<JsonObject>(ent->getName()).get<JsonObject>(JSONKEY_actions);
-
-	i=mergeModels(loadedActions,modelActions);
-
-	return i;
-}
-
-void JsonDao::initDatas() {
-	Serial.println(FPSTR("---> Init Data"));
-
-	for (std::list<EntityJson*>::iterator ent = entities.begin(); ent != entities.end(); ent++){
-		createEntityJson(ROOT_PATH_DATA,(*ent));
-
-		EntityJson* entity=(*ent);
-
-		JsonArray& varFields = getEntityModelVarFields(entity);
-		JsonObject& allFields = getEntityModelAllFields(entity);
-		JsonObject& dataFields = getEntityData(entity);
-
-		int add=0;
-		for (const auto& kvp : varFields) {
-			const char* key = kvp.as<const char*>();
-			dataFields.set(key, allFields.get<JsonVariant>(key));
-			add++;
-		}
-		Serial.print(entity->getName());
-		Serial.print(FPSTR(" var ="));
-		Serial.println(add);
-	}
-
-	//JsonObjectUtil::print("root=", root);
-	Serial.println(FPSTR("------------------------------------------"));
-}
-
-void JsonDao::persistDatas() {
-	Serial.println(FPSTR("---> Persist Data"));
-	const char* fileName = PATH_DATA_file;
-	const char* rootPath = ROOT_PATH_DATA;
-
-	Serial.print(rootPath);
-	Serial.print(FPSTR(" storage ="));
-	Serial.print(fileName);
-
-	if(!FileUtils::existsAndHasSizeChar(fileName)){
-		Serial.println(FPSTR(" - new "));
-		FileUtils::saveRootJson(fileName, rootPath, root);
-	}else{
-		bool fileEqModel=FileUtils::compareCrs(fileName, root.get<JsonObject>(rootPath));
-
-		if(!fileEqModel){
-			Serial.println(FPSTR(" - recreate "));
-			bufTmp.clear();
-			File f =FileUtils::getFile(fileName, FILE_MODE_READ);
-
-			JsonObject& fromFile = bufTmp.parse(f).as<JsonObject>();
-
-			int t=0;
-			for (std::list<EntityJson*>::iterator it = entities.begin(); it != entities.end(); it++){
-				t+=loadedDataToData((*it),fromFile);
-			}
-
-			f.close();
-			bufTmp.clear();
-
-			if(t!=0){
-				Serial.print(t);
-				Serial.println(FPSTR(" changes done"));
-
-				FileUtils::saveRootJson(fileName, rootPath, root);
-			}else{
-				Serial.println(FPSTR(" - no changes "));
-			}
-		}else{
-			Serial.println(FPSTR(" - actual"));
-		}
-	}
-
-	Serial.println(FPSTR("------------------------------------------"));
-}
-
-void JsonDao::saveDatas() {
-	FileUtils::saveRootJson(PATH_DATA_file,ROOT_PATH_DATA, root);
-}
-
-int JsonDao::loadedDataToData(EntityJson* ent, JsonObject& loaded) {
-	Serial.print(FPSTR("Loading "));
-	Serial.println(ent->getName());
-	int i=0;
-
-	JsonArray& loadFields = getEntityDataLoadFields(ent);
-	JsonObject& dataFields = getEntityData(ent);
-
-	for (const auto& kvp : loadFields) {
-		const char* key = kvp;
-		if(!isDefaultField(kvp) && loaded.containsKey(key) &&
-				strcmp(loaded.get<const char*>(key),dataFields.get<const char*>(key))!=0){
-			dataFields.set(strdup(key), strdup(loaded.get<const char*>(key)));
-			i++;
-		}
-	}
-
-	if(i>0){
-		Serial.print(i);
-		Serial.println(FPSTR(" - updated "));
-
-	}else{
-		Serial.println(FPSTR(" - data is actual"));
-	}
-
-	return i;
-}
-*/

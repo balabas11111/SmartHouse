@@ -48,6 +48,8 @@ public:
 	static bool printFile(const char* fileName);
 
 	static int saveFile(const char* fileName,uint8_t *data, size_t len);
+
+	static void dirFiles(JsonObject& json);
 };
 
 #endif /* LIBRARIES_DEVICELIB_UTILS_FILEUTILS_H_ */

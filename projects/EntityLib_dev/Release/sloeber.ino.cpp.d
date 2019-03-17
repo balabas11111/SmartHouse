@@ -152,6 +152,7 @@ sloeber.ino.cpp.o: ..\sloeber.ino.cpp \
  D:\projects\!!!SmartHouse\librarys\utils/FileUtils.h \
  D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\cores\esp8266/FS.h \
  D:\projects\!!!SmartHouse\librarys\EntityLib/EntityConsts.h \
+ D:\projects\!!!SmartHouse\librarys\EntityLib/ESP_Consts.h \
  D:\projects\!!!SmartHouse\librarys\utils/ObjectUtils.h \
  D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\cores\esp8266/IPAddress.h \
  D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\cores\esp8266/Printable.h \
@@ -192,6 +193,7 @@ sloeber.ino.cpp.o: ..\sloeber.ino.cpp \
  D:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/tools/sdk/libc/xtensa-lx106-elf/include/machine/time.h \
  D:\projects\!!!SmartHouse\librarys\ESPAsyncWebServer\src/AsyncWebSocket.h \
  D:\projects\!!!SmartHouse\librarys\ESPAsyncWebServer\src/AsyncEventSource.h \
+ D:\projects\!!!SmartHouse\librarys\ESPAsyncWebServer\src/AsyncJson.h \
  D:\projects\!!!SmartHouse\librarys\utils/WiFiUtils.h \
  D:\projects\!!!SmartHouse\librarys\EntityLib/ESP_Consts.h \
  ..\EntityLib_dev.ino
@@ -502,6 +504,8 @@ D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\co
 
 D:\projects\!!!SmartHouse\librarys\EntityLib/EntityConsts.h:
 
+D:\projects\!!!SmartHouse\librarys\EntityLib/ESP_Consts.h:
+
 D:\projects\!!!SmartHouse\librarys\utils/ObjectUtils.h:
 
 D:\projects\sloeber\arduinoPlugin\packages\esp8266\hardware\esp8266\2.4.0-rc2\cores\esp8266/IPAddress.h:
@@ -581,6 +585,8 @@ D:\projects\sloeber\/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/t
 D:\projects\!!!SmartHouse\librarys\ESPAsyncWebServer\src/AsyncWebSocket.h:
 
 D:\projects\!!!SmartHouse\librarys\ESPAsyncWebServer\src/AsyncEventSource.h:
+
+D:\projects\!!!SmartHouse\librarys\ESPAsyncWebServer\src/AsyncJson.h:
 
 D:\projects\!!!SmartHouse\librarys\utils/WiFiUtils.h:
 

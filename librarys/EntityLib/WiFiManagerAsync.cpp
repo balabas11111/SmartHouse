@@ -213,15 +213,15 @@ void WiFiManagerAsync::startServer() {
 void WiFiManagerAsync::deployDefaultUrls() {
 	Serial.println(FPSTR(" ------------Deploy default Urls-----------"));
 
-	server->on("/", HTTP_GET, [this](AsyncWebServerRequest *request){onRoot(request);});
+	server->on(URL_ROOT, HTTP_GET, [this](AsyncWebServerRequest *request){onRoot(request);});
 
-	server->on("/info", HTTP_GET, [this](AsyncWebServerRequest *request){onInfo(request);});
-	server->on("/dir", HTTP_GET, [this](AsyncWebServerRequest *request){onDir(request);});
-	server->on("/cat", HTTP_GET, [this](AsyncWebServerRequest *request){onCat(request);});
+	server->on(URL_INFO, HTTP_GET, [this](AsyncWebServerRequest *request){onInfo(request);});
+	server->on(URL_DIR, HTTP_GET, [this](AsyncWebServerRequest *request){onDir(request);});
+	server->on(URL_CAT, HTTP_GET, [this](AsyncWebServerRequest *request){onCat(request);});
 
-	server->on("/files", HTTP_DELETE, [this](AsyncWebServerRequest *request){onDelete(request);});
+	server->on(URL_FILES, HTTP_DELETE, [this](AsyncWebServerRequest *request){onDelete(request);});
 
-	server->on("/files", HTTP_POST,
+	server->on(URL_FILES, HTTP_POST,
 			[this](AsyncWebServerRequest *request){
 				request->send(200);
 			},
@@ -233,12 +233,24 @@ void WiFiManagerAsync::deployDefaultUrls() {
 
 void WiFiManagerAsync::deployStaticFiles() {
 	Serial.println(FPSTR(" ------------Deploy static Files-----------"));
+	std::function<String(const String&)> AwsTemplateProcessor=[this](const String& var){return processor(var);};
+	server
+	    ->serveStatic("/", SPIFFS, PATH_MODEL_DATA_JSON_FILE_PATH)
+	    .setDefaultFile(PATH_MODEL_DATA_JSON_FILE_NAME)
+		.setTemplateProcessor(AwsTemplateProcessor)
+	    .setAuthentication(conf->adminLogin(), conf->adminPassword());
+
+	//server->serveStatic("/", SPIFFS, PATH_WEB_FILES_PATH,false);
+
+
+	server->on("/index.htm", HTTP_GET, [this](AsyncWebServerRequest *request){onFileRead(request);});
+
 }
 
 void WiFiManagerAsync::deployTemplates() {
 	Serial.println(FPSTR(" ------------Deploy templates-----------"));
 	std::function<String(const String&)> AwsTemplateProcessor=[this](const String& var){return processor(var);};
-	server->serveStatic("/", SPIFFS, "/deploy/").setTemplateProcessor(AwsTemplateProcessor);
+	server->serveStatic("/", SPIFFS, PATH_MODEL_DATA_JSON_BY_GROUP).setTemplateProcessor(AwsTemplateProcessor).setAuthentication(conf->userLogin(), conf->userPassword());
 	Serial.println(FPSTR(" deployed"));
 }
 
@@ -261,23 +273,44 @@ void WiFiManagerAsync::deployEventSource() {
 }
 
 void WiFiManagerAsync::sendAsEventSource(const char* event,const char* msg) {
-	events->send(msg,event,millis());
+	/*Serial.print(FPSTR("Send event = "));
+	Serial.print(event);
+	Serial.print(FPSTR(" msg = "));
+	Serial.println(msg);*/
+	events->send(msg,NULL,millis(),1000);
 }
 
 void WiFiManagerAsync::onRoot(AsyncWebServerRequest *request){
-	request->send(200,FPSTR(CONTENT_TYPE_TEXT_HTML));
+	onInfo(request);
 }
 
 void WiFiManagerAsync::onInfo(AsyncWebServerRequest *request){
+
+	AsyncResponseStream *response = request->beginResponseStream("application/json");
+
+	JsonObject &root = dao->getEntityRoot();
+
+	root.printTo(*response);
+	response->setCode(200);
+	request->send(response);
+
 	request->send(200, FPSTR(CONTENT_TYPE_TEXT_HTML));
 }
 
 void WiFiManagerAsync::onDir(AsyncWebServerRequest *request){
-	request->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN));
+	AsyncJsonResponse * response = new AsyncJsonResponse();
+	response->addHeader("Server","ESP Async Web Server");
+	JsonObject& root = response->getRoot();
+
+	FileUtils::dirFiles(root.createNestedObject("files"));
+
+	response->setLength();
+	request->send(response);
 }
 
 void WiFiManagerAsync::onCat(AsyncWebServerRequest *request){
-	request->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN));
+	String fileName=request->arg("file");
+	request->send(SPIFFS, fileName);
 }
 
 void WiFiManagerAsync::onDelete(AsyncWebServerRequest *request){
@@ -296,20 +329,92 @@ void WiFiManagerAsync::onDelete(AsyncWebServerRequest *request){
 }
 
 void  WiFiManagerAsync::onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
-	Serial.print(FPSTR("Upload file url="));
-	Serial.println(request->url());
-
 	if(!index){
-		Serial.printf("UploadStart: %s\n", filename.c_str());
+		Serial.printf("UploadStart: %s url\n", filename.c_str());
+
+		Serial.print(FPSTR(" url="));
+		Serial.println(request->url());
+
+		fsUploadFile = SPIFFS.open(filename, "w");
 	}
 
-	FileUtils::saveFile(filename.c_str(), data, len);
+	if(fsUploadFile){
+		for(size_t i=0; i<len; i++){
+			fsUploadFile.write(data[i]);
+		}
+	}
 
 	if(final){
+		if(fsUploadFile)
+			fsUploadFile.close();
+
 		Serial.printf("UploadEnd: %s, %u B\n", filename.c_str(), index+len);
+		Serial.print(FPSTR("ex and has size = "));
+		Serial.println(FileUtils::existsAndHasSize(filename));
 	}
 }
 
 void WiFiManagerAsync::notFound(AsyncWebServerRequest *request) {
     request->send(404, "text/plain", "Not found");
 }
+
+void WiFiManagerAsync::onFileRead(AsyncWebServerRequest* request) {
+	if(!handleFileGzRead(MESSAGE_WIFIHELPER_INDEX_HTML_PAGE,request)){
+			request->send(404, CONTENT_TYPE_TEXT_PLAIN, MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND);
+	};
+}
+
+bool WiFiManagerAsync::handleFileRead(String path,AsyncWebServerRequest* request){
+	Serial.println("handleFileRead: " + path);
+	  String contentType = getContentType(path,request);
+		  if(SPIFFS.exists(path)){
+			File file = SPIFFS.open(path, "r");
+			request->send(file, path, contentType);
+			file.close();
+			return true;
+		  }
+	  return false;
+}
+
+bool WiFiManagerAsync::handleFileGzRead(String path,AsyncWebServerRequest* request){
+	  Serial.println("handleFileGzRead: " + path);
+	  if(path.endsWith("/")) path += "index.htm";
+	  String contentType = getContentType(path,request);
+	  String pathWithGz = path + ".gz";
+	  Serial.println(pathWithGz);
+	  if(SPIFFS.exists(pathWithGz) || SPIFFS.exists(path)){
+		if(SPIFFS.exists(pathWithGz)){
+		  //path += ".gz";
+		 // contentType = getContentType(pathWithGz,request);
+		}
+
+		Serial.print(FPSTR("path ="));
+		Serial.print(path);
+		Serial.print(FPSTR(" pathWithGz ="));
+		Serial.print(pathWithGz);
+		Serial.print(FPSTR(" contentType ="));
+		Serial.println(contentType);
+		//size_t sent =
+		//request->send(file, path, contentType);
+		request->send(SPIFFS, path, contentType,false);
+		return true;
+	  }
+	  return false;
+}
+
+String  WiFiManagerAsync::getContentType(String filename,AsyncWebServerRequest* request){
+	  if(request->hasArg("download")) return FPSTR(CONTENT_TYPE_APPLICATION_OCTED_STREAM);
+	  else if(filename.endsWith(".htm")) return FPSTR(CONTENT_TYPE_TEXT_HTML);
+	  else if(filename.endsWith(".html")) return FPSTR(CONTENT_TYPE_TEXT_HTML);
+	  else if(filename.endsWith(".css")) return FPSTR(CONTENT_TYPE_TEXT_CSS);
+	  else if(filename.endsWith(".js")) return FPSTR(CONTENT_TYPE_APPLICATION_JAVASCRIPT);
+	  else if(filename.endsWith(".png")) return FPSTR(CONTENT_TYPE_IMAGE_PNG);
+	  else if(filename.endsWith(".gif")) return FPSTR(CONTENT_TYPE_IMAGE_GIF);
+	  else if(filename.endsWith(".jpg")) return FPSTR(CONTENT_TYPE_IMAGE_JPEG);
+	  else if(filename.endsWith(".ico")) return FPSTR(CONTENT_TYPE_IMAGE_XICON);
+	  else if(filename.endsWith(".xml")) return FPSTR(CONTENT_TYPE_TEXT_XML);
+	  else if(filename.endsWith(".pdf")) return FPSTR(CONTENT_TYPE_APPLICATION_XPDF);
+	  else if(filename.endsWith(".zip")) return FPSTR(CONTENT_TYPE_APPLICATION_XZIP);
+	  else if(filename.endsWith(".gz")) return FPSTR(CONTENT_TYPE_APPLICATION_XGZIP);
+	  return FPSTR(CONTENT_TYPE_TEXT_PLAIN);
+	}

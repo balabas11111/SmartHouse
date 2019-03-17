@@ -52,6 +52,13 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/OLED}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/EspSettingsBox}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/EntityLib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/utils}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/FastCRC}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.202221004" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -90,6 +97,13 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/OLED}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/EspSettingsBox}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/EntityLib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/utils}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/FastCRC}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.729829356" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -128,6 +142,13 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/OLED}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/EspSettingsBox}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/EntityLib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncTCP-master/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/ESPAsyncWebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/utils}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ESP8266_Ntp_Pir/libraries/FastCRC}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1229660566" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>

@@ -1,7 +1,7 @@
 /*
  * Measurer.h
  *
- *  Created on: 14 Ã�â€œÃ‘â€œÃ�â€™Ã‚Â®Ã�â€œÃ‘â€œÃ�â€™Ã�â€žÃ�â€œÃ‘â€œÃ�â€™Ã�â€ . 2018 Ã�â€œÃ‘â€œÃ�â€™Ã�Ë†.
+ *  Created on: 14 ГѓпїЅГўв‚¬Е“ГѓвЂ�Гўв‚¬Е“ГѓпїЅГўв‚¬в„ўГѓвЂљГ‚В®ГѓпїЅГўв‚¬Е“ГѓвЂ�Гўв‚¬Е“ГѓпїЅГўв‚¬в„ўГѓпїЅГўв‚¬ЕѕГѓпїЅГўв‚¬Е“ГѓвЂ�Гўв‚¬Е“ГѓпїЅГўв‚¬в„ўГѓпїЅГўв‚¬В . 2018 ГѓпїЅГўв‚¬Е“ГѓвЂ�Гўв‚¬Е“ГѓпїЅГўв‚¬в„ўГѓпїЅГ‹вЂ .
  *      Author: Vitaliy
  */
 
@@ -20,19 +20,6 @@
 
 #include "Arduino.h"
 
-//sensors constants
-const char TEMPERATURE_RU[] PROGMEM ="Температура °C BME-280";
-const char HUMIDITY_RU[] PROGMEM ="Относительная влажность % BME-280";
-const char PRESSURE_RU[] PROGMEM ="Атмосферное давление Паскаль BME-280";
-const char ALTITUDE_RU[] PROGMEM ="Высота над уровнем моря BME-280";
-const char LIGHT_RU[] PROGMEM ="Освещенность Люкс BH-1750";
-
-const char MEASURE_CELSIUS_DEGREES_RU[] PROGMEM ="°C";
-const char MEASURE_PERSENT_RU[] PROGMEM ="%";
-const char MEASURE_PASCAL_RU[] PROGMEM ="Паскаль";
-const char MEASURE_METER_RU[] PROGMEM ="м";
-const char MEASURE_LIGHT_RU[] PROGMEM ="Люкс";
-
 const char TEMPERATURE[] PROGMEM ="Temperature";
 const char HUMIDITY[] PROGMEM ="Humidity";
 const char PRESSURE[] PROGMEM ="Pressure";
@@ -42,19 +29,33 @@ const char LIGHT[] PROGMEM ="Light";
 const char TEMPERATURE_DHT22[] PROGMEM ="Temperature_DHT22";
 const char HUMIDITY_DHT22[] PROGMEM ="Humidity_DHT22";
 
-const char MEASURE_CELSIUS_DEGREES[] PROGMEM ="°C";
+const char MEASURE_CELSIUS_DEGREES[] PROGMEM ="В°C";
 const char MEASURE_PERSENT[] PROGMEM ="%";
 const char MEASURE_PASCAL[] PROGMEM ="Pa";
 const char MEASURE_METER[] PROGMEM ="m";
 const char MEASURE_LIGHT[] PROGMEM ="Lux";
+//--------------------------------------------------------
+//Application paths
 
+//ModelData storage
+#define PATH_MODEL_DATA_JSON_FILE_PATH "/data/entity/"
+#define PATH_MODEL_DATA_JSON_FILE      "/data/entity/root.json"
+#define PATH_MODEL_DATA_JSON_FILE_NAME "root.json"
+#define PATH_MODEL_DATA_JSON_BY_GROUP  "/deploy/"
+#define PATH_WEB_FILES_PATH            "/web/"
+//http Root URLs
+#define URL_ROOT  "/"
+#define URL_INFO  "/info"
+#define URL_DIR   "/dir"
+#define URL_CAT   "/cat"
+#define URL_FILES "/files"
 //--------------------------------------------------------
 //content types
-const PROGMEM char CONTENT_TYPE[]="Content-Type";
-const PROGMEM char CONTENT_TYPE_TEXT_HTML[]="text/html";
-const PROGMEM char CONTENT_TYPE_JSON[]="application/json";
-const PROGMEM char CONTENT_TYPE_FORM_URL_ENCODED[]="application/x-www-form-urlencoded";
-const PROGMEM char CONTENT_TYPE_TEXT_PLAIN[]="text/plain";
+#define CONTENT_TYPE                  "Content-Type"
+#define CONTENT_TYPE_TEXT_HTML        "text/html"
+#define CONTENT_TYPE_JSON             "application/json"
+#define CONTENT_TYPE_FORM_URL_ENCODED "application/x-www-form-urlencoded"
+#define CONTENT_TYPE_TEXT_PLAIN       "text/plain"
 
 const PROGMEM char CONTENT_TYPE_APPLICATION_OCTED_STREAM[]="application/octet-stream";
 const PROGMEM char CONTENT_TYPE_TEXT_CSS[]="text/css";
@@ -129,7 +130,7 @@ const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_NOT_IDENTIFIED[]="No Alarm";
 const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_STARTED[]="Alarm started";
 const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED[]="Alarm finished";
 
-const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED_RESULT[]="Режим тревоги прекращен. Все показатели в норме";
+const PROGMEM char MESSAGE_DEVICE_HELPER_ALARM_MODE_FINISHED_RESULT[]="Р РµР¶РёРј С‚СЂРµРІРѕРіРё РїСЂРµРєСЂР°С‰РµРЅ. Р’СЃРµ РїРѕРєР°Р·Р°С‚РµР»Рё РІ РЅРѕСЂРјРµ";
 
 //----------EspSettingsBox Messages---------------
 const PROGMEM char MESSAGE_ESPSETTINGSBOX_ABSTRACT_ITEM_SAVE_BEGIN[]="Save AbstractSensor to file=";
@@ -260,11 +261,11 @@ const PROGMEM char ESBOX_telegramReceivers[]="telegramReceivers";
 const PROGMEM char ESBOX_telegramSenders[]="telegramSenders";
 
 //WiFi deploy folder
-const PROGMEM char ESPSETTINGSBOX_DEFAULT_PAGE[]="/web/index.htm";
-const PROGMEM char ESPSETTINGSBOX_DEFAULT_WEB_FOLDER[]="/web/";
-const PROGMEM char ESPSETTINGSBOX_DEFAULT_WEB_FOLDER_NO_END[]="/web";
-const PROGMEM char ESPSETTINGSBOX_DEFAULT_WEB_FOLDER_ESP32[]="web/";
-const PROGMEM char ESPSETTINGSBOX_DEPLOY_EXT[]="gz,js,css";
+const PROGMEM char WEB_DEFAULT_PAGE[]="/web/index.htm";
+const PROGMEM char WEB_DEFAULT_WEB_FOLDER[]="/web/";
+const PROGMEM char WEB_DEFAULT_WEB_FOLDER_NO_END[]="/web";
+const PROGMEM char WEB_DEFAULT_WEB_FOLDER_ESP32[]="web/";
+const PROGMEM char WEB_DEPLOY_EXT[]="gz,js,css";
 
 //MQTT helper messages
 const PROGMEM char MESSAGE_MQTTHELPER_SEND_IS_DISABLED[]="===MQTT Helper is disabled in settings box===";
@@ -387,7 +388,7 @@ const PROGMEM char MESSAGE_WIFIHELPER_CONNECT_TO[]="connect to";
 const PROGMEM char MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_SSID[]="espSettingsBox.ssid=";
 const PROGMEM char MESSAGE_WIFIHELPER_ESP_SETTINGS_BOX_PASSWORD[]="espSettingsBox.password=";
 const PROGMEM char MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_NOT_FOUND[]="Not Found";
-const PROGMEM char MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND[]="File Not Found";
+#define MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND "File Not Found"
 const PROGMEM char MESSAGE_WIFIHELPER_HTTP_STATUS_TEXT_I_M_HERE[]="I'm here";
 
 //
@@ -418,8 +419,8 @@ const PROGMEM char MESSAGE_THINGSPEAK_NAME_FOR_REQUEST_EQ[]="&name=";
 const PROGMEM char MESSAGE_THINGSPEAK_DESCRIPTION_FOR_REQUEST[]="&description";
 const PROGMEM char MESSAGE_THINGSPEAK_DESCRIPTION_FOR_REQUEST_EQ[]="&description=";
 
-const PROGMEM char MESSAGE_THINGSPEAK_GET_CHANNELS[]=" - каналов чтения было создано";
-const PROGMEM char MESSAGE_THINGSPEAK_SET_CHANNELS[]=" - каналов записи было создано";
+const PROGMEM char MESSAGE_THINGSPEAK_GET_CHANNELS[]=" - РєР°РЅР°Р»РѕРІ С‡С‚РµРЅРёСЏ Р±С‹Р»Рѕ СЃРѕР·РґР°РЅРѕ";
+const PROGMEM char MESSAGE_THINGSPEAK_SET_CHANNELS[]=" - РєР°РЅР°Р»РѕРІ Р·Р°РїРёСЃРё Р±С‹Р»Рѕ СЃРѕР·РґР°РЅРѕ";
 
 const PROGMEM char MESSAGE_THINGSPEAK_CHANNELS_PREF[]="channels/";
 const PROGMEM char MESSAGE_THINGSPEAK_SUBSCRIBE_FIELDS_FIELD[]="/subscribe/fields/field";
@@ -451,9 +452,9 @@ const PROGMEM char MESSAGE_ABSTRACT_ITEM_INDEX_EQ[]="index=";
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_VAL_EQ[]=" val=";
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_METHOD_NOT_IMPLEMENTED[]=" Method not implemented";
 
-const PROGMEM char MESSAGE_ABSTRACT_ITEM_CURRENT_VAL_EQ[]=" Ã�Â Ã‘â€”Ã�Â Ã‘â€¢Ã�Â¡Ã¢â‚¬Å¡Ã�Â Ã‘â€¢Ã�Â¡Ã¢â‚¬Â¡Ã�Â Ã�â€¦Ã�Â Ã‘â€¢Ã�Â Ã‚Âµ Ã�Â Ã‚Â·Ã�Â Ã�â€¦Ã�Â Ã‚Â°Ã�Â¡Ã¢â‚¬Â¡Ã�Â Ã‚ÂµÃ�Â Ã�â€¦Ã�Â Ã‘â€˜Ã�Â Ã‚Âµ =";
-const PROGMEM char MESSAGE_ABSTRACT_ITEM_MAX_SPECIFIED_VAL_EQ[]=" Ã�Â Ã‘ËœÃ�Â Ã‚Â°Ã�Â Ã‘â€�Ã�Â¡Ã�Æ’Ã�Â Ã‘â€˜Ã�Â Ã‘ËœÃ�Â Ã‚Â°Ã�Â Ã‚Â»Ã�Â¡Ã�Å Ã�Â Ã�â€¦Ã�Â Ã‘â€¢ Ã�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â Ã’â€˜Ã�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã‘â€¢Ã�Â Ã‚Âµ =";
-const PROGMEM char MESSAGE_ABSTRACT_ITEM_MIN_SPECIFIED_VAL_EQ[]=" Ã�Â Ã‘ËœÃ�Â Ã‘â€˜Ã�Â Ã�â€¦Ã�Â Ã‘â€˜Ã�Â Ã‘ËœÃ�Â Ã‚Â°Ã�Â Ã‚Â»Ã�Â¡Ã�Å Ã�Â Ã�â€¦Ã�Â Ã‘â€¢ Ã�Â Ã‚Â·Ã�Â Ã‚Â°Ã�Â Ã’â€˜Ã�Â Ã‚Â°Ã�Â Ã�â€¦Ã�Â Ã‘â€¢Ã�Â Ã‚Âµ =";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_CURRENT_VAL_EQ[]=" ГѓпїЅГ‚В ГѓвЂ�Гўв‚¬вЂќГѓпїЅГ‚В ГѓвЂ�Гўв‚¬ВўГѓпїЅГ‚ВЎГѓВўГўвЂљВ¬Г…ВЎГѓпїЅГ‚В ГѓвЂ�Гўв‚¬ВўГѓпїЅГ‚ВЎГѓВўГўвЂљВ¬Г‚ВЎГѓпїЅГ‚В ГѓпїЅГўв‚¬В¦ГѓпїЅГ‚В ГѓвЂ�Гўв‚¬ВўГѓпїЅГ‚В ГѓвЂљГ‚Вµ ГѓпїЅГ‚В ГѓвЂљГ‚В·ГѓпїЅГ‚В ГѓпїЅГўв‚¬В¦ГѓпїЅГ‚В ГѓвЂљГ‚В°ГѓпїЅГ‚ВЎГѓВўГўвЂљВ¬Г‚ВЎГѓпїЅГ‚В ГѓвЂљГ‚ВµГѓпїЅГ‚В ГѓпїЅГўв‚¬В¦ГѓпїЅГ‚В ГѓвЂ�Гўв‚¬ЛњГѓпїЅГ‚В ГѓвЂљГ‚Вµ =";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_MAX_SPECIFIED_VAL_EQ[]=" ГѓпїЅГ‚В ГѓвЂ�Г‹Е“ГѓпїЅГ‚В ГѓвЂљГ‚В°ГѓпїЅГ‚В ГѓвЂ�Гўв‚¬пїЅГѓпїЅГ‚ВЎГѓпїЅГ†вЂ™ГѓпїЅГ‚В ГѓвЂ�Гўв‚¬ЛњГѓпїЅГ‚В ГѓвЂ�Г‹Е“ГѓпїЅГ‚В ГѓвЂљГ‚В°ГѓпїЅГ‚В ГѓвЂљГ‚В»ГѓпїЅГ‚ВЎГѓпїЅГ…В ГѓпїЅГ‚В ГѓпїЅГўв‚¬В¦ГѓпїЅГ‚В ГѓвЂ�Гўв‚¬Вў ГѓпїЅГ‚В ГѓвЂљГ‚В·ГѓпїЅГ‚В ГѓвЂљГ‚В°ГѓпїЅГ‚В ГѓвЂ™Гўв‚¬ЛњГѓпїЅГ‚В ГѓвЂљГ‚В°ГѓпїЅГ‚В ГѓпїЅГўв‚¬В¦ГѓпїЅГ‚В ГѓвЂ�Гўв‚¬ВўГѓпїЅГ‚В ГѓвЂљГ‚Вµ =";
+const PROGMEM char MESSAGE_ABSTRACT_ITEM_MIN_SPECIFIED_VAL_EQ[]=" ГѓпїЅГ‚В ГѓвЂ�Г‹Е“ГѓпїЅГ‚В ГѓвЂ�Гўв‚¬ЛњГѓпїЅГ‚В ГѓпїЅГўв‚¬В¦ГѓпїЅГ‚В ГѓвЂ�Гўв‚¬ЛњГѓпїЅГ‚В ГѓвЂ�Г‹Е“ГѓпїЅГ‚В ГѓвЂљГ‚В°ГѓпїЅГ‚В ГѓвЂљГ‚В»ГѓпїЅГ‚ВЎГѓпїЅГ…В ГѓпїЅГ‚В ГѓпїЅГўв‚¬В¦ГѓпїЅГ‚В ГѓвЂ�Гўв‚¬Вў ГѓпїЅГ‚В ГѓвЂљГ‚В·ГѓпїЅГ‚В ГѓвЂљГ‚В°ГѓпїЅГ‚В ГѓвЂ™Гўв‚¬ЛњГѓпїЅГ‚В ГѓвЂљГ‚В°ГѓпїЅГ‚В ГѓпїЅГўв‚¬В¦ГѓпїЅГ‚В ГѓвЂ�Гўв‚¬ВўГѓпїЅГ‚В ГѓвЂљГ‚Вµ =";
 
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_SETTING_BEGIN[]="------------Saving sensors settings------------";
 const PROGMEM char MESSAGE_ABSTRACT_ITEM_SET_SENSOR_VAL_NAME_EQ[]=" Set sensor value NAME=";
@@ -471,7 +472,6 @@ const PROGMEM char URL_LIST[]="/list";
 const PROGMEM char URL_VIEW[]="/view";
 const PROGMEM char URL_TEST[]="/test";
 
-const PROGMEM char URL_ROOT[]="/";
 const PROGMEM char URL_INDEX[]="/index";
 const PROGMEM char URL_SETTINGS[]="/settings";
 const PROGMEM char URL_EDIT[]="/edit";
@@ -486,7 +486,7 @@ const PROGMEM char URL_PROCESS_JSON[]="/processJson";
 
 const PROGMEM char URL_SET_DIGITAL_PIN_CURRENT_VALUE[]="/sdpcv";
 
-const PROGMEM char MESSAGE_WIFIHELPER_INDEX_HTML_PAGE[]="/web/index.htm";
+#define MESSAGE_WIFIHELPER_INDEX_HTML_PAGE "/web/index.htm"
 const PROGMEM char MESSAGE_WIFIHELPER_SETTINGS_HTML_PAGE[]="/web/settings.htm";
 const PROGMEM char MESSAGE_WIFIHELPER_EDIT_HTML_PAGE[]="/web/edit.htm";
 

@@ -45,12 +45,6 @@
 #define JSONKEY_declaredFields  "declaredFields"
 #define JSONKEY_declaredActions "declaredActions"
 
-#define PATH_ROOT_file   "/data/entity/root.json"
-#define PATH_MODEL_file   "/data/entity/model.json"
-#define PATH_DATA_file    "/data/entity/data.json"
-#define PATH_DEPLOY_file   "/data/entity/deploy.json"
-#define PATH_DEPLOY_folder "/deploy/"
-
 #define JSON_EXT              ".json"
 #define JSON_DEFAULT_FILENAME "_data.json"
 

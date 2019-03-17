@@ -23,6 +23,7 @@
 #include "EntityModelDataProvider.h"
 #include "EntityConsts.h"
 #include "EventSender.h"
+#include "ESP_Consts.h"
 /*
 {"model": {
   	"sensors":{
@@ -58,6 +59,8 @@ public:
 	JsonObject& getEntitysJson_ByPath_OrCreateNew(JsonObject& container,const char* path,EntityJson* entity);
 	JsonObject& getEntitysJson_ByPath(JsonObject& container,const char* path,EntityJson* entity);
 	JsonObject& getEntitysJson_ByPath_entId(JsonObject& container,const char* path,int entityId);
+
+	virtual JsonObject& getEntityRoot() override;
 
 	void printEntities();
 
@@ -116,11 +119,18 @@ public:
 		return JsonObjectUtil::getField<T>(obj,key);
 	}
 	void dispatchFieldChange(EntityJson* entity,const char* key){
-		Serial.print(FPSTR("Field changed Entity="));
+		/*Serial.print(FPSTR("Field changed Entity="));
 		Serial.print(entity->getName());
 		Serial.print(FPSTR(" key="));
 		Serial.println(key);
-		//TODO: Implement this method
+		*/
+		if(eventSender!=nullptr && eventSender!=NULL){
+			JsonObject& obj = getEntitysJson_ByPath(root, ROOT_PATH_DATA, entity);
+			obj.set("changed", key);
+			String str;
+			obj.printTo(str);
+			eventSender->sendAsEventSource("change", str.c_str());
+		}
 	}
 
 	virtual EventSender* getEventSender() override {

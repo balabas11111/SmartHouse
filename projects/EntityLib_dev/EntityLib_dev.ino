@@ -38,8 +38,12 @@ Serial.print(FPSTR("millis"));
 Serial.println(millis());
 }
 
+int i=0;
+
 void loop()
 {
 	delay(5000);
-	Serial.println(ESP.getFreeHeap());
+	//Serial.println(ESP.getFreeHeap());
+	i++;
+	bh1750.getModelDataProvider()->setField(bh1750.getId(), "light", i);
 }

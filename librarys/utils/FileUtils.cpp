@@ -266,9 +266,9 @@ bool FileUtils::printFile(const char* fileName) {
 }
 
 int FileUtils::saveFile(const char* fileName, uint8_t* data, size_t len) {
-	Serial.print(FPSTR("SAVE "));
+	/*Serial.print(FPSTR("SAVE "));
 	Serial.print(fileName);
-
+*/
 	File f = getFileChar(fileName, FILE_MODE_WRITE);
 
 	for(size_t i=0; i<len; i++){
@@ -276,11 +276,24 @@ int FileUtils::saveFile(const char* fileName, uint8_t* data, size_t len) {
 	}
 
 	f.close();
-
+/*
 	Serial.print(FPSTR("...done s="));
 	Serial.println(f.size());
-
+*/
 	return f.size();
+}
+
+void FileUtils::dirFiles(JsonObject& json) {
+	JsonArray& arrNames=json.createNestedArray("files");
+	JsonArray& arrSize=json.createNestedArray("size");
+
+	int count=0;
+		Dir dir = SPIFFS.openDir("/");
+		while (dir.next()) {
+			arrNames.add(dir.fileName());
+			arrSize.add(dir.fileSize());
+		  count++;
+		}
 }
 
 #ifdef ESP32

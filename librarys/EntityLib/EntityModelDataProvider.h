@@ -19,6 +19,7 @@ public:
 
 	virtual JsonObject& getEntityModel(int entityId)=0;
 	virtual JsonObject& getEntityData(int entityId)=0;
+	virtual JsonObject& getEntityRoot()=0;
 
 	virtual bool hasFieldInt(int entityId,const char* key){return JsonObjectUtil::hasField<int>(getEntityData(entityId), key);}
 	virtual bool hasFieldFloat(int entityId,const char* key){return JsonObjectUtil::hasField<float>(getEntityData(entityId), key);}
