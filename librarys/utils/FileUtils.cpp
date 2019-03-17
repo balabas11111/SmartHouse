@@ -114,6 +114,7 @@ bool FileUtils::existsAndHasSizeChar(const char* fileName) {
 bool FileUtils::init() {
 	Serial.println(FPSTR("======================================"));
 	Serial.print(FPSTR("Init SPIFFS status="));
+
 	bool result=false;
 
 	#ifdef ESP8266
@@ -215,6 +216,71 @@ bool FileUtils::saveRootJson(const char* fileName,const char* rootPath,JsonObjec
 		Serial.println(FPSTR(" ERROR"));
 	}
 	return res;
+}
+
+bool FileUtils::deleteFile(const char* fileName) {
+	if(exists(fileName)){
+		return SPIFFS.remove(fileName);
+	}
+
+	return true;
+}
+
+bool FileUtils::deleteAllFiles(const char* path) {
+#ifdef ESP8266
+	FSInfo fs_info;
+	SPIFFS.info(fs_info);
+#endif
+	Serial.println(FPSTR("--------------------------------------"));
+	Serial.println(FPSTR("     Files"));
+	Serial.println(FPSTR("--------------------------------------"));
+#ifdef ESP8266
+	int count=0;
+	Dir dir = SPIFFS.openDir(path);
+	while (dir.next()) {
+	  Serial.print(dir.fileName());
+	  Serial.print(FPSTR("   "));
+	  Serial.println(dir.fileSize());
+	  deleteFile(dir.fileName().c_str());
+	  count++;
+	}
+	Serial.println(FPSTR("--------------------------------------"));
+	Serial.print(FPSTR(" total deleted="));
+	Serial.print(count);
+	Serial.print(FPSTR(" bytes="));
+	Serial.print(fs_info.totalBytes);
+	Serial.print(FPSTR(" used="));
+	Serial.println(fs_info.usedBytes);
+#endif
+
+	return true;
+}
+
+bool FileUtils::printFile(const char* fileName) {
+	Serial.print(FPSTR("----------------file="));
+	Serial.print(fileName);
+	Serial.println(FPSTR("----------------"));
+	Serial.println(loadStringFromFile(fileName));
+	Serial.println(FPSTR("----------------"));
+	return true;
+}
+
+int FileUtils::saveFile(const char* fileName, uint8_t* data, size_t len) {
+	Serial.print(FPSTR("SAVE "));
+	Serial.print(fileName);
+
+	File f = getFileChar(fileName, FILE_MODE_WRITE);
+
+	for(size_t i=0; i<len; i++){
+		f.write(data[i]);
+	}
+
+	f.close();
+
+	Serial.print(FPSTR("...done s="));
+	Serial.println(f.size());
+
+	return f.size();
 }
 
 #ifdef ESP32

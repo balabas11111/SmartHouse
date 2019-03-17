@@ -11,6 +11,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include "JsonObjectUtil.h"
+#include "EventSender.h"
 
 class EntityModelDataProvider {
 public:
@@ -29,10 +30,15 @@ public:
 	virtual bool setField(int entityId,const char* key,const char* value)=0;
 	virtual bool setField(int entityId,const char* key,char* value)=0;
 
+	virtual String getByTemplateKey(const String& var)=0;
 	virtual int getFieldInt(int entityId,const char* key)=0;
 	virtual float getFieldFloat(int entityId,const char* key)=0;
 	virtual const char* getFieldConstChar(int entityId,const char* key)=0;
 	virtual char* getFieldChar(int entityId,const char* key)=0;
+
+	virtual EventSender* getEventSender()=0;
+
+	virtual void setEventSender(EventSender* eventSender)=0;
 };
 
 #endif /* LIBRARIES_ENTITYLIB_ENTITYMODELDATAPROVIDER_H_ */

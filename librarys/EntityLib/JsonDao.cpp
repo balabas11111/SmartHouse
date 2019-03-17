@@ -12,31 +12,45 @@
 #include <ObjectUtils.h>
 
 JsonDao::JsonDao(EntityJson* entitiesIn[],int count) {
+	beginTime = millis();
+	long tmp=millis();
 	this->incomeEntities = ARRAY_SIZE(entitiesIn);
 	for(int i=0;i<count;i++){
 		this->entities.push_back(entitiesIn[i]);
 	}
+	initTime=millis()-tmp;
 }
 
 void JsonDao::init() {
-	if(FileUtils::init()){
-		FileUtils::dir();
-	}
-
+	Serial.print(FPSTR(" createTime ="));
+	Serial.println(initTime);
+	initTime=millis();
+	FileUtils::dir();
+	initTime=millis()-initTime;
 	Serial.println(FPSTR("=========================================="));
 	Serial.print(FPSTR("JsonDao init. Entity count="));
 	Serial.println(this->entities.size());
-	Serial.print(FPSTR("incomeEntities count="));
-	Serial.println(incomeEntities);
+	Serial.print(FPSTR(" initTime ="));
+	Serial.println(initTime);
 	Serial.println(FPSTR("------------------------------------------"));
 	printEntities();
 	Serial.println(FPSTR("------------------------------------------"));
-
+	initTime=millis();
 	initEntitiesModelData();
+	initTime=millis()-initTime;
+	Serial.print(FPSTR(" initEntMD time ="));
+	Serial.println(initTime);
+	initTime=millis();
 
 	initTemplates();
 	persistTemplates();
 
+	initTime=millis()-initTime;
+	Serial.print(FPSTR(" json depl time ="));
+	Serial.println(initTime);
+	initTime=millis()-beginTime;
+	Serial.print(FPSTR(" TOTAL time ="));
+	Serial.println(initTime);
 	Serial.println(FPSTR("JsonDao DONE"));
 	//Serial.println(FPSTR("------------------------------------------"));
 	//JsonObjectUtil::printAllJson(root);
@@ -128,12 +142,13 @@ void JsonDao::initEntitiesModelData(){
 		entity->init();
 		id++;
 		initEntityModelData(entity, fromFile);
+		entity->postModelDataInit();
 	}
 
 	Serial.print(id);
 	Serial.println(FPSTR(" - Entities processed"));
 
-	JsonObjectUtil::print("root=", root);
+	//JsonObjectUtil::print("root=", root);
 
 	saveJsonObjectToFile(PATH_ROOT_file, root);
 
@@ -164,24 +179,20 @@ void JsonDao::initEntityModelData(EntityJson* entity,JsonObject& fromFile) {
 
 	JsonObject& model = getEntitysJson_ByPath_OrCreateNew(root,ROOT_PATH_MODEL,entity);
 
-	JsonObjectUtil::print("MODEL", modelDescriptor, modelLoaded, model);
-
 	mergeModels(modelDescriptor,model);
 	mergeModels(modelLoaded,model);
-
-	JsonObjectUtil::print("root =",root);
 
 	JsonObject& dataDescriptor = JsonObjectUtil::getObjectChildOrCreateNew(descriptor,JSONKEY_data);
 	JsonObject& dataLoaded = getEntitysJson_ByPath_OrCreateNew(fromFile,ROOT_PATH_DATA,entity);
 
 	JsonObject& data = getEntitysJson_ByPath_OrCreateNew(root,ROOT_PATH_DATA,entity);
 
-	JsonObjectUtil::print("DATA", dataDescriptor, dataLoaded, data);
-
 	mergeDatas(dataDescriptor,data);
 	mergeDatas(dataLoaded,data);
 
 	createEntityDataPrimaryFields(entity, data);
+	//JsonObjectUtil::print("DESCR =",descriptor);
+	//JsonObjectUtil::print("ent done root =",root);
 
 	b.clear();
 }
@@ -201,8 +212,9 @@ int JsonDao::mergeModels(JsonObject& from, JsonObject& to) {
 	}
 
 	if(changed>0){
-		Serial.print(FPSTR("models merged="));
+		/*Serial.print(FPSTR("models merged="));
 		Serial.println(changed);
+		*/
 	}
 
 	return changed;
@@ -222,8 +234,8 @@ int JsonDao::mergeDatas(JsonObject& from, JsonObject& to) {
 	}
 
 	if(changed>0){
-		Serial.print(FPSTR("data merged="));
-		Serial.println(changed);
+		/*Serial.print(FPSTR("data merged="));
+		Serial.println(changed);*/
 	}
 
 	return changed;
@@ -258,11 +270,21 @@ void JsonDao::initTemplates() {
 			if(getEntityHasAction(entity,ENTITY_ACTION_tvar)){
 				JsonArray& tmplFields = getEntityDataFieldsByAction(entity, ENTITY_ACTION_tvar);
 
-				for (const auto& kvp : tmplFields) {
-					const char* key = kvp.as<const char*>();
+				if(getEntityDataFieldHasAction(entity, "*", ENTITY_ACTION_tvar)){
+					for (const auto& kvp : getEntityData(entity->getId())) {
+						const char* key = kvp.key;
 
-					generateTemplateKey(entity, key);
-					entityTvars++;
+						generateTemplateKey(entity, key);
+						entityTvars++;
+					}
+				}else{
+
+					for (const auto& kvp : tmplFields) {
+						const char* key = kvp.as<const char*>();
+
+						generateTemplateKey(entity, key);
+						entityTvars++;
+					}
 				}
 			}
 
@@ -275,14 +297,15 @@ void JsonDao::initTemplates() {
 		Serial.println(entityTvars);
 	}
 
-	JsonObjectUtil::print("root=", root);
+	//JsonObjectUtil::print("root=", root);
 	Serial.println(FPSTR("------------------------------------------"));
 }
 
 void JsonDao::persistTemplates() {
+	Serial.println(FPSTR("Persist templates"));
 	saveTemplates();
-	JsonObjectUtil::print("root=", root);
 	cleanTemplates();
+	JsonObjectUtil::print("root=", root);
 	Serial.println(FPSTR("------------------------------------------"));
 }
 
@@ -314,6 +337,8 @@ void JsonDao::saveTemplates() {
 			Serial.println(FPSTR(" - actual"));
 		}
 	}
+
+	FileUtils::printFile(baseFileName);
 
 	Serial.println(FPSTR("---> Persist Group Deploy"));
 
@@ -349,6 +374,8 @@ void JsonDao::saveTemplates() {
 				Serial.println(FPSTR(" - actual"));
 			}
 		}
+
+		FileUtils::printFile(fileName);
 	}
 
 	if(er>0){
@@ -390,18 +417,28 @@ void JsonDao::generateTemplateKey(EntityJson* entity, const char* key) {
 	getEntitysJson_ByPath_OrCreateNew(root,ROOT_PATH_DEPLOYED,entity).set(key, result);
 }
 
-String JsonDao::getByTemplateKey(const char* key) {
+String JsonDao::getByTemplateKey(const String& key) {
 	String str = String(key);
 	int ind=str.indexOf(':');
 
-	int entityId = str.substring(0, ind-1).toInt();
-	const char* keyName=str.substring(ind).c_str();
+	int entityId = str.substring(0, ind).toInt();
+	const char* keyName=strdup(str.substring(ind+1).c_str());
 
+/*
+	Serial.print(FPSTR(" key="));
+	Serial.print(key);
+	Serial.print(FPSTR(" entId="));
+	Serial.print(entityId);
+	Serial.print(FPSTR(" keyName="));
+	Serial.print(keyName);
+	Serial.print(FPSTR(" ind="));
+	Serial.println(ind);
+*/
 	EntityJson* entity=getEntity(entityId);
 	if(entity!=NULL){
 		return JsonObjectUtil::getObjectValueAsString(getEntitysJson_ByPath_OrCreateNew(root,ROOT_PATH_DATA,entity), keyName);
 	}
-	return FPSTR("N/A");
+	return FPSTR("noEntity");
 }
 
 JsonObject& JsonDao::getEntityModel(int entityId) {

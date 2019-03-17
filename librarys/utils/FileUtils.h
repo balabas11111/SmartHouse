@@ -42,6 +42,12 @@ public:
 	static void dir(const char* path);
 
 	static bool saveRootJson(const char* fileName,const char* rootPath,JsonObject& root);
+	static bool deleteFile(const char* fileName);
+	static bool deleteAllFiles(const char* path);
+
+	static bool printFile(const char* fileName);
+
+	static int saveFile(const char* fileName,uint8_t *data, size_t len);
 };
 
 #endif /* LIBRARIES_DEVICELIB_UTILS_FILEUTILS_H_ */

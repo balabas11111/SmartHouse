@@ -192,7 +192,7 @@ public:
 	}
 
 	static String getObjectValueAsString(JsonObject& obj,const char* keyName){
-		String str=FPSTR("N/A");
+		String str=FPSTR("key/NA");
 
 		if(obj.is<char*>(keyName)){
 			str = obj.get<char*>(keyName);
@@ -218,11 +218,11 @@ public:
 	}
 
 	static JsonObject& getObjectChildOrCreateNew(JsonObject& obj,const char* key){
-		return (obj.containsKey(key))?obj.get<JsonObject>(key):obj.createNestedObject(key);
+		return (obj.containsKey(key))?obj.get<JsonObject>(key):obj.createNestedObject(strdup(key));
 	}
 
 	static JsonArray& getObjectChildArrayOrCreateNew(JsonObject& obj,const char* key){
-		return (obj.containsKey(key))?obj.get<JsonArray>(key):obj.createNestedArray(key);
+		return (obj.containsKey(key))?obj.get<JsonArray>(key):obj.createNestedArray(strdup(key));
 	}
 
 	static bool getObjectFieldExistsAndEquals(JsonObject& obj,const char* key,JsonVariant val){

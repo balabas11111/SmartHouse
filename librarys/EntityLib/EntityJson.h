@@ -35,6 +35,10 @@ public:
 
 	}
 
+	virtual void postModelDataInit(){
+
+	}
+
 	int getId(){
 		return this->id;
 	}
@@ -83,7 +87,7 @@ public:
 			JsonObjectUtil::print("Data --->", modelDataProvider->getEntityData(getId()));
 			JsonObjectUtil::print("Model --->", modelDataProvider->getEntityModel(getId()));
 		}else{
-			Serial.println(FPSTR("NO data provider bind"));
+			//Serial.println(FPSTR("NO data provider bind"));
 		}
 	}
 

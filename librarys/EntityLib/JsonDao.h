@@ -22,20 +22,16 @@
 
 #include "EntityModelDataProvider.h"
 #include "EntityConsts.h"
+#include "EventSender.h"
 /*
 {"model": {
   	"sensors":{
-  		"BME280":{"id": 0,
-  				  	"name":"BME280",
- 	  				"descr":"BME280 hum/temp/press",
-  				  "fields":{"id":{"default":0},"name":{"default"}},
-  				  "actions":{
-  							"stat":["id","name"],
- 	 	  					"var":["descr"],
- 	 	  					"load":["descr"],
- 	 	  					"save":["descr"],
- 	 	  					"set":["descr"]
-  						}
+		"BME280":{			"stat":["id","name"],
+						"var":["descr"],
+						"load":["descr"],
+						"save":["descr"],
+						"set":["descr"]
+
   				  }
   			  },
   	"settings":{
@@ -79,7 +75,7 @@ public:
 	void cleanTemplates();
 
 	void generateTemplateKey(EntityJson* entity,const char* key);
-	String getByTemplateKey(const char* key);
+	String getByTemplateKey(const String& var) override;
 
 	virtual JsonObject& getEntityModel(int entityId) override;
 	virtual JsonObject& getEntityData(int entityId) override;
@@ -119,43 +115,20 @@ public:
 		JsonObject& obj = getEntityData(entityId);
 		return JsonObjectUtil::getField<T>(obj,key);
 	}
-/*
-	virtual bool hasFieldInt(int entityId,const char* key) override;
-	virtual bool hasFieldFloat(int entityId,const char* key) override;
-	virtual bool hasFieldConstChar(int entityId,const char* key) override;
-	virtual bool hasFieldChar(int entityId,const char* key) override;
-
-	template<typename T>
-	void registerEntityField(JsonObject& model,const char* key,T defValue,bool stat,bool var,bool load, bool save, bool deploy,bool set){
-		JsonObjectUtil::getObjectChildOrCreateNew(model, JSONKEY_fields);
-		JsonObjectUtil::getObjectChildOrCreateNew(model, JSONKEY_actions);
-
-		JsonObject& fields = model.get<JsonObject>(JSONKEY_fields);
-		JsonObject& actions = model.get<JsonObject>(JSONKEY_actions);
-
-		setField(fields,key,defValue);
-
-		JsonObjectUtil::getObjectChildArrayOrCreateNew(actions, JSONKEY_stat);
-		JsonObjectUtil::getObjectChildArrayOrCreateNew(actions, JSONKEY_var);
-		JsonObjectUtil::getObjectChildArrayOrCreateNew(actions, JSONKEY_load);
-		JsonObjectUtil::getObjectChildArrayOrCreateNew(actions, JSONKEY_save);
-		JsonObjectUtil::getObjectChildArrayOrCreateNew(actions, JSONKEY_deploy);
-		JsonObjectUtil::getObjectChildArrayOrCreateNew(actions, JSONKEY_set);
-
-		if(stat){actions.get<JsonArray>(JSONKEY_stat).add(key);}
-		if(var){actions.get<JsonArray>(JSONKEY_var).add(key);}
-		if(load){actions.get<JsonArray>(JSONKEY_load).add(key);}
-		if(save){actions.get<JsonArray>(JSONKEY_save).add(key);}
-		if(deploy){actions.get<JsonArray>(JSONKEY_deploy).add(key);}
-		if(set){actions.get<JsonArray>(JSONKEY_set).add(key);}
-	}
-*/
 	void dispatchFieldChange(EntityJson* entity,const char* key){
 		Serial.print(FPSTR("Field changed Entity="));
 		Serial.print(entity->getName());
 		Serial.print(FPSTR(" key="));
 		Serial.println(key);
 		//TODO: Implement this method
+	}
+
+	virtual EventSender* getEventSender() override {
+		return eventSender;
+	}
+
+	virtual void setEventSender(EventSender* eventSender){
+		this->eventSender = eventSender;
 	}
 
 protected:
@@ -172,7 +145,11 @@ protected:
 	JsonObject& root = this->buf.parse("{}").as<JsonObject>();
 	JsonObject& rootTmp = this->bufTmp.parse("{}").as<JsonObject>();
 
+	EventSender* eventSender;
+
 	int incomeEntities;
+	long initTime = 0;
+	long beginTime = 0;
 };
 
 #endif /* LIBRARIES_ENTITYLIB_JSONDAO_H_ */
