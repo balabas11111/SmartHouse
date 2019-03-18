@@ -2,6 +2,7 @@ const DATA_MODEL_ROOT_URL = '/info';
 const templa
 
 var dataModel={};
+var modelToViewHandlers={};
 
 var source = new EventSource('/events');
 
@@ -23,36 +24,70 @@ function onLoadPageComplete(){
 }
 
 function handleRootReceive(json){
-	processModelToView(currentView);
+	processGroupToView(currentView);
 }
 /*---------------------------Model to view functions----------------------------*/
-function processModelToView(group){
+function processGroupToView(group){
 	var entities = dataModel.data[group];
 	console.log("Group = ", group);
 	/*document.getElementById("mainContent").innerHTML='';*/
 	if(entities!=undefined){
 		for (var i in entities) {
-			var entity = entities[i];
-			var pref = getPreffixForEntity(entities[i]);
-			
-			console.log("Entity = ", entity.name);
-			//console.log("pref = ",pref);
-			
-			Object.keys(entity).forEach(function(key) {
-				var expId=pref+'.'+key;
-				var val = entity[key];
-				
-				console.log('key: '+key+', expId: '+expId+', val: '+val);
-				
-				setComponentValueById(expid,val);
-			})
+			processEntityToView(entities[i]);
 		}
 	}
 }
 
-function getPreffixForEntity(item){
-	var result=item.group+'.'+item.name;
-	return result;
+function processEntityToView(entity){
+	if(entity==undefined || entity.group==undefined || entity.name==undefined || entity.id==undefined){
+		return;
+	}
+	
+	var pref = getPreffixForEntity(entity);
+	
+	console.log('Entity = '+entity.name+'; pref = '+pref);
+	
+	Object.keys(entity).forEach(function(key) {
+		var expId=getEntityViewId(entity,key);
+		var val = entity[key];
+		
+		console.log('key: '+key+', expId: '+expId+', val: '+val);
+
+		updateEntityViewValue(entity,key,val);
+	})
+}
+
+function getPreffixForEntity(entity){
+	return entity.group+'.'+entity.name;
+}
+
+function getEntityViewId(entity,key){
+	return getPreffixForEntity(entity)+'.'+key;
+}
+/*---Model to view handlers processing*/
+function updateEntityViewValue(entity,key,val){
+	var handlerName=getPreffixForEntity(entity);
+	var handler = getModelToViewHandlerByName(name); 
+		
+	handler(entity,key,val);
+}
+
+function registerModelToViewHandler(name,handler){
+	console.log('Register ModelToView handler ',name);
+	modelToViewHandlers[name]=handler;
+}
+
+function getModelToViewHandlerByName(name){
+	if(name==undefined || modelToViewHandlers[name]==undefined){
+		return updateEntityViewValueDefault;
+	}
+
+	return modelToViewHandlers[name];
+}
+/*---Model To View handlers---*/
+function updateEntityViewValueDefault(entity,key,val){
+	var expId = getEntityViewId(entity,key);
+	setComponentValueById(expid,val);
 }
 /*---------------------------Event source functions----------------------------*/
 function initEventSourceChannel(){
@@ -69,7 +104,7 @@ function initEventSourceChannel(){
 	  }, false);
 	
 	  source.addEventListener('message', function(e) {
-	    console.log("message", e.data);
+		  processEventSourceMessage(e.data);
 	  }, false);
 	
 	  source.addEventListener('myevent', function(e) {
@@ -77,11 +112,32 @@ function initEventSourceChannel(){
 	  }, false);
 	}
 }
+
+function processEventSourceMessage(message){
+	console.log("message", message);
+	
+	if(message=='hello!'){
+		return;
+	}
+	
+	try{
+		var entity = JSON.parse(message);
+		console.log("changed entity = ",entity);
+		
+		if(obj!=undefined && obj.chgKey!=undefined){
+			var key = obj.chgKey;
+			var val = obj[key];
+			
+			updateEntityViewValue(entity,key,val);
+		}
+	}catch(err){
+		console.log("ERROR parse json"+err);
+		return;
+	}
+}
 /*---------------------------AJAX functions------------------------------------*/
 function isHttpStatusOk(status){
-	/*Standard http 200 Ok*/
 	if(status==200){	return true;	}
-	/*local files only*/
 	if(localTest && status==0){	return true; }
 	
 	return false;

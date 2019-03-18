@@ -126,7 +126,7 @@ public:
 		*/
 		if(eventSender!=nullptr && eventSender!=NULL){
 			JsonObject& obj = getEntitysJson_ByPath(root, ROOT_PATH_DATA, entity);
-			obj.set("changed", key);
+			obj.set("chgKey", key);
 			String str;
 			obj.printTo(str);
 			eventSender->sendAsEventSource("change", str.c_str());
