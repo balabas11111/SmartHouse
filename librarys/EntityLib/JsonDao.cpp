@@ -27,16 +27,21 @@ void JsonDao::init() {
 	initTime=millis();
 	FileUtils::dir();
 	initTime=millis()-initTime;
+
 	Serial.println(FPSTR("=========================================="));
 	Serial.print(FPSTR("JsonDao init. Entity count="));
 	Serial.println(this->entities.size());
 	Serial.print(FPSTR(" initTime ="));
 	Serial.println(initTime);
 	Serial.println(FPSTR("------------------------------------------"));
+
 	printEntities();
+
 	Serial.println(FPSTR("------------------------------------------"));
 	initTime=millis();
+
 	initEntitiesModelData();
+
 	initTime=millis()-initTime;
 	Serial.print(FPSTR(" initEntMD time ="));
 	Serial.println(initTime);
@@ -48,6 +53,7 @@ void JsonDao::init() {
 	initTime=millis()-initTime;
 	Serial.print(FPSTR(" json depl time ="));
 	Serial.println(initTime);
+
 	initTime=millis()-beginTime;
 	Serial.print(FPSTR(" TOTAL time ="));
 	Serial.println(initTime);
