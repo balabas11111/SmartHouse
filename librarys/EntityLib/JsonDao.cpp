@@ -138,6 +138,8 @@ void JsonDao::initEntitiesModelData(){
 	JsonObjectUtil::getObjectChildOrCreateNew(root,ROOT_PATH_MODEL);
 	JsonObject& fromFile = loadRootIfExists();
 
+	JsonObjectUtil::print("loaded = ", fromFile);
+
 	for (std::list<EntityJson*>::iterator ent = entities.begin(); ent != entities.end(); ent++){
 
 		EntityJson* entity = (*ent);
@@ -148,6 +150,8 @@ void JsonDao::initEntitiesModelData(){
 		initEntityModelData(entity, fromFile);
 		entity->postModelDataInit();
 	}
+
+	JsonObjectUtil::print("root = ", root);
 
 	Serial.print(id);
 	Serial.println(FPSTR(" - Entities processed"));
@@ -193,13 +197,16 @@ void JsonDao::initEntityModelData(EntityJson* entity,JsonObject& fromFile) {
 
 	//JsonObjectUtil::print("before descr root =",root);
 	mergeDatas(dataDescriptor,data);
-	//JsonObjectUtil::print("before load root =",root);
+	JsonObjectUtil::print("descr added root =",root);
+	JsonObjectUtil::print("descr added data =",data);
 	mergeDatas(dataLoaded,data);
+	JsonObjectUtil::print("loaded added root =",root);
+	JsonObjectUtil::print("loaded added data =",data);
 	//JsonObjectUtil::print("after load root =",root);
 
 	createEntityDataPrimaryFields(entity, data);
 	//JsonObjectUtil::print("DESCR =",descriptor);
-	//JsonObjectUtil::print("ent done root =",root);
+	JsonObjectUtil::print("ent done root =",root);
 
 	b.clear();
 }
@@ -241,19 +248,31 @@ int JsonDao::mergeDatas(JsonObject& from, JsonObject& to) {
 
 	int changed=0;
 
+	JsonObjectUtil::print("from =",from);
+	JsonObjectUtil::print("to =",to);
+
+	Serial.println(FPSTR("data merged"));
+
 	for (const auto& kvp : from) {
 		if(!isDefaultField(kvp.key)){
 			if(!to.containsKey(kvp.key) || to[kvp.key]!=from[kvp.key]){
 				changed++;
+				to.remove(kvp.key);
 				to.set(strdup(kvp.key), strdup(kvp.value));
 				/*
 				Serial.print(FPSTR("key="));
 				Serial.print(kvp.key);
 				Serial.print(FPSTR(" value="));
 				Serial.println(kvp.value.as<char*>());*/
+			}else{
+				Serial.print(FPSTR("NOT modified key = "));
+				Serial.println(kvp.key);
 			}
 		}
 	}
+
+	JsonObjectUtil::print("from =",from);
+	JsonObjectUtil::print("to =",to);
 
 	if(changed>0){
 		/*Serial.print(FPSTR("data merged="));
