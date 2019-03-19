@@ -1,5 +1,5 @@
 const DATA_MODEL_ROOT_URL = '/info';
-const templa
+const DATA_MODEL_POST_URL = '/info';
 
 var dataModel={};
 var modelToViewHandlers={};
@@ -7,6 +7,7 @@ var modelToViewHandlers={};
 var source = new EventSource('/events');
 
 var currentView = 'sensors';
+var localTest = false;
 
 /*--------------------------Menu functions-----------------------------*/
 function w3_open(){
@@ -19,11 +20,12 @@ function w3_close(){
 
 
 function onLoadPageComplete(){
-	sendRequest("GET", DATA_MODEL_ROOT_URL, handleRootReceive, "exec","root", 0, 2000);
+	sendRequest("GET", DATA_MODEL_ROOT_URL, handleRootReceive, "root", 0, 2000);
 	initEventSourceChannel();
 }
 
 function handleRootReceive(json){
+	dataModel = json;
 	processGroupToView(currentView);
 }
 /*---------------------------Model to view functions----------------------------*/
@@ -64,6 +66,9 @@ function getPreffixForEntity(entity){
 function getEntityViewId(entity,key){
 	return getPreffixForEntity(entity)+'.'+key;
 }
+function getEntityEditId(entity,key){
+	return getPreffixForEntity(entity)+'.'+key+'.edit';
+}
 /*---Model to view handlers processing*/
 function updateEntityViewValue(entity,key,val){
 	var handlerName=getPreffixForEntity(entity);
@@ -87,7 +92,9 @@ function getModelToViewHandlerByName(name){
 /*---Model To View handlers---*/
 function updateEntityViewValueDefault(entity,key,val){
 	var expId = getEntityViewId(entity,key);
-	setComponentValueById(expid,val);
+	var expEditId = getEntityEditId(entity,key);
+	setComponentValueById(expId,val);
+	setComponentValueById(expEditId,val);
 }
 /*---------------------------Event source functions----------------------------*/
 function initEventSourceChannel(){
@@ -124,9 +131,9 @@ function processEventSourceMessage(message){
 		var entity = JSON.parse(message);
 		console.log("changed entity = ",entity);
 		
-		if(obj!=undefined && obj.chgKey!=undefined){
-			var key = obj.chgKey;
-			var val = obj[key];
+		if(entity!=undefined && entity.chgKey!=undefined){
+			var key = entity.chgKey;
+			var val = entity[key];
 			
 			updateEntityViewValue(entity,key,val);
 		}
@@ -142,15 +149,31 @@ function isHttpStatusOk(status){
 	
 	return false;
 }
-function sendRequest(requestmethod, url, handler, val,sensor, timeout, errorTimeOut){
-	console.log("XHR send request "+val+"="+sensor);
+function formSubmitAsJson(form,div,resultHandler){
+	
+	var frmComp = document.forms[form];
+	var fd = new FormData(frmComp);
+	var data = {};
+
+	for (let [key, prop] of fd) {
+	  data[key] = prop;
+	}
+
+	data = JSON.stringify(data, null, 2);
+	
+	console.log("form = ", form, " data=",data);
+	
+	sendRequest("POST", DATA_MODEL_POST_URL, resultHandler, data, 0, 2000);
+}
+
+function handleHttpRequestStatus(success,message){
+	console.log("result="+success+" message="+message);
+}
+
+function sendRequest(requestmethod, url, handler, data, timeout, errorTimeOut){
+	console.log("XHR send request data=",data);
 	
 	var request = new XMLHttpRequest();
-	
-	var formData = new FormData();
-	if(val!=undefined && sensor!=undefined){
-		formData.append(val, sensor);
-	}
 	
 	request.open(requestmethod, url, true);
 	request.timeout=6000;
@@ -171,8 +194,8 @@ function sendRequest(requestmethod, url, handler, val,sensor, timeout, errorTime
 					var ok=true;
 					
 					try{
+						console.log("Response = "+this.responseText);
 						var json = JSON.parse(this.responseText);
-						dataModel = json;
 						if(handler!=undefined){
 							handler(json);
 						}
@@ -184,14 +207,14 @@ function sendRequest(requestmethod, url, handler, val,sensor, timeout, errorTime
 									
 					if(timeout>0){
 						var reloadTime=timeout;
-						addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout, errorTimeOut,reloadTime);
+						addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, data, timeout, errorTimeOut,reloadTime);
 					}
 					
 					console.log("XHR complete = ");
 				}else{
 					if(errorTimeOut>0){
 						var reloadTime=errorTimeOut;
-						addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout, errorTimeOut, reloadTime);
+						addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, data, timeout, errorTimeOut, reloadTime);
 					}else{
 						console.log('Ошибка запроса устройства');
 					}
@@ -202,12 +225,12 @@ function sendRequest(requestmethod, url, handler, val,sensor, timeout, errorTime
 				}
 			};
 		};
-	request.send(formData);
+	request.send(data);
 };
 
-function addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, val,sensor, timeout, errorTimeOut, reloadTime){
+function addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, body, timeout, errorTimeOut, reloadTime){
 	if(reloadTime!='' && reloadTime!=0 && reloadTime>=2000){
-		setTimeout(function(){sendRequest(requestmethod, url, handler, val,sensor, timeout, errorTimeOut);}, reloadTime);
+		setTimeout(function(){sendRequest(requestmethod, url, handler, body, timeout, errorTimeOut);}, reloadTime);
 	}
 };
 
@@ -321,5 +344,29 @@ function setComponentValue(component,val){
 			component.href=val;
 			showComponent(component.id);
 		};
+	}
+}
+/*----------------------------------------------------------------------------*/
+function hideComponent(componentId){
+	var comp=document.getElementById(componentId);
+	setVisible(comp,false);
+};
+
+function showComponent(componentId){
+	var comp=document.getElementById(componentId);
+	setVisible(comp,true);
+};
+
+function isVisible(comp){
+	return (comp!=undefined && comp.style!=undefined && comp.style.display=='block')
+}
+
+function setVisible(comp,visible){
+	if(comp!=undefined){
+		if(visible){
+			comp.style.display = "block";
+		}else{
+			comp.style.display = "none";
+		}
 	}
 }

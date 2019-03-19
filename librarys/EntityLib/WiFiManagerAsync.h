@@ -83,6 +83,7 @@ protected:
 	void onDelete(AsyncWebServerRequest *request);
 	void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final);
 	void onFileRead(AsyncWebServerRequest *request);
+	void onEntityPost(AsyncWebServerRequest *request, JsonVariant &json);
 
 	virtual void sendAsEventSource(const char* event,const char* msg) override;
 
@@ -103,6 +104,7 @@ protected:
 #ifdef ASYNC
 	AsyncWebServer* server;
 	AsyncEventSource* events;
+	AsyncCallbackJsonWebHandler* jsonPostHandler;
 #endif
 
 #ifdef ESP8266

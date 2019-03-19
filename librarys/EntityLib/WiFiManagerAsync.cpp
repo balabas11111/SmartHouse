@@ -218,9 +218,31 @@ void WiFiManagerAsync::deployDefaultUrls() {
 	server->on(URL_INFO, HTTP_GET, [this](AsyncWebServerRequest *request){onInfo(request);});
 	server->on(URL_DIR, HTTP_GET, [this](AsyncWebServerRequest *request){onDir(request);});
 	server->on(URL_CAT, HTTP_GET, [this](AsyncWebServerRequest *request){onCat(request);});
+	server->on(URL_INFO, HTTP_POST, [this](AsyncWebServerRequest *request){
+		Serial.println(FPSTR("post info"));
+
+		AsyncResponseStream *response = request->beginResponseStream("application/json");
+
+		DynamicJsonBuffer buf;
+		JsonObject &root = buf.createObject();
+		JsonObject& obj=root.createNestedObject("response");
+
+		obj.set("status", "accepted");
+
+		obj.printTo(*response);
+		response->setCode(200);
+		request->send(response);
+	});
+
+
+	jsonPostHandler = new AsyncCallbackJsonWebHandler(URL_INFO_POST, [this](AsyncWebServerRequest *request, JsonVariant &json) {
+		Serial.println(FPSTR("post Json"));
+		onEntityPost(request,json);
+		request->send(200,CONTENT_TYPE_JSON_UTF8,"{accepted}");
+	});
+	server->addHandler(jsonPostHandler);
 
 	server->on(URL_FILES, HTTP_DELETE, [this](AsyncWebServerRequest *request){onDelete(request);});
-
 	server->on(URL_FILES, HTTP_POST,
 			[this](AsyncWebServerRequest *request){
 				request->send(200);
@@ -240,11 +262,7 @@ void WiFiManagerAsync::deployStaticFiles() {
 		.setTemplateProcessor(AwsTemplateProcessor)
 	    .setAuthentication(conf->adminLogin(), conf->adminPassword());
 
-	//server->serveStatic("/", SPIFFS, PATH_WEB_FILES_PATH,false);
-
-
 	server->on("/index.htm", HTTP_GET, [this](AsyncWebServerRequest *request){onFileRead(request);});
-
 }
 
 void WiFiManagerAsync::deployTemplates() {
@@ -273,10 +291,6 @@ void WiFiManagerAsync::deployEventSource() {
 }
 
 void WiFiManagerAsync::sendAsEventSource(const char* event,const char* msg) {
-	/*Serial.print(FPSTR("Send event = "));
-	Serial.print(event);
-	Serial.print(FPSTR(" msg = "));
-	Serial.println(msg);*/
 	events->send(msg,NULL,millis(),1000);
 }
 
@@ -394,12 +408,17 @@ bool WiFiManagerAsync::handleFileGzRead(String path,AsyncWebServerRequest* reque
 		Serial.print(pathWithGz);
 		Serial.print(FPSTR(" contentType ="));
 		Serial.println(contentType);
-		//size_t sent =
-		//request->send(file, path, contentType);
 		request->send(SPIFFS, path, contentType,false);
 		return true;
 	  }
 	  return false;
+}
+
+void WiFiManagerAsync::onEntityPost(AsyncWebServerRequest *request, JsonVariant &json) {
+	Serial.println(FPSTR("Json posted"));
+	json.printTo(Serial);
+	Serial.println(FPSTR("--------------------"));
+	request->send(200);
 }
 
 String  WiFiManagerAsync::getContentType(String filename,AsyncWebServerRequest* request){

@@ -32,8 +32,14 @@ delay(5000);
 Serial.println(FPSTR("Device starting"));
 FileUtils::init();
 //FileUtils::deleteAllFiles("/");
+Serial.print(FPSTR(" heap="));
+Serial.println(ESP.getFreeHeap());
 dao.init();
+Serial.print(FPSTR(" heap="));
+Serial.println(ESP.getFreeHeap());
 server.init();
+Serial.print(FPSTR(" heap="));
+Serial.println(ESP.getFreeHeap());
 Serial.print(FPSTR("millis"));
 Serial.println(millis());
 }
@@ -42,8 +48,11 @@ int i=0;
 
 void loop()
 {
-	delay(5000);
-	//Serial.println(ESP.getFreeHeap());
+	delay(30000);
+	Serial.print(FPSTR("i="));
+	Serial.print(i);
+	Serial.print(FPSTR(" heap="));
+	Serial.println(ESP.getFreeHeap());
 	i++;
 	bh1750.getModelDataProvider()->setField(bh1750.getId(), "light", i);
 }

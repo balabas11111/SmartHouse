@@ -17,25 +17,41 @@ img.humidity-icon {
 }
 </style>
 <script type="text/javascript">
-	registerJsonHandler('bmeMeasurer',processSimpleJson);
+hideComponent("sensors.bme280.editForm");
+
+function editBme280(){
+	hideComponent("sensors.bme280.viewForm");
+	showComponent("sensors.bme280.editForm");
+}	
+function cancelEditBme280(){
+	hideComponent("sensors.bme280.editForm");
+	showComponent("sensors.bme280.viewForm");
+}
+function saveBme280(){
+	formSubmitAsJson("sensors.bme280.form","sensors.bme280.div",onDataPosted);
+}
+function onDataPosted(response){
+	console.log("response = ",response);
+	
+	hideComponent("sensors.bme280.editForm");
+	showComponent("sensors.bme280.viewForm");
+}
 </script>
-<div>
-	<div class="w3-card-4" style="width: 400px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+<div id="sensors.bme280.div">
+	<div id="sensors.bme280.viewForm" class="w3-card-4" style="width: 400px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 			<div class="w3-container w3-teal">
-				 <div><h3 id="sensors.bme280.descr">bmeMeasurer</h3></div>
+				 <div><h4 id="sensors.bme280.descr">bmeMeasurer</h4></div>
 			</div>
 			
-			<form id="bmeMeasurer" class="w3-container">
-						
 				<div id="temperatureDiv" class="w3-row" style="margin-top: 15px;">
 					<div class="w3-quarter">
 						<img class="temperature-icon"/>
 					</div>
 					<div class="w3-third">
-						<label for="bmeMeasurer_Temperature" style="max-width: 240px;">
+						<label for="sensors.bme280.temp" style="max-width: 240px;">
 							<b>Температура °C</b>
 						</label>
-						<input id="sensors.bme280.temp" class="w3-input w3-border" style="width:90%" type="text" value="?" disabled>
+						<input id="sensors.bme280.temp" name="temp" class="w3-input w3-border" style="width:90%" type="text" value="?" disabled>
 					</div>
 				</div>	
 
@@ -44,7 +60,7 @@ img.humidity-icon {
 						<img class="pressure-icon"/>
 					</div>
 					<div class="w3-third">
-						<label for="bmeMeasurer_Pressure" style="max-width: 240px;">
+						<label for="sensors.bme280.press" style="max-width: 240px;">
 							<b>Давление (Паскаль)</b>
 						</label>
 						<input id="sensors.bme280.press" class="w3-input w3-border" style="width:90%" type="text" value="?" disabled>
@@ -56,14 +72,69 @@ img.humidity-icon {
 						<img class="humidity-icon"/>
 					</div>
 					<div class="w3-third">
-						<label for="bmeMeasurer_Humidity" style="max-width: 240px;">
+						<label for="sensors.bme280.hum" style="max-width: 240px;">
 							<b>Влажность (%)</b>
 						</label>
 						<input id="sensors.bme280.hum" class="w3-input w3-border" style="width: 90%; margin-bottom: 10px;" type="text" value="?" disabled>
 					</div>
 				</div>	
-							   		
+				
+				<footer class="w3-container w3-teal w3-display-container">
+				 		<div class="w3-row">
+				 			<div class="w3-half">
+							      <button id="confirm_editBtn" 
+							      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
+							      	style="margin-top: 2px; margin-bottom: 2px;"
+										onclick="editBme280();">Редакт</button>
+							</div>
+						</div>
+    			</footer>			   		
+		   	
+	</div>
+	<div id="sensors.bme280.editForm" class="w3-card-4" style="display:none; width: 400px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+			<div class="w3-container w3-teal">
+				 <div><h4></h4></div>
+			</div>
+			<div class="w3-container w3-teal">
+				 <div><h4>Редактирование</h4></div>
+			</div>
+			
+			<form id="sensors.bme280.form" class="w3-container">
+				<input id="sensors.bme280.id.edit" name="id" type="hidden">
+				<input id="sensors.bme280.group.edit" name="group" type="hidden">
+				
+				<div id="humidityDiv" class="w3-row" style="margin-top: 15px;">
+						<label for="sensors.bme280.name.edit" style="max-width: 240px;">
+							<b>Датчик/устройство</b>
+						</label>
+						<input id="sensors.bme280.name.edit" name="name" class="w3-input w3-border" style="width: 90%; margin-bottom: 10px;" type="text" value="?" readonly="readonly">
+				</div>
+						
+				<div id="descrDiv" class="w3-row" style="margin-top: 15px; margin-bottom: 5px;">
+						<label for="sensors.bme280.descr.edit" style="max-width: 240px;">
+							<b>Описание</b>
+						</label>
+						<input id="sensors.bme280.descr.edit" name="descr" class="w3-input w3-border" style="width:90%" type="text" value="?">
+				</div>	
+
 		   	</form>
+		   	
+		   	<footer class="w3-container w3-teal w3-display-container">
+			 		<div class="w3-row">
+			 			<div class="w3-half">
+						      <button id="confirm_okBtn" 
+						      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
+						      	style="margin-top: 2px; margin-bottom: 2px;"
+									onclick="saveBme280();">Сохранить</button>
+						</div>
+						<div class="w3-half">
+							  <button id="confirm_closeBtn" 
+							  	class="w3-btn w3-white w3-border w3-border-red w3-round-large" 
+							  	style="margin-top: 2px; margin-bottom: 2px;"
+									onclick="cancelEditBme280();">Закрыть</button>
+						</div>
+					</div>
+   			</footer>
 		   	
 	</div>
 </div>
