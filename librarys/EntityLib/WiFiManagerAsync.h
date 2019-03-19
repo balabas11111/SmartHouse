@@ -85,6 +85,7 @@ protected:
 	void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final);
 	void onFileRead(AsyncWebServerRequest *request);
 	void onEntityPost(AsyncWebServerRequest *request);
+	bool entityPostField(AsyncWebServerRequest *request, int entityId, const char* key);
 
 	virtual void sendAsEventSource(JsonObject& obj) override;
 

@@ -31,15 +31,13 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/utils}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/FastCRC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPUpdateServer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WebServer/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/TimeTrigger}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESPAsyncTCP-master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESPAsyncTCP-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESPAsyncWebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESPAsyncWebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSensors}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.392278783" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -57,15 +55,13 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/utils}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/FastCRC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPUpdateServer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WebServer/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/TimeTrigger}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESPAsyncTCP-master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESPAsyncTCP-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESPAsyncWebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESPAsyncWebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSensors}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1644733984" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -83,15 +79,13 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/utils}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/FastCRC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPUpdateServer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WebServer/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/TimeTrigger}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESPAsyncTCP-master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESPAsyncTCP-master/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESPAsyncWebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESPAsyncWebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSensors}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.2126147630" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>

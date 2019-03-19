@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2019-03-19 11:48:02
+//This file has been generated on 2019-03-19 16:23:31
 
 #include "Arduino.h"
 #include "Arduino.h"
@@ -14,6 +14,8 @@
 #include <FileUtils.h>
 #include <ServerSettingsBox.h>
 #include <WiFiManagerAsync.h>
+#include "Bme280sensor.h"
+#include "Bh1750sensor.h"
 
 void setup() ;
 void loop() ;

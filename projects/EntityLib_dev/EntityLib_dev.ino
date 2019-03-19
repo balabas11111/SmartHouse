@@ -10,15 +10,12 @@
 #include <ServerSettingsBox.h>
 #include <WiFiManagerAsync.h>
 
-#define BME280Descriptor "{\"data\": {\"temp\":\"-1\",\"hum\":\"-1\",\"press\":\"-1\"},\
-\"model\":{\"stat\":[],\"var\":[\"temp\",\"hum\",\"press\"],\"load\":[],\"save\":[],\"set\":[],\"tvar\":[\"temp\",\"hum\"]}  }"
-
-#define BH1750Descriptor "{\"data\": {\"light\":\"-1\"},\
-\"model\":{\"stat\":[],\"var\":[\"light\"],\"load\":[],\"save\":[],\"set\":[],\"tvar\":[\"light\"]}  }"
+#include "Bme280sensor.h"
+#include "Bh1750sensor.h"
 
 ServerSettingsBox conf("EntityLiv dev settings");
-EntityAbstract bme280(ROOT_GROUP_SENSORS,"bme280","Temperature/Humidity/AtmPressure",BME280Descriptor);
-EntityAbstract bh1750(ROOT_GROUP_SENSORS,"bh1750","Light level",BH1750Descriptor);
+Bme280sensor bme280;
+Bh1750sensor bh1750;
 
 EntityJson* entities[] = {&bme280,&bh1750,&conf};
 JsonDao dao(entities, ARRAY_SIZE(entities));

@@ -426,18 +426,10 @@ void WiFiManagerAsync::onEntityPost(AsyncWebServerRequest *request) {
 
 		for (const auto& kvp : setAllowedFields) {
 			const char* key = kvp.as<const char*>();
-
-			if(request->hasArg(key)){
-				const String& value = request->arg(key);
-
-				const char* validMsg = dao->validateField(entityId, key, value);
-				bool isValid = value.length()!=0 && sizeof(validMsg)<1;
-
-				if(isValid){
-					count+=dao->setField(entityId, key, value);
-				}
-			}
+			count+=entityPostField(request,entityId,key);
 		}
+
+		count+=entityPostField(request,entityId,JSONKEY_descr);
 
 		Serial.print(FPSTR("keys changed = "));
 		Serial.println(count);
@@ -453,6 +445,21 @@ void WiFiManagerAsync::onEntityPost(AsyncWebServerRequest *request) {
 	resp.printTo(*response);
 	response->setCode(200);
 	request->send(response);
+}
+
+bool WiFiManagerAsync::entityPostField(AsyncWebServerRequest *request, int entityId, const char* key) {
+	bool changed=0;
+	if(request->hasArg(key)){
+		const String& value = request->arg(key);
+
+		const char* validMsg = dao->validateField(entityId, key, value);
+		bool isValid = value.length()!=0 && sizeof(validMsg)<1;
+
+		if(isValid){
+			return dao->setField(entityId, key, value);
+		}
+	}
+	return 0;
 }
 
 String  WiFiManagerAsync::getContentType(String filename,AsyncWebServerRequest* request){
