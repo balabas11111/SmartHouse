@@ -221,15 +221,28 @@ void WiFiManagerAsync::deployDefaultUrls() {
 	server->on(URL_INFO, HTTP_POST, [this](AsyncWebServerRequest *request){
 		Serial.println(FPSTR("post info"));
 
-		AsyncResponseStream *response = request->beginResponseStream("application/json");
-
 		DynamicJsonBuffer buf;
 		JsonObject &root = buf.createObject();
-		JsonObject& obj=root.createNestedObject("response");
+		JsonObject& resp=root.createNestedObject("response");
 
-		obj.set("status", "accepted");
+		if(!request->hasArg("id") || !request->hasArg("name")){
+			resp.set("status", "error");
+			resp.set("message", "Data is not entity");
+		}
 
-		obj.printTo(*response);
+		int entityId=request->arg("id").toInt();
+		String entityName=request->arg("name");
+		if(dao->getEntityData(entityId).get<String>("name")==entityName){
+			resp.set("message", "Entity found");
+		}else{
+			resp.set("message", "No entity");
+		}
+
+		AsyncResponseStream *response = request->beginResponseStream("application/json");
+
+		resp.set("status", "ok");
+
+		resp.printTo(*response);
 		response->setCode(200);
 		request->send(response);
 	});

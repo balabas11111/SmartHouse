@@ -165,7 +165,14 @@ function formSubmitAsJson(form,div,resultHandler){
 	
 	sendRequest("POST", DATA_MODEL_POST_URL, resultHandler, data, 0, 2000);
 }
-
+function formSubmitAsForm(form,div,resultHandler){
+	
+	var frmComp = document.forms[form];
+	var data = new FormData(frmComp);
+	
+	console.log("form = ", form, " data=",data);
+	sendRequest("POST", DATA_MODEL_POST_URL, resultHandler, data, 0, 2000);
+}
 function handleHttpRequestStatus(success,message){
 	console.log("result="+success+" message="+message);
 }

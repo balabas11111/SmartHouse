@@ -28,11 +28,9 @@ function cancelEditBme280(){
 	showComponent("sensors.bme280.viewForm");
 }
 function saveBme280(){
-	formSubmitAsJson("sensors.bme280.form","sensors.bme280.div",onDataPosted);
+	formSubmitAsForm("sensors.bme280.form","sensors.bme280.div",onDataPostedBme280);
 }
-function onDataPosted(response){
-	console.log("response = ",response);
-	
+function onDataPostedBme280(response){
 	hideComponent("sensors.bme280.editForm");
 	showComponent("sensors.bme280.viewForm");
 }
