@@ -41,12 +41,32 @@
 #define JSONKEY_dao     "dao"
 #define JSONKEY_class   "class"
 #define JSONKEY_open    "open"
+#define JSONKEY_files   "files"
+#define JSONKEY_file    "file"
 
 #define JSONKEY_declaredFields  "declaredFields"
 #define JSONKEY_declaredActions "declaredActions"
 
 #define JSON_EXT              ".json"
 #define JSON_DEFAULT_FILENAME "_data.json"
+//response constants
+#define RESPONSE_KEY_response  "response"
+#define RESPONSE_KEY_status    "status"
+#define RESPONSE_KEY_message   "message"
+#define RESPONSE_KEY_Server    "Server"
+
+#define RESPONSE_MSG_ok                "ok"
+#define RESPONSE_MSG_success           "success"
+#define RESPONSE_MSG_error             "error"
+#define RESPONSE_MSG_dataIsNotEntity   "Data is not entity"
+#define RESPONSE_MSG_entityFound       "Entity found"
+#define RESPONSE_MSG_noSuchEntity      "No such entity"
+#define RESPONSE_MSG_defaultServerName "ESP Async Web Server"
+#define RESPONSE_MSG_badArgs           "BAD ARGS"
+#define RESPONSE_MSG_badPath           "BAD PATH"
+#define RESPONSE_MSG_fileNotFound      "FileNotFound"
+
+
 
 const char* const ROOT_PATHS[] PROGMEM = {
 		ROOT_PATH_MODEL,

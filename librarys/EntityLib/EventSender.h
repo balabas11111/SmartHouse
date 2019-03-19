@@ -8,11 +8,13 @@
 #ifndef LIBRARIES_ENTITYLIB_EVENTSENDER_H_
 #define LIBRARIES_ENTITYLIB_EVENTSENDER_H_
 
+#include "ArduinoJson.h"
+
 class EventSender {
 public:
 	virtual ~EventSender(){};
 
-	virtual void sendAsEventSource(const char* event,const char* msg)=0;
+	virtual void sendAsEventSource(JsonObject& obj)=0;
 };
 
 #endif /* LIBRARIES_ENTITYLIB_EVENTSENDER_H_ */

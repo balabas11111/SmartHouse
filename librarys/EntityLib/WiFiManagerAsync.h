@@ -21,13 +21,14 @@
 #ifndef ASYNC
 #include <ESP8266WebServer.h>
 #endif
-#include "AsyncJson.h"
-#include "ArduinoJson.h"
+#include <AsyncJson.h>
+#include <ArduinoJson.h>
 #include <WiFiUtils.h>
 #include <FileUtils.h>
 #include <ServerSettingsBox.h>
 #include <ESP_Consts.h>
-#include "EventSender.h"
+#include <EntityConsts.h>
+#include <EventSender.h>
 
 class WiFiManagerAsync: public EventSender {
 public:
@@ -83,19 +84,17 @@ protected:
 	void onDelete(AsyncWebServerRequest *request);
 	void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final);
 	void onFileRead(AsyncWebServerRequest *request);
-	void onEntityPost(AsyncWebServerRequest *request, JsonVariant &json);
+	void onEntityPost(AsyncWebServerRequest *request);
 
-	virtual void sendAsEventSource(const char* event,const char* msg) override;
+	virtual void sendAsEventSource(JsonObject& obj) override;
 
 	void notFound(AsyncWebServerRequest *request);
 	bool handleFileRead(String path,AsyncWebServerRequest* request);
 	bool handleFileGzRead(String path,AsyncWebServerRequest* request);
 	String getContentType(String filename,AsyncWebServerRequest* request);
-
-	String processor(const String& var)
-	{
-		return dao->getByTemplateKey(var);
-	}
+#ifdef DEPLOY_TEMPLATES
+	String processor(const String& var)	{ return dao->getByTemplateKey(var);}
+#endif
 
 	ServerSettingsBox* conf;
 
@@ -104,7 +103,7 @@ protected:
 #ifdef ASYNC
 	AsyncWebServer* server;
 	AsyncEventSource* events;
-	AsyncCallbackJsonWebHandler* jsonPostHandler;
+	//AsyncCallbackJsonWebHandler* jsonPostHandler;
 #endif
 
 #ifdef ESP8266

@@ -7,18 +7,32 @@ img.luxmeter-icon {
 }
 </style>
 <script type="text/javascript">
-	
+hideComponent("sensors.bh1750.editForm");
+
+function editBh1750(){
+	hideShowComponent("sensors.bh1750.viewForm","sensors.bh1750.editForm");
+}	
+function cancelEditBh1750(){
+	hideShowComponent("sensors.bh1750.editForm","sensors.bh1750.viewForm");
+}
+function saveBh1750(){
+	formSubmitAsForm("sensors.bh1750.form","sensors.bh1750.div",onDataPostedBh1750);
+}
+function onDataPostedBh1750(response){
+	hideShowComponent("sensors.bh1750.editForm","sensors.bh1750.viewForm");
+}
 	
 </script>
-<div>
-	<div class="w3-card-4" style="width: 400px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+<div id="sensors.bh1750.div">
+
+	<div id="sensors.bh1750.viewForm" class="w3-card-4" style="width: 400px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 			<div class="w3-container w3-teal">
 				 <div><h4 id="sensors.bh1750.descr">bh1750Measurer</h4></div>
 			</div>
 			
-			<form id="bh1750" class="w3-container">
+			<!--  <form id="bh1750" class="w3-container"> -->
 				
-				<div id="lightDiv" class="w3-row" style="margin-top: 15px;">
+				<div class="w3-row" style="margin-top: 15px;">
 					<div class="w3-quarter">
 						<img class="luxmeter-icon"/>
 					</div>
@@ -29,8 +43,61 @@ img.luxmeter-icon {
 						<input id="sensors.bh1750.light" name="light" class="w3-input w3-border" style="width: 90%; margin-bottom: 10px;" type="text" value="обновляю" disabled>
 					</div>
 				</div>	
+				
+				<footer class="w3-container w3-teal w3-display-container">
+				 		<div class="w3-row">
+				 			<div class="w3-half">
+							      <button id="confirm_editBtn" 
+							      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
+							      	style="margin-top: 2px; margin-bottom: 2px;"
+										onclick="editBh1750();">Редакт</button>
+							</div>
+						</div>
+    			</footer>						
+			<!--  </form> -->
+	</div>
+	
+	<div id="sensors.bh1750.editForm" class="w3-card-4" style="width: 400px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+			<div class="w3-container w3-teal">
+				 <div><h4>Редактирование</h4></div>
+			</div>
+			
+			<form id="sensors.bh1750.form" class="w3-container">
+				<input id="sensors.bh1750.id.edit" name="id" type="hidden">
+				<input id="sensors.bh1750.group.edit" name="group" type="hidden">
+				
+				<div class="w3-row" style="margin-top: 15px;">
+						<label for="sensors.bh1750.name.edit" style="max-width: 240px;">
+							<b>Датчик/устройство</b>
+						</label>
+						<input id="sensors.bh1750.name.edit" name="name" class="w3-input w3-border" style="width: 90%; margin-bottom: 10px;" type="text" value="?" readonly="readonly">
+				</div>
+						
+				<div class="w3-row" style="margin-top: 15px; margin-bottom: 5px;">
+						<label for="sensors.bh1750.descr.edit" style="max-width: 240px;">
+							<b>Описание</b>
+						</label>
+						<input id="sensors.bh1750.descr.edit" name="descr" class="w3-input w3-border" style="width:90%" type="text" value="?">
+				</div>	
 										
 			</form>
+			
+			 <footer class="w3-container w3-teal w3-display-container">
+		 		<div class="w3-row">
+		 			<div class="w3-half">
+					      <button id="confirm_okBtn" 
+					      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
+					      	style="margin-top: 2px; margin-bottom: 2px;"
+								onclick="saveBh1750();">Сохранить</button>
+					</div>
+					<div class="w3-half">
+						  <button id="confirm_closeBtn" 
+						  	class="w3-btn w3-white w3-border w3-border-red w3-round-large" 
+						  	style="margin-top: 2px; margin-bottom: 2px;"
+								onclick="cancelEditBh1750();">Закрыть</button>
+					</div>
+				</div>
+   			</footer>
 	</div>
 </div>
-<!--BME280 BH1750 ends-->
+<!--BH1750 ends-->

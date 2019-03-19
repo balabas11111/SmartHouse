@@ -364,6 +364,13 @@ function showComponent(componentId){
 	setVisible(comp,true);
 };
 
+function hideShowComponent(componentIdHide,componentIdShow){
+	var compHide=document.getElementById(componentIdHide);
+	var compShow=document.getElementById(componentIdShow);
+	setVisible(compHide,false);
+	setVisible(compShow,true);
+};
+
 function isVisible(comp){
 	return (comp!=undefined && comp.style!=undefined && comp.style.display=='block')
 }

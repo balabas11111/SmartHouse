@@ -91,10 +91,6 @@ public:
 		}
 	}
 
-	EntityModelDataProvider* getModelDataProvider() {
-		return modelDataProvider;
-	}
-
 	const char* getDescriptor() const {
 		return descriptor;
 	}
@@ -111,6 +107,33 @@ public:
 		return deployedAsData;
 	}
 
+	JsonObject& getData(){
+		return getModelDataProvider()->getEntityData(getId());
+	}
+
+	JsonObject& getModel(){
+		return getModelDataProvider()->getEntityModel(getId());
+	}
+
+	template<typename T>
+	bool hasFieldOfType(const char* key,T value){
+		return getData().containsKey(key) && getData().is<T>(key);
+	}
+
+	template<typename T>
+	bool setField(const char* key,T value){
+		return getModelDataProvider()->setField(getId(), key, value);
+	}
+
+	template<typename T>
+	T getField(const char* key){
+		return getData().get<T>(key);
+	}
+
+	virtual const char* validateField(const char* key,const String& value){
+		return "";
+	}
+
 protected:
 	EntityModelDataProvider* modelDataProvider;
 
@@ -125,6 +148,9 @@ protected:
 	bool deployedAsTemplate = true;
 	bool deployedAsData = true;
 
+	EntityModelDataProvider* getModelDataProvider() {
+		return modelDataProvider;
+	}
 };
 
 #endif /* LIBRARIES_ENTITYLIB_ENTITYJSON_H_ */

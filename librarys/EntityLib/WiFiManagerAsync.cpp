@@ -216,44 +216,11 @@ void WiFiManagerAsync::deployDefaultUrls() {
 	server->on(URL_ROOT, HTTP_GET, [this](AsyncWebServerRequest *request){onRoot(request);});
 
 	server->on(URL_INFO, HTTP_GET, [this](AsyncWebServerRequest *request){onInfo(request);});
+	server->on(URL_INFO, HTTP_POST, [this](AsyncWebServerRequest *request){onEntityPost(request);});
+
 	server->on(URL_DIR, HTTP_GET, [this](AsyncWebServerRequest *request){onDir(request);});
 	server->on(URL_CAT, HTTP_GET, [this](AsyncWebServerRequest *request){onCat(request);});
-	server->on(URL_INFO, HTTP_POST, [this](AsyncWebServerRequest *request){
-		Serial.println(FPSTR("post info"));
 
-		DynamicJsonBuffer buf;
-		JsonObject &root = buf.createObject();
-		JsonObject& resp=root.createNestedObject("response");
-
-		if(!request->hasArg("id") || !request->hasArg("name")){
-			resp.set("status", "error");
-			resp.set("message", "Data is not entity");
-		}
-
-		int entityId=request->arg("id").toInt();
-		String entityName=request->arg("name");
-		if(dao->getEntityData(entityId).get<String>("name")==entityName){
-			resp.set("message", "Entity found");
-		}else{
-			resp.set("message", "No entity");
-		}
-
-		AsyncResponseStream *response = request->beginResponseStream("application/json");
-
-		resp.set("status", "ok");
-
-		resp.printTo(*response);
-		response->setCode(200);
-		request->send(response);
-	});
-
-
-	jsonPostHandler = new AsyncCallbackJsonWebHandler(URL_INFO_POST, [this](AsyncWebServerRequest *request, JsonVariant &json) {
-		Serial.println(FPSTR("post Json"));
-		onEntityPost(request,json);
-		request->send(200,CONTENT_TYPE_JSON_UTF8,"{accepted}");
-	});
-	server->addHandler(jsonPostHandler);
 
 	server->on(URL_FILES, HTTP_DELETE, [this](AsyncWebServerRequest *request){onDelete(request);});
 	server->on(URL_FILES, HTTP_POST,
@@ -268,21 +235,25 @@ void WiFiManagerAsync::deployDefaultUrls() {
 
 void WiFiManagerAsync::deployStaticFiles() {
 	Serial.println(FPSTR(" ------------Deploy static Files-----------"));
-	std::function<String(const String&)> AwsTemplateProcessor=[this](const String& var){return processor(var);};
-	server
-	    ->serveStatic("/", SPIFFS, PATH_MODEL_DATA_JSON_FILE_PATH)
-	    .setDefaultFile(PATH_MODEL_DATA_JSON_FILE_NAME)
-		.setTemplateProcessor(AwsTemplateProcessor)
-	    .setAuthentication(conf->adminLogin(), conf->adminPassword());
 
-	server->on("/index.htm", HTTP_GET, [this](AsyncWebServerRequest *request){onFileRead(request);});
+	server->on(URL_INDEXHTM, HTTP_GET, [this](AsyncWebServerRequest *request){onFileRead(request);});
 }
 
 void WiFiManagerAsync::deployTemplates() {
+#ifdef DEPLOY_TEMPLATES
 	Serial.println(FPSTR(" ------------Deploy templates-----------"));
+
 	std::function<String(const String&)> AwsTemplateProcessor=[this](const String& var){return processor(var);};
-	server->serveStatic("/", SPIFFS, PATH_MODEL_DATA_JSON_BY_GROUP).setTemplateProcessor(AwsTemplateProcessor).setAuthentication(conf->userLogin(), conf->userPassword());
+		server
+		    ->serveStatic(URL_ROOT, SPIFFS, PATH_MODEL_DATA_JSON_FILE_PATH)
+		    .setDefaultFile(PATH_MODEL_DATA_JSON_FILE_NAME)
+			.setTemplateProcessor(AwsTemplateProcessor)
+		    .setAuthentication(conf->adminLogin(), conf->adminPassword());
+
+	std::function<String(const String&)> AwsTemplateProcessor=[this](const String& var){return processor(var);};
+	server->serveStatic(URL_ROOT, SPIFFS, PATH_MODEL_DATA_JSON_BY_GROUP).setTemplateProcessor(AwsTemplateProcessor).setAuthentication(conf->userLogin(), conf->userPassword());
 	Serial.println(FPSTR(" deployed"));
+#endif
 }
 
 void WiFiManagerAsync::deployServices() {
@@ -303,17 +274,20 @@ void WiFiManagerAsync::deployEventSource() {
 	  dao->setEventSender(this);
 }
 
-void WiFiManagerAsync::sendAsEventSource(const char* event,const char* msg) {
-	events->send(msg,NULL,millis(),1000);
+void WiFiManagerAsync::sendAsEventSource(JsonObject& obj) {
+	String msg;
+	obj.printTo(msg);
+
+	events->send(msg.c_str(),NULL,millis(),1000);
 }
 
 void WiFiManagerAsync::onRoot(AsyncWebServerRequest *request){
-	onInfo(request);
+	request->redirect(URL_INDEXHTM);
 }
 
 void WiFiManagerAsync::onInfo(AsyncWebServerRequest *request){
 
-	AsyncResponseStream *response = request->beginResponseStream("application/json");
+	AsyncResponseStream *response = request->beginResponseStream(CONTENT_TYPE_JSON_UTF8);
 
 	JsonObject &root = dao->getEntityRoot();
 
@@ -326,31 +300,31 @@ void WiFiManagerAsync::onInfo(AsyncWebServerRequest *request){
 
 void WiFiManagerAsync::onDir(AsyncWebServerRequest *request){
 	AsyncJsonResponse * response = new AsyncJsonResponse();
-	response->addHeader("Server","ESP Async Web Server");
+	response->addHeader(RESPONSE_KEY_Server,RESPONSE_MSG_defaultServerName);
 	JsonObject& root = response->getRoot();
 
-	FileUtils::dirFiles(root.createNestedObject("files"));
+	FileUtils::dirFiles(root.createNestedObject(JSONKEY_files));
 
 	response->setLength();
 	request->send(response);
 }
 
 void WiFiManagerAsync::onCat(AsyncWebServerRequest *request){
-	String fileName=request->arg("file");
+	String fileName=request->arg(JSONKEY_file);
 	request->send(SPIFFS, fileName);
 }
 
 void WiFiManagerAsync::onDelete(AsyncWebServerRequest *request){
-	  if(request->args() == 0) return request->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "BAD ARGS");
+	  if(request->args() == 0) return request->send(500, CONTENT_TYPE_TEXT_PLAIN, RESPONSE_MSG_badArgs);
 	  size_t i = 0;
 	  const String& path = request->arg(i);
 	  Serial.print(FPSTR("handleFileDelete: "));
 	  Serial.println(path);
 
 	  if(path == "/")
-		request->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "BAD PATH");
+		request->send(500, FPSTR(CONTENT_TYPE_TEXT_PLAIN), RESPONSE_MSG_badPath);
 	  if(!SPIFFS.exists(path))
-		  request->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "FileNotFound");
+		  request->send(404, FPSTR(CONTENT_TYPE_TEXT_PLAIN), RESPONSE_MSG_fileNotFound);
 	  SPIFFS.remove(path);
 	  request->send(200, FPSTR(CONTENT_TYPE_TEXT_PLAIN), "");
 }
@@ -392,7 +366,8 @@ void WiFiManagerAsync::onFileRead(AsyncWebServerRequest* request) {
 }
 
 bool WiFiManagerAsync::handleFileRead(String path,AsyncWebServerRequest* request){
-	Serial.println("handleFileRead: " + path);
+	Serial.print("handleFileRead: ");
+	Serial.println(path);
 	  String contentType = getContentType(path,request);
 		  if(SPIFFS.exists(path)){
 			File file = SPIFFS.open(path, "r");
@@ -404,7 +379,8 @@ bool WiFiManagerAsync::handleFileRead(String path,AsyncWebServerRequest* request
 }
 
 bool WiFiManagerAsync::handleFileGzRead(String path,AsyncWebServerRequest* request){
-	  Serial.println("handleFileGzRead: " + path);
+	  Serial.print("handleFile GZ Read: ");
+	  Serial.println(path);
 	  if(path.endsWith("/")) path += "index.htm";
 	  String contentType = getContentType(path,request);
 	  String pathWithGz = path + ".gz";
@@ -427,11 +403,56 @@ bool WiFiManagerAsync::handleFileGzRead(String path,AsyncWebServerRequest* reque
 	  return false;
 }
 
-void WiFiManagerAsync::onEntityPost(AsyncWebServerRequest *request, JsonVariant &json) {
-	Serial.println(FPSTR("Json posted"));
-	json.printTo(Serial);
-	Serial.println(FPSTR("--------------------"));
-	request->send(200);
+void WiFiManagerAsync::onEntityPost(AsyncWebServerRequest *request) {
+	Serial.println(FPSTR("Post entity "));
+
+	DynamicJsonBuffer buf;
+	JsonObject &root = buf.createObject();
+	JsonObject& resp=root.createNestedObject(RESPONSE_KEY_response);
+
+	if(!request->hasArg(JSONKEY_id) || !request->hasArg(JSONKEY_name)){
+		resp.set(RESPONSE_KEY_status, RESPONSE_MSG_error);
+		resp.set(RESPONSE_KEY_message, RESPONSE_MSG_dataIsNotEntity);
+	}
+
+	int entityId=request->arg(JSONKEY_id).toInt();
+	String entityName=request->arg(JSONKEY_name);
+
+	if(dao->getEntityData(entityId).get<String>(JSONKEY_name)==entityName){
+		resp.set(RESPONSE_KEY_message, RESPONSE_MSG_entityFound);
+		JsonArray& setAllowedFields = dao->getEntityDataFieldsByAction(entityId, ENTITY_ACTION_set);
+
+		int count=0;
+
+		for (const auto& kvp : setAllowedFields) {
+			const char* key = kvp.as<const char*>();
+
+			if(request->hasArg(key)){
+				const String& value = request->arg(key);
+
+				const char* validMsg = dao->validateField(entityId, key, value);
+				bool isValid = value.length()!=0 && sizeof(validMsg)<1;
+
+				if(isValid){
+					count+=dao->setField(entityId, key, value);
+				}
+			}
+		}
+
+		Serial.print(FPSTR("keys changed = "));
+		Serial.println(count);
+
+	}else{
+		resp.set(RESPONSE_KEY_message, RESPONSE_MSG_noSuchEntity);
+	}
+
+	AsyncResponseStream *response = request->beginResponseStream(CONTENT_TYPE_JSON_UTF8);
+
+	resp.set(RESPONSE_KEY_status, RESPONSE_MSG_ok);
+
+	resp.printTo(*response);
+	response->setCode(200);
+	request->send(response);
 }
 
 String  WiFiManagerAsync::getContentType(String filename,AsyncWebServerRequest* request){

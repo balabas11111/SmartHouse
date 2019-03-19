@@ -19,6 +19,7 @@ JsonDao::JsonDao(EntityJson* entitiesIn[],int count) {
 		this->entities.push_back(entitiesIn[i]);
 	}
 	initTime=millis()-tmp;
+	this->eventSender=nullptr;
 }
 
 void JsonDao::init() {
@@ -46,17 +47,18 @@ void JsonDao::init() {
 	Serial.print(FPSTR(" initEntMD time ="));
 	Serial.println(initTime);
 	initTime=millis();
-
+#ifdef DEPLOY_TEMPLATES
 	initTemplates();
 	persistTemplates();
 
 	initTime=millis()-initTime;
 	Serial.print(FPSTR(" json depl time ="));
 	Serial.println(initTime);
-
+#endif
 	initTime=millis()-beginTime;
 	Serial.print(FPSTR(" TOTAL time ="));
 	Serial.println(initTime);
+
 	Serial.println(FPSTR("JsonDao DONE"));
 	//Serial.println(FPSTR("------------------------------------------"));
 	//JsonObjectUtil::printAllJson(root);
@@ -121,11 +123,7 @@ bool JsonDao::saveJsonObjectToFile(const char* fileName,JsonObject& json) {
 	if(!FileUtils::existsAndHasSizeChar(fileName) || !FileUtils::compareCrs(fileName, json)){
 
 		bool res=FileUtils::saveJsonToFile(PATH_MODEL_DATA_JSON_FILE, json);
-		if(res){
-			Serial.println(FPSTR("Root saved OK."));
-		}else{
-			Serial.println(FPSTR("Root saved ERROR"));
-		}
+		if(res){Serial.println(FPSTR("Root saved OK."));}else{Serial.println(FPSTR("Root saved ERROR"));}
 		return res;
 	}else{
 		Serial.println(FPSTR("Root and file on disc are similar"));
@@ -226,6 +224,16 @@ int JsonDao::mergeModels(JsonObject& from, JsonObject& to) {
 	return changed;
 }
 
+JsonArray& JsonDao::getEntityDataFieldsByAction(int entityId,const char* action) {
+	EntityJson* entity = getEntity(entityId);
+	return getEntityDataFieldsByAction(entity, action);
+}
+
+const char* JsonDao::validateField(int entityId, const char* key,const  String& value) {
+	EntityJson* entity = getEntity(entityId);
+	return entity->validateField(key, value);
+}
+
 int JsonDao::mergeDatas(JsonObject& from, JsonObject& to) {
 
 	int changed=0;
@@ -246,7 +254,7 @@ int JsonDao::mergeDatas(JsonObject& from, JsonObject& to) {
 
 	return changed;
 }
-
+#ifdef DEPLOY_TEMPLATES
 void JsonDao::initTemplates() {
 	Serial.println(FPSTR("---> Init Deploy Templates"));
 
@@ -446,7 +454,7 @@ String JsonDao::getByTemplateKey(const String& key) {
 	}
 	return FPSTR("noEntity");
 }
-
+#endif
 JsonObject& JsonDao::getEntityModel(int entityId) {
 	return getEntitysJson_ByPath_entId(root,ROOT_PATH_MODEL,entityId);
 }
@@ -468,13 +476,26 @@ bool JsonDao::getEntityDataFieldHasAction(EntityJson* entity,const char* dataFie
 JsonArray& JsonDao::getEntityDataFieldsByAction(EntityJson* entity,
 		const char* action) {
 	JsonObject& model = getEntitysJson_ByPath(root,ROOT_PATH_MODEL,entity);
-	return model.get<JsonArray>(action);
+	return JsonObjectUtil::getObjectChildArrayOrCreateNew(model, action);
 }
 
 bool JsonDao::setField(int entityId, const char* key, int value) {	return setField<int>(entityId, key, value); }
 bool JsonDao::setField(int entityId, const char* key, float value) {  return setField<float>(entityId, key, value); }
 bool JsonDao::setField(int entityId, const char* key, const char* value) {	return setField<const char*>(entityId, key, value); }
 bool JsonDao::setField(int entityId, const char* key, char* value) {  return setField<char*>(entityId, key, value); }
+bool JsonDao::setField(int entityId, const char* key,String value) {
+	JsonObject& data = getEntityData(entityId);
+	if(data.is<int>(key)){
+		return setField(entityId, key, value.toInt());
+	}
+	if(data.is<float>(key)){
+		return setField(entityId, key, value.toFloat());
+	}
+	if(data.is<const char*>(key) || data.is<char*>(key)){
+		return setField(entityId, key, value.c_str());
+	}
+	return false;
+}
 
 int JsonDao::getFieldInt(int entityId, const char* key) { return getField<int>(entityId, key); }
 float JsonDao::getFieldFloat(int entityId, const char* key) { return getField<float>(entityId, key); }

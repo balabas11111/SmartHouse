@@ -54,5 +54,5 @@ void loop()
 	Serial.print(FPSTR(" heap="));
 	Serial.println(ESP.getFreeHeap());
 	i++;
-	bh1750.getModelDataProvider()->setField(bh1750.getId(), "light", i);
+	bh1750.setField("light", i);
 }

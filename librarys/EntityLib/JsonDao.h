@@ -71,7 +71,7 @@ public:
 	bool saveJsonObjectToFile(const char* fileName,JsonObject& json);
 
 	void initEntitiesModelData();
-
+#ifdef DEPLOY_TEMPLATES
 	void initTemplates();
 	void persistTemplates();
 	void saveTemplates();
@@ -79,9 +79,11 @@ public:
 
 	void generateTemplateKey(EntityJson* entity,const char* key);
 	String getByTemplateKey(const String& var) override;
-
+#endif
 	virtual JsonObject& getEntityModel(int entityId) override;
 	virtual JsonObject& getEntityData(int entityId) override;
+	virtual JsonArray& getEntityDataFieldsByAction(int entityId,const char* action);
+	virtual const char* validateField(int entityId,const char* key,const String& value);
 
 	bool getEntityHasAction(EntityJson* entity,const char* action);
 	bool getEntityDataFieldHasAction(EntityJson* entity,const char* dataFieldName,const char* action);
@@ -91,6 +93,7 @@ public:
 	virtual bool setField(int entityId,const char* key,float value) override;
 	virtual bool setField(int entityId,const char* key,const char* value) override;
 	virtual bool setField(int entityId,const char* key,char* value) override;
+	virtual bool setField(int entityId,const char* key,String value) override;
 
 	virtual int getFieldInt(int entityId,const char* key) override;
 	virtual float getFieldFloat(int entityId,const char* key) override;
@@ -127,9 +130,7 @@ public:
 		if(eventSender!=nullptr && eventSender!=NULL){
 			JsonObject& obj = getEntitysJson_ByPath(root, ROOT_PATH_DATA, entity);
 			obj.set("chgKey", key);
-			String str;
-			obj.printTo(str);
-			eventSender->sendAsEventSource("change", str.c_str());
+			eventSender->sendAsEventSource(obj);
 		}
 	}
 

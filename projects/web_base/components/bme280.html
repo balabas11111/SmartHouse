@@ -20,19 +20,16 @@ img.humidity-icon {
 hideComponent("sensors.bme280.editForm");
 
 function editBme280(){
-	hideComponent("sensors.bme280.viewForm");
-	showComponent("sensors.bme280.editForm");
+	hideShowComponent("sensors.bme280.viewForm","sensors.bme280.editForm");
 }	
 function cancelEditBme280(){
-	hideComponent("sensors.bme280.editForm");
-	showComponent("sensors.bme280.viewForm");
+	hideShowComponent("sensors.bme280.editForm","sensors.bme280.viewForm");
 }
 function saveBme280(){
 	formSubmitAsForm("sensors.bme280.form","sensors.bme280.div",onDataPostedBme280);
 }
 function onDataPostedBme280(response){
-	hideComponent("sensors.bme280.editForm");
-	showComponent("sensors.bme280.viewForm");
+	hideShowComponent("sensors.bme280.editForm","sensors.bme280.viewForm");
 }
 </script>
 <div id="sensors.bme280.div">
@@ -97,9 +94,6 @@ function onDataPostedBme280(response){
 	</div>
 	<div id="sensors.bme280.editForm" class="w3-card-4" style="display:none; width: 400px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 			<div class="w3-container w3-teal">
-				 <div><h4></h4></div>
-			</div>
-			<div class="w3-container w3-teal">
 				 <div><h4>Редактирование</h4></div>
 			</div>
 			
@@ -107,14 +101,14 @@ function onDataPostedBme280(response){
 				<input id="sensors.bme280.id.edit" name="id" type="hidden">
 				<input id="sensors.bme280.group.edit" name="group" type="hidden">
 				
-				<div id="humidityDiv" class="w3-row" style="margin-top: 15px;">
+				<div class="w3-row" style="margin-top: 15px;">
 						<label for="sensors.bme280.name.edit" style="max-width: 240px;">
 							<b>Датчик/устройство</b>
 						</label>
 						<input id="sensors.bme280.name.edit" name="name" class="w3-input w3-border" style="width: 90%; margin-bottom: 10px;" type="text" value="?" readonly="readonly">
 				</div>
 						
-				<div id="descrDiv" class="w3-row" style="margin-top: 15px; margin-bottom: 5px;">
+				<div class="w3-row" style="margin-top: 15px; margin-bottom: 5px;">
 						<label for="sensors.bme280.descr.edit" style="max-width: 240px;">
 							<b>Описание</b>
 						</label>

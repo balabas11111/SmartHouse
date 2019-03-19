@@ -21,6 +21,10 @@ public:
 	virtual JsonObject& getEntityData(int entityId)=0;
 	virtual JsonObject& getEntityRoot()=0;
 
+	virtual JsonArray& getEntityDataFieldsByAction(int entityId,const char* action)=0;
+
+	virtual const char* validateField(int entityId,const char* key,const String& value)=0;
+
 	virtual bool hasFieldInt(int entityId,const char* key){return JsonObjectUtil::hasField<int>(getEntityData(entityId), key);}
 	virtual bool hasFieldFloat(int entityId,const char* key){return JsonObjectUtil::hasField<float>(getEntityData(entityId), key);}
 	virtual bool hasFieldConstChar(int entityId,const char* key){return JsonObjectUtil::hasField<const char*>(getEntityData(entityId), key);}
@@ -30,8 +34,10 @@ public:
 	virtual bool setField(int entityId,const char* key,float value)=0;
 	virtual bool setField(int entityId,const char* key,const char* value)=0;
 	virtual bool setField(int entityId,const char* key,char* value)=0;
-
+	virtual bool setField(int entityId,const char* key,String value)=0;
+#ifdef DEPLOY_TEMPLATES
 	virtual String getByTemplateKey(const String& var)=0;
+#endif
 	virtual int getFieldInt(int entityId,const char* key)=0;
 	virtual float getFieldFloat(int entityId,const char* key)=0;
 	virtual const char* getFieldConstChar(int entityId,const char* key)=0;
