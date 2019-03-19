@@ -157,8 +157,9 @@ public:
 	const char* deviceDescr(){ return this->getModelDataProvider()->getFieldConstChar(id, _ADMIN_PASS);}
 
 	virtual void init() override{
-		String devIdTmp="ESP_"+String(ESP.getChipId());
-		this->devId=devIdTmp.c_str();
+		//String devIdTmp="ESP_"+String(ESP.getChipId());
+		//this->devId=strdup(devIdTmp.c_str());
+		this->devId="ESP_Dev_ID";
 	}
 
 	virtual void postModelDataInit() override{

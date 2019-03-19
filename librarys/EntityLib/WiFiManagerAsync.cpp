@@ -6,6 +6,7 @@
  */
 
 #include "WiFiManagerAsync.h"
+#include "ArduinoJson.h"
 
 bool WiFiManagerAsync::init(bool resetToAp,
 		std::function<void(void)> externalEvents,
@@ -424,6 +425,8 @@ void WiFiManagerAsync::onEntityPost(AsyncWebServerRequest *request) {
 
 		int count=0;
 
+		setAllowedFields.printTo(Serial);
+
 		for (const auto& kvp : setAllowedFields) {
 			const char* key = kvp.as<const char*>();
 			count+=entityPostField(request,entityId,key);
@@ -451,12 +454,24 @@ bool WiFiManagerAsync::entityPostField(AsyncWebServerRequest *request, int entit
 	bool changed=0;
 	if(request->hasArg(key)){
 		const String& value = request->arg(key);
+/*
+		Serial.print(FPSTR("value = "));
+		Serial.print(value);
+		Serial.print(FPSTR("key = "));
+		Serial.println(key);
 
-		const char* validMsg = dao->validateField(entityId, key, value);
-		bool isValid = value.length()!=0 && sizeof(validMsg)<1;
+		const char* validMsg = dao->validateField(entityId, key, value);*/
+		bool isValid = value.length()!=0;// && sizeof(validMsg)<1;
 
 		if(isValid){
-			return dao->setField(entityId, key, value);
+			//Serial.println(FPSTR("Validate passed"));
+			bool res= dao->setField(entityId, key, value);
+
+			if(res){
+				dao->saveRootToFileIfChanged();
+			}
+
+			return res;
 		}
 	}
 	return 0;

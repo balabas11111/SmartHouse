@@ -191,8 +191,11 @@ void JsonDao::initEntityModelData(EntityJson* entity,JsonObject& fromFile) {
 
 	JsonObject& data = getEntitysJson_ByPath_OrCreateNew(root,ROOT_PATH_DATA,entity);
 
+	//JsonObjectUtil::print("before descr root =",root);
 	mergeDatas(dataDescriptor,data);
+	//JsonObjectUtil::print("before load root =",root);
 	mergeDatas(dataLoaded,data);
+	//JsonObjectUtil::print("after load root =",root);
 
 	createEntityDataPrimaryFields(entity, data);
 	//JsonObjectUtil::print("DESCR =",descriptor);
@@ -243,6 +246,11 @@ int JsonDao::mergeDatas(JsonObject& from, JsonObject& to) {
 			if(!to.containsKey(kvp.key) || to[kvp.key]!=from[kvp.key]){
 				changed++;
 				to.set(strdup(kvp.key), strdup(kvp.value));
+				/*
+				Serial.print(FPSTR("key="));
+				Serial.print(kvp.key);
+				Serial.print(FPSTR(" value="));
+				Serial.println(kvp.value.as<char*>());*/
 			}
 		}
 	}
@@ -484,6 +492,8 @@ bool JsonDao::setField(int entityId, const char* key, float value) {  return set
 bool JsonDao::setField(int entityId, const char* key, const char* value) {	return setField<const char*>(entityId, key, value); }
 bool JsonDao::setField(int entityId, const char* key, char* value) {  return setField<char*>(entityId, key, value); }
 bool JsonDao::setField(int entityId, const char* key,String value) {
+	Serial.println(FPSTR("Set field"));
+
 	JsonObject& data = getEntityData(entityId);
 	if(data.is<int>(key)){
 		return setField(entityId, key, value.toInt());
@@ -492,7 +502,7 @@ bool JsonDao::setField(int entityId, const char* key,String value) {
 		return setField(entityId, key, value.toFloat());
 	}
 	if(data.is<const char*>(key) || data.is<char*>(key)){
-		return setField(entityId, key, value.c_str());
+		return setField(entityId, key, strdup(value.c_str()));
 	}
 	return false;
 }
@@ -511,4 +521,11 @@ void JsonDao::printEntities() {
 JsonObject& JsonDao::getEntityRoot() {
 	root.printTo(Serial);
 	return root;
+}
+
+bool JsonDao::saveRootToFileIfChanged() {
+	//JsonObjectUtil::print("before save root=", root);
+	bool res = saveJsonObjectToFile(PATH_MODEL_DATA_JSON_FILE, root);
+	//JsonObjectUtil::print("after save root=", root);
+	return res;
 }

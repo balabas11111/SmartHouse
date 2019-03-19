@@ -70,6 +70,8 @@ public:
 	JsonObject& loadRootIfExists();
 	bool saveJsonObjectToFile(const char* fileName,JsonObject& json);
 
+	bool saveRootToFileIfChanged();
+
 	void initEntitiesModelData();
 #ifdef DEPLOY_TEMPLATES
 	void initTemplates();

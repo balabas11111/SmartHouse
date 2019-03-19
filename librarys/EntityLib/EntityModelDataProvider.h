@@ -21,6 +21,8 @@ public:
 	virtual JsonObject& getEntityData(int entityId)=0;
 	virtual JsonObject& getEntityRoot()=0;
 
+	virtual bool saveRootToFileIfChanged()=0;
+
 	virtual JsonArray& getEntityDataFieldsByAction(int entityId,const char* action)=0;
 
 	virtual const char* validateField(int entityId,const char* key,const String& value)=0;
