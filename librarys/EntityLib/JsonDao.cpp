@@ -120,6 +120,8 @@ JsonObject& JsonDao::loadRootIfExists(){
 }
 
 bool JsonDao::saveJsonObjectToFile(const char* fileName,JsonObject& json) {
+
+
 	if(!FileUtils::existsAndHasSizeChar(fileName) || !FileUtils::compareCrs(fileName, json)){
 
 		bool res=FileUtils::saveJsonToFile(PATH_MODEL_DATA_JSON_FILE, json);
@@ -138,7 +140,7 @@ void JsonDao::initEntitiesModelData(){
 	JsonObjectUtil::getObjectChildOrCreateNew(root,ROOT_PATH_MODEL);
 	JsonObject& fromFile = loadRootIfExists();
 
-	JsonObjectUtil::print("loaded = ", fromFile);
+	//JsonObjectUtil::print("loaded = ", fromFile);
 
 	for (std::list<EntityJson*>::iterator ent = entities.begin(); ent != entities.end(); ent++){
 
@@ -151,12 +153,10 @@ void JsonDao::initEntitiesModelData(){
 		entity->postModelDataInit();
 	}
 
-	JsonObjectUtil::print("root = ", root);
+	JsonObjectUtil::print("Final root = ", root);
 
 	Serial.print(id);
 	Serial.println(FPSTR(" - Entities processed"));
-
-	//JsonObjectUtil::print("root=", root);
 
 	saveJsonObjectToFile(PATH_MODEL_DATA_JSON_FILE, root);
 
@@ -177,6 +177,7 @@ int JsonDao::createEntityDataPrimaryFields(EntityJson* e,JsonObject& data) {
 }
 
 void JsonDao::initEntityModelData(EntityJson* entity,JsonObject& fromFile) {
+	Serial.print(FPSTR("Entity = "));
 	Serial.println(entity->getName());
 
 	DynamicJsonBuffer b;
@@ -195,18 +196,20 @@ void JsonDao::initEntityModelData(EntityJson* entity,JsonObject& fromFile) {
 
 	JsonObject& data = getEntitysJson_ByPath_OrCreateNew(root,ROOT_PATH_DATA,entity);
 
+	createEntityDataPrimaryFields(entity, data);
 	//JsonObjectUtil::print("before descr root =",root);
 	mergeDatas(dataDescriptor,data);
-	JsonObjectUtil::print("descr added root =",root);
-	JsonObjectUtil::print("descr added data =",data);
+	Serial.println(FPSTR("descriptor-->model"));
+	//JsonObjectUtil::print("descr added root =",root);
+	//JsonObjectUtil::print("descr added data =",data);
 	mergeDatas(dataLoaded,data);
-	JsonObjectUtil::print("loaded added root =",root);
-	JsonObjectUtil::print("loaded added data =",data);
+	Serial.println(FPSTR("saved-->model"));
+	//JsonObjectUtil::print("loaded added root =",root);
+	//JsonObjectUtil::print("loaded added data =",data);
 	//JsonObjectUtil::print("after load root =",root);
 
-	createEntityDataPrimaryFields(entity, data);
 	//JsonObjectUtil::print("DESCR =",descriptor);
-	JsonObjectUtil::print("ent done root =",root);
+	//JsonObjectUtil::print("ent done root =",root);
 
 	b.clear();
 }
@@ -248,32 +251,46 @@ int JsonDao::mergeDatas(JsonObject& from, JsonObject& to) {
 
 	int changed=0;
 
-	JsonObjectUtil::print("from =",from);
-	JsonObjectUtil::print("to =",to);
-
-	Serial.println(FPSTR("data merged"));
+	//JsonObjectUtil::print("from =",from);
+	//JsonObjectUtil::print("to =",to);
 
 	for (const auto& kvp : from) {
 		if(!isDefaultField(kvp.key)){
-			if(!to.containsKey(kvp.key) || to[kvp.key]!=from[kvp.key]){
+			if(!to.containsKey(kvp.key)){
+				/*Serial.print(FPSTR("ADD key="));
+				Serial.println(kvp.key);
+				*/
+				changed++;
+				to.set(strdup(kvp.key), strdup(kvp.value));
+			}else if (to[kvp.key]!=from[kvp.key]){
+
+				/*Serial.print(FPSTR("UPDATE key="));
+				Serial.print(kvp.key);
+				Serial.print(FPSTR(" to[kvp.key]="));
+				(to[kvp.key]).printTo(Serial);
+				Serial.print(FPSTR(" from[kvp.key]="));
+				(from[kvp.key]).printTo(Serial);
+				Serial.println(kvp.key);
+*/
 				changed++;
 				to.remove(kvp.key);
 				to.set(strdup(kvp.key), strdup(kvp.value));
-				/*
+								/*
 				Serial.print(FPSTR("key="));
 				Serial.print(kvp.key);
 				Serial.print(FPSTR(" value="));
 				Serial.println(kvp.value.as<char*>());*/
 			}else{
-				Serial.print(FPSTR("NOT modified key = "));
+				/*Serial.print(FPSTR("NOT modified key = "));
 				Serial.println(kvp.key);
+				*/
 			}
 		}
 	}
 
-	JsonObjectUtil::print("from =",from);
+	/*JsonObjectUtil::print("from =",from);
 	JsonObjectUtil::print("to =",to);
-
+*/
 	if(changed>0){
 		/*Serial.print(FPSTR("data merged="));
 		Serial.println(changed);*/

@@ -212,7 +212,7 @@ void WiFiManagerAsync::startServer() {
 }
 
 void WiFiManagerAsync::deployDefaultUrls() {
-	Serial.println(FPSTR(" ------------Deploy default Urls-----------"));
+	Serial.print(FPSTR("Deploy default Urls"));
 
 	server->on(URL_ROOT, HTTP_GET, [this](AsyncWebServerRequest *request){onRoot(request);});
 
@@ -232,12 +232,14 @@ void WiFiManagerAsync::deployDefaultUrls() {
 				onUpload(request, filename, index, data, len, final);
 			}
 			);
+	Serial.println(FPSTR("...done"));
 }
 
 void WiFiManagerAsync::deployStaticFiles() {
-	Serial.println(FPSTR(" ------------Deploy static Files-----------"));
+	Serial.print(FPSTR("Deploy static Files"));
 
 	server->on(URL_INDEXHTM, HTTP_GET, [this](AsyncWebServerRequest *request){onFileRead(request);});
+	Serial.println(FPSTR("...done"));
 }
 
 void WiFiManagerAsync::deployTemplates() {
@@ -258,11 +260,11 @@ void WiFiManagerAsync::deployTemplates() {
 }
 
 void WiFiManagerAsync::deployServices() {
-	Serial.println(FPSTR(" ------------Deploy services-----------"));
+	//Serial.println(FPSTR(" ------------Deploy services-----------"));
 }
 
 void WiFiManagerAsync::deployEventSource() {
-	Serial.println(FPSTR(" ------------Deploy eventSources-----------"));
+	Serial.print(FPSTR("Deploy eventSources"));
 	  events->onConnect([](AsyncEventSourceClient *client){
 	    if(client->lastId()){
 	      Serial.printf("Client reconnected! Last message ID that it gat is: %u\n", client->lastId());
@@ -273,6 +275,7 @@ void WiFiManagerAsync::deployEventSource() {
 	  server->addHandler(events);
 
 	  dao->setEventSender(this);
+	  Serial.println(FPSTR("...done"));
 }
 
 void WiFiManagerAsync::sendAsEventSource(JsonObject& obj) {
