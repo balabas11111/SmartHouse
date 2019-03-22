@@ -6,23 +6,27 @@
 	<div class="w3-tooltip w3-animate-opacity">
 		<span class="w3-text w3-tag w3-white w3-border w3-border-gray w3-round-large" 
 				style="position:absolute;left: 48px;bottom: 0px">
-				<div id="httpStatusTooltip">Ожидаю состояние</div>
+					<div id="httpStatusTooltip">Ожидаю состояние</div>
 		</span>
-		<img id="httpStatusImg" class="http-refresh-icon48" style="display: none; margin-top: 10px;" alt="Состояние подключения"/>
-		<img id="httpProgressImg" class="w3-spin http-refresh-icon48" style="display: block; margin-top: 10px;" alt="Получаю данные"/>
-		<img id="httpErrorImg" class="w3-spin http-error-icon48" style="display: none; margin-top: 10px;" alt="Получаю данные"/>
+		<img id="httpConnectImg" class="w3-spin http-refresh-icon48" style="display: block; margin-top: 10px;" alt="Получаю данные"/>
+		<img id="httpOkImg" class="http-ok-icon48" style="display: none; margin-top: 10px;" alt="Подключено"/>
+		<img id="httpErrorImg" class="w3-spin http-error-icon48" style="display: none; margin-top: 10px;" alt="Ошибка"/>
 	</div>
 </div>
 
 <div class="w3-quarter w3-container w3-animate-opacity"	style="width: 150px;" >
-	<h4 id="espSettingsBox_DEV_id" style="margin-top: 20px;" 
-		title="Идентификатор устройства">Устройство</h4>	
+	<h4 id="settings.ServerSettings.deviceId style="margin-top: 20px;" 
+		title="Идентификатор устройства">???</h4>	
 </div>
 
 <div class="w3-third w3-container w3-animate-opacity">
-	<h2 id="espSettingsBox_DEV_location" style="margin-left: 20px;" 
+	<h2 id="settings.ServerSettings.deviceDescr" style="margin-left: 20px;" 
 		title="Наименование/размещение устройства">Загрузка</h2>
 </div>
+
+<script type="text/javascript">
+
+</script>
 
 <style>
 img.http-refresh-icon48 {

@@ -90,7 +90,7 @@ protected:
 	virtual void sendAsEventSource(JsonObject& obj) override;
 
 	void notFound(AsyncWebServerRequest *request);
-	bool handleFileRead(String path,AsyncWebServerRequest* request);
+	//bool handleFileRead(String path,AsyncWebServerRequest* request);
 	bool handleFileGzRead(String path,AsyncWebServerRequest* request);
 	String getContentType(String filename,AsyncWebServerRequest* request);
 #ifdef DEPLOY_TEMPLATES

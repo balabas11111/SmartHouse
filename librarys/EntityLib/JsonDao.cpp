@@ -264,7 +264,8 @@ int JsonDao::mergeDatas(JsonObject& from, JsonObject& to) {
 				to.set(strdup(kvp.key), strdup(kvp.value));
 			}else if (to[kvp.key]!=from[kvp.key]){
 
-				/*Serial.print(FPSTR("UPDATE key="));
+				/*
+				Serial.print(FPSTR("UPDATE key="));
 				Serial.print(kvp.key);
 				Serial.print(FPSTR(" to[kvp.key]="));
 				(to[kvp.key]).printTo(Serial);
@@ -279,7 +280,8 @@ int JsonDao::mergeDatas(JsonObject& from, JsonObject& to) {
 				Serial.print(FPSTR("key="));
 				Serial.print(kvp.key);
 				Serial.print(FPSTR(" value="));
-				Serial.println(kvp.value.as<char*>());*/
+				Serial.println(kvp.value.as<char*>());
+				*/
 			}else{
 				/*Serial.print(FPSTR("NOT modified key = "));
 				Serial.println(kvp.key);
@@ -298,6 +300,74 @@ int JsonDao::mergeDatas(JsonObject& from, JsonObject& to) {
 
 	return changed;
 }
+
+JsonObject& JsonDao::getEntityModel(int entityId) {
+	return getEntitysJson_ByPath_entId(root,ROOT_PATH_MODEL,entityId);
+}
+
+JsonObject& JsonDao::getEntityData(int entityId) {
+	return getEntitysJson_ByPath_entId(root,ROOT_PATH_DATA,entityId);
+}
+
+bool JsonDao::getEntityHasAction(EntityJson* entity, const char* action) {
+	JsonObject& model = getEntitysJson_ByPath(root,ROOT_PATH_MODEL,entity);
+	return model.containsKey(action);
+}
+
+bool JsonDao::getEntityDataFieldHasAction(EntityJson* entity,const char* dataField, const char* action) {
+	return getEntityHasAction(entity, action)
+			&& JsonObjectUtil::isInArray(dataField, getEntitysJson_ByPath(root,ROOT_PATH_MODEL,entity).get<JsonArray>(action));
+}
+
+JsonArray& JsonDao::getEntityDataFieldsByAction(EntityJson* entity,
+		const char* action) {
+	JsonObject& model = getEntitysJson_ByPath(root,ROOT_PATH_MODEL,entity);
+	return JsonObjectUtil::getObjectChildArrayOrCreateNew(model, action);
+}
+
+bool JsonDao::setField(int entityId, const char* key, int value) {	return setField<int>(entityId, key, value); }
+bool JsonDao::setField(int entityId, const char* key, float value) {  return setField<float>(entityId, key, value); }
+bool JsonDao::setField(int entityId, const char* key, const char* value) {	return setField<const char*>(entityId, key, value); }
+bool JsonDao::setField(int entityId, const char* key, char* value) {  return setField<char*>(entityId, key, value); }
+bool JsonDao::setField(int entityId, const char* key,String value) {
+	Serial.println(FPSTR("Set field"));
+
+	JsonObject& data = getEntityData(entityId);
+	if(data.is<int>(key)){
+		return setField(entityId, key, value.toInt());
+	}
+	if(data.is<float>(key)){
+		return setField(entityId, key, value.toFloat());
+	}
+	if(data.is<const char*>(key) || data.is<char*>(key)){
+		return setField(entityId, key, strdup(value.c_str()));
+	}
+	return false;
+}
+
+int JsonDao::getFieldInt(int entityId, const char* key) { return getField<int>(entityId, key); }
+float JsonDao::getFieldFloat(int entityId, const char* key) { return getField<float>(entityId, key); }
+const char* JsonDao::getFieldConstChar(int entityId, const char* key) {	return getField<const char*>(entityId, key);}
+char* JsonDao::getFieldChar(int entityId, const char* key) { return strdup(getField<const char*>(entityId, key)); }
+
+void JsonDao::printEntities() {
+	for (std::list<EntityJson*>::iterator it = entities.begin(); it != entities.end(); it++){
+		(*it)->print();
+	}
+}
+
+JsonObject& JsonDao::getEntityRoot() {
+	root.printTo(Serial);
+	return root;
+}
+
+bool JsonDao::saveRootToFileIfChanged() {
+	//JsonObjectUtil::print("before save root=", root);
+	bool res = saveJsonObjectToFile(PATH_MODEL_DATA_JSON_FILE, root);
+	//JsonObjectUtil::print("after save root=", root);
+	return res;
+}
+
 #ifdef DEPLOY_TEMPLATES
 void JsonDao::initTemplates() {
 	Serial.println(FPSTR("---> Init Deploy Templates"));
@@ -499,69 +569,3 @@ String JsonDao::getByTemplateKey(const String& key) {
 	return FPSTR("noEntity");
 }
 #endif
-JsonObject& JsonDao::getEntityModel(int entityId) {
-	return getEntitysJson_ByPath_entId(root,ROOT_PATH_MODEL,entityId);
-}
-
-JsonObject& JsonDao::getEntityData(int entityId) {
-	return getEntitysJson_ByPath_entId(root,ROOT_PATH_DATA,entityId);
-}
-
-bool JsonDao::getEntityHasAction(EntityJson* entity, const char* action) {
-	JsonObject& model = getEntitysJson_ByPath(root,ROOT_PATH_MODEL,entity);
-	return model.containsKey(action);
-}
-
-bool JsonDao::getEntityDataFieldHasAction(EntityJson* entity,const char* dataField, const char* action) {
-	return getEntityHasAction(entity, action)
-			&& JsonObjectUtil::isInArray(dataField, getEntitysJson_ByPath(root,ROOT_PATH_MODEL,entity).get<JsonArray>(action));
-}
-
-JsonArray& JsonDao::getEntityDataFieldsByAction(EntityJson* entity,
-		const char* action) {
-	JsonObject& model = getEntitysJson_ByPath(root,ROOT_PATH_MODEL,entity);
-	return JsonObjectUtil::getObjectChildArrayOrCreateNew(model, action);
-}
-
-bool JsonDao::setField(int entityId, const char* key, int value) {	return setField<int>(entityId, key, value); }
-bool JsonDao::setField(int entityId, const char* key, float value) {  return setField<float>(entityId, key, value); }
-bool JsonDao::setField(int entityId, const char* key, const char* value) {	return setField<const char*>(entityId, key, value); }
-bool JsonDao::setField(int entityId, const char* key, char* value) {  return setField<char*>(entityId, key, value); }
-bool JsonDao::setField(int entityId, const char* key,String value) {
-	Serial.println(FPSTR("Set field"));
-
-	JsonObject& data = getEntityData(entityId);
-	if(data.is<int>(key)){
-		return setField(entityId, key, value.toInt());
-	}
-	if(data.is<float>(key)){
-		return setField(entityId, key, value.toFloat());
-	}
-	if(data.is<const char*>(key) || data.is<char*>(key)){
-		return setField(entityId, key, strdup(value.c_str()));
-	}
-	return false;
-}
-
-int JsonDao::getFieldInt(int entityId, const char* key) { return getField<int>(entityId, key); }
-float JsonDao::getFieldFloat(int entityId, const char* key) { return getField<float>(entityId, key); }
-const char* JsonDao::getFieldConstChar(int entityId, const char* key) {	return getField<const char*>(entityId, key);}
-char* JsonDao::getFieldChar(int entityId, const char* key) { return strdup(getField<const char*>(entityId, key)); }
-
-void JsonDao::printEntities() {
-	for (std::list<EntityJson*>::iterator it = entities.begin(); it != entities.end(); it++){
-		(*it)->print();
-	}
-}
-
-JsonObject& JsonDao::getEntityRoot() {
-	root.printTo(Serial);
-	return root;
-}
-
-bool JsonDao::saveRootToFileIfChanged() {
-	//JsonObjectUtil::print("before save root=", root);
-	bool res = saveJsonObjectToFile(PATH_MODEL_DATA_JSON_FILE, root);
-	//JsonObjectUtil::print("after save root=", root);
-	return res;
-}

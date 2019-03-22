@@ -237,26 +237,11 @@ void WiFiManagerAsync::deployDefaultUrls() {
 
 void WiFiManagerAsync::deployStaticFiles() {
 	Serial.print(FPSTR("Deploy static Files"));
-
+//TODO: reimplement to deploy folder dynamically
+	server->on(URL_SETUPHTM, HTTP_GET, [this](AsyncWebServerRequest *request){onFileRead(request);});
 	server->on(URL_INDEXHTM, HTTP_GET, [this](AsyncWebServerRequest *request){onFileRead(request);});
+
 	Serial.println(FPSTR("...done"));
-}
-
-void WiFiManagerAsync::deployTemplates() {
-#ifdef DEPLOY_TEMPLATES
-	Serial.println(FPSTR(" ------------Deploy templates-----------"));
-
-	std::function<String(const String&)> AwsTemplateProcessor=[this](const String& var){return processor(var);};
-		server
-		    ->serveStatic(URL_ROOT, SPIFFS, PATH_MODEL_DATA_JSON_FILE_PATH)
-		    .setDefaultFile(PATH_MODEL_DATA_JSON_FILE_NAME)
-			.setTemplateProcessor(AwsTemplateProcessor)
-		    .setAuthentication(conf->adminLogin(), conf->adminPassword());
-
-	std::function<String(const String&)> AwsTemplateProcessor=[this](const String& var){return processor(var);};
-	server->serveStatic(URL_ROOT, SPIFFS, PATH_MODEL_DATA_JSON_BY_GROUP).setTemplateProcessor(AwsTemplateProcessor).setAuthentication(conf->userLogin(), conf->userPassword());
-	Serial.println(FPSTR(" deployed"));
-#endif
 }
 
 void WiFiManagerAsync::deployServices() {
@@ -369,19 +354,6 @@ void WiFiManagerAsync::onFileRead(AsyncWebServerRequest* request) {
 	};
 }
 
-bool WiFiManagerAsync::handleFileRead(String path,AsyncWebServerRequest* request){
-	Serial.print("handleFileRead: ");
-	Serial.println(path);
-	  String contentType = getContentType(path,request);
-		  if(SPIFFS.exists(path)){
-			File file = SPIFFS.open(path, "r");
-			request->send(file, path, contentType);
-			file.close();
-			return true;
-		  }
-	  return false;
-}
-
 bool WiFiManagerAsync::handleFileGzRead(String path,AsyncWebServerRequest* request){
 	  Serial.print("handleFile GZ Read: ");
 	  Serial.println(path);
@@ -454,7 +426,7 @@ void WiFiManagerAsync::onEntityPost(AsyncWebServerRequest *request) {
 }
 
 bool WiFiManagerAsync::entityPostField(AsyncWebServerRequest *request, int entityId, const char* key) {
-	bool changed=0;
+	//bool changed=0;
 	if(request->hasArg(key)){
 		const String& value = request->arg(key);
 /*
@@ -495,4 +467,35 @@ String  WiFiManagerAsync::getContentType(String filename,AsyncWebServerRequest* 
 	  else if(filename.endsWith(".zip")) return FPSTR(CONTENT_TYPE_APPLICATION_XZIP);
 	  else if(filename.endsWith(".gz")) return FPSTR(CONTENT_TYPE_APPLICATION_XGZIP);
 	  return FPSTR(CONTENT_TYPE_TEXT_PLAIN);
-	}
+}
+
+void WiFiManagerAsync::deployTemplates() {
+#ifdef DEPLOY_TEMPLATES
+	Serial.println(FPSTR(" ------------Deploy templates-----------"));
+
+	std::function<String(const String&)> AwsTemplateProcessor=[this](const String& var){return processor(var);};
+		server
+		    ->serveStatic(URL_ROOT, SPIFFS, PATH_MODEL_DATA_JSON_FILE_PATH)
+		    .setDefaultFile(PATH_MODEL_DATA_JSON_FILE_NAME)
+			.setTemplateProcessor(AwsTemplateProcessor)
+		    .setAuthentication(conf->adminLogin(), conf->adminPassword());
+
+	std::function<String(const String&)> AwsTemplateProcessor=[this](const String& var){return processor(var);};
+	server->serveStatic(URL_ROOT, SPIFFS, PATH_MODEL_DATA_JSON_BY_GROUP).setTemplateProcessor(AwsTemplateProcessor).setAuthentication(conf->userLogin(), conf->userPassword());
+	Serial.println(FPSTR(" deployed"));
+#endif
+}
+/*
+bool WiFiManagerAsync::handleFileRead(String path,AsyncWebServerRequest* request){
+	Serial.print("handleFileRead: ");
+	Serial.println(path);
+	  String contentType = getContentType(path,request);
+		  if(SPIFFS.exists(path)){
+			File file = SPIFFS.open(path, "r");
+			request->send(file, path, contentType);
+			file.close();
+			return true;
+		  }
+	  return false;
+}
+*/

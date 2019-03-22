@@ -1,0 +1,303 @@
+<!--ServSetBox starts-->
+<style>
+img.luxmeter-icon {
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQYSURBVGhD7ZdbSFRRFIZPRXNGM+xOFzLJblpaJlFZFIFd3qJ0KiPFwrQixyJRZizHggqy6K2negh6iF6KIumiHkctBZOadFCZtIsaZXQ3JMi1WmNrSmVnM6Nz5gTzwf8ys/da/79nn332SAECBPAci8UyMvGg2ZhkNJeRLAaDYRR/9f9gyMgLJfN3SehSotF8gb/+f0jMMl3uG8KlrVmmExuSMxas37VrDA/VNklZZtvAENsOFThSzKdhx5FC3JSyDxN2pr9PSE7fyFO0SZLRlPsnRD4k5xS0ph07g2nHinqVSoG2H84v5OGaZkSi0XQlKSu/KzXP8sUVwKXdBWfw0oVtjdgg6Xi8djFYLLrUvKPdA0NkFp7E2mtxiFYZoVy+rvkwzuN2y/6cnr4hck+ZsO32rN4QLoFVvqnpMAkpGWEbUzIpwK9no+h8JnaVjO8Xok+YYiiWZJ6qLdbv3LOGTqX67OP5tqsXN2NPeZAwhEtQrrsDD6Ugnq4d1m3fG7HWcCAk+7xlHFh1DpH5gaJx9/CRFMwltAco8l6RcZHolynVbBjnliGDr0XGRaKxVlSkEJ6uLcicWWT6b6JtVglV0lierh1ohelZkb+KTP9NFP4B3pdCuYR2oCBnRYYHE4Wp0VwYsOpn0tv8u8jwYKIFqMVKaTyX0Qa09y+LzP5LtAB1dGhM4DL+Byp0UWQKRGb/JfplHqMSMolL+R8Kcktk1B3RXBs8GDOFS/kXelbWiEy6KwpjRyV4KpfzL/SsVItMuisK0wQlQTO4nP+gIJtFBj0R1XBgpT6MS/oHRGkkPbyNIoOeiN4zrajI4VzWP1CQdJE5T0VhXkKpHMFl1cf5z5BMuH2ZHEy0zdqhSjefS6sPBckVGfNGzkUhRXJpdXFeJsnEp4GmvBUFeQvlo6O5vLrQUVokMuWtaJu9ozCxXF49wBo8jcJ4fJkcTFTvA1aOjuMW6kGreElkaIj6BErQCm6hDnyZ7BGYGZKo5mdU9Ku5jTpQ0xsiM0MVva+6oEK/ltv4HrpMxouM9FOFHrFmHGLdFETbdMSGMER7+B/Vz0R8Qp/XTkSsHvt7Hi3SN7oBJHAr30PHZ1U/407VTUZsnoPYHovYGY/4bpX7erMc8UV0b0ioCe0GRd7ErXxLv8ukbQZixzKxQS8FL2J64GmYkdv5DrpMjqBtYEfHfKGRYdHbeITmuWZu6TugekK20MAwCtqWfOR2vgOfS3roiOsWGRguQUukwu18CzTNi4GXMW9EJoakzpUUIqrE+X+IW6kDNs5Og9ZFDfB62Q+hMXfU6dxKS7soQDHYIxZyaf8B9RHroHnOOXgWWQat0Y3wanEHtMV+7DXZFvvtl5Z8oJOpHVoWPYGWBTfAMTcH7OGzuESAAAG8RpJ+Apfn2Zxo1YIOAAAAAElFTkSuQmCC);
+  width: 50px;  
+  height: 50px;
+}
+</style>
+<script type="text/javascript">
+
+function saveServSetBox(){
+	formSubmitAsForm("settings.ServerSettings.form","settings.ServerSettings.div",onDataPostedServSetBox);
+}
+function onDataPostedServSetBox(response){
+	/*hideShowComponent("settings.ServerSettings.editForm","settings.ServerSettings.viewForm");*/
+}
+	
+</script>
+<div id="settings.ServerSettings.div">
+
+	<div id="settings.ServerSettings.viewForm" class="w3-card-4" style="width: 400px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+		<div class="w3-container w3-teal">
+			 <div><h4 id="settings.ServerSettings.descr">Настройки устройства</h4></div>
+		</div>
+			
+		<form id="settings.ServerSettings.form" class="w3-container">
+			
+			<input id="settings.ServerSettings.id.edit" name="id" type="hidden">
+			<input id="settings.ServerSettings.group.edit" name="group" type="hidden">
+			<input id="settings.ServerSettings.name.edit" name="name" type="hidden">
+
+			<div class="w3-row">		
+				<div class="w3-third">
+		  			<label for="settings.ServerSettings.descr.edit"><b>Описание</b></label>
+		  		</div>
+		  		<div class="w3-rest">
+		  			<input id="settings.ServerSettings.descr.edit" name="descr" class="w3-input w3-border" type="text" value="?"/>
+		  		</div>
+		  	</div>
+
+<!--	"deviceId":"bh1750",	"deviceFirmware":"EntityLiv dev settings",	"deviceDescr":"Default Device description",-->
+		 	<div class="w3-row">		
+				<div class="w3-third">
+		  			<label for="settings.ServerSettings.deviceId.edit"><b>ID устройства</b></label>
+		  		</div>
+		  		<div class="w3-rest">
+		  			<h3 id="settings.ServerSettings.deviceId.edit">?</h3>
+		  		</div>
+		  	</div>
+		  	
+		  	<div class="w3-row">		
+				<div class="w3-third">
+		  			<label for="settings.ServerSettings.deviceFirmware.edit"><b>Прошивка</b></label>
+		  		</div>
+		  		<div class="w3-rest">
+		  			<h3 id="settings.ServerSettings.deviceFirmware.edit">?</h3>
+		  		</div>
+		  	</div>
+		 
+		 	<div class="w3-row">		
+				<div class="w3-third">
+		  			<label for="settings.ServerSettings.deviceDescr.edit"><b>Описание Устройства</b></label>
+		  		</div>
+		  		<div class="w3-rest">
+		  			<input id="settings.ServerSettings.deviceDescr.edit" name="deviceDescr" class="w3-input w3-border" type="text" value="?"/>
+		  		</div>
+		  	</div>
+		
+		<div class="w3-row">
+	  		<h2>Сеть</h2>
+	  	</div>
+	  		
+<!--    "isAp":"0",	"ssid":"balabasKiev5", "pass":"wuWylKegayg2wu22", "passAp":"", "isStatIp":"0", "disStIfCon":"0",
+	"id":2,
+	"group":"settings",
+	"name":"ServerSettings",
+	"descr":"Wifi Server Device settings"}
+	 -->
+		  	<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.isAp">Является точкой доступа</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.isAp" name="isAp" class="w3-check" type="checkbox">
+				</div>
+		  	</div>
+			
+			<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.ssid">SSID</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.ssid" name="ssid" class="w3-input w3-border" style="width:50%" type="text" value="?">
+				</div>
+		  	</div>
+			
+			<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.pass">Пароль WiFi</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.pass" name="pass" class="w3-input w3-border" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}">
+				</div>
+		  	</div>
+			
+			<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.passConfirm">Подтверждение Пароль WiFi</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.passConfirm" name="passConfir" class="w3-input w3-border" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}">
+				</div>
+		  	</div>
+		  	
+		  	<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.pass">Пароль режим Точка Доступа</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.pass" name="pass" class="w3-input w3-border" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}">
+				</div>
+		  	</div>
+			
+			<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.passConfirm">Подтверждение Пароль режим Точка Доступа</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.passConfirm" name="passConfir" class="w3-input w3-border" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}">
+				</div>
+		  	</div>
+			
+			<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.isStatIp">Использовать статический IP</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.isStatIp" name="isStatIp" class="w3-check" type="checkbox">
+				</div>
+		  	</div>
+		  	
+		  	<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.disStIfCon">Переподключатся при старте</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.disStIfCon" name="disStIfCon" class="w3-check" type="checkbox">
+				</div>
+		  	</div>
+	  	
+<!--  "ip":"192.168.0.120",	"ipAP":"192.168.0.4",	"gateway":"192.168.0.1",	"subnet":"255.255.255.0",	"dns":"192.168.0.1",	
+      "dns2":"192.168.0.1", "smrtServIp":"192.168.0.5"  -->  	
+		  	<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.ip">IP адресс в локальной сети (LocalIp)</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.ip" name="ip" class="w3-input w3-border" type="text" 
+						value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+				</div>
+		  	</div>
+	
+			<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.ipAP">IP адресс Если точка доступа (Access point IP)</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.ipAP" name="ipAP" class="w3-input w3-border" type="text" 
+							value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+				</div>
+		  	</div>
+		
+			<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.gateway">IP адресс шлюза (GateWay)</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.gateway" name="gateway" class="w3-input w3-border" type="text" 
+							value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+				</div>
+		  	</div>
+	
+			<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.subnet">IP адресс подсети (Subnet)</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.subnet" name="subnet" class="w3-input w3-border" type="text" 
+						value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+				</div>
+		  	</div>
+	
+			<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.dns">IP адресс DNS</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.dns" name="dns" class="w3-input w3-border" type="text" 
+						value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+				</div>
+		  	</div>
+	
+			<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.dns2">IP адресс DNS2</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.dns2" name="dns2" class="w3-input w3-border" type="text" 
+							value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+				</div>
+		  	</div>
+	
+			<div class="w3-row">
+				<div class="w3-third">
+					<label for="settings.ServerSettings.smrtServIp">IP адресс Сервера !!!SmartHouse</label>
+				</div>
+		  		<div class="w3-rest">
+					<input id="settings.ServerSettings.smrtServIp" name="smrtServIp" class="w3-input w3-border" type="text" 
+							value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+				</div>
+		  	</div>
+	  	
+	<!-- "userLogin":"",	"userPass":"",	"adminLogin":"admin",	"adminPass":"admin", -->  	
+	  	<div class="w3-row w3-green">
+			<h2>Настройки пользователя</h2>
+		</div>
+	  	
+		  	<div class="w3-row">
+				<div class="w3-third">
+		  			<label for="settings.ServerSettings.userLogin">Пользователь</label>
+		  		</div>
+		  		<div class="w3-rest">
+		  			<input id="settings.ServerSettings.userLogin" class="w3-input w3-border" 
+		  				type="text" value="?"/>
+		  		</div>
+		  	</div>
+		  	
+		  	<div class="w3-row">
+				<div class="w3-half">
+		  			<label for="settings.ServerSettings.userPass">Пароль</label>
+		  		</div>
+		  		<div class="w3-half">
+		  			<input id="settings.ServerSettings.userPass" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
+		  		</div>
+		  	</div>
+		  	
+		  	<div class="w3-row">
+				<div class="w3-half">
+		  			<label for="settings.ServerSettings.userPassConfirm">Пароль подтверждение</label>
+		  		</div>
+		  		<div class="w3-half">
+		  			<input id="settings.ServerSettings.userPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
+		  		</div>
+		  	</div>
+		  	
+		  	<div class="w3-row w3-green">
+				<h2>Настройки администратора</h2>
+			</div>
+		  	
+		  	<div class="w3-row">
+				<div class="w3-third">
+		  			<label for="settings.ServerSettings.adminLogin">Пользователь</label>
+		  		</div>
+		  		<div class="w3-rest">
+		  			<input id="settings.ServerSettings.adminLogin" class="w3-input w3-border" type="text" value="?"/>
+		  		</div>
+		  	</div>
+		  	
+		  	<div class="w3-row">
+				<div class="w3-half">
+		  			<label for="settings.ServerSettings.adminPass">Пароль</label>
+		  		</div>
+		  		<div class="w3-half">
+		  			<input id="settings.ServerSettings.adminPass" class="w3-input w3-border" style="width:50%" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}"/>
+		  		</div>
+		  	</div>
+		  	
+		  	<div class="w3-row">
+				<div class="w3-half">
+		  			<label for="settings.ServerSettings.adminPassConfirm">Пароль подтверждение</label>
+		  		</div>
+		  		<div class="w3-half">
+		  			<input id="settings.ServerSettings.adminPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}"/>
+		  		</div>
+		  	</div>
+		
+		</form>
+				
+		<footer class="w3-container w3-teal w3-display-container">
+	 		<div class="w3-row">
+	 			<div class="w3-half">
+				      <button id="confirm_editBtn" 
+				      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
+				      	style="margin-top: 2px; margin-bottom: 2px;"
+							onclick="saveServSetBox();">Сохр</button>
+				</div>
+			</div>
+		</footer>						
+			<!--  </form> -->
+	</div>
+	
+</div>
+<!--ServSetBox ends-->

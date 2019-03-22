@@ -1,12 +1,14 @@
 const DATA_MODEL_ROOT_URL = '/info';
 const DATA_MODEL_POST_URL = '/info';
 
+const GROUP_SENSORS  = 'sensors';
+const GROUP_SETTINGS = 'settings';
+
 var dataModel={};
 var modelToViewHandlers={};
 
 var source = new EventSource('/events');
 
-var currentView = 'sensors';
 var localTest = false;
 
 /*--------------------------Menu functions-----------------------------*/
@@ -20,22 +22,26 @@ function w3_close(){
 
 
 function onLoadPageComplete(){
+	httpRequestDisplayStart();
 	sendRequest("GET", DATA_MODEL_ROOT_URL, handleRootReceive, "root", 0, 2000);
 	initEventSourceChannel();
 }
 
 function handleRootReceive(json){
 	dataModel = json;
-	processGroupToView(currentView);
+	processGroupToView(GROUP_SETTINGS);
+	processGroupToView(GROUP_SENSORS);
 }
 /*---------------------------Model to view functions----------------------------*/
 function processGroupToView(group){
 	var entities = dataModel.data[group];
-	console.log("Group = ", group);
-	/*document.getElementById("mainContent").innerHTML='';*/
 	if(entities!=undefined){
-		for (var i in entities) {
-			processEntityToView(entities[i]);
+		console.log("Group = ", group);
+		/*document.getElementById("mainContent").innerHTML='';*/
+		if(entities!=undefined){
+			for (var i in entities) {
+				processEntityToView(entities[i]);
+			}
 		}
 	}
 }
@@ -178,6 +184,7 @@ function handleHttpRequestStatus(success,message){
 }
 
 function sendRequest(requestmethod, url, handler, data, timeout, errorTimeOut){
+	httpRequestDisplayStart();
 	console.log("XHR send request data=",data);
 	
 	var request = new XMLHttpRequest();
@@ -187,10 +194,12 @@ function sendRequest(requestmethod, url, handler, data, timeout, errorTimeOut){
 	request.ontimeout = function(){
 		console.log("XHR request timeout "+request.status);
 		handleHttpRequestStatus(false,'Ошибка: Превышен интервал ожидания');
+		httpRequestDisplayError();
 	};
 	request.onerror = function(){
 		console.log("XHR request error "+request.status);
 		handleHttpRequestStatus(false,'Ошибка запроса устройства');
+		httpRequestDisplayError();
 	};
 	
 	request.onreadystatechange  = 
@@ -207,9 +216,11 @@ function sendRequest(requestmethod, url, handler, data, timeout, errorTimeOut){
 							handler(json);
 						}
 						console.log("XHR result = "+this.responseText);
+						httpRequestDisplayOk();
 					}catch(err){
 						ok=false;
 						console.log("ERROR = "+err);
+						httpRequestDisplayError();
 					}
 									
 					if(timeout>0){
@@ -224,11 +235,13 @@ function sendRequest(requestmethod, url, handler, data, timeout, errorTimeOut){
 						addPostponedUpdateComponentsByAjaxCall(requestmethod, url, handler, data, timeout, errorTimeOut, reloadTime);
 					}else{
 						console.log('Ошибка запроса устройства');
+						httpRequestDisplayError();
 					}
 				}
 			}else{
 				if(this.status!=200){
 					console.log('Ошибка: статус='+this.status);
+					httpRequestDisplayError();
 				}
 			};
 		};
@@ -353,7 +366,7 @@ function setComponentValue(component,val){
 		};
 	}
 }
-/*----------------------------------------------------------------------------*/
+/*-----------------------------GUI show hide components----------------------------------------*/
 function hideComponent(componentId){
 	var comp=document.getElementById(componentId);
 	setVisible(comp,false);
@@ -383,4 +396,22 @@ function setVisible(comp,visible){
 			comp.style.display = "none";
 		}
 	}
+}
+/*-----------------------------Http show hide components----------------------------------------*/
+function hideShowStatusImages(showImageId){
+	hideComponent('httpConnectImg');
+	hideComponent('httpOkImg');
+	hideComponent('httpErrorImg');
+	
+	showComponent(showImageId);
+}
+
+function httpRequestDisplayStart(){
+	hideShowStatusImages('httpConnectImg');
+}
+function httpRequestDisplayOk(){
+	hideShowStatusImages('httpOkImg');
+}
+function httpRequestDisplayError(){
+	hideShowStatusImages('httpErrorImg');
 }

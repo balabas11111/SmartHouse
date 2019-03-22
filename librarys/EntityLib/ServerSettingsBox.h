@@ -24,6 +24,7 @@
 #define _IP_SUBNET "subnet"
 #define _IP_DNS "dns"
 #define _IP_DNS2 "dns2"
+#define _SMART_HOUSE_SERVER_IP "smrtServIp"
 //access settings
 #define _USER_LOGIN "userLogin"
 #define _USER_PASS "userPass"
@@ -55,6 +56,7 @@
 				\"subnet\":\"255.255.255.0\",\
 				\"dns\":\"192.168.0.1\",\
 				\"dns2\":\"192.168.0.1\",\
+				\"smrtServIp\":\"192.168.0.5\",\
 				\"userLogin\":\"\",\
 				\"userPass\":\"\",\
 				\"adminLogin\":\"admin\",\
@@ -73,6 +75,7 @@ class ServerSettingsBox: public EntityJson {
 public:
 	ServerSettingsBox(const char* firmware):EntityJson("settings", "ServerSettings", "Wifi Server Device settings",_DEFAULT_SERVER_DESCRIPTOR){
 		this->firmware=firmware;
+		this->devId="ESP_Dev_ID";
 	};
 	virtual ~ServerSettingsBox(){};
 
@@ -82,8 +85,8 @@ public:
 	}
 
 	void printApConf(){
-		Serial.print(FPSTR(" ssid="));  Serial.print(ssidAP());
-		Serial.print(FPSTR(" pass=")); Serial.print(passwordAP());
+		Serial.print(FPSTR(" ssidAP="));  Serial.print(ssidAP());
+		Serial.print(FPSTR(" passwordAP=")); Serial.print(passwordAP());
 		Serial.print(FPSTR(" chann="));  Serial.print(channelAP());
 		Serial.print(FPSTR(" hidden=")); Serial.print(hiddenAP());
 		Serial.print(FPSTR(" maxCon=")); Serial.print(maxConnAP());
@@ -93,6 +96,7 @@ public:
 		Serial.print(FPSTR(" subnet="));  Serial.print(subnet());
 		Serial.print(FPSTR(" dns="));  Serial.print(dns());
 		Serial.print(FPSTR(" dns2="));  Serial.print(dns2());
+		Serial.print(FPSTR(" smrtServIp="));  Serial.print(smartHouseServerIp());
 		Serial.println();
 	}
 
@@ -145,6 +149,10 @@ public:
 		const char* ip=this->getModelDataProvider()->getFieldConstChar(id, _IP_DNS2);
 		return ObjectUtils::stringToIp(ip);
 	}
+	IPAddress smartHouseServerIp(){
+		const char* ip=this->getModelDataProvider()->getFieldConstChar(id, _SMART_HOUSE_SERVER_IP);
+		return ObjectUtils::stringToIp(ip);
+	}
 
 	const char* userLogin(){ return this->getModelDataProvider()->getFieldConstChar(id, _USER_LOGIN);}
 	const char* userPassword(){ return this->getModelDataProvider()->getFieldConstChar(id, _USER_PASS);}
@@ -159,7 +167,7 @@ public:
 	virtual void init() override{
 		//String devIdTmp="ESP_"+String(ESP.getChipId());
 		//this->devId=strdup(devIdTmp.c_str());
-		this->devId="ESP_Dev_ID";
+
 	}
 
 	virtual void postModelDataInit() override{
