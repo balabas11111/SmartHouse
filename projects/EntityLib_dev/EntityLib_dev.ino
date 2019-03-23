@@ -12,12 +12,14 @@
 
 #include "Bme280sensor.h"
 #include "Bh1750sensor.h"
+#include "OutputPin.h"
 
 ServerSettingsBox conf("EntityLiv dev settings");
 Bme280sensor bme280;
 Bh1750sensor bh1750;
+OutputPin rele(D4,"DefaultRele");
 
-EntityJson* entities[] = {&bme280,&bh1750,&conf};
+EntityJson* entities[] = {&bme280,&bh1750,&conf,&rele};
 JsonDao dao(entities, ARRAY_SIZE(entities));
 
 WiFiManagerAsync server(&conf, &dao);
@@ -52,4 +54,6 @@ void loop()
 	Serial.println(ESP.getFreeHeap());
 	i++;
 	bh1750.setField("light", i);
+	bh1750.sendAsEventSourceEntity();
 }
+

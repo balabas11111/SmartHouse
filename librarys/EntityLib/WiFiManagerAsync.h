@@ -83,11 +83,12 @@ protected:
 	void onCat(AsyncWebServerRequest *request);
 	void onDelete(AsyncWebServerRequest *request);
 	void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final);
-	void onFileRead(AsyncWebServerRequest *request);
+	void onFileRead(const char* fileName,AsyncWebServerRequest *request);
 	void onEntityPost(AsyncWebServerRequest *request);
 	bool entityPostField(AsyncWebServerRequest *request, int entityId, const char* key);
 
-	virtual void sendAsEventSource(JsonObject& obj) override;
+	virtual void sendAsEventSourceNow(JsonObject& obj) override;
+	virtual void sendAsEventSourceEntityNow(int entityId) override;
 
 	void notFound(AsyncWebServerRequest *request);
 	//bool handleFileRead(String path,AsyncWebServerRequest* request);

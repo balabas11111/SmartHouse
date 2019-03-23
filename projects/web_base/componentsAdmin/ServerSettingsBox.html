@@ -18,7 +18,7 @@ function onDataPostedServSetBox(response){
 </script>
 <div id="settings.ServerSettings.div">
 
-	<div id="settings.ServerSettings.viewForm" class="w3-card-4" style="width: 400px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+	<div id="settings.ServerSettings.viewForm" class="w3-card-4" style="width: 800px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 		<div class="w3-container w3-teal">
 			 <div><h4 id="settings.ServerSettings.descr">Настройки устройства</h4></div>
 		</div>
@@ -236,7 +236,7 @@ function onDataPostedServSetBox(response){
 		  	</div>
 		  	
 		  	<div class="w3-row">
-				<div class="w3-half">
+				<div class="w3-third">
 		  			<label for="settings.ServerSettings.userPass">Пароль</label>
 		  		</div>
 		  		<div class="w3-half">
@@ -245,7 +245,7 @@ function onDataPostedServSetBox(response){
 		  	</div>
 		  	
 		  	<div class="w3-row">
-				<div class="w3-half">
+				<div class="w3-third">
 		  			<label for="settings.ServerSettings.userPassConfirm">Пароль подтверждение</label>
 		  		</div>
 		  		<div class="w3-half">
@@ -258,30 +258,18 @@ function onDataPostedServSetBox(response){
 			</div>
 		  	
 		  	<div class="w3-row">
-				<div class="w3-third">
 		  			<label for="settings.ServerSettings.adminLogin">Пользователь</label>
-		  		</div>
-		  		<div class="w3-rest">
 		  			<input id="settings.ServerSettings.adminLogin" class="w3-input w3-border" type="text" value="?"/>
-		  		</div>
 		  	</div>
 		  	
 		  	<div class="w3-row">
-				<div class="w3-half">
 		  			<label for="settings.ServerSettings.adminPass">Пароль</label>
-		  		</div>
-		  		<div class="w3-half">
 		  			<input id="settings.ServerSettings.adminPass" class="w3-input w3-border" style="width:50%" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}"/>
-		  		</div>
 		  	</div>
 		  	
 		  	<div class="w3-row">
-				<div class="w3-half">
 		  			<label for="settings.ServerSettings.adminPassConfirm">Пароль подтверждение</label>
-		  		</div>
-		  		<div class="w3-half">
 		  			<input id="settings.ServerSettings.adminPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}"/>
-		  		</div>
 		  	</div>
 		
 		</form>

@@ -102,6 +102,15 @@ public:
 	virtual const char* getFieldConstChar(int entityId,const char* key) override;
 	virtual char* getFieldChar(int entityId,const char* key) override;
 
+	virtual void sendEntityAsEventSourceNow(int entityId) override{
+		this->eventSender->sendAsEventSourceEntityNow(entityId);
+	}
+
+	virtual void postDataPosted(int entityId) override{
+		EntityJson* entity = getEntity(entityId);
+		entity->postDataPosted();
+	}
+
 	template<typename T>
 	bool hasField(int entityId,const char* key){
 		JsonObject& obj = getEntityData(entityId);
@@ -132,7 +141,7 @@ public:
 		if(eventSender!=nullptr && eventSender!=NULL){
 			JsonObject& obj = getEntitysJson_ByPath(root, ROOT_PATH_DATA, entity);
 			obj.set("chgKey", key);
-			eventSender->sendAsEventSource(obj);
+			eventSender->setSendRequired(true);
 		}
 	}
 

@@ -27,6 +27,8 @@ public:
 
 	virtual const char* validateField(int entityId,const char* key,const String& value)=0;
 
+	virtual void sendEntityAsEventSourceNow(int entityId)=0;
+
 	virtual bool hasFieldInt(int entityId,const char* key){return JsonObjectUtil::hasField<int>(getEntityData(entityId), key);}
 	virtual bool hasFieldFloat(int entityId,const char* key){return JsonObjectUtil::hasField<float>(getEntityData(entityId), key);}
 	virtual bool hasFieldConstChar(int entityId,const char* key){return JsonObjectUtil::hasField<const char*>(getEntityData(entityId), key);}
@@ -48,6 +50,8 @@ public:
 	virtual EventSender* getEventSender()=0;
 
 	virtual void setEventSender(EventSender* eventSender)=0;
+
+	virtual void postDataPosted(int entityId)=0;
 };
 
 #endif /* LIBRARIES_ENTITYLIB_ENTITYMODELDATAPROVIDER_H_ */

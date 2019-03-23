@@ -14,7 +14,18 @@ class EventSender {
 public:
 	virtual ~EventSender(){};
 
-	virtual void sendAsEventSource(JsonObject& obj)=0;
+	virtual void sendAsEventSourceNow(JsonObject& obj)=0;
+	virtual void sendAsEventSourceEntityNow(int entityId)=0;
+
+	virtual void setSendRequired(bool required=true){
+		sendRequired=required;
+	}
+
+	bool getSendRequired(){
+		return sendRequired;
+	}
+protected:
+	bool sendRequired=false;
 };
 
 #endif /* LIBRARIES_ENTITYLIB_EVENTSENDER_H_ */

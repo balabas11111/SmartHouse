@@ -330,8 +330,11 @@ bool JsonDao::setField(int entityId, const char* key, float value) {  return set
 bool JsonDao::setField(int entityId, const char* key, const char* value) {	return setField<const char*>(entityId, key, value); }
 bool JsonDao::setField(int entityId, const char* key, char* value) {  return setField<char*>(entityId, key, value); }
 bool JsonDao::setField(int entityId, const char* key,String value) {
-	Serial.println(FPSTR("Set field"));
-
+	/*Serial.print(FPSTR("SET "));
+	Serial.print(key);
+	Serial.print(FPSTR(" = "));
+	Serial.println(value);
+*/
 	JsonObject& data = getEntityData(entityId);
 	if(data.is<int>(key)){
 		return setField(entityId, key, value.toInt());

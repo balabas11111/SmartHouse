@@ -4,6 +4,11 @@ const DATA_MODEL_POST_URL = '/info';
 const GROUP_SENSORS  = 'sensors';
 const GROUP_SETTINGS = 'settings';
 
+const FIELD_ID = "id";
+const FIELD_GROUP = "group";
+const FIELD_NAME = "name";
+const FIELD_DESCR = "descr";
+
 var dataModel={};
 var modelToViewHandlers={};
 
@@ -78,8 +83,12 @@ function getEntityEditId(entity,key){
 /*---Model to view handlers processing*/
 function updateEntityViewValue(entity,key,val){
 	var handlerName=getPreffixForEntity(entity);
-	var handler = getModelToViewHandlerByName(name); 
-		
+	var handler = getModelToViewHandlerByName(handlerName); 
+	
+	if(dataModel.data!=undefined && entity.group!=undefined && entity.name!=undefined && key!=undefined){
+		dataModel.data[entity.group][entity.name][key]=val;
+	}
+	
 	handler(entity,key,val);
 }
 
@@ -137,11 +146,18 @@ function processEventSourceMessage(message){
 		var entity = JSON.parse(message);
 		console.log("changed entity = ",entity);
 		
-		if(entity!=undefined && entity.chgKey!=undefined){
-			var key = entity.chgKey;
-			var val = entity[key];
+		if(entity!=undefined){
+			if(entity[FIELD_ID]!=undefined && entity[FIELD_GROUP]!=undefined && entity[FIELD_NAME]!=undefined){
+				
+				var divId=entity[FIELD_GROUP]+'.'+entity[FIELD_NAME]+'.div';
+				removeGrayScale(divId);
+				
+				for (var key in entity) {
+				  let val = entity[key];
+				  updateEntityViewValue(entity,key,val);
+				}
+			}
 			
-			updateEntityViewValue(entity,key,val);
 		}
 	}catch(err){
 		console.log("ERROR parse json"+err);
@@ -171,7 +187,39 @@ function formSubmitAsJson(form,div,resultHandler){
 	
 	sendRequest("POST", DATA_MODEL_POST_URL, resultHandler, data, 0, 2000);
 }
+function addGrayScale(compId){
+	var comp = document.getElementById(compId);
+	if(comp!=undefined){
+		comp.classList.add("w3-grayscale-max");
+	}
+}
+function removeGrayScale(compId){
+	var comp = document.getElementById(compId);
+	if(comp!=undefined){
+		comp.classList.remove("w3-grayscale-max");
+		console.log('Gray removed = ',compId);
+	}
+}
+
+function addSepia(comp){
+	if(comp!=undefined){
+		comp.classList.add("w3-sepia-max");
+	}
+}
+
+function removeSepia(comp){
+	if(comp!=undefined){
+		comp.classList.remove("w3-sepia-max");
+	}
+}
+
 function formSubmitAsForm(form,div,resultHandler){
+	
+	addGrayScale(div);
+	
+	if(!validateForm(div,form)){
+		return;
+	}
 	
 	var frmComp = document.forms[form];
 	var data = new FormData(frmComp);
@@ -320,6 +368,7 @@ function getComponentValue(component){
 function setComponentValue(component,val){
 	if(component!=undefined){
 		var tagName = component.tagName.toLowerCase();
+		addSepia(component);
 		
 		if (tagName =='label' || tagName=='div' || tagName == 'h1' || tagName == 'h2' || tagName == 'h3' || tagName == 'h4' || tagName == 'h5' || tagName == 'h6'
 			|| tagName == 'b'){
@@ -364,8 +413,104 @@ function setComponentValue(component,val){
 			component.href=val;
 			showComponent(component.id);
 		};
+		
+		removeSepia(component);
 	}
 }
+/*-----ShowMessage-----*/
+function showMessage(message,clazz){
+	console.log('message clazz=',clazz,' message= ',message);
+}
+
+/*-------------------------validate functions-----------*/
+function markComponentValidityById(id,valid){
+	var comp=getComponentById(id);
+	
+	markComponentValidity(comp,valid);
+}
+
+function markComponentValidity(comp,valid){
+	if(comp!=undefined){
+		if(comp.classList!=undefined){
+			if(valid){
+				comp.classList.remove('w3-border-red');
+			}else{
+				comp.classList.add('w3-border-red');
+			}
+		}
+	}
+}
+
+function setComponentValidityMessage(comp,message){
+	if(comp!=undefined && comp.type!=undefined){
+		var type=comp.type.toLowerCase();
+		if(type=='input'){
+			comp.setCustomValidity(message);
+		}
+	}
+}
+
+function markComponentValidityWithMessage(comp,valid,msg){
+	markComponentValidity(comp,valid);
+	setComponentValidityMessage(comp,msg);
+	
+	return msg;
+}
+
+function validateForm(div,form){
+	markFormAsValid(form);
+	return validateFormFunctionDefault(div,form);
+}
+
+function markFormAsValid(form){
+	var comp = document.getElementById(form);
+	var childNodes = comp.querySelectorAll('input');
+	
+	if(childNodes!=undefined){
+		for (var i in childNodes) {
+			markComponentValidity(childNodes[i],true);
+			/*if(cleanValMsg){
+				setComponentValidityMessage(childNodes[i],'');
+			}*/
+		}
+	}
+}
+
+function validateFormFunctionDefault(div,formName){
+	var form = document.getElementById(formName);
+	var validateMessage='';
+	
+	var isValidForm = form.checkValidity();
+	var childNodes=form.querySelectorAll('input');;
+	
+	if(!isValidForm){
+		var labels=form.querySelectorAll('label');
+		
+		for(var i=0;i<childNodes.length;i++){
+			var child=childNodes[i];
+			var valid=child.validity.valid;
+			
+			markComponentValidity(child, valid);
+			
+			if(!valid){
+				validateMessage+=child.validationMessage+' <br>'
+			}
+		}
+	}else{
+		for(var i=0;i<childNodes.length;i++){
+			markComponentValidity(childNodes[i], true);
+		}
+	}
+	
+	if(validateMessage!=undefined && validateMessage.length!=undefined  && validateMessage.length>0){
+		showMessage(validateMessage,'error');
+		removeGrayScale(div);
+		return false;
+	}
+	
+	return true;
+}
+
 /*-----------------------------GUI show hide components----------------------------------------*/
 function hideComponent(componentId){
 	var comp=document.getElementById(componentId);
@@ -382,6 +527,8 @@ function hideShowComponent(componentIdHide,componentIdShow){
 	var compShow=document.getElementById(componentIdShow);
 	setVisible(compHide,false);
 	setVisible(compShow,true);
+	
+	markFormAsValid(componentIdShow);
 };
 
 function isVisible(comp){

@@ -64,7 +64,7 @@
 				\"deviceId\":\"devId\",\
 				\"deviceFirmware\":\"firmware\",\
 				\"deviceDescr\":\"Default Device description\"},\
-				\"model\":{\"tvar\":[\"*\"]}}"
+				\"model\":{\"tvar\":[\"*\"],\"set\":[\"*\"]}}"
 
 #include <EntityJson.h>
 #include <IPAddress.h>

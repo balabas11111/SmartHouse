@@ -238,8 +238,8 @@ void WiFiManagerAsync::deployDefaultUrls() {
 void WiFiManagerAsync::deployStaticFiles() {
 	Serial.print(FPSTR("Deploy static Files"));
 //TODO: reimplement to deploy folder dynamically
-	server->on(URL_SETUPHTM, HTTP_GET, [this](AsyncWebServerRequest *request){onFileRead(request);});
-	server->on(URL_INDEXHTM, HTTP_GET, [this](AsyncWebServerRequest *request){onFileRead(request);});
+	server->on(URL_SETUPHTM, HTTP_GET, [this](AsyncWebServerRequest *request){onFileRead(MESSAGE_WIFIHELPER_SETUP_HTML_PAGE,request);});
+	server->on(URL_INDEXHTM, HTTP_GET, [this](AsyncWebServerRequest *request){onFileRead(MESSAGE_WIFIHELPER_INDEX_HTML_PAGE,request);}).setAuthentication(conf->adminLogin(), conf->adminPassword());
 
 	Serial.println(FPSTR("...done"));
 }
@@ -263,11 +263,19 @@ void WiFiManagerAsync::deployEventSource() {
 	  Serial.println(FPSTR("...done"));
 }
 
-void WiFiManagerAsync::sendAsEventSource(JsonObject& obj) {
+void WiFiManagerAsync::sendAsEventSourceNow(JsonObject& obj) {
+	if(!getSendRequired()){
+		return;
+	}
+	Serial.print(FPSTR("SENT "));
+	obj.printTo(Serial);
+	Serial.println();
+
 	String msg;
 	obj.printTo(msg);
 
 	events->send(msg.c_str(),NULL,millis(),1000);
+	setSendRequired(false);
 }
 
 void WiFiManagerAsync::onRoot(AsyncWebServerRequest *request){
@@ -348,8 +356,8 @@ void WiFiManagerAsync::notFound(AsyncWebServerRequest *request) {
     request->send(404, "text/plain", "Not found");
 }
 
-void WiFiManagerAsync::onFileRead(AsyncWebServerRequest* request) {
-	if(!handleFileGzRead(MESSAGE_WIFIHELPER_INDEX_HTML_PAGE,request)){
+void WiFiManagerAsync::onFileRead(const char* fileName,AsyncWebServerRequest* request) {
+	if(!handleFileGzRead(fileName,request)){
 			request->send(404, CONTENT_TYPE_TEXT_PLAIN, MESSAGE_WIFIHELPER_HTTP_STATUS_FILE_NOT_FOUND);
 	};
 }
@@ -402,12 +410,27 @@ void WiFiManagerAsync::onEntityPost(AsyncWebServerRequest *request) {
 
 		setAllowedFields.printTo(Serial);
 
-		for (const auto& kvp : setAllowedFields) {
-			const char* key = kvp.as<const char*>();
-			count+=entityPostField(request,entityId,key);
+		if(JsonObjectUtil::isInArray("*", setAllowedFields)){
+			Serial.println(FPSTR("All fields to be set"));
+			JsonObject& entData = dao->getEntityData(entityId);
+			for (const auto& kvp : entData) {
+				const char* key = kvp.key;
+				count+=entityPostField(request,entityId,key);
+			}
+		}else{
+			for (const auto& kvp : setAllowedFields) {
+				const char* key = kvp.as<const char*>();
+				count+=entityPostField(request,entityId,key);
+			}
 		}
 
 		count+=entityPostField(request,entityId,JSONKEY_descr);
+
+		if(count>0){
+			dao->saveRootToFileIfChanged();
+			dao->postDataPosted(entityId);
+			sendAsEventSourceEntityNow(entityId);
+		}
 
 		Serial.print(FPSTR("keys changed = "));
 		Serial.println(count);
@@ -417,39 +440,45 @@ void WiFiManagerAsync::onEntityPost(AsyncWebServerRequest *request) {
 	}
 
 	AsyncResponseStream *response = request->beginResponseStream(CONTENT_TYPE_JSON_UTF8);
+	Serial.print(FPSTR("1-->"));
+	Serial.println(ESP.getFreeHeap());
 
 	resp.set(RESPONSE_KEY_status, RESPONSE_MSG_ok);
+	Serial.print(FPSTR("2-->"));
+	Serial.println(ESP.getFreeHeap());
 
 	resp.printTo(*response);
+	Serial.print(FPSTR("3-->"));
+	Serial.println(ESP.getFreeHeap());
+
 	response->setCode(200);
 	request->send(response);
+
+	Serial.print(FPSTR("4-->"));
+	Serial.println(ESP.getFreeHeap());
 }
 
 bool WiFiManagerAsync::entityPostField(AsyncWebServerRequest *request, int entityId, const char* key) {
 	//bool changed=0;
 	if(request->hasArg(key)){
 		const String& value = request->arg(key);
-/*
-		Serial.print(FPSTR("value = "));
-		Serial.print(value);
-		Serial.print(FPSTR("key = "));
-		Serial.println(key);
 
-		const char* validMsg = dao->validateField(entityId, key, value);*/
+/*		const char* validMsg = dao->validateField(entityId, key, value);*/
 		bool isValid = value.length()!=0;// && sizeof(validMsg)<1;
 
 		if(isValid){
 			//Serial.println(FPSTR("Validate passed"));
 			bool res= dao->setField(entityId, key, value);
 
-			if(res){
-				dao->saveRootToFileIfChanged();
-			}
-
 			return res;
 		}
 	}
 	return 0;
+}
+
+void WiFiManagerAsync::sendAsEventSourceEntityNow(int entityId) {
+	JsonObject& obj = dao->getEntityData(entityId);
+	sendAsEventSourceNow(obj);
 }
 
 String  WiFiManagerAsync::getContentType(String filename,AsyncWebServerRequest* request){

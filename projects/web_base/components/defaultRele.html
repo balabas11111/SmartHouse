@@ -1,0 +1,173 @@
+<!--DefaultRele info starts-->
+<style> 
+img.lamp-on-icon {
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAHaElEQVR42u2aW2xUVRSG/3ObM50ZZnqbQiuFBhAJxlswNhBA4y0k6AMPPvGogWAk+KJRMTEab9EXjQaCwUeMb2iCCcZLlBhJDcRbgopVoYXWttMOvUzncm6utfc+bYFaOvTQYuJOdvZp2tnzf2v9e+01k2r4jw9toQVcVwA/PIf1tGyl+QDNepqr1K86aQ7R/IzmJ7e/iuPXFQAJf4aWXYtWNC9Lr1mOVFszdNtCrC5B7xCgnB+BVyxhtLMHo7+dR6Er10V/v59AXl9QABK+g4U3tq+9ffHGO2DaNlDwgKILlFz4jgMEPnTdB2oCYJEJ1JqoFMr4+/OfkP/+zA8K5L15ByDxL9dkM3vbHrkfsViahPvwKwEC0smiA5rwCMR36UdHrvSzQRkxGKTRRrFYwNkPj1OGCq8QxPPzBkDi38msbn1i2YMboTsxoKzBgw5N08XvhXifMuE5JJ6EuxUJwGvg8R/AMjVodTF4NcDZT05i9Ez/uwSx+5oDcOTTbS172x66G1rRJF0GAt2CZlBUFYDIAEffq9BKEG5ZPhMAAwk4GrquwaJsBGSrPz/6DmPnB6vORFUAJP7ReG3q4I3b7oce2HBdEm7aJJ6yYNCzrjLg+zL6JDwg4XBKUrxbkmACIJjY106b8KwAv3/cgfLI+GME8f61Ajhx08Ob18XrsxRQAzDjBBAHLAkhshBA2YaizgA8K0UJ4BQnbCUPC1QmaIuMheLQKE5/euIkAdwZOQCJ31Pf1vxW64Y7SIgFTyPBsRpoVlxMcCZMSwKIqJNwEfkQQK4CgLPA52TK4DOhk526jv+CfHf/kwTxdmQAJN7QNM1dc187YrUZOC6J56grADCEyRmwpIVYJAEI6zBIZfyKADzslIny8Dh++/p7SlBgEoQXFcC9qfr0Fys33AovsOAbtrAOAwj7CCuReN2QLyCPS8uwjUoyAyIjnAlZUqdaKBymodFR0vBHxy8YGxq5jwC+jArgjcUrlj61ZHUrKq5JwtkyoYVsEX3wQVaHeKKEOpNnAE5FWUoB/Muw4zr+7uxF35/n3iSAp6MC+HbZbavX12UzKHuGqDygiEv/S/HCPgKAIuurMuqq0qmqkDgX/2KfcMRtHfncKLp+PH2cADZEBdC/6s612XgiBsfXZek0TeV9SwEYl98DAsBRwh0J4V1cQi8dfJhLRQedJ04NEEBTVADl1XetjfHFE/CNy2K57puq/nP5ZP9rajvytyiV4jJzJIR7efmcVpDGCQxw+rtTFQKwowNYtyamhQJpFaLZNrRqLJ7tM5GBQB7k8NKaqDzBbN6OKxBOn/w1UoD+VbeszBqmcXGoSLi4fbUQYDIDfA4ERNgXzVI8D8/10PnzH5Fa6Ntlq5aujyfj0+ygqalP2S6Qgll8FcLDUSyU0N157hsC2BQVwL6mloZdtfXpGXbSJrfUptk2UFC4MtDQwAXk+vKvE8CzUQFsTaZqjtzQmr3yH4e2EpeahqnZCLgCzVBCw9F9tg/F8fImAvgmKgBW465Y2Qxz6jm4dCtdU/eBMXmwuSKpQy0P88wQlYqDM3/1nSLxN89GWzXN3N7aTOLlJrrMpo+8LitT2NRxdVJWmmyvHXk3zADR05vHWKG0mwDejRpAZGH5DQ2wY+Zl24iLTbQXsrGDaU1kQEafWuwKN3cVdaFd3k4USw66e4dmdXirBlAQO2zLPLB0SUZ8mroo+mF3aof9EQMwaCAjzpHnpo4hKrJLnVqhPM9HV+8FuJ6/nQA+uCYACuK1hG0909K4SBab8FKjyOvxJDSesbBHMtWt7Ml2olSAX6LWulwUM/xoyRzncyMolt2XSPwL1ei52g/1b2USsT1NtQlR/zXLktGvSckZT6gsKABX2ac0hqBYoJUhxuWZoJEbKSI/Vn6bxD9ZrZa5fK1ypKWuZmuyRvmeIq8nKCs8OQtsJbaRH8hGjgWPj8IfZ4gxCUPnoex46MoVeMtFBDA2nwBbLUM/0taYkOI58kk6G8k0QaQkBGVBtBJ8cCnyfmGYIEYkBK1so57hEgpl73ESv/9qdMz1m7mDi1OxR9OUBb0uCz1dDz1VK7KgEwQoC+KzAXueRPtjFxAQhD+Shz88SNF30TVcrupDfNQA60xdO9FWGxMXl7FkOYxsCwFwJqSVxA3M0eeIj16A19cFb7BXnI3zow7GHb+qr1EiBThw4MA+WnbNZQ8a+3fu3Pn4QgEE27dvRzKZvKrXFwoFHDp0CARw1ToiyUA2m0VT0xVb94tGf38/BgYG+HFBMyAAWlpa0NzcXNVre3t70dPTs+AAwbZt2+ayBQ4fPrzwFmpsbERDQ0NVrx0cHEQul+PH/y00F4Bgy5Ytc9kCR48eXXgL8XNdXZ2Ysxn5fF5MNRYuA1NBqJTuam1tpb5+5i+UDcNAd3c3l9A5CY8aINi8eXNVrzl27NicrBM1wISVMpmMmNON4eFhMdW4fjJwCcw9tPB8IcwKR5vGizS/ItFfRfl+1+x/JdhW7e3t4rmjoyMSu8w3wNRONRK7zCvAfI1/AC/dEW3UUe1uAAAAAElFTkSuQmCC);
+  width: 64px;  
+  height: 64px;
+}
+
+img.lamp-off-icon {
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAFgUlEQVR42u2aWUhcVxjHj/u+b4xbBPvgWBFFUUZQa2tFGR9cHn1MiRgakpeWFAuhJaWhfUloSLCkj/ZVkBEGRQkqcZmIFSUgVkFFxX3BHXX6/W/nDMeTGZ3rXB0L/eDjXOfOvfP/ne87y3evXuw/bl6eFnCrAFpaWgzUGMm/JI8m/8R26m/yDfIu8o7GxsaBWwVAwh9T06TT6VLv3LnDEhMTWUBAAAsLC1PO7+zssMPDQ7awsMDm5ubY8vLyHH38mkCeeRSAhN+DcL1en5OXl8eCg4Pt546OjtjJyQmzWq3M19eXBQYG2s/t7u4yi8XCpqam/rKB/H7jACT+aURERHNlZSWjVvkMvXx2dqaIhqGV3cfHxx6Z9fV11tXVhQj9RBDf3xgAif8tLS3t67KyMubn56cI56K5iaI5FHcYogIQRKqnp4fNz8+/JIgH1w6Ank9OTm6uqqpS/oYA5UZe528lCpdbbt7e3iw8PFw57ujoYIuLi6ojoQqAxN+ldHlTV1enpAJ6HiIgHq2z3hddjAI3pCDGS1tbG9LpK4L447oA3tfX1+dFR0ez/f19u3DuPAqOhMsQouHayMhItra2BogRAsjXHIDEP0xPT3+OvD84OLAPSPw4WjEKsuDT01N7y+Fkw5hAOmE8zMzMPCKIF5oBkHgfEnhSU1OjhJunDoRzCO4igCj8MgAYBvXW1hZrb2/H93wJ4lQrgM8TEhK6y8vLlVzlvS2K51GQIwDRHEB0R4Z7+Pv7s+7ubix2XxBAj1YAv2RlZX2TnZ2tzDpi6ogQ8hhQGwFYUFAQGx8fZxMTE78SwLdaAbwrLi42JCUlsePj4496XkwfDiBCyBGQB7FoWLFpOmV9fX0DBFCkFcAKrbhxISEhihieLnLvixEQZyIRwNE0KhoGM2Y4s9m8SgDxWgEcVVdX+0MwTBy0jtYBmLh4udr7iiC6F4BNJtMxAQRoBmA0Gv25SFG02IrmbCV2xfA9Wpk1BVipqKiIwwzBTUwb0bl42V0VD8M46+zs1DSF3hUVFRmioqLOXywJFwFkEDW2sbHBBgYG+gmgWCuAVzSNNqWmpjq+iQTAzdEO1RWbnp5mk5OTzwjgO60AjHFxcab8/Mu3KJfBuAIxODjINjc3iwmgXysAZStRWlp6rrK6SDx3OZ0ug0C11t/f/4HEf+qKNjWbuWZKoaeZmZkXipfXBG5yPeAMYnR0FNuIBwTwUmsAJQoGg8FeEsoA8tQqindUnclGacOGh4ddGryqAWwQ90JDQ1sKCgqUFdOReDECOHYk3hEEpk6aebDXaiCAP68FwAbxMxU0j3Nzc+29LIrn2wtHY0De1PFz+GxkZARb6R9J/BM1eq5a1D+njd1DvV7/Ue9ftjvl4nkLm5qaYrOzsy9I/CO1Wtx5rGLKycnB9HquPuDurEKTd6eYdYaGhgATRgC7NwlgpL27CYMa40EGcFTgcPEixNjYGGrh+yT+9VV0uPtk7k1GRsZd1AmAwDMiZwAQjGqOi8cxHjlaLBZVRbzWAHm0sL0vLCy0l4NwwPCxABN7HRUdZhwYep/2Paoeo2gN8IqaJnfuwf59NnrfUwDWhoYGhkrtKra3t8daW1sZAVxZhyYRwEwUH3/p1v2crayssNXVVRx6NAIKAN4H6HQ6VdcuLS0pxbunAay1tbXu3EJ5HurxFIqNjWUxMTGqrsW7ATwLZf+nkHsAVryhccfMZrPnUwjHKPjlot+ZYd8Pt5nnIiCC0FTalJKSoqy2FxlW6Pn5eUyhbgnXGsBaUlKi6pre3l63UkdrAHsq4f0Bf2sp2/b2tuI2uz0RkGA+owb+hEcFvU32A/lbEv1Wy9+7tv+VQFphlwpDwaJFutw0gLhT1SRdbhTgpuwfCYpCbZTDm4UAAAAASUVORK5CYII=);
+  width: 64px;  
+  height: 64px;
+}
+</style>
+<script type="text/javascript">
+
+registerModelToViewHandler("sensors.DefaultRele",updateDefaultReleViewValue);
+
+function editDefaultRele(){
+	hideShowComponent("sensors.DefaultRele.viewForm","sensors.DefaultRele.editForm");
+}	
+
+function updateDefaultReleViewValue(entity,key,val){
+	updateEntityViewValueDefault(entity,key,val);
+	console.log("updateDefaultReleViewValue key="+key+" value="+val);
+	if(key=='on'){
+		console.log("on=",val);
+		processJsonOnImageComponent(entity);
+	}
+}
+function processJsonOnImageComponent(data){
+	
+	var id=data.name+'ImagesBody';
+	var descr=data.descr;
+	
+	
+	var comp=document.getElementById(id);
+	var lookUpClassName=data.name+"_Image";
+	
+	if(comp!=undefined){
+		var childNodes = comp.getElementsByClassName(lookUpClassName);
+		
+		for(i in childNodes){
+			hideComponent(childNodes[i].id);
+		}
+		var imageName=(data.name+"_"+data.on);
+		showComponent(imageName);
+	}
+}
+	
+function saveDefaultRele(){
+	formSubmitAsForm("sensors.DefaultRele.form","sensors.DefaultRele.div",onDataPostedDefaultRele);
+}
+function onDataPostedDefaultRele(response){
+	hideShowComponent("sensors.DefaultRele.editForm","DefaultRele.viewForm");
+}
+	
+function lampWidgetClick(component){
+	var componentId=component.id;
+	var ind=componentId.indexOf('_');
+	
+	var val=0;
+	
+	if(componentId.endsWith('0')){val=1;};
+	var sensor=componentId.substr(0,ind);
+	var url='/sdpcv';
+	
+	console.log("Default rele pressed");
+	
+	document.getElementById("sensors.DefaultRele.on").value=val;
+	
+	formSubmitAsForm("DefaultReleFormValue","sensors.DefaultRele.div",onWingetClickSubmittedDefaultRele);
+}
+function onWingetClickSubmittedDefaultRele(response){
+	hideShowComponent("sensors.DefaultRele.editForm","sensors.DefaultRele.viewForm");
+}
+</script>
+<div>
+
+<div id="sensors.DefaultRele.div">
+
+	<div id="sensors.DefaultRele.viewForm" class="w3-card-4" style="width: 400px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+			<div class="w3-container w3-teal">
+				  <div><h3 id="sensors.DefaultRele.descr">sensors.DefaultRele</h3></div>
+			</div>
+			 
+			<form id="DefaultReleFormValue" class="w3-container">
+			
+				<input id="sensors.DefaultRele.id" name="id" type="hidden">
+				<input id="sensors.DefaultRele.group" name="group" type="hidden">
+				<input id="sensors.DefaultRele.name" name="group" type="hidden">
+				<input id="sensors.DefaultRele.on" name="on" type="hidden">
+									
+				<div id="DefaultReleImagesBody" class="w3-row">
+					<div class="w3-half w3-card-4 w3-center" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; width: 92px; height: 120px;">
+						<img id="DefaultRele_" class="w3-center DefaultRele_Image lamp-q-icon" 
+							style="cursor: pointer; object-fit: contain; margin-top: 10px; "
+							title="Ожидание"
+							alt="Ожидаю подключения"/>
+						<img id="DefaultRele_1" class="w3-center DefaultRele_Image lamp-on-icon" 
+							style="cursor: pointer; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
+							title="Выключить"
+							onclick="lampWidgetClick(this);" 
+							alt="Выключить"/>
+						<img id="DefaultRele_0" class="w3-center DefaultRele_Image lamp-off-icon" 
+							style="cursor: pointer; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
+							title="Включить"
+							onclick="lampWidgetClick(this);" 
+							alt="Включить"/>
+					</div>
+				</div>
+			</form>
+			
+			<footer class="w3-container w3-teal w3-display-container">
+			 		<div class="w3-row">
+			 			<div class="w3-half">
+						      <button id="confirm_editBtn" 
+						      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
+						      	style="margin-top: 2px; margin-bottom: 2px;"
+									onclick="editDefaultRele();">Редактировать</button>
+						</div>
+					</div>
+   			</footer>	
+		</div>
+		
+		<div id="sensors.DefaultRele.editForm" class="w3-card-4" style="display:none; width: 400px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+			<div class="w3-container w3-teal">
+				 <div><h4>Редактирование</h4></div>
+			</div>
+			
+			<form id="sensors.DefaultRele.form" class="w3-container">
+				<input id="sensors.DefaultRele.id.edit" name="id" type="hidden">
+				<input id="sensors.DefaultRele.group.edit" name="group" type="hidden">
+				
+				<div class="w3-row" style="margin-top: 15px;">
+						<label for="sensors.DefaultRele.name.edit" style="max-width: 240px;">
+							<b>Имя</b>
+						</label>
+						<input id="sensors.DefaultRele.name.edit" name="name" class="w3-input w3-border" style="width: 90%; margin-bottom: 10px;" type="text" value="?" readonly="readonly">
+				</div>
+						
+				<div class="w3-row" style="margin-top: 15px; margin-bottom: 5px;">
+						<label for="sensors.DefaultRele.descr.edit" style="max-width: 240px;">
+							<b>Описание</b>
+						</label>
+						<input id="sensors.DefaultRele.descr.edit" name="descr"
+							 class="w3-input w3-border" style="width:90%" type="text" value="?"
+							 >
+				</div>	
+										
+			</form>
+			
+			 <footer class="w3-container w3-teal w3-display-container">
+		 		<div class="w3-row">
+		 			<div class="w3-half">
+					      <button id="confirm_okBtn" 
+					      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
+					      	style="margin-top: 2px; margin-bottom: 2px;"
+								onclick="saveDefaultRele();">Сохранить</button>
+					</div>
+					<div class="w3-half">
+						  <button id="confirm_closeBtn" 
+						  	class="w3-btn w3-white w3-border w3-border-red w3-round-large" 
+						  	style="margin-top: 2px; margin-bottom: 2px;"
+								onclick="cancelEditDefaultRele();">Отменить</button>
+					</div>
+				</div>
+   			</footer>
+		</div>
+	
+	</div>
+</div>
+<!--DefaultRele info ends-->

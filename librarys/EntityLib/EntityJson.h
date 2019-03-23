@@ -39,6 +39,10 @@ public:
 
 	}
 
+	virtual void postDataPosted(){
+
+	}
+
 	int getId(){
 		return this->id;
 	}
@@ -132,6 +136,10 @@ public:
 
 	virtual const char* validateField(const char* key,const String& value){
 		return "";
+	}
+
+	void sendAsEventSourceEntity(){
+		modelDataProvider->sendEntityAsEventSourceNow(id);
 	}
 
 protected:
