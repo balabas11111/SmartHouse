@@ -76,7 +76,7 @@ public:
 
 	void onNtpTimeReceived(){
 		timeClient->end();
-		Serial.println(FPSTR("On Ntp received"));
+		//Serial.println(FPSTR("On Ntp received"));
 	}
 
 	virtual void update() override{

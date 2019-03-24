@@ -71,6 +71,22 @@ public:
 	  return _address.dword;
 	}
 
+	static void initSerial(){
+		Serial.begin(115200);
+		delay(1000);
+		Serial.println(FPSTR("EntityLib Device starting"));
+	}
+
+	static void printHeap(){
+		Serial.print(FPSTR("heap = "));
+		Serial.println(ESP.getFreeHeap());
+	}
+
+	static void printMillis(){
+		Serial.print(FPSTR("millis = "));
+		Serial.println(millis());
+	}
+
 
 };
 

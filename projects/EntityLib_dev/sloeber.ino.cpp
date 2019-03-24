@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2019-03-25 00:29:21
+//This file has been generated on 2019-03-25 01:45:25
 
 #include "Arduino.h"
 #include "Arduino.h"
@@ -20,10 +20,13 @@
 #include "DHT22sensor.h"
 #include "DS18D20sensor.h"
 #include "OutputPin.h"
+#include "TM1637DisplayTime.h"
 #include <Ticker.h>
 
 void setup() ;
 void loop() ;
+void printHeap();
+void updateDisplayTime();
 void updateSensors();
 
 #include "EntityLib_dev.ino"

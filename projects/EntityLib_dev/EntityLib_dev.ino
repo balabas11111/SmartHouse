@@ -16,12 +16,16 @@
 #include "DHT22sensor.h"
 #include "DS18D20sensor.h"
 #include "OutputPin.h"
+#include "TM1637DisplayTime.h"
 #include <Ticker.h>
 
 Ticker ticker;
 
 ServerSettingsBox conf("EntityLiv dev settings");
 NtpBox ntpBox;
+
+TM1637DisplayTime display;
+
 Bme280sensor bme280;
 Bh1750sensor bh1750;
 OutputPin rele(D4,"DefaultRele");
@@ -35,42 +39,37 @@ WiFiManagerAsync server(&conf, &dao);
 
 void setup()
 {
-Serial.begin(115200);
-delay(5000);
-Serial.println(FPSTR("Device starting"));
+ObjectUtils::initSerial();
 FileUtils::init();
 //FileUtils::deleteAllFiles("/");
-Serial.print(FPSTR(" heap="));
-Serial.println(ESP.getFreeHeap());
+
+ObjectUtils::printHeap();
 dao.init();
-Serial.print(FPSTR(" heap="));
-Serial.println(ESP.getFreeHeap());
+ObjectUtils::printHeap();
 server.init();
 ntpBox.startTime();
 
 ticker.attach(conf.refreshInterval(), updateSensors);
+ticker.attach(1,updateDisplayTime);
+ticker.attach(30,printHeap);
 
-Serial.print(FPSTR(" heap="));
-Serial.println(ESP.getFreeHeap());
-Serial.print(FPSTR("millis = "));
-Serial.println(millis());
+ObjectUtils::printHeap();
+ObjectUtils::printMillis();
 }
-
-int i=0;
 
 void loop()
 {
-	delay(30000);
-	Serial.print(FPSTR("i="));
-	Serial.print(i);
-	Serial.print(FPSTR(" heap="));
-	Serial.println(ESP.getFreeHeap());
-	i++;
 
+}
+
+void printHeap(){
+	ObjectUtils::printHeap();
+}
+
+void updateDisplayTime(){
 	ntpBox.update();
-
-	bh1750.setField("light", i);
-	bh1750.sendAsEventSourceEntity();
+	display.tick();
+	display.updateTime(ntpBox.timeHm());
 }
 
 void updateSensors(){

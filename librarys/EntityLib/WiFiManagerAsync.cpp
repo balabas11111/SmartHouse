@@ -267,10 +267,10 @@ void WiFiManagerAsync::sendAsEventSourceNow(JsonObject& obj) {
 	if(!getSendRequired()){
 		return;
 	}
-	Serial.print(FPSTR("SENT "));
+	/*Serial.print(FPSTR("SENT "));
 	obj.printTo(Serial);
 	Serial.println();
-
+*/
 	String msg;
 	obj.printTo(msg);
 
