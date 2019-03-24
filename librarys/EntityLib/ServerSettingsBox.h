@@ -73,7 +73,8 @@
 
 class ServerSettingsBox: public EntityJson {
 public:
-	ServerSettingsBox(const char* firmware):EntityJson("settings", "ServerSettings", "Wifi Server Device settings",_DEFAULT_SERVER_DESCRIPTOR){
+	ServerSettingsBox(const char* firmware)
+		:EntityJson(ROOT_GROUP_SETTINGS, "ServerSettings", "Wifi Server Device settings",_DEFAULT_SERVER_DESCRIPTOR){
 		this->firmware=firmware;
 		this->devId="ESP_Dev_ID";
 	};

@@ -326,6 +326,8 @@ JsonArray& JsonDao::getEntityDataFieldsByAction(EntityJson* entity,
 }
 
 bool JsonDao::setField(int entityId, const char* key, int value) {	return setField<int>(entityId, key, value); }
+bool JsonDao::setField(int entityId, const char* key, long value) { return setField<long>(entityId, key, value);}
+bool JsonDao::setField(int entityId, const char* key, ulong value) { return setField<ulong>(entityId, key, value); }
 bool JsonDao::setField(int entityId, const char* key, float value) {  return setField<float>(entityId, key, value); }
 bool JsonDao::setField(int entityId, const char* key, const char* value) {	return setField<const char*>(entityId, key, value); }
 bool JsonDao::setField(int entityId, const char* key, char* value) {  return setField<char*>(entityId, key, value); }
@@ -349,6 +351,9 @@ bool JsonDao::setField(int entityId, const char* key,String value) {
 }
 
 int JsonDao::getFieldInt(int entityId, const char* key) { return getField<int>(entityId, key); }
+long JsonDao::getFieldLong(int entityId, const char* key) { return getField<long>(entityId, key); }
+ulong JsonDao::getFieldULong(int entityId, const char* key) { return getField<ulong>(entityId, key); }
+
 float JsonDao::getFieldFloat(int entityId, const char* key) { return getField<float>(entityId, key); }
 const char* JsonDao::getFieldConstChar(int entityId, const char* key) {	return getField<const char*>(entityId, key);}
 char* JsonDao::getFieldChar(int entityId, const char* key) { return strdup(getField<const char*>(entityId, key)); }

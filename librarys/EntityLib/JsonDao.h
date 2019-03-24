@@ -92,12 +92,16 @@ public:
 	JsonArray& getEntityDataFieldsByAction(EntityJson* entity,const char* action);
 
 	virtual bool setField(int entityId,const char* key,int value) override;
+	virtual bool setField(int entityId,const char* key,long value) override;
+	virtual bool setField(int entityId,const char* key,ulong value) override;
 	virtual bool setField(int entityId,const char* key,float value) override;
 	virtual bool setField(int entityId,const char* key,const char* value) override;
 	virtual bool setField(int entityId,const char* key,char* value) override;
 	virtual bool setField(int entityId,const char* key,String value) override;
 
 	virtual int getFieldInt(int entityId,const char* key) override;
+	virtual long getFieldLong(int entityId,const char* key) override;
+	virtual ulong getFieldULong(int entityId,const char* key) override;
 	virtual float getFieldFloat(int entityId,const char* key) override;
 	virtual const char* getFieldConstChar(int entityId,const char* key) override;
 	virtual char* getFieldChar(int entityId,const char* key) override;

@@ -7,19 +7,21 @@
 #include <EntityConsts.h>
 #include <ObjectUtils.h>
 #include <FileUtils.h>
-#include <ServerSettingsBox.h>
+#include <NtpBox.h>
 #include <WiFiManagerAsync.h>
 
+#include <ServerSettingsBox.h>
 #include "Bme280sensor.h"
 #include "Bh1750sensor.h"
 #include "OutputPin.h"
 
 ServerSettingsBox conf("EntityLiv dev settings");
+NtpBox ntpBox;
 Bme280sensor bme280;
 Bh1750sensor bh1750;
 OutputPin rele(D4,"DefaultRele");
 
-EntityJson* entities[] = {&bme280,&bh1750,&conf,&rele};
+EntityJson* entities[] = {&bme280,&bh1750,&conf,&rele,&ntpBox};
 JsonDao dao(entities, ARRAY_SIZE(entities));
 
 WiFiManagerAsync server(&conf, &dao);
@@ -37,9 +39,10 @@ dao.init();
 Serial.print(FPSTR(" heap="));
 Serial.println(ESP.getFreeHeap());
 server.init();
+ntpBox.startTime();
 Serial.print(FPSTR(" heap="));
 Serial.println(ESP.getFreeHeap());
-Serial.print(FPSTR("millis"));
+Serial.print(FPSTR("millis = "));
 Serial.println(millis());
 }
 
@@ -53,6 +56,7 @@ void loop()
 	Serial.print(FPSTR(" heap="));
 	Serial.println(ESP.getFreeHeap());
 	i++;
+	ntpBox.update();
 	bh1750.setField("light", i);
 	bh1750.sendAsEventSourceEntity();
 }

@@ -35,6 +35,8 @@ public:
 	virtual bool hasFieldChar(int entityId, const char* key){return JsonObjectUtil::hasField<char*>(getEntityData(entityId), key);}
 
 	virtual bool setField(int entityId,const char* key,int value)=0;
+	virtual bool setField(int entityId,const char* key,long value)=0;
+	virtual bool setField(int entityId,const char* key,ulong value)=0;
 	virtual bool setField(int entityId,const char* key,float value)=0;
 	virtual bool setField(int entityId,const char* key,const char* value)=0;
 	virtual bool setField(int entityId,const char* key,char* value)=0;
@@ -43,6 +45,8 @@ public:
 	virtual String getByTemplateKey(const String& var)=0;
 #endif
 	virtual int getFieldInt(int entityId,const char* key)=0;
+	virtual long getFieldLong(int entityId,const char* key)=0;
+	virtual ulong getFieldULong(int entityId,const char* key)=0;
 	virtual float getFieldFloat(int entityId,const char* key)=0;
 	virtual const char* getFieldConstChar(int entityId,const char* key)=0;
 	virtual char* getFieldChar(int entityId,const char* key)=0;

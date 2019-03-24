@@ -15,7 +15,9 @@ img.lamp-off-icon {
 <script type="text/javascript">
 
 registerModelToViewHandler("sensors.DefaultRele",updateDefaultReleViewValue);
-
+function cancelEditDefaultRele(){
+	hideShowComponent("sensors.DefaultRele.editForm","sensors.DefaultRele.viewForm");
+}
 function editDefaultRele(){
 	hideShowComponent("sensors.DefaultRele.viewForm","sensors.DefaultRele.editForm");
 }	
