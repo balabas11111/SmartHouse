@@ -30,6 +30,7 @@
 #define _USER_PASS "userPass"
 #define _ADMIN_LOGIN "adminLogin"
 #define _ADMIN_PASS "adminPass"
+#define _REFRESH_INTERVAL "interval"
 //device info
 #define _DEVICE_ID "deviceId"
 #define _DEVICE_FIRMWARE "deviceFirmware"
@@ -61,6 +62,7 @@
 				\"userPass\":\"\",\
 				\"adminLogin\":\"admin\",\
 				\"adminPass\":\"admin\",\
+				\"interval\":60,\
 				\"deviceId\":\"devId\",\
 				\"deviceFirmware\":\"firmware\",\
 				\"deviceDescr\":\"Default Device description\"},\
@@ -121,6 +123,8 @@ public:
 	int channelAP(){ return this->getModelDataProvider()->getFieldInt(id, _AP_CHANNEL);}
 	int hiddenAP(){ return this->getModelDataProvider()->getFieldInt(id, _AP_HIDDEN);}
 	int maxConnAP(){ return this->getModelDataProvider()->getFieldInt(id, _AP_MAXCONN);}
+
+	int refreshInterval(){ return this->getModelDataProvider()->getFieldInt(id, _REFRESH_INTERVAL);}
 
 	bool isAccessPoint(){return this->getModelDataProvider()->getFieldInt(id, _IS_AP);}
 	bool isStaticIp(){return this->getModelDataProvider()->getFieldInt(id, _IS_STAT_IP);}

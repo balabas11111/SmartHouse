@@ -44,6 +44,12 @@
 #define JSONKEY_files   "files"
 #define JSONKEY_file    "file"
 
+#define JSONKEY_items     "items"
+#define JSONKEY_itemCount "itemCount"
+#define JSONKEY_temp      "temp"
+#define JSONKEY_hum       "hum"
+#define JSONKEY_press     "press"
+
 #define JSONKEY_declaredFields  "declaredFields"
 #define JSONKEY_declaredActions "declaredActions"
 

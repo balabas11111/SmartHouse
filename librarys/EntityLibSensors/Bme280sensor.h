@@ -11,6 +11,9 @@
 #include "EntityJson.h"
 #include "UpdateAble.h"
 
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
+
 #define BME280Descriptor "{\"data\": {\"temp\":\"-1\",\"hum\":\"-1\",\"press\":\"-1\"},\
 \"model\":{\"var\":[\"temp\",\"hum\",\"press\"],\"tvar\":[\"temp\",\"hum\"]}  }"
 
@@ -21,17 +24,26 @@ public:
 
 	virtual ~Bme280sensor(){};
 
-	virtual void init() override{
-
-	}
+	virtual void init() override{	}
 
 	virtual void postModelDataInit() override{
-
+		bme = new Adafruit_BME280();
+		bme->begin();
 	}
 
 	virtual void update() override{
+		float h = bme->readHumidity();
+		float t = bme->readTemperature();
+		float p = bme->readPressure();
 
+		this->getModelDataProvider()->setField(id, JSONKEY_temp,t);
+		this->getModelDataProvider()->setField(id, JSONKEY_hum,h);
+		this->getModelDataProvider()->setField(id, JSONKEY_press,p);
+
+		sendAsEventSourceEntity();
 	}
+protected:
+	Adafruit_BME280* bme;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSENSORS_BME280SENSOR_H_ */

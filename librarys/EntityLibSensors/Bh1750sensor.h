@@ -21,9 +21,7 @@ public:
 
 	virtual ~Bh1750sensor(){};
 
-	virtual void init() override{
-
-	}
+	virtual void init() override{	}
 
 	virtual void postModelDataInit() override{
 

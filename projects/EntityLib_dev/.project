@@ -42,9 +42,29 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/variants/d1_mini</locationURI>
 		</link>
 		<link>
+			<name>libraries/Adafruit_BME280</name>
+			<type>2</type>
+			<location>D:/projects/!!!SmartHouse/librarys/Adafruit_BME280</location>
+		</link>
+		<link>
+			<name>libraries/Adafruit_Sensor</name>
+			<type>2</type>
+			<location>D:/projects/!!!SmartHouse/librarys/Adafruit_Sensor</location>
+		</link>
+		<link>
 			<name>libraries/ArduinoJson</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/ArduinoJson/5.12.0</locationURI>
+		</link>
+		<link>
+			<name>libraries/DHT_sensor_library</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DHT_sensor_library/1.2.2</locationURI>
+		</link>
+		<link>
+			<name>libraries/DallasTemperature</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DallasTemperature/3.7.6</locationURI>
 		</link>
 		<link>
 			<name>libraries/ESP8266WebServer</name>
@@ -90,6 +110,21 @@
 			<name>libraries/NTPClient</name>
 			<type>2</type>
 			<location>D:/projects/!!!SmartHouse/librarys/NTPClient</location>
+		</link>
+		<link>
+			<name>libraries/OneWire</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire/2.3.3</locationURI>
+		</link>
+		<link>
+			<name>libraries/SPI</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/SPI</locationURI>
+		</link>
+		<link>
+			<name>libraries/Ticker</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Ticker</locationURI>
 		</link>
 		<link>
 			<name>libraries/Wire</name>

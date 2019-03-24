@@ -2,6 +2,7 @@ eclipse.preferences.version=1
 encoding//components/bh1750.html=UTF-8
 encoding//components/bme280.html=UTF-8
 encoding//components/defaultRele.html=UTF-8
+encoding//components/dht22.html=UTF-8
 encoding//componentsAdmin/NtpBox.html=UTF-8
 encoding//componentsAdmin/ServerSettingsBox.html=UTF-8
 encoding//componentsBase/defaultFooter.html=UTF-8

@@ -1,0 +1,120 @@
+<!--dht22 starts-->
+<style>
+img.temperature-icon {
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJ/SURBVGhD7Zk/aBRBFMafIgGFGPQuEBAVVAzYKFwT7vYS0FjYpLPQMuZEG2tLC0HBwk4UbLSTtCHExCSHJzbZeHcYby/3x1SCrYUI/tnx22E2rPI4b6p9TvKDj4Xbmcf37czs7O7RLjuBWqN7uhp0nr1rtrdw7OD4pLq5ecSc/j9YDzo5mP9SbXZUUgjzea3VOmmayQem/b9DbCtoz5tmsln/8PE4GyBW0P7p+58OmOZy8RutMTZAQv5G95hpLpdas+tx5pOKg4QePQyLtJTQeV1EAlZBilRRRVKxwnG6qotIwCrIOE0pj67HCifolC4iAZsgorGcWjcwpe5vK0/ndBEJ7Mw14sqIiMZqRFy5a7mzRlzZ2UUTLM/l67V6o5feLywcjdpmppdHszMruVgHr709rItIQBXIS857VgXSI5KdKVeGS2UVK1Mqy1kjNkGGS6svsqXVbiwEmdJFJGATRDQ2QTLTbwaHblYOxaLLGwO6iARsgjizRpwJ4szUEo1NEGduvw6tEUceUcSiiPbgneIBaz4hPL7fMl3koc7QAN4nZjnjnBDmcRTcdJcDjD3lDPcSgt813WWA6XSRM/ovIcgvUV9OYOiPd28bRdPRlEkXNUEj+soyJvsR+n4Nx2i/KZceyqNJzqCNwgKdNeXSA4v8CmfOSrgYplx64GpeYs3ZyKOcKZceMHGCNdensEa+h3kaNOXSBWbqnMl+hKm5aMqkT/SpkzPZjxDkgimTPnjU2AtDLzmjvYSRfG5KyEFN0hCMrXGGOaHtK5Ujmf+3RxsbDD7C6PzgzEfCuW/QPWyk+0w3ueAuNArTd2D4NbQFtaEV/HYbQfV3313ch+g3dpTZj2wLjMMAAAAASUVORK5CYII=);
+  width: 50px;  
+  height: 50px;
+}
+img.humidity-icon {
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAARMSURBVGhD7ZldaBxVGIZHqLWIF/YiF+JVK2gbUYO9SIlJUxtQtNZIW7FshMa0rqQoiBe22IIKIr3zRlJaI7UxpmxYMtPtssn+Du5PBTHSYPyrmU0FQWrthZ0fZ2fSOX5nOWtD8m12d+bMhTgPvITszJzvfffMd85MIgQEBAT8P8ko9n55ntzDfv1vkrz696ZU2VLTZftj9pEnnG7hgNMjpP9VtzDr7BDK8PMjdgp/CCF3pMtWBkKQlGI5EKiXHXIN6RGOgchKQagCO4U/ECJMQ9SUKtsL8iLZwA67gnQJHaRbCNcEszHqa5DEFactrVg3lgdh+oCdwgUIEvI1CNxK55AQIMucWTS3sNNc4zwhbIcAJyFAzLcgtBdoT+BBqKws7R92uiuguYdpgJq4B5mcJ+vTiv0DHuC2ksrSy+wSV/g+IzAT72DGV8u6Fv+VbGSXucaXHqF7BjS4jhtHpNin2KUtA7dWu2+rFsyGiBquJ8W6lblaeZxd3hK+9QhtcNRsQ1kZNkRLQI/sAfPpWzvXzdm77vpde/7+CXbIPXQFgs3ua9xoE1Ls59hQLSNmL4WkXIlI2ZL3GUktLIVQg00qpdjfyzJZx4Zrikg+3ybmCtukXPE4lyDUAHyji5jBlqRUhtiQTTGVLQ5XA9TkNUhqofJKUrHJyGyFnPjSJEdzJnmvYJLRyxaZgc9R04iqz2EtzArMxAAEUODnNc9Btn1D7nw9aVx/5BONbBpRV2nrGY0MXjTI2TkLNb9SiSutb5JceiQkmSNYAEx9Ezp5H2ZK/Gl1KPFnqzqTPWO60dtgVmRZ3hAvFDbWJMnFVz0H6TqnGpjpRur8TCPPRvSqusY08sCp28cOxvQP2fAoYPhY1fhKuQ0yIGqHl5vjpZ3j2h+sBAr3IM9E9B8xI161GWZncLr+bs/11jooknsfOq06mBEe2jelTrNSDfHU7IfixnHMAC/1jms3Wam6cFl+90aNrzADvESb/42808bKoXDZEJ8+r/2GGeCp16b1flYOhcsjyq4vtD+x4jw1lNCaemTx1CO7I/ovWHGeGp6xulg5FDFT2CNmi2kpW/zOdZC9Ub2EFeclugQfkdf+EyuXHhlKmEcxA7y0Y1z7i5Wqi5TJt4u5UngqWxp1HeTdGLl7q4/7yEuSEWOlGuL5ofGFSf1bzIRXbTmtksPJSgcrU5cLcmE79MdJCBDzFOSttPmgH7OyP6rnWYk14fpiNSDpY5gZt+o8q5lvTmv3seHXhNuM1Oif1OcwU63q4TOqE06ofWzYpuHyYkV5cZ6s9xrmsU9vLoXjRlNvh6Jc7KCrVU2eVi0Mepu1w7eKGV1LT45rN4YTlUfZMA0Bw3zfRzDoAtAf1WcbBdoM6v5cUwdjxgl2adNIcukA3dGXaRZUhmcu/v96o/vMoYvG2/uiemF3RF3om9CuPwUPmnALXg5d0M8fiVud7NSAgICAgBUIwj/1oWMyLCcBQQAAAABJRU5ErkJggg==);
+  width: 50px;  
+  height: 50px;
+}
+</style>
+<script type="text/javascript">
+hideComponent("sensors.dht22.editForm");
+
+function editdht22(){
+	hideShowComponent("sensors.dht22.viewForm","sensors.dht22.editForm");
+}	
+function cancelEditdht22(){
+	hideShowComponent("sensors.dht22.editForm","sensors.dht22.viewForm");
+}
+function savedht22(){
+	formSubmitAsForm("sensors.dht22.form","sensors.dht22.div",onDataPosteddht22);
+}
+function onDataPosteddht22(response){
+	hideShowComponent("sensors.dht22.editForm","sensors.dht22.viewForm");
+}
+</script>
+<div id="sensors.dht22.div">
+	<div id="sensors.dht22.viewForm" class="w3-card-4" style="width: 400px; float:left; min-width: 340px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+			<div class="w3-container w3-teal">
+				 <div><h4 id="sensors.dht22.descr">bmeMeasurer</h4></div>
+			</div>
+			
+				<div id="temperatureDiv" class="w3-row" style="margin-top: 5px;">
+					<div class="w3-quarter">
+						<img class="temperature-icon"/>
+					</div>
+					<div class="w3-third">
+						<label for="sensors.dht22.temp" style="max-width: 240px;">
+							<b>Температура °C</b>
+						</label>
+					</div>
+					<div class="w3-third">
+						<input id="sensors.dht22.temp" name="temp" class="w3-input w3-border" style="width:90%" type="text" value="?" disabled>
+					</div>
+				</div>	
+		   					   		
+				<div id="humidityDiv" class="w3-row" style="margin-top: 5px;">
+					<div class="w3-quarter">
+						<img class="humidity-icon"/>
+					</div>
+					<div class="w3-third">
+						<label for="sensors.dht22.hum" style="max-width: 240px;">
+							<b>Влажность (%)</b>
+						</label>
+					</div>
+					<div class="w3-third">
+						<input id="sensors.dht22.hum" class="w3-input w3-border" style="width: 90%; " type="text" value="?" disabled>
+					</div>
+				</div>	
+				
+				<footer class="w3-container w3-teal w3-display-container">
+				 		<div class="w3-row">
+				 			<div class="w3-half">
+							      <button id="confirm_editBtn" 
+							      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
+							      	style="margin-top: 2px; margin-bottom: 2px;"
+										onclick="editdht22();">Редактировать</button>
+							</div>
+						</div>
+    			</footer>			   		
+		   	
+	</div>
+	<div id="sensors.dht22.editForm" class="w3-card-4" style="display:none; width: 400px; float:left; min-width: 340px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+			<div class="w3-container w3-teal">
+				 <div><h4>Редактирование</h4></div>
+			</div>
+			
+			<form id="sensors.dht22.form" class="w3-container">
+				<input id="sensors.dht22.id.edit" name="id" type="hidden">
+				<input id="sensors.dht22.group.edit" name="group" type="hidden">
+				
+				<div class="w3-row" style="margin-top: 5px;">
+						<label for="sensors.dht22.name.edit" style="max-width: 240px;">
+							<b>Датчик/устройство</b>
+						</label>
+						<input id="sensors.dht22.name.edit" name="name" class="w3-input w3-border" style="width: 90%;" type="text" value="?" readonly="readonly">
+				</div>
+						
+				<div class="w3-row" style="margin-top: 5px; margin-bottom: 5px;">
+						<label for="sensors.dht22.descr.edit" style="max-width: 240px;">
+							<b>Описание</b>
+						</label>
+						<input id="sensors.dht22.descr.edit" name="descr" class="w3-input w3-border" style="width:90%" type="text" value="?">
+				</div>	
+
+		   	</form>
+		   	
+		   	<footer class="w3-container w3-teal w3-display-container">
+			 		<div class="w3-row">
+			 			<div class="w3-half">
+						      <button id="confirm_okBtn" 
+						      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
+						      	style="margin-top: 2px; margin-bottom: 2px;"
+									onclick="savedht22();">Сохранить</button>
+						</div>
+						<div class="w3-half">
+							  <button id="confirm_closeBtn" 
+							  	class="w3-btn w3-white w3-border w3-border-red w3-round-large" 
+							  	style="margin-top: 2px; margin-bottom: 2px;"
+									onclick="cancelEditdht22();">Закрыть</button>
+						</div>
+					</div>
+   			</footer>
+		   	
+	</div>
+</div>
+<!--dht22 ends-->

@@ -57,6 +57,12 @@ function onDataPostedServSetBox(response){
 		  			<label for="settings.ServerSettings.deviceDescr.edit"><b>Описание Устройства</b></label>
 		  			<input id="settings.ServerSettings.deviceDescr.edit" name="deviceDescr" class="w3-input w3-border" type="text" value="?"/>
 		  	</div>
+		  	
+		  	<div class="w3-row">
+				<label for="settings.ServerSettings.interval">Обновление датчиков интервал сек</label>
+				<input id="settings.ServerSettings.interval" name="interval" class="w3-input w3-border" type="number" min="30" max="10000" 
+					value="">
+		  	</div>
 		
 		<div class="w3-row w3-teal">
 	  		<h2>Сеть</h2>

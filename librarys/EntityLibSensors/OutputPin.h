@@ -24,9 +24,7 @@ public:
 	};
 	virtual ~OutputPin(){};
 
-	virtual void init() override{
-
-	}
+	virtual void init() override{	}
 
 	virtual void postModelDataInit() override{
 
