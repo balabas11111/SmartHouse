@@ -251,28 +251,12 @@ int JsonDao::mergeDatas(JsonObject& from, JsonObject& to) {
 
 	int changed=0;
 
-	//JsonObjectUtil::print("from =",from);
-	//JsonObjectUtil::print("to =",to);
-
 	for (const auto& kvp : from) {
 		if(!isDefaultField(kvp.key)){
 			if(!to.containsKey(kvp.key)){
-				/*Serial.print(FPSTR("ADD key="));
-				Serial.println(kvp.key);
-				*/
 				changed++;
 				to.set(strdup(kvp.key), strdup(kvp.value));
 			}else if (to[kvp.key]!=from[kvp.key]){
-
-				/*
-				Serial.print(FPSTR("UPDATE key="));
-				Serial.print(kvp.key);
-				Serial.print(FPSTR(" to[kvp.key]="));
-				(to[kvp.key]).printTo(Serial);
-				Serial.print(FPSTR(" from[kvp.key]="));
-				(from[kvp.key]).printTo(Serial);
-				Serial.println(kvp.key);
-*/
 				changed++;
 				to.remove(kvp.key);
 				to.set(strdup(kvp.key), strdup(kvp.value));
@@ -332,20 +316,17 @@ bool JsonDao::setField(int entityId, const char* key, float value) {  return set
 bool JsonDao::setField(int entityId, const char* key, const char* value) {	return setField<const char*>(entityId, key, value); }
 bool JsonDao::setField(int entityId, const char* key, char* value) {  return setField<char*>(entityId, key, value); }
 bool JsonDao::setField(int entityId, const char* key,String value) {
-	/*Serial.print(FPSTR("SET "));
-	Serial.print(key);
-	Serial.print(FPSTR(" = "));
-	Serial.println(value);
-*/
 	JsonObject& data = getEntityData(entityId);
-	if(data.is<int>(key)){
+	if(data.is<int>(key) || data.is<long>(key)){
 		return setField(entityId, key, value.toInt());
 	}
 	if(data.is<float>(key)){
 		return setField(entityId, key, value.toFloat());
 	}
 	if(data.is<const char*>(key) || data.is<char*>(key)){
-		return setField(entityId, key, strdup(value.c_str()));
+		if(getEntity(entityId)->processFieldPreSave(key, value.c_str())){
+			return setField(entityId, key, strdup(value.c_str()));
+		}
 	}
 	return false;
 }

@@ -142,6 +142,10 @@ public:
 		modelDataProvider->sendEntityAsEventSourceNow(id);
 	}
 
+	virtual bool processFieldPreSave(const char* key,const char* val){
+		return true;
+	}
+
 protected:
 	EntityModelDataProvider* modelDataProvider;
 

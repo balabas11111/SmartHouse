@@ -53,6 +53,21 @@ public:
 		readTemperatures();
 		sendAsEventSourceEntity();
 	}
+	virtual bool processFieldPreSave(const char* key,const char* val) override{
+		String keyStr=key;
+
+		if(keyStr.endsWith(JSONKEY_descr)){
+			keyStr=keyStr.substring(0, keyStr.length()-6);
+			Serial.print(FPSTR("Sensor UID = "));
+			Serial.print(keyStr);
+			Serial.print(FPSTR(" key="));
+			Serial.println(key);
+
+			putDescrToDict(keyStr, val);
+		}
+
+		return true;
+	}
 
 protected:
 	int itemCount=0;
@@ -87,7 +102,7 @@ protected:
 	const char* getDescrFromDict(String& devAddressStr){
 		return devAddressStr.c_str();
 	}
-	void putDescrFromDict(String& devAddressStr,const char* val){
+	void putDescrToDict(String& devAddressStr,const char* val){
 
 	}
 
