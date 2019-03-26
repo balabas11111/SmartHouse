@@ -58,9 +58,8 @@ public:
 
 	JsonObject& getEntitysJson_ByPath_OrCreateNew(JsonObject& container,const char* path,EntityJson* entity);
 	JsonObject& getEntitysJson_ByPath(JsonObject& container,const char* path,EntityJson* entity);
+	JsonObject& getEntitysJson_ByPath_OrCreateNew_entId(JsonObject& container,const char* path,int entityId);
 	JsonObject& getEntitysJson_ByPath_entId(JsonObject& container,const char* path,int entityId);
-
-	virtual JsonObject& getEntityRoot() override;
 
 	void printEntities();
 
@@ -84,6 +83,9 @@ public:
 #endif
 	virtual JsonObject& getEntityModel(int entityId) override;
 	virtual JsonObject& getEntityData(int entityId) override;
+	virtual JsonObject& getEntityRoot() override;
+	virtual JsonObject& getEntityDictionary(int entityId) override;
+
 	virtual JsonArray& getEntityDataFieldsByAction(int entityId,const char* action);
 	virtual const char* validateField(int entityId,const char* key,const String& value);
 
@@ -148,11 +150,9 @@ public:
 			eventSender->setSendRequired(true);
 		}
 	}
-
 	virtual EventSender* getEventSender() override {
 		return eventSender;
 	}
-
 	virtual void setEventSender(EventSender* eventSender){
 		this->eventSender = eventSender;
 	}

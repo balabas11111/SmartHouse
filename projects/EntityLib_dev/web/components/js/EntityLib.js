@@ -187,31 +187,6 @@ function formSubmitAsJson(form,div,resultHandler){
 	
 	sendRequest("POST", DATA_MODEL_POST_URL, resultHandler, data, 0, 2000);
 }
-function addGrayScale(compId){
-	var comp = document.getElementById(compId);
-	if(comp!=undefined){
-		comp.classList.add("w3-grayscale-max");
-	}
-}
-function removeGrayScale(compId){
-	var comp = document.getElementById(compId);
-	if(comp!=undefined){
-		comp.classList.remove("w3-grayscale-max");
-		console.log('Gray removed = ',compId);
-	}
-}
-
-function addSepia(comp){
-	if(comp!=undefined){
-		comp.classList.add("w3-sepia-max");
-	}
-}
-
-function removeSepia(comp){
-	if(comp!=undefined){
-		comp.classList.remove("w3-sepia-max");
-	}
-}
 
 function formSubmitAsForm(form,div,resultHandler){
 	
@@ -542,6 +517,32 @@ function setVisible(comp,visible){
 		}else{
 			comp.style.display = "none";
 		}
+	}
+}
+/*-----grayscale sepia-----*/
+function addGrayScale(compId){
+	var comp = document.getElementById(compId);
+	if(comp!=undefined){
+		comp.classList.add("w3-grayscale-max");
+	}
+}
+function removeGrayScale(compId){
+	var comp = document.getElementById(compId);
+	if(comp!=undefined){
+		comp.classList.remove("w3-grayscale-max");
+		console.log('Gray removed = ',compId);
+	}
+}
+
+function addSepia(comp){
+	if(comp!=undefined){
+		comp.classList.add("w3-sepia-max");
+	}
+}
+
+function removeSepia(comp){
+	if(comp!=undefined){
+		comp.classList.remove("w3-sepia-max");
 	}
 }
 /*-----------------------------Http show hide components----------------------------------------*/

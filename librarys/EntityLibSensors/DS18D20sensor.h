@@ -15,6 +15,9 @@
 #include <OneWire.h>
 #include "DallasTemperature.h"
 
+#include <OneWireMock.h>
+#include "DallasTemperatureMock.h"
+
 #define DS18D20sensorDescriptor "{\"data\": {\"temp\":\"-1\",\"hum\":\"-1\",\"press\":\"-1\"},\
 \"model\":{\"var\":[\"temp\",\"hum\",\"press\"],\"tvar\":[\"temp\",\"hum\"]}  }"
 
@@ -22,8 +25,7 @@ class DS18D20sensor: public EntityJson, public UpdateAble {
 public:
 	DS18D20sensor(int pin):
 		EntityJson(ROOT_GROUP_SENSORS,"bme280","Temperature/Humidity/AtmPressure",DS18D20sensorDescriptor){
-		oneWire=new OneWire(pin);
-		dallasTemperature=new DallasTemperature(oneWire);
+		construct(pin);
 	};
 
 	virtual ~DS18D20sensor(){};
@@ -31,7 +33,6 @@ public:
 	virtual void init() override{ }
 
 	virtual void postModelDataInit() override{
-		//dallasTemperature->begin();
 		cleanUnnededFields();
 		dallasTemperature->begin();
 		itemCount=dallasTemperature->getDeviceCount();
@@ -39,40 +40,71 @@ public:
 		this->getModelDataProvider()->setField(id, JSONKEY_itemCount,itemCount);
 
 		for(uint8_t i=0;i<itemCount;i++){
-			String devAddressStr=getDeviceAddress(i);
-			const char* descr = getDescrFromDict(devAddressStr);
-
-			putSensorToData(devAddressStr.c_str(),descr,127);
+			initSensorModel(getDeviceAddress(i).c_str(),127);
 		}
 		readTemperatures();
-		Serial.print(FPSTR("DS18D20 itemCount = "));
-		Serial.println(itemCount);
+		print();
 	}
 
 	virtual void update() override{
 		readTemperatures();
 		sendAsEventSourceEntity();
 	}
-	virtual bool processFieldPreSave(const char* key,const char* val) override{
+	virtual bool processFieldPreSave(const char* key,const char* value) override{
 		String keyStr=key;
 
 		if(keyStr.endsWith(JSONKEY_descr)){
 			keyStr=keyStr.substring(0, keyStr.length()-6);
-			Serial.print(FPSTR("Sensor UID = "));
-			Serial.print(keyStr);
-			Serial.print(FPSTR(" key="));
-			Serial.println(key);
-
-			putDescrToDict(keyStr, val);
+			Serial.print(FPSTR("Sensor UID = "));Serial.print(keyStr);
+			Serial.print(FPSTR(" key="));Serial.println(key);
+			setSensorDescr(keyStr.c_str(),value);
+			return false;
 		}
 
 		return true;
 	}
 
+	float getSensorValue(const char* sensorUid){
+		return JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items)
+				.get<JsonObject>(sensorUid).get<float>(JSONKEY_temp);
+	}
+	const char* getSensorDescr(const char* sensorUid){
+		return JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items)
+				.get<JsonObject>(sensorUid).get<const char*>(JSONKEY_descr);
+	}
+
+	void print(){
+		Serial.println(FPSTR("DS18D20 Entity"));
+		Serial.print(FPSTR(" name = "));
+		Serial.print(name);
+		Serial.print(FPSTR(" itemCount = "));
+		Serial.println(itemCount);
+		Serial.println(FPSTR("-----"));
+		for(uint8_t i=0;i<itemCount;i++){
+			Serial.print("i=");
+			Serial.print(i);
+			Serial.print(" address=");
+			Serial.println(getDeviceAddress(i));
+		}
+		Serial.println(FPSTR("-----"));
+		Serial.println(FPSTR("dict = "));
+		getDictionary().printTo(Serial);
+		Serial.println();
+		Serial.println(FPSTR("data = "));
+		getData().printTo(Serial);
+		Serial.println();
+		Serial.println(FPSTR("-----"));
+	}
+
 protected:
 	int itemCount=0;
-	OneWire* oneWire;
-	DallasTemperature* dallasTemperature;
+	OneWireMock* oneWire;
+	DallasTemperatureMock* dallasTemperature;
+
+	void construct(int pin){
+		this->oneWire=new OneWireMock(pin);
+		this->dallasTemperature=new DallasTemperatureMock(oneWire);
+	}
 
 	void cleanUnnededFields(){
 		if(modelDataProvider->getEntityData(id).containsKey(JSONKEY_items)){
@@ -80,30 +112,18 @@ protected:
 		}
 	}
 
-	void putSensorToData(const char* sensorUid,const char* descr,float value){
-		JsonObject& item =
-		JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items)
-			.createNestedObject(sensorUid);
+	void initSensorModel(const char* sensorUid,float value){
+		JsonObject& item = JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items).createNestedObject(sensorUid);
 
-		item.set(JSONKEY_descr, descr);
+		item.set(JSONKEY_descr, getDictionaryValue(sensorUid));
 		item.set(JSONKEY_temp, value);
 	}
-	void setSensorDataValue(const char* sensorUid,float value){
-		JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items)
-			.get<JsonObject>(sensorUid)
-			.set(JSONKEY_temp, value);
+	void setSensorValue(const char* sensorUid,float value){
+		JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items).get<JsonObject>(sensorUid).set(JSONKEY_temp, value);
 	}
-	void setSensorDataValueDescr(const char* sensorUid,const char* descr){
-		JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items)
-			.get<JsonObject>(sensorUid)
-			.set(JSONKEY_descr, descr);
-	}
-
-	const char* getDescrFromDict(String& devAddressStr){
-		return devAddressStr.c_str();
-	}
-	void putDescrToDict(String& devAddressStr,const char* val){
-
+	void setSensorDescr(const char* sensorUid,const char* descr){
+		JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items).get<JsonObject>(sensorUid).set(JSONKEY_descr, descr);
+		setDictionaryValue(sensorUid, descr);
 	}
 
 	virtual void readTemperatures(){
@@ -111,38 +131,25 @@ protected:
 		for(uint8_t i=0;i<itemCount;i++){
 			String devAddressStr=getDeviceAddress(i);
 			float t = dallasTemperature->getTempCByIndex(i);
-			setSensorDataValue(devAddressStr.c_str(),t);
+			setSensorValue(devAddressStr.c_str(),t);
 		}
 	}
 
 	String getDeviceAddress(uint8_t index){
-			DeviceAddress deviceAddress;
-			dallasTemperature->getAddress(deviceAddress,index);
-			uint8_t size=sizeof(deviceAddress);
+		DeviceAddress deviceAddress;
+		dallasTemperature->getAddress(deviceAddress,index);
+		uint8_t size=sizeof(deviceAddress);
 
-			String addrStr=deviceAddressToString(deviceAddress,size);
+		return deviceAddressToString(deviceAddress,size);
+	}
 
-			Serial.print("index=");
-			Serial.print(index);
-			Serial.print(" address=");
-			for(uint8_t k=0;k<size;k++){
-				Serial.print(deviceAddress[k]);
-			}
-			Serial.print(" addrStr=");
-			Serial.println(addrStr);
-
-			return addrStr;
+	String deviceAddressToString(DeviceAddress deviceAddress,uint8_t size){
+		String devAddrStr="";
+		for(uint8_t k=0;k<size;k++){
+			devAddrStr+=String(deviceAddress[k]);
 		}
-
-		String deviceAddressToString(DeviceAddress deviceAddress,uint8_t size){
-			String devAddrStr="";
-
-			for(uint8_t k=0;k<size;k++){
-				devAddrStr+=String(deviceAddress[k]);
-			}
-
-			return devAddrStr;
-		}
+		return devAddrStr;
+	}
 };
 
 #endif /* LIBRARIES_ENTITYLIBSENSORS_DS18D20sensor_H_ */

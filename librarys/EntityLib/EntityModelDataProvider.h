@@ -20,6 +20,7 @@ public:
 	virtual JsonObject& getEntityModel(int entityId)=0;
 	virtual JsonObject& getEntityData(int entityId)=0;
 	virtual JsonObject& getEntityRoot()=0;
+	virtual JsonObject& getEntityDictionary(int entityId)=0;
 
 	virtual bool saveRootToFileIfChanged()=0;
 

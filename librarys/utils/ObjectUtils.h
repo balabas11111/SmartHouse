@@ -10,6 +10,7 @@
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
+#define UNUSED(expr) do { (void)(expr); } while (0)
 
 #include "IPAddress.h"
 

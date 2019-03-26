@@ -11,6 +11,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <functional>
+#include <ObjectUtils.h>
 
 #include "EntityModelDataProvider.h"
 
@@ -114,9 +115,25 @@ public:
 	JsonObject& getData(){
 		return getModelDataProvider()->getEntityData(getId());
 	}
-
 	JsonObject& getModel(){
 		return getModelDataProvider()->getEntityModel(getId());
+	}
+	JsonObject& getDictionary(){
+		return getModelDataProvider()->getEntityDictionary(getId());
+	}
+
+	bool hasDictionaryValue(const char* key){
+		return getDictionary().containsKey(key);
+	}
+	const char* getDictionaryValue(const char* key){
+		JsonObject& dict = getDictionary();
+		if(!dict.containsKey(key)){
+			setDictionaryValue(key,key);
+		}
+		return dict.get<const char*>(key);
+	}
+	bool setDictionaryValue(const char* key,const char* value){
+		return getDictionary().set(key, value);
 	}
 
 	template<typename T>
@@ -134,15 +151,16 @@ public:
 		return getData().get<T>(key);
 	}
 
-	virtual const char* validateField(const char* key,const String& value){
-		return "";
-	}
-
 	void sendAsEventSourceEntity(){
 		modelDataProvider->sendEntityAsEventSourceNow(id);
 	}
 
-	virtual bool processFieldPreSave(const char* key,const char* val){
+	virtual const char* validateField(const char* key,const String& value){
+		UNUSED(key);UNUSED(value);
+		return "";
+	}
+	virtual bool processFieldPreSave(const char* key,const char* value){
+		UNUSED(key);UNUSED(value);
 		return true;
 	}
 

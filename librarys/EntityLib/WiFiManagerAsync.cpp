@@ -463,8 +463,8 @@ bool WiFiManagerAsync::entityPostField(AsyncWebServerRequest *request, int entit
 	if(request->hasArg(key)){
 		const String& value = request->arg(key);
 
-/*		const char* validMsg = dao->validateField(entityId, key, value);*/
-		bool isValid = value.length()!=0;// && sizeof(validMsg)<1;
+		const char* validMsg = dao->validateField(entityId, key, value);
+		bool isValid = value.length()!=0 && strcmp(validMsg,"")==0;
 
 		if(isValid){
 			//Serial.println(FPSTR("Validate passed"));

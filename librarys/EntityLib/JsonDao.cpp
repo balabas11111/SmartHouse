@@ -10,6 +10,7 @@
 #include <FileUtils.h>
 #include <EntityJson.h>
 #include <ObjectUtils.h>
+#include <EntityConsts.h>
 
 JsonDao::JsonDao(EntityJson* entitiesIn[],int count) {
 	beginTime = millis();
@@ -86,7 +87,10 @@ JsonObject& JsonDao::getEntitysJson_ByPath(JsonObject& container,const char* pat
 			.get<JsonObject>(entity->getGroup())
 			.get<JsonObject>(entity->getName());
 }
-
+JsonObject& JsonDao::getEntitysJson_ByPath_OrCreateNew_entId(JsonObject& container, const char* path, int entityId) {
+	EntityJson* entity = getEntity(entityId);
+	return getEntitysJson_ByPath_OrCreateNew(container,path, entity);
+}
 JsonObject& JsonDao::getEntitysJson_ByPath_entId(JsonObject& container,const char* path, int entityId) {
 	EntityJson* entity = getEntity(entityId);
 	return getEntitysJson_ByPath(container,path, entity);
@@ -292,6 +296,13 @@ JsonObject& JsonDao::getEntityModel(int entityId) {
 JsonObject& JsonDao::getEntityData(int entityId) {
 	return getEntitysJson_ByPath_entId(root,ROOT_PATH_DATA,entityId);
 }
+JsonObject& JsonDao::getEntityRoot() {
+	root.printTo(Serial);
+	return root;
+}
+JsonObject& JsonDao::getEntityDictionary(int entityId) {
+	return getEntitysJson_ByPath_OrCreateNew_entId(root,ROOT_PATH_DICTIONARY,entityId);
+}
 
 bool JsonDao::getEntityHasAction(EntityJson* entity, const char* action) {
 	JsonObject& model = getEntitysJson_ByPath(root,ROOT_PATH_MODEL,entity);
@@ -343,11 +354,6 @@ void JsonDao::printEntities() {
 	for (std::list<EntityJson*>::iterator it = entities.begin(); it != entities.end(); it++){
 		(*it)->print();
 	}
-}
-
-JsonObject& JsonDao::getEntityRoot() {
-	root.printTo(Serial);
-	return root;
 }
 
 bool JsonDao::saveRootToFileIfChanged() {

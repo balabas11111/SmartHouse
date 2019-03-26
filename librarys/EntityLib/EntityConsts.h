@@ -12,10 +12,11 @@
 
 #define PERSENT_STR "%"
 
-#define ROOT_PATH_MODEL "model"
-#define ROOT_PATH_DATA "data"
-#define ROOT_PATH_DEPLOYED "deploy"
-#define ROOT_PATH_TEMP "temp"
+#define ROOT_PATH_MODEL      "model"
+#define ROOT_PATH_DATA       "data"
+#define ROOT_PATH_DICTIONARY "dict"
+#define ROOT_PATH_DEPLOYED   "deploy"
+#define ROOT_PATH_TEMP       "temp"
 
 #define ROOT_GROUP_SENSORS "sensors"
 #define ROOT_GROUP_SETTINGS "settings"
@@ -43,6 +44,7 @@
 #define JSONKEY_open    "open"
 #define JSONKEY_files   "files"
 #define JSONKEY_file    "file"
+#define JSONKEY_val     "val"
 
 #define JSONKEY_items     "items"
 #define JSONKEY_itemCount "itemCount"
