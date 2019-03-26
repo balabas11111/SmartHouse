@@ -11,6 +11,7 @@
 #include "EntityJson.h"
 #include "UpdateAble.h"
 #include "DHT.h"
+#include "DHT22Mock.h"
 
 #define Dht22Descriptor "{\"data\": {\"temp\":\"-1\",\"hum\":\"-1\"},\
 \"model\":{\"var\":[\"temp\",\"hum\"],\"tvar\":[\"temp\",\"hum\"]}  }"
@@ -19,7 +20,8 @@ class DHT22sensor: public EntityJson, public UpdateAble {
 public:
 	DHT22sensor(int pin):
 		EntityJson(ROOT_GROUP_SENSORS,"dht22","Temperature/Humidity",Dht22Descriptor){
-		this->dht = new DHT(pin, DHT22);
+		//this->dht = new DHT(pin, DHT22);
+		this->dht = new DHT22Mock(pin, DHT22);
 	};
 
 	virtual ~DHT22sensor(){};
@@ -40,7 +42,8 @@ public:
 		sendAsEventSourceEntity();
 	}
 protected:
-	DHT* dht;
+	//DHT* dht;
+	DHT22Mock* dht;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSENSORS_BME280SENSOR_H_ */

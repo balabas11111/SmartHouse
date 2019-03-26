@@ -11,6 +11,10 @@
 #include "EntityJson.h"
 #include "UpdateAble.h"
 
+#include <Wire.h>
+#include <BH1750.h>
+#include <Bh1750Mock.h>
+
 #define BH1750Descriptor "{\"data\": {\"light\":\"-1\"},\
 \"model\":{\"var\":[\"light\"],\"tvar\":[\"light\"]}  }"
 
@@ -24,12 +28,17 @@ public:
 	virtual void init() override{	}
 
 	virtual void postModelDataInit() override{
-
+		lightMeter = new Bh1750Mock();
+		lightMeter->begin();
 	}
 
 	virtual void update() override{
-
+		uint16_t lux = lightMeter->readLightLevel();
+		this->getModelDataProvider()->setField(id, JSONKEY_light,lux);
+		sendAsEventSourceEntity();
 	}
+protected:
+	Bh1750Mock* lightMeter;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSENSORS_BH1750SENSOR_H_ */

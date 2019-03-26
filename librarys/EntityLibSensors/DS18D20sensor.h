@@ -14,6 +14,7 @@
 
 #include <OneWire.h>
 #include "DallasTemperature.h"
+#include "ObjectUtils.h"
 
 #include <OneWireMock.h>
 #include "DallasTemperatureMock.h"
@@ -139,7 +140,7 @@ protected:
 		DeviceAddress deviceAddress;
 		dallasTemperature->getAddress(deviceAddress,index);
 		uint8_t size=sizeof(deviceAddress);
-
+		ObjectUtils::printInt8Arr(deviceAddress);
 		return deviceAddressToString(deviceAddress,size);
 	}
 

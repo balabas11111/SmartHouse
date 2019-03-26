@@ -88,6 +88,14 @@ public:
 		Serial.println(millis());
 	}
 
+	static void printInt8Arr(uint8_t* arr){
+		Serial.print(FPSTR("Arr= "));
+		for(int i=0;i<8;i++){
+			Serial.print(arr[i]);
+		}
+		Serial.println();
+	}
+
 
 };
 

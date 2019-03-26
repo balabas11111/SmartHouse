@@ -9,20 +9,20 @@
 #define LIBRARIES_ENTITYLIBMOCK_DALLASTEMPERATUREMOCK_H_
 
 #include "Arduino.h"
-#include "OneWireMock.h"
-#include "DallasTemperature.h"
+#include "AMock.h"
 #include "ObjectUtils.h"
 
-class DallasTemperatureMock {
+#include "OneWireMock.h"
+#include "DallasTemperature.h"
+
+
+class DallasTemperatureMock: public AMock {
 public:
 	DallasTemperatureMock(OneWireMock* oneWire){
 		owm = oneWire;
 	};
 	virtual ~DallasTemperatureMock(){};
 
-	void begin(){
-		Serial.println(FPSTR("DallasTemperatureMock->begin"));
-	};
 	int getDeviceCount(){
 		return this->deviceC;
 	}
@@ -30,6 +30,8 @@ public:
 		UNUSED(deviceAddress);
 		uint8_t addr[8]={0,0,0,0,0,0,0,index};
 		deviceAddress=addr;
+		Serial.println(FPSTR("getAddress"));
+		ObjectUtils::printInt8Arr(addr);
 		return true;
 	}
 	void requestTemperatures(){

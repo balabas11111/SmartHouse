@@ -14,6 +14,8 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 
+#include <Bme280Mock.h>
+
 #define BME280Descriptor "{\"data\": {\"temp\":\"-1\",\"hum\":\"-1\",\"press\":\"-1\"},\
 \"model\":{\"var\":[\"temp\",\"hum\",\"press\"],\"tvar\":[\"temp\",\"hum\"]}  }"
 
@@ -27,7 +29,8 @@ public:
 	virtual void init() override{	}
 
 	virtual void postModelDataInit() override{
-		bme = new Adafruit_BME280();
+		//bme = new Adafruit_BME280();
+		bme= new Bme280Mock();
 		bme->begin();
 	}
 
@@ -43,7 +46,8 @@ public:
 		sendAsEventSourceEntity();
 	}
 protected:
-	Adafruit_BME280* bme;
+	//Adafruit_BME280* bme;
+	Bme280Mock* bme;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSENSORS_BME280SENSOR_H_ */

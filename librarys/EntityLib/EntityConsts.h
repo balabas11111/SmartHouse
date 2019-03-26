@@ -45,6 +45,7 @@
 #define JSONKEY_files   "files"
 #define JSONKEY_file    "file"
 #define JSONKEY_val     "val"
+#define JSONKEY_light   "light"
 
 #define JSONKEY_items     "items"
 #define JSONKEY_itemCount "itemCount"
