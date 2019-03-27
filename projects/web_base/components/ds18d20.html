@@ -1,0 +1,192 @@
+<!--ds18d20 starts-->
+<style>
+img.temperature-icon {
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJ/SURBVGhD7Zk/aBRBFMafIgGFGPQuEBAVVAzYKFwT7vYS0FjYpLPQMuZEG2tLC0HBwk4UbLSTtCHExCSHJzbZeHcYby/3x1SCrYUI/tnx22E2rPI4b6p9TvKDj4Xbmcf37czs7O7RLjuBWqN7uhp0nr1rtrdw7OD4pLq5ecSc/j9YDzo5mP9SbXZUUgjzea3VOmmayQem/b9DbCtoz5tmsln/8PE4GyBW0P7p+58OmOZy8RutMTZAQv5G95hpLpdas+tx5pOKg4QePQyLtJTQeV1EAlZBilRRRVKxwnG6qotIwCrIOE0pj67HCifolC4iAZsgorGcWjcwpe5vK0/ndBEJ7Mw14sqIiMZqRFy5a7mzRlzZ2UUTLM/l67V6o5feLywcjdpmppdHszMruVgHr709rItIQBXIS857VgXSI5KdKVeGS2UVK1Mqy1kjNkGGS6svsqXVbiwEmdJFJGATRDQ2QTLTbwaHblYOxaLLGwO6iARsgjizRpwJ4szUEo1NEGduvw6tEUceUcSiiPbgneIBaz4hPL7fMl3koc7QAN4nZjnjnBDmcRTcdJcDjD3lDPcSgt813WWA6XSRM/ovIcgvUV9OYOiPd28bRdPRlEkXNUEj+soyJvsR+n4Nx2i/KZceyqNJzqCNwgKdNeXSA4v8CmfOSrgYplx64GpeYs3ZyKOcKZceMHGCNdensEa+h3kaNOXSBWbqnMl+hKm5aMqkT/SpkzPZjxDkgimTPnjU2AtDLzmjvYSRfG5KyEFN0hCMrXGGOaHtK5Ujmf+3RxsbDD7C6PzgzEfCuW/QPWyk+0w3ueAuNArTd2D4NbQFtaEV/HYbQfV3313ch+g3dpTZj2wLjMMAAAAASUVORK5CYII=);
+  width: 50px;  
+  height: 50px;
+}
+</style>
+<script type="text/javascript">
+hideComponent("sensors.ds18d20.editForm");
+
+registerModelToViewHandler('sensors.ds18d20',handleDs18d20View);
+
+function editDs18d20(){
+	hideShowComponent("sensors.ds18d20.viewForm","sensors.ds18d20.editForm");
+}	
+function cancelEditDs18d20(){
+	hideShowComponent("sensors.ds18d20.editForm","sensors.ds18d20.viewForm");
+}
+function saveDs18d20(){
+	formSubmitAsForm("sensors.ds18d20.form","sensors.ds18d20.div",onDataPostedDs18d20);
+}
+function onDataPostedDs18d20(response){
+	hideShowComponent("sensors.ds18d20.editForm","sensors.ds18d20.viewForm");
+}
+
+function handleDs18d20View(entity,key,val){
+	if(key!='items'){
+		updateEntityViewValueDefault(entity,key,val);
+		return;
+	}
+	/*process items field here*/
+	itemsDivClean(true);
+	itemsDivClean(false);
+	
+	for (var key in val){
+	  itemToViewDiv(key,val);
+	  itemToEditDiv(key,val);
+	}
+}
+
+function itemsDivClean(doEdit){
+	var divName='sensors.ds18d20.items.div'+doEdit?'.edit':'';
+	var div=document.getElementById(divName);
+	div.innerHTML='';
+	return div;
+}
+function itemToViewDiv(uid,item){
+	var descr=item.descr;
+	var temp=item.temp;	
+	
+	var div = document.createElement('div');
+	var label = document.createElement('label');
+	var input = document.createElement('input');
+	
+	label.id='sensors.ds18d20.'+uid+'.descr';
+	label.htmlFor='sensors.ds18d20.'+uid+'.temp';
+	label.value=descr;
+	
+	input.id='sensors.ds18d20.'+uid+'.temp';
+	input.value=temp;
+	input.disabled='disabled';
+	
+	div.classList.add('w3-row');
+	div.appendChild(label);
+	div.appendChild(input);
+	
+	document.getElemntById('sensors.ds18d20.items.div').appendChild(div);
+}
+function itemsToEditDiv(uid,item){
+	var descr=item.descr;
+	
+	var div = document.createElement('div');
+	var label = document.createElement('label');
+	var input = document.createElement('input');
+	
+	label.htmlFor='sensors.ds18d20.'+uid+'.descr.edit';
+	label.value='Описание '+uid;
+	
+	input.id='sensors.ds18d20.'+uid+'.descr';
+	input.name=uid+'.descr';
+	input.value=descr;
+	
+	div.classList.add('w3-row');
+	div.appendChild(label);
+	div.appendChild(input);
+	
+	document.getElemntById('sensors.ds18d20.items.div.edit').appendChild(div);
+}
+</script>
+<div id="sensors.ds18d20.div">
+	<div id="sensors.ds18d20.viewForm" class="w3-card-4" style="width: 400px; float:left; min-width: 340px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+			<div class="w3-container w3-teal">
+				 <div><h4 id="sensors.ds18d20.descr">bmeMeasurer</h4></div>
+			</div>
+			
+				<div id="temperatureDiv" class="w3-row" style="margin-top: 5px;">
+					<div class="w3-quarter">
+						<img class="temperature-icon"/>
+					</div>
+					<div class="w3-third">
+						<label for="sensors.ds18d20.temp" style="max-width: 240px;">
+							<b>Кол-во датчиков</b>
+						</label>
+					</div>
+					<div class="w3-third">
+						<input id="sensors.ds18d20.itemCount" name="temp" class="w3-input w3-border" style="width:90%" type="text" value="?" disabled>
+					</div>
+				</div>	
+
+				<div class="w3-row" style="margin-top: 5px; margin-bottom: 5px;">
+						<b>Описание датчиков</b>
+				</div>
+				
+				<div id="sensors.ds18d20.items.div">
+					<!-- 
+						<div class="w3-row">
+					  			<label id="sensors.ds18d20.UID.descr" for="sensors.ds18d20.UID.temp">?</label>
+					  			<input id="sensors.ds18d20.UID.temp" class="w3-input w3-border" style="width:50%" type="text" value="?" disabled/>
+					  	</div>
+					 -->
+				</div>
+
+				<footer class="w3-container w3-teal w3-display-container">
+				 		<div class="w3-row">
+				 			<div class="w3-half">
+							      <button id="confirm_editBtn" 
+							      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
+							      	style="margin-top: 2px; margin-bottom: 2px;"
+										onclick="editDs18d20();">Редактировать</button>
+							</div>
+						</div>
+    			</footer>			   		
+		   	
+	</div>
+	<div id="sensors.ds18d20.editForm" class="w3-card-4" style="display:none; width: 400px; float:left; min-width: 340px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+			<div class="w3-container w3-teal">
+				 <div><h4>Редактирование</h4></div>
+			</div>
+			
+			<form id="sensors.ds18d20.form" class="w3-container">
+				<input id="sensors.ds18d20.id.edit" name="id" type="hidden">
+				<input id="sensors.ds18d20.group.edit" name="group" type="hidden">
+				
+				<div class="w3-row" style="margin-top: 5px;">
+						<label for="sensors.ds18d20.name.edit" style="max-width: 240px;">
+							<b>Датчик/устройство</b>
+						</label>
+						<input id="sensors.ds18d20.name.edit" name="name" class="w3-input w3-border" style="width: 90%;" type="text" value="?" readonly="readonly">
+				</div>
+						
+				<div class="w3-row" style="margin-top: 5px; margin-bottom: 5px;">
+						<label for="sensors.ds18d20.descr.edit" style="max-width: 240px;">
+							<b>Описание</b>
+						</label>
+						<input id="sensors.ds18d20.descr.edit" name="descr" class="w3-input w3-border" style="width:90%" type="text" value="?">
+				</div>	
+
+				<div class="w3-row" style="margin-top: 5px; margin-bottom: 5px;">
+						<b>Описание датчиков</b>
+				</div>
+
+				<div id="sensors.ds18d20.items.div.edit" style="margin-top: 5px;">
+					<!-- 
+						<div class="w3-row">
+					  			<label for="sensors.ds18d20.UID.descr.edit">?</label>
+					  			<input id="sensors.ds18d20.UID.descr.edit" name="UID.descr" class="w3-input w3-border" style="width:50%" type="text" value="?"/>
+					  	</div>
+					 -->
+				</div>
+		   	</form>
+		   	
+		   	<footer class="w3-container w3-teal w3-display-container">
+			 		<div class="w3-row">
+			 			<div class="w3-half">
+						      <button id="confirm_okBtn" 
+						      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
+						      	style="margin-top: 2px; margin-bottom: 2px;"
+									onclick="saveDs18d20();">Сохранить</button>
+						</div>
+						<div class="w3-half">
+							  <button id="confirm_closeBtn" 
+							  	class="w3-btn w3-white w3-border w3-border-red w3-round-large" 
+							  	style="margin-top: 2px; margin-bottom: 2px;"
+									onclick="cancelEditDs18d20();">Закрыть</button>
+						</div>
+					</div>
+   			</footer>
+		   	
+	</div>
+</div>
+<!--ds18d20 ends-->

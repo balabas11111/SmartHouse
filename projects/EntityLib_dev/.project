@@ -44,12 +44,12 @@
 		<link>
 			<name>libraries/Adafruit_BME280</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/Adafruit_BME280</location>
+			<location>D:/projects/!!SmartHouse/librarys/Adafruit_BME280</location>
 		</link>
 		<link>
 			<name>libraries/Adafruit_Sensor</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/Adafruit_Sensor</location>
+			<location>D:/projects/!!SmartHouse/librarys/Adafruit_Sensor</location>
 		</link>
 		<link>
 			<name>libraries/ArduinoJson</name>
@@ -59,92 +59,92 @@
 		<link>
 			<name>libraries/BH1750</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/BH1750</location>
+			<location>D:/projects/!!SmartHouse/librarys/BH1750</location>
 		</link>
 		<link>
 			<name>libraries/DHT_sensor_library</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DHT_sensor_library/1.2.2</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DHT_sensor_library/1.3.0</locationURI>
 		</link>
 		<link>
 			<name>libraries/DallasTemperature</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DallasTemperature/3.7.6</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DallasTemperature/3.8.0</locationURI>
 		</link>
 		<link>
 			<name>libraries/ESP8266WebServer</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266WebServer</locationURI>
+			<location>D:/projects/sloeber/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266WebServer</location>
 		</link>
 		<link>
 			<name>libraries/ESP8266WiFi</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266WiFi</locationURI>
+			<location>D:/projects/sloeber/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/ESP8266WiFi</location>
 		</link>
 		<link>
 			<name>libraries/ESPAsyncTCP-master</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/ESPAsyncTCP-master</location>
+			<location>D:/projects/!!SmartHouse/librarys/ESPAsyncTCP-master</location>
 		</link>
 		<link>
 			<name>libraries/ESPAsyncWebServer</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/ESPAsyncWebServer</location>
+			<location>D:/projects/!!SmartHouse/librarys/ESPAsyncWebServer</location>
 		</link>
 		<link>
 			<name>libraries/EntityLib</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/EntityLib</location>
+			<location>D:/projects/!!SmartHouse/librarys/EntityLib</location>
 		</link>
 		<link>
 			<name>libraries/EntityLibMock</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/EntityLibMock</location>
+			<location>D:/projects/!!SmartHouse/librarys/EntityLibMock</location>
 		</link>
 		<link>
 			<name>libraries/EntityLibSensors</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/EntityLibSensors</location>
+			<location>D:/projects/!!SmartHouse/librarys/EntityLibSensors</location>
 		</link>
 		<link>
 			<name>libraries/FastCRC</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/FastCRC</location>
+			<location>D:/projects/!!SmartHouse/librarys/FastCRC</location>
 		</link>
 		<link>
 			<name>libraries/Hash</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Hash</locationURI>
+			<location>D:/projects/sloeber/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Hash</location>
 		</link>
 		<link>
 			<name>libraries/NTPClient</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/NTPClient</location>
+			<location>D:/projects/!!SmartHouse/librarys/NTPClient</location>
 		</link>
 		<link>
 			<name>libraries/OneWire</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire/2.3.3</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire/2.3.4</locationURI>
 		</link>
 		<link>
 			<name>libraries/SPI</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/SPI</locationURI>
+			<location>D:/projects/sloeber/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/SPI</location>
 		</link>
 		<link>
 			<name>libraries/Ticker</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Ticker</locationURI>
+			<location>D:/projects/sloeber/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Ticker</location>
 		</link>
 		<link>
 			<name>libraries/Wire</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Wire</locationURI>
+			<location>D:/projects/sloeber/arduinoPlugin/packages/esp8266/hardware/esp8266/2.4.0-rc2/libraries/Wire</location>
 		</link>
 		<link>
 			<name>libraries/utils</name>
 			<type>2</type>
-			<location>D:/projects/!!!SmartHouse/librarys/utils</location>
+			<location>D:/projects/!!SmartHouse/librarys/utils</location>
 		</link>
 	</linkedResources>
 </projectDescription>

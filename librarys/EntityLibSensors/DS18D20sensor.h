@@ -19,13 +19,13 @@
 #include <OneWireMock.h>
 #include "DallasTemperatureMock.h"
 
-#define DS18D20sensorDescriptor "{\"data\": {\"temp\":\"-1\",\"hum\":\"-1\",\"press\":\"-1\"},\
-\"model\":{\"var\":[\"temp\",\"hum\",\"press\"],\"tvar\":[\"temp\",\"hum\"]}  }"
+#define DS18D20sensorDescriptor "{\"data\": {},\
+\"model\":{\"var\":[]}  }"
 
 class DS18D20sensor: public EntityJson, public UpdateAble {
 public:
 	DS18D20sensor(int pin):
-		EntityJson(ROOT_GROUP_SENSORS,"bme280","Temperature/Humidity/AtmPressure",DS18D20sensorDescriptor){
+		EntityJson(ROOT_GROUP_SENSORS,"ds18d20","Temperature DallasTemperature",DS18D20sensorDescriptor){
 		construct(pin);
 	};
 

@@ -41,7 +41,7 @@ void setup()
 {
 ObjectUtils::initSerial();
 FileUtils::init();
-//FileUtils::deleteAllFiles("/");
+FileUtils::deleteAllFiles("/");
 
 ObjectUtils::printHeap();
 dao.init();
