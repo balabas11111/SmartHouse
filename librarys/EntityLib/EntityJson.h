@@ -133,7 +133,12 @@ public:
 		return dict.get<const char*>(key);
 	}
 	bool setDictionaryValue(const char* key,const char* value){
-		return getDictionary().set(key, value);
+		bool res= getDictionary().set(strdup(key), strdup(value));
+		Serial.print(FPSTR("Set Dict ="));
+		Serial.print(key);
+		Serial.print(FPSTR(" : "));
+		Serial.println(value);
+		return res;
 	}
 
 	template<typename T>

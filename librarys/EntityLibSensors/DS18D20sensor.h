@@ -114,7 +114,10 @@ protected:
 	}
 
 	void initSensorModel(const char* sensorUid,float value){
-		JsonObject& item = JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items).createNestedObject(sensorUid);
+		Serial.print(FPSTR("UID = "));
+		Serial.println(sensorUid);
+
+		JsonObject& item = JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items).createNestedObject(strdup(sensorUid));
 
 		item.set(JSONKEY_descr, getDictionaryValue(sensorUid));
 		item.set(JSONKEY_temp, value);
@@ -137,8 +140,9 @@ protected:
 	}
 
 	String getDeviceAddress(uint8_t index){
+
 		DeviceAddress deviceAddress;
-		dallasTemperature->getAddress(deviceAddress,index);
+		return dallasTemperature->getAddress(deviceAddress,index);
 		uint8_t size=sizeof(deviceAddress);
 		ObjectUtils::printInt8Arr(deviceAddress);
 		return deviceAddressToString(deviceAddress,size);

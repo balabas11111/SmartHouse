@@ -41,17 +41,18 @@ void setup()
 {
 ObjectUtils::initSerial();
 FileUtils::init();
-FileUtils::deleteAllFiles("/");
+FileUtils::deleteAllFiles("/data/");
 
-ObjectUtils::printHeap();
 dao.init();
-ObjectUtils::printHeap();
 server.init();
 ntpBox.startTime();
 
-ticker.attach(conf.refreshInterval(), updateSensors);
+
 ticker.attach(1,updateDisplayTime);
 ticker.attach(30,printHeap);
+ticker.attach(60, updateSensors);
+
+updateSensors();
 
 ObjectUtils::printHeap();
 ObjectUtils::printMillis();

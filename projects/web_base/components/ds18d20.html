@@ -40,14 +40,20 @@ function handleDs18d20View(entity,key,val){
 }
 
 function itemsDivClean(doEdit){
-	var divName='sensors.ds18d20.items.div'+doEdit?'.edit':'';
+	var divName='sensors.ds18d20.items.div.edit';
+	if(!doEdit){
+		divName='sensors.ds18d20.items.div';
+	}
 	var div=document.getElementById(divName);
-	div.innerHTML='';
+	if(div!=undefined){
+		div.innerHTML='';
+		console.error("HTML component not found "+divName);
+	}
 	return div;
 }
 function itemToViewDiv(uid,item){
-	var descr=item.descr;
-	var temp=item.temp;	
+	var descr=item[uid].descr;
+	var temp=item[uid].temp;	
 	
 	var div = document.createElement('div');
 	var label = document.createElement('label');
@@ -55,7 +61,7 @@ function itemToViewDiv(uid,item){
 	
 	label.id='sensors.ds18d20.'+uid+'.descr';
 	label.htmlFor='sensors.ds18d20.'+uid+'.temp';
-	label.value=descr;
+	label.innerText=descr;
 	
 	input.id='sensors.ds18d20.'+uid+'.temp';
 	input.value=temp;
@@ -65,17 +71,17 @@ function itemToViewDiv(uid,item){
 	div.appendChild(label);
 	div.appendChild(input);
 	
-	document.getElemntById('sensors.ds18d20.items.div').appendChild(div);
+	document.getElementById('sensors.ds18d20.items.div').appendChild(div);
 }
-function itemsToEditDiv(uid,item){
-	var descr=item.descr;
+function itemToEditDiv(uid,item){
+	var descr=item[uid].descr;
 	
 	var div = document.createElement('div');
 	var label = document.createElement('label');
 	var input = document.createElement('input');
 	
 	label.htmlFor='sensors.ds18d20.'+uid+'.descr.edit';
-	label.value='Описание '+uid;
+	label.innerText='Описание '+uid;
 	
 	input.id='sensors.ds18d20.'+uid+'.descr';
 	input.name=uid+'.descr';
@@ -85,7 +91,7 @@ function itemsToEditDiv(uid,item){
 	div.appendChild(label);
 	div.appendChild(input);
 	
-	document.getElemntById('sensors.ds18d20.items.div.edit').appendChild(div);
+	document.getElementById('sensors.ds18d20.items.div.edit').appendChild(div);
 }
 </script>
 <div id="sensors.ds18d20.div">

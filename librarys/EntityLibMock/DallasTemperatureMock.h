@@ -26,23 +26,27 @@ public:
 	int getDeviceCount(){
 		return this->deviceC;
 	}
-	bool getAddress(DeviceAddress deviceAddress,uint8_t index){
+	String getAddress(DeviceAddress deviceAddress,uint8_t index){
 		UNUSED(deviceAddress);
-		uint8_t addr[8]={0,0,0,0,0,0,0,index};
-		deviceAddress=addr;
-		Serial.println(FPSTR("getAddress"));
+		uint8_t addrLoc[8]={0,0,0,0,0,0,0,index};
+
+		/*Serial.println(FPSTR("getAddress"));
 		ObjectUtils::printInt8Arr(addr);
-		return true;
+		*/
+		return "0000000"+String(index);
 	}
 	void requestTemperatures(){
 		Serial.println(FPSTR("DallasTemperatureMock->requestTemperatures"));
 	}
 	float getTempCByIndex(int i){
-		return 1+i;
+		return 20+random(0, 20);
 	}
+
 protected:
+	uint8_t* addr[8];
 	OneWireMock* owm;
 	int deviceC=3;
+
 };
 
 #endif /* LIBRARIES_ENTITYLIBMOCK_DALLASTEMPERATUREMOCK_H_ */
