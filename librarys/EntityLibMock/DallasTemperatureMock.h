@@ -36,7 +36,7 @@ public:
 		return "0000000"+String(index);
 	}
 	void requestTemperatures(){
-		Serial.println(FPSTR("DallasTemperatureMock->requestTemperatures"));
+		//Serial.println(FPSTR("DallasTemperatureMock->requestTemperatures"));
 	}
 	float getTempCByIndex(int i){
 		return 20+random(0, 20);
