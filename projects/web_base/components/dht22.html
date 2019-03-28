@@ -28,37 +28,25 @@ function onDataPosteddht22(response){
 }
 </script>
 <div id="sensors.dht22.div">
-	<div id="sensors.dht22.viewForm" class="w3-card-4" style="width: 400px; float:left; min-width: 340px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+	<div id="sensors.dht22.viewForm" class="w3-card-4 entityLib-entity">
 			<div class="w3-container w3-teal">
 				 <div><h4 id="sensors.dht22.descr">bmeMeasurer</h4></div>
 			</div>
 			
-				<div id="temperatureDiv" class="w3-row" style="margin-top: 5px;">
-					<div class="w3-quarter">
+				<div id="temperatureDiv" class="entityLib-row">
 						<img class="temperature-icon"/>
-					</div>
-					<div class="w3-third">
-						<label for="sensors.dht22.temp" style="max-width: 240px;">
+						<label for="sensors.dht22.temp"  class="entityLib-label">
 							<b>Температура °C</b>
 						</label>
-					</div>
-					<div class="w3-third">
-						<input id="sensors.dht22.temp" name="temp" class="w3-input w3-border" style="width:90%" type="text" value="?" disabled>
-					</div>
+						<input id="sensors.dht22.temp" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
 				</div>	
 		   					   		
-				<div id="humidityDiv" class="w3-row" style="margin-top: 5px;">
-					<div class="w3-quarter">
+				<div id="humidityDiv" class="entityLib-row">
 						<img class="humidity-icon"/>
-					</div>
-					<div class="w3-third">
-						<label for="sensors.dht22.hum" style="max-width: 240px;">
+						<label for="sensors.dht22.hum"  class="entityLib-label">
 							<b>Влажность (%)</b>
 						</label>
-					</div>
-					<div class="w3-third">
-						<input id="sensors.dht22.hum" class="w3-input w3-border" style="width: 90%; " type="text" value="?" disabled>
-					</div>
+						<input id="sensors.dht22.hum" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
 				</div>	
 				
 				<footer class="w3-container w3-teal w3-display-container">
@@ -73,7 +61,7 @@ function onDataPosteddht22(response){
     			</footer>			   		
 		   	
 	</div>
-	<div id="sensors.dht22.editForm" class="w3-card-4" style="display:none; width: 400px; float:left; min-width: 340px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+	<div id="sensors.dht22.editForm" class="w3-card-4 entityLib-entity" style="display:none;">
 			<div class="w3-container w3-teal">
 				 <div><h4>Редактирование</h4></div>
 			</div>
@@ -82,18 +70,18 @@ function onDataPosteddht22(response){
 				<input id="sensors.dht22.id.edit" name="id" type="hidden">
 				<input id="sensors.dht22.group.edit" name="group" type="hidden">
 				
-				<div class="w3-row" style="margin-top: 5px;">
-						<label for="sensors.dht22.name.edit" style="max-width: 240px;">
+				<div class="entityLib-row">
+						<label for="sensors.dht22.name.edit" class="entityLib-label">
 							<b>Датчик/устройство</b>
 						</label>
-						<input id="sensors.dht22.name.edit" name="name" class="w3-input w3-border" style="width: 90%;" type="text" value="?" readonly="readonly">
+						<input id="sensors.dht22.name.edit" name="name" class="w3-input w3-border entityLib-input-edit" type="text" value="?" readonly="readonly">
 				</div>
 						
-				<div class="w3-row" style="margin-top: 5px; margin-bottom: 5px;">
-						<label for="sensors.dht22.descr.edit" style="max-width: 240px;">
+				<div class="entityLib-row">
+						<label for="sensors.dht22.descr.edit" class="entityLib-label">
 							<b>Описание</b>
 						</label>
-						<input id="sensors.dht22.descr.edit" name="descr" class="w3-input w3-border" style="width:90%" type="text" value="?">
+						<input id="sensors.dht22.descr.edit" name="descr" class="w3-input w3-border entityLib-input-edit" type="text" value="?">
 				</div>	
 
 		   	</form>

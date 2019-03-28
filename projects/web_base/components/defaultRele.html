@@ -81,7 +81,7 @@ function onWingetClickSubmittedDefaultRele(response){
 
 <div id="sensors.DefaultRele.div">
 
-	<div id="sensors.DefaultRele.viewForm" class="w3-card-4" style="width: 400px; float:left; min-width: 340px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+	<div id="sensors.DefaultRele.viewForm" class="w3-card-4 entityLib-entity">
 			<div class="w3-container w3-teal">
 				  <div><h4 id="sensors.DefaultRele.descr">sensors.DefaultRele</h4></div>
 			</div>
@@ -94,18 +94,17 @@ function onWingetClickSubmittedDefaultRele(response){
 				<input id="sensors.DefaultRele.on" name="on" type="hidden">
 									
 				<div id="DefaultReleImagesBody" class="w3-row">
-					<div class="w3-half w3-card-4 w3-center" style="margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; width: 92px; height: 92px;">
-						<img id="DefaultRele_" class="w3-center DefaultRele_Image lamp-q-icon" 
-							style="cursor: pointer; object-fit: contain; margin-top: 10px; "
+					<div class="w3-half w3-card-4 w3-center entityLib-container-image">
+						<img id="DefaultRele_" class="w3-center DefaultRele_Image lamp-q-icon entityLib-image" 
 							title="Ожидание"
 							alt="Ожидаю подключения"/>
-						<img id="DefaultRele_1" class="w3-center DefaultRele_Image lamp-on-icon" 
-							style="cursor: pointer; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
+						<img id="DefaultRele_1" class="w3-center DefaultRele_Image lamp-on-icon entityLib-image" 
+							style="display: none;"
 							title="Выключить"
 							onclick="lampWidgetClick(this);" 
 							alt="Выключить"/>
-						<img id="DefaultRele_0" class="w3-center DefaultRele_Image lamp-off-icon" 
-							style="cursor: pointer; object-fit: contain; margin-top: 10px; margin-left: 15px; display: none;"
+						<img id="DefaultRele_0" class="w3-center DefaultRele_Image lamp-off-icon entityLib-image" 
+							style="display: none;"
 							title="Включить"
 							onclick="lampWidgetClick(this);" 
 							alt="Включить"/>
@@ -125,7 +124,7 @@ function onWingetClickSubmittedDefaultRele(response){
    			</footer>	
 		</div>
 		
-		<div id="sensors.DefaultRele.editForm" class="w3-card-4" style="display:none; width: 400px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+		<div id="sensors.DefaultRele.editForm" class="w3-card-4 entityLib-entity" style="display:none;">
 			<div class="w3-container w3-teal">
 				 <div><h4>Редактирование</h4></div>
 			</div>
@@ -134,20 +133,18 @@ function onWingetClickSubmittedDefaultRele(response){
 				<input id="sensors.DefaultRele.id.edit" name="id" type="hidden">
 				<input id="sensors.DefaultRele.group.edit" name="group" type="hidden">
 				
-				<div class="w3-row" style="margin-top: 15px;">
-						<label for="sensors.DefaultRele.name.edit" style="max-width: 240px;">
+				<div class="entityLib-row">
+						<label for="sensors.DefaultRele.name.edit" class="entityLib-label">
 							<b>Имя</b>
 						</label>
-						<input id="sensors.DefaultRele.name.edit" name="name" class="w3-input w3-border" style="width: 90%; margin-bottom: 10px;" type="text" value="?" readonly="readonly">
+						<input id="sensors.DefaultRele.name.edit" name="name" class="w3-input w3-border entityLib-input-edit" type="text" value="?" readonly="readonly">
 				</div>
 						
-				<div class="w3-row" style="margin-top: 15px; margin-bottom: 5px;">
-						<label for="sensors.DefaultRele.descr.edit" style="max-width: 240px;">
+				<div class="entityLib-row">
+						<label for="sensors.DefaultRele.descr.edit" class="entityLib-label">
 							<b>Описание</b>
 						</label>
-						<input id="sensors.DefaultRele.descr.edit" name="descr"
-							 class="w3-input w3-border" style="width:90%" type="text" value="?"
-							 >
+						<input id="sensors.DefaultRele.descr.edit" name="descr" class="w3-input w3-border entityLib-input-edit" type="text" value="?">
 				</div>	
 										
 			</form>

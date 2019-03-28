@@ -95,26 +95,20 @@ function itemToEditDiv(uid,item){
 }
 </script>
 <div id="sensors.ds18d20.div">
-	<div id="sensors.ds18d20.viewForm" class="w3-card-4" style="width: 400px; float:left; min-width: 340px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+	<div id="sensors.ds18d20.viewForm" class="w3-card-4 entityLib-entity">
 			<div class="w3-container w3-teal">
 				 <div><h4 id="sensors.ds18d20.descr">bmeMeasurer</h4></div>
 			</div>
 			
-				<div id="temperatureDiv" class="w3-row" style="margin-top: 5px;">
-					<div class="w3-quarter">
-						<img class="temperature-icon"/>
-					</div>
-					<div class="w3-third">
-						<label for="sensors.ds18d20.temp" style="max-width: 240px;">
-							<b>Кол-во датчиков</b>
-						</label>
-					</div>
-					<div class="w3-third">
-						<input id="sensors.ds18d20.itemCount" name="temp" class="w3-input w3-border" style="width:90%" type="text" value="?" disabled>
-					</div>
+				<div id="temperatureDiv" class="entityLib-row">
+					<img class="temperature-icon"/>
+					<label for="sensors.ds18d20.temp" class="entityLib-label">
+						<b>Кол-во датчиков</b>
+					</label>
+					<input id="sensors.ds18d20.itemCount" name="temp" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
 				</div>	
 
-				<div class="w3-row" style="margin-top: 5px; margin-bottom: 5px;">
+				<div class="entityLib-row" >
 						<b>Описание датчиков</b>
 				</div>
 				
@@ -139,7 +133,7 @@ function itemToEditDiv(uid,item){
     			</footer>			   		
 		   	
 	</div>
-	<div id="sensors.ds18d20.editForm" class="w3-card-4" style="display:none; width: 400px; float:left; min-width: 340px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+	<div id="sensors.ds18d20.editForm" class="w3-card-4 entityLib-entity"  style="display:none;">
 			<div class="w3-container w3-teal">
 				 <div><h4>Редактирование</h4></div>
 			</div>
@@ -148,25 +142,25 @@ function itemToEditDiv(uid,item){
 				<input id="sensors.ds18d20.id.edit" name="id" type="hidden">
 				<input id="sensors.ds18d20.group.edit" name="group" type="hidden">
 				
-				<div class="w3-row" style="margin-top: 5px;">
-						<label for="sensors.ds18d20.name.edit" style="max-width: 240px;">
+				<div class="entityLib-row">
+						<label for="sensors.ds18d20.name.edit" class="entityLib-label">
 							<b>Датчик/устройство</b>
 						</label>
-						<input id="sensors.ds18d20.name.edit" name="name" class="w3-input w3-border" style="width: 90%;" type="text" value="?" readonly="readonly">
+						<input id="sensors.ds18d20.name.edit" name="name" class="w3-input w3-border entityLib-input-edit" type="text" value="?" readonly="readonly">
 				</div>
 						
-				<div class="w3-row" style="margin-top: 5px; margin-bottom: 5px;">
-						<label for="sensors.ds18d20.descr.edit" style="max-width: 240px;">
+				<div class="entityLib-row">
+						<label for="sensors.ds18d20.descr.edit" class="entityLib-label">
 							<b>Описание</b>
 						</label>
-						<input id="sensors.ds18d20.descr.edit" name="descr" class="w3-input w3-border" style="width:90%" type="text" value="?">
+						<input id="sensors.ds18d20.descr.edit" name="descr" class="w3-input w3-border entityLib-input-edit" type="text" value="?">
 				</div>	
 
-				<div class="w3-row" style="margin-top: 5px; margin-bottom: 5px;">
+				<div class="entityLib-row">
 						<b>Описание датчиков</b>
 				</div>
 
-				<div id="sensors.ds18d20.items.div.edit" style="margin-top: 5px;">
+				<div id="sensors.ds18d20.items.div.edit">
 					<!-- 
 						<div class="w3-row">
 					  			<label for="sensors.ds18d20.UID.descr.edit">?</label>

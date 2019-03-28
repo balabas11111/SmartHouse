@@ -25,25 +25,19 @@ function onDataPostedBh1750(response){
 </script>
 <div id="sensors.bh1750.div">
 
-	<div id="sensors.bh1750.viewForm" class="w3-card-4" style="width: 400px; float:left; min-width: 340px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+	<div id="sensors.bh1750.viewForm" class="w3-card-4 entityLib-entity">
 			<div class="w3-container w3-teal">
 				 <div><h4 id="sensors.bh1750.descr">bh1750Measurer</h4></div>
 			</div>
 			
 			<!--  <form id="bh1750" class="w3-container"> -->
 				
-				<div class="w3-row" style="margin-top: 5px;">
-					<div class="w3-quarter">
-						<img class="luxmeter-icon"/>
-					</div>
-					<div class="w3-third">
-						<label for="sensors.bh1750.light" style="max-width: 240px;">
-							<b>Освещенность (люкс)</b>
-						</label>
-					</div>
-					<div class="w3-third">
-						<input id="sensors.bh1750.light" name="light" class="w3-input w3-border" style="width: 90%; margin-bottom: 5px;" type="text" value="обновляю" disabled>
-					</div>
+				<div class="entityLib-row">
+					<img class="luxmeter-icon"/>
+					<label for="sensors.bh1750.light" class="entityLib-label">
+						<b>Освещенность (люкс)</b>
+					</label>
+					<input id="sensors.bh1750.light" name="light" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
 				</div>	
 				
 				<footer class="w3-container w3-teal w3-display-container">
@@ -59,7 +53,7 @@ function onDataPostedBh1750(response){
 			<!--  </form> -->
 	</div>
 	
-	<div id="sensors.bh1750.editForm" class="w3-card-4" style="display:none; width: 400px; float:left; min-width: 340px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+	<div id="sensors.bh1750.editForm" class="w3-card-4 entityLib-entity" style="display:none;">
 			<div class="w3-container w3-teal">
 				 <div><h4>Редактирование</h4></div>
 			</div>
@@ -68,20 +62,18 @@ function onDataPostedBh1750(response){
 				<input id="sensors.bh1750.id.edit" name="id" type="hidden">
 				<input id="sensors.bh1750.group.edit" name="group" type="hidden">
 				
-				<div class="w3-row" style="margin-top: 5px;">
-						<label for="sensors.bh1750.name.edit" style="max-width: 240px;">
+				<div class="entityLib-row">
+						<label for="sensors.bh1750.name.edit" class="entityLib-label">
 							<b>Датчик/устройство</b>
 						</label>
-						<input id="sensors.bh1750.name.edit" name="name" class="w3-input w3-border" style="width: 90%; margin-bottom: 5px;" type="text" value="?" readonly="readonly">
+						<input id="sensors.bh1750.name.edit" name="name" class="w3-input w3-border entityLib-input-edit" type="text" value="?" readonly="readonly">
 				</div>
 						
-				<div class="w3-row" style="margin-top: 5px; margin-bottom: 5px;">
-						<label for="sensors.bh1750.descr.edit" style="max-width: 240px;">
+				<div class="entityLib-row">
+						<label for="sensors.bh1750.descr.edit" class="entityLib-label">
 							<b>Описание</b>
 						</label>
-						<input id="sensors.bh1750.descr.edit" name="descr"
-							 class="w3-input w3-border" style="width:90%" type="text" value="?"
-							 pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
+						<input id="sensors.bh1750.descr.edit" name="descr" class="w3-input w3-border entityLib-input-edit" type="text" value="?">
 				</div>	
 										
 			</form>
