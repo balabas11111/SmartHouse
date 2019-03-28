@@ -134,10 +134,10 @@ public:
 	}
 	bool setDictionaryValue(const char* key,const char* value){
 		bool res= getDictionary().set(strdup(key), strdup(value));
-		Serial.print(FPSTR("Set Dict ="));
+		/*Serial.print(FPSTR("Set Dict ="));
 		Serial.print(key);
 		Serial.print(FPSTR(" : "));
-		Serial.println(value);
+		Serial.println(value);*/
 		return res;
 	}
 

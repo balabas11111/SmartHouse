@@ -71,6 +71,8 @@ public:
 
 	bool saveRootToFileIfChanged();
 
+	virtual bool isPrimaryField(const char* key);
+
 	void initEntitiesModelData();
 #ifdef DEPLOY_TEMPLATES
 	void initTemplates();

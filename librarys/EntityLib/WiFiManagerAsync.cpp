@@ -408,6 +408,7 @@ void WiFiManagerAsync::onEntityPost(AsyncWebServerRequest *request) {
 
 		int count=0;
 
+		Serial.println(FPSTR("Allowed fls"));
 		setAllowedFields.printTo(Serial);
 
 		if(JsonObjectUtil::isInArray("*", setAllowedFields)){
@@ -418,9 +419,28 @@ void WiFiManagerAsync::onEntityPost(AsyncWebServerRequest *request) {
 				count+=entityPostField(request,entityId,key);
 			}
 		}else{
+			int fpr=0;
 			for (const auto& kvp : setAllowedFields) {
 				const char* key = kvp.as<const char*>();
 				count+=entityPostField(request,entityId,key);
+				fpr++;
+			}
+			if(fpr==0){
+				Serial.println(FPSTR("Request params"));
+				for(int i=0;i<request->args();i++){
+					const char* key=request->argName(i).c_str();
+					bool isPrim=dao->isPrimaryField(key);
+/*
+					Serial.print("key=");
+					Serial.print(key);
+					Serial.print(" isPrim=");
+					Serial.println(isPrim);
+*/
+					if(!dao->isPrimaryField(key)){
+						//Serial.println(FPSTR(key));
+						count+=entityPostField(request,entityId,key);
+					}
+				}
 			}
 		}
 

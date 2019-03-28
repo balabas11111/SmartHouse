@@ -251,6 +251,12 @@ const char* JsonDao::validateField(int entityId, const char* key,const  String& 
 	return entity->validateField(key, value);
 }
 
+bool JsonDao::isPrimaryField(const char* key) {
+	return strcmp(key,JSONKEY_id)==0
+		|| strcmp(key,JSONKEY_group)==0
+		|| strcmp(key,JSONKEY_name)==0;
+}
+
 int JsonDao::mergeDatas(JsonObject& from, JsonObject& to) {
 
 	int changed=0;
@@ -334,10 +340,9 @@ bool JsonDao::setField(int entityId, const char* key,String value) {
 	if(data.is<float>(key)){
 		return setField(entityId, key, value.toFloat());
 	}
-	if(data.is<const char*>(key) || data.is<char*>(key)){
-		if(getEntity(entityId)->processFieldPreSave(key, value.c_str())){
-			return setField(entityId, key, strdup(value.c_str()));
-		}
+	if(getEntity(entityId)->processFieldPreSave(key, value.c_str())){
+		JsonObjectUtil::print("root=",root);
+		return setField(entityId, strdup(key), strdup(value.c_str()));
 	}
 	return false;
 }

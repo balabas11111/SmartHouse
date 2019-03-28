@@ -198,10 +198,26 @@ function formSubmitAsForm(form,div,resultHandler){
 	
 	var frmComp = document.forms[form];
 	var data = new FormData(frmComp);
-	
-	console.log("form = ", form, " data=",data);
+	var json =  toJSONString(frmComp);
+	console.log("form = ", form, " data=",data," json=",json);
 	sendRequest("POST", DATA_MODEL_POST_URL, resultHandler, data, 0, 2000);
 }
+function toJSONString( form ) {
+	var obj = {};
+	var elements = form.querySelectorAll( "input, select, textarea" );
+	for( var i = 0; i < elements.length; ++i ) {
+		var element = elements[i];
+		var name = element.name;
+		var value = element.value;
+
+		if( name ) {
+			obj[ name ] = value;
+		}
+	}
+
+	return JSON.stringify( obj );
+}
+
 function handleHttpRequestStatus(success,message){
 	console.log("result="+success+" message="+message);
 }

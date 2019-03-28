@@ -62,12 +62,14 @@ function itemToViewDiv(uid,item){
 	label.id='sensors.ds18d20.'+uid+'.descr';
 	label.htmlFor='sensors.ds18d20.'+uid+'.temp';
 	label.innerText=descr;
+	label.classList.add('entityLib-label');
 	
 	input.id='sensors.ds18d20.'+uid+'.temp';
 	input.value=temp;
 	input.disabled='disabled';
+	input.classList.add('entityLib-input-view');
 	
-	div.classList.add('w3-row');
+	div.classList.add('entityLib-row');
 	div.appendChild(label);
 	div.appendChild(input);
 	
@@ -82,12 +84,14 @@ function itemToEditDiv(uid,item){
 	
 	label.htmlFor='sensors.ds18d20.'+uid+'.descr.edit';
 	label.innerText='Описание '+uid;
+	label.classList.add('entityLib-label');
 	
 	input.id='sensors.ds18d20.'+uid+'.descr';
 	input.name=uid+'.descr';
 	input.value=descr;
+	input.classList.add('entityLib-input-edit');
 	
-	div.classList.add('w3-row');
+	div.classList.add('entityLib-row');
 	div.appendChild(label);
 	div.appendChild(input);
 	

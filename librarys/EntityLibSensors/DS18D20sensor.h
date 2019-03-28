@@ -54,12 +54,20 @@ public:
 	virtual bool processFieldPreSave(const char* key,const char* value) override{
 		String keyStr=key;
 
+		Serial.print(FPSTR("DS18D20 set key= "));
+		Serial.print(key);
+		Serial.print(FPSTR(" value= "));
+		Serial.println(value);
+
 		if(keyStr.endsWith(JSONKEY_descr)){
 			keyStr=keyStr.substring(0, keyStr.length()-6);
-			Serial.print(FPSTR("Sensor UID = "));Serial.print(keyStr);
-			Serial.print(FPSTR(" key="));Serial.println(key);
-			setSensorDescr(keyStr.c_str(),value);
-			return false;
+			if(keyStr!=JSONKEY_descr){
+				/*Serial.print(FPSTR("KeyStr = "));Serial.print(keyStr);
+				Serial.print(FPSTR(" key="));Serial.println(key);
+				*/
+				setSensorDescr(keyStr.c_str(),value);
+				return false;
+			}
 		}
 
 		return true;
@@ -114,9 +122,9 @@ protected:
 	}
 
 	void initSensorModel(const char* sensorUid,float value){
-		Serial.print(FPSTR("UID = "));
+		/*Serial.print(FPSTR("UID = "));
 		Serial.println(sensorUid);
-
+*/
 		JsonObject& item = JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items).createNestedObject(strdup(sensorUid));
 
 		item.set(JSONKEY_descr, getDictionaryValue(sensorUid));
@@ -126,8 +134,17 @@ protected:
 		JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items).get<JsonObject>(sensorUid).set(JSONKEY_temp, value);
 	}
 	void setSensorDescr(const char* sensorUid,const char* descr){
-		JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items).get<JsonObject>(sensorUid).set(JSONKEY_descr, descr);
+		Serial.print(FPSTR("uid="));
+		Serial.print(sensorUid);
+		Serial.print(FPSTR(" descr="));
+		Serial.println(descr);
+		JsonObject& items=JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items);
+		JsonObject& sensor=items.get<JsonObject>(sensorUid);
+		JsonObjectUtil::print("ItemsBefore = ",items);
+		sensor.set(strdup("descr"), strdup(descr));
 		setDictionaryValue(sensorUid, descr);
+		JsonObjectUtil::print("Dict = ",this->getDictionary());
+		JsonObjectUtil::print("ItemsAfter = ",items);
 	}
 
 	virtual void readTemperatures(){
@@ -144,7 +161,7 @@ protected:
 		DeviceAddress deviceAddress;
 		return dallasTemperature->getAddress(deviceAddress,index);
 		uint8_t size=sizeof(deviceAddress);
-		ObjectUtils::printInt8Arr(deviceAddress);
+		//ObjectUtils::printInt8Arr(deviceAddress);
 		return deviceAddressToString(deviceAddress,size);
 	}
 
