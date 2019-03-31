@@ -35,6 +35,7 @@
 #define JSONKEY_name    "name"
 #define JSONKEY_group   "group"
 #define JSONKEY_data    "data"
+#define JSONKEY_command "com"
 #define JSONKEY_fields  "fields"
 #define JSONKEY_model   "model"
 #define JSONKEY_descr   "descr"
@@ -75,7 +76,12 @@
 #define RESPONSE_MSG_badPath           "BAD PATH"
 #define RESPONSE_MSG_fileNotFound      "FileNotFound"
 
+#define COMMAND_restart                "restart"
+#define COMMAND_deleteSettings         "delSett"
 
+//default responses
+const char RESPONSE_restart_triggered[] PROGMEM = "{\"message\":{\"message\":\"restart\",\"time\":30,\"status\":200,\"result\":\"restart\"}}";
+const char RESPONSE_settings_deleted[] PROGMEM = "{\"message\":{\"message\":\"settings Deleted\",\"time\":30,\"status\":200,\"result\":\"delSett\"}}";
 
 const char* const ROOT_PATHS[] PROGMEM = {
 		ROOT_PATH_MODEL,

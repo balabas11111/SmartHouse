@@ -19,7 +19,8 @@
 #include "TM1637DisplayTime.h"
 #include <Ticker.h>
 
-Ticker ticker;
+Ticker tickerHeap;
+Ticker tickerSensors;
 
 ServerSettingsBox conf("EntityLiv dev settings");
 NtpBox ntpBox;
@@ -48,9 +49,9 @@ server.init();
 ntpBox.startTime();
 
 
-ticker.attach(1,updateDisplayTime);
-ticker.attach(30,printHeap);
-ticker.attach(60, updateSensors);
+//ticker.attach(1,updateDisplayTime);
+tickerHeap.attach(30,printHeap);
+tickerSensors.attach(60, updateSensors);
 
 updateSensors();
 
@@ -60,7 +61,7 @@ ObjectUtils::printMillis();
 
 void loop()
 {
-
+	server.update();
 }
 
 void printHeap(){

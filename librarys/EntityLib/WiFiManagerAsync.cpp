@@ -222,6 +222,8 @@ void WiFiManagerAsync::deployDefaultUrls() {
 	server->on(URL_DIR, HTTP_GET, [this](AsyncWebServerRequest *request){onDir(request);});
 	server->on(URL_CAT, HTTP_GET, [this](AsyncWebServerRequest *request){onCat(request);});
 
+	server->on(URL_COMMAND, HTTP_GET, [this](AsyncWebServerRequest *request){onCommand(request);});
+
 
 	server->on(URL_FILES, HTTP_DELETE, [this](AsyncWebServerRequest *request){onDelete(request);});
 	server->on(URL_FILES, HTTP_POST,
@@ -310,6 +312,16 @@ void WiFiManagerAsync::onCat(AsyncWebServerRequest *request){
 	String fileName=request->arg(JSONKEY_file);
 	request->send(SPIFFS, fileName);
 }
+void WiFiManagerAsync::onCommand(AsyncWebServerRequest* request) {
+	const char* command=request->arg(JSONKEY_command).c_str();
+	if(strcmp(command,COMMAND_restart)==0){
+		doRestart=true;
+		request->send_P(200, CONTENT_TYPE_JSON_UTF8, RESPONSE_restart_triggered);
+	}else if(strcmp(command,COMMAND_deleteSettings)==0){
+		doDeleteSettings=true;
+		request->send_P(200, CONTENT_TYPE_JSON_UTF8, RESPONSE_settings_deleted);
+	}
+}
 
 void WiFiManagerAsync::onDelete(AsyncWebServerRequest *request){
 	  if(request->args() == 0) return request->send(500, CONTENT_TYPE_TEXT_PLAIN, RESPONSE_MSG_badArgs);
@@ -363,8 +375,8 @@ void WiFiManagerAsync::onFileRead(const char* fileName,AsyncWebServerRequest* re
 }
 
 bool WiFiManagerAsync::handleFileGzRead(String path,AsyncWebServerRequest* request){
-	  Serial.print("handleFile GZ Read: ");
-	  Serial.println(path);
+	  /*Serial.print("handleFile GZ Read: ");
+	  Serial.println(path);*/
 	  if(path.endsWith("/")) path += "index.htm";
 	  String contentType = getContentType(path,request);
 	  String pathWithGz = path + ".gz";
@@ -374,13 +386,13 @@ bool WiFiManagerAsync::handleFileGzRead(String path,AsyncWebServerRequest* reque
 		  //path += ".gz";
 		 // contentType = getContentType(pathWithGz,request);
 		}
-
+/*
 		Serial.print(FPSTR("path ="));
 		Serial.print(path);
 		Serial.print(FPSTR(" pathWithGz ="));
 		Serial.print(pathWithGz);
 		Serial.print(FPSTR(" contentType ="));
-		Serial.println(contentType);
+		Serial.println(contentType);*/
 		request->send(SPIFFS, path, contentType,false);
 		return true;
 	  }
@@ -497,8 +509,31 @@ bool WiFiManagerAsync::entityPostField(AsyncWebServerRequest *request, int entit
 }
 
 void WiFiManagerAsync::sendAsEventSourceEntityNow(int entityId) {
-	JsonObject& obj = dao->getEntityData(entityId);
-	sendAsEventSourceNow(obj);
+	if(dao->isEntityEventSOurceSendAble(entityId)){
+		JsonObject& obj = dao->getEntityData(entityId);
+		sendAsEventSourceNow(obj);
+	}
+}
+
+void WiFiManagerAsync::update() {
+	if(doRestart){
+		restartDevice();
+	}else
+	if(doDeleteSettings){
+		deleteAllSettingsFiles();
+	}
+}
+
+void WiFiManagerAsync::restartDevice() {
+	Serial.println(FPSTR("===RESTART DEVICE==="));
+	doRestart=false;
+	ESP.restart();
+}
+
+void WiFiManagerAsync::deleteAllSettingsFiles() {
+	Serial.println(FPSTR("===DELETE SETTINGS==="));
+	doDeleteSettings=false;
+	FileUtils::deleteAllFiles("/data/");
 }
 
 String  WiFiManagerAsync::getContentType(String filename,AsyncWebServerRequest* request){

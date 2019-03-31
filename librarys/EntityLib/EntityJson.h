@@ -169,6 +169,10 @@ public:
 		return true;
 	}
 
+	virtual bool isSendableAsEventSource(){
+		return false;
+	}
+
 protected:
 	EntityModelDataProvider* modelDataProvider;
 

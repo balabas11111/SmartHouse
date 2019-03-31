@@ -1,5 +1,6 @@
 const DATA_MODEL_ROOT_URL = '/info';
 const DATA_MODEL_POST_URL = '/info';
+const COMMAND_POST_URL    = '/com';
 
 const GROUP_SENSORS  = 'sensors';
 const GROUP_SETTINGS = 'settings';
@@ -8,6 +9,16 @@ const FIELD_ID = "id";
 const FIELD_GROUP = "group";
 const FIELD_NAME = "name";
 const FIELD_DESCR = "descr";
+
+const COMMAND_restart           =     "restart"
+const COMMAND_deleteSettings    =     "delSett"
+	
+const CLASS_ERROR = 'error';
+const CLASS_WARN = 'warning';
+const CLASS_INFO = 'info';
+
+const MESSAGE_PAGE_WILL_BE_RELOADED = 'Page will be reloaded';
+const MESSAGE_PAGE_DEL_SETT_RELOAD_REQUIRED = 'Page reload required';
 
 var dataModel={};
 var modelToViewHandlers={};
@@ -28,7 +39,7 @@ function w3_close(){
 
 function onLoadPageComplete(){
 	httpRequestDisplayStart();
-	sendRequest("GET", DATA_MODEL_ROOT_URL, handleRootReceive, "root", 0, 2000);
+	sendRequest("GET", DATA_MODEL_ROOT_URL, handleRootReceive, "root", 60000, 2000);
 	initEventSourceChannel();
 }
 
@@ -141,6 +152,10 @@ function processEventSourceMessage(message){
 	if(message=='hello!'){
 		return;
 	}
+	if(message.startsWith('{"message":{')){
+		processServiceMessage(message);
+		return;
+	}
 	
 	try{
 		var entity = JSON.parse(message);
@@ -163,6 +178,29 @@ function processEventSourceMessage(message){
 		console.log("ERROR parse json"+err);
 		return;
 	}
+}
+
+function processServiceMessage(message){
+	console.log('process as message');
+	
+	var msg = JSON.parse(message);
+	
+	console.log('msg=',msg);
+	
+	if(msg.message!=undefined && msg.message.result!=undefined){
+		var result = msg.message.result;
+		
+		if(result == COMMAND_restart){
+			showMessage(MESSAGE_PAGE_WILL_BE_RELOADED,CLASS_WARN);
+			setTimeout(function(){reloadPage();}, 30000);
+		}else
+		if(result == COMMAND_deleteSettings){
+			showMessage(MESSAGE_PAGE_DEL_SETT_RELOAD_REQUIRED,CLASS_WARN);
+		}
+	}
+}
+function reloadPage(){
+	window.location.reload(false); 
 }
 /*---------------------------AJAX functions------------------------------------*/
 function isHttpStatusOk(status){
@@ -188,8 +226,7 @@ function formSubmitAsJson(form,div,resultHandler){
 	sendRequest("POST", DATA_MODEL_POST_URL, resultHandler, data, 0, 2000);
 }
 
-function formSubmitAsForm(form,div,resultHandler){
-	
+function formSubmitAsFormToUrl(url,form,div,resultHandler){
 	addGrayScale(div);
 	
 	if(!validateForm(div,form)){
@@ -200,7 +237,15 @@ function formSubmitAsForm(form,div,resultHandler){
 	var data = new FormData(frmComp);
 	var json =  toJSONString(frmComp);
 	console.log("form = ", form, " data=",data," json=",json);
-	sendRequest("POST", DATA_MODEL_POST_URL, resultHandler, data, 0, 2000);
+	sendRequest("POST", url, resultHandler, data, 0, 2000);
+
+}
+
+function formSubmitAsForm(form,div,resultHandler){
+	formSubmitAsFormToUrl(DATA_MODEL_POST_URL,form,div,resultHandler);
+}
+function formSubmitAsFormCommand(form,div,resultHandler){
+	formSubmitAsFormToUrl(COMMAND_POST_URL,form,div,resultHandler);
 }
 function toJSONString( form ) {
 	var obj = {};
@@ -408,8 +453,10 @@ function setComponentValue(component,val){
 		removeSepia(component);
 	}
 }
+
 /*-----ShowMessage-----*/
 function showMessage(message,clazz){
+	/*TODO: implement message notification display here*/
 	console.log('message clazz=',clazz,' message= ',message);
 }
 
@@ -494,7 +541,7 @@ function validateFormFunctionDefault(div,formName){
 	}
 	
 	if(validateMessage!=undefined && validateMessage.length!=undefined  && validateMessage.length>0){
-		showMessage(validateMessage,'error');
+		showMessage(validateMessage,CLASS_ERROR);
 		removeGrayScale(div);
 		return false;
 	}

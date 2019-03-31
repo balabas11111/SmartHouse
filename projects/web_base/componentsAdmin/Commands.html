@@ -1,0 +1,44 @@
+<!--ServSetBox starts-->
+<style>
+img.luxmeter-icon {
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQYSURBVGhD7ZdbSFRRFIZPRXNGM+xOFzLJblpaJlFZFIFd3qJ0KiPFwrQixyJRZizHggqy6K2negh6iF6KIumiHkctBZOadFCZtIsaZXQ3JMi1WmNrSmVnM6Nz5gTzwf8ys/da/79nn332SAECBPAci8UyMvGg2ZhkNJeRLAaDYRR/9f9gyMgLJfN3SehSotF8gb/+f0jMMl3uG8KlrVmmExuSMxas37VrDA/VNklZZtvAENsOFThSzKdhx5FC3JSyDxN2pr9PSE7fyFO0SZLRlPsnRD4k5xS0ph07g2nHinqVSoG2H84v5OGaZkSi0XQlKSu/KzXP8sUVwKXdBWfw0oVtjdgg6Xi8djFYLLrUvKPdA0NkFp7E2mtxiFYZoVy+rvkwzuN2y/6cnr4hck+ZsO32rN4QLoFVvqnpMAkpGWEbUzIpwK9no+h8JnaVjO8Xok+YYiiWZJ6qLdbv3LOGTqX67OP5tqsXN2NPeZAwhEtQrrsDD6Ugnq4d1m3fG7HWcCAk+7xlHFh1DpH5gaJx9/CRFMwltAco8l6RcZHolynVbBjnliGDr0XGRaKxVlSkEJ6uLcicWWT6b6JtVglV0lierh1ohelZkb+KTP9NFP4B3pdCuYR2oCBnRYYHE4Wp0VwYsOpn0tv8u8jwYKIFqMVKaTyX0Qa09y+LzP5LtAB1dGhM4DL+Byp0UWQKRGb/JfplHqMSMolL+R8Kcktk1B3RXBs8GDOFS/kXelbWiEy6KwpjRyV4KpfzL/SsVItMuisK0wQlQTO4nP+gIJtFBj0R1XBgpT6MS/oHRGkkPbyNIoOeiN4zrajI4VzWP1CQdJE5T0VhXkKpHMFl1cf5z5BMuH2ZHEy0zdqhSjefS6sPBckVGfNGzkUhRXJpdXFeJsnEp4GmvBUFeQvlo6O5vLrQUVokMuWtaJu9ozCxXF49wBo8jcJ4fJkcTFTvA1aOjuMW6kGreElkaIj6BErQCm6hDnyZ7BGYGZKo5mdU9Ku5jTpQ0xsiM0MVva+6oEK/ltv4HrpMxouM9FOFHrFmHGLdFETbdMSGMER7+B/Vz0R8Qp/XTkSsHvt7Hi3SN7oBJHAr30PHZ1U/407VTUZsnoPYHovYGY/4bpX7erMc8UV0b0ioCe0GRd7ErXxLv8ukbQZixzKxQS8FL2J64GmYkdv5DrpMjqBtYEfHfKGRYdHbeITmuWZu6TugekK20MAwCtqWfOR2vgOfS3roiOsWGRguQUukwu18CzTNi4GXMW9EJoakzpUUIqrE+X+IW6kDNs5Og9ZFDfB62Q+hMXfU6dxKS7soQDHYIxZyaf8B9RHroHnOOXgWWQat0Y3wanEHtMV+7DXZFvvtl5Z8oJOpHVoWPYGWBTfAMTcH7OGzuESAAAG8RpJ+Apfn2Zxo1YIOAAAAAElFTkSuQmCC);
+  width: 50px;  
+  height: 50px;
+}
+</style>
+<script type="text/javascript">
+
+function submitCommandForm(command){
+	document.getElementById('settings.commands.edit').value=command;
+	formSubmitAsFormCommand("settings.commands.form","settings.commands.div",onDataPostedCommandForm);
+}
+function onDataPostedCommandForm(response){
+	/*hideShowComponent("settings.NtpBox.editForm","settings.NtpBox.viewForm");*/
+}
+	
+</script>
+<div id="settings.commands.div">
+
+	<div class="w3-card-4" style="width: 800px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+		<div class="w3-container w3-teal">
+			 <div><h4 >Управление устройством</h4></div>
+		</div>
+			
+		<form id="settings.commands.form" class="w3-container">
+			<input id="settings.commands.edit" name="com" type="hidden" value="restart"/>
+			<b>Выберите действие над устройством</b>
+		</form>
+				
+		<footer class="w3-container w3-display-container">
+		      <button class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
+		      	style="margin-top: 2px; margin-bottom: 2px;"
+					onclick="submitCommandForm('restart');">Перегрузить</button>
+		      <button class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
+		      	style="margin-top: 2px; margin-bottom: 2px;"
+					onclick="submitCommandForm('delSett');">Удалить настройки</button>
+		</footer>						
+			<!--  </form> -->
+	</div>
+	
+</div>
+<!--ServSetBox ends-->

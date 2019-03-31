@@ -54,7 +54,7 @@ public:
 
 	void init();
 	std::list<EntityJson*>* getEntities();
-	EntityJson* getEntity(int i);
+	virtual EntityJson* getEntity(int i);
 
 	JsonObject& getEntitysJson_ByPath_OrCreateNew(JsonObject& container,const char* path,EntityJson* entity);
 	JsonObject& getEntitysJson_ByPath(JsonObject& container,const char* path,EntityJson* entity);
@@ -72,6 +72,7 @@ public:
 	bool saveRootToFileIfChanged();
 
 	virtual bool isPrimaryField(const char* key);
+	virtual bool isEntityEventSOurceSendAble(int entityId);
 
 	void initEntitiesModelData();
 #ifdef DEPLOY_TEMPLATES

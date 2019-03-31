@@ -44,12 +44,13 @@ const char MEASURE_LIGHT[] PROGMEM ="Lux";
 #define PATH_MODEL_DATA_JSON_BY_GROUP  "/deploy/"
 #define PATH_WEB_FILES_PATH            "/web/"
 //http Root URLs
-#define URL_ROOT  "/"
-#define URL_INFO  "/info"
+#define URL_ROOT       "/"
+#define URL_INFO       "/info"
 #define URL_INFO_POST  "/infoPost"
-#define URL_DIR   "/dir"
-#define URL_CAT   "/cat"
-#define URL_FILES "/files"
+#define URL_DIR        "/dir"
+#define URL_CAT        "/cat"
+#define URL_COMMAND    "/com"
+#define URL_FILES      "/files"
 
 #define URL_INDEXHTM "/index.htm"
 #define URL_SETUPHTM "/setup.htm"

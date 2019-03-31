@@ -42,6 +42,9 @@ public:
 	bool isOn(){
 		 return this->getModelDataProvider()->getFieldInt(id, ON_FIELD);
 	}
+	virtual bool isSendableAsEventSource() override{
+		return true;
+	}
 protected:
 	int pin;
 };

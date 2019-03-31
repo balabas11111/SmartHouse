@@ -53,12 +53,12 @@ public:
 	}
 	virtual bool processFieldPreSave(const char* key,const char* value) override{
 		String keyStr=key;
-
+/*
 		Serial.print(FPSTR("DS18D20 set key= "));
 		Serial.print(key);
 		Serial.print(FPSTR(" value= "));
 		Serial.println(value);
-
+*/
 		if(keyStr.endsWith(JSONKEY_descr)){
 			keyStr=keyStr.substring(0, keyStr.length()-6);
 			if(keyStr!=JSONKEY_descr){
@@ -134,15 +134,21 @@ protected:
 		JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items).get<JsonObject>(sensorUid).set(JSONKEY_temp, value);
 	}
 	void setSensorDescr(const char* sensorUid,const char* descr){
-		Serial.print(FPSTR("uid="));
+/*		Serial.print(FPSTR("uid="));
 		Serial.print(sensorUid);
 		Serial.print(FPSTR(" descr="));
-		Serial.println(descr);
+		Serial.println(descr);*/
 		JsonObject& items=JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items);
 		JsonObject& sensor=items.get<JsonObject>(sensorUid);
-		JsonObjectUtil::print("ItemsBefore = ",items);
-		sensor.set(strdup("descr"), strdup(descr));
-		setDictionaryValue(sensorUid, descr);
+		//JsonObjectUtil::print("ItemsBefore = ",items);
+		if(sensor.containsKey(JSONKEY_descr) &&
+				strcmp(sensor.get<const char*>(JSONKEY_descr),descr)==0){
+			Serial.println(FPSTR("descr no  changed"));
+
+		}else{
+			sensor.set(strdup("descr"), strdup(descr));
+			setDictionaryValue(sensorUid, descr);
+		}
 		JsonObjectUtil::print("Dict = ",this->getDictionary());
 		JsonObjectUtil::print("ItemsAfter = ",items);
 	}

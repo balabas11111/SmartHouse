@@ -257,6 +257,10 @@ bool JsonDao::isPrimaryField(const char* key) {
 		|| strcmp(key,JSONKEY_name)==0;
 }
 
+bool JsonDao::isEntityEventSOurceSendAble(int entityId) {
+	return getEntity(entityId)->isSendableAsEventSource();
+}
+
 int JsonDao::mergeDatas(JsonObject& from, JsonObject& to) {
 
 	int changed=0;

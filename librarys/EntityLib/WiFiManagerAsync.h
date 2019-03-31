@@ -29,8 +29,9 @@
 #include <ESP_Consts.h>
 #include <EntityConsts.h>
 #include <EventSender.h>
+#include "UpdateAble.h"
 
-class WiFiManagerAsync: public EventSender {
+class WiFiManagerAsync: public EventSender, public UpdateAble {
 public:
 	WiFiManagerAsync(ServerSettingsBox* conf, EntityModelDataProvider* dao, int port =80){
 		this->conf=conf;
@@ -55,7 +56,13 @@ public:
 
 	bool checkAuth(bool userLogin=false);
 
+	virtual void update() override;
+	void restartDevice();
+	void deleteAllSettingsFiles();
+
 protected:
+
+
 	bool disconnect();
 	void waitForConnect();
 
@@ -81,6 +88,7 @@ protected:
 	void onInfo(AsyncWebServerRequest *request);
 	void onDir(AsyncWebServerRequest *request);
 	void onCat(AsyncWebServerRequest *request);
+	void onCommand(AsyncWebServerRequest *request);
 	void onDelete(AsyncWebServerRequest *request);
 	void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final);
 	void onFileRead(const char* fileName,AsyncWebServerRequest *request);
@@ -114,6 +122,9 @@ protected:
 
 	wl_status_t oldWiFistatus;
 	bool reconnected=false;
+
+	bool doRestart=false;
+	bool doDeleteSettings=false;
 
 	File fsUploadFile;
 
