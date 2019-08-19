@@ -79,6 +79,7 @@ protected:
 
 	void onRoot(AsyncWebServerRequest *request);
 	void onInfo(AsyncWebServerRequest *request);
+	void onInfo2(AsyncWebServerRequest *request);
 	void onDir(AsyncWebServerRequest *request);
 	void onCat(AsyncWebServerRequest *request);
 	void onDelete(AsyncWebServerRequest *request);
