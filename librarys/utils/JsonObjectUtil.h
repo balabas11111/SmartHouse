@@ -221,6 +221,14 @@ public:
 		return (obj.containsKey(key))?obj.get<JsonObject>(key):obj.createNestedObject(strdup(key));
 	}
 
+	static JsonObject& getObjectChildOrCreateNewNoKeyDup(JsonObject& obj,const char* key){
+		return (obj.containsKey(key))?obj.get<JsonObject>(key):obj.createNestedObject(key);
+	}
+
+	static JsonObject& getObjectChildOrCreateNewNoKeyDup(JsonObject& obj, const char* group, const char* name){
+		return getObjectChildOrCreateNewNoKeyDup(getObjectChildOrCreateNewNoKeyDup(obj, group), name);
+	}
+
 	static JsonArray& getObjectChildArrayOrCreateNew(JsonObject& obj,const char* key){
 		return (obj.containsKey(key))?obj.get<JsonArray>(key):obj.createNestedArray(strdup(key));
 	}
@@ -268,6 +276,15 @@ public:
 	template<typename T>
 	static T getField(JsonObject& parent,const char* key){
 		return parent.get<T>(key);
+	}
+
+	template<typename T>
+	static T getFieldIfKeyExistsOrDefault(JsonObject& obj,const char* key, T defaultValue){
+		if(!hasField<T>(obj,key)){
+			return defaultValue;
+		}
+
+		return getField<T>(obj, key);
 	}
 
 	static bool hasFieldInt(JsonObject& obj,const char* key){
