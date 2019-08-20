@@ -240,6 +240,13 @@ public:
 		return !CompareUtils::compareValues(obj.get<JsonVariant>(key), val);
 	}
 
+	static bool getObjectFieldNotExistsOrNotEquals(JsonObject& obj,const char* key,JsonVariant val){
+		if(!obj.containsKey(key)){
+			return true;
+		}
+		return !CompareUtils::compareValues(obj.get<JsonVariant>(key), val);
+	}
+
 	static bool getObjectFieldExistsAndEquals(JsonObject& obj,const char* key,JsonVariant val){
 		if(!obj.containsKey(key)){
 			return false;

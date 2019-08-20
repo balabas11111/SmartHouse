@@ -7,14 +7,16 @@
 
 #include <Entity.h>
 
-Entity::Entity(const char* group, const char* name, char* descr,
-		bool hasGet, bool hasPost, bool dispatcher,
-		bool canLoad, bool canSave) {
+Entity::Entity(const char* group, const char* name, char* descr, const char* descrField,
+bool hasGet, bool hasPost, bool dispatcher,
+bool canLoad, bool canSave) {
 	this->changed = false;
 	this->id = -1;
 	this->group = group;
 	this->name = name;
 	this->descr = descr;
+
+	this->descrField = descrField;
 
 	this->hasGet = hasGet;
 	this->hasPost = hasPost;
@@ -33,7 +35,7 @@ void Entity::initialize(int id, std::function<void(int)> eventProcessFunction) {
 	}
 }
 
-bool Entity::isChanged() const {
+bool Entity::isChanged() {
 	return this->changed;
 }
 
@@ -76,25 +78,7 @@ bool Entity::canSaveState() {
 bool Entity::isTarget(const char* group, const char* name) {
 	return (strcmp(group, this->group) == 0) && (strcmp(name, this->name) == 0);
 }
-/*
-void Entity::dispatchChangeEvent() {
-	dispatchChangeEvent(this->changed);
-	this->changed = false;
-}
 
-void Entity::executeGet(JsonObject& params, JsonObject& response) {
-	UNUSED(params);
-	JsonObjectUtil::setField(response, MESSAGE, NOT_IMPLEMENTED);
-}
-
-void Entity::executePost(JsonObject& params, JsonObject& response) {
-	if (!hasPostMethod()) {
-		JsonObjectUtil::setField(response, MESSAGE, NOT_ALLOWED);
-	} else {
-		executeGet(params, response);
-	}
-}
-*/
 void Entity::print() {
 	Serial.print(FPSTR("Entity id="));
 	Serial.print(id);
@@ -107,7 +91,41 @@ void Entity::print() {
 }
 
 void Entity::dispatchChangeEvent(bool clause) {
-	if (clause && this->dispatcher && id > -1 && eventProcessFunction != nullptr) {
+	if (clause && this->dispatcher && id > -1
+			&& eventProcessFunction != nullptr) {
 		eventProcessFunction(id);
 	}
+}
+
+void Entity::executeGet(JsonObject& params, JsonObject& response) {
+	setJsonField(response, this->descrField, this->descr);
+
+	doGet(params, response);
+}
+
+void Entity::executePost(JsonObject& params, JsonObject& response) {
+	if (isKeyExistsInJsonAndNotEqValue(params, this->descrField, this->descr)) {
+		this->descr = getJsonField<char*>(params, this->descrField);
+		setChanged(true);
+	}
+
+	doPost(params, response);
+
+	executeGet(params, response);
+}
+
+void Entity::executeLoad(JsonObject& jsonFromFile) {
+	if (isKeyExistsInJsonAndNotEqValue(jsonFromFile, this->descrField, this->descr)) {
+		this->descr = getJsonField<char*>(jsonFromFile, this->descrField);
+	}
+
+	doLoad(jsonFromFile);
+}
+
+void Entity::executeSave(JsonObject& jsonToFile) {
+	if(isKeyNotExistsInJsonOrNotEqValue(jsonToFile,this->descrField,this->descr)){
+		setJsonField(jsonToFile, this->descrField, this->descr);
+	}
+
+	doSave(jsonToFile);
 }

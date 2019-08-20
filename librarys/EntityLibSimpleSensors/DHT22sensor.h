@@ -8,18 +8,23 @@
 #ifndef LIBRARIES_ENTITYLIBSENSORS_DHT22SENSOR_H_
 #define LIBRARIES_ENTITYLIBSENSORS_DHT22SENSOR_H_
 
-#define DHT22_NAME "dht22"
-#define DHT22_DESCR "Temperature/Humidity"
-
 #include "Entity.h"
 #include "UpdateAble.h"
 #include "DHT.h"
 #include "DHT22Mock.h"
 
+//--------------------------------
+#define DHT22_NAME "dht22"
+#define DHT22_DESCRIPTION "Temperature/Humidity"
+
+#define DHT22_DESCR "d"
+#define DHT22_HUMIDITY "h"
+#define DHT22_TEMPERATURE "t"
+
 class DHT22sensor: public Entity, public UpdateAble {
 public:
 	DHT22sensor(int pin) :
-			Entity(ROOT_GROUP_SENSORS, DHT22_NAME, DHT22_DESCR) {
+			Entity(GROUP_SENSORS, DHT22_NAME, DHT22_DESCRIPTION) {
 		//this->dht = new DHT(pin, DHT22);
 		this->dht = new DHT22Mock(pin, DHT22);
 	}
@@ -39,6 +44,20 @@ public:
 
 		this->hum = h;
 		this->temp = t;
+	}
+
+	virtual void doGet(JsonObject& params, JsonObject& response) override {
+		setJsonField(response, DHT22_HUMIDITY, this->hum);
+		setJsonField(response, DHT22_TEMPERATURE, this->temp);
+	}
+
+	virtual void doPost(JsonObject& params, JsonObject& response) override {
+	}
+
+	virtual void doLoad(JsonObject& jsonFromFile) override {
+	}
+
+	virtual void doSave(JsonObject& jsonToFile) override {
 	}
 protected:
 	//DHT* dht;

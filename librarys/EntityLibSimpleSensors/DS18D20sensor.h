@@ -9,7 +9,7 @@
 #define LIBRARIES_ENTITYLIBSENSORS_DS18D20SENSOR_H_
 
 #include <ArduinoJson.h>
-#include <EntityJson.h>
+#include <Entity.h>
 #include "UpdateAble.h"
 
 #include <OneWire.h>
@@ -19,139 +19,107 @@
 #include <OneWireMock.h>
 #include "DallasTemperatureMock.h"
 
-#define DS18D20sensorDescriptor "{\"data\": {},\
-\"model\":{\"var\":[]}  }"
+//--------------------------------
+#define DS18D20_NAME "ds18d20"
+#define DS18D20_DESCRIPTION "Temperature DallasTemperature"
 
-class DS18D20sensor: public EntityJson, public UpdateAble {
+#define DS18D20_DESCR "d"
+
+#define DS18D20_SENSOR_COUNT "c"
+#define DS18D20_SENSOR_ID "i"
+#define DS18D20_SENSOR_NAME "n"
+#define DS18D20_TEMPERATURE "t"
+
+class DS18D20item{
 public:
-	DS18D20sensor(int pin):
-		EntityJson(ROOT_GROUP_SENSORS,"ds18d20","Temperature DallasTemperature",DS18D20sensorDescriptor){
+	DeviceAddress uid;
+	char* descr;
+	float val;
+};
+
+class DS18D20sensor: public Entity, public UpdateAble {
+public:
+	DS18D20sensor(int pin) :
+			Entity(ROOT_GROUP_SENSORS, DS18D20_NAME, DS18D20_DESCRIPTION) {
 		construct(pin);
-	};
+	}
 
-	virtual ~DS18D20sensor(){};
+	virtual ~DS18D20sensor() {
+	}
 
-	virtual void init() override{ }
-
-	virtual void postModelDataInit() override{
-		cleanUnnededFields();
+	virtual void init() override {
 		dallasTemperature->begin();
-		itemCount=dallasTemperature->getDeviceCount();
+		itemCount = dallasTemperature->getDeviceCount();
 
-		this->getModelDataProvider()->setField(id, JSONKEY_itemCount,itemCount);
+		items = new DS18D20item[itemCount];
 
-		for(uint8_t i=0;i<itemCount;i++){
-			initSensorModel(getDeviceAddress(i).c_str(),127);
+		for (uint8_t i = 0; i < itemCount; i++) {
+			DS18D20item item = new DS18D20item();
+			initSensorModel(getDeviceAddress(i).c_str(), 127);
 		}
 		readTemperatures();
 		print();
 	}
 
-	virtual void update() override{
+	virtual void update() override {
 		readTemperatures();
-		sendAsEventSourceEntity();
-	}
-	virtual bool processFieldPreSave(const char* key,const char* value) override{
-		String keyStr=key;
-
-		if(keyStr.endsWith(JSONKEY_descr)){
-			keyStr=keyStr.substring(0, keyStr.length()-6);
-			Serial.print(FPSTR("Sensor UID = "));Serial.print(keyStr);
-			Serial.print(FPSTR(" key="));Serial.println(key);
-			setSensorDescr(keyStr.c_str(),value);
-			return false;
-		}
-
-		return true;
 	}
 
-	float getSensorValue(const char* sensorUid){
-		return JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items)
-				.get<JsonObject>(sensorUid).get<float>(JSONKEY_temp);
-	}
-	const char* getSensorDescr(const char* sensorUid){
-		return JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items)
-				.get<JsonObject>(sensorUid).get<const char*>(JSONKEY_descr);
-	}
-
-	void print(){
+	void print() {
 		Serial.println(FPSTR("DS18D20 Entity"));
 		Serial.print(FPSTR(" name = "));
 		Serial.print(name);
 		Serial.print(FPSTR(" itemCount = "));
 		Serial.println(itemCount);
 		Serial.println(FPSTR("-----"));
-		for(uint8_t i=0;i<itemCount;i++){
+		for (uint8_t i = 0; i < itemCount; i++) {
 			Serial.print("i=");
 			Serial.print(i);
 			Serial.print(" address=");
 			Serial.println(getDeviceAddress(i));
 		}
 		Serial.println(FPSTR("-----"));
-		Serial.println(FPSTR("dict = "));
-		getDictionary().printTo(Serial);
 		Serial.println();
 		Serial.println(FPSTR("data = "));
-		getData().printTo(Serial);
 		Serial.println();
 		Serial.println(FPSTR("-----"));
 	}
 
 protected:
-	int itemCount=0;
+	int itemCount = 0;
 	OneWireMock* oneWire;
 	DallasTemperatureMock* dallasTemperature;
 
-	void construct(int pin){
-		this->oneWire=new OneWireMock(pin);
-		this->dallasTemperature=new DallasTemperatureMock(oneWire);
+	DS18D20item* items;
+
+	void construct(int pin) {
+		this->oneWire = new OneWireMock(pin);
+		this->dallasTemperature = new DallasTemperatureMock(oneWire);
 	}
 
-	void cleanUnnededFields(){
-		if(modelDataProvider->getEntityData(id).containsKey(JSONKEY_items)){
-			modelDataProvider->getEntityData(id).remove(JSONKEY_items);
-		}
-	}
-
-	void initSensorModel(const char* sensorUid,float value){
-		Serial.print(FPSTR("UID = "));
-		Serial.println(sensorUid);
-
-		JsonObject& item = JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items).createNestedObject(strdup(sensorUid));
-
-		item.set(JSONKEY_descr, getDictionaryValue(sensorUid));
-		item.set(JSONKEY_temp, value);
-	}
-	void setSensorValue(const char* sensorUid,float value){
-		JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items).get<JsonObject>(sensorUid).set(JSONKEY_temp, value);
-	}
-	void setSensorDescr(const char* sensorUid,const char* descr){
-		JsonObjectUtil::getObjectChildOrCreateNew(modelDataProvider->getEntityData(id), JSONKEY_items).get<JsonObject>(sensorUid).set(JSONKEY_descr, descr);
-		setDictionaryValue(sensorUid, descr);
-	}
-
-	virtual void readTemperatures(){
+	virtual void readTemperatures() {
 		dallasTemperature->requestTemperatures();
-		for(uint8_t i=0;i<itemCount;i++){
-			String devAddressStr=getDeviceAddress(i);
+		for (uint8_t i = 0; i < itemCount; i++) {
+			String devAddressStr = getDeviceAddress(i);
 			float t = dallasTemperature->getTempCByIndex(i);
-			setSensorValue(devAddressStr.c_str(),t);
+			setSensorValue(devAddressStr.c_str(), t);
 		}
 	}
 
-	String getDeviceAddress(uint8_t index){
+	String getDeviceAddress(uint8_t index) {
 
 		DeviceAddress deviceAddress;
-		return dallasTemperature->getAddress(deviceAddress,index);
-		uint8_t size=sizeof(deviceAddress);
+		return dallasTemperature->getAddress(deviceAddress, index);
+		/*uint8_t size = sizeof(deviceAddress);
 		ObjectUtils::printInt8Arr(deviceAddress);
-		return deviceAddressToString(deviceAddress,size);
+		return deviceAddressToString(deviceAddress, size);
+		*/
 	}
 
-	String deviceAddressToString(DeviceAddress deviceAddress,uint8_t size){
-		String devAddrStr="";
-		for(uint8_t k=0;k<size;k++){
-			devAddrStr+=String(deviceAddress[k]);
+	String deviceAddressToString(DeviceAddress deviceAddress, uint8_t size) {
+		String devAddrStr = "";
+		for (uint8_t k = 0; k < size; k++) {
+			devAddrStr += String(deviceAddress[k]);
 		}
 		return devAddrStr;
 	}

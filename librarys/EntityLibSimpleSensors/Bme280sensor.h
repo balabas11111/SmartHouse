@@ -8,21 +8,28 @@
 #ifndef LIBRARIES_ENTITYLIBSENSORS_BME280SENSOR_H_
 #define LIBRARIES_ENTITYLIBSENSORS_BME280SENSOR_H_
 
-#define BME280 "bme280"
-#define BME280_DESCR "Temperature/Humidity/AtmPressure"
-
 #include "Entity.h"
 #include "UpdateAble.h"
 
+#include <ArduinoJson.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 
 #include <Bme280Mock.h>
 
+//-----------------------------------------------------
+#define BME280 "bme280"
+#define BME280_DESCRIPTION "Temperature/Humidity/AtmPressure"
+
+#define BME280_DESCR "d"
+#define BME280_HUMIDITY "h"
+#define BME280_TEMPERATURE "t"
+#define BME280_PRESSURE "p"
+
 class Bme280sensor: public Entity, public UpdateAble {
 public:
 	Bme280sensor():
-		Entity(GROUP_SENSORS,BME280,BME280_DESCR){};
+		Entity(GROUP_SENSORS,BME280,BME280_DESCRIPTION){};
 
 	virtual ~Bme280sensor(){};
 
@@ -43,6 +50,22 @@ public:
 		this->temp = t;
 		this->press = p;
 	}
+
+	virtual void doGet(JsonObject& params, JsonObject& response) override {
+		setJsonField(response, BME280_HUMIDITY, this->hum);
+		setJsonField(response, BME280_TEMPERATURE, this->temp);
+		setJsonField(response, BME280_PRESSURE, this->press);
+	}
+
+	virtual void doPost(JsonObject& params, JsonObject& response) override {
+	}
+
+	virtual void doLoad(JsonObject& jsonFromFile) override {
+	}
+
+	virtual void doSave(JsonObject& jsonToFile) override {
+	}
+
 protected:
 	//Adafruit_BME280* bme;
 	Bme280Mock* bme = nullptr;

@@ -75,20 +75,36 @@ void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 			return;
 		}
 
+		bool changed = false;
+
 		for (Entity* entity : entitiesToGet) {
 			executeHttpMethodOnEntity(params, response, method, entity);
+
+			changed = changed || entity->isChanged();
 		}
+
+		if (changed) {
+			saveEntitiesToFile();
+		}
+
+		return;
 	}
 
 	if (JsonObjectUtil::hasField<const char*>(params, GROUP)
 			&& JsonObjectUtil::hasField<const char*>(params, NAME)) {
 
-		executeHttpMethodOnEntity(params, response, method,
-				getEntityByGroupAndName(
-						JsonObjectUtil::getFieldIfKeyExistsOrDefault(params,
-								GROUP, DEFAULT_VALUE),
-						JsonObjectUtil::getFieldIfKeyExistsOrDefault(params,
-								NAME, DEFAULT_VALUE)));
+		Entity* entity = getEntityByGroupAndName(
+				JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, GROUP,
+						DEFAULT_VALUE),
+				JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, NAME,
+						DEFAULT_VALUE));
+
+		executeHttpMethodOnEntity(params, response, method, entity);
+
+		if (entity->isChanged()) {
+			saveEntitiesToFile();
+		}
+
 		return;
 	}
 }
@@ -115,6 +131,7 @@ void EntityManager::executeHttpMethodOnEntity(JsonObject& params,
 		}
 	} else if (strcmp(method, HTTP_POST) == 0) {
 		if (entity->hasPostMethod()) {
+			entity->setChanged(false);
 			entity->executePost(
 					JsonObjectUtil::getFieldIfKeyExistsOrDefault<JsonObject&>(
 							params, BODY, params),
@@ -180,9 +197,8 @@ void EntityManager::persist(
 	JsonObjectUtil::print(obj);
 
 	for (Entity* entity : entities) {
-		JsonObject& json =
-				JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(*obj,
-						entity->getGroup(), entity->getName());
+		JsonObject& json = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(
+				*obj, entity->getGroup(), entity->getName());
 		entity->print();
 		JsonObjectUtil::print(json);
 		onEntityFunction(json, entity);

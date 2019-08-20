@@ -18,8 +18,6 @@
 #define GROUP_SETTINGS "settings"
 #define GROUP_SERVICES "services"
 
-const char DESCR[] PROGMEM ="descr";
-
 const char MESSAGE[] PROGMEM ="Message";
 
 const char NOT_ALLOWED[] PROGMEM ="Not allowed";
@@ -29,7 +27,7 @@ const char BAD_METHOD[] PROGMEM ="Bad method";
 
 class Entity {
 public:
-	Entity(const char* group, const char* name, char* descr,
+	Entity(const char* group, const char* name, char* descr, const char* descrField = "d",
 			bool hasGet = true, bool hasPost = false, bool dispatcher = false,
 			bool canLoad = true, bool canSave = true);
 	virtual ~Entity() {};
@@ -56,11 +54,11 @@ public:
 
 	bool isTarget(const char* group, const char* name);
 
-	virtual void executeGet(JsonObject& params, JsonObject& response) = 0;
-	virtual void executePost(JsonObject& params, JsonObject& response) = 0;
+	void executeGet(JsonObject& params, JsonObject& response);
+	void executePost(JsonObject& params, JsonObject& response);
 
-	virtual void executeLoad(JsonObject& jsonFromFile) = 0;
-	virtual void executeSave(JsonObject& jsonToFile) = 0;
+	void executeLoad(JsonObject& jsonFromFile);
+	void executeSave(JsonObject& jsonToFile);
 
 protected:
 	bool changed;
@@ -77,9 +75,16 @@ protected:
 	const char* name;
 	char* descr;
 
+	const char* descrField;
+
 	std::function<void(int)> eventProcessFunction;
 
-	//void dispatchChangeEvent();
+	virtual void doGet(JsonObject& params, JsonObject& response) = 0;
+	virtual void doPost(JsonObject& params, JsonObject& response) = 0;
+
+	virtual void doLoad(JsonObject& jsonFromFile) = 0;
+	virtual void doSave(JsonObject& jsonToFile) = 0;
+
 	void dispatchChangeEvent(bool clause);
 
 	template<typename T>
@@ -95,6 +100,11 @@ protected:
 	bool isKeyExistsInJsonAndNotEqValue(JsonObject& json, const char* key,JsonVariant val){
 		return JsonObjectUtil::getObjectFieldExistsAndNotEquals(json, key, val);
 	}
+
+	bool isKeyNotExistsInJsonOrNotEqValue(JsonObject& json, const char* key,JsonVariant val){
+		return JsonObjectUtil::getObjectFieldNotExistsOrNotEquals(json, key, val);
+	}
+
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITY_H_ */
