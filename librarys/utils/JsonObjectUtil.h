@@ -79,8 +79,8 @@ public:
 		Serial.println();
 	}
 
-	static void printKeyVal(const char* const& key,JsonVariant value){
-		Serial.print(key);
+	static void printWithPreffix(const char* const& preffix,JsonVariant value){
+		Serial.print(preffix);
 		Serial.print(FPSTR("="));
 		if(value.is<JsonObject>() || value.is<JsonArray>()){
 			value.printTo(Serial);
@@ -231,6 +231,13 @@ public:
 
 	static JsonArray& getObjectChildArrayOrCreateNew(JsonObject& obj,const char* key){
 		return (obj.containsKey(key))?obj.get<JsonArray>(key):obj.createNestedArray(strdup(key));
+	}
+
+	static bool getObjectFieldExistsAndNotEquals(JsonObject& obj,const char* key,JsonVariant val){
+		if(!obj.containsKey(key)){
+			return false;
+		}
+		return !CompareUtils::compareValues(obj.get<JsonVariant>(key), val);
 	}
 
 	static bool getObjectFieldExistsAndEquals(JsonObject& obj,const char* key,JsonVariant val){

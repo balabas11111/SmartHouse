@@ -14,40 +14,63 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <JsonObjectUtil.h>
+#include <FileUtils.h>
 
 #include <Entity.h>
 
 /*
-#define GROUP "Group"
-#define  NAME "Name";
-#define  BODY "Body";
-*/
-const char GROUP[] PROGMEM ="Group";
-const char NAME[] PROGMEM ="Name";
-const char BODY[] PROGMEM ="Body";
+ #define GROUP "Group"
+ #define  NAME "Name";
+ #define  BODY "Body";
+ */
+const char GROUP[] PROGMEM = "Group";
+const char NAME[] PROGMEM = "Name";
+const char BODY[] PROGMEM = "Body";
 
-const char DEFAULT_VALUE[] PROGMEM ="DEFAULT";
-const char EMPTY_GROUP[] PROGMEM ="Empty group";
+const char DEFAULT_VALUE[] PROGMEM = "DEFAULT";
+const char EMPTY_GROUP[] PROGMEM = "Empty group";
 
-const char HTTP_GET[] PROGMEM ="GET";
-const char HTTP_POST[] PROGMEM ="POST";
+
+const char METHOD[] PROGMEM = "Method";
+const char HTTP_GET[] PROGMEM = "GET";
+const char HTTP_POST[] PROGMEM = "POST";
+
+const char FILE_PATH[] PROGMEM = "/data/entity/entity.json";
 
 class EntityManager {
 public:
-	EntityManager(Entity* entities[],int count);
-	virtual ~EntityManager(){};
+	EntityManager(Entity* entities[], int count);
+	virtual ~EntityManager() {
+	}
 
-	void processEvent(int entityIndex);
-	void executeMethod(JsonObject& params, JsonObject& response, const char* method);
+	void init();
+
+	void processEntityChangedEvent(int entityIndex);
+	void executeHttpMethod(JsonObject& params, JsonObject& response,
+			const char* method);
+
+	void loadEntitiesFromFile();
+	void saveEntitiesToFile();
 
 protected:
 	std::list<Entity*> entities;
-	const int count;
+	int count;
 
 	std::list<Entity*> getEntitiesByGroup(const char* group);
 	Entity* getEntityByGroupAndName(const char* group, const char* name);
 
-	void executeMethod(JsonObject& params, JsonObject& response, const char* method, Entity* entity);
+	void addNotAllowed(JsonObject& response, const char* method);
+	void executeHttpMethodOnEntity(JsonObject& params, JsonObject& response,
+									const char* method, Entity* entity);
+
+	void executeLoadOnEntity(JsonObject& json, Entity* entity);
+	void executeSaveOnEntity(JsonObject& json, Entity* entity);
+
+	void persist(std::function<void(JsonObject& json, Entity* entity)> onEntityFunction,
+					std::function<void(JsonObject& json)> postPersistFunction);
+
+	DynamicJsonBuffer buf;
+	JsonObject* obj;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYMANAGER_H_ */

@@ -10,10 +10,18 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include <ObjectUtils.h>
 #include <JsonObjectUtil.h>
 #include <functional>
 
+#define GROUP_SENSORS "sensors"
+#define GROUP_SETTINGS "settings"
+#define GROUP_SERVICES "services"
+
+const char DESCR[] PROGMEM ="descr";
+
 const char MESSAGE[] PROGMEM ="Message";
+
 const char NOT_ALLOWED[] PROGMEM ="Not allowed";
 const char NOT_IMPLEMENTED[] PROGMEM ="Not implemented";
 const char NOT_FOUND[] PROGMEM ="Not found";
@@ -21,31 +29,48 @@ const char BAD_METHOD[] PROGMEM ="Bad method";
 
 class Entity {
 public:
-	Entity(const char* group, const char* name, const char* descr, const bool hasGet = true, const bool hasPost = false, const bool dispatcher = false);
+	Entity(const char* group, const char* name, char* descr,
+			bool hasGet = true, bool hasPost = false, bool dispatcher = false,
+			bool canLoad = true, bool canSave = true);
 	virtual ~Entity() {};
 
 	void initialize(int id, std::function<void(int)> eventProcessFunction = nullptr);
 
 	virtual void init(){};
 
-	void setId(int id);
+	bool isChanged();
+	void setChanged(bool changed);
+
 	const char* getName();
 	const char* getGroup();
 	char* getDescr();
 
-	const bool hasGetMethod();
-	const bool hasPostMethod();
+	bool hasGetMethod();
+	bool hasPostMethod();
+
+	bool canDispatchChangeEvent();
+	bool canLoadState();
+	bool canSaveState();
+
+	void print();
 
 	bool isTarget(const char* group, const char* name);
 
-	void executeGet(JsonObject& params, JsonObject& response);
-	void executePost(JsonObject& params, JsonObject& response);
+	virtual void executeGet(JsonObject& params, JsonObject& response) = 0;
+	virtual void executePost(JsonObject& params, JsonObject& response) = 0;
+
+	virtual void executeLoad(JsonObject& jsonFromFile) = 0;
+	virtual void executeSave(JsonObject& jsonToFile) = 0;
 
 protected:
-	bool changed = false;
-	const bool hasGet;
-	const bool hasPost;
-	const bool dispatcher;
+	bool changed;
+
+	bool hasGet;
+	bool hasPost;
+	bool dispatcher;
+
+	bool canLoad;
+	bool canSave;
 
 	int id;
 	const char* group;
@@ -53,6 +78,23 @@ protected:
 	char* descr;
 
 	std::function<void(int)> eventProcessFunction;
+
+	//void dispatchChangeEvent();
+	void dispatchChangeEvent(bool clause);
+
+	template<typename T>
+	T getJsonField(JsonObject& json, const char* key){
+		return JsonObjectUtil::getField<T>(json, key);
+	}
+
+	template<typename T>
+	bool setJsonField(JsonObject& json, const char* key,T value){
+		return JsonObjectUtil::setField(json, key, value);
+	}
+
+	bool isKeyExistsInJsonAndNotEqValue(JsonObject& json, const char* key,JsonVariant val){
+		return JsonObjectUtil::getObjectFieldExistsAndNotEquals(json, key, val);
+	}
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITY_H_ */

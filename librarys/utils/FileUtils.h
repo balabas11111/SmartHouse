@@ -27,11 +27,15 @@ public:
 
 	static bool saveJsonToFile(String fileName,JsonObject& obj);
 	static bool loadJsonFromFile(String fileName, JsonObject& obj);
+
 	static bool saveStringToFile(String fileName,String value);
 	static String loadStringFromFile(String fileName);
 
 	static File getFile(String fileName,const char* mode);
 	static File getFileChar(const char* fileName,const char* mode);
+
+	static void loadJsonFromFile(const char* fileName, DynamicJsonBuffer& buf, JsonVariant obj);
+	static bool saveJsonToFileIfDiff(const char* fileName, JsonObject& obj);
 
 	static unsigned int getCrc(const char* fileName);
 	static unsigned int getCrc(JsonObject& obj);
