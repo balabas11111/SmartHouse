@@ -78,6 +78,8 @@ void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 		bool changed = false;
 
 		for (Entity* entity : entitiesToGet) {
+			entity->setChanged(false);
+
 			executeHttpMethodOnEntity(params, response, method, entity);
 
 			changed = changed || entity->isChanged();
@@ -98,7 +100,7 @@ void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 						DEFAULT_VALUE),
 				JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, NAME,
 						DEFAULT_VALUE));
-
+		entity->setChanged(false);
 		executeHttpMethodOnEntity(params, response, method, entity);
 
 		if (entity->isChanged()) {

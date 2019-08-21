@@ -60,6 +60,11 @@ public:
 	void executeLoad(JsonObject& jsonFromFile);
 	void executeSave(JsonObject& jsonToFile);
 
+	virtual void doGet(JsonObject& params, JsonObject& response) = 0;
+	virtual void doPost(JsonObject& params, JsonObject& response) = 0;
+
+	virtual void doLoad(JsonObject& jsonFromFile) = 0;
+	virtual void doSave(JsonObject& jsonToFile) = 0;
 protected:
 	bool changed;
 
@@ -78,12 +83,6 @@ protected:
 	const char* descrField;
 
 	std::function<void(int)> eventProcessFunction;
-
-	virtual void doGet(JsonObject& params, JsonObject& response) = 0;
-	virtual void doPost(JsonObject& params, JsonObject& response) = 0;
-
-	virtual void doLoad(JsonObject& jsonFromFile) = 0;
-	virtual void doSave(JsonObject& jsonToFile) = 0;
 
 	void dispatchChangeEvent(bool clause);
 

@@ -105,7 +105,7 @@ void Entity::executeGet(JsonObject& params, JsonObject& response) {
 
 void Entity::executePost(JsonObject& params, JsonObject& response) {
 	if (isKeyExistsInJsonAndNotEqValue(params, this->descrField, this->descr)) {
-		this->descr = getJsonField<char*>(params, this->descrField);
+		this->descr = strdup(getJsonField<const char*>(params, this->descrField));
 		setChanged(true);
 	}
 
@@ -116,7 +116,7 @@ void Entity::executePost(JsonObject& params, JsonObject& response) {
 
 void Entity::executeLoad(JsonObject& jsonFromFile) {
 	if (isKeyExistsInJsonAndNotEqValue(jsonFromFile, this->descrField, this->descr)) {
-		this->descr = getJsonField<char*>(jsonFromFile, this->descrField);
+		this->descr = strdup(getJsonField<const char*>(jsonFromFile, this->descrField));
 	}
 
 	doLoad(jsonFromFile);
