@@ -27,14 +27,20 @@ const char BAD_METHOD[] PROGMEM ="Bad method";
 
 class Entity {
 public:
-	Entity(const char* group, const char* name, char* descr, const char* descrField = "d",
+	Entity(const char* group, const char* name, char* descr,
+			const char* descrField = "d",
 			bool hasGet = true, bool hasPost = false, bool dispatcher = false,
 			bool canLoad = true, bool canSave = true);
-	virtual ~Entity() {};
+	virtual ~Entity() {
+	}
+	;
 
-	void initialize(int id, std::function<void(int)> eventProcessFunction = nullptr);
+	void initialize(int id, std::function<void(int)> eventProcessFunction =
+			nullptr);
 
-	virtual void init(){};
+	virtual void init() {
+	}
+	;
 
 	bool isChanged();
 	void setChanged(bool changed);
@@ -43,12 +49,9 @@ public:
 	const char* getGroup();
 	char* getDescr();
 
-	bool hasGetMethod();
-	bool hasPostMethod();
+	bool hasGetMethod();bool hasPostMethod();
 
-	bool canDispatchChangeEvent();
-	bool canLoadState();
-	bool canSaveState();
+	bool canDispatchChangeEvent();bool canLoadState();bool canSaveState();
 
 	void print();
 
@@ -68,12 +71,9 @@ public:
 protected:
 	bool changed;
 
-	bool hasGet;
-	bool hasPost;
-	bool dispatcher;
+	bool hasGet;bool hasPost;bool dispatcher;
 
-	bool canLoad;
-	bool canSave;
+	bool canLoad;bool canSave;
 
 	int id;
 	const char* group;
@@ -87,21 +87,32 @@ protected:
 	void dispatchChangeEvent(bool clause);
 
 	template<typename T>
-	T getJsonField(JsonObject& json, const char* key){
+	T getJsonField(JsonObject& json, const char* key) {
 		return JsonObjectUtil::getField<T>(json, key);
 	}
 
 	template<typename T>
-	bool setJsonField(JsonObject& json, const char* key,T value){
+	bool setJsonField(JsonObject& json, const char* key, T value) {
 		return JsonObjectUtil::setField(json, key, value);
 	}
 
-	bool isKeyExistsInJsonAndNotEqValue(JsonObject& json, const char* key,JsonVariant val){
+	bool getKeyValueIfExistsAndNotEquals(JsonObject& json, const char* key,	char** val);
+	bool getKeyValueIfExistsAndNotEquals(JsonObject& json, const char* key, int* val);
+	bool getKeyValueIfExistsAndNotEquals(JsonObject& json, const char* key, uint8_t* val);
+	bool getKeyValueIfExistsAndNotEquals(JsonObject& json, const char* key, uint16_t* val);
+	bool getKeyValueIfExistsAndNotEquals(JsonObject& json, const char* key, bool* val);
+	bool getKeyValueIfExistsAndNotEquals(JsonObject& json, const char* key, IPAddress* val);
+
+	bool setKeyValueIfNotExistOrNotEqual(JsonObject& json, const char* key, JsonVariant val);
+
+	bool isKeyExistsInJsonAndNotEqValue(JsonObject& json, const char* key, JsonVariant val) {
 		return JsonObjectUtil::getObjectFieldExistsAndNotEquals(json, key, val);
 	}
 
-	bool isKeyNotExistsInJsonOrNotEqValue(JsonObject& json, const char* key,JsonVariant val){
-		return JsonObjectUtil::getObjectFieldNotExistsOrNotEquals(json, key, val);
+	bool isKeyNotExistsInJsonOrNotEqValue(JsonObject& json, const char* key,
+			JsonVariant val) {
+		return JsonObjectUtil::getObjectFieldNotExistsOrNotEquals(json, key,
+				val);
 	}
 
 };

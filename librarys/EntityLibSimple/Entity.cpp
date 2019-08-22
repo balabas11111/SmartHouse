@@ -6,6 +6,7 @@
  */
 
 #include <Entity.h>
+#include <ArduinoJson.h>
 
 Entity::Entity(const char* group, const char* name, char* descr, const char* descrField,
 bool hasGet, bool hasPost, bool dispatcher,
@@ -104,10 +105,11 @@ void Entity::executeGet(JsonObject& params, JsonObject& response) {
 }
 
 void Entity::executePost(JsonObject& params, JsonObject& response) {
-	if (isKeyExistsInJsonAndNotEqValue(params, this->descrField, this->descr)) {
+	/*if (isKeyExistsInJsonAndNotEqValue(params, this->descrField, this->descr)) {
 		this->descr = strdup(getJsonField<const char*>(params, this->descrField));
 		setChanged(true);
-	}
+	}*/
+	setChanged(getKeyValueIfExistsAndNotEquals(params, this->descrField, &this->descr));
 
 	doPost(params, response);
 
@@ -115,17 +117,83 @@ void Entity::executePost(JsonObject& params, JsonObject& response) {
 }
 
 void Entity::executeLoad(JsonObject& jsonFromFile) {
-	if (isKeyExistsInJsonAndNotEqValue(jsonFromFile, this->descrField, this->descr)) {
+	/*if (isKeyExistsInJsonAndNotEqValue(jsonFromFile, this->descrField, this->descr)) {
 		this->descr = strdup(getJsonField<const char*>(jsonFromFile, this->descrField));
-	}
-
+	}*/
+	getKeyValueIfExistsAndNotEquals(jsonFromFile, this->descrField, &this->descr);
 	doLoad(jsonFromFile);
 }
 
 void Entity::executeSave(JsonObject& jsonToFile) {
-	if(isKeyNotExistsInJsonOrNotEqValue(jsonToFile,this->descrField,this->descr)){
-		setJsonField(jsonToFile, this->descrField, this->descr);
-	}
+	setKeyValueIfNotExistOrNotEqual(jsonToFile, this->descrField, this->descr);
 
 	doSave(jsonToFile);
+}
+
+bool Entity::getKeyValueIfExistsAndNotEquals(JsonObject& json, const char* key,	char** val) {
+	if (isKeyExistsInJsonAndNotEqValue(json, key, *val)) {
+		*val = strdup(getJsonField<const char*>(json, key));
+		return true;
+	}
+	return false;
+}
+
+bool Entity::getKeyValueIfExistsAndNotEquals(JsonObject& json, const char* key,	int* val) {
+	if (isKeyExistsInJsonAndNotEqValue(json, key, *val)) {
+		*val = getJsonField<int>(json, key);
+		return true;
+	}
+	return false;
+}
+
+bool Entity::getKeyValueIfExistsAndNotEquals(JsonObject& json, const char* key,
+		bool* val) {
+	if (isKeyExistsInJsonAndNotEqValue(json, key, *val)) {
+			*val = getJsonField<int>(json, key);
+			return true;
+		}
+		return false;
+}
+
+bool Entity::getKeyValueIfExistsAndNotEquals(JsonObject& json, const char* key,
+		uint16_t* val) {
+	if (isKeyExistsInJsonAndNotEqValue(json, key, *val)) {
+			*val = getJsonField<int>(json, key);
+			return true;
+		}
+		return false;
+}
+
+bool Entity::getKeyValueIfExistsAndNotEquals(JsonObject& json, const char* key,
+		uint8_t* val) {
+	if (isKeyExistsInJsonAndNotEqValue(json, key, *val)) {
+		*val = getJsonField<int>(json, key);
+		return true;
+	}
+	return false;
+}
+
+bool Entity::getKeyValueIfExistsAndNotEquals(JsonObject& json, const char* key, IPAddress* val){
+	bool chg = false;
+
+	if(!json.containsKey(key)){
+		chg = false;
+	} else{
+		chg = !CompareUtils::compareValues(json.get<JsonVariant>(key), val);
+	}
+
+	if(chg){
+		*val = strdup(getJsonField<char*>(json, key));
+		return true;
+	}
+	return false;
+}
+
+bool Entity::setKeyValueIfNotExistOrNotEqual(JsonObject& json, const char* key,	JsonVariant val) {
+	if(JsonObjectUtil::getObjectFieldNotExistsOrNotEquals(json, key, val)){
+		JsonObjectUtil::setField(json, key, val);
+		return true;
+	}
+
+	return false;
 }

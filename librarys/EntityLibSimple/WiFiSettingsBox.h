@@ -45,6 +45,8 @@
 #define _DEFAULT_AP_HIDDEN   0
 #define _DEFAULT_AP_MAXCONN  4
 
+#define _MASKED_VALUE "******"
+
 #include <Entity.h>
 #include <IPAddress.h>
 #include <sstream>
@@ -206,61 +208,31 @@ public:
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
-		setJsonField(response, _DEVICE_ID, this->_devId);
-		setJsonField(response, _DEVICE_FIRMWARE, this->_firmware);
-		setJsonField(response, _DEVICE_DESCR, this->_firmware);
-
-		setJsonField(response, _SSID, this->_ssid);
-		setJsonField(response, _PASS, this->_pass);
-
-		setJsonField(response, _SSID_AP, this->_ssidAP);
-		setJsonField(response, _PASS_AP, this->_firmware);
-
-
-//network settings
-
-#define  ""
-#define  "passAP"
-
-#define _IS_AP "isAp"
-#define _IS_STAT_IP "isStatIp"
-#define _DISCONNECT_ON_START_IF_CONN "disStIfCon"
-
-#define _IP "ip"
-#define _IP_AP "ipAP"
-#define _IP_GATEWAY "gateway"
-#define _IP_SUBNET "subnet"
-#define _IP_DNS "dns"
-#define _IP_DNS2 "dns2"
-#define _SMART_HOUSE_SERVER_IP "smrtServIp"
-//access settings
-#define _USER_LOGIN "userLogin"
-#define _USER_PASS "userPass"
-#define _ADMIN_LOGIN "adminLogin"
-#define _ADMIN_PASS "adminPass"
-#define _REFRESH_INTERVAL "interval"
-// AP default settings
-#define _AP_CHANNEL  "apCH"
-#define _AP_HIDDEN   "apH"
-#define _AP_MAXCONN  "apMC"
+		itemsToJson(response, true);
 	}
 
 	virtual void doPost(JsonObject& params, JsonObject& response) override {
+		setChanged(jsonToItems(params));
 	}
 
 	virtual void doLoad(JsonObject& jsonFromFile) override {
+		jsonToItems(params);
 	}
 
 	virtual void doSave(JsonObject& jsonToFile) override {
+		itemsToJson(jsonToFile, false);
 	}
 
 protected:
 	const char* _devId;
 	const char* _firmware;
+	char* _deviceDescr = "Default Device description";
+
 	char* _ssid = "balabasKiev5";
 	char* _pass = "wuWylKegayg2wu22";
 	char* _ssidAp = "";
-	char* _passAp = "";bool _isAp = 0;bool _isStatIp = 0;bool _disStIfCon = 0;
+	char* _passAp = "";
+	bool _isAp = 0;bool _isStatIp = 0;bool _disStIfCon = 0;
 
 	uint8_t _apCH = 1;
 	uint8_t _apH = 0;
@@ -278,7 +250,76 @@ protected:
 	char* _adminLogin = "admin";
 	char* _adminPassword = "admin";
 	uint16_t _interval = 60;
-	char* _deviceDescr = "Default Device description";
+
+	bool jsonToItems(JsonObject& json){
+		bool chg = false;
+
+		chg = getKeyValueIfExistsAndNotEquals(json, _DEVICE_DESCR, &this->_deviceDescr)?true:chg;
+
+		chg = getKeyValueIfExistsAndNotEquals(json, _SSID, &this->_ssid)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _PASS, &this->_pass)?true:chg;
+
+		chg = getKeyValueIfExistsAndNotEquals(json, _SSID_AP, &this->_ssidAp)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _PASS_AP, &this->_passAp)?true:chg;
+
+		chg = getKeyValueIfExistsAndNotEquals(json, _IS_AP, &this->_isAp)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _IS_STAT_IP, &this->_isStatIp)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _DISCONNECT_ON_START_IF_CONN, &this->_disStIfCon)?true:chg;
+
+		chg = getKeyValueIfExistsAndNotEquals(json, _IP, &this->_ip)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _IP_AP, &this->_ipAP)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _IP_GATEWAY, &this->_gateway)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _IP_SUBNET, &this->_subnet)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _IP_DNS, &this->_dns)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _IP_DNS2, &this->_dns2)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _SMART_HOUSE_SERVER_IP, &this->_smrtServIp)?true:chg;
+
+		chg = getKeyValueIfExistsAndNotEquals(json, _USER_LOGIN, &this->_userLogin)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _USER_PASS, &this->_userPassword)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _ADMIN_LOGIN, &this->_adminLogin)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _ADMIN_PASS, &this->_adminPassword)?true:chg;
+
+		chg = getKeyValueIfExistsAndNotEquals(json, _REFRESH_INTERVAL, &this->_interval)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _AP_CHANNEL, &this->_apCH)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _AP_HIDDEN, &this->_apH)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _AP_MAXCONN, &this->_apMC)?true:chg;
+
+		return chg;
+	}
+
+	void itemsToJson(JsonObject& json, bool mask) {
+		setJsonField(json, _DEVICE_ID, this->_devId);
+		setJsonField(json, _DEVICE_FIRMWARE, this->_firmware);
+		setJsonField(json, _DEVICE_DESCR, this->_deviceDescr);
+
+		setJsonField(json, _SSID, this->_ssid);
+		setJsonField(json, _PASS, mask?_MASKED_VALUE:_pass);
+
+		setJsonField(json, _SSID_AP, this->_ssidAp);
+		setJsonField(json, _PASS_AP, mask?_MASKED_VALUE:_passAp);
+
+		setJsonField(json, _IS_AP, this->_isAp);
+		setJsonField(json, _IS_STAT_IP, this->_isStatIp);
+		setJsonField(json, _DISCONNECT_ON_START_IF_CONN, this->_disStIfCon);
+
+		setJsonField(json, _IP, this->_ip);
+		setJsonField(json, _IP_AP, this->_ipAP);
+		setJsonField(json, _IP_GATEWAY, this->_gateway);
+		setJsonField(json, _IP_SUBNET, this->_subnet);
+		setJsonField(json, _IP_DNS, this->_dns);
+		setJsonField(json, _IP_DNS2, this->_dns2);
+		setJsonField(json, _SMART_HOUSE_SERVER_IP, this->_smrtServIp);
+
+		setJsonField(json, _USER_LOGIN, this->_userLogin);
+		setJsonField(json, _USER_PASS, mask?_MASKED_VALUE:_userPassword);
+		setJsonField(json, _ADMIN_LOGIN, this->_adminLogin);
+		setJsonField(json, _ADMIN_PASS, mask?_MASKED_VALUE:_adminPassword);
+		setJsonField(json, _REFRESH_INTERVAL, this->_interval);
+		setJsonField(json, _AP_CHANNEL, this->_apCH);
+		setJsonField(json, _AP_HIDDEN, this->_apH);
+		setJsonField(json, _AP_MAXCONN, this->_apMC);
+	}
+
 };
 
 #endif /* LIBRARIES_DEVICELIB_ENTITY_SETTINGS_SERVERSETTINGSBOX_H_ */

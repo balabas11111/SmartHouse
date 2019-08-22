@@ -97,24 +97,21 @@ public:
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
-		setJsonField(response, DS18D20_SENSOR_COUNT, this->itemCount);
-		JsonObject& sensors = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response, DS18D20_SENSOR_ITEMS);
-
-		for(int i = 0;i,itemCount;i++){
-			JsonObject& sensor = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(sensors, items[i].uidStr);
-			setJsonField(sensor, strdup(DS18D20_SENSOR_NAME), items[i].descr);
-			setJsonField(sensor, strdup(DS18D20_SENSOR_TEMPERATURE), items[i].temp);
-		}
+		itemsToJson(response, true);
 	}
 
 	virtual void doPost(JsonObject& params, JsonObject& response) override {
+		setChanged(jsonToItems(params));
 	}
 
 	virtual void doLoad(JsonObject& jsonFromFile) override {
+		jsonToItems(jsonFromFile);
 	}
 
 	virtual void doSave(JsonObject& jsonToFile) override {
+		itemsToJson(jsonToFile, false);
 	}
+
 protected:
 	int itemCount = 0;
 	OneWireMock* oneWire;
@@ -148,6 +145,47 @@ protected:
 	String getDeviceAddress(uint8_t index) {
 		DeviceAddress deviceAddress;
 		return dallasTemperature->getAddress(deviceAddress, index);
+	}
+
+	bool jsonToItems(JsonObject& json) {
+		bool chg = false;
+
+		if (JsonObjectUtil::hasField<JsonObject>(json, DS18D20_SENSOR_ITEMS)) {
+			JsonObject& sensors = JsonObjectUtil::getField<JsonObject>(json,
+			DS18D20_SENSOR_ITEMS);
+
+			for (int i = 0; i, itemCount; i++) {
+				if (JsonObjectUtil::hasField<JsonObject>(sensors,
+						items[i].uidStr)) {
+					JsonObject& sensor = JsonObjectUtil::getField<JsonObject>(
+							json, items[i].uidStr);
+
+					if (getKeyValueIfExistsAndNotEquals(sensor,
+					DS18D20_SENSOR_NAME, &items[i].descr)) {
+						chg = true;
+					}
+				}
+			}
+		}
+
+		return chg;
+	}
+
+	void itemsToJson(JsonObject& json, bool addTemp) {
+		setJsonField(json, DS18D20_SENSOR_COUNT, this->itemCount);
+		JsonObject& sensors = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(
+				json, DS18D20_SENSOR_ITEMS);
+
+		for (int i = 0; i, itemCount; i++) {
+			JsonObject& sensor =
+					JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(sensors,
+							items[i].uidStr);
+			setJsonField(sensor, strdup(DS18D20_SENSOR_NAME), items[i].descr);
+			if (addTemp) {
+				setJsonField(sensor, strdup(DS18D20_SENSOR_TEMPERATURE),
+						items[i].temp);
+			}
+		}
 	}
 	/*uint8_t size = sizeof(deviceAddress);
 	 ObjectUtils::printInt8Arr(deviceAddress);

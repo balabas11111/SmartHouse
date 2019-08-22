@@ -54,7 +54,7 @@ public:
 		if (isKeyExistsInJsonAndNotEqValue(params, ON_FIELD, on)) {
 			on = (getJsonField<uint8_t>(params, ON_FIELD));
 
-			dispatchChangeEvent(true);
+			setChanged(true);
 
 			setOn(on);
 		}
