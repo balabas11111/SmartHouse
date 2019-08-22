@@ -47,22 +47,25 @@
 
 #define _MASKED_VALUE "******"
 
+#define _WIFI_SETTINGS_DEF_NAME "WiFiSettings"
+#define _WIFI_SETTINGS_DEF_DESCR "Wifi Server Device settings"
+
 #include <Entity.h>
 #include <IPAddress.h>
 #include <sstream>
 #include "ObjectUtils.h"
 
-class ServerSettingsBox: public Entity {
+class WiFiSettingsBox: public Entity {
 public:
-	ServerSettingsBox(const char* firmware) :
-			Entity(GROUP_SETTINGS, "WiFiSettings",
-					"Wifi Server Device settings") {
+	WiFiSettingsBox(const char* firmware) :
+			Entity(GROUP_SETTINGS, _WIFI_SETTINGS_DEF_NAME,
+					(char*)_WIFI_SETTINGS_DEF_DESCR) {
 		this->_firmware = firmware;
 		this->_devId = "ESP_Dev_ID";
 
-		this->_ssidAp = deviceId();
+		this->_ssidAp = strdup(deviceId());
 	}
-	virtual ~ServerSettingsBox() {
+	virtual ~WiFiSettingsBox() {
 	}
 
 	virtual void init() override {
@@ -208,15 +211,17 @@ public:
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
+		UNUSED(params);
 		itemsToJson(response, true);
 	}
 
 	virtual void doPost(JsonObject& params, JsonObject& response) override {
+		UNUSED(response);
 		setChanged(jsonToItems(params));
 	}
 
 	virtual void doLoad(JsonObject& jsonFromFile) override {
-		jsonToItems(params);
+		jsonToItems(jsonFromFile);
 	}
 
 	virtual void doSave(JsonObject& jsonToFile) override {
@@ -226,29 +231,30 @@ public:
 protected:
 	const char* _devId;
 	const char* _firmware;
-	char* _deviceDescr = "Default Device description";
+	char* _deviceDescr = (char*)"Default Device description";
 
-	char* _ssid = "balabasKiev5";
-	char* _pass = "wuWylKegayg2wu22";
-	char* _ssidAp = "";
-	char* _passAp = "";
+	char* _ssid = (char*)"balabasKiev5";
+	char* _pass = (char*)"wuWylKegayg2wu22";
+	char* _ssidAp = (char*)"";
+	char* _passAp = (char*)"";
 	bool _isAp = 0;bool _isStatIp = 0;bool _disStIfCon = 0;
 
 	uint8_t _apCH = 1;
 	uint8_t _apH = 0;
 	uint8_t _apMC = 4;
 
-	IPAddress _ip = "192.168.0.120";
-	IPAddress _ipAP = "192.168.0.4";
-	IPAddress _gateway = "192.168.0.1";
-	IPAddress _subnet = "255.255.255.0";
-	IPAddress _dns = "192.168.0.1";
-	IPAddress _dns2 = "192.168.0.1";
-	IPAddress _smrtServIp = "192.168.0.5";
-	char* _userLogin = "";
-	char* _userPassword = "";
-	char* _adminLogin = "admin";
-	char* _adminPassword = "admin";
+	IPAddress _ip = new IPAddress(192,168,0,120);
+	IPAddress _ipAP = new IPAddress(192,168,0,4);
+	IPAddress _gateway = new IPAddress(192,168,0,1);
+	IPAddress _subnet = new IPAddress(255,255,255,0);
+	IPAddress _dns = new IPAddress(192,168,0,1);
+	IPAddress _dns2 = new IPAddress(192,168,0,1);
+	IPAddress _smrtServIp = new IPAddress(192,168,0,5);
+
+	char* _userLogin = (char*)"";
+	char* _userPassword = (char*)"";
+	char* _adminLogin = (char*)"admin";
+	char* _adminPassword = (char*)"admin";
 	uint16_t _interval = 60;
 
 	bool jsonToItems(JsonObject& json){
@@ -302,13 +308,13 @@ protected:
 		setJsonField(json, _IS_STAT_IP, this->_isStatIp);
 		setJsonField(json, _DISCONNECT_ON_START_IF_CONN, this->_disStIfCon);
 
-		setJsonField(json, _IP, this->_ip);
-		setJsonField(json, _IP_AP, this->_ipAP);
-		setJsonField(json, _IP_GATEWAY, this->_gateway);
-		setJsonField(json, _IP_SUBNET, this->_subnet);
-		setJsonField(json, _IP_DNS, this->_dns);
-		setJsonField(json, _IP_DNS2, this->_dns2);
-		setJsonField(json, _SMART_HOUSE_SERVER_IP, this->_smrtServIp);
+		setJsonField(json, _IP, (this->_ip).toString().c_str());
+		setJsonField(json, _IP_AP, (this->_ipAP).toString().c_str());
+		setJsonField(json, _IP_GATEWAY, (this->_gateway).toString().c_str());
+		setJsonField(json, _IP_SUBNET, (this->_subnet).toString().c_str());
+		setJsonField(json, _IP_DNS, (this->_dns).toString().c_str());
+		setJsonField(json, _IP_DNS2, (this->_dns2).toString().c_str());
+		setJsonField(json, _SMART_HOUSE_SERVER_IP, (this->_smrtServIp).toString().c_str());
 
 		setJsonField(json, _USER_LOGIN, this->_userLogin);
 		setJsonField(json, _USER_PASS, mask?_MASKED_VALUE:_userPassword);

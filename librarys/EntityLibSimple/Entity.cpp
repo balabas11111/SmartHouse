@@ -183,7 +183,9 @@ bool Entity::getKeyValueIfExistsAndNotEquals(JsonObject& json, const char* key, 
 	}
 
 	if(chg){
-		*val = strdup(getJsonField<char*>(json, key));
+		const char* ipChar = strdup(getJsonField<const char*>(json, key));
+		IPAddress addr = (new IPAddress())->fromString(ipChar);
+		*val = addr;
 		return true;
 	}
 	return false;
