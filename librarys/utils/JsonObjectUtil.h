@@ -106,18 +106,25 @@ public:
 		}
 	}
 
-	static JsonVariant clone(JsonVariant jb, JsonVariant prototype, const char* protoKey)
+	static void clone(JsonVariant to,String& prototype, const char* key){
+		DynamicJsonBuffer tmp;
+
+		JsonObjectUtil::clone(to, tmp.parse(prototype).as<JsonObject>(), key);
+		tmp.clear();
+	}
+
+	static JsonVariant clone(JsonVariant to, JsonVariant prototype, const char* protoKey)
 	{
 		Serial.println(FPSTR("Prototype="));
 		prototype.printTo(Serial);
 		Serial.println();
 		Serial.println(FPSTR(" jb="));
-		jb.printTo(Serial);
+		to.printTo(Serial);
 		Serial.println();
 		Serial.println(FPSTR("..."));
 
-		if(jb.is<JsonObject>()){
-			JsonObject& target = jb.as<JsonObject>();
+		if(to.is<JsonObject>()){
+			JsonObject& target = to.as<JsonObject>();
 			bool hasKey = target.containsKey(protoKey);
 
 			if (prototype.is<JsonObject>()) {
@@ -313,6 +320,7 @@ public:
 	static bool hasFieldChar(JsonObject& obj,const char* key){
 		return hasField<char*>(obj, key);
 	}
+
 };
 
 #endif /* LIBRARIES_DEVICELIB_UTILS_JSONOBJECTUTIL_H_ */

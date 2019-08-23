@@ -124,14 +124,14 @@ void EntityManager::executeHttpMethodOnEntity(JsonObject& params,
 		return;
 	}
 
-	if (strcmp(method, HTTP_GET) == 0) {
+	if (strcmp(method, REQUEST_GET) == 0) {
 		if (entity->hasGetMethod()) {
 			entity->executeGet(params,
 					JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
 							entity->getGroup(), entity->getName()));
 			return;
 		}
-	} else if (strcmp(method, HTTP_POST) == 0) {
+	} else if (strcmp(method, REQUEST_POST) == 0) {
 		if (entity->hasPostMethod()) {
 			entity->setChanged(false);
 			entity->executePost(

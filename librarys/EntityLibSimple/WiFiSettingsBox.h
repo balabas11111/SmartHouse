@@ -210,6 +210,14 @@ public:
 		return this->_deviceDescr;
 	}
 
+	bool hasAdminPassword(){
+		return strcmp(_adminPassword,"")!=0;
+	}
+
+	bool hasUserPassword(){
+		return strcmp(_userPassword,"")!=0;
+	}
+
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
 		UNUSED(params);
 		itemsToJson(response, true);
@@ -243,13 +251,13 @@ protected:
 	uint8_t _apH = 0;
 	uint8_t _apMC = 4;
 
-	IPAddress _ip = new IPAddress(192,168,0,120);
-	IPAddress _ipAP = new IPAddress(192,168,0,4);
-	IPAddress _gateway = new IPAddress(192,168,0,1);
-	IPAddress _subnet = new IPAddress(255,255,255,0);
-	IPAddress _dns = new IPAddress(192,168,0,1);
-	IPAddress _dns2 = new IPAddress(192,168,0,1);
-	IPAddress _smrtServIp = new IPAddress(192,168,0,5);
+	IPAddress _ip = IPAddress(192,168,0,120);
+	IPAddress _ipAP = IPAddress(192,168,0,4);
+	IPAddress _gateway = IPAddress(192,168,0,1);
+	IPAddress _subnet = IPAddress(255,255,255,0);
+	IPAddress _dns = IPAddress(192,168,0,1);
+	IPAddress _dns2 = IPAddress(192,168,0,1);
+	IPAddress _smrtServIp = IPAddress(192,168,0,5);
 
 	char* _userLogin = (char*)"";
 	char* _userPassword = (char*)"";

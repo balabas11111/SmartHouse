@@ -32,8 +32,8 @@ const char EMPTY_GROUP[] PROGMEM = "Empty group";
 
 
 const char METHOD[] PROGMEM = "Method";
-const char HTTP_GET[] PROGMEM = "GET";
-const char HTTP_POST[] PROGMEM = "POST";
+const char REQUEST_GET[] PROGMEM = "GET";
+const char REQUEST_POST[] PROGMEM = "POST";
 
 const char FILE_PATH[] PROGMEM = "/data/entity/entity.json";
 
