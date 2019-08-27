@@ -5,7 +5,7 @@
  *      Author: Vitaliy_Vlasov
  */
 
-#include <WiFiManager.h>
+#include <WiFi/WiFiManager.h>
 
 WiFiManager::WiFiManager(WiFiSettingsBox* conf,
 		std::function<void(void)> onWiFiConnected,

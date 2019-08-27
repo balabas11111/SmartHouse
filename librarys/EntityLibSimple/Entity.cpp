@@ -27,7 +27,7 @@ bool canLoad, bool canSave) {
 	this->canSave = canSave;
 }
 
-void Entity::initialize(int id, std::function<void(int)> eventProcessFunction) {
+void Entity::preInitialize(int id, std::function<void(int)> eventProcessFunction) {
 	this->id = id;
 	if (this->canDispatchChangeEvent()) {
 		this->eventProcessFunction = eventProcessFunction;

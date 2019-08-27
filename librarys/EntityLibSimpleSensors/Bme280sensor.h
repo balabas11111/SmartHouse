@@ -8,8 +8,8 @@
 #ifndef LIBRARIES_ENTITYLIBSENSORS_BME280SENSOR_H_
 #define LIBRARIES_ENTITYLIBSENSORS_BME280SENSOR_H_
 
-#include "Entity.h"
-#include "UpdateAble.h"
+#include <Entity.h>
+#include <EntityUpdate.h>
 
 #include <ArduinoJson.h>
 #include <Adafruit_Sensor.h>
@@ -26,7 +26,7 @@
 #define BME280_TEMPERATURE "t"
 #define BME280_PRESSURE "p"
 
-class Bme280sensor: public Entity, public UpdateAble {
+class Bme280sensor: public Entity, public EntityUpdate {
 public:
 	Bme280sensor():
 		Entity(GROUP_SENSORS,BME280,BME280_DESCRIPTION){};
@@ -39,7 +39,7 @@ public:
 		bme->begin();
 	}
 
-	virtual void update() override{
+	virtual void doUpdate() override{
 		float h = bme->readHumidity();
 		float t = bme->readTemperature();
 		float p = bme->readPressure();

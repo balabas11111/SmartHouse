@@ -33,14 +33,12 @@ public:
 			bool canLoad = true, bool canSave = true);
 	virtual ~Entity() {
 	}
-	;
 
-	void initialize(int id, std::function<void(int)> eventProcessFunction =
+	void preInitialize(int id, std::function<void(int)> eventProcessFunction =
 			nullptr);
 
 	virtual void init() {
 	}
-	;
 
 	bool isChanged();
 	void setChanged(bool changed);

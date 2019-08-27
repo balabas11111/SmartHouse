@@ -5,8 +5,8 @@
  *      Author: Vitaliy_Vlasov
  */
 
-#ifndef LIBRARIES_ENTITYLIBSIMPLE_WIFIMANAGER_H_
-#define LIBRARIES_ENTITYLIBSIMPLE_WIFIMANAGER_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_WIFI_WIFIMANAGER_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_WIFI_WIFIMANAGER_H_
 
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
@@ -14,7 +14,7 @@
 #include <Hash.h>
 
 #include <WiFiUtils.h>
-#include <WiFiSettingsBox.h>
+#include <WiFi/WiFiSettingsBox.h>
 
 class WiFiManager {
 public:
@@ -61,4 +61,4 @@ private:
 	std::function<void(void)> onWiFiDisConnected;
 };
 
-#endif /* LIBRARIES_ENTITYLIBSIMPLE_WIFIMANAGER_H_ */
+#endif /* LIBRARIES_ENTITYLIBSIMPLE_WIFI_WIFIMANAGER_H_ */

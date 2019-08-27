@@ -9,12 +9,11 @@
 #define LIBRARIES_ENTITYLIBSENSORS_BH1750SENSOR_H_
 
 #include "Entity.h"
-#include "UpdateAble.h"
-
 #include <ArduinoJson.h>
 #include <Wire.h>
 #include <BH1750.h>
 #include <Bh1750Mock.h>
+#include <EntityUpdate.h>
 
 //---------------------------------------
 #define BH1750 "bh1750"
@@ -23,7 +22,7 @@
 #define BH1750_DESCR "d"
 #define BH1750_LUX "l"
 
-class Bh1750sensor: public Entity, public UpdateAble {
+class Bh1750sensor: public Entity, public EntityUpdate {
 public:
 	Bh1750sensor() :
 			Entity(GROUP_SENSORS, BH1750, BH1750_DESCRIPTION) {
@@ -35,7 +34,7 @@ public:
 		lightMeter->begin();
 	}
 
-	virtual void update() override {
+	virtual void doUpdate() override {
 		uint16_t l = lightMeter->readLightLevel();
 
 		dispatchChangeEvent(l != this->lux);

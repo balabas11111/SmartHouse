@@ -10,7 +10,7 @@
 EntityManager::EntityManager(Entity* entities[], int count) {
 	for (int i = 0; i < count; i++) {
 		Entity* entity = entities[i];
-		entity->initialize(i,
+		entity->preInitialize(i,
 				[this](int val) {processEntityChangedEvent(val);});
 		this->entities.push_back(entity);
 	}
@@ -172,6 +172,7 @@ void EntityManager::init() {
 	}
 
 	loadEntitiesFromFile();
+	saveEntitiesToFile();
 }
 
 void EntityManager::loadEntitiesFromFile() {
@@ -196,6 +197,8 @@ void EntityManager::persist(
 	buf.clear();
 
 	FileUtils::loadJsonFromFile(FILE_PATH, buf, obj);
+
+	Serial.println(FPSTR("Loaded entities"));
 	JsonObjectUtil::print(obj);
 
 	for (Entity* entity : entities) {

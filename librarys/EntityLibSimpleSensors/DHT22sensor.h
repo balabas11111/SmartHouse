@@ -8,10 +8,10 @@
 #ifndef LIBRARIES_ENTITYLIBSENSORS_DHT22SENSOR_H_
 #define LIBRARIES_ENTITYLIBSENSORS_DHT22SENSOR_H_
 
-#include "Entity.h"
-#include "UpdateAble.h"
-#include "DHT.h"
-#include "DHT22Mock.h"
+#include <Entity.h>
+#include <EntityUpdate.h>
+#include <DHT.h>
+#include <DHT22Mock.h>
 
 //--------------------------------
 #define DHT22_NAME "dht22"
@@ -21,7 +21,7 @@
 #define DHT22_HUMIDITY "h"
 #define DHT22_TEMPERATURE "t"
 
-class DHT22sensor: public Entity, public UpdateAble {
+class DHT22sensor: public Entity, public EntityUpdate {
 public:
 	DHT22sensor(int pin) :
 			Entity(GROUP_SENSORS, DHT22_NAME, DHT22_DESCRIPTION) {
@@ -36,7 +36,7 @@ public:
 		dht->begin();
 	}
 
-	virtual void update() override {
+	virtual void doUpdate() override {
 		float h = dht->readHumidity();
 		float t = dht->readTemperature();
 

@@ -5,15 +5,15 @@
  *      Author: Vitaliy_Vlasov
  */
 
-#ifndef LIBRARIES_ENTITYLIBSIMPLE_WIFISERVERMANAGER_H_
-#define LIBRARIES_ENTITYLIBSIMPLE_WIFISERVERMANAGER_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_WIFI_WIFISERVERMANAGER_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_WIFI_WIFISERVERMANAGER_H_
 
 #include <Arduino.h>
 #include <FS.h>
 #include <ArduinoJson.h>
 
 #include <FileUtils.h>
-#include <WiFiSettingsBox.h>
+#include <WiFi/WiFiSettingsBox.h>
 #include <ESP8266WebServer.h>
 #include <EntityManager.h>
 #include <EntityJsonRequestResponse.h>
@@ -115,4 +115,4 @@ private:
 	File fsUploadFile;
 };
 
-#endif /* LIBRARIES_ENTITYLIBSIMPLE_WIFISERVERMANAGER_H_ */
+#endif /* LIBRARIES_ENTITYLIBSIMPLE_WIFI_WIFISERVERMANAGER_H_ */

@@ -10,7 +10,7 @@
 
 #include <ArduinoJson.h>
 #include <Entity.h>
-#include "UpdateAble.h"
+#include <EntityUpdate.h>
 
 #include <OneWire.h>
 #include "DallasTemperature.h"
@@ -40,7 +40,7 @@ public:
 	float temp;
 };
 
-class DS18D20sensor: public Entity, public UpdateAble {
+class DS18D20sensor: public Entity, public EntityUpdate {
 public:
 	DS18D20sensor(int pin) :
 			Entity(ROOT_GROUP_SENSORS, DS18D20_NAME, DS18D20_DESCRIPTION) {
@@ -69,7 +69,7 @@ public:
 		print();
 	}
 
-	virtual void update() override {
+	virtual void doUpdate() override {
 		readTemperatures(true);
 	}
 

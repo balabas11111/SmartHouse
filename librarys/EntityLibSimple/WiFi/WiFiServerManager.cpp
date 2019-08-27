@@ -5,7 +5,7 @@
  *      Author: Vitaliy_Vlasov
  */
 
-#include <WiFiServerManager.h>
+#include <WiFi/WiFiServerManager.h>
 
 WiFiServerManager::WiFiServerManager(EntityManager* manager, WiFiSettingsBox* conf, int port) {
 	this->server = new ESP8266WebServer(port);

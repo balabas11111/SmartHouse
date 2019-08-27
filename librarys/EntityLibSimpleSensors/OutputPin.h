@@ -10,7 +10,7 @@
 
 #include "Arduino.h"
 #include "Entity.h"
-#include "UpdateAble.h"
+#include "EntityUpdate.h"
 
 #define ON_FIELD "on"
 
@@ -20,7 +20,7 @@
 #define OUTPUT_PIN_DESCR "d"
 #define OUTPUT_PIN_VALUE "v"
 
-class OutputPin: public Entity, public UpdateAble {
+class OutputPin: public Entity, public EntityUpdate {
 public:
 	OutputPin(uint8_t pin, const char* name = strdup(OUTPUT_PIN_NAME), char* descr = strdup(OUTPUT_PIN_DESCRIPTION)) :
 			Entity(GROUP_SENSORS, name, descr) {
@@ -33,7 +33,7 @@ public:
 	virtual void init() override {
 	}
 
-	virtual void update() override {
+	virtual void doUpdate() override {
 	}
 
 	void setOn(bool on) {

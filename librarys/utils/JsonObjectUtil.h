@@ -152,8 +152,8 @@ public:
 
 		}
 
-		if(jb.is<JsonArray>()){
-			JsonArray& target = jb.as<JsonArray>();
+		if(to.is<JsonArray>()){
+			JsonArray& target = to.as<JsonArray>();
 
 			target.add(prototype);
 			return prototype;

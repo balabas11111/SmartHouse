@@ -324,7 +324,7 @@ bool FileUtils::saveJsonToFileIfDiff(const char* fileName, JsonObject& json) {
 			if(res){Serial.println(FPSTR(" saved OK."));}else{Serial.println(FPSTR(" saved ERROR"));}
 			return res;
 		}else{
-			Serial.println(FPSTR("Json == file"));
+			Serial.println(FPSTR("Json == file. Not changed"));
 		}
 		return true;
 }

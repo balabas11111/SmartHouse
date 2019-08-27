@@ -52,6 +52,10 @@ public:
 	void loadEntitiesFromFile();
 	void saveEntitiesToFile();
 
+	std::list<Entity*>& getEntities() {
+		return this->entities;
+	}
+
 protected:
 	std::list<Entity*> entities;
 	int count;
