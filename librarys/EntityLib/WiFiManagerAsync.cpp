@@ -294,7 +294,14 @@ void WiFiManagerAsync::onInfo(AsyncWebServerRequest *request){
 	response->setCode(200);
 	request->send(response);
 
-	request->send(200, FPSTR(CONTENT_TYPE_TEXT_HTML));
+	//request->send(200, FPSTR(CONTENT_TYPE_TEXT_HTML));
+}
+
+void WiFiManagerAsync::onInfo2(AsyncWebServerRequest* request) {
+	AsyncJsonResponse * response = new AsyncJsonResponse();
+	JsonObject& root = response->getRoot();
+	response->setLength();
+	request->send(response);
 }
 
 void WiFiManagerAsync::onDir(AsyncWebServerRequest *request){

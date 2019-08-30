@@ -58,8 +58,11 @@ bool FileUtils::saveJsonToFile(String fileName,JsonObject& obj) {
 		return false;
 	}
 	size_t bytes = (obj.printTo(file)>0);
+	int bytesInt = static_cast<int>(bytes);
+	Serial.print(bytesInt);
+	Serial.println(FPSTR("- bytes saved"));
 
-	if(bytes==0){Serial.println(FPSTR("Data was not saved to file"));}
+	//if(bytes==0){Serial.println(FPSTR("Data was not saved to file"));}
 	file.close();
 
 	return bytes>0;
@@ -294,6 +297,36 @@ void FileUtils::dirFiles(JsonObject& json) {
 			arrSize.add(dir.fileSize());
 		  count++;
 		}
+}
+
+void FileUtils::loadJsonFromFile(const char* fileName, DynamicJsonBuffer& buf, JsonVariant obj) {
+
+	Serial.print(FPSTR("Load json storage ="));
+	Serial.print(fileName);
+
+	buf.clear();
+
+	if(!existsAndHasSizeChar(fileName)){
+		Serial.println(FPSTR(" - NO file. Empty obj returned"));
+		obj = buf.createObject();
+	}else{
+		Serial.println(FPSTR(" - File exists. Loaded"));
+
+		File f =FileUtils::getFile(fileName, FILE_MODE_READ);
+		obj = buf.parse(f).as<JsonObject>();
+	}
+}
+
+bool FileUtils::saveJsonToFileIfDiff(const char* fileName, JsonObject& json) {
+	if(!FileUtils::existsAndHasSizeChar(fileName) || !FileUtils::compareCrs(fileName, json)){
+
+			bool res=FileUtils::saveJsonToFile(fileName, json);
+			if(res){Serial.println(FPSTR(" saved OK."));}else{Serial.println(FPSTR(" saved ERROR"));}
+			return res;
+		}else{
+			Serial.println(FPSTR("Json == file. Not changed"));
+		}
+		return true;
 }
 
 #ifdef ESP32

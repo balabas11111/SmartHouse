@@ -79,8 +79,8 @@ public:
 		Serial.println();
 	}
 
-	static void printKeyVal(const char* const& key,JsonVariant value){
-		Serial.print(key);
+	static void printWithPreffix(const char* const& preffix,JsonVariant value){
+		Serial.print(preffix);
 		Serial.print(FPSTR("="));
 		if(value.is<JsonObject>() || value.is<JsonArray>()){
 			value.printTo(Serial);
@@ -106,18 +106,25 @@ public:
 		}
 	}
 
-	static JsonVariant clone(JsonVariant jb, JsonVariant prototype, const char* protoKey)
+	static void clone(JsonVariant to,String& prototype, const char* key){
+		DynamicJsonBuffer tmp;
+
+		JsonObjectUtil::clone(to, tmp.parse(prototype).as<JsonObject>(), key);
+		tmp.clear();
+	}
+
+	static JsonVariant clone(JsonVariant to, JsonVariant prototype, const char* protoKey)
 	{
 		Serial.println(FPSTR("Prototype="));
 		prototype.printTo(Serial);
 		Serial.println();
 		Serial.println(FPSTR(" jb="));
-		jb.printTo(Serial);
+		to.printTo(Serial);
 		Serial.println();
 		Serial.println(FPSTR("..."));
 
-		if(jb.is<JsonObject>()){
-			JsonObject& target = jb.as<JsonObject>();
+		if(to.is<JsonObject>()){
+			JsonObject& target = to.as<JsonObject>();
 			bool hasKey = target.containsKey(protoKey);
 
 			if (prototype.is<JsonObject>()) {
@@ -145,8 +152,8 @@ public:
 
 		}
 
-		if(jb.is<JsonArray>()){
-			JsonArray& target = jb.as<JsonArray>();
+		if(to.is<JsonArray>()){
+			JsonArray& target = to.as<JsonArray>();
 
 			target.add(prototype);
 			return prototype;
@@ -221,8 +228,30 @@ public:
 		return (obj.containsKey(key))?obj.get<JsonObject>(key):obj.createNestedObject(strdup(key));
 	}
 
+	static JsonObject& getObjectChildOrCreateNewNoKeyDup(JsonObject& obj,const char* key){
+		return (obj.containsKey(key))?obj.get<JsonObject>(key):obj.createNestedObject(key);
+	}
+
+	static JsonObject& getObjectChildOrCreateNewNoKeyDup(JsonObject& obj, const char* group, const char* name){
+		return getObjectChildOrCreateNewNoKeyDup(getObjectChildOrCreateNewNoKeyDup(obj, group), name);
+	}
+
 	static JsonArray& getObjectChildArrayOrCreateNew(JsonObject& obj,const char* key){
 		return (obj.containsKey(key))?obj.get<JsonArray>(key):obj.createNestedArray(strdup(key));
+	}
+
+	static bool getObjectFieldExistsAndNotEquals(JsonObject& obj,const char* key,JsonVariant val){
+		if(!obj.containsKey(key)){
+			return false;
+		}
+		return !CompareUtils::compareValues(obj.get<JsonVariant>(key), val);
+	}
+
+	static bool getObjectFieldNotExistsOrNotEquals(JsonObject& obj,const char* key,JsonVariant val){
+		if(!obj.containsKey(key)){
+			return true;
+		}
+		return !CompareUtils::compareValues(obj.get<JsonVariant>(key), val);
 	}
 
 	static bool getObjectFieldExistsAndEquals(JsonObject& obj,const char* key,JsonVariant val){
@@ -270,6 +299,15 @@ public:
 		return parent.get<T>(key);
 	}
 
+	template<typename T>
+	static T getFieldIfKeyExistsOrDefault(JsonObject& obj,const char* key, T defaultValue){
+		if(!hasField<T>(obj,key)){
+			return defaultValue;
+		}
+
+		return getField<T>(obj, key);
+	}
+
 	static bool hasFieldInt(JsonObject& obj,const char* key){
 		return hasField<int>(obj, key);
 	}
@@ -282,6 +320,7 @@ public:
 	static bool hasFieldChar(JsonObject& obj,const char* key){
 		return hasField<char*>(obj, key);
 	}
+
 };
 
 #endif /* LIBRARIES_DEVICELIB_UTILS_JSONOBJECTUTIL_H_ */
