@@ -18,19 +18,18 @@ Ticker tickerHeap;
 
 Bme280sensor bme280;
 Bh1750sensor bh1750;
-OutputPin rele(D4, "DefaultRele");
+OutputPin rele(D4, "DefaultRele", "Default relea pin");
 DHT22sensor dht22(D5);
 DS18D20sensor ds18d20(D6);
 
 Entity* entities[] = { &bme280, &bh1750, &rele, &dht22, &ds18d20 };
 EntityUpdate* entityUpdate[] = { &bme280, &bh1750, &rele, &dht22, &ds18d20 };
 
-EntityApplication application("EntityLib dev device", entities,
+EntityApplication app("EntityLib dev device", entities,
 		ARRAY_SIZE(entities), entityUpdate, ARRAY_SIZE(entityUpdate));
 
 void setup() {
-	//application.initI2C();
-	application.init();
+	app.init();
 
 	tickerHeap.attach(30, printHeap);
 
@@ -39,7 +38,7 @@ void setup() {
 }
 
 void loop() {
-	application.loop();
+	app.loop();
 }
 
 void printHeap() {

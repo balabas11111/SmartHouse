@@ -171,6 +171,7 @@ void EntityManager::executeSaveOnEntity(JsonObject& jsonToFile,
 }
 
 void EntityManager::init() {
+	Serial.println(FPSTR("Init entityManager"));
 	FileUtils::init();
 
 	for (Entity* entity : entities) {
@@ -179,6 +180,8 @@ void EntityManager::init() {
 
 	loadEntitiesFromFile();
 	saveEntitiesToFile();
+
+	Serial.println(FPSTR("Init entityManager completed"));
 }
 
 void EntityManager::loadEntitiesFromFile() {

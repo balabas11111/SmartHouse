@@ -8,7 +8,8 @@
 #include <Entity.h>
 #include <ArduinoJson.h>
 
-Entity::Entity(const char* group, const char* name, char* descr, const char* descrField,
+Entity::Entity(const char* group, const char* name, char* descr,
+		std::function<void(void)> selfEventProcessFunction,const char* descrField,
 bool hasGet, bool hasPost, bool dispatcher,
 bool canLoad, bool canSave) {
 	this->changed = false;
@@ -25,6 +26,8 @@ bool canLoad, bool canSave) {
 
 	this->canLoad = canLoad;
 	this->canSave = canSave;
+
+	this->selfEventProcessFunction = selfEventProcessFunction;
 }
 
 void Entity::preInitialize(int id, std::function<void(int)> eventProcessFunction) {
@@ -92,6 +95,9 @@ void Entity::print() {
 }
 
 void Entity::dispatchChangeEvent(bool clause) {
+	if(selfEventProcessFunction!=nullptr){
+		selfEventProcessFunction();
+	}
 	if (clause && this->dispatcher && id > -1
 			&& eventProcessFunction != nullptr) {
 		eventProcessFunction(id);

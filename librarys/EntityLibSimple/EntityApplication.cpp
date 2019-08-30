@@ -9,26 +9,11 @@
 
 EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 		int entityCount, EntityUpdate* entityUpdate[], int entityUpdateCount,
-		WiFiSettingsBox* conf,
-		bool initSerial,
-		bool initFs,
-		bool deleteFs,
-		std::function<void(void)> onWiFiConnected,
+		WiFiSettingsBox* conf, std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
 
-	if(initSerial){
-		ObjectUtils::initSerial();
-	}
-
-	if (initFs) {
-		FileUtils::init();
-	}
-	if (deleteFs) {
-		FileUtils::deleteAllFiles("/data/");
-	}
-
 	bool newConf = conf == nullptr;
-	if(newConf){
+	if (newConf) {
 		Serial.println(FPSTR("New WiFISettingsBox will be created"));
 	}
 
@@ -47,16 +32,33 @@ EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 	this->wifiServerManager = new WiFiServerManager(this->entityManager,
 			this->conf);
 
+}
+
+void EntityApplication::init(bool initSerial,
+		bool initFs,
+		bool deleteFs,
+		bool initI2C, uint8_t clockPin, uint8_t dataPin) {
+
+	if (initSerial) {
+		ObjectUtils::initSerial();
+	}
+
+	if (initFs) {
+		FileUtils::init();
+	}
+	if (deleteFs) {
+		FileUtils::deleteAllFiles("/data/");
+	}
+
+	if(initI2C){
+		I2C_utils::initStatic(clockPin, dataPin);
+	}
+
+	Serial.print(FPSTR("Init application "));
+	Serial.println(conf->deviceFirmWare());
+
 	ObjectUtils::printHeap();
 	ObjectUtils::printMillis();
-}
-
-void EntityApplication::initI2C(uint8_t clockPin, uint8_t dataPin) {
-	I2C_utils::initStatic(clockPin, dataPin);
-}
-
-void EntityApplication::init() {
-	Serial.println(FPSTR("Init application"));
 
 	entityManager->init();
 	entityUpdateManager->init(this->conf->refreshInterval());
@@ -65,6 +67,9 @@ void EntityApplication::init() {
 	wifiServerManager->begin();
 
 	Serial.println(FPSTR("Application Init done"));
+
+	ObjectUtils::printHeap();
+	ObjectUtils::printMillis();
 }
 
 void EntityApplication::loop() {

@@ -12,6 +12,8 @@
 #include "Entity.h"
 #include "EntityUpdate.h"
 
+#include <functional>
+
 #define ON_FIELD "on"
 
 #define OUTPUT_PIN_NAME "digPinOutput"
@@ -22,8 +24,9 @@
 
 class OutputPin: public Entity, public EntityUpdate {
 public:
-	OutputPin(uint8_t pin, const char* name = strdup(OUTPUT_PIN_NAME), char* descr = strdup(OUTPUT_PIN_DESCRIPTION)) :
-			Entity(GROUP_SENSORS, name, descr) {
+	OutputPin(uint8_t pin, const char* name = strdup(OUTPUT_PIN_NAME), const char* descr = OUTPUT_PIN_DESCRIPTION,
+			std::function<void(void)> selfEventProcessFunction = nullptr) :
+			Entity(GROUP_SENSORS, name, strdup(descr), selfEventProcessFunction) {
 		this->pin = pin;
 	}
 

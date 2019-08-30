@@ -28,20 +28,17 @@
 
 class EntityApplication {
 public:
-	EntityApplication(const char* firmWare,
-			Entity* entities[], int entityCount,
+	EntityApplication(const char* firmWare, Entity* entities[], int entityCount,
 			EntityUpdate* entityUpdate[], int entityUpdateCount,
-			WiFiSettingsBox* conf = nullptr ,
-			bool initSerial = true,
-			bool initFs = true,
-			bool deleteFs = false,
+			WiFiSettingsBox* conf = nullptr,
 			std::function<void(void)> onWiFiConnected = nullptr,
 			std::function<void(void)> onWiFiDisConnected = nullptr);
-	virtual ~EntityApplication(){};
+	virtual ~EntityApplication() {
+	}
+	;
 
-	void initI2C(uint8_t clockPin = SCL,uint8_t dataPin = SDA);
-
-	void init();
+	void init(bool initSerial = true, bool initFs = true,
+			bool deleteFs = false, bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
 
 	void loop();
 
