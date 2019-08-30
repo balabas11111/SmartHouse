@@ -18,15 +18,15 @@
 
 class EntityUpdateManager {
 public:
-	//EntityUpdateManager(){}
+	EntityUpdateManager(EntityUpdate* entities[], int count);
 	virtual ~EntityUpdateManager(){}
 
-	int init(std::list<EntityUpdate*>& entities, int interval);
+	int init(int interval);
 
-	void update();
+	void loop();
 
 private:
-	std::list<EntityUpdate*>& entities;
+	std::list<EntityUpdate*> entities;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYUPDATEMANAGER_H_ */

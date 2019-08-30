@@ -43,7 +43,7 @@ public:
 class DS18D20sensor: public Entity, public EntityUpdate {
 public:
 	DS18D20sensor(int pin) :
-			Entity(ROOT_GROUP_SENSORS, DS18D20_NAME, DS18D20_DESCRIPTION) {
+			Entity(GROUP_SENSORS, DS18D20_NAME, DS18D20_DESCRIPTION) {
 		construct(pin);
 	}
 
@@ -57,9 +57,9 @@ public:
 		items = new DS18D20item[itemCount];
 
 		for (uint8_t i = 0; i < itemCount; i++) {
-			DS18D20item item = new DS18D20item();
+			DS18D20item item = DS18D20item();
 
-			item.uidStr = dallasTemperature->getAddress(item.uid, i).c_str();
+			item.uidStr = strdup(dallasTemperature->getAddress(item.uid, i).c_str());
 			item.descr = item.uidStr;
 			item.temp = 127;
 
@@ -151,13 +151,13 @@ protected:
 		bool chg = false;
 
 		if (JsonObjectUtil::hasField<JsonObject>(json, DS18D20_SENSOR_ITEMS)) {
-			JsonObject& sensors = JsonObjectUtil::getField<JsonObject>(json,
+			JsonObject& sensors = JsonObjectUtil::getFieldAsObject(json,
 			DS18D20_SENSOR_ITEMS);
 
-			for (int i = 0; i, itemCount; i++) {
+			for (int i = 0; i<itemCount; i++) {
 				if (JsonObjectUtil::hasField<JsonObject>(sensors,
 						items[i].uidStr)) {
-					JsonObject& sensor = JsonObjectUtil::getField<JsonObject>(
+					JsonObject& sensor = JsonObjectUtil::getFieldAsObject(
 							json, items[i].uidStr);
 
 					if (getKeyValueIfExistsAndNotEquals(sensor,

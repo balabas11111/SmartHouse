@@ -23,7 +23,7 @@ void WiFiUtils::printWiFiDetails() {
 	Serial.print(FPSTR(" MAC=")); 	  Serial.print (WiFi.macAddress());
 	Serial.print(FPSTR(" IP=")); 	  Serial.print (getIp());
 	Serial.print(FPSTR(" STATUS="));  Serial.println(WiFi.status());
-	Serial.println(FPSTR(MESSAGE_HORIZONTAL_LINE));
+	Serial.println(FPSTR("----------------------------------"));
 }
 
 IPAddress WiFiUtils::getIp() {

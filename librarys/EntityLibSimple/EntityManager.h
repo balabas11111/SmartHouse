@@ -43,6 +43,7 @@ public:
 	virtual ~EntityManager() {
 	}
 
+	void registerAndPreInitEntity(Entity* entity);
 	void init();
 
 	void processEntityChangedEvent(int entityIndex);
@@ -58,7 +59,7 @@ public:
 
 protected:
 	std::list<Entity*> entities;
-	int count;
+	int count=0;
 
 	std::list<Entity*> getEntitiesByGroup(const char* group);
 	Entity* getEntityByGroupAndName(const char* group, const char* name);

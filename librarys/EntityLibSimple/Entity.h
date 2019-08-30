@@ -37,8 +37,7 @@ public:
 	void preInitialize(int id, std::function<void(int)> eventProcessFunction =
 			nullptr);
 
-	virtual void init() {
-	}
+	virtual void init() {};
 
 	bool isChanged();
 	void setChanged(bool changed);

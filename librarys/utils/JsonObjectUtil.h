@@ -14,7 +14,19 @@
 
 #include <utility>
 #include <CompareUtils.h>
-#include "EntityConsts.h"
+
+const int ROOT_PATHS_TOTAL PROGMEM = 2;
+
+const char* const ROOT_PATHS[] PROGMEM = {
+		"model",
+		"deploy"
+};
+
+const char* const ROOT_PATHS_GROUPS[] PROGMEM = {
+		"sensors",
+		"settings",
+		"services"
+};
 
 class JsonObjectUtil {
 public:
@@ -297,6 +309,10 @@ public:
 	template<typename T>
 	static T getField(JsonObject& parent,const char* key){
 		return parent.get<T>(key);
+	}
+
+	static JsonObject& getFieldAsObject(JsonObject& parent,const char* key){
+		return parent.get<JsonObject>(key);
 	}
 
 	template<typename T>

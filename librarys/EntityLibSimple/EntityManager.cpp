@@ -9,13 +9,19 @@
 
 EntityManager::EntityManager(Entity* entities[], int count) {
 	for (int i = 0; i < count; i++) {
-		Entity* entity = entities[i];
-		entity->preInitialize(i,
-				[this](int val) {processEntityChangedEvent(val);});
-		this->entities.push_back(entity);
+		registerAndPreInitEntity(entities[i]);
 	}
+}
 
-	this->count = this->entities.size();
+void EntityManager::registerAndPreInitEntity(Entity* entity) {
+	Serial.print(FPSTR("register "));
+	entity->print();
+
+	this->entities.push_back(entity);
+
+	entity->preInitialize(this->count,
+					[this](int val) {processEntityChangedEvent(val);});
+	this->count++;
 }
 
 void EntityManager::processEntityChangedEvent(int entityIndex) {

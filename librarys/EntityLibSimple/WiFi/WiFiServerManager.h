@@ -47,6 +47,7 @@
 
 //default responses
 #define RESPONSE_MSG_badArgs           "BAD ARGS"
+#define RESPONSE_MSG_badPath           "BAD Path"
 #define RESPONSE_MSG_fileNotFound      "FileNotFound"
 
 //content types
@@ -87,6 +88,7 @@ public:
 	}
 
 	void begin();
+	void loop();
 
 protected:
 	void deployDefaultUrls();

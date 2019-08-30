@@ -11,7 +11,7 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 
-#include <ESP_Consts.h>
+//#include <ESP_Consts.h>
 
 class WiFiUtils {
 public:

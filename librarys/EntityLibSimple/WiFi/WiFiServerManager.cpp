@@ -210,3 +210,7 @@ void WiFiServerManager::onEntityRequest(const char* method) {
 	server->sendHeader(RESPONSE_KEY_Server,getServerName());
 	server->send(200, CONTENT_TYPE_TEXT_JSON_UTF8, response);
 }
+
+void WiFiServerManager::loop() {
+	this->server->handleClient();
+}

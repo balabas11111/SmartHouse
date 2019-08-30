@@ -160,6 +160,9 @@ public:
 	bool isStaticIp() {
 		return this->_isStatIp;
 	}
+	bool isResetToAp(){
+		return false;
+	}
 	bool isDisconnectOnStartIfConn() {
 		return this->_disStIfCon;
 	}
