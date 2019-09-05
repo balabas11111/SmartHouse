@@ -26,6 +26,8 @@
 
 #include <functional>
 
+#include <Ticker.h>
+
 class EntityApplication {
 public:
 	EntityApplication(const char* firmWare, Entity* entities[], int entityCount,
@@ -37,10 +39,27 @@ public:
 	}
 	;
 
-	void init(bool initSerial = true, bool initFs = true,
+	void init(bool initSerial = true, bool initWiFi = false, bool initServer = false, bool initFs = true,
 			bool deleteFs = false, bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
 
 	void loop();
+
+	void startWiFi(){
+		wifiManager->begin();
+	}
+	void startServer(){
+		wifiServerManager->begin();
+	}
+
+	EntityManager* getEntityManager() {
+		return entityManager;
+	}
+
+	void registerTicker(uint32_t milliseconds, void (*callback)(void)){
+		Ticker* ticker = new Ticker();
+		ticker->attach_ms(milliseconds, callback);
+	}
+
 
 private:
 	WiFiSettingsBox* conf;

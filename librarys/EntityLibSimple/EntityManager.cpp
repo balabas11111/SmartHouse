@@ -175,6 +175,7 @@ void EntityManager::init() {
 	FileUtils::init();
 
 	for (Entity* entity : entities) {
+
 		entity->init();
 	}
 

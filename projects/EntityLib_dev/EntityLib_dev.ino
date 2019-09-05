@@ -14,24 +14,27 @@
 #include "DS18D20sensor.h"
 #include "OutputPin.h"
 
-Ticker tickerHeap;
+#include <Notifiers/EntityManagerSerialNotifier.h>
+
+EntityManagerSerialNotifier defaultNotifier;
 
 Bme280sensor bme280;
 Bh1750sensor bh1750;
 OutputPin rele(D4, "DefaultRele", "Default relea pin");
 DHT22sensor dht22(D5);
-DS18D20sensor ds18d20(D6);
+//DS18D20sensor ds18d20(D6);
 
-Entity* entities[] = { &bme280, &bh1750, &rele, &dht22, &ds18d20 };
-EntityUpdate* entityUpdate[] = { &bme280, &bh1750, &rele, &dht22, &ds18d20 };
+Entity* entities[] = { &bme280, &bh1750, &rele, &dht22 };
+EntityUpdate* entityUpdate[] = { &bme280, &bh1750, &rele, &dht22, &defaultNotifier };
 
 EntityApplication app("EntityLib dev device", entities,
 		ARRAY_SIZE(entities), entityUpdate, ARRAY_SIZE(entityUpdate));
 
 void setup() {
 	app.init();
+	app.registerTicker(10000, printHeap);
 
-	tickerHeap.attach(30, printHeap);
+	defaultNotifier.begin(app.getEntityManager());
 
 	ObjectUtils::printHeap();
 	ObjectUtils::printMillis();

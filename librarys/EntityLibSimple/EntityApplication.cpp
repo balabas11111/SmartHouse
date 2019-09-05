@@ -35,6 +35,7 @@ EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 }
 
 void EntityApplication::init(bool initSerial,
+		bool initWiFi, bool initServer,
 		bool initFs,
 		bool deleteFs,
 		bool initI2C, uint8_t clockPin, uint8_t dataPin) {
@@ -63,8 +64,12 @@ void EntityApplication::init(bool initSerial,
 	entityManager->init();
 	entityUpdateManager->init(this->conf->refreshInterval());
 
-	wifiManager->begin();
-	wifiServerManager->begin();
+	if(initWiFi){
+		startWiFi();
+	}
+	if(initServer){
+		startServer();
+	}
 
 	Serial.println(FPSTR("Application Init done"));
 

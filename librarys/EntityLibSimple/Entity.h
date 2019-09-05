@@ -61,11 +61,11 @@ public:
 	void executeLoad(JsonObject& jsonFromFile);
 	void executeSave(JsonObject& jsonToFile);
 
-	virtual void doGet(JsonObject& params, JsonObject& response) = 0;
-	virtual void doPost(JsonObject& params, JsonObject& response) = 0;
+	virtual void doGet(JsonObject& params, JsonObject& response) {};
+	virtual void doPost(JsonObject& params, JsonObject& response) {};
 
-	virtual void doLoad(JsonObject& jsonFromFile) = 0;
-	virtual void doSave(JsonObject& jsonToFile) = 0;
+	virtual void doLoad(JsonObject& jsonFromFile) {};
+	virtual void doSave(JsonObject& jsonToFile) {};
 protected:
 	bool changed;
 

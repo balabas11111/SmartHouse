@@ -97,10 +97,12 @@ public:
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
+		UNUSED(params);
 		itemsToJson(response, true);
 	}
 
 	virtual void doPost(JsonObject& params, JsonObject& response) override {
+		UNUSED(response);
 		setChanged(jsonToItems(params));
 	}
 
@@ -176,7 +178,7 @@ protected:
 		JsonObject& sensors = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(
 				json, DS18D20_SENSOR_ITEMS);
 
-		for (int i = 0; i, itemCount; i++) {
+		for (int i = 0; i < itemCount; i++) {
 			JsonObject& sensor =
 					JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(sensors,
 							items[i].uidStr);

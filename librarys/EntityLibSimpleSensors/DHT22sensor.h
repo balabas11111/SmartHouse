@@ -47,18 +47,11 @@ public:
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
-		setJsonField(response, DHT22_HUMIDITY, this->hum);
-		setJsonField(response, DHT22_TEMPERATURE, this->temp);
+		UNUSED(params);
+		response[DHT22_HUMIDITY] = this->hum;
+		response[DHT22_TEMPERATURE] = this->temp;
 	}
 
-	virtual void doPost(JsonObject& params, JsonObject& response) override {
-	}
-
-	virtual void doLoad(JsonObject& jsonFromFile) override {
-	}
-
-	virtual void doSave(JsonObject& jsonToFile) override {
-	}
 protected:
 	//DHT* dht;
 	DHT22Mock* dht;

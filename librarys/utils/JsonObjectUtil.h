@@ -118,14 +118,14 @@ public:
 		}
 	}
 
-	static void clone(JsonVariant to,String& prototype, const char* key){
+	static void clone(JsonVariant to,String& prototype, const char* key = ""){
 		DynamicJsonBuffer tmp;
 
 		JsonObjectUtil::clone(to, tmp.parse(prototype).as<JsonObject>(), key);
 		tmp.clear();
 	}
 
-	static JsonVariant clone(JsonVariant to, JsonVariant prototype, const char* protoKey)
+	static JsonVariant clone(JsonVariant to, JsonVariant prototype, const char* protoKey = "")
 	{
 		Serial.println(FPSTR("Prototype="));
 		prototype.printTo(Serial);
@@ -137,11 +137,14 @@ public:
 
 		if(to.is<JsonObject>()){
 			JsonObject& target = to.as<JsonObject>();
-			bool hasKey = target.containsKey(protoKey);
+
+			bool keyEmpty = strcmp(protoKey,"")==0;
+			bool hasKey = keyEmpty?true:target.containsKey(protoKey);
 
 			if (prototype.is<JsonObject>()) {
 				const JsonObject& protoObj = prototype;
-				JsonObject& newObj = (!hasKey)?target.createNestedObject(protoKey):target.get<JsonObject>(protoKey);
+				JsonObject& newObj = getJsonTargetAsObject(keyEmpty,hasKey,protoKey, target);
+
 				for (const auto& kvp : protoObj) {
 				  newObj[strdup(kvp.key)] = clone(newObj, kvp.value,kvp.key);
 				}
@@ -150,7 +153,7 @@ public:
 
 			if (prototype.is<JsonArray>()) {
 				const JsonArray& protoArr = prototype;
-				JsonArray& newArr = (!hasKey)?target.createNestedArray(protoKey):target.get<JsonArray>(protoKey);
+				JsonArray& newArr = getJsonTargetAsArray(keyEmpty,hasKey,protoKey, target);
 				for (const auto& elem : protoArr) {
 				  newArr.add(clone(newArr, elem,NULL));
 				}
@@ -172,6 +175,22 @@ public:
 		}
 
 	  return prototype;
+	}
+
+	static JsonObject& getJsonTargetAsObject(bool keyEmpty, bool hasKey, const char* protoKey, JsonObject& target){
+		if(keyEmpty){
+			return target;
+		}
+
+		return (!hasKey)?target.createNestedObject(protoKey):target.get<JsonObject>(protoKey);
+	}
+
+	static JsonArray& getJsonTargetAsArray(bool keyEmpty, bool hasKey, const char* protoKey, JsonVariant target){
+		if(keyEmpty){
+			return target;
+		}
+
+		return (!hasKey)?target.as<JsonObject>().createNestedArray(protoKey):target.as<JsonObject>().get<JsonArray>(protoKey);
 	}
 
 	static int copyArray(JsonArray& a,JsonArray& b){

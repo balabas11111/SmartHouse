@@ -52,18 +52,10 @@ public:
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
-		setJsonField(response, BME280_HUMIDITY, this->hum);
-		setJsonField(response, BME280_TEMPERATURE, this->temp);
-		setJsonField(response, BME280_PRESSURE, this->press);
-	}
-
-	virtual void doPost(JsonObject& params, JsonObject& response) override {
-	}
-
-	virtual void doLoad(JsonObject& jsonFromFile) override {
-	}
-
-	virtual void doSave(JsonObject& jsonToFile) override {
+		UNUSED(params);
+		response[BME280_HUMIDITY] = this->hum;
+		response[BME280_TEMPERATURE] = this->temp;
+		response[BME280_PRESSURE] = this->press;
 	}
 
 protected:

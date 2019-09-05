@@ -43,16 +43,8 @@ public:
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
-		setJsonField(response, BH1750_LUX, this->lux);
-	}
-
-	virtual void doPost(JsonObject& params, JsonObject& response) override {
-	}
-
-	virtual void doLoad(JsonObject& jsonFromFile) override {
-	}
-
-	virtual void doSave(JsonObject& jsonToFile) override {
+		UNUSED(params);
+		response[BH1750_LUX] = this->lux;
 	}
 
 protected:
