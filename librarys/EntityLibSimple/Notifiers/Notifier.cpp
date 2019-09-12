@@ -7,7 +7,8 @@
 
 #include <Notifiers/Notifier.h>
 
-Notifier::Notifier(const char* name) {
+Notifier::Notifier(const char* name, NotificationTarget* target) {
 	this->name = name;
+	this->target = target;
 }
 

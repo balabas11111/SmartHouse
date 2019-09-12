@@ -32,6 +32,7 @@ class EntityApplication {
 public:
 	EntityApplication(const char* firmWare, Entity* entities[], int entityCount,
 			EntityUpdate* entityUpdate[], int entityUpdateCount,
+			std::function<void(void)> onEntityChanged = nullptr,
 			WiFiSettingsBox* conf = nullptr,
 			std::function<void(void)> onWiFiConnected = nullptr,
 			std::function<void(void)> onWiFiDisConnected = nullptr);
@@ -55,7 +56,23 @@ public:
 	}
 
 	EntityManager* getEntityManager() {
-		return entityManager;
+		return this->entityManager;
+	}
+
+	WiFiSettingsBox* getConf(){
+		return this->conf;
+	}
+
+	void registerTicker(void (*callback)(void)){
+
+		uint32_t tickInterval = 30000;
+
+		if(this->conf != nullptr && this->conf->refreshInterval()>0){
+			tickInterval = conf->refreshInterval() * 1000;
+		}
+
+
+		registerTicker(tickInterval, callback);
 	}
 
 	void registerTicker(uint32_t milliseconds, void (*callback)(void)){

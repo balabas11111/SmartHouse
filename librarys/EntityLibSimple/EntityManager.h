@@ -20,6 +20,7 @@
 #include <Entity.h>
 #include <EntityJsonRequestResponse.h>
 
+#include <functional>
 /*
  #define GROUP "Group"
  #define  NAME "Name";
@@ -27,10 +28,12 @@
  */
 
 #define FILE_PATH "/data/entity/entity.json"
+#define PARAMETERS "params"
+#define RESPONSE "resp"
 
-const char GROUP[] PROGMEM = "Group";
-const char NAME[] PROGMEM = "Name";
-const char BODY[] PROGMEM = "Body";
+#define GROUP "Group"
+#define NAME "Name"
+#define BODY "Body"
 
 const char DEFAULT_VALUE[] PROGMEM = "DEFAULT";
 const char EMPTY_GROUP[] PROGMEM = "Empty group";
@@ -42,7 +45,7 @@ const char EMPTY_GROUP[] PROGMEM = "Empty group";
 
 class EntityManager {
 public:
-	EntityManager(Entity* entities[], int count);
+	EntityManager(Entity* entities[], int count, std::function<void(void)> onEntityChanged = nullptr);
 	virtual ~EntityManager() {
 	}
 
@@ -67,16 +70,40 @@ public:
 		return this->entities;
 	}
 
+	void groupNameToParam(char* group, char* name, EntityJsonRequestResponse* json);
+
+	EntityJsonRequestResponse* createEntityJsonRequestResponse();
+	void deleteEntityJsonRequestResponse(EntityJsonRequestResponse* json);
+
+	void dispatchAllChangedEntities();
+
+	void loop();
 protected:
 	std::list<Entity*> entities;
 	int count=0;
 
-	std::list<Entity*> getEntitiesByGroup(const char* group);
 	Entity* getEntityByGroupAndName(const char* group, const char* name);
 
 	void addNotAllowed(JsonObject& response, const char* method);
 	void executeHttpMethodOnEntity(JsonObject& params, JsonObject& response,
 									const char* method, Entity* entity);
+
+	bool executeHttpMethodOnAll(JsonObject& params, JsonObject& response,
+			const char* method);
+
+	bool executeHttpMethodOnGroup(JsonObject& params, JsonObject& response,
+				const char* method);
+
+	bool executeHttpMethodOnEntityOnly(JsonObject& params, JsonObject& response,
+					const char* method);
+
+	bool hasNoGroupNoName(JsonObject& params);
+
+	bool hasAllGroupNoName(JsonObject& params);
+
+	bool hasGroupNoName(JsonObject& params);
+
+	bool hasGroupName(JsonObject& params);
 
 	void executeLoadOnEntity(JsonObject& json, Entity* entity);
 	void executeSaveOnEntity(JsonObject& json, Entity* entity);
@@ -86,6 +113,10 @@ protected:
 
 	DynamicJsonBuffer buf;
 	JsonObject* obj;
+
+	bool entitiesChanged = false;
+
+	std::function<void(void)> onEntityChanged;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYMANAGER_H_ */

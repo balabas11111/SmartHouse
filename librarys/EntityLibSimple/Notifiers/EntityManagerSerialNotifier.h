@@ -9,60 +9,43 @@
 #define LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_ENTITYMANAGERSERIALNOTIFIER_H_
 
 #include <Arduino.h>
-#include <EntityUpdate.h>
 #include <EntityManager.h>
 #include <JsonObjectUtil.h>
 
 #include <ObjectUtils.h>
+#include <Notifiers/Notifier.h>
 
 #include <EntityJsonRequestResponse.h>
 
-class EntityManagerSerialNotifier: public EntityUpdate {
+class EntityManagerSerialNotifier: public Notifier  {
 public:
-	EntityManagerSerialNotifier();
+	EntityManagerSerialNotifier(NotificationTarget* target = nullptr):Notifier("EntityManagerSerialNotifier", target){
+
+	}
 	virtual ~EntityManagerSerialNotifier();
 
 	void begin(EntityManager* manager){
 		this->manager = manager;
 	}
 
-	virtual void doUpdate() override{
+	virtual void notify(char* group = nullptr, char* name = nullptr){
 		if(this->manager == nullptr){
 			return;
 		}
 
+		unsigned long start = startNotification();
+		EntityJsonRequestResponse* json = this->manager->createEntityJsonRequestResponse();
 
-		unsigned long start= millis();
-		Serial.println(FPSTR("-----------------------------------------------"));
-		Serial.println(FPSTR("update EntityManagerSerialNotifier"));
-		ObjectUtils::printHeap();
-		EntityJsonRequestResponse* json = new EntityJsonRequestResponse();
-		/*json->print();
+		json->addRequestParam(GROUP, group);
+		json->addRequestParam(NAME, name);
 
-		Serial.println(FPSTR("EntityManagerSerialNotifier root = "));
-		JsonObjectUtil::print(json->getRoot());
-
-		Serial.println(FPSTR("request = "));
-		JsonObjectUtil::print(json->getRequest());
-
-		Serial.println(FPSTR("response = "));
-		JsonObjectUtil::print(json->getResponse());
-*/
 		this->manager->get(json);
-		Serial.print(FPSTR("RESULT = "));
-		JsonObjectUtil::print(json->getResponse());
 
-		delete json;
+		toTarget(json->getResponse());
+		this->manager->deleteEntityJsonRequestResponse(json);
 
-		ObjectUtils::printHeap();
-
-		unsigned long totalTime = millis()-start;
-
-		Serial.print(FPSTR("DONE EntityManagerSerialNotifier time ="));
-		Serial.println(totalTime);
-		Serial.println(FPSTR("============================================="));
+		finishNotification(start);
 	}
-
 
 private:
 	EntityManager* manager;

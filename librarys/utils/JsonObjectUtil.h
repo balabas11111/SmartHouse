@@ -317,6 +317,14 @@ public:
 		return (obj.containsKey(key) && obj.is<T>(key));
 	}
 
+	static bool hasFieldWithAnyType(JsonObject& obj,const char* key){
+		return (obj.containsKey(key) );
+	}
+
+	static bool hasFieldAndValueEquals(JsonObject& obj,const char* key, char* value){
+		return (obj.containsKey(key) && strcmp(obj.get<char*>(key),value)==0);
+	}
+
 	template<typename T>
 	static bool setField(JsonObject& parent,const char* key,T value){
 		if(!JsonObjectUtil::getObjectFieldExistsAndEquals(parent,key,value)){

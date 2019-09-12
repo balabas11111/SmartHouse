@@ -14,6 +14,7 @@
 #include <JsonObjectUtil.h>
 #include <functional>
 
+#define GROUP_ALL "all"
 #define GROUP_SENSORS "sensors"
 #define GROUP_SETTINGS "settings"
 #define GROUP_SERVICES "services"
@@ -66,6 +67,8 @@ public:
 
 	virtual void doLoad(JsonObject& jsonFromFile) {};
 	virtual void doSave(JsonObject& jsonToFile) {};
+
+	void dispatchChangeEvent(bool clause);
 protected:
 	bool changed;
 
@@ -82,8 +85,6 @@ protected:
 
 	std::function<void(int)> eventProcessFunction;
 	std::function<void(void)> selfEventProcessFunction;
-
-	void dispatchChangeEvent(bool clause);
 
 	template<typename T>
 	T getJsonField(JsonObject& json, const char* key) {

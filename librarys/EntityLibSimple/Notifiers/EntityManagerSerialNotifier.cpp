@@ -7,11 +7,6 @@
 
 #include <Notifiers/EntityManagerSerialNotifier.h>
 
-EntityManagerSerialNotifier::EntityManagerSerialNotifier() {
-	// TODO Auto-generated constructor stub
-
-}
-
 EntityManagerSerialNotifier::~EntityManagerSerialNotifier() {
 	// TODO Auto-generated destructor stub
 }

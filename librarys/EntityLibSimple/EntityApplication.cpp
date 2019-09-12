@@ -9,6 +9,7 @@
 
 EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 		int entityCount, EntityUpdate* entityUpdate[], int entityUpdateCount,
+		std::function<void(void)> onEntityChanged,
 		WiFiSettingsBox* conf, std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
 
@@ -18,7 +19,7 @@ EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 	}
 
 	this->conf = (newConf) ? new WiFiSettingsBox(firmWare) : conf;
-	this->entityManager = new EntityManager(entities, entityCount);
+	this->entityManager = new EntityManager(entities, entityCount, onEntityChanged);
 
 	if (newConf) {
 		this->entityManager->registerAndPreInitEntity(this->conf);
@@ -92,6 +93,7 @@ void EntityApplication::initWithoutWiFi(bool deleteFs, bool initI2C,
 }
 
 void EntityApplication::loop() {
+	this->entityManager->loop();
 	this->entityUpdateManager->loop();
 	wifiServerManager->loop();
 }

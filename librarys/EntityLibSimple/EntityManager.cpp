@@ -7,10 +7,11 @@
 
 #include <EntityManager.h>
 
-EntityManager::EntityManager(Entity* entities[], int count) {
+EntityManager::EntityManager(Entity* entities[], int count, std::function<void(void)> onEntityChanged) {
 	for (int i = 0; i < count; i++) {
 		registerAndPreInitEntity(entities[i]);
 	}
+	this->onEntityChanged = onEntityChanged;
 }
 
 void EntityManager::registerAndPreInitEntity(Entity* entity) {
@@ -27,18 +28,6 @@ void EntityManager::registerAndPreInitEntity(Entity* entity) {
 void EntityManager::processEntityChangedEvent(int entityIndex) {
 	Serial.print(FPSTR("Change event id="));
 	Serial.println(entityIndex);
-}
-
-std::list<Entity*> EntityManager::getEntitiesByGroup(const char* group) {
-	std::list<Entity*>* result = new std::list<Entity*>();
-
-	for (Entity* entity : this->entities) {
-		if (strcmp(entity->getGroup(), group)) {
-			result->push_back(entity);
-		}
-	}
-
-	return *result;
 }
 
 Entity* EntityManager::getEntityByGroupAndName(const char* group,
@@ -66,76 +55,25 @@ void EntityManager::executeHttpMethod(EntityJsonRequestResponse* reqResp,
 void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 		const char* method) {
 
-	Serial.print(FPSTR("Execute Http method params, response method="));
-	Serial.println(method);
-/*
-	Serial.print(FPSTR("params"));
-	JsonObjectUtil::print(params);
+	this->entitiesChanged = (this->entitiesChanged || false);
+	bool changed = false;
 
-	Serial.print(FPSTR("response"));
-	JsonObjectUtil::print(response);
-*/
-	if (!JsonObjectUtil::hasField<const char*>(params, GROUP)
-			&& !JsonObjectUtil::hasField<const char*>(params, NAME)) {
+	Serial.print(method);
+	Serial.print(FPSTR(" "));
 
-		//Serial.println(FPSTR("No Group and no name specified"));
+	JsonObjectUtil::printWithPreffix(PARAMETERS, params);
 
-		for (Entity* entity : this->entities) {
-			executeHttpMethodOnEntity(params, response, method, entity);
-		}
-		return;
+	if (hasNoGroupNoName(params) || hasAllGroupNoName(params)) {
+		executeHttpMethodOnAll(params, response, method);
+	}else
+	if (hasGroupNoName(params)) {
+		executeHttpMethodOnGroup(params, response, method);
+	}else
+	if (hasGroupName(params)) {
+		executeHttpMethodOnEntityOnly(params, response, method);
 	}
 
-	if (JsonObjectUtil::hasField<const char*>(params, GROUP)
-			&& !JsonObjectUtil::hasField<const char*>(params, NAME)) {
-
-		//Serial.println(FPSTR("Group only specified"));
-
-		std::list<Entity*> entitiesToGet = getEntitiesByGroup(
-				JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, GROUP,
-						DEFAULT_VALUE));
-
-		if (entitiesToGet.size() == 0) {
-			JsonObjectUtil::setField(response, MESSAGE, NOT_FOUND);
-			return;
-		}
-
-		bool changed = false;
-
-
-
-		for (Entity* entity : entitiesToGet) {
-			entity->setChanged(false);
-
-			executeHttpMethodOnEntity(params, response, method, entity);
-
-			changed = changed || entity->isChanged();
-		}
-
-		if (changed) {
-			saveEntitiesToFile();
-		}
-
-		return;
-	}
-
-	if (JsonObjectUtil::hasField<const char*>(params, GROUP)
-			&& JsonObjectUtil::hasField<const char*>(params, NAME)) {
-
-		Entity* entity = getEntityByGroupAndName(
-				JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, GROUP,
-						DEFAULT_VALUE),
-				JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, NAME,
-						DEFAULT_VALUE));
-		entity->setChanged(false);
-		executeHttpMethodOnEntity(params, response, method, entity);
-
-		if (entity->isChanged()) {
-			saveEntitiesToFile();
-		}
-
-		return;
-	}
+	JsonObjectUtil::printWithPreffix(RESPONSE, response);
 }
 
 void EntityManager::executeHttpMethodOnEntity(JsonObject& params,
@@ -223,6 +161,136 @@ void EntityManager::saveEntitiesToFile() {
 	persist(
 			[this](JsonObject& json, Entity* entity) {executeSaveOnEntity(json,entity);},
 			[this](JsonObject& json) {FileUtils::saveJsonToFileIfDiff(FILE_PATH, json);});
+}
+
+void EntityManager::groupNameToParam(char* group, char* name,
+		EntityJsonRequestResponse* json) {
+	json->addRequestParam(GROUP, group);
+	json->addRequestParam(NAME, name);
+}
+
+EntityJsonRequestResponse* EntityManager::createEntityJsonRequestResponse() {
+	ObjectUtils::printHeap();
+	return new EntityJsonRequestResponse();
+}
+
+void EntityManager::deleteEntityJsonRequestResponse(
+		EntityJsonRequestResponse* json) {
+	delete json;
+	ObjectUtils::printHeap();
+}
+
+void EntityManager::dispatchAllChangedEntities() {
+	if(entitiesChanged){
+		for(Entity* entity: entities){
+
+			if(entity->isChanged()){
+				entity->dispatchChangeEvent(false);
+				entity->setChanged(false);
+			}
+		}
+
+		if(onEntityChanged!=nullptr){
+			onEntityChanged();
+		}
+
+		Serial.println(FPSTR("entities onCHange processed"));
+	}
+	entitiesChanged = false;
+}
+
+void EntityManager::loop() {
+	dispatchAllChangedEntities();
+}
+
+bool EntityManager::executeHttpMethodOnAll(JsonObject& params,
+		JsonObject& response, const char* method) {
+
+	bool changed = false;
+
+	for (Entity* entity : this->entities) {
+		executeHttpMethodOnEntity(params, response, method, entity);
+		changed = changed || entity->isChanged();
+	}
+
+	this->entitiesChanged = (this->entitiesChanged || changed);
+	return changed;
+}
+
+bool EntityManager::executeHttpMethodOnGroup(JsonObject& params,
+		JsonObject& response, const char* method) {
+
+	bool changed = false;
+
+	int totalCount = 0;
+
+	const char* group = params[GROUP].as<char*>();
+
+	for (Entity* entity : this->entities) {
+		/*Serial.print(FPSTR("check only ="));
+		Serial.print(entity->getGroup());
+*/
+		if(strcmp(entity->getGroup(),group)==0){
+			executeHttpMethodOnEntity(params, response, method, entity);
+
+			changed = changed || entity->isChanged();
+
+			totalCount++;
+		}
+	}
+
+	if (totalCount == 0) {
+		JsonObjectUtil::setField(response, MESSAGE, NOT_FOUND);
+		return false;;
+	}
+
+	if (changed) {
+		saveEntitiesToFile();
+	}
+
+	this->entitiesChanged = (this->entitiesChanged || changed);
+
+	return changed;
+}
+
+bool EntityManager::executeHttpMethodOnEntityOnly(JsonObject& params,
+		JsonObject& response, const char* method) {
+
+	bool changed = false;
+	Entity* entity = getEntityByGroupAndName(
+			JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, GROUP,
+					DEFAULT_VALUE),
+			JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, NAME,
+					DEFAULT_VALUE));
+	entity->setChanged(false);
+	executeHttpMethodOnEntity(params, response, method, entity);
+
+	if (entity->isChanged()) {
+		saveEntitiesToFile();
+	}
+
+	changed = entity->isChanged();
+
+	return changed;
+}
+
+bool EntityManager::hasNoGroupNoName(JsonObject& params) {
+	return !JsonObjectUtil::hasFieldWithAnyType(params, GROUP)
+				&& !JsonObjectUtil::hasFieldWithAnyType(params, NAME);
+}
+
+bool EntityManager::hasGroupNoName(JsonObject& params) {
+	return JsonObjectUtil::hasFieldWithAnyType(params, GROUP)
+					&& !JsonObjectUtil::hasFieldWithAnyType(params, NAME);
+}
+
+bool EntityManager::hasGroupName(JsonObject& params) {
+	return JsonObjectUtil::hasFieldWithAnyType(params, GROUP)
+					&& JsonObjectUtil::hasFieldWithAnyType(params, NAME);
+}
+
+bool EntityManager::hasAllGroupNoName(JsonObject& params) {
+	return JsonObjectUtil::hasFieldAndValueEquals(params, GROUP, GROUP_ALL);
 }
 
 void EntityManager::persist(

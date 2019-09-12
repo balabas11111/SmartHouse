@@ -64,6 +64,19 @@ public:
 		JsonObjectUtil::print(root);
 	}
 
+	void addRequestParam(char* key, char* value){
+		JsonObject& param = getRequest();
+		if(key==nullptr || value == nullptr){
+			return;
+		}
+		/*Serial.print(FPSTR("Add "));
+		Serial.print(key);
+		Serial.print(FPSTR(" ="));
+		Serial.println(value);
+*/
+		param.set(key, value);
+	}
+
 	void putRequestJsonParam(String str, const char* key){
 		Serial.print(FPSTR("parse "));
 		Serial.println(str);
