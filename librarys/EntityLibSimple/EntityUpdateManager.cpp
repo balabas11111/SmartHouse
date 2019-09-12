@@ -85,12 +85,13 @@ int EntityUpdateManager::init(int interval) {
 void EntityUpdateManager::loop() {
 	//Serial.println(FPSTR("EntityUpdateManager loop"));
 	for (EntityUpdate* entity : this->entities) {
-			entity->update(false);
+			entity->update(true);
 	}
-
+/*
 	Serial.println(FPSTR("----------------------------------"));
 	Serial.println(FPSTR("EntityUpdateManager loop DONE"));
 	Serial.println(FPSTR("=================================="));
+	*/
 }
 
 void EntityUpdateManager::executeTickUpdate(uint32_t interval) {

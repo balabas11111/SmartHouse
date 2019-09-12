@@ -29,12 +29,12 @@ public:
 
 	virtual void update(bool withCheck = false) final{
 		if(this->interval<1){
-			Serial.println(FPSTR("No update    is expected interval<1"));
+			//Serial.println(FPSTR("No update    is expected interval<1"));
 			return;
 		}
 
 		if((withCheck && !shouldUpdate())){
-			Serial.println(FPSTR("No update    is expected"));
+			//Serial.println(FPSTR("No update    is expected"));
 			return;
 		}
 

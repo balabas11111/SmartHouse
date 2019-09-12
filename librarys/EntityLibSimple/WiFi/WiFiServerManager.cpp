@@ -188,9 +188,13 @@ const char* WiFiServerManager::getContentType(String& path) {
 }
 
 void WiFiServerManager::onEntityRequest(const char* method) {
-	EntityJsonRequestResponse * req = new EntityJsonRequestResponse();
+	Serial.println(FPSTR("----------------------------"));
+	Serial.println(FPSTR("on Entity request"));
+
+	unsigned long start = millis();
+
+	EntityJsonRequestResponse * req = manager->createEntityJsonRequestResponse();
 	JsonObject& params = req->getRequest();
-	JsonObject& resp = req->getResponse();
 
 	if(server->hasArg(BODY)){
 		req->putRequestJsonParam(server->arg(BODY), BODY);
@@ -207,10 +211,16 @@ void WiFiServerManager::onEntityRequest(const char* method) {
 	String response;
 	req->getResponseAsString(response);
 
-	delete req;
+	manager->deleteEntityJsonRequestResponse(req);
 
 	server->sendHeader(RESPONSE_KEY_Server,getServerName());
 	server->send(200, CONTENT_TYPE_TEXT_JSON_UTF8, response);
+
+	unsigned long totalTime = millis()-start;
+
+	Serial.print(FPSTR("HTTP sent  time ="));
+	Serial.println(totalTime);
+	Serial.println(FPSTR("============================================="));
 }
 
 void WiFiServerManager::loop() {
