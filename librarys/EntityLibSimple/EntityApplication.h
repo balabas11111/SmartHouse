@@ -39,6 +39,9 @@ public:
 	}
 	;
 
+	void initWithWiFi(bool deleteFs = false, bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
+	void initWithoutWiFi(bool deleteFs = false, bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
+
 	void init(bool initSerial = true, bool initWiFi = false, bool initServer = false, bool initFs = true,
 			bool deleteFs = false, bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
 
@@ -56,10 +59,16 @@ public:
 	}
 
 	void registerTicker(uint32_t milliseconds, void (*callback)(void)){
+		Serial.print(FPSTR("register ticker interval = "));
+		Serial.print(milliseconds);
 		Ticker* ticker = new Ticker();
 		ticker->attach_ms(milliseconds, callback);
+		Serial.println(FPSTR(" done"));
 	}
 
+	void updateEntityUpdate(){
+		entityUpdateManager->loop();
+	}
 
 private:
 	WiFiSettingsBox* conf;

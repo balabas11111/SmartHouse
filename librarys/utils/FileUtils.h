@@ -34,7 +34,7 @@ public:
 	static File getFile(String fileName,const char* mode);
 	static File getFileChar(const char* fileName,const char* mode);
 
-	static void loadJsonFromFile(const char* fileName, DynamicJsonBuffer& buf, JsonVariant obj);
+	static JsonObject& loadJsonFromFile(const char* fileName, DynamicJsonBuffer* buf, JsonObject& obj);
 	static bool saveJsonToFileIfDiff(const char* fileName, JsonObject& obj);
 
 	static unsigned int getCrc(const char* fileName);

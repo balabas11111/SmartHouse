@@ -55,6 +55,7 @@ void EntityApplication::init(bool initSerial,
 		I2C_utils::initStatic(clockPin, dataPin);
 	}
 
+	Serial.println(FPSTR("--------------------"));
 	Serial.print(FPSTR("Init application "));
 	Serial.println(conf->deviceFirmWare());
 
@@ -75,6 +76,19 @@ void EntityApplication::init(bool initSerial,
 
 	ObjectUtils::printHeap();
 	ObjectUtils::printMillis();
+	Serial.println(FPSTR("===================================="));
+}
+
+void EntityApplication::initWithWiFi(bool deleteFs, bool initI2C,
+		uint8_t clockPin, uint8_t dataPin) {
+	init(true, true, true, true,
+				deleteFs, initI2C, clockPin, dataPin);
+}
+
+void EntityApplication::initWithoutWiFi(bool deleteFs, bool initI2C,
+		uint8_t clockPin, uint8_t dataPin) {
+	init(true, false, false, true,
+					deleteFs, initI2C, clockPin, dataPin);
 }
 
 void EntityApplication::loop() {

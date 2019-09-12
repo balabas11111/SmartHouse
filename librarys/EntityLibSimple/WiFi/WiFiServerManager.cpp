@@ -202,10 +202,12 @@ void WiFiServerManager::onEntityRequest(const char* method) {
 		}
 	}
 
-	manager->executeHttpMethod(params, resp, method);
+	manager->executeHttpMethod(req, method);
 
 	String response;
-	req->printResponseTo(response);
+	req->getResponseAsString(response);
+
+	delete req;
 
 	server->sendHeader(RESPONSE_KEY_Server,getServerName());
 	server->send(200, CONTENT_TYPE_TEXT_JSON_UTF8, response);

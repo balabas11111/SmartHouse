@@ -16,13 +16,18 @@
 #include <JsonObjectUtil.h>
 #include <FileUtils.h>
 
+
 #include <Entity.h>
+#include <EntityJsonRequestResponse.h>
 
 /*
  #define GROUP "Group"
  #define  NAME "Name";
  #define  BODY "Body";
  */
+
+#define FILE_PATH "/data/entity/entity.json"
+
 const char GROUP[] PROGMEM = "Group";
 const char NAME[] PROGMEM = "Name";
 const char BODY[] PROGMEM = "Body";
@@ -31,11 +36,9 @@ const char DEFAULT_VALUE[] PROGMEM = "DEFAULT";
 const char EMPTY_GROUP[] PROGMEM = "Empty group";
 
 
-const char METHOD[] PROGMEM = "Method";
-const char REQUEST_GET[] PROGMEM = "GET";
-const char REQUEST_POST[] PROGMEM = "POST";
-
-const char FILE_PATH[] PROGMEM = "/data/entity/entity.json";
+#define METHOD "Method"
+#define REQUEST_GET "GET"
+#define REQUEST_POST "POST"
 
 class EntityManager {
 public:
@@ -47,8 +50,15 @@ public:
 	void init();
 
 	void processEntityChangedEvent(int entityIndex);
+
+	void get(EntityJsonRequestResponse* reqResp);
+	void post(EntityJsonRequestResponse* reqResp);
+
 	void executeHttpMethod(JsonObject& params, JsonObject& response,
 			const char* method);
+
+	void executeHttpMethod(EntityJsonRequestResponse* reqResp,
+				const char* method);
 
 	void loadEntitiesFromFile();
 	void saveEntitiesToFile();

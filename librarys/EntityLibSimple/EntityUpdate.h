@@ -18,12 +18,23 @@ public:
 	EntityUpdate();
 	virtual ~EntityUpdate(){};
 
-	void init(int16_t interval){
-		this->interval = interval * 1000;
+	void init(long interv){
+		this->interval = interv * 1000;
+		/*Serial.print(FPSTR("init entity interval ="));
+		Serial.print(interv);
+		Serial.print(FPSTR(" result ="));
+		Serial.println(getInterval());
+		*/
 	}
 
 	virtual void update(bool withCheck = false) final{
-		if(this->interval<1 || (withCheck && !shouldUpdate())){
+		if(this->interval<1){
+			Serial.println(FPSTR("No update    is expected interval<1"));
+			return;
+		}
+
+		if((withCheck && !shouldUpdate())){
+			Serial.println(FPSTR("No update    is expected"));
 			return;
 		}
 
@@ -33,7 +44,7 @@ public:
 
 	virtual void doUpdate() = 0;
 
-	int16_t getInterval(){
+	long getInterval(){
 		return interval;
 	}
 
@@ -46,7 +57,7 @@ protected:
 		return (lastUpdate + interval < millis());
 	}
 
-	int16_t interval = SETTINGS_BOX_INTERVAL;
+	long interval = SETTINGS_BOX_INTERVAL;
 	unsigned long lastUpdate = millis();
 };
 

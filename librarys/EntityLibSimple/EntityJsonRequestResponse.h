@@ -18,14 +18,25 @@ class EntityJsonRequestResponse {
 private:
 	DynamicJsonBuffer buf;
 
+	JsonVariant root;
 	JsonVariant request;
 	JsonVariant response;
 public:
 	EntityJsonRequestResponse(){
-		JsonObject& root= buf.createObject();
+		root= buf.parse("{}").asObject();
+		request = root.asObject().createNestedObject(REQUEST);
+		response = root.asObject().createNestedObject(RESPONSE);
+/*
+		Serial.println(FPSTR("New ENtityJsonRequestResponse created"));
 
-		request = root.createNestedObject(REQUEST);
-		response = root.createNestedObject(RESPONSE);
+		Serial.println(FPSTR("Create request section"));
+
+		Serial.println(FPSTR("Create response section"));
+
+
+		JsonObjectUtil::print(root);
+		Serial.println(FPSTR("New ENtityJsonRequestResponse done"));
+		*/
 	};
 	virtual ~EntityJsonRequestResponse(){};
 
@@ -33,12 +44,24 @@ public:
 		buf.clear();
 	}
 
-	JsonObject & getRequest(){
-		return request;
+	JsonObject& getRoot(){
+		return root.asObject();
 	}
 
-	JsonObject & getResponse(){
-		return response;
+	JsonObject& getRequest(){
+		return root.asObject().get<JsonObject>(REQUEST);
+	}
+
+	JsonObject& getResponse(){
+		return root.asObject().get<JsonObject>(RESPONSE);
+	}
+
+	void getResponseAsString(String& str){
+		getResponse().printTo(str);
+	}
+
+	void print(){
+		JsonObjectUtil::print(root);
 	}
 
 	void putRequestJsonParam(String str, const char* key){

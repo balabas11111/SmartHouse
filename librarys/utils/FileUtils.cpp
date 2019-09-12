@@ -299,21 +299,32 @@ void FileUtils::dirFiles(JsonObject& json) {
 		}
 }
 
-void FileUtils::loadJsonFromFile(const char* fileName, DynamicJsonBuffer& buf, JsonVariant obj) {
+JsonObject& FileUtils::loadJsonFromFile(const char* fileName, DynamicJsonBuffer* buf, JsonObject& obj) {
 
 	Serial.print(FPSTR("Load json storage ="));
 	Serial.print(fileName);
 
-	buf.clear();
+	//buf.clear();
 
 	if(!existsAndHasSizeChar(fileName)){
 		Serial.println(FPSTR(" - NO file. Empty obj returned"));
-		obj = buf.createObject();
+		return obj;
+		//obj = buf->createObject();
 	}else{
 		Serial.println(FPSTR(" - File exists. Loaded"));
 
 		File f =FileUtils::getFile(fileName, FILE_MODE_READ);
-		obj = buf.parse(f).as<JsonObject>();
+		Serial.println("File was read");
+		if(f.size() !=0){
+			JsonObject& objTmp = buf->parse(f).as<JsonObject>();
+			Serial.println("File size >0");
+			JsonObjectUtil::print(objTmp);
+
+			return objTmp;
+		} else{
+			Serial.println(FPSTR("FIle is empty"));
+			return obj;
+		}
 	}
 }
 

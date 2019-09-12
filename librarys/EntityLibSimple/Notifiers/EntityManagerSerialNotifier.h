@@ -31,18 +31,36 @@ public:
 			return;
 		}
 
+
+		unsigned long start= millis();
+		Serial.println(FPSTR("-----------------------------------------------"));
 		Serial.println(FPSTR("update EntityManagerSerialNotifier"));
 		ObjectUtils::printHeap();
 		EntityJsonRequestResponse* json = new EntityJsonRequestResponse();
+		/*json->print();
 
-		this->manager->executeHttpMethod(json->getRequest(), json->getResponse(), REQUEST_GET);
+		Serial.println(FPSTR("EntityManagerSerialNotifier root = "));
+		JsonObjectUtil::print(json->getRoot());
+
+		Serial.println(FPSTR("request = "));
+		JsonObjectUtil::print(json->getRequest());
+
+		Serial.println(FPSTR("response = "));
+		JsonObjectUtil::print(json->getResponse());
+*/
+		this->manager->get(json);
+		Serial.print(FPSTR("RESULT = "));
 		JsonObjectUtil::print(json->getResponse());
 
 		delete json;
 
 		ObjectUtils::printHeap();
 
-		Serial.println(FPSTR("DONE update EntityManagerSerialNotifier"));
+		unsigned long totalTime = millis()-start;
+
+		Serial.print(FPSTR("DONE EntityManagerSerialNotifier time ="));
+		Serial.println(totalTime);
+		Serial.println(FPSTR("============================================="));
 	}
 
 

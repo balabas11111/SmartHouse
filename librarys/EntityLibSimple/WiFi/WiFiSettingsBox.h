@@ -95,13 +95,13 @@ public:
 		Serial.print(FPSTR(" ipStatic="));
 		Serial.print(isStaticIp());
 		Serial.print(FPSTR(" gateway="));
-		Serial.print(gateway());
+		Serial.print(this->_gateway);
 		Serial.print(FPSTR(" subnet="));
-		Serial.print(subnet());
+		Serial.print(this->_subnet);
 		Serial.print(FPSTR(" dns="));
-		Serial.print(dns());
+		Serial.print(this->_dns);
 		Serial.print(FPSTR(" dns2="));
-		Serial.print(dns2());
+		Serial.print(this->_dns2);
 		Serial.print(FPSTR(" smrtServIp="));
 		Serial.print(smartHouseServerIp());
 		Serial.println();
@@ -113,17 +113,17 @@ public:
 		Serial.print(FPSTR(" pass="));
 		Serial.print(password());
 		Serial.print(FPSTR(" ip="));
-		Serial.print(IPstation());
+		Serial.print(this->_ip);
 		Serial.print(FPSTR(" ipStatic="));
 		Serial.print(isStaticIp());
 		Serial.print(FPSTR(" gateway="));
-		Serial.print(gateway());
+		Serial.print(this->_gateway);
 		Serial.print(FPSTR(" subnet="));
-		Serial.print(subnet());
+		Serial.print(this->_subnet);
 		Serial.print(FPSTR(" dns="));
-		Serial.print(dns());
+		Serial.print(this->_dns);
 		Serial.print(FPSTR(" dns2="));
-		Serial.print(dns2());
+		Serial.print(this->_dns2);
 		Serial.println();
 	}
 
@@ -168,25 +168,29 @@ public:
 	}
 
 	IPAddress IPstation() {
-		return this->_ip;
+		return (new IPAddress())->fromString(this->_ip);
 	}
 	IPAddress IPaccessPoint() {
-		return this->_ipAP;
+		return  (new IPAddress())->fromString(this->_ipAP);
 	}
 	IPAddress gateway() {
-		return this->_gateway;
+		return  (new IPAddress())->fromString(this->_gateway);
 	}
 	IPAddress subnet() {
-		return this->_subnet;
+		return  (new IPAddress())->fromString(this->_subnet);
 	}
 	IPAddress dns() {
-		return this->_dns;
+		return  (new IPAddress())->fromString(this->_dns);
 	}
 	IPAddress dns2() {
-		return this->_dns2;
+		return  (new IPAddress())->fromString(this->_dns2);
 	}
 	IPAddress smartHouseServerIp() {
-		return this->_smrtServIp;
+		return  (new IPAddress())->fromString(this->_smrtServIp);
+	}
+
+	char* smartHouseServerIpStr() {
+		return  this->_smrtServIp;
 	}
 
 	const char* userLogin() {
@@ -254,13 +258,13 @@ protected:
 	uint8_t _apH = 0;
 	uint8_t _apMC = 4;
 
-	IPAddress _ip = IPAddress(192,168,0,120);
-	IPAddress _ipAP = IPAddress(192,168,0,4);
-	IPAddress _gateway = IPAddress(192,168,0,1);
-	IPAddress _subnet = IPAddress(255,255,255,0);
-	IPAddress _dns = IPAddress(192,168,0,1);
-	IPAddress _dns2 = IPAddress(192,168,0,1);
-	IPAddress _smrtServIp = IPAddress(192,168,0,5);
+	char* _ip = "192,168,0,120";
+	char* _ipAP = "192,168,0,4";
+	char* _gateway = "192,168,0,1";
+	char* _subnet = "255,255,255,0";
+	char* _dns = "192,168,0,1";
+	char* _dns2 = "192,168,0,1";
+	char* _smrtServIp = "192,168,0,5";
 
 	char* _userLogin = (char*)"";
 	char* _userPassword = (char*)"";
@@ -319,13 +323,13 @@ protected:
 		setJsonField(json, _IS_STAT_IP, this->_isStatIp);
 		setJsonField(json, _DISCONNECT_ON_START_IF_CONN, this->_disStIfCon);
 
-		setJsonField(json, _IP, (this->_ip).toString().c_str());
-		setJsonField(json, _IP_AP, (this->_ipAP).toString().c_str());
-		setJsonField(json, _IP_GATEWAY, (this->_gateway).toString().c_str());
-		setJsonField(json, _IP_SUBNET, (this->_subnet).toString().c_str());
-		setJsonField(json, _IP_DNS, (this->_dns).toString().c_str());
-		setJsonField(json, _IP_DNS2, (this->_dns2).toString().c_str());
-		setJsonField(json, _SMART_HOUSE_SERVER_IP, (this->_smrtServIp).toString().c_str());
+		setJsonField(json, _IP, this->_ip);
+		setJsonField(json, _IP_AP, this->_ipAP);
+		setJsonField(json, _IP_GATEWAY, this->_gateway);
+		setJsonField(json, _IP_SUBNET, this->_subnet);
+		setJsonField(json, _IP_DNS, this->_dns);
+		setJsonField(json, _IP_DNS2, this->_dns2);
+		setJsonField(json, _SMART_HOUSE_SERVER_IP, this->_smrtServIp);
 
 		setJsonField(json, _USER_LOGIN, this->_userLogin);
 		setJsonField(json, _USER_PASS, mask?_MASKED_VALUE:_userPassword);

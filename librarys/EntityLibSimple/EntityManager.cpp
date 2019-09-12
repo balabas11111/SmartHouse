@@ -57,11 +57,28 @@ void EntityManager::addNotAllowed(JsonObject& response, const char* method) {
 	JsonObjectUtil::setField(response, METHOD, method);
 }
 
+void EntityManager::executeHttpMethod(EntityJsonRequestResponse* reqResp,
+		const char* method) {
+	executeHttpMethod(reqResp->getRequest(), reqResp->getResponse(),
+			 method);
+}
+
 void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 		const char* method) {
 
+	Serial.print(FPSTR("Execute Http method params, response method="));
+	Serial.println(method);
+/*
+	Serial.print(FPSTR("params"));
+	JsonObjectUtil::print(params);
+
+	Serial.print(FPSTR("response"));
+	JsonObjectUtil::print(response);
+*/
 	if (!JsonObjectUtil::hasField<const char*>(params, GROUP)
 			&& !JsonObjectUtil::hasField<const char*>(params, NAME)) {
+
+		//Serial.println(FPSTR("No Group and no name specified"));
 
 		for (Entity* entity : this->entities) {
 			executeHttpMethodOnEntity(params, response, method, entity);
@@ -71,6 +88,8 @@ void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 
 	if (JsonObjectUtil::hasField<const char*>(params, GROUP)
 			&& !JsonObjectUtil::hasField<const char*>(params, NAME)) {
+
+		//Serial.println(FPSTR("Group only specified"));
 
 		std::list<Entity*> entitiesToGet = getEntitiesByGroup(
 				JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, GROUP,
@@ -82,6 +101,8 @@ void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 		}
 
 		bool changed = false;
+
+
 
 		for (Entity* entity : entitiesToGet) {
 			entity->setChanged(false);
@@ -119,11 +140,13 @@ void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 
 void EntityManager::executeHttpMethodOnEntity(JsonObject& params,
 		JsonObject& response, const char* method, Entity* entity) {
-
+/*
 	Serial.print(FPSTR("Execute method "));
-	Serial.println(method);
-
-	JsonObjectUtil::print(params);
+	Serial.print(method);
+	Serial.print(FPSTR(" Entity = "));
+	Serial.println(entity->getName());
+*/
+	//JsonObjectUtil::print(params);
 
 	if (entity == nullptr) {
 		JsonObjectUtil::setField(response, MESSAGE, NOT_FOUND);
@@ -171,11 +194,13 @@ void EntityManager::executeSaveOnEntity(JsonObject& jsonToFile,
 }
 
 void EntityManager::init() {
+	Serial.println(FPSTR("----------------------------------"));
 	Serial.println(FPSTR("Init entityManager"));
 	FileUtils::init();
 
-	for (Entity* entity : entities) {
+	//buf = new DynamicJsonBuffer();
 
+	for (Entity* entity : entities) {
 		entity->init();
 	}
 
@@ -183,6 +208,7 @@ void EntityManager::init() {
 	saveEntitiesToFile();
 
 	Serial.println(FPSTR("Init entityManager completed"));
+	Serial.println(FPSTR("==============================="));
 }
 
 void EntityManager::loadEntitiesFromFile() {
@@ -204,26 +230,37 @@ void EntityManager::persist(
 		std::function<void(JsonObject& json)> postPersistFunction) {
 
 	Serial.println(FPSTR("-------------"));
-	buf.clear();
+	JsonObject& jsonEmpty = buf.parse("{}").asObject();
 
-	FileUtils::loadJsonFromFile(FILE_PATH, buf, obj);
+	JsonObject& jsonTemp = FileUtils::loadJsonFromFile(FILE_PATH, &buf, jsonEmpty);
+
 
 	Serial.println(FPSTR("Loaded entities"));
-	JsonObjectUtil::print(obj);
+	JsonObjectUtil::print(jsonTemp);
+	Serial.println(FPSTR("-------------"));
 
 	for (Entity* entity : entities) {
 		JsonObject& json = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(
-				*obj, entity->getGroup(), entity->getName());
+				jsonTemp, entity->getGroup(), entity->getName());
 		entity->print();
 		JsonObjectUtil::print(json);
 		onEntityFunction(json, entity);
 	}
 
 	if (postPersistFunction != nullptr) {
-		postPersistFunction(*obj);
+		postPersistFunction(jsonTemp);
+		Serial.println(FPSTR("Execute post persist function"));
 	}
 
-	buf.clear();
+	//buf->clear();
 
 	Serial.println(FPSTR("------persisted-------"));
+}
+
+void EntityManager::get(EntityJsonRequestResponse* reqResp) {
+	executeHttpMethod(reqResp, REQUEST_GET);
+}
+
+void EntityManager::post(EntityJsonRequestResponse* reqResp) {
+	executeHttpMethod(reqResp, REQUEST_POST);
 }
