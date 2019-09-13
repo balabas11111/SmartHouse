@@ -19,15 +19,17 @@ private:
 	DynamicJsonBuffer buf;
 
 	JsonVariant root;
-	/*JsonVariant request;
+	/*
+	JsonVariant request;
 	JsonVariant response;
 	*/
+
 public:
 	EntityJsonRequestResponse(){
 		this->root= buf.parse("{}").as<JsonObject>();
-		/*this->request = getRoot().createNestedObject(REQUEST);
-		this->response = getRoot().createNestedObject(RESPONSE);
-		*/
+
+		getRoot().createNestedObject(REQUEST);
+		getRoot().createNestedObject(RESPONSE);
 	};
 	virtual ~EntityJsonRequestResponse(){};
 

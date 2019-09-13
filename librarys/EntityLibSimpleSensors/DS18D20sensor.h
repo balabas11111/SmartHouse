@@ -23,8 +23,6 @@
 #define DS18D20_NAME "ds18d20"
 #define DS18D20_DESCRIPTION "Temperature DallasTemperature"
 
-#define DS18D20_DESCR "d"
-
 #define DS18D20_SENSOR_COUNT "c"
 #define DS18D20_SENSOR_ID "i"
 #define DS18D20_SENSOR_NAME "n"
@@ -43,7 +41,7 @@ public:
 class DS18D20sensor: public Entity, public EntityUpdate {
 public:
 	DS18D20sensor(int pin) :
-			Entity(GROUP_SENSORS, DS18D20_NAME, DS18D20_DESCRIPTION) {
+			Entity(GROUP_SENSORS, DS18D20_NAME, (char*)DS18D20_DESCRIPTION) {
 		construct(pin);
 	}
 
@@ -178,30 +176,21 @@ protected:
 		JsonObject& sensors = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(
 				json, DS18D20_SENSOR_ITEMS);
 
+
 		for (int i = 0; i < itemCount; i++) {
 			JsonObject& sensor =
 					JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(sensors,
 							items[i].uidStr);
-			setJsonField(sensor, strdup(DS18D20_SENSOR_NAME), items[i].descr);
+
+			setJsonField(sensor, (DS18D20_SENSOR_NAME), items[i].descr);
 			if (addTemp) {
-				setJsonField(sensor, strdup(DS18D20_SENSOR_TEMPERATURE),
+				setJsonField(sensor, (DS18D20_SENSOR_TEMPERATURE),
 						items[i].temp);
 			}
+
 		}
+
 	}
-	/*uint8_t size = sizeof(deviceAddress);
-	 ObjectUtils::printInt8Arr(deviceAddress);
-	 return deviceAddressToString(deviceAddress, size);
-
-	 }
-
-	 String deviceAddressToString(DeviceAddress deviceAddress, uint8_t size) {
-	 String devAddrStr = "";
-	 for (uint8_t k = 0; k < size; k++) {
-	 devAddrStr += String(deviceAddress[k]);
-	 }
-	 return devAddrStr;
-	 }*/
 };
 
 #endif /* LIBRARIES_ENTITYLIBSENSORS_DS18D20sensor_H_ */

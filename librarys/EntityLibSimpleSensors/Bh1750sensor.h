@@ -19,7 +19,6 @@
 #define BH1750 "bh1750"
 #define BH1750_DESCRIPTION "Light level"
 
-#define BH1750_DESCR "d"
 #define BH1750_LUX "l"
 
 class Bh1750sensor: public Entity, public EntityUpdate {

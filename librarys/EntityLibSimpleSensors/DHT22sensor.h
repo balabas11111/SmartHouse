@@ -17,7 +17,6 @@
 #define DHT22_NAME "dht22"
 #define DHT22_DESCRIPTION "Temperature/Humidity"
 
-#define DHT22_DESCR "d"
 #define DHT22_HUMIDITY "h"
 #define DHT22_TEMPERATURE "t"
 

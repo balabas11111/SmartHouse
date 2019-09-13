@@ -31,9 +31,9 @@
 #define PARAMETERS "params"
 #define RESPONSE "resp"
 
-#define GROUP "Group"
-#define NAME "Name"
-#define BODY "Body"
+#define GROUP "group"
+#define NAME "name"
+#define BODY "body"
 
 const char DEFAULT_VALUE[] PROGMEM = "DEFAULT";
 const char EMPTY_GROUP[] PROGMEM = "Empty group";
@@ -79,10 +79,16 @@ public:
 
 	void loop();
 
+	void print();
+
 	void setOnEntityChanged(std::function<void(void)> onEntityChanged);
 protected:
 	std::list<Entity*> entities;
 	int count=0;
+	int failPreinit=0;
+
+	int initOk=0;
+	int failValidate=0;
 
 	Entity* getEntityByGroupAndName(const char* group, const char* name);
 

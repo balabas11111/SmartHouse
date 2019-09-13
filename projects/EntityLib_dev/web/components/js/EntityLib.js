@@ -1,5 +1,5 @@
-const DATA_MODEL_ROOT_URL = '/info';
-const DATA_MODEL_POST_URL = '/info';
+const DATA_MODEL_ROOT_URL = '/data';
+const DATA_MODEL_POST_URL = '/data';
 const COMMAND_POST_URL    = '/com';
 
 const GROUP_SENSORS  = 'sensors';
@@ -44,7 +44,7 @@ function onLoadPageComplete(){
 }
 
 function handleRootReceive(json){
-	dataModel = json;
+	dataModel.data = json;
 	processGroupToView(GROUP_SETTINGS);
 	processGroupToView(GROUP_SENSORS);
 }
@@ -54,16 +54,26 @@ function processGroupToView(group){
 	if(entities!=undefined){
 		console.log("Group = ", group);
 		/*document.getElementById("mainContent").innerHTML='';*/
-		if(entities!=undefined){
-			for (var i in entities) {
-				processEntityToView(entities[i]);
-			}
-		}
+		Object.keys(entities).forEach(function(entityKey) {
+			var entity = entities[entityKey];
+			
+			processEntityGroupNameSet(group, entityKey, entity);
+			processEntityToView(entity);
+		});
+	}
+}
+
+function processEntityGroupNameSet(group,name,entity){
+	if(entity[FIELD_GROUP] == undefined){
+		entity[FIELD_GROUP] = group;
+	}
+	if(entity[FIELD_NAME] == undefined){
+		entity[FIELD_NAME] = name;
 	}
 }
 
 function processEntityToView(entity){
-	if(entity==undefined || entity.group==undefined || entity.name==undefined || entity.id==undefined){
+	if(entity==undefined || entity.group==undefined || entity.name==undefined){
 		return;
 	}
 	

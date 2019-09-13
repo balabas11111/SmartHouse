@@ -19,6 +19,8 @@
 #define GROUP_SETTINGS "settings"
 #define GROUP_SERVICES "services"
 
+#define DESCR "d"
+
 const char MESSAGE[] PROGMEM ="Message";
 
 const char NOT_ALLOWED[] PROGMEM ="Not allowed";
@@ -30,15 +32,16 @@ class Entity {
 public:
 	Entity(const char* group, const char* name, char* descr,
 			std::function<void(void)> selfEventProcessFunction = nullptr,
-			const char* descrField = "d",
 			bool hasGet = true, bool hasPost = false, bool dispatcher = false,
 			bool canLoad = true, bool canSave = true);
 	virtual ~Entity() {
 	}
 
+	virtual bool preValidate(){return true;}
 	void preInitialize(int id, std::function<void(int)> eventProcessFunction =
 			nullptr);
 
+	virtual bool validate(){return true;}
 	virtual void init() {};
 
 	bool isChanged();
@@ -91,7 +94,7 @@ protected:
 	const char* name;
 	char* descr;
 
-	const char* descrField;
+	//const char* descrField;
 
 	std::function<void(int)> eventProcessFunction;
 	std::function<void(void)> selfEventProcessFunction;

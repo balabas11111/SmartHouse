@@ -1,0 +1,65 @@
+/*
+ * Pin.h
+ *
+ *  Created on: 13 сент. 2019 г.
+ *      Author: Vitaliy
+ */
+
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_COMP_PIN_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_COMP_PIN_H_
+
+#include <Arduino.h>
+#include <FunctionalInterrupt.h>
+
+class Pin {
+public:
+	Pin(uint8_t pin, uint8_t pinMod){
+		this->pin = pin;
+		this->pinMod = pinMod;
+
+		if(validateMode()){
+			pinMode(pin, pinMod);
+		}
+	};
+	virtual ~Pin(){};
+
+	virtual uint8_t getValue(){
+		return digitalRead(pin);
+	}
+
+	virtual void setValue(uint8_t value){
+		UNUSED(value);
+	}
+
+	void setOnOpposite(){
+		setOn(!isOn());
+	}
+
+	void setOn(bool on = true){
+		setValue(on?onLevel:offLevel);
+	}
+
+	bool isOn(){
+		return getValue() == onLevel;
+	}
+protected:
+	uint8_t pin;
+	uint8_t pinMod;
+
+	void attachPinInterrupt(std::function<void(void)> func, int mode){
+		if(mode<1){
+			Serial.print(FPSTR("Unknown interrupt mode "));
+			Serial.println(mode);
+		}
+		attachInterrupt(this->pin, func, mode);
+
+		Serial.print(FPSTR("Interrupt attached to pin"));
+		Serial.println(this->pin);
+	}
+	virtual bool validateMode() {return true;}
+
+	const uint8_t onLevel = HIGH;
+	const uint8_t offLevel = LOW;
+};
+
+#endif /* LIBRARIES_ENTITYLIBSIMPLE_COMP_PIN_H_ */

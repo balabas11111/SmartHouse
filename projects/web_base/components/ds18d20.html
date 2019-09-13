@@ -7,6 +7,10 @@ img.temperature-icon {
 }
 </style>
 <script type="text/javascript">
+const SENSOR_ITEMS  = 'si';
+const SENSOR_ITEM_DESCR  = 'd';
+const SENSOR_ITEM_TEMP   = 't';
+
 hideComponent("sensors.ds18d20.editForm");
 
 registerModelToViewHandler('sensors.ds18d20',handleDs18d20View);
@@ -25,7 +29,7 @@ function onDataPostedDs18d20(response){
 }
 
 function handleDs18d20View(entity,key,val){
-	if(key!='items'){
+	if(key!=SENSOR_ITEMS){
 		updateEntityViewValueDefault(entity,key,val);
 		return;
 	}
@@ -52,8 +56,8 @@ function itemsDivClean(doEdit){
 	return div;
 }
 function itemToViewDiv(uid,item){
-	var descr=item[uid].descr;
-	var temp=item[uid].temp;	
+	var descr=item[uid][SENSOR_ITEM_DESCR];
+	var temp=item[uid][SENSOR_ITEM_TEMP];	
 	
 	var div = document.createElement('div');
 	var label = document.createElement('label');
@@ -76,7 +80,7 @@ function itemToViewDiv(uid,item){
 	document.getElementById('sensors.ds18d20.items.div').appendChild(div);
 }
 function itemToEditDiv(uid,item){
-	var descr=item[uid].descr;
+	var descr=item[uid][SENSOR_ITEM_DESCR];
 	
 	var div = document.createElement('div');
 	var label = document.createElement('label');

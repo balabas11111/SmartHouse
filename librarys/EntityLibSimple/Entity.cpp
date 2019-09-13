@@ -9,7 +9,7 @@
 #include <ArduinoJson.h>
 
 Entity::Entity(const char* group, const char* name, char* descr,
-		std::function<void(void)> selfEventProcessFunction,const char* descrField,
+		std::function<void(void)> selfEventProcessFunction,
 bool hasGet, bool hasPost, bool dispatcher,
 bool canLoad, bool canSave) {
 	this->changed = false;
@@ -17,8 +17,6 @@ bool canLoad, bool canSave) {
 	this->group = group;
 	this->name = name;
 	this->descr = descr;
-
-	this->descrField = descrField;
 
 	this->hasGet = hasGet;
 	this->hasPost = hasPost;
@@ -105,7 +103,7 @@ void Entity::dispatchChangeEvent(bool clause) {
 }
 
 void Entity::executeGet(JsonObject& params, JsonObject& response) {
-	setJsonField(response, this->descrField, this->descr);
+	setJsonField(response, DESCR, this->descr);
 
 	doGet(params, response);
 }
@@ -115,7 +113,7 @@ void Entity::executePost(JsonObject& params, JsonObject& response) {
 		this->descr = strdup(getJsonField<const char*>(params, this->descrField));
 		setChanged(true);
 	}*/
-	setChanged(getKeyValueIfExistsAndNotEquals(params, this->descrField, &this->descr));
+	setChanged(getKeyValueIfExistsAndNotEquals(params, DESCR, &this->descr));
 
 	doPost(params, response);
 
@@ -126,12 +124,12 @@ void Entity::executeLoad(JsonObject& jsonFromFile) {
 	/*if (isKeyExistsInJsonAndNotEqValue(jsonFromFile, this->descrField, this->descr)) {
 		this->descr = strdup(getJsonField<const char*>(jsonFromFile, this->descrField));
 	}*/
-	getKeyValueIfExistsAndNotEquals(jsonFromFile, this->descrField, &this->descr);
+	getKeyValueIfExistsAndNotEquals(jsonFromFile, DESCR, &this->descr);
 	doLoad(jsonFromFile);
 }
 
 void Entity::executeSave(JsonObject& jsonToFile) {
-	setKeyValueIfNotExistOrNotEqual(jsonToFile, this->descrField, this->descr);
+	setKeyValueIfNotExistOrNotEqual(jsonToFile, DESCR, this->descr);
 
 	doSave(jsonToFile);
 }

@@ -21,7 +21,6 @@
 #define BME280 "bme280"
 #define BME280_DESCRIPTION "Temperature/Humidity/AtmPressure"
 
-#define BME280_DESCR "d"
 #define BME280_HUMIDITY "h"
 #define BME280_TEMPERATURE "t"
 #define BME280_PRESSURE "p"

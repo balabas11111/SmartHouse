@@ -9,6 +9,7 @@
 #define LIBRARIES_ENTITYLIBSENSORS_OUTPUTPIN_H_
 
 #include "Arduino.h"
+#include "Comp/Pin.h"
 #include "Entity.h"
 #include "EntityUpdate.h"
 
@@ -19,15 +20,11 @@
 #define OUTPUT_PIN_NAME "digPinOutput"
 #define OUTPUT_PIN_DESCRIPTION "Digital pin Output"
 
-#define OUTPUT_PIN_DESCR "d"
-#define OUTPUT_PIN_VALUE "v"
-
-class OutputPin: public Entity, public EntityUpdate {
+class OutputPin:public Pin, public Entity, public EntityUpdate {
 public:
 	OutputPin(uint8_t pin, const char* name = strdup(OUTPUT_PIN_NAME), const char* descr = OUTPUT_PIN_DESCRIPTION,
 			std::function<void(void)> selfEventProcessFunction = nullptr) :
-			Entity(GROUP_SENSORS, name, strdup(descr), selfEventProcessFunction) {
-		this->pin = pin;
+			Pin(pin,OUTPUT), Entity(GROUP_SENSORS, name, strdup(descr), selfEventProcessFunction) {
 	}
 
 	virtual ~OutputPin() {
@@ -39,15 +36,11 @@ public:
 	virtual void doUpdate() override {
 	}
 
-	void setOn(bool on = true) {
-		bool ch =  isOn() != on;
-		digitalWrite(on, on?HIGH:LOW);
+	void setValue(uint8_t value) override {
+		bool ch =  getValue() != value;
+		digitalWrite(pin, value);
 
 		dispatchChangeEvent(ch);
-	}
-
-	bool isOn() {
-		return digitalRead(pin) == HIGH;
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
@@ -62,7 +55,6 @@ public:
 			on = (getJsonField<uint8_t>(params, ON_FIELD));
 
 			setChanged(true);
-
 			setOn(on);
 		}
 	}
@@ -75,7 +67,16 @@ public:
 		UNUSED(jsonToFile);
 	}
 protected:
-	uint8_t pin;
+
+	bool validateMode() override{
+		if(pinMod == OUTPUT){
+			return true;
+		}
+
+		Serial.println(FPSTR("Bad pin or interrupt Mode"));
+		return false;
+	}
+
 };
 
 #endif /* LIBRARIES_ENTITYLIBSENSORS_OUTPUTPIN_H_ */

@@ -66,13 +66,15 @@ int EntityUpdateManager::init(int interval) {
 	}
 
 	if(intervalCounts>0){
+		/*
 		for(int i = 0;i<intervalCounts; i++){
 			uint32_t interval = intervals[i];
-			//Ticker* ticker = new Ticker();
-			//ticker->attach_msWithMaParam(intervals[i], [this](uint32_t intervalIn){executeTickUpdate(intervalIn);});
-			//ticker->attach_ms(interval,[this](void){loop{};});
+			Ticker* ticker = new Ticker();
+			ticker->attach_msWithMaParam(intervals[i], [this](uint32_t intervalIn){executeTickUpdate(intervalIn);});
+			ticker->attach_ms(interval,[this](void){loop{};});
 
 		}
+		*/
 	}
 
 	Serial.print(FPSTR("EntityUpdateManager totalCount="));
@@ -85,6 +87,7 @@ int EntityUpdateManager::init(int interval) {
 void EntityUpdateManager::loop(bool withCheck) {
 	//Serial.println(FPSTR("EntityUpdateManager loop"));
 	for (EntityUpdate* entity : this->entities) {
+			entity->loop();
 			entity->update(withCheck);
 	}
 /*
@@ -92,7 +95,4 @@ void EntityUpdateManager::loop(bool withCheck) {
 	Serial.println(FPSTR("EntityUpdateManager loop DONE"));
 	Serial.println(FPSTR("=================================="));
 	*/
-}
-
-void EntityUpdateManager::executeTickUpdate(uint32_t interval) {
 }

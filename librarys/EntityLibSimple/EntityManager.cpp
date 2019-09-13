@@ -18,11 +18,43 @@ void EntityManager::registerAndPreInitEntity(Entity* entity) {
 	Serial.print(FPSTR("register "));
 	entity->print();
 
-	this->entities.push_back(entity);
-
 	entity->preInitialize(this->count,
-					[this](int val) {processEntityChangedEvent(val);});
-	this->count++;
+								[this](int val) {processEntityChangedEvent(val);});
+
+	if(entity->preValidate()){
+		this->entities.push_back(entity);
+		this->count++;
+	}else{
+		this->failPreinit++;
+		Serial.print(FPSTR("PreValidation failed for entity = "));
+		Serial.println(entity->getName());
+	}
+
+}
+
+void EntityManager::init() {
+	Serial.println(FPSTR("----------------------------------"));
+	Serial.println(FPSTR("Init entityManager"));
+	FileUtils::init();
+
+	for (Entity* entity : entities) {
+		if(entity->validate()){
+			Serial.print(FPSTR("init "));
+			Serial.println(entity->getName());
+			entity->init();
+			this->initOk++;
+		}else{
+			Serial.print(FPSTR("validation FAILED "));
+			Serial.println(entity->getName());
+			this->failValidate++;
+		}
+	}
+
+	loadEntitiesFromFile();
+	saveEntitiesToFile();
+
+	Serial.println(FPSTR("Init entityManager completed"));
+	Serial.println(FPSTR("==============================="));
 }
 
 void EntityManager::processEntityChangedEvent(int entityIndex) {
@@ -130,24 +162,6 @@ void EntityManager::executeSaveOnEntity(JsonObject& jsonToFile,
 	}
 }
 
-void EntityManager::init() {
-	Serial.println(FPSTR("----------------------------------"));
-	Serial.println(FPSTR("Init entityManager"));
-	FileUtils::init();
-
-	//buf = new DynamicJsonBuffer();
-
-	for (Entity* entity : entities) {
-		entity->init();
-	}
-
-	loadEntitiesFromFile();
-	saveEntitiesToFile();
-
-	Serial.println(FPSTR("Init entityManager completed"));
-	Serial.println(FPSTR("==============================="));
-}
-
 void EntityManager::loadEntitiesFromFile() {
 	Serial.println(FPSTR("Load entities"));
 	persist(
@@ -205,6 +219,7 @@ void EntityManager::loop() {
 bool EntityManager::executeHttpMethodOnAll(JsonObject& params,
 		JsonObject& response, const char* method) {
 
+	//Serial.println(FPSTR("EntityManager::executeHttpMethodOnAll"));
 	bool changed = false;
 
 	for (Entity* entity : this->entities) {
@@ -219,6 +234,7 @@ bool EntityManager::executeHttpMethodOnAll(JsonObject& params,
 bool EntityManager::executeHttpMethodOnGroup(JsonObject& params,
 		JsonObject& response, const char* method) {
 
+	//Serial.println(FPSTR("EntityManager::executeHttpMethodOnGroup"));
 	bool changed = false;
 
 	int totalCount = 0;
@@ -255,6 +271,7 @@ bool EntityManager::executeHttpMethodOnGroup(JsonObject& params,
 bool EntityManager::executeHttpMethodOnEntityOnly(JsonObject& params,
 		JsonObject& response, const char* method) {
 
+	//Serial.println(FPSTR("EntityManager::executeHttpMethodOnEntityOnly"));
 	bool changed = false;
 	Entity* entity = getEntityByGroupAndName(
 			JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, GROUP,
@@ -295,6 +312,19 @@ bool EntityManager::hasAllGroupNoName(JsonObject& params) {
 void EntityManager::setOnEntityChanged(
 		std::function<void(void)> onEntityChanged) {
 	this->onEntityChanged = onEntityChanged;
+}
+
+void EntityManager::print() {
+	Serial.print(FPSTR("EntityManager "));
+	Serial.print(FPSTR("count = "));
+	Serial.print(count);
+	Serial.print(FPSTR(" failed preinit = "));
+	Serial.print(failPreinit);
+	Serial.print(FPSTR(" initOk = "));
+	Serial.print(initOk);
+	Serial.print(FPSTR(" failValidate = "));
+	Serial.println(failValidate);
+
 }
 
 void EntityManager::persist(

@@ -26,9 +26,7 @@ public:
 	void loop(bool withCheck = true);
 
 private:
-	void executeTickUpdate(uint32_t interval);
 	std::list<EntityUpdate*> entities;
-	Ticker* ticker;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYUPDATEMANAGER_H_ */
