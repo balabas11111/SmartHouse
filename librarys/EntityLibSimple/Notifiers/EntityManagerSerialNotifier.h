@@ -24,11 +24,7 @@ public:
 	}
 	virtual ~EntityManagerSerialNotifier();
 
-	void begin(EntityManager* manager){
-		this->manager = manager;
-	}
-
-	virtual void notify(char* group = nullptr, char* name = nullptr){
+	virtual void notify(char* group = nullptr, char* name = nullptr, NotificationTarget* notifTarget = nullptr){
 		if(this->manager == nullptr){
 			return;
 		}
@@ -41,14 +37,12 @@ public:
 
 		this->manager->get(json);
 
-		toTarget(json->getResponse());
+		toTarget(json->getResponse(), notifTarget);
 		this->manager->deleteEntityJsonRequestResponse(json);
 
 		finishNotification(start);
 	}
 
-private:
-	EntityManager* manager;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_ENTITYMANAGERSERIALNOTIFIER_H_ */

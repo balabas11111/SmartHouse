@@ -27,6 +27,7 @@
 #include <functional>
 
 #include <Ticker.h>
+#include <Notifiers/Notifier.h>
 
 class EntityApplication {
 public:
@@ -83,10 +84,13 @@ public:
 		Serial.println(FPSTR(" done"));
 	}
 
-	void updateEntityUpdate(){
-		entityUpdateManager->loop();
+	void updateEntityUpdate(bool withCheck = true){
+		entityUpdateManager->loop(withCheck);
 	}
 
+	void initNotifier(Notifier* notifier){
+		notifier->begin(this->entityManager);
+	}
 private:
 	WiFiSettingsBox* conf;
 	WiFiManager* wifiManager;

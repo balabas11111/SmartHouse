@@ -14,6 +14,8 @@
 #include <JsonObjectUtil.h>
 #include <Notifiers/NotificationTarget.h>
 
+#include <EntityManager.h>
+
 #define SENT_TO_DEFAULT_TARGET "toSerialTarget"
 #define SENT_TO_TARGET "toTarget"
 
@@ -22,13 +24,22 @@ public:
 	Notifier(const char* name, NotificationTarget* target = nullptr);
 	virtual ~Notifier(){}
 
+	virtual void begin(EntityManager* manager){
+		this->manager = manager;
+	}
+
 	virtual void notify(){
 		Serial.println(FPSTR("-----------------------------------------------"));
 		Serial.print(FPSTR("Notify "));
 		Serial.println(this->name);
 	}
 
-	virtual void toTarget(JsonObject& json){
+	virtual void toTarget(JsonObject& json, NotificationTarget* notifTarget = nullptr){
+		if(notifTarget!=nullptr){
+			JsonObjectUtil::printWithPreffix(SENT_TO_TARGET,json);
+			notifTarget->toTarget(json);
+		}
+
 		if(this->target==nullptr){
 			JsonObjectUtil::printWithPreffix(SENT_TO_DEFAULT_TARGET,json);
 		}else{
@@ -51,6 +62,11 @@ public:
 		return millis();
 	}
 
+	virtual EntityManager* getEntityManager(){
+		return manager;
+	}
+protected:
+	EntityManager* manager;
 private:
 	const char* name;
 	NotificationTarget* target;

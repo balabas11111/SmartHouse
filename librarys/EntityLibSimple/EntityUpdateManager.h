@@ -23,7 +23,7 @@ public:
 
 	int init(int interval);
 
-	void loop();
+	void loop(bool withCheck = true);
 
 private:
 	void executeTickUpdate(uint32_t interval);
