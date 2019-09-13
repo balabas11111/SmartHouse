@@ -78,6 +78,8 @@ public:
 	void dispatchAllChangedEntities();
 
 	void loop();
+
+	void setOnEntityChanged(std::function<void(void)> onEntityChanged);
 protected:
 	std::list<Entity*> entities;
 	int count=0;

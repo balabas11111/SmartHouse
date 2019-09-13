@@ -103,7 +103,7 @@ public:
 		Serial.print(FPSTR(" dns2="));
 		Serial.print(this->_dns2);
 		Serial.print(FPSTR(" smrtServIp="));
-		Serial.print(smartHouseServerIp());
+		Serial.print(this->_smrtServIp);
 		Serial.println();
 	}
 

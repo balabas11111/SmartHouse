@@ -23,6 +23,7 @@
 #include <ObjectUtils.h>
 #include <FileUtils.h>
 #include <I2C_utils.h>
+#include <Notifiers/EntityManagerNotifier.h>
 
 #include <functional>
 
@@ -33,13 +34,11 @@ class EntityApplication {
 public:
 	EntityApplication(const char* firmWare, Entity* entities[], int entityCount,
 			EntityUpdate* entityUpdate[], int entityUpdateCount,
-			std::function<void(void)> onEntityChanged = nullptr,
 			WiFiSettingsBox* conf = nullptr,
 			std::function<void(void)> onWiFiConnected = nullptr,
 			std::function<void(void)> onWiFiDisConnected = nullptr);
 	virtual ~EntityApplication() {
 	}
-	;
 
 	void initWithWiFi(bool deleteFs = false, bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
 	void initWithoutWiFi(bool deleteFs = false, bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
@@ -47,50 +46,26 @@ public:
 	void init(bool initSerial = true, bool initWiFi = false, bool initServer = false, bool initFs = true,
 			bool deleteFs = false, bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
 
+	void setOnEntityChanged(std::function<void(void)> onEntityChanged);
 	void loop();
 
-	void startWiFi(){
-		wifiManager->begin();
-	}
-	void startServer(){
-		wifiServerManager->begin();
-	}
+	void startWiFi();
+	void startServer();
 
-	EntityManager* getEntityManager() {
-		return this->entityManager;
-	}
+	EntityManager* getEntityManager();
 
-	WiFiSettingsBox* getConf(){
-		return this->conf;
-	}
+	WiFiSettingsBox* getConf();
 
-	void registerTicker(void (*callback)(void)){
+	void registerTicker(void (*callback)(void));
+	void registerTicker(uint32_t milliseconds, void (*callback)(void));
 
-		uint32_t tickInterval = 30000;
+	void updateEntities(bool withCheck = true);
 
-		if(this->conf != nullptr && this->conf->refreshInterval()>0){
-			tickInterval = conf->refreshInterval() * 1000;
-		}
+	void initNotifier(Notifier* notifier);
+	void initDefaultNotifier(NotificationTarget* target = nullptr);
+	EntityManagerNotifier* getDefaultNotifier();
 
-
-		registerTicker(tickInterval, callback);
-	}
-
-	void registerTicker(uint32_t milliseconds, void (*callback)(void)){
-		Serial.print(FPSTR("register ticker interval = "));
-		Serial.print(milliseconds);
-		Ticker* ticker = new Ticker();
-		ticker->attach_ms(milliseconds, callback);
-		Serial.println(FPSTR(" done"));
-	}
-
-	void updateEntityUpdate(bool withCheck = true){
-		entityUpdateManager->loop(withCheck);
-	}
-
-	void initNotifier(Notifier* notifier){
-		notifier->begin(this->entityManager);
-	}
+	void notify(char* group = nullptr, char* name = nullptr, NotificationTarget* notifTarget = nullptr);
 private:
 	WiFiSettingsBox* conf;
 	WiFiManager* wifiManager;
@@ -98,6 +73,8 @@ private:
 
 	EntityManager* entityManager;
 	EntityUpdateManager* entityUpdateManager;
+
+	EntityManagerNotifier* defaultNotifier;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYAPPLICATION_H_ */

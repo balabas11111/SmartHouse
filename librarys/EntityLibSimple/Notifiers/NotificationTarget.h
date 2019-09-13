@@ -13,8 +13,8 @@
 
 class NotificationTarget {
 public:
-	NotificationTarget();
-	virtual ~NotificationTarget();
+	NotificationTarget(){};
+	virtual ~NotificationTarget(){};
 
 	virtual void toTarget(JsonObject& json) = 0;
 };

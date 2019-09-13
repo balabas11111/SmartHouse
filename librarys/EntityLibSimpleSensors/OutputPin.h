@@ -39,9 +39,11 @@ public:
 	virtual void doUpdate() override {
 	}
 
-	void setOn(bool on) {
-		dispatchChangeEvent(isOn() != on);
+	void setOn(bool on = true) {
+		bool ch =  isOn() != on;
 		digitalWrite(on, on?HIGH:LOW);
+
+		dispatchChangeEvent(ch);
 	}
 
 	bool isOn() {
@@ -49,10 +51,12 @@ public:
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
+		UNUSED(params);
 		setJsonField(response, ON_FIELD, this->isOn());
 	}
 
 	virtual void doPost(JsonObject& params, JsonObject& response) override {
+		UNUSED(response);
 		uint8_t on = isOn();
 		if (isKeyExistsInJsonAndNotEqValue(params, ON_FIELD, on)) {
 			on = (getJsonField<uint8_t>(params, ON_FIELD));
@@ -64,9 +68,11 @@ public:
 	}
 
 	virtual void doLoad(JsonObject& jsonFromFile) override {
+		UNUSED(jsonFromFile);
 	}
 
 	virtual void doSave(JsonObject& jsonToFile) override {
+		UNUSED(jsonToFile);
 	}
 protected:
 	uint8_t pin;

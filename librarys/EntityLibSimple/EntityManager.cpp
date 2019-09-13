@@ -56,7 +56,6 @@ void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 		const char* method) {
 
 	this->entitiesChanged = (this->entitiesChanged || false);
-	bool changed = false;
 
 	Serial.print(method);
 	Serial.print(FPSTR(" "));
@@ -165,8 +164,8 @@ void EntityManager::saveEntitiesToFile() {
 
 void EntityManager::groupNameToParam(char* group, char* name,
 		EntityJsonRequestResponse* json) {
-	json->addRequestParam(GROUP, group);
-	json->addRequestParam(NAME, name);
+	json->addRequestParam((char*)GROUP, group);
+	json->addRequestParam((char*)NAME, name);
 }
 
 EntityJsonRequestResponse* EntityManager::createEntityJsonRequestResponse() {
@@ -290,7 +289,12 @@ bool EntityManager::hasGroupName(JsonObject& params) {
 }
 
 bool EntityManager::hasAllGroupNoName(JsonObject& params) {
-	return JsonObjectUtil::hasFieldAndValueEquals(params, GROUP, GROUP_ALL);
+	return JsonObjectUtil::hasFieldAndValueEquals(params, (char*)GROUP, (char*)GROUP_ALL);
+}
+
+void EntityManager::setOnEntityChanged(
+		std::function<void(void)> onEntityChanged) {
+	this->onEntityChanged = onEntityChanged;
 }
 
 void EntityManager::persist(
@@ -298,7 +302,7 @@ void EntityManager::persist(
 		std::function<void(JsonObject& json)> postPersistFunction) {
 
 	Serial.println(FPSTR("-------------"));
-	JsonObject& jsonEmpty = buf.parse("{}").asObject();
+	JsonObject& jsonEmpty = buf.parse("{}").as<JsonObject>();
 
 	JsonObject& jsonTemp = FileUtils::loadJsonFromFile(FILE_PATH, &buf, jsonEmpty);
 

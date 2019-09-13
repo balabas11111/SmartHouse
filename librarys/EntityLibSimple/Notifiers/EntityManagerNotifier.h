@@ -5,8 +5,8 @@
  *      Author: Vitaliy
  */
 
-#ifndef LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_ENTITYMANAGERSERIALNOTIFIER_H_
-#define LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_ENTITYMANAGERSERIALNOTIFIER_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_ENTITYMANAGERNOTIFIER_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_ENTITYMANAGERNOTIFIER_H_
 
 #include <Arduino.h>
 #include <EntityManager.h>
@@ -17,23 +17,23 @@
 
 #include <EntityJsonRequestResponse.h>
 
-class EntityManagerSerialNotifier: public Notifier  {
+class EntityManagerNotifier: public Notifier  {
 public:
-	EntityManagerSerialNotifier(NotificationTarget* target = nullptr):Notifier("EntityManagerSerialNotifier", target){
+	EntityManagerNotifier(NotificationTarget* target = nullptr):Notifier("EntityManagerNotifier", target){
 
 	}
-	virtual ~EntityManagerSerialNotifier();
+	virtual ~EntityManagerNotifier(){};
 
 	virtual void notify(char* group = nullptr, char* name = nullptr, NotificationTarget* notifTarget = nullptr){
-		if(this->manager == nullptr){
+		if(this->manager == nullptr ){
 			return;
 		}
 
 		unsigned long start = startNotification();
 		EntityJsonRequestResponse* json = this->manager->createEntityJsonRequestResponse();
 
-		json->addRequestParam(GROUP, group);
-		json->addRequestParam(NAME, name);
+		json->addRequestParam((char*)GROUP, group);
+		json->addRequestParam((char*)NAME, name);
 
 		this->manager->get(json);
 
@@ -45,4 +45,4 @@ public:
 
 };
 
-#endif /* LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_ENTITYMANAGERSERIALNOTIFIER_H_ */
+#endif /* LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_ENTITYMANAGERNOTIFIER_H_ */

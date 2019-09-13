@@ -21,7 +21,10 @@
 
 class Notifier {
 public:
-	Notifier(const char* name, NotificationTarget* target = nullptr);
+	Notifier(const char* name, NotificationTarget* target = nullptr){
+		this->name = name;
+		this->target = target;
+	}
 	virtual ~Notifier(){}
 
 	virtual void begin(EntityManager* manager){
@@ -38,6 +41,7 @@ public:
 		if(notifTarget!=nullptr){
 			JsonObjectUtil::printWithPreffix(SENT_TO_TARGET,json);
 			notifTarget->toTarget(json);
+			return;
 		}
 
 		if(this->target==nullptr){

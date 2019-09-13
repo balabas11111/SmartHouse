@@ -2,32 +2,28 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2019-03-31 02:41:17
+//This file has been generated on 2019-09-13 04:24:18
 
 #include "Arduino.h"
 #include "Arduino.h"
 #include <ArduinoJson.h>
-#include <EntityAbstract.h>
-#include <JsonDao.h>
-#include <EntityConsts.h>
+#include <EntityApplication.h>
+#include <Entity.h>
+#include <EntityUpdate.h>
+#include <Notifiers/EntityManagerNotifier.h>
 #include <ObjectUtils.h>
-#include <FileUtils.h>
-#include <NtpBox.h>
-#include <WiFiManagerAsync.h>
-#include <ServerSettingsBox.h>
+#include <WIFi/WiFiSettingsBox.h>
 #include "Bme280sensor.h"
 #include "Bh1750sensor.h"
 #include "DHT22sensor.h"
 #include "DS18D20sensor.h"
 #include "OutputPin.h"
-#include "TM1637DisplayTime.h"
-#include <Ticker.h>
 
 void setup() ;
 void loop() ;
-void printHeap();
-void updateDisplayTime();
-void updateSensors();
+void printSensorsJson() ;
+void updateEntities();
+void onEntityChanged();
 
 #include "EntityLib_dev.ino"
 

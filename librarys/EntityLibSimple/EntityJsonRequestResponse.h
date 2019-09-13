@@ -19,41 +19,32 @@ private:
 	DynamicJsonBuffer buf;
 
 	JsonVariant root;
-	JsonVariant request;
+	/*JsonVariant request;
 	JsonVariant response;
+	*/
 public:
 	EntityJsonRequestResponse(){
-		root= buf.parse("{}").asObject();
-		request = root.asObject().createNestedObject(REQUEST);
-		response = root.asObject().createNestedObject(RESPONSE);
-/*
-		Serial.println(FPSTR("New ENtityJsonRequestResponse created"));
-
-		Serial.println(FPSTR("Create request section"));
-
-		Serial.println(FPSTR("Create response section"));
-
-
-		JsonObjectUtil::print(root);
-		Serial.println(FPSTR("New ENtityJsonRequestResponse done"));
+		this->root= buf.parse("{}").as<JsonObject>();
+		/*this->request = getRoot().createNestedObject(REQUEST);
+		this->response = getRoot().createNestedObject(RESPONSE);
 		*/
 	};
 	virtual ~EntityJsonRequestResponse(){};
 
 	void clear(){
-		buf.clear();
+		this->buf.clear();
 	}
 
 	JsonObject& getRoot(){
-		return root.asObject();
+		return this->root.as<JsonObject>();
 	}
 
 	JsonObject& getRequest(){
-		return root.asObject().get<JsonObject>(REQUEST);
+		return getRoot().get<JsonObject>(REQUEST);
 	}
 
 	JsonObject& getResponse(){
-		return root.asObject().get<JsonObject>(RESPONSE);
+		return getRoot().get<JsonObject>(RESPONSE);
 	}
 
 	void getResponseAsString(String& str){
@@ -80,15 +71,15 @@ public:
 	void putRequestJsonParam(String str, const char* key){
 		Serial.print(FPSTR("parse "));
 		Serial.println(str);
-		JsonObjectUtil::clone(request, str, key);
+		JsonObjectUtil::clone(getRequest(), str, key);
 
 		Serial.print(FPSTR("-result "));
-		request.printTo(Serial);
+		getRequest().printTo(Serial);
 		Serial.println();
 	}
 
 	String& printResponseTo(String& str){
-		response.printTo(str);
+		getResponse().printTo(str);
 		return str;
 	}
 

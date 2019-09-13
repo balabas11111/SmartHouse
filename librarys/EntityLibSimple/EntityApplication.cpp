@@ -9,7 +9,6 @@
 
 EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 		int entityCount, EntityUpdate* entityUpdate[], int entityUpdateCount,
-		std::function<void(void)> onEntityChanged,
 		WiFiSettingsBox* conf, std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
 
@@ -19,7 +18,7 @@ EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 	}
 
 	this->conf = (newConf) ? new WiFiSettingsBox(firmWare) : conf;
-	this->entityManager = new EntityManager(entities, entityCount, onEntityChanged);
+	this->entityManager = new EntityManager(entities, entityCount);
 
 	if (newConf) {
 		this->entityManager->registerAndPreInitEntity(this->conf);
@@ -75,6 +74,8 @@ void EntityApplication::init(bool initSerial,
 
 	Serial.println(FPSTR("Application Init done"));
 
+	initDefaultNotifier();
+
 	ObjectUtils::printHeap();
 	ObjectUtils::printMillis();
 	Serial.println(FPSTR("===================================="));
@@ -95,5 +96,70 @@ void EntityApplication::initWithoutWiFi(bool deleteFs, bool initI2C,
 void EntityApplication::loop() {
 	this->entityManager->loop();
 	this->entityUpdateManager->loop();
-	wifiServerManager->loop();
+	this->wifiServerManager->loop();
+}
+
+void EntityApplication::startWiFi(){
+this->wifiManager->begin();
+}
+void EntityApplication::startServer(){
+	this->wifiServerManager->begin();
+}
+
+EntityManager* EntityApplication::getEntityManager() {
+	return this->entityManager;
+}
+
+WiFiSettingsBox* EntityApplication::getConf(){
+	return this->conf;
+}
+
+void EntityApplication::registerTicker(void (*callback)(void)){
+
+	uint32_t tickInterval = 30000;
+
+	if(this->conf != nullptr && this->conf->refreshInterval()>0){
+		tickInterval = conf->refreshInterval() * 1000;
+	}
+
+
+	registerTicker(tickInterval, callback);
+}
+
+void EntityApplication::registerTicker(uint32_t milliseconds, void (*callback)(void)){
+	Serial.print(FPSTR("register ticker interval = "));
+	Serial.print(milliseconds);
+	Ticker* ticker = new Ticker();
+	ticker->attach_ms(milliseconds, callback);
+	Serial.println(FPSTR(" done"));
+}
+
+void EntityApplication::updateEntities(bool withCheck){
+	this->entityUpdateManager->loop(withCheck);
+}
+
+void EntityApplication::initNotifier(Notifier* notifier){
+	notifier->begin(this->entityManager);
+}
+
+void EntityApplication::initDefaultNotifier(NotificationTarget* target) {
+	this->defaultNotifier = new EntityManagerNotifier(target);
+	this->defaultNotifier->begin(this->getEntityManager());
+}
+
+EntityManagerNotifier* EntityApplication::getDefaultNotifier() {
+	return this->defaultNotifier;
+}
+
+void EntityApplication::notify(char* group, char* name,
+		NotificationTarget* notifTarget) {
+	if(this->defaultNotifier == nullptr){
+		return;
+	}
+	this->defaultNotifier->notify(group, name, notifTarget);
+}
+
+void EntityApplication::setOnEntityChanged(
+		std::function<void(void)> onEntityChanged) {
+	this->getEntityManager()->setOnEntityChanged(onEntityChanged);
 }
