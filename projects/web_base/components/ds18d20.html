@@ -8,12 +8,13 @@ img.temperature-icon {
 </style>
 <script type="text/javascript">
 const SENSOR_ITEMS  = 'si';
-const SENSOR_ITEM_DESCR  = 'd';
+const SENSOR_ITEM_DESCR  = 'n';
 const SENSOR_ITEM_TEMP   = 't';
 
-hideComponent("sensors.ds18d20.editForm");
-
 registerModelToViewHandler('sensors.ds18d20',handleDs18d20View);
+registerViewDescriptorDefault("sensors.ds18d20");
+/*
+hideComponent("sensors.ds18d20.editForm");
 
 function editDs18d20(){
 	hideShowComponent("sensors.ds18d20.viewForm","sensors.ds18d20.editForm");
@@ -27,7 +28,7 @@ function saveDs18d20(){
 function onDataPostedDs18d20(response){
 	hideShowComponent("sensors.ds18d20.editForm","sensors.ds18d20.viewForm");
 }
-
+*/
 function handleDs18d20View(entity,key,val){
 	if(key!=SENSOR_ITEMS){
 		updateEntityViewValueDefault(entity,key,val);
@@ -128,7 +129,7 @@ function itemToEditDiv(uid,item){
 					  	</div>
 					 -->
 				</div>
-
+			<!-- 
 				<footer class="w3-container w3-teal w3-display-container">
 				 		<div class="w3-row">
 				 			<div class="w3-half">
@@ -139,7 +140,7 @@ function itemToEditDiv(uid,item){
 							</div>
 						</div>
     			</footer>			   		
-		   	
+	 		-->	   	
 	</div>
 	<div id="sensors.ds18d20.editForm" class="w3-card-4 entityLib-entity"  style="display:none;">
 			<div class="w3-container w3-teal">
@@ -177,7 +178,7 @@ function itemToEditDiv(uid,item){
 					 -->
 				</div>
 		   	</form>
-		   	
+		   	<!-- 
 		   	<footer class="w3-container w3-teal w3-display-container">
 			 		<div class="w3-row">
 			 			<div class="w3-half">
@@ -194,6 +195,7 @@ function itemToEditDiv(uid,item){
 						</div>
 					</div>
    			</footer>
+   			 -->
 		   	
 	</div>
 </div>

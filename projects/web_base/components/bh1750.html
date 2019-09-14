@@ -7,7 +7,10 @@ img.luxmeter-icon {
 }
 </style>
 <script type="text/javascript">
-hideComponent("sensors.bh1750.editForm");
+
+registerViewDescriptorDefault("sensors.bh1750");
+
+/*hideComponent("sensors.bh1750.editForm");
 
 function editBh1750(){
 	hideShowComponent("sensors.bh1750.viewForm","sensors.bh1750.editForm");
@@ -21,7 +24,8 @@ function saveBh1750(){
 function onDataPostedBh1750(response){
 	hideShowComponent("sensors.bh1750.editForm","sensors.bh1750.viewForm");
 }
-	
+*/
+
 </script>
 <div id="sensors.bh1750.div">
 
@@ -40,6 +44,7 @@ function onDataPostedBh1750(response){
 					<input id="sensors.bh1750.light" name="light" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
 				</div>	
 				
+				<!-- 
 				<footer class="w3-container w3-teal w3-display-container">
 				 		<div class="w3-row">
 				 			<div class="w3-half">
@@ -49,7 +54,8 @@ function onDataPostedBh1750(response){
 										onclick="editBh1750();">Редактировать</button>
 							</div>
 						</div>
-    			</footer>						
+    			</footer>
+    			 -->						
 			<!--  </form> -->
 	</div>
 	
@@ -78,6 +84,7 @@ function onDataPostedBh1750(response){
 										
 			</form>
 			
+			<!--
 			 <footer class="w3-container w3-teal w3-display-container">
 		 		<div class="w3-row">
 		 			<div class="w3-half">
@@ -94,6 +101,7 @@ function onDataPostedBh1750(response){
 					</div>
 				</div>
    			</footer>
+   			-->
 	</div>
 </div>
 <!--BH1750 ends-->

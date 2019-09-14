@@ -17,7 +17,9 @@ img.humidity-icon {
 }
 </style>
 <script type="text/javascript">
-hideComponent("sensors.bme280.editForm");
+
+registerViewDescriptorDefault("sensors.bme280");
+/*hideComponent("sensors.bme280.editForm");
 
 function editBme280(){
 	hideShowComponent("sensors.bme280.viewForm","sensors.bme280.editForm");
@@ -31,6 +33,7 @@ function saveBme280(){
 function onDataPostedBme280(response){
 	hideShowComponent("sensors.bme280.editForm","sensors.bme280.viewForm");
 }
+*/
 </script>
 <div id="sensors.bme280.div">
 	<div id="sensors.bme280.viewForm" class="w3-card-4 entityLib-entity">
@@ -62,6 +65,7 @@ function onDataPostedBme280(response){
 					<input id="sensors.bme280.hum" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
 				</div>	
 				
+				<!--  
 				<footer class="w3-container w3-teal w3-display-container">
 				 		<div class="w3-row">
 				 			<div class="w3-half">
@@ -71,7 +75,8 @@ function onDataPostedBme280(response){
 										onclick="editBme280();">Редактировать</button>
 							</div>
 						</div>
-    			</footer>			   		
+    			</footer>
+    			-->			   		
 		   	
 	</div>
 	<div id="sensors.bme280.editForm" class="w3-card-4 entityLib-entity" style="display:none;">
@@ -98,7 +103,7 @@ function onDataPostedBme280(response){
 				</div>	
 
 		   	</form>
-		   	
+		   	<!-- 
 		   	<footer class="w3-container w3-teal w3-display-container">
 			 		<div class="w3-row">
 			 			<div class="w3-half">
@@ -115,6 +120,7 @@ function onDataPostedBme280(response){
 						</div>
 					</div>
    			</footer>
+   			 -->
 		   	
 	</div>
 </div>

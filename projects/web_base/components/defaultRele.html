@@ -14,30 +14,46 @@ img.lamp-off-icon {
 </style>
 <script type="text/javascript">
 
+const FIELD_ON = "on";
+
 registerModelToViewHandler("sensors.DefaultRele",updateDefaultReleViewValue);
+registerViewDescriptorDefault("sensors.DefaultRele");
+/*
 function cancelEditDefaultRele(){
 	hideShowComponent("sensors.DefaultRele.editForm","sensors.DefaultRele.viewForm");
 }
 function editDefaultRele(){
 	hideShowComponent("sensors.DefaultRele.viewForm","sensors.DefaultRele.editForm");
 }	
-
+function saveDefaultRele(){
+	formSubmitAsForm("sensors.DefaultRele.form","sensors.DefaultRele.div",onDataPostedDefaultRele);
+}
+function onDataPostedDefaultRele(response){
+	hideShowComponent("sensors.DefaultRele.editForm","sensors.DefaultRele.viewForm");
+}
+*/
 function updateDefaultReleViewValue(entity,key,val){
 	updateEntityViewValueDefault(entity,key,val);
 	console.log("updateDefaultReleViewValue key="+key+" value="+val);
-	if(key=='on'){
+	if(key==FIELD_ON){
 		console.log("on=",val);
-		processJsonOnImageComponent(entity);
+		/*processJsonOnImageComponent(entity);*/
+		var containerId = data[FIELD_NAME]+'ImagesBody';
+		var hideImageClass=data[FIELD_NAME]+"_Image";
+		var showImageId=(data[FIELD_NAME]+"_"+data[FIELD_ON]);
+		
+		showOnlyOneImageInContainer(containerId, hideImageClass, showImageId);
 	}
 }
+/*
 function processJsonOnImageComponent(data){
 	
-	var id=data.name+'ImagesBody';
-	var descr=data.descr;
+	var id=data[FIELD_NAME]+'ImagesBody';
+	var descr=data[FIELD_DESCR];
 	
 	
 	var comp=document.getElementById(id);
-	var lookUpClassName=data.name+"_Image";
+	var lookUpClassName=data[FIELD_NAME]+"_Image";
 	
 	if(comp!=undefined){
 		var childNodes = comp.getElementsByClassName(lookUpClassName);
@@ -49,32 +65,26 @@ function processJsonOnImageComponent(data){
 		showComponent(imageName);
 	}
 }
+*/
 	
-function saveDefaultRele(){
-	formSubmitAsForm("sensors.DefaultRele.form","sensors.DefaultRele.div",onDataPostedDefaultRele);
-}
-function onDataPostedDefaultRele(response){
-	hideShowComponent("sensors.DefaultRele.editForm","sensors.DefaultRele.viewForm");
-}
-	
-function lampWidgetClick(component){
-	var componentId=component.id;
+function lampWidgetClick(val){
+/*	var componentId=component.id;
 	var ind=componentId.indexOf('_');
 	
 	var val=0;
 	
 	if(componentId.endsWith('0')){val=1;};
 	var sensor=componentId.substr(0,ind);
-	var url='/sdpcv';
 	
 	console.log("Default rele pressed");
-	
+	*/
 	document.getElementById("sensors.DefaultRele.on").value=val;
 	
 	formSubmitAsForm("DefaultReleFormValue","sensors.DefaultRele.div",onWingetClickSubmittedDefaultRele);
 }
 function onWingetClickSubmittedDefaultRele(response){
-	hideShowComponent("sensors.DefaultRele.editForm","sensors.DefaultRele.viewForm");
+	activeEntityViewForm("sensors.DefaultRele");
+	/*hideShowComponent("sensors.DefaultRele.editForm","sensors.DefaultRele.viewForm");*/
 }
 </script>
 <div>
@@ -101,17 +111,17 @@ function onWingetClickSubmittedDefaultRele(response){
 						<img id="DefaultRele_1" class="w3-center DefaultRele_Image lamp-on-icon entityLib-image" 
 							style="display: none;"
 							title="Выключить"
-							onclick="lampWidgetClick(this);" 
+							onclick="lampWidgetClick(0);" 
 							alt="Выключить"/>
 						<img id="DefaultRele_0" class="w3-center DefaultRele_Image lamp-off-icon entityLib-image" 
 							style="display: none;"
 							title="Включить"
-							onclick="lampWidgetClick(this);" 
+							onclick="lampWidgetClick(1);" 
 							alt="Включить"/>
 					</div>
 				</div>
 			</form>
-			
+			<!-- 
 			<footer class="w3-container w3-teal w3-display-container">
 			 		<div class="w3-row">
 			 			<div class="w3-half">
@@ -121,7 +131,8 @@ function onWingetClickSubmittedDefaultRele(response){
 									onclick="editDefaultRele();">Редактировать</button>
 						</div>
 					</div>
-   			</footer>	
+   			</footer>
+   			 -->	
 		</div>
 		
 		<div id="sensors.DefaultRele.editForm" class="w3-card-4 entityLib-entity" style="display:none;">
@@ -149,6 +160,7 @@ function onWingetClickSubmittedDefaultRele(response){
 										
 			</form>
 			
+			<!-- 
 			 <footer class="w3-container w3-teal w3-display-container">
 		 		<div class="w3-row">
 		 			<div class="w3-half">
@@ -165,6 +177,7 @@ function onWingetClickSubmittedDefaultRele(response){
 					</div>
 				</div>
    			</footer>
+   			 -->
 		</div>
 	
 	</div>

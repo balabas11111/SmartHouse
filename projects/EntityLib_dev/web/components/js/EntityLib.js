@@ -22,6 +22,7 @@ const MESSAGE_PAGE_DEL_SETT_RELOAD_REQUIRED = 'Page reload required';
 
 var dataModel={};
 var modelToViewHandlers={};
+var viewDescriptor={};
 
 var source = new EventSource('/events');
 
@@ -57,10 +58,15 @@ function processGroupToView(group){
 		Object.keys(entities).forEach(function(entityKey) {
 			var entity = entities[entityKey];
 			
-			processEntityGroupNameSet(group, entityKey, entity);
-			processEntityToView(entity);
+			entityToView(group, entityKey, entity)
+			
 		});
 	}
+}
+
+function entityToView(group, name, entity){
+	processEntityGroupNameSet(group, entityKey, entity);
+	processEntityToView(entity);
 }
 
 function processEntityGroupNameSet(group,name,entity){
@@ -131,6 +137,173 @@ function updateEntityViewValueDefault(entity,key,val){
 	var expEditId = getEntityEditId(entity,key);
 	setComponentValueById(expId,val);
 	setComponentValueById(expEditId,val);
+}
+
+function showOnlyOneImageInContainer(containerId, hideImageClass, showImageId){
+	var comp=document.getElementById(containerId);
+	
+	if(comp!=undefined){
+		var childNodes = comp.getElementsByClassName(hideImageClass);
+		
+		for(i in childNodes){
+			hideComponent(childNodes[i].id);
+		}
+		showComponent(showImageId);
+	}
+}
+/*---------------------------viewDescriptor operations-------------------------*/
+const VIEW_DESCRIPTOR_VIEW_FORM = "viewForm";
+const VIEW_DESCRIPTOR_EDIT_FORM = "editForm";
+const VIEW_DESCRIPTOR_SUBMIT_FORM = "form";
+const VIEW_DESCRIPTOR_REDRAW_DIV = "div";
+const VIEW_DESCRIPTOR_ON_SUBMIT_HANDLER = "handler";
+
+function registerViewDescriptorDefault(descriptorName, onSubmitHandler) {
+	var viewFormDivId = descriptorName + '.' + VIEW_DESCRIPTOR_VIEW_FORM;
+	var editFormDivId = descriptorName + '.' + VIEW_DESCRIPTOR_EDIT_FORM;
+	var submitFormId =  descriptorName + '.' + VIEW_DESCRIPTOR_SUBMIT_FORM;
+	var onSubmitRedrawDivId  = descriptorName + '.' + VIEW_DESCRIPTOR_REDRAW_DIV;
+	
+	registerViewDescriptor(descriptorName, viewFormDivId, editFormDivId, submitFormId, onSubmitRedrawDivId, onSubmitHandler);
+}
+
+function registerViewDescriptor(descriptorName, viewFormDivId, editFormDivId, submitFormId, onSubmitRedrawDivId, onSubmitHandler) {
+	viewDescriptor[descriptorName][VIEW_DESCRIPTOR_VIEW_FORM] = viewFormDivId;
+	viewDescriptor[descriptorName][VIEW_DESCRIPTOR_EDIT_FORM] = editFormDivId;
+	viewDescriptor[descriptorName][VIEW_DESCRIPTOR_SUBMIT_FORM] = submitFormId;
+	viewDescriptor[descriptorName][VIEW_DESCRIPTOR_REDRAW_DIV] = onSubmitRedrawDivId;
+	viewDescriptor[descriptorName][VIEW_DESCRIPTOR_ON_SUBMIT_HANDLER] = onSubmitHandler;
+	
+	addEditButtonToViewForm(descriptorName, viewFormDivId);
+	addSaveCancelButtonsToEditForm(descriptorName, editFormDivId);
+	
+	hideComponent(editFormDivId);
+	
+	console.log('registerViewDescriptor ', descriptorName);
+}
+
+function addEditButtonToViewForm(descriptorName, viewFormDivId){
+	var footer = createFooterElement();
+	var target = footer.childNodes[0];
+	
+	var editHandlerText = "activeEntityEditForm('"+descriptorName+"');";
+	
+	createButtonDiv(editHandlerText, "Редактировать", target);
+	
+	var comp = document.getElementById(viewDescriptor[descriptorName][VIEW_DESCRIPTOR_VIEW_FORM]);
+	
+	if(comp!=undefined){
+		comp.appendChild(footer);
+	}
+}
+
+function addSaveCancelButtonsToEditForm(descriptorName, editFormDivId){
+	var footer = createFooterElement();
+	var target = footer.childNodes[0];
+	
+	var saveHandlerText = "submitEntityEditForm('"+descriptorName+"');";
+	var cancelHandlerText = "activeEntityViewForm('"+descriptorName+"');";
+	
+	createButtonDiv(saveHandlerText, "Сохранить", target);
+	createButtonDiv(cancelHandlerText, "Отменить", target);
+	
+	var comp = document.getElementById(viewDescriptor[descriptorName][VIEW_DESCRIPTOR_EDIT_FORM]);
+	
+	if(comp!=undefined){
+		comp.appendChild(footer);
+	}
+}
+
+function createFooterElement(){
+	var footer = document.createElement('footer');
+	footer.classList.add('w3-container');
+	footer.classList.add('w3-teal');
+	footer.classList.add('w3-display-container');
+	
+	var div = document.createElement('div');
+	div.classList.add('w3-row');
+	
+	div.appendChild(button);
+}
+
+function createButtonDiv(handlerTxt, buttonText, target){
+	var div = document.createElement('div');
+	div.classList.add('w3-half');
+	
+	var button = document.createElement('button');
+	button.value=buttonText;
+	button.classList.add('w3-btn');
+	button.classList.add('w3-white');
+	button.classList.add('w3-border');
+	button.classList.add('w3-round-large');
+	button.classList.add('w3-border-green');
+	button.setAttribute("style", "margin-top: 2px; margin-bottom: 2px;");
+	button.setAttribute("onclick", handlerTxt);
+	
+	div.appendChild(button);
+	
+	target.appendChild(div);
+}
+
+function getViewDescriptor(descriptorName){
+	var result = viewDescriptor[descriptorName];
+	
+	return result;
+}
+
+function activeEntityEditForm(descriptorName){
+	var descriptor = getViewDescriptor(descriptorName);
+	
+	hideShowComponent(descriptor[VIEW_DESCRIPTOR_VIEW_FORM], descriptor[VIEW_DESCRIPTOR_EDIT_FORM]);
+}
+
+function activeEntityViewForm(descriptorName){
+	var descriptor = getViewDescriptor(descriptorName);
+	hideShowComponent(descriptor[VIEW_DESCRIPTOR_EDIT_FORM], descriptor[VIEW_DESCRIPTOR_VIEW_FORM]);
+}
+
+function submitEntityEditForm(descriptorName){
+	var descriptor = getViewDescriptor(descriptorName);
+	
+	formSubmitAsForm(descriptor[VIEW_DESCRIPTOR_SUBMIT_FORM],
+					descriptor[VIEW_DESCRIPTOR_REDRAW_DIV],
+					onEntityEditFormResponse
+					/*descriptor[VIEW_DESCRIPTOR_ON_SUBMIT_HANDLER]*/);
+}
+
+function onEntityEditFormResponse(json){
+	if(json!=undefined){
+		for(var group in json) {
+			
+			if(group!=undefined){
+				for(var name in json[group]){
+					if(group!=undefined){
+						var descriptorName = group+"."+name;
+						
+						var descriptor = getViewDescriptor(descriptorName);
+						var entity = json[group][name];
+
+						if(entity!=undefined){
+							entityToView(group, name, entity);
+						}
+						
+						if(descriptor != undefined){
+							activeEntityViewForm(descriptorName);
+						
+							var handler = descriptor[VIEW_DESCRIPTOR_ON_SUBMIT_HANDLER];
+						
+							if(handler!=undefined){
+								handler(json);
+							}
+						} else{
+							/*TODO: handle error here*/
+						}
+					}
+				}
+			}
+		
+		}
+	}
 }
 /*---------------------------Event source functions----------------------------*/
 function initEventSourceChannel(){
