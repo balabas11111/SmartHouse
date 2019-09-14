@@ -16,75 +16,28 @@ img.lamp-off-icon {
 
 const FIELD_ON = "on";
 
-registerModelToViewHandler("sensors.DefaultRele",updateDefaultReleViewValue);
-registerViewDescriptorDefault("sensors.DefaultRele");
-/*
-function cancelEditDefaultRele(){
-	hideShowComponent("sensors.DefaultRele.editForm","sensors.DefaultRele.viewForm");
-}
-function editDefaultRele(){
-	hideShowComponent("sensors.DefaultRele.viewForm","sensors.DefaultRele.editForm");
-}	
-function saveDefaultRele(){
-	formSubmitAsForm("sensors.DefaultRele.form","sensors.DefaultRele.div",onDataPostedDefaultRele);
-}
-function onDataPostedDefaultRele(response){
-	hideShowComponent("sensors.DefaultRele.editForm","sensors.DefaultRele.viewForm");
-}
-*/
+registerViewDescriptorDefault("sensors.DefaultRele", updateDefaultReleViewValue);
+
 function updateDefaultReleViewValue(entity,key,val){
 	updateEntityViewValueDefault(entity,key,val);
 	console.log("updateDefaultReleViewValue key="+key+" value="+val);
 	if(key==FIELD_ON){
 		console.log("on=",val);
-		/*processJsonOnImageComponent(entity);*/
-		var containerId = data[FIELD_NAME]+'ImagesBody';
-		var hideImageClass=data[FIELD_NAME]+"_Image";
-		var showImageId=(data[FIELD_NAME]+"_"+data[FIELD_ON]);
+		var containerId = entity[FIELD_NAME]+'ImagesBody';
+		var hideImageClass =entity[FIELD_NAME]+"_Image";
+		var showImageId =(entity[FIELD_NAME]+"_"+entity[FIELD_ON]);
 		
 		showOnlyOneImageInContainer(containerId, hideImageClass, showImageId);
 	}
 }
-/*
-function processJsonOnImageComponent(data){
-	
-	var id=data[FIELD_NAME]+'ImagesBody';
-	var descr=data[FIELD_DESCR];
-	
-	
-	var comp=document.getElementById(id);
-	var lookUpClassName=data[FIELD_NAME]+"_Image";
-	
-	if(comp!=undefined){
-		var childNodes = comp.getElementsByClassName(lookUpClassName);
-		
-		for(i in childNodes){
-			hideComponent(childNodes[i].id);
-		}
-		var imageName=(data.name+"_"+data.on);
-		showComponent(imageName);
-	}
-}
-*/
 	
 function lampWidgetClick(val){
-/*	var componentId=component.id;
-	var ind=componentId.indexOf('_');
-	
-	var val=0;
-	
-	if(componentId.endsWith('0')){val=1;};
-	var sensor=componentId.substr(0,ind);
-	
-	console.log("Default rele pressed");
-	*/
 	document.getElementById("sensors.DefaultRele.on").value=val;
-	
 	formSubmitAsForm("DefaultReleFormValue","sensors.DefaultRele.div",onWingetClickSubmittedDefaultRele);
 }
+
 function onWingetClickSubmittedDefaultRele(response){
 	activeEntityViewForm("sensors.DefaultRele");
-	/*hideShowComponent("sensors.DefaultRele.editForm","sensors.DefaultRele.viewForm");*/
 }
 </script>
 <div>
@@ -93,12 +46,11 @@ function onWingetClickSubmittedDefaultRele(response){
 
 	<div id="sensors.DefaultRele.viewForm" class="w3-card-4 entityLib-entity">
 			<div class="w3-container w3-teal">
-				  <div><h4 id="sensors.DefaultRele.descr">sensors.DefaultRele</h4></div>
+				  <div><h4 id="sensors.DefaultRele.d">sensors.DefaultRele</h4></div>
 			</div>
 			 
 			<form id="DefaultReleFormValue" class="w3-container">
 			
-				<input id="sensors.DefaultRele.id" name="id" type="hidden">
 				<input id="sensors.DefaultRele.group" name="group" type="hidden">
 				<input id="sensors.DefaultRele.name" name="name" type="hidden">
 				<input id="sensors.DefaultRele.on" name="on" type="hidden">
@@ -108,12 +60,12 @@ function onWingetClickSubmittedDefaultRele(response){
 						<img id="DefaultRele_" class="w3-center DefaultRele_Image lamp-q-icon entityLib-image" 
 							title="Ожидание"
 							alt="Ожидаю подключения"/>
-						<img id="DefaultRele_1" class="w3-center DefaultRele_Image lamp-on-icon entityLib-image" 
+						<img id="DefaultRele_true" class="w3-center DefaultRele_Image lamp-on-icon entityLib-image" 
 							style="display: none;"
 							title="Выключить"
 							onclick="lampWidgetClick(0);" 
 							alt="Выключить"/>
-						<img id="DefaultRele_0" class="w3-center DefaultRele_Image lamp-off-icon entityLib-image" 
+						<img id="DefaultRele_false" class="w3-center DefaultRele_Image lamp-off-icon entityLib-image" 
 							style="display: none;"
 							title="Включить"
 							onclick="lampWidgetClick(1);" 
@@ -121,18 +73,7 @@ function onWingetClickSubmittedDefaultRele(response){
 					</div>
 				</div>
 			</form>
-			<!-- 
-			<footer class="w3-container w3-teal w3-display-container">
-			 		<div class="w3-row">
-			 			<div class="w3-half">
-						      <button id="confirm_editBtn" 
-						      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
-						      	style="margin-top: 2px; margin-bottom: 2px;"
-									onclick="editDefaultRele();">Редактировать</button>
-						</div>
-					</div>
-   			</footer>
-   			 -->	
+			<!-- footer here -->	
 		</div>
 		
 		<div id="sensors.DefaultRele.editForm" class="w3-card-4 entityLib-entity" style="display:none;">
@@ -141,43 +82,25 @@ function onWingetClickSubmittedDefaultRele(response){
 			</div>
 			
 			<form id="sensors.DefaultRele.form" class="w3-container">
-				<input id="sensors.DefaultRele.id.edit" name="id" type="hidden">
 				<input id="sensors.DefaultRele.group.edit" name="group" type="hidden">
 				
 				<div class="entityLib-row">
 						<label for="sensors.DefaultRele.name.edit" class="entityLib-label">
-							<b>Имя</b>
+							<b>Датчик /устройство</b>
 						</label>
 						<input id="sensors.DefaultRele.name.edit" name="name" class="w3-input w3-border entityLib-input-edit" type="text" value="?" readonly="readonly">
 				</div>
 						
 				<div class="entityLib-row">
-						<label for="sensors.DefaultRele.descr.edit" class="entityLib-label">
+						<label for="sensors.DefaultRele.d.edit" class="entityLib-label">
 							<b>Описание</b>
 						</label>
-						<input id="sensors.DefaultRele.descr.edit" name="descr" class="w3-input w3-border entityLib-input-edit" type="text" value="?">
+						<input id="sensors.DefaultRele.d.edit" name="descr" class="w3-input w3-border entityLib-input-edit" type="text" value="?">
 				</div>	
 										
 			</form>
 			
-			<!-- 
-			 <footer class="w3-container w3-teal w3-display-container">
-		 		<div class="w3-row">
-		 			<div class="w3-half">
-					      <button id="confirm_okBtn" 
-					      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
-					      	style="margin-top: 2px; margin-bottom: 2px;"
-								onclick="saveDefaultRele();">Сохранить</button>
-					</div>
-					<div class="w3-half">
-						  <button id="confirm_closeBtn" 
-						  	class="w3-btn w3-white w3-border w3-border-red w3-round-large" 
-						  	style="margin-top: 2px; margin-bottom: 2px;"
-								onclick="cancelEditDefaultRele();">Отменить</button>
-					</div>
-				</div>
-   			</footer>
-   			 -->
+			<!-- footer here -->
 		</div>
 	
 	</div>

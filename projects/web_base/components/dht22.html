@@ -14,56 +14,31 @@ img.humidity-icon {
 <script type="text/javascript">
 
 registerViewDescriptorDefault("sensors.dht22");
-/*hideComponent("sensors.dht22.editForm");
 
-function editdht22(){
-	hideShowComponent("sensors.dht22.viewForm","sensors.dht22.editForm");
-}	
-function cancelEditdht22(){
-	hideShowComponent("sensors.dht22.editForm","sensors.dht22.viewForm");
-}
-function savedht22(){
-	formSubmitAsForm("sensors.dht22.form","sensors.dht22.div",onDataPosteddht22);
-}
-function onDataPosteddht22(response){
-	hideShowComponent("sensors.dht22.editForm","sensors.dht22.viewForm");
-}
-*/
 </script>
 <div id="sensors.dht22.div">
 	<div id="sensors.dht22.viewForm" class="w3-card-4 entityLib-entity">
 			<div class="w3-container w3-teal">
-				 <div><h4 id="sensors.dht22.descr">bmeMeasurer</h4></div>
+				 <div><h4 id="sensors.dht22.d">dht22Measurer</h4></div>
 			</div>
 			
 				<div id="temperatureDiv" class="entityLib-row">
 						<img class="temperature-icon"/>
-						<label for="sensors.dht22.temp"  class="entityLib-label">
+						<label for="sensors.dht22.t"  class="entityLib-label">
 							<b>Температура °C</b>
 						</label>
-						<input id="sensors.dht22.temp" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
+						<input id="sensors.dht22.t" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
 				</div>	
 		   					   		
 				<div id="humidityDiv" class="entityLib-row">
 						<img class="humidity-icon"/>
-						<label for="sensors.dht22.hum"  class="entityLib-label">
+						<label for="sensors.dht22.h"  class="entityLib-label">
 							<b>Влажность (%)</b>
 						</label>
-						<input id="sensors.dht22.hum" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
+						<input id="sensors.dht22.h" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
 				</div>	
 				
-				<!-- 
-				<footer class="w3-container w3-teal w3-display-container">
-				 		<div class="w3-row">
-				 			<div class="w3-half">
-							      <button id="confirm_editBtn" 
-							      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
-							      	style="margin-top: 2px; margin-bottom: 2px;"
-										onclick="editdht22();">Редактировать</button>
-							</div>
-						</div>
-    			</footer>
-    			 -->			   		
+				<!-- footer here -->			   		
 		   	
 	</div>
 	<div id="sensors.dht22.editForm" class="w3-card-4 entityLib-entity" style="display:none;">
@@ -72,43 +47,25 @@ function onDataPosteddht22(response){
 			</div>
 			
 			<form id="sensors.dht22.form" class="w3-container">
-				<input id="sensors.dht22.id.edit" name="id" type="hidden">
 				<input id="sensors.dht22.group.edit" name="group" type="hidden">
 				
 				<div class="entityLib-row">
 						<label for="sensors.dht22.name.edit" class="entityLib-label">
-							<b>Датчик/устройство</b>
+							<b>Датчик /устройство</b>
 						</label>
 						<input id="sensors.dht22.name.edit" name="name" class="w3-input w3-border entityLib-input-edit" type="text" value="?" readonly="readonly">
 				</div>
 						
 				<div class="entityLib-row">
-						<label for="sensors.dht22.descr.edit" class="entityLib-label">
+						<label for="sensors.dht22.d.edit" class="entityLib-label">
 							<b>Описание</b>
 						</label>
-						<input id="sensors.dht22.descr.edit" name="descr" class="w3-input w3-border entityLib-input-edit" type="text" value="?">
+						<input id="sensors.dht22.d.edit" name="descr" class="w3-input w3-border entityLib-input-edit" type="text" value="?">
 				</div>	
 
 		   	</form>
 		   	
-		   	<!-- 
-		   	<footer class="w3-container w3-teal w3-display-container">
-			 		<div class="w3-row">
-			 			<div class="w3-half">
-						      <button id="confirm_okBtn" 
-						      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
-						      	style="margin-top: 2px; margin-bottom: 2px;"
-									onclick="savedht22();">Сохранить</button>
-						</div>
-						<div class="w3-half">
-							  <button id="confirm_closeBtn" 
-							  	class="w3-btn w3-white w3-border w3-border-red w3-round-large" 
-							  	style="margin-top: 2px; margin-bottom: 2px;"
-									onclick="cancelEditdht22();">Закрыть</button>
-						</div>
-					</div>
-   			</footer>
-		   	 -->
+		   	<!-- footer here -->
 	</div>
 </div>
 <!--dht22 ends-->

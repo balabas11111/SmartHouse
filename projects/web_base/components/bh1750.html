@@ -10,53 +10,25 @@ img.luxmeter-icon {
 
 registerViewDescriptorDefault("sensors.bh1750");
 
-/*hideComponent("sensors.bh1750.editForm");
-
-function editBh1750(){
-	hideShowComponent("sensors.bh1750.viewForm","sensors.bh1750.editForm");
-}	
-function cancelEditBh1750(){
-	hideShowComponent("sensors.bh1750.editForm","sensors.bh1750.viewForm");
-}
-function saveBh1750(){
-	formSubmitAsForm("sensors.bh1750.form","sensors.bh1750.div",onDataPostedBh1750);
-}
-function onDataPostedBh1750(response){
-	hideShowComponent("sensors.bh1750.editForm","sensors.bh1750.viewForm");
-}
-*/
-
 </script>
 <div id="sensors.bh1750.div">
 
 	<div id="sensors.bh1750.viewForm" class="w3-card-4 entityLib-entity">
 			<div class="w3-container w3-teal">
-				 <div><h4 id="sensors.bh1750.descr">bh1750Measurer</h4></div>
+				 <div><h4 id="sensors.bh1750.d">bh1750Measurer</h4></div>
 			</div>
 			
 			<!--  <form id="bh1750" class="w3-container"> -->
 				
 				<div class="entityLib-row">
 					<img class="luxmeter-icon"/>
-					<label for="sensors.bh1750.light" class="entityLib-label">
+					<label for="sensors.bh1750.l" class="entityLib-label">
 						<b>Освещенность (люкс)</b>
 					</label>
-					<input id="sensors.bh1750.light" name="light" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
+					<input id="sensors.bh1750.l" name="light" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
 				</div>	
 				
-				<!-- 
-				<footer class="w3-container w3-teal w3-display-container">
-				 		<div class="w3-row">
-				 			<div class="w3-half">
-							      <button id="confirm_editBtn" 
-							      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
-							      	style="margin-top: 2px; margin-bottom: 2px;"
-										onclick="editBh1750();">Редактировать</button>
-							</div>
-						</div>
-    			</footer>
-    			 -->						
-			<!--  </form> -->
+				<!-- footer here -->
 	</div>
 	
 	<div id="sensors.bh1750.editForm" class="w3-card-4 entityLib-entity" style="display:none;">
@@ -65,43 +37,25 @@ function onDataPostedBh1750(response){
 			</div>
 			
 			<form id="sensors.bh1750.form" class="w3-container">
-				<input id="sensors.bh1750.id.edit" name="id" type="hidden">
 				<input id="sensors.bh1750.group.edit" name="group" type="hidden">
 				
 				<div class="entityLib-row">
 						<label for="sensors.bh1750.name.edit" class="entityLib-label">
-							<b>Датчик/устройство</b>
+							<b>Датчик /устройство</b>
 						</label>
 						<input id="sensors.bh1750.name.edit" name="name" class="w3-input w3-border entityLib-input-edit" type="text" value="?" readonly="readonly">
 				</div>
 						
 				<div class="entityLib-row">
-						<label for="sensors.bh1750.descr.edit" class="entityLib-label">
+						<label for="sensors.bh1750.d.edit" class="entityLib-label">
 							<b>Описание</b>
 						</label>
-						<input id="sensors.bh1750.descr.edit" name="descr" class="w3-input w3-border entityLib-input-edit" type="text" value="?">
+						<input id="sensors.bh1750.d.edit" name="descr" class="w3-input w3-border entityLib-input-edit" type="text" value="?">
 				</div>	
 										
 			</form>
 			
-			<!--
-			 <footer class="w3-container w3-teal w3-display-container">
-		 		<div class="w3-row">
-		 			<div class="w3-half">
-					      <button id="confirm_okBtn" 
-					      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
-					      	style="margin-top: 2px; margin-bottom: 2px;"
-								onclick="saveBh1750();">Сохранить</button>
-					</div>
-					<div class="w3-half">
-						  <button id="confirm_closeBtn" 
-						  	class="w3-btn w3-white w3-border w3-border-red w3-round-large" 
-						  	style="margin-top: 2px; margin-bottom: 2px;"
-								onclick="cancelEditBh1750();">Закрыть</button>
-					</div>
-				</div>
-   			</footer>
-   			-->
+			<!-- footer here -->
 	</div>
 </div>
 <!--BH1750 ends-->

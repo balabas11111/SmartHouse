@@ -47,7 +47,7 @@
 
 #define _MASKED_VALUE "******"
 
-#define _WIFI_SETTINGS_DEF_NAME "WiFiSettings"
+#define _WIFI_SETTINGS_DEF_NAME "DeviceSettings"
 #define _WIFI_SETTINGS_DEF_DESCR "Wifi Server Device settings"
 
 #include <Entity.h>

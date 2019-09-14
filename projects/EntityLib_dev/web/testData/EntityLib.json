@@ -1,0 +1,71 @@
+{
+	"sensors": {
+		"bme280": {
+			"d": "Temperature/Humidity/AtmPressure",
+			"h": 59,
+			"t": 23,
+			"p": 100553
+		},
+		"bh1750": {
+			"d": "Light level",
+			"l": 1253
+		},
+		"DefaultRele": {
+			"d": "Default relea pin",
+			"on": false
+		},
+		"dht22": {
+			"d": "Temperature/Humidity",
+			"h": 67,
+			"t": 28
+		},
+		"ds18d20": {
+			"d": "Temperature DallasTemperature",
+			"c": 3,
+			"si": {
+				"00000000": {
+					"n": "00000000",
+					"t": 36
+				},
+				"00000001": {
+					"n": "00000001",
+					"t": 32
+				},
+				"00000002": {
+					"n": "00000002",
+					"t": 31
+				}
+			}
+		}
+	},
+	"settings": {
+		"DeviceSettings": {
+			"d": "Wifi Server Device settings",
+			"deviceId": "ESP_Dev_ID",
+			"deviceFirmware": "EntityLib dev device",
+			"deviceDescr": "Default Device description",
+			"ssid": "balabasKiev5",
+			"pass": "******",
+			"ssidAP": "ESP_Dev_ID",
+			"passAP": "******",
+			"isAp": false,
+			"isStatIp": false,
+			"disStIfCon": false,
+			"ip": "192,168,0,120",
+			"ipAP": "192,168,0,4",
+			"gateway": "192,168,0,1",
+			"subnet": "255,255,255,0",
+			"dns": "192,168,0,1",
+			"dns2": "192,168,0,1",
+			"smrtServIp": "192,168,0,5",
+			"userLogin": "",
+			"userPass": "******",
+			"adminLogin": "admin",
+			"adminPass": "******",
+			"interval": 60,
+			"apCH": 1,
+			"apH": 0,
+			"apMC": 4
+		}
+	}
+}

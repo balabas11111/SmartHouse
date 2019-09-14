@@ -19,64 +19,39 @@ img.humidity-icon {
 <script type="text/javascript">
 
 registerViewDescriptorDefault("sensors.bme280");
-/*hideComponent("sensors.bme280.editForm");
 
-function editBme280(){
-	hideShowComponent("sensors.bme280.viewForm","sensors.bme280.editForm");
-}	
-function cancelEditBme280(){
-	hideShowComponent("sensors.bme280.editForm","sensors.bme280.viewForm");
-}
-function saveBme280(){
-	formSubmitAsForm("sensors.bme280.form","sensors.bme280.div",onDataPostedBme280);
-}
-function onDataPostedBme280(response){
-	hideShowComponent("sensors.bme280.editForm","sensors.bme280.viewForm");
-}
-*/
 </script>
 <div id="sensors.bme280.div">
 	<div id="sensors.bme280.viewForm" class="w3-card-4 entityLib-entity">
 			<div class="w3-container w3-teal">
-				 <div><h4 id="sensors.bme280.descr">bmeMeasurer</h4></div>
+				 <div><h4 id="sensors.bme280.d">bmeMeasurer</h4></div>
 			</div>
 			
 				<div class="entityLib-row">
 					<img class="temperature-icon"/>
-					<label for="sensors.bme280.temp" class="entityLib-label">
+					<label for="sensors.bme280.t" class="entityLib-label">
 						<b>Температура °C</b>
 					</label>
-					<input id="sensors.bme280.temp" name="temp" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
+					<input id="sensors.bme280.t" name="temp" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
 				</div>	
 
 				<div class="entityLib-row">
 					<img class="pressure-icon"/>
-					<label for="sensors.bme280.press" class="entityLib-label">
+					<label for="sensors.bme280.p" class="entityLib-label">
 						<b>Давление (Паскаль)</b>
 					</label>
-					<input id="sensors.bme280.press" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
+					<input id="sensors.bme280.p" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
 				</div>			
 		   					   		
 				<div class="entityLib-row">
 					<img class="humidity-icon"/>
-					<label for="sensors.bme280.hum" class="entityLib-label">
+					<label for="sensors.bme280.h" class="entityLib-label">
 						<b>Влажность (%)</b>
 					</label>
-					<input id="sensors.bme280.hum" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
+					<input id="sensors.bme280.h" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
 				</div>	
 				
-				<!--  
-				<footer class="w3-container w3-teal w3-display-container">
-				 		<div class="w3-row">
-				 			<div class="w3-half">
-							      <button id="confirm_editBtn" 
-							      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
-							      	style="margin-top: 2px; margin-bottom: 2px;"
-										onclick="editBme280();">Редактировать</button>
-							</div>
-						</div>
-    			</footer>
-    			-->			   		
+				<!-- footer here -->			   		
 		   	
 	</div>
 	<div id="sensors.bme280.editForm" class="w3-card-4 entityLib-entity" style="display:none;">
@@ -85,42 +60,24 @@ function onDataPostedBme280(response){
 			</div>
 			
 			<form id="sensors.bme280.form" class="w3-container">
-				<input id="sensors.bme280.id.edit" name="id" type="hidden">
 				<input id="sensors.bme280.group.edit" name="group" type="hidden">
 				
 				<div class="entityLib-row">
 						<label for="sensors.bme280.name.edit" class="entityLib-label">
-							<b>Датчик/устройство</b>
+							<b>Датчик /устройство</b>
 						</label>
 						<input id="sensors.bme280.name.edit" name="name" class="w3-input w3-border entityLib-input-edit" type="text" value="?" readonly="readonly">
 				</div>
 						
 				<div class="entityLib-row" style="margin-bottom: 5px;">
-						<label for="sensors.bme280.descr.edit" class="entityLib-label">
+						<label for="sensors.bme280.d.edit" class="entityLib-label">
 							<b>Описание</b>
 						</label>
-						<input id="sensors.bme280.descr.edit" name="descr" class="w3-input w3-border entityLib-input-edit" type="text" value="?">
+						<input id="sensors.bme280.d.edit" name="descr" class="w3-input w3-border entityLib-input-edit" type="text" value="?">
 				</div>	
 
 		   	</form>
-		   	<!-- 
-		   	<footer class="w3-container w3-teal w3-display-container">
-			 		<div class="w3-row">
-			 			<div class="w3-half">
-						      <button id="confirm_okBtn" 
-						      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
-						      	style="margin-top: 2px; margin-bottom: 2px;"
-									onclick="saveBme280();">Сохранить</button>
-						</div>
-						<div class="w3-half">
-							  <button id="confirm_closeBtn" 
-							  	class="w3-btn w3-white w3-border w3-border-red w3-round-large" 
-							  	style="margin-top: 2px; margin-bottom: 2px;"
-									onclick="cancelEditBme280();">Закрыть</button>
-						</div>
-					</div>
-   			</footer>
-   			 -->
+		   	<!-- footer here -->
 		   	
 	</div>
 </div>

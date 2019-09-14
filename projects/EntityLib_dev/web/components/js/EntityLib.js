@@ -2,8 +2,13 @@ const DATA_MODEL_ROOT_URL = '/data';
 const DATA_MODEL_POST_URL = '/data';
 const COMMAND_POST_URL    = '/com';
 
+const DATA_MODEL_REQUEST_METHOD = 'GET';
+const DATA_MODEL_SUBMIT_METHOD = 'POST';
+
 const GROUP_SENSORS  = 'sensors';
 const GROUP_SETTINGS = 'settings';
+
+const GROUPS = [GROUP_SENSORS, GROUP_SETTINGS];
 
 const FIELD_ID = "id";
 const FIELD_GROUP = "group";
@@ -20,9 +25,13 @@ const CLASS_INFO = 'info';
 const MESSAGE_PAGE_WILL_BE_RELOADED = 'Page will be reloaded';
 const MESSAGE_PAGE_DEL_SETT_RELOAD_REQUIRED = 'Page reload required';
 
-var dataModel={};
-var modelToViewHandlers={};
 var viewDescriptor={};
+const VIEW_DESCRIPTOR_VIEW_FORM = "viewForm";
+const VIEW_DESCRIPTOR_EDIT_FORM = "editForm";
+const VIEW_DESCRIPTOR_SUBMIT_FORM = "form";
+const VIEW_DESCRIPTOR_REDRAW_DIV = "div";
+const VIEW_DESCRIPTOR_ON_SUBMIT_HANDLER = "handler";
+
 
 var source = new EventSource('/events');
 
@@ -39,62 +48,66 @@ function w3_close(){
 
 
 function onLoadPageComplete(){
+	prepareDescriptors();
 	httpRequestDisplayStart();
-	sendRequest("GET", DATA_MODEL_ROOT_URL, handleRootReceive, "root", 60000, 2000);
+	sendRequest(DATA_MODEL_REQUEST_METHOD, DATA_MODEL_ROOT_URL, handleRootReceive, "root", 60000, 2000);
 	initEventSourceChannel();
 }
 
 function handleRootReceive(json){
-	dataModel.data = json;
-	processGroupToView(GROUP_SETTINGS);
-	processGroupToView(GROUP_SENSORS);
+	processJsonToView(json);
 }
 /*---------------------------Model to view functions----------------------------*/
-function processGroupToView(group){
-	var entities = dataModel.data[group];
+function processJsonToView(json, groupIn){
+	var groups = [];
+	
+	if(groupIn != undefined){groups.push(groupIn);}else{groups = GROUPS;}
+	
+	var arrayLength = groups.length;
+	
+	for (var i = 0; i < arrayLength; i++) {
+		groupToView(groups[i], json);
+	}
+}
+
+function groupToView(group, json, afterHandler){
+	if(group == undefined || json == undefined){
+		return;
+	}
+	var entities = json[group];
+	
 	if(entities!=undefined){
-		console.log("Group = ", group);
-		/*document.getElementById("mainContent").innerHTML='';*/
-		Object.keys(entities).forEach(function(entityKey) {
-			var entity = entities[entityKey];
-			
-			entityToView(group, entityKey, entity)
-			
+		Object.keys(entities).forEach(function(name) {
+			var entity = prepareEntity(group, name, entities);
+			entityToView(entity, afterHandler);
 		});
 	}
 }
 
-function entityToView(group, name, entity){
-	processEntityGroupNameSet(group, entityKey, entity);
-	processEntityToView(entity);
+function prepareEntity(group, name, entities){
+	var entity = entities[name];
+	
+	if(entity!=undefined){
+		if(entity[FIELD_GROUP] == undefined){entity[FIELD_GROUP] = group;}
+		if(entity[FIELD_NAME] == undefined){ entity[FIELD_NAME] = name;}
+	}
+	
+	return entity;
 }
 
-function processEntityGroupNameSet(group,name,entity){
-	if(entity[FIELD_GROUP] == undefined){
-		entity[FIELD_GROUP] = group;
-	}
-	if(entity[FIELD_NAME] == undefined){
-		entity[FIELD_NAME] = name;
-	}
-}
-
-function processEntityToView(entity){
-	if(entity==undefined || entity.group==undefined || entity.name==undefined){
-		return;
-	}
-	
-	var pref = getPreffixForEntity(entity);
-	
-	console.log('Entity = '+entity.name+'; pref = '+pref);
-	
-	Object.keys(entity).forEach(function(key) {
-		var expId=getEntityViewId(entity,key);
-		var val = entity[key];
+function entityToView(entity, afterHandler){
+	if(entity!=undefined){
+		var handlerName=getPreffixForEntity(entity);
+		var handler = getModelToViewHandlerByName(handlerName);
 		
-		console.log('key: '+key+', expId: '+expId+', val: '+val);
-
-		updateEntityViewValue(entity,key,val);
-	})
+		Object.keys(entity).forEach(function(key) {
+			handler(entity,key,entity[key]);
+		})
+		
+		if(afterHandler!=undefined){
+			afterHandler(entity);
+		}
+	}
 }
 
 function getPreffixForEntity(entity){
@@ -107,30 +120,7 @@ function getEntityViewId(entity,key){
 function getEntityEditId(entity,key){
 	return getPreffixForEntity(entity)+'.'+key+'.edit';
 }
-/*---Model to view handlers processing*/
-function updateEntityViewValue(entity,key,val){
-	var handlerName=getPreffixForEntity(entity);
-	var handler = getModelToViewHandlerByName(handlerName); 
-	
-	if(dataModel.data!=undefined && entity.group!=undefined && entity.name!=undefined && key!=undefined){
-		dataModel.data[entity.group][entity.name][key]=val;
-	}
-	
-	handler(entity,key,val);
-}
 
-function registerModelToViewHandler(name,handler){
-	console.log('Register ModelToView handler ',name);
-	modelToViewHandlers[name]=handler;
-}
-
-function getModelToViewHandlerByName(name){
-	if(name==undefined || modelToViewHandlers[name]==undefined){
-		return updateEntityViewValueDefault;
-	}
-
-	return modelToViewHandlers[name];
-}
 /*---Model To View handlers---*/
 function updateEntityViewValueDefault(entity,key,val){
 	var expId = getEntityViewId(entity,key);
@@ -145,18 +135,29 @@ function showOnlyOneImageInContainer(containerId, hideImageClass, showImageId){
 	if(comp!=undefined){
 		var childNodes = comp.getElementsByClassName(hideImageClass);
 		
-		for(i in childNodes){
+		for(var i in childNodes){
 			hideComponent(childNodes[i].id);
 		}
 		showComponent(showImageId);
 	}
 }
 /*---------------------------viewDescriptor operations-------------------------*/
-const VIEW_DESCRIPTOR_VIEW_FORM = "viewForm";
-const VIEW_DESCRIPTOR_EDIT_FORM = "editForm";
-const VIEW_DESCRIPTOR_SUBMIT_FORM = "form";
-const VIEW_DESCRIPTOR_REDRAW_DIV = "div";
-const VIEW_DESCRIPTOR_ON_SUBMIT_HANDLER = "handler";
+
+function getModelToViewHandlerByName(descriptorName){
+	var descriptor = getViewDescriptor(descriptorName);
+	
+	if(name==undefined || descriptor==undefined || descriptor[VIEW_DESCRIPTOR_ON_SUBMIT_HANDLER]==undefined){
+		return updateEntityViewValueDefault;
+	}
+
+	return descriptor[VIEW_DESCRIPTOR_ON_SUBMIT_HANDLER];
+}
+
+function getViewDescriptor(descriptorName){
+	var result = viewDescriptor[descriptorName];
+	
+	return result;
+}
 
 function registerViewDescriptorDefault(descriptorName, onSubmitHandler) {
 	var viewFormDivId = descriptorName + '.' + VIEW_DESCRIPTOR_VIEW_FORM;
@@ -168,87 +169,15 @@ function registerViewDescriptorDefault(descriptorName, onSubmitHandler) {
 }
 
 function registerViewDescriptor(descriptorName, viewFormDivId, editFormDivId, submitFormId, onSubmitRedrawDivId, onSubmitHandler) {
+	viewDescriptor[descriptorName] = {};
+	
 	viewDescriptor[descriptorName][VIEW_DESCRIPTOR_VIEW_FORM] = viewFormDivId;
 	viewDescriptor[descriptorName][VIEW_DESCRIPTOR_EDIT_FORM] = editFormDivId;
 	viewDescriptor[descriptorName][VIEW_DESCRIPTOR_SUBMIT_FORM] = submitFormId;
 	viewDescriptor[descriptorName][VIEW_DESCRIPTOR_REDRAW_DIV] = onSubmitRedrawDivId;
 	viewDescriptor[descriptorName][VIEW_DESCRIPTOR_ON_SUBMIT_HANDLER] = onSubmitHandler;
 	
-	addEditButtonToViewForm(descriptorName, viewFormDivId);
-	addSaveCancelButtonsToEditForm(descriptorName, editFormDivId);
-	
-	hideComponent(editFormDivId);
-	
 	console.log('registerViewDescriptor ', descriptorName);
-}
-
-function addEditButtonToViewForm(descriptorName, viewFormDivId){
-	var footer = createFooterElement();
-	var target = footer.childNodes[0];
-	
-	var editHandlerText = "activeEntityEditForm('"+descriptorName+"');";
-	
-	createButtonDiv(editHandlerText, "Редактировать", target);
-	
-	var comp = document.getElementById(viewDescriptor[descriptorName][VIEW_DESCRIPTOR_VIEW_FORM]);
-	
-	if(comp!=undefined){
-		comp.appendChild(footer);
-	}
-}
-
-function addSaveCancelButtonsToEditForm(descriptorName, editFormDivId){
-	var footer = createFooterElement();
-	var target = footer.childNodes[0];
-	
-	var saveHandlerText = "submitEntityEditForm('"+descriptorName+"');";
-	var cancelHandlerText = "activeEntityViewForm('"+descriptorName+"');";
-	
-	createButtonDiv(saveHandlerText, "Сохранить", target);
-	createButtonDiv(cancelHandlerText, "Отменить", target);
-	
-	var comp = document.getElementById(viewDescriptor[descriptorName][VIEW_DESCRIPTOR_EDIT_FORM]);
-	
-	if(comp!=undefined){
-		comp.appendChild(footer);
-	}
-}
-
-function createFooterElement(){
-	var footer = document.createElement('footer');
-	footer.classList.add('w3-container');
-	footer.classList.add('w3-teal');
-	footer.classList.add('w3-display-container');
-	
-	var div = document.createElement('div');
-	div.classList.add('w3-row');
-	
-	div.appendChild(button);
-}
-
-function createButtonDiv(handlerTxt, buttonText, target){
-	var div = document.createElement('div');
-	div.classList.add('w3-half');
-	
-	var button = document.createElement('button');
-	button.value=buttonText;
-	button.classList.add('w3-btn');
-	button.classList.add('w3-white');
-	button.classList.add('w3-border');
-	button.classList.add('w3-round-large');
-	button.classList.add('w3-border-green');
-	button.setAttribute("style", "margin-top: 2px; margin-bottom: 2px;");
-	button.setAttribute("onclick", handlerTxt);
-	
-	div.appendChild(button);
-	
-	target.appendChild(div);
-}
-
-function getViewDescriptor(descriptorName){
-	var result = viewDescriptor[descriptorName];
-	
-	return result;
 }
 
 function activeEntityEditForm(descriptorName){
@@ -274,36 +203,91 @@ function submitEntityEditForm(descriptorName){
 function onEntityEditFormResponse(json){
 	if(json!=undefined){
 		for(var group in json) {
-			
-			if(group!=undefined){
-				for(var name in json[group]){
-					if(group!=undefined){
-						var descriptorName = group+"."+name;
-						
-						var descriptor = getViewDescriptor(descriptorName);
-						var entity = json[group][name];
-
-						if(entity!=undefined){
-							entityToView(group, name, entity);
-						}
-						
-						if(descriptor != undefined){
-							activeEntityViewForm(descriptorName);
-						
-							var handler = descriptor[VIEW_DESCRIPTOR_ON_SUBMIT_HANDLER];
-						
-							if(handler!=undefined){
-								handler(json);
-							}
-						} else{
-							/*TODO: handle error here*/
-						}
-					}
-				}
-			}
-		
+			groupToView(group, json, function (entity){
+										var descriptorName = getPreffixForEntity(entity);
+										var descriptor = getViewDescriptor(descriptorName);
+										
+										activeEntityViewForm(descriptorName);
+										
+										removeGrayScale(descriptor[VIEW_DESCRIPTOR_REDRAW_DIV]);
+			});
 		}
 	}
+}
+/*------------------------viewDescriptor GUI operations------------------------*/
+function prepareDescriptors(){
+	Object.keys(viewDescriptor).forEach(function(descriptorName) {
+		addEditButtonToViewForm(descriptorName);
+		addSaveCancelButtonsToEditForm(descriptorName);
+		
+		activeEntityViewForm(descriptorName);
+	})
+}
+
+function addEditButtonToViewForm(descriptorName){
+	var footer = createFooterElement();
+	var target = footer.childNodes[0];
+	
+	var editHandlerText = "activeEntityEditForm('"+descriptorName+"');";
+	
+	createButtonDiv(editHandlerText, "Редактировать", "w3-border-green", target);
+
+	var formId = viewDescriptor[descriptorName][VIEW_DESCRIPTOR_VIEW_FORM];
+	var comp = document.getElementById(formId);
+	
+	if(comp!=undefined){
+		comp.appendChild(footer);
+	}
+}
+
+function addSaveCancelButtonsToEditForm(descriptorName){
+	var footer = createFooterElement();
+	var target = footer.childNodes[0];
+	
+	var saveHandlerText = "submitEntityEditForm('"+descriptorName+"');";
+	var cancelHandlerText = "activeEntityViewForm('"+descriptorName+"');";
+	
+	createButtonDiv(saveHandlerText, "Сохранить", "w3-border-green", target);
+	createButtonDiv(cancelHandlerText, "Отменить", "w3-border-red", target);
+	
+	var comp = document.getElementById(viewDescriptor[descriptorName][VIEW_DESCRIPTOR_EDIT_FORM]);
+	
+	if(comp!=undefined){
+		comp.appendChild(footer);
+	}
+}
+
+function createFooterElement(){
+	var footer = document.createElement('footer');
+	footer.classList.add('w3-container');
+	footer.classList.add('w3-teal');
+	footer.classList.add('w3-display-container');
+	
+	var div = document.createElement('div');
+	div.classList.add('w3-row');
+	
+	footer.appendChild(div);
+	
+	return footer;
+}
+
+function createButtonDiv(handlerTxt, buttonText, buttonColorClass, target){
+	var div = document.createElement('div');
+	div.classList.add('w3-half');
+	
+	var button = document.createElement('button');
+	button.innerHTML=buttonText;
+	button.classList.add('w3-btn');
+	button.classList.add('w3-white');
+	button.classList.add('w3-border');
+	button.classList.add('w3-round-large');
+	button.classList.add(buttonColorClass);
+	button.setAttribute("style", "margin-top: 2px; margin-bottom: 2px;");
+	button.setAttribute("onclick", handlerTxt);
+	
+	div.appendChild(button);
+	
+	target.appendChild(div);
 }
 /*---------------------------Event source functions----------------------------*/
 function initEventSourceChannel(){
@@ -406,7 +390,7 @@ function formSubmitAsJson(form,div,resultHandler){
 	
 	console.log("form = ", form, " data=",data);
 	
-	sendRequest("POST", DATA_MODEL_POST_URL, resultHandler, data, 0, 2000);
+	sendRequest(DATA_MODEL_SUBMIT_METHOD, DATA_MODEL_POST_URL, resultHandler, data, 0, 2000);
 }
 
 function formSubmitAsFormToUrl(url,form,div,resultHandler){
@@ -420,7 +404,7 @@ function formSubmitAsFormToUrl(url,form,div,resultHandler){
 	var data = new FormData(frmComp);
 	var json =  toJSONString(frmComp);
 	console.log("form = ", form, " data=",data," json=",json);
-	sendRequest("POST", url, resultHandler, data, 0, 2000);
+	sendRequest(DATA_MODEL_SUBMIT_METHOD, url, resultHandler, data, 0, 2000);
 
 }
 

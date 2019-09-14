@@ -11,24 +11,8 @@ const SENSOR_ITEMS  = 'si';
 const SENSOR_ITEM_DESCR  = 'n';
 const SENSOR_ITEM_TEMP   = 't';
 
-registerModelToViewHandler('sensors.ds18d20',handleDs18d20View);
-registerViewDescriptorDefault("sensors.ds18d20");
-/*
-hideComponent("sensors.ds18d20.editForm");
+registerViewDescriptorDefault("sensors.ds18d20", handleDs18d20View);
 
-function editDs18d20(){
-	hideShowComponent("sensors.ds18d20.viewForm","sensors.ds18d20.editForm");
-}	
-function cancelEditDs18d20(){
-	hideShowComponent("sensors.ds18d20.editForm","sensors.ds18d20.viewForm");
-}
-function saveDs18d20(){
-	formSubmitAsForm("sensors.ds18d20.form","sensors.ds18d20.div",onDataPostedDs18d20);
-}
-function onDataPostedDs18d20(response){
-	hideShowComponent("sensors.ds18d20.editForm","sensors.ds18d20.viewForm");
-}
-*/
 function handleDs18d20View(entity,key,val){
 	if(key!=SENSOR_ITEMS){
 		updateEntityViewValueDefault(entity,key,val);
@@ -64,12 +48,12 @@ function itemToViewDiv(uid,item){
 	var label = document.createElement('label');
 	var input = document.createElement('input');
 	
-	label.id='sensors.ds18d20.'+uid+'.descr';
-	label.htmlFor='sensors.ds18d20.'+uid+'.temp';
+	label.id='sensors.ds18d20.'+uid+'.'+SENSOR_ITEM_DESCR;
+	label.htmlFor='sensors.ds18d20.'+uid+'.'+SENSOR_ITEM_TEMP;
 	label.innerText=descr;
 	label.classList.add('entityLib-label');
 	
-	input.id='sensors.ds18d20.'+uid+'.temp';
+	input.id='sensors.ds18d20.'+uid+'.'+SENSOR_ITEM_TEMP;
 	input.value=temp;
 	input.disabled='disabled';
 	input.classList.add('entityLib-input-view');
@@ -87,12 +71,12 @@ function itemToEditDiv(uid,item){
 	var label = document.createElement('label');
 	var input = document.createElement('input');
 	
-	label.htmlFor='sensors.ds18d20.'+uid+'.descr.edit';
+	label.htmlFor='sensors.ds18d20.'+uid+'.'+SENSOR_ITEM_DESCR+'.edit';
 	label.innerText='Описание '+uid;
 	label.classList.add('entityLib-label');
 	
-	input.id='sensors.ds18d20.'+uid+'.descr';
-	input.name=uid+'.descr';
+	input.id='sensors.ds18d20.'+uid+'.'+SENSOR_ITEM_DESCR;
+	input.name=uid+'.'+SENSOR_ITEM_DESCR;
 	input.value=descr;
 	input.classList.add('entityLib-input-edit');
 	
@@ -106,15 +90,15 @@ function itemToEditDiv(uid,item){
 <div id="sensors.ds18d20.div">
 	<div id="sensors.ds18d20.viewForm" class="w3-card-4 entityLib-entity">
 			<div class="w3-container w3-teal">
-				 <div><h4 id="sensors.ds18d20.descr">bmeMeasurer</h4></div>
+				 <div><h4 id="sensors.ds18d20.d">ds18d20Measurer</h4></div>
 			</div>
 			
 				<div id="temperatureDiv" class="entityLib-row">
 					<img class="temperature-icon"/>
-					<label for="sensors.ds18d20.temp" class="entityLib-label">
+					<label for="sensors.ds18d20.c" class="entityLib-label">
 						<b>Кол-во датчиков</b>
 					</label>
-					<input id="sensors.ds18d20.itemCount" name="temp" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
+					<input id="sensors.ds18d20.c" name="temp" class="w3-input w3-border entityLib-input-view" type="text" value="?" disabled>
 				</div>	
 
 				<div class="entityLib-row" >
@@ -129,18 +113,7 @@ function itemToEditDiv(uid,item){
 					  	</div>
 					 -->
 				</div>
-			<!-- 
-				<footer class="w3-container w3-teal w3-display-container">
-				 		<div class="w3-row">
-				 			<div class="w3-half">
-							      <button id="confirm_editBtn" 
-							      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
-							      	style="margin-top: 2px; margin-bottom: 2px;"
-										onclick="editDs18d20();">Редактировать</button>
-							</div>
-						</div>
-    			</footer>			   		
-	 		-->	   	
+			<!-- footer here -->  	
 	</div>
 	<div id="sensors.ds18d20.editForm" class="w3-card-4 entityLib-entity"  style="display:none;">
 			<div class="w3-container w3-teal">
@@ -148,21 +121,20 @@ function itemToEditDiv(uid,item){
 			</div>
 			
 			<form id="sensors.ds18d20.form" class="w3-container">
-				<input id="sensors.ds18d20.id.edit" name="id" type="hidden">
 				<input id="sensors.ds18d20.group.edit" name="group" type="hidden">
 				
 				<div class="entityLib-row">
 						<label for="sensors.ds18d20.name.edit" class="entityLib-label">
-							<b>Датчик/устройство</b>
+							<b>Датчик /устройство</b>
 						</label>
 						<input id="sensors.ds18d20.name.edit" name="name" class="w3-input w3-border entityLib-input-edit" type="text" value="?" readonly="readonly">
 				</div>
 						
 				<div class="entityLib-row">
-						<label for="sensors.ds18d20.descr.edit" class="entityLib-label">
+						<label for="sensors.ds18d20.d.edit" class="entityLib-label">
 							<b>Описание</b>
 						</label>
-						<input id="sensors.ds18d20.descr.edit" name="descr" class="w3-input w3-border entityLib-input-edit" type="text" value="?">
+						<input id="sensors.ds18d20.d.edit" name="d" class="w3-input w3-border entityLib-input-edit" type="text" value="?">
 				</div>	
 
 				<div class="entityLib-row">
@@ -178,24 +150,8 @@ function itemToEditDiv(uid,item){
 					 -->
 				</div>
 		   	</form>
-		   	<!-- 
-		   	<footer class="w3-container w3-teal w3-display-container">
-			 		<div class="w3-row">
-			 			<div class="w3-half">
-						      <button id="confirm_okBtn" 
-						      	class="w3-btn w3-white w3-border w3-round-large w3-border-green" 
-						      	style="margin-top: 2px; margin-bottom: 2px;"
-									onclick="saveDs18d20();">Сохранить</button>
-						</div>
-						<div class="w3-half">
-							  <button id="confirm_closeBtn" 
-							  	class="w3-btn w3-white w3-border w3-border-red w3-round-large" 
-							  	style="margin-top: 2px; margin-bottom: 2px;"
-									onclick="cancelEditDs18d20();">Закрыть</button>
-						</div>
-					</div>
-   			</footer>
-   			 -->
+		   	
+		   	<!-- footer here -->
 		   	
 	</div>
 </div>
