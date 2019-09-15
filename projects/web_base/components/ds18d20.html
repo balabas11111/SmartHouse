@@ -13,78 +13,61 @@ const SENSOR_ITEM_TEMP   = 't';
 
 registerViewDescriptorDefault("sensors.ds18d20", handleDs18d20View);
 
-function handleDs18d20View(entity,key,val){
+function handleDs18d20View(entity,key,item){
 	if(key!=SENSOR_ITEMS){
-		updateEntityViewValueDefault(entity,key,val);
+		updateEntityViewValueDefault(entity,uid,item);
 		return;
 	}
 	/*process items field here*/
-	itemsDivClean(true);
-	itemsDivClean(false);
+	itemsDivClean('sensors.ds18d20.items.div');
+	itemsDivClean('sensors.ds18d20.items.div.edit');
 	
-	for (var key in val){
-	  itemToViewDiv(key,val);
-	  itemToEditDiv(key,val);
+	for (var uid in item){
+		itemToDiv(
+				'sensors.ds18d20.'+uid+'.'+SENSOR_ITEM_TEMP,
+				item[uid][SENSOR_ITEM_DESCR],
+				uid+'.'+SENSOR_ITEM_TEMP,
+				true,
+				item[uid][SENSOR_ITEM_TEMP], 'entityLib-input-view', 'sensors.ds18d20.items.div');
+		
+		itemToDiv(
+				'sensors.ds18d20.'+uid+'.'+SENSOR_ITEM_DESCR+'.edit',
+				uid,
+				uid+'.'+SENSOR_ITEM_DESCR,
+				false,
+				item[uid][SENSOR_ITEM_DESCR], 'entityLib-input-edit', 'sensors.ds18d20.items.div.edit');
 	}
 }
 
-function itemsDivClean(doEdit){
-	var divName='sensors.ds18d20.items.div.edit';
-	if(!doEdit){
-		divName='sensors.ds18d20.items.div';
-	}
+function itemsDivClean(divName){
 	var div=document.getElementById(divName);
 	if(div!=undefined){
 		div.innerHTML='';
-		console.error("HTML component not found "+divName);
+	};
+}
+
+function itemToDiv(compId, labelText, inputName, inputDisabled, inputValue, inputClass, parentDivId){
+	var div = document.createElement('div');
+	var label = document.createElement('label');
+	var input = document.createElement('input');
+	
+	label.htmlFor = compId;
+	label.innerText = labelText;
+	label.classList.add('entityLib-label');
+	
+	input.id = compId;
+	input.name = inputName;
+	if(inputDisabled){
+		input.disabled = 'disabled';
 	}
-	return div;
-}
-function itemToViewDiv(uid,item){
-	var descr=item[uid][SENSOR_ITEM_DESCR];
-	var temp=item[uid][SENSOR_ITEM_TEMP];	
-	
-	var div = document.createElement('div');
-	var label = document.createElement('label');
-	var input = document.createElement('input');
-	
-	label.id='sensors.ds18d20.'+uid+'.'+SENSOR_ITEM_DESCR;
-	label.htmlFor='sensors.ds18d20.'+uid+'.'+SENSOR_ITEM_TEMP;
-	label.innerText=descr;
-	label.classList.add('entityLib-label');
-	
-	input.id='sensors.ds18d20.'+uid+'.'+SENSOR_ITEM_TEMP;
-	input.value=temp;
-	input.disabled='disabled';
-	input.classList.add('entityLib-input-view');
+	input.value = inputValue;
+	input.classList.add(inputClass);
 	
 	div.classList.add('entityLib-row');
 	div.appendChild(label);
 	div.appendChild(input);
 	
-	document.getElementById('sensors.ds18d20.items.div').appendChild(div);
-}
-function itemToEditDiv(uid,item){
-	var descr=item[uid][SENSOR_ITEM_DESCR];
-	
-	var div = document.createElement('div');
-	var label = document.createElement('label');
-	var input = document.createElement('input');
-	
-	label.htmlFor='sensors.ds18d20.'+uid+'.'+SENSOR_ITEM_DESCR+'.edit';
-	label.innerText='Описание '+uid;
-	label.classList.add('entityLib-label');
-	
-	input.id='sensors.ds18d20.'+uid+'.'+SENSOR_ITEM_DESCR;
-	input.name=uid+'.'+SENSOR_ITEM_DESCR;
-	input.value=descr;
-	input.classList.add('entityLib-input-edit');
-	
-	div.classList.add('entityLib-row');
-	div.appendChild(label);
-	div.appendChild(input);
-	
-	document.getElementById('sensors.ds18d20.items.div.edit').appendChild(div);
+	document.getElementById(parentDivId).appendChild(div);
 }
 </script>
 <div id="sensors.ds18d20.div">

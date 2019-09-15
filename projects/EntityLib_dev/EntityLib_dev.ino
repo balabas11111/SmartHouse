@@ -4,6 +4,7 @@
 #include <EntityApplication.h>
 #include <Entity.h>
 #include <EntityUpdate.h>
+#include <Notifiers/EntityManagerNotifier.h>
 
 #include <ObjectUtils.h>
 
@@ -14,36 +15,48 @@
 #include "DS18D20sensor.h"
 #include "OutputPin.h"
 
-#include <Notifiers/EntityManagerSerialNotifier.h>
-
-EntityManagerSerialNotifier defaultNotifier;
-
 Bme280sensor bme280;
 Bh1750sensor bh1750;
-OutputPin rele(D4, "DefaultRele", "Default relea pin");
+OutputPin rele(BUILTIN_LED, "DefaultRele", "Default relea pin");
 DHT22sensor dht22(D5);
-//DS18D20sensor ds18d20(D6);
+DS18D20sensor ds18d20(D6);
 
-Entity* entities[] = { &bme280, &bh1750, &rele, &dht22 };
-EntityUpdate* entityUpdate[] = { &bme280, &bh1750, &rele, &dht22, &defaultNotifier };
+Entity* entities[] = { &bme280, &bh1750, &rele, &dht22, &ds18d20 };
+EntityUpdate* updateableEntities[] = { &bme280, &bh1750, &rele, &dht22, &ds18d20};
 
-EntityApplication app("EntityLib dev device", entities,
-		ARRAY_SIZE(entities), entityUpdate, ARRAY_SIZE(entityUpdate));
+EntityApplication app("EntityLib dev device",
+		entities, ARRAY_SIZE(entities),
+		updateableEntities, ARRAY_SIZE(updateableEntities));
 
 void setup() {
-	app.init();
-	app.registerTicker(10000, printHeap);
+	app.initWithWiFi();
+	app.setOnEntityChanged(onEntityChanged);
 
-	defaultNotifier.begin(app.getEntityManager());
+	app.registerTicker(1000,changeLed);
+	app.registerTicker(10000, printSensorsJson);
+	app.registerTicker(updateEntities);
 
-	ObjectUtils::printHeap();
-	ObjectUtils::printMillis();
+	app.updateEntities(false);
 }
 
 void loop() {
 	app.loop();
 }
 
-void printHeap() {
-	ObjectUtils::printHeap();
+void printSensorsJson() {
+	//app.notify((char*)GROUP_SENSORS);
+	app.notify();
+}
+
+void updateEntities(){
+	//app.getEntityManager()->print();
+	app.updateEntities(false);
+}
+
+void changeLed(){
+	rele.setOnOpposite();
+}
+
+void onEntityChanged(){
+	Serial.println(FPSTR("onEntityChanged"));
 }

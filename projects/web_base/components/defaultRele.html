@@ -19,8 +19,6 @@ const FIELD_ON = "on";
 registerViewDescriptorDefault("sensors.DefaultRele", updateDefaultReleViewValue);
 
 function updateDefaultReleViewValue(entity,key,val){
-	updateEntityViewValueDefault(entity,key,val);
-	console.log("updateDefaultReleViewValue key="+key+" value="+val);
 	if(key==FIELD_ON){
 		console.log("on=",val);
 		var containerId = entity[FIELD_NAME]+'ImagesBody';
@@ -28,12 +26,14 @@ function updateDefaultReleViewValue(entity,key,val){
 		var showImageId =(entity[FIELD_NAME]+"_"+entity[FIELD_ON]);
 		
 		showOnlyOneImageInContainer(containerId, hideImageClass, showImageId);
+	}else{
+		updateEntityViewValueDefault(entity,key,val);
 	}
 }
 	
 function lampWidgetClick(val){
 	document.getElementById("sensors.DefaultRele.on").value=val;
-	formSubmitAsForm("DefaultReleFormValue","sensors.DefaultRele.div",onWingetClickSubmittedDefaultRele);
+	formSubmitAsForm("DefaultReleFormValue","sensors.DefaultRele.div",updateDefaultReleViewValue);
 }
 
 function onWingetClickSubmittedDefaultRele(response){
