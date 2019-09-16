@@ -9,6 +9,7 @@
 #define LIBRARIES_DEVICELIB_UTILS_COMPAREUTILS_H_
 
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <utility>
 #include <typeinfo>
 

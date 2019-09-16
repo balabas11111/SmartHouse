@@ -32,6 +32,7 @@ EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 	this->wifiServerManager = new WiFiServerManager(this->entityManager,
 			this->conf);
 
+	this->defaultNotifier = nullptr;
 }
 
 void EntityApplication::init(bool initSerial,
@@ -57,12 +58,12 @@ void EntityApplication::init(bool initSerial,
 
 	Serial.println(FPSTR("--------------------"));
 	Serial.print(FPSTR("Init application "));
-	Serial.println(conf->deviceFirmWare());
+	Serial.println(this->conf->deviceFirmWare());
 
 	ObjectUtils::printHeap();
 	ObjectUtils::printMillis();
 
-	entityManager->init();
+	entityManager->init(this->conf);
 	entityUpdateManager->init(this->conf->refreshInterval());
 
 	if(initWiFi){
@@ -100,7 +101,7 @@ void EntityApplication::loop() {
 }
 
 void EntityApplication::startWiFi(){
-this->wifiManager->begin();
+	this->wifiManager->begin();
 }
 void EntityApplication::startServer(){
 	this->wifiServerManager->begin();
@@ -139,12 +140,11 @@ void EntityApplication::updateEntities(bool withCheck){
 }
 
 void EntityApplication::initNotifier(Notifier* notifier){
-	notifier->begin(this->entityManager);
+	notifier->init(this->entityManager);
 }
 
 void EntityApplication::initDefaultNotifier(NotificationTarget* target) {
-	this->defaultNotifier = new EntityManagerNotifier(target);
-	this->defaultNotifier->begin(this->getEntityManager());
+	this->defaultNotifier = new EntityManagerNotifier(target, this->getEntityManager());
 }
 
 EntityManagerNotifier* EntityApplication::getDefaultNotifier() {

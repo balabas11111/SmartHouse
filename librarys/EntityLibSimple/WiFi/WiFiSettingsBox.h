@@ -7,6 +7,9 @@
 
 #ifndef LIBRARIES_ENTITYLIB_WIFI_WSERVERSETTINGSBOX_H_
 #define LIBRARIES_ENTITYLIB_WIFI_WSERVERSETTINGSBOX_H_
+
+#define _DEVICE "device"
+#define _INFO "info"
 //device info
 #define _DEVICE_ID "deviceId"
 #define _DEVICE_FIRMWARE "deviceFirmware"
@@ -54,6 +57,7 @@
 #include <IPAddress.h>
 #include <sstream>
 #include "ObjectUtils.h"
+#include "JsonObjectUtil.h"
 
 class WiFiSettingsBox: public Entity {
 public:
@@ -223,6 +227,15 @@ public:
 
 	bool hasUserPassword(){
 		return strcmp(_userPassword,"")!=0;
+	}
+
+	virtual void addDeviceInfoToResponse(JsonObject& response){
+		JsonObject& json = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
+									_DEVICE, _INFO);
+
+		setJsonField(json, _DEVICE_ID, this->_devId);
+		setJsonField(json, _DEVICE_FIRMWARE, this->_firmware);
+		setJsonField(json, _DEVICE_DESCR, this->_deviceDescr);
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {

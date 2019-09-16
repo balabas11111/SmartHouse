@@ -101,11 +101,11 @@ public:
 
 	virtual void doPost(JsonObject& params, JsonObject& response) override {
 		UNUSED(response);
-		setChanged(jsonToItems(params));
+		setChanged(jsonFromPostToItems(params));
 	}
 
 	virtual void doLoad(JsonObject& jsonFromFile) override {
-		jsonToItems(jsonFromFile);
+		jsonFromFileToItems(jsonFromFile);
 	}
 
 	virtual void doSave(JsonObject& jsonToFile) override {
@@ -147,24 +147,48 @@ protected:
 		return dallasTemperature->getAddress(deviceAddress, index);
 	}
 
-	bool jsonToItems(JsonObject& json) {
+	bool jsonFromFileToItems(JsonObject& json) {
 		bool chg = false;
 
 		if (JsonObjectUtil::hasField<JsonObject>(json, DS18D20_SENSOR_ITEMS)) {
-			JsonObject& sensors = JsonObjectUtil::getFieldAsObject(json,
-			DS18D20_SENSOR_ITEMS);
+			JsonObject& sensors = JsonObjectUtil::getFieldAsObject(json, DS18D20_SENSOR_ITEMS);
 
 			for (int i = 0; i<itemCount; i++) {
-				if (JsonObjectUtil::hasField<JsonObject>(sensors,
-						items[i].uidStr)) {
-					JsonObject& sensor = JsonObjectUtil::getFieldAsObject(
-							json, items[i].uidStr);
+				if (JsonObjectUtil::hasField<JsonObject>(sensors, items[i].uidStr)) {
 
-					if (getKeyValueIfExistsAndNotEquals(sensor,
-					DS18D20_SENSOR_NAME, &items[i].descr)) {
+					JsonObject& sensor = JsonObjectUtil::getFieldAsObject(json, items[i].uidStr);
+
+					if (getKeyValueIfExistsAndNotEquals(sensor,	DS18D20_SENSOR_NAME, &items[i].descr)) {
 						chg = true;
 					}
 				}
+			}
+		}
+
+		return chg;
+	}
+
+	bool jsonFromPostToItems(JsonObject& json){
+		bool chg = false;
+
+		for (int i = 0; i<itemCount; i++) {
+			String nameKey = String(items[i].uidStr)+ ".";
+
+			nameKey +=DS18D20_SENSOR_NAME;
+
+			Serial.print(nameKey);
+
+			if (JsonObjectUtil::hasField<char*>(json, nameKey.c_str())) {
+				Serial.print(FPSTR(" - found"));
+
+				if (getKeyValueIfExistsAndNotEquals(json, nameKey.c_str(), &items[i].descr)) {
+					Serial.print(FPSTR(" - updated ->"));
+					Serial.println(items[i].descr);
+					chg = true;
+				}else{
+					Serial.println();
+				}
+
 			}
 		}
 

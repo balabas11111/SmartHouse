@@ -21,13 +21,14 @@
 
 class Notifier {
 public:
-	Notifier(const char* name, NotificationTarget* target = nullptr){
+	Notifier(const char* name, NotificationTarget* target = nullptr, EntityManager* manager = nullptr){
 		this->name = name;
 		this->target = target;
+		this->manager = manager;
 	}
 	virtual ~Notifier(){}
 
-	virtual void begin(EntityManager* manager){
+	virtual void init(EntityManager* manager){
 		this->manager = manager;
 	}
 
@@ -35,6 +36,10 @@ public:
 		Serial.println(FPSTR("-----------------------------------------------"));
 		Serial.print(FPSTR("Notify "));
 		Serial.println(this->name);
+	}
+
+	bool initialized(){
+		return this->manager != nullptr;
 	}
 
 	virtual void toTarget(JsonObject& json, NotificationTarget* notifTarget = nullptr){
@@ -66,8 +71,14 @@ public:
 		return millis();
 	}
 
+
+
 	virtual EntityManager* getEntityManager(){
 		return manager;
+	}
+
+	virtual void setTarget(NotificationTarget* target){
+		this->target = target;
 	}
 protected:
 	EntityManager* manager;

@@ -32,7 +32,8 @@ void EntityManager::registerAndPreInitEntity(Entity* entity) {
 
 }
 
-void EntityManager::init() {
+void EntityManager::init(WiFiSettingsBox* conf) {
+	this->conf = conf;
 	Serial.println(FPSTR("----------------------------------"));
 	Serial.println(FPSTR("Init entityManager"));
 	FileUtils::init();
@@ -93,6 +94,8 @@ void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 	Serial.print(FPSTR(" "));
 
 	JsonObjectUtil::printWithPreffix(PARAMETERS, params);
+
+	this->conf->addDeviceInfoToResponse(response);
 
 	if (hasNoGroupNoName(params) || hasAllGroupNoName(params)) {
 		executeHttpMethodOnAll(params, response, method);
@@ -366,3 +369,4 @@ void EntityManager::get(EntityJsonRequestResponse* reqResp) {
 void EntityManager::post(EntityJsonRequestResponse* reqResp) {
 	executeHttpMethod(reqResp, REQUEST_POST);
 }
+

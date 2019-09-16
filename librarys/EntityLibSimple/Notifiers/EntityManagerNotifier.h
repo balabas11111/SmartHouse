@@ -19,13 +19,14 @@
 
 class EntityManagerNotifier: public Notifier  {
 public:
-	EntityManagerNotifier(NotificationTarget* target = nullptr):Notifier("EntityManagerNotifier", target){
+	EntityManagerNotifier(NotificationTarget* target = nullptr, EntityManager* manager = nullptr):Notifier("EntityManagerNotifier", target, manager){
 
 	}
 	virtual ~EntityManagerNotifier(){};
 
 	virtual void notify(char* group = nullptr, char* name = nullptr, NotificationTarget* notifTarget = nullptr){
-		if(this->manager == nullptr ){
+		if(!initialized()){
+			Serial.println(FPSTR("No entity Manager was set"));
 			return;
 		}
 

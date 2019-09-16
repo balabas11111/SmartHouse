@@ -18,6 +18,7 @@
 
 
 #include <Entity.h>
+#include "WiFi/WiFiSettingsBox.h"
 #include <EntityJsonRequestResponse.h>
 
 #include <functional>
@@ -50,7 +51,7 @@ public:
 	}
 
 	void registerAndPreInitEntity(Entity* entity);
-	void init();
+	void init(WiFiSettingsBox* conf);
 
 	void processEntityChangedEvent(int entityIndex);
 
@@ -125,6 +126,8 @@ protected:
 	bool entitiesChanged = false;
 
 	std::function<void(void)> onEntityChanged;
+
+	WiFiSettingsBox* conf;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYMANAGER_H_ */

@@ -9,58 +9,57 @@ img.luxmeter-icon {
 <script type="text/javascript">
 
 function saveServSetBox(){
-	formSubmitAsForm("settings.ServerSettings.form","settings.ServerSettings.div",onDataPostedServSetBox);
+	formSubmitAsForm("settings.DeviceSettings.form","settings.DeviceSettings.div",onDataPostedServSetBox);
 }
 function onDataPostedServSetBox(response){
-	/*hideShowComponent("settings.ServerSettings.editForm","settings.ServerSettings.viewForm");*/
+	/*hideShowComponent("settings.DeviceSettings.editForm","settings.DeviceSettings.viewForm");*/
 }
 	
 </script>
-<div id="settings.ServerSettings.div">
+<div id="settings.DeviceSettings.div">
 
-	<div id="settings.ServerSettings.viewForm" class="w3-card-4" style="width: 800px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
+	<div id="settings.DeviceSettings.viewForm" class="w3-card-4" style="width: 800px; float:left; min-width: 340px; min-height:270px; margin-left: 10px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px;">
 		<div class="w3-container w3-teal">
-			 <div><h4 id="settings.ServerSettings.descr">Настройки устройства</h4></div>
+			 <div><h4 id="settings.DeviceSettings.descr">Настройки устройства</h4></div>
 		</div>
 			
-		<form id="settings.ServerSettings.form" class="w3-container">
+		<form id="settings.DeviceSettings.form" class="w3-container">
 			
-			<input id="settings.ServerSettings.id.edit" name="id" type="hidden">
-			<input id="settings.ServerSettings.group.edit" name="group" type="hidden">
-			<input id="settings.ServerSettings.name.edit" name="name" type="hidden">
+			<input id="settings.DeviceSettings.group.edit" name="group" type="hidden">
+			<input id="settings.DeviceSettings.name.edit" name="name" type="hidden">
 
 			<div class="w3-row">		
-		  			<label for="settings.ServerSettings.descr.edit"><b>Описание</b></label>
-		  			<input id="settings.ServerSettings.descr.edit" name="descr" class="w3-input w3-border" type="text" value="?"/>
+		  			<label for="settings.DeviceSettings.descr.edit"><b>Описание</b></label>
+		  			<input id="settings.DeviceSettings.descr.edit" name="descr" class="w3-input w3-border" type="text" value="?"/>
 		  	</div>
 
 <!--	"deviceId":"bh1750",	"deviceFirmware":"EntityLiv dev settings",	"deviceDescr":"Default Device description",-->
 		 	<div class="w3-row">		
 				<div class="w3-third">
-		  			<label for="settings.ServerSettings.deviceId.edit"><b>ID устройства</b></label>
+		  			<label for="settings.DeviceSettings.deviceId.edit"><b>ID устройства</b></label>
 		  		</div>
 		  		<div class="w3-rest">
-		  			<h3 id="settings.ServerSettings.deviceId.edit">?</h3>
+		  			<h3 id="settings.DeviceSettings.deviceId.edit">?</h3>
 		  		</div>
 		  	</div>
 		  	
 		  	<div class="w3-row">		
 				<div class="w3-third">
-		  			<label for="settings.ServerSettings.deviceFirmware.edit"><b>Прошивка</b></label>
+		  			<label for="settings.DeviceSettings.deviceFirmware.edit"><b>Прошивка</b></label>
 		  		</div>
 		  		<div class="w3-rest">
-		  			<h3 id="settings.ServerSettings.deviceFirmware.edit">?</h3>
+		  			<h3 id="settings.DeviceSettings.deviceFirmware.edit">?</h3>
 		  		</div>
 		  	</div>
 		 
 		 	<div class="w3-row">		
-		  			<label for="settings.ServerSettings.deviceDescr.edit"><b>Описание Устройства</b></label>
-		  			<input id="settings.ServerSettings.deviceDescr.edit" name="deviceDescr" class="w3-input w3-border" type="text" value="?"/>
+		  			<label for="settings.DeviceSettings.deviceDescr.edit"><b>Описание Устройства</b></label>
+		  			<input id="settings.DeviceSettings.deviceDescr.edit" name="deviceDescr" class="w3-input w3-border" type="text" value="?"/>
 		  	</div>
 		  	
 		  	<div class="w3-row">
-				<label for="settings.ServerSettings.interval">Обновление датчиков интервал сек</label>
-				<input id="settings.ServerSettings.interval" name="interval" class="w3-input w3-border" type="number" min="30" max="10000" 
+				<label for="settings.DeviceSettings.interval">Обновление датчиков интервал сек</label>
+				<input id="settings.DeviceSettings.interval" name="interval" class="w3-input w3-border" type="number" min="30" max="10000" 
 					value="">
 		  	</div>
 		
@@ -69,86 +68,86 @@ function onDataPostedServSetBox(response){
 	  	</div>
 	  		
 		  	<div class="w3-row">
-					<label for="settings.ServerSettings.isAp">Является точкой доступа</label>
-					<input id="settings.ServerSettings.isAp" name="isAp" class="w3-check" type="checkbox">
+					<label for="settings.DeviceSettings.isAp">Является точкой доступа</label>
+					<input id="settings.DeviceSettings.isAp" name="isAp" class="w3-check" type="checkbox">
 		  	</div>
 			
 			<div class="w3-row">
-					<label for="settings.ServerSettings.ssid">SSID</label>
-					<input id="settings.ServerSettings.ssid" name="ssid" class="w3-input w3-border" style="width:50%" type="text" value="?">
+					<label for="settings.DeviceSettings.ssid">SSID</label>
+					<input id="settings.DeviceSettings.ssid" name="ssid" class="w3-input w3-border" style="width:50%" type="text" value="?">
 		  	</div>
 			
 			<div class="w3-row">
-					<label for="settings.ServerSettings.pass">Пароль WiFi</label>
-					<input id="settings.ServerSettings.pass" name="pass" class="w3-input w3-border" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}">
+					<label for="settings.DeviceSettings.pass">Пароль WiFi</label>
+					<input id="settings.DeviceSettings.pass" name="pass" class="w3-input w3-border" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}">
 		  	</div>
 			
 			<div class="w3-row">
-					<label for="settings.ServerSettings.passConfirm">Подтверждение Пароль WiFi</label>
-					<input id="settings.ServerSettings.passConfirm" name="passConfir" class="w3-input w3-border" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}">
+					<label for="settings.DeviceSettings.passConfirm">Подтверждение Пароль WiFi</label>
+					<input id="settings.DeviceSettings.passConfirm" name="passConfir" class="w3-input w3-border" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}">
 		  	</div>
 		  	
 		  	<div class="w3-row">
-					<label for="settings.ServerSettings.pass">Пароль режим Точка Доступа</label>
-					<input id="settings.ServerSettings.pass" name="pass" class="w3-input w3-border" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}">
+					<label for="settings.DeviceSettings.pass">Пароль режим Точка Доступа</label>
+					<input id="settings.DeviceSettings.pass" name="pass" class="w3-input w3-border" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}">
 		  	</div>
 			
 			<div class="w3-row">
-					<label for="settings.ServerSettings.passConfirm">Подтверждение Пароль режим Точка Доступа</label>
-					<input id="settings.ServerSettings.passConfirm" name="passConfir" class="w3-input w3-border" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}">
+					<label for="settings.DeviceSettings.passConfirm">Подтверждение Пароль режим Точка Доступа</label>
+					<input id="settings.DeviceSettings.passConfirm" name="passConfir" class="w3-input w3-border" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}">
 		  	</div>
 			
 			<div class="w3-row">
-					<label for="settings.ServerSettings.isStatIp">Использовать статический IP</label>
-					<input id="settings.ServerSettings.isStatIp" name="isStatIp" class="w3-check" type="checkbox">
+					<label for="settings.DeviceSettings.isStatIp">Использовать статический IP</label>
+					<input id="settings.DeviceSettings.isStatIp" name="isStatIp" class="w3-check" type="checkbox">
 		  	</div>
 		  	
 		  	<div class="w3-row">
-					<label for="settings.ServerSettings.disStIfCon">Переподключатся при старте</label>
-					<input id="settings.ServerSettings.disStIfCon" name="disStIfCon" class="w3-check" type="checkbox">
+					<label for="settings.DeviceSettings.disStIfCon">Переподключатся при старте</label>
+					<input id="settings.DeviceSettings.disStIfCon" name="disStIfCon" class="w3-check" type="checkbox">
 		  	</div>
 	  	
 <!--  "ip":"192.168.0.120",	"ipAP":"192.168.0.4",	"gateway":"192.168.0.1",	"subnet":"255.255.255.0",	"dns":"192.168.0.1",	
       "dns2":"192.168.0.1", "smrtServIp":"192.168.0.5"  -->  	
 		  	<div class="w3-row">
-					<label for="settings.ServerSettings.ip">IP адресс в локальной сети (LocalIp)</label>
-					<input id="settings.ServerSettings.ip" name="ip" class="w3-input w3-border" type="text" 
+					<label for="settings.DeviceSettings.ip">IP адресс в локальной сети (LocalIp)</label>
+					<input id="settings.DeviceSettings.ip" name="ip" class="w3-input w3-border" type="text" 
 						value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
 		  	</div>
 	
 			<div class="w3-row">
-					<label for="settings.ServerSettings.ipAP">IP адресс Если точка доступа (Access point IP)</label>
-					<input id="settings.ServerSettings.ipAP" name="ipAP" class="w3-input w3-border" type="text" 
+					<label for="settings.DeviceSettings.ipAP">IP адресс Если точка доступа (Access point IP)</label>
+					<input id="settings.DeviceSettings.ipAP" name="ipAP" class="w3-input w3-border" type="text" 
 							value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
 		  	</div>
 		
 			<div class="w3-row">
-					<label for="settings.ServerSettings.gateway">IP адресс шлюза (GateWay)</label>
-					<input id="settings.ServerSettings.gateway" name="gateway" class="w3-input w3-border" type="text" 
+					<label for="settings.DeviceSettings.gateway">IP адресс шлюза (GateWay)</label>
+					<input id="settings.DeviceSettings.gateway" name="gateway" class="w3-input w3-border" type="text" 
 							value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
 		  	</div>
 	
 			<div class="w3-row">
-					<label for="settings.ServerSettings.subnet">IP адресс подсети (Subnet)</label>
-					<input id="settings.ServerSettings.subnet" name="subnet" class="w3-input w3-border" type="text" 
+					<label for="settings.DeviceSettings.subnet">IP адресс подсети (Subnet)</label>
+					<input id="settings.DeviceSettings.subnet" name="subnet" class="w3-input w3-border" type="text" 
 						value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
 		  	</div>
 	
 			<div class="w3-row">
-					<label for="settings.ServerSettings.dns">IP адресс DNS</label>
-					<input id="settings.ServerSettings.dns" name="dns" class="w3-input w3-border" type="text" 
+					<label for="settings.DeviceSettings.dns">IP адресс DNS</label>
+					<input id="settings.DeviceSettings.dns" name="dns" class="w3-input w3-border" type="text" 
 						value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
 		  	</div>
 	
 			<div class="w3-row">
-					<label for="settings.ServerSettings.dns2">IP адресс DNS2</label>
-					<input id="settings.ServerSettings.dns2" name="dns2" class="w3-input w3-border" type="text" 
+					<label for="settings.DeviceSettings.dns2">IP адресс DNS2</label>
+					<input id="settings.DeviceSettings.dns2" name="dns2" class="w3-input w3-border" type="text" 
 							value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
 		  	</div>
 	
 			<div class="w3-row">
-					<label for="settings.ServerSettings.smrtServIp">IP адресс Сервера !!!SmartHouse</label>
-					<input id="settings.ServerSettings.smrtServIp" name="smrtServIp" class="w3-input w3-border" type="text" 
+					<label for="settings.DeviceSettings.smrtServIp">IP адресс Сервера !!!SmartHouse</label>
+					<input id="settings.DeviceSettings.smrtServIp" name="smrtServIp" class="w3-input w3-border" type="text" 
 							value="" pattern="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$">
 		  	</div>
 	  	
@@ -158,19 +157,19 @@ function onDataPostedServSetBox(response){
 		</div>
 	  	
 		  	<div class="w3-row">
-		  			<label for="settings.ServerSettings.userLogin">Пользователь</label>
-		  			<input id="settings.ServerSettings.userLogin" class="w3-input w3-border" 
+		  			<label for="settings.DeviceSettings.userLogin">Пользователь</label>
+		  			<input id="settings.DeviceSettings.userLogin" class="w3-input w3-border" 
 		  				type="text" value="?"/>
 		  	</div>
 		  	
 		  	<div class="w3-row">
-		  			<label for="settings.ServerSettings.userPass">Пароль</label>
-		  			<input id="settings.ServerSettings.userPass" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
+		  			<label for="settings.DeviceSettings.userPass">Пароль</label>
+		  			<input id="settings.DeviceSettings.userPass" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
 		  	</div>
 		  	
 		  	<div class="w3-row">
-		  			<label for="settings.ServerSettings.userPassConfirm">Пароль подтверждение</label>
-		  			<input id="settings.ServerSettings.userPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
+		  			<label for="settings.DeviceSettings.userPassConfirm">Пароль подтверждение</label>
+		  			<input id="settings.DeviceSettings.userPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****"/>
 		  	</div>
 		  	
 		  	<div class="w3-row w3-teal">
@@ -178,18 +177,18 @@ function onDataPostedServSetBox(response){
 			</div>
 		  	
 		  	<div class="w3-row">
-		  			<label for="settings.ServerSettings.adminLogin">Пользователь</label>
-		  			<input id="settings.ServerSettings.adminLogin" class="w3-input w3-border" type="text" value="?"/>
+		  			<label for="settings.DeviceSettings.adminLogin">Пользователь</label>
+		  			<input id="settings.DeviceSettings.adminLogin" class="w3-input w3-border" type="text" value="?"/>
 		  	</div>
 		  	
 		  	<div class="w3-row">
-		  			<label for="settings.ServerSettings.adminPass">Пароль</label>
-		  			<input id="settings.ServerSettings.adminPass" class="w3-input w3-border" style="width:50%" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}"/>
+		  			<label for="settings.DeviceSettings.adminPass">Пароль</label>
+		  			<input id="settings.DeviceSettings.adminPass" class="w3-input w3-border" style="width:50%" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}"/>
 		  	</div>
 		  	
 		  	<div class="w3-row">
-		  			<label for="settings.ServerSettings.adminPassConfirm">Пароль подтверждение</label>
-		  			<input id="settings.ServerSettings.adminPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}"/>
+		  			<label for="settings.DeviceSettings.adminPassConfirm">Пароль подтверждение</label>
+		  			<input id="settings.DeviceSettings.adminPassConfirm" class="w3-input w3-border" style="width:50%" type="password" value="*****"  required="required" pattern="[A-Za-z0-9]{1,20}"/>
 		  	</div>
 		
 		</form>
