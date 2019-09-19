@@ -31,7 +31,7 @@
 #define _IP_SUBNET "subnet"
 #define _IP_DNS "dns"
 #define _IP_DNS2 "dns2"
-#define _SMART_HOUSE_SERVER_IP "smrtServIp"
+#define _SMART_HOUSE_SERVER_URL "smrtServUrl"
 //access settings
 #define _USER_LOGIN "userLogin"
 #define _USER_PASS "userPass"
@@ -53,11 +53,13 @@
 #define _WIFI_SETTINGS_DEF_NAME "DeviceSettings"
 #define _WIFI_SETTINGS_DEF_DESCR "Wifi Server Device settings"
 
+#include "Arduino.h"
+#include "ArduinoJson.h"
 #include <Entity.h>
 #include <IPAddress.h>
 #include <sstream>
 #include "ObjectUtils.h"
-#include "JsonObjectUtil.h"
+//#include "JsonObjectUtil.h"
 
 class WiFiSettingsBox: public Entity {
 public:
@@ -113,8 +115,8 @@ public:
 		Serial.print(this->_dns);
 		Serial.print(FPSTR(" dns2="));
 		Serial.print(this->_dns2);
-		Serial.print(FPSTR(" smrtServIp="));
-		Serial.print(this->_smrtServIp);
+		Serial.print(FPSTR(" smrtServUrl="));
+		Serial.print(this->_smrtServUrl);
 		Serial.println();
 	}
 
@@ -196,12 +198,9 @@ public:
 	IPAddress dns2() {
 		return  (new IPAddress())->fromString(this->_dns2);
 	}
-	IPAddress smartHouseServerIp() {
-		return  (new IPAddress())->fromString(this->_smrtServIp);
-	}
 
-	char* smartHouseServerIpStr() {
-		return  this->_smrtServIp;
+	char* smartHouseServerUrlStr() {
+		return  this->_smrtServUrl;
 	}
 
 	const char* userLogin() {
@@ -236,10 +235,7 @@ public:
 		return strcmp(_userPassword,"")!=0;
 	}
 
-	virtual void addDeviceInfoToResponse(JsonObject& response){
-		JsonObject& json = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
-									_DEVICE, _INFO);
-
+	virtual void addDeviceInfoToResponse(JsonObject& json){
 		setJsonField(json, _DEVICE_ID, this->_devId);
 		setJsonField(json, _DEVICE_FIRMWARE, this->_firmware);
 		setJsonField(json, _DEVICE_DESCR, this->_deviceDescr);
@@ -284,7 +280,7 @@ protected:
 	char* _subnet = "255,255,255,0";
 	char* _dns = "192,168,0,1";
 	char* _dns2 = "192,168,0,1";
-	char* _smrtServIp = "192,168,0,5";
+	char* _smrtServUrl = "http://192.168.0.103:8080/api/v1/devices/register";
 
 	char* _userLogin = (char*)"";
 	char* _userPassword = (char*)"";
@@ -315,7 +311,7 @@ protected:
 		chg = getKeyValueIfExistsAndNotEquals(json, _IP_SUBNET, &this->_subnet)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _IP_DNS, &this->_dns)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _IP_DNS2, &this->_dns2)?true:chg;
-		chg = getKeyValueIfExistsAndNotEquals(json, _SMART_HOUSE_SERVER_IP, &this->_smrtServIp)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _SMART_HOUSE_SERVER_URL, &this->_smrtServUrl)?true:chg;
 
 		chg = getKeyValueIfExistsAndNotEquals(json, _USER_LOGIN, &this->_userLogin)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _USER_PASS, &this->_userPassword)?true:chg;
@@ -351,7 +347,7 @@ protected:
 		setJsonField(json, _IP_SUBNET, this->_subnet);
 		setJsonField(json, _IP_DNS, this->_dns);
 		setJsonField(json, _IP_DNS2, this->_dns2);
-		setJsonField(json, _SMART_HOUSE_SERVER_IP, this->_smrtServIp);
+		setJsonField(json, _SMART_HOUSE_SERVER_URL, this->_smrtServUrl);
 
 		setJsonField(json, _USER_LOGIN, this->_userLogin);
 		setJsonField(json, _USER_PASS, mask?_MASKED_VALUE:_userPassword);

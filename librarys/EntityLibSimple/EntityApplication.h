@@ -53,6 +53,7 @@ public:
 	void startServer();
 
 	EntityManager* getEntityManager();
+	WiFiManager* getWiFiManager();
 
 	WiFiSettingsBox* getConf();
 
@@ -66,6 +67,7 @@ public:
 	EntityManagerNotifier* getDefaultNotifier();
 
 	void notify(char* group = nullptr, char* name = nullptr, NotificationTarget* notifTarget = nullptr);
+
 private:
 	WiFiSettingsBox* conf;
 	WiFiManager* wifiManager;

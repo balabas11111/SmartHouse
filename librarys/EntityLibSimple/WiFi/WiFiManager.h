@@ -16,6 +16,9 @@
 #include <WiFiUtils.h>
 #include <WiFi/WiFiSettingsBox.h>
 
+#include <EntityJsonRequestResponse.h>
+#include <HttpUtils.h>
+
 class WiFiManager {
 public:
 	WiFiManager(WiFiSettingsBox* conf,
@@ -29,6 +32,8 @@ public:
 	bool isConnected();
 
 	bool disconnect();
+
+	boolean registerOnServer();
 
 protected:
 	bool startAsAP();

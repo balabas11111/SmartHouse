@@ -8,20 +8,19 @@
 #ifndef LIBRARIES_ENTITYLIBSIMPLE_ENTITYMANAGER_H_
 #define LIBRARIES_ENTITYLIBSIMPLE_ENTITYMANAGER_H_
 
+#include "Arduino.h"
+#include "ArduinoJson.h"
+#include "JsonObjectUtil.h"
+#include "FileUtils.h"
+
 #include <list>
 #include <functional>
 
-#include <Arduino.h>
-#include <ArduinoJson.h>
-#include <JsonObjectUtil.h>
-#include <FileUtils.h>
-
-
-#include <Entity.h>
+#include "Entity.h"
 #include "WiFi/WiFiSettingsBox.h"
-#include <EntityJsonRequestResponse.h>
 
-#include <functional>
+#include "EntityJsonRequestResponse.h"
+
 /*
  #define GROUP "Group"
  #define  NAME "Name";

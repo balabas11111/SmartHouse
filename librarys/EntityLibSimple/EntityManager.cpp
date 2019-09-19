@@ -7,6 +7,9 @@
 
 #include <EntityManager.h>
 
+#include <Arduino.h>
+#include <ArduinoJson.h>
+
 EntityManager::EntityManager(Entity* entities[], int count, std::function<void(void)> onEntityChanged) {
 	for (int i = 0; i < count; i++) {
 		registerAndPreInitEntity(entities[i]);
@@ -95,7 +98,9 @@ void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 
 	JsonObjectUtil::printWithPreffix(PARAMETERS, params);
 
-	this->conf->addDeviceInfoToResponse(response);
+	JsonObject& json = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
+										_DEVICE, _INFO);
+	this->conf->addDeviceInfoToResponse(json);
 
 	if (hasNoGroupNoName(params) || hasAllGroupNoName(params)) {
 		executeHttpMethodOnAll(params, response, method);

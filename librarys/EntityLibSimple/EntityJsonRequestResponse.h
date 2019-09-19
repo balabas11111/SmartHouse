@@ -8,6 +8,7 @@
 #ifndef LIBRARIES_ENTITYLIBSIMPLE_ENTITYJSONREQUESTRESPONSE_H_
 #define LIBRARIES_ENTITYLIBSIMPLE_ENTITYJSONREQUESTRESPONSE_H_
 
+#include "Arduino.h"
 #include <ArduinoJson.h>
 #include <JsonObjectUtil.h>
 

@@ -15,11 +15,12 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 
+#include "RestClient.h"
 #include <JsonObjectUtil.h>
 
 #define HEADER_CONTENT_TYPE           "Content-Type"
-#define CONTENT_TYPE_JSON "application/json"
-#define CONTENT_TYPE_FORM_URL_ENCODED "application/x-www-form-urlencoded"
+#define CONTENT_TYPE_APPLICATION_JSON "application/json"
+#define CONTENT_TYPE_APPLICATION_FORM_URL_ENCODED "application/x-www-form-urlencoded"
 
 #define EMPTY_STR " "
 #define QUESTION_STR "?"
@@ -52,8 +53,7 @@ public:
 		params += paramValue;
 	}
 
-	static int executeGetRequest(String& url, String& params = nullptr,
-			String& result) {
+	static int executeGetRequest(String& url, String& params, String& result) {
 
 		int httpCode = httpGetBase(URL_GET, url, params, result);
 		printStrResponse(result);
@@ -61,8 +61,7 @@ public:
 		return httpCode;
 	}
 
-	static int executeGetRequest(String& url, String& params = nullptr,
-			JsonObject& result) {
+	static int executeGetRequest(String& url, String& params, JsonObject& result) {
 
 		String resultStr;
 
@@ -73,8 +72,7 @@ public:
 		return httpCode;
 	}
 
-	static int executeGetRequest(String& url, JsonObject& params,
-				String& result) {
+	static int executeGetRequest(String& url, JsonObject& params, String& result) {
 
 		String paramsStr;
 
@@ -105,7 +103,7 @@ public:
 	static int executePostRequest(String& url, String& params,
 			String& result) {
 
-		int httpCode = executePostRequestBase(URL_POST, url, params, result, CONTENT_TYPE_FORM_URL_ENCODED);
+		int httpCode = executePostRequestBase(URL_POST, url, params, result, CONTENT_TYPE_APPLICATION_FORM_URL_ENCODED);
 		printStrResponse( result);
 
 		return httpCode;
@@ -115,7 +113,7 @@ public:
 			JsonObject& result) {
 		String resultStr;
 
-		int httpCode = executePostRequestBase(URL_POST, url, params, resultStr, CONTENT_TYPE_FORM_URL_ENCODED);
+		int httpCode = executePostRequestBase(URL_POST, url, params, resultStr, CONTENT_TYPE_APPLICATION_FORM_URL_ENCODED);
 
 		printJsonResponse(resultStr, result);
 
@@ -128,7 +126,7 @@ public:
 		String paramsStr;
 		params.printTo(paramsStr);
 
-		int httpCode = executePostRequestBase(URL_POST_JSON, url, paramsStr, result, CONTENT_TYPE_JSON);
+		int httpCode = executePostRequestBase(URL_POST_JSON, url, paramsStr, result, CONTENT_TYPE_APPLICATION_JSON);
 
 		printStrResponse(result);
 
@@ -143,7 +141,7 @@ public:
 
 		jsonToStrAsParams(params, paramsStr, false);
 
-		int httpCode = executePostRequestBase(URL_POST_JSON, url, paramsStr, resultStr,	CONTENT_TYPE_FORM_URL_ENCODED);
+		int httpCode = executePostRequestBase(URL_POST_JSON, url, paramsStr, resultStr,	CONTENT_TYPE_APPLICATION_FORM_URL_ENCODED);
 
 		printJsonResponse(resultStr, result);
 
@@ -151,9 +149,9 @@ public:
 	}
 private:
 	static void jsonToStrAsParams(JsonObject& params, String& paramsStr, bool isGet = true) {
-		if(params == nullptr){
+		/*if(*params ==nullptr){
 			return;
-		}
+		}*/
 		int index = 0;
 
 		for (const auto& kvp : params) {
@@ -174,22 +172,37 @@ private:
 	}
 	static int executePostRequestBase(const char* reqType,String& url, String& params,
 			String& result, const String& contentType) {
+
+		RestClient client = RestClient("192.168.0.103");
+		 String response = "";
+		  int statusCode = client.get("/api/v1/devices", &response);
+		  Serial.print("Status code from server: ");
+		  Serial.println(statusCode);
+		  Serial.print("Response body from server: ");
+		  Serial.println(response);
+
+/*
+		url = "http://192.168.0.103/api/v1/devices";
+
+		Serial.println(FPSTR("--------------------"));
+		Serial.println(FPSTR("Execute GET request"));
+
 		printReqDetails(reqType, url, params);
 
 		HTTPClient http;
 
-		http.begin(url);
+		http.begin("http://192.168.0.103/api/v1/devices");
 
-		http.addHeader(HEADER_CONTENT_TYPE, contentType);
+		//http.addHeader(HEADER_CONTENT_TYPE, contentType);
 
-		int httpCode = http.POST(params);
+		int httpCode = http.GET();
 		result = http.getString();
 
 		printHttpCode(httpCode);
 
 		http.end();
-
-		return httpCode;
+*/
+		return statusCode;
 	}
 	static int httpGetBase(const char* reqType, String& url, String& params,
 			String& result) {
@@ -211,7 +224,7 @@ private:
 	}
 	static void printReqDetails(const char* reqType, String& url) {
 		Serial.print(reqType);
-		Serial.print(FPSTR(" = "));
+		Serial.print(FPSTR(" url= "));
 		Serial.print(url);
 		Serial.print(FPSTR(" params = "));
 	}

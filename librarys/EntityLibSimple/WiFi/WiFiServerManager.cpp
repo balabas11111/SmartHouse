@@ -6,6 +6,7 @@
  */
 
 #include <WiFi/WiFiServerManager.h>
+#include <ArduinoJson.h>
 
 WiFiServerManager::WiFiServerManager(EntityManager* manager, WiFiSettingsBox* conf, int port) {
 	this->server = new ESP8266WebServer(port);

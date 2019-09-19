@@ -7,6 +7,8 @@
 
 #include <WiFi/WiFiManager.h>
 
+#include <WiFi/WiFiSettingsBox.h>
+
 WiFiManager::WiFiManager(WiFiSettingsBox* conf,
 		std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
@@ -178,7 +180,18 @@ void WiFiManager::onStationModeDisconnected(
 void WiFiManager::onStationModeGotIP(const WiFiEventStationModeGotIP& evt) {
 	reconnected = true;
 	WiFiUtils::printStationModeGotIP(evt);
+	conf->setCurrentIp(strdup(evt.ip.toString().c_str()));
+
 	if (onWiFiConnected != nullptr) {
 		onWiFiConnected();
 	}
+}
+
+boolean WiFiManager::registerOnServer() {
+	EntityJsonRequestResponse* req = new EntityJsonRequestResponse();
+	String url = conf->smartHouseServerUrlStr();
+
+	int status = HttpUtils::executePostRequest(url, req->getRequest(), req->getResponse());
+
+	return status == 200;
 }

@@ -8,7 +8,7 @@
 #ifndef LIBRARIES_UTILS_HASHPRINT_H_
 #define LIBRARIES_UTILS_HASHPRINT_H_
 
-#include <Arduino.h>
+#include "Arduino.h"
 #include <FastCRC.h>
 #include <Print.h>
 

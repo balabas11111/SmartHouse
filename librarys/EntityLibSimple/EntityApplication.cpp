@@ -163,3 +163,7 @@ void EntityApplication::setOnEntityChanged(
 		std::function<void(void)> onEntityChanged) {
 	this->getEntityManager()->setOnEntityChanged(onEntityChanged);
 }
+
+WiFiManager* EntityApplication::getWiFiManager() {
+	return this->wifiManager;
+}
