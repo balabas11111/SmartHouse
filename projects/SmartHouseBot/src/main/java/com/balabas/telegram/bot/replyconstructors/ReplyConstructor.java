@@ -1,5 +1,14 @@
 package com.balabas.telegram.bot.replyconstructors;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
+import org.json.JSONException;
+import org.xml.sax.SAXException;
+
 import com.balabas.telegram.bot.model.TelegramMessage;
 
 import io.fouad.jtb.core.beans.CallbackQuery;
@@ -16,12 +25,12 @@ public interface ReplyConstructor {
     }
     
     default TelegramMessage constructReplyMessage(Message msgIn,
-            TelegramMessage replyMessage){
+            TelegramMessage replyMessage) throws UnsupportedEncodingException{
         return null;
     }
     
     default TelegramMessage constructReplyMessage(CallbackQuery callbackQuery,
-            TelegramMessage replyMessage){
+            TelegramMessage replyMessage) throws UnsupportedEncodingException, JSONException, ParserConfigurationException, SAXException, IOException, TransformerException{
         return null;
     }
 }

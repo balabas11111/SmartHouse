@@ -31,6 +31,7 @@ import io.fouad.jtb.core.enums.*;
 import io.fouad.jtb.core.exceptions.*;
 import io.fouad.jtb.core.utils.*;
 import io.fouad.jtb.core.utils.HttpClient.*;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +46,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Represents a Telegram bot. It supports POLLING mode by default. To run as webhook,
  * use this class with <code>WebhookServer</code> or use your custom server.
  */
+@Log4j2
 public class JTelegramBot implements TelegramBotApi
 {
 	private final String botName;
@@ -152,7 +154,8 @@ public class JTelegramBot implements TelegramBotApi
 		int timeout = telegramBotConfig.getPollingTimeoutInSeconds();
 		
 		botState.set(BotState.RUNNING);
-		System.out.println("JTelegramBot (" + botName + ") starts in \"Polling\" mode.");
+		log.info("JTelegramBot (" + botName + ") starts in \"Polling\" mode.");
+		
 		
 		while(botState.get() == BotState.RUNNING)
 		{

@@ -1,4 +1,4 @@
-package com.balabas.telegram.bot.service;
+package com.balabas.telegram.bot.util;
 
 import io.fouad.jtb.core.beans.CallbackQuery;
 import io.fouad.jtb.core.beans.InlineKeyboardButton;

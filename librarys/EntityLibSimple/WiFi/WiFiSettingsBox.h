@@ -75,7 +75,14 @@ public:
 	virtual void init() override {
 		//String devIdTmp="ESP_"+String(ESP.getChipId());
 		//this->devId=strdup(devIdTmp.c_str());
+	}
 
+	void setCurrentIp(char* ip) {
+		this->currentIp = ip;
+	}
+
+	char* getCurrentIp() {
+		return this->currentIp;
 	}
 
 	void resetToAp() {
@@ -284,6 +291,8 @@ protected:
 	char* _adminLogin = (char*)"admin";
 	char* _adminPassword = (char*)"admin";
 	uint16_t _interval = 60;
+
+	char* currentIp;
 
 	bool jsonToItems(JsonObject& json){
 		bool chg = false;

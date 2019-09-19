@@ -1,5 +1,12 @@
 package com.balabas.telegram.bot.service;
 
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
+import org.xml.sax.SAXException;
+
 import com.balabas.telegram.bot.model.TelegramMessage;
 
 import io.fouad.jtb.core.TelegramBotApi;
@@ -14,6 +21,6 @@ public interface ReplyConstructService {
     
     TelegramMessage constructReplyMessage(TelegramBotApi arg0,Message msgIn);
     
-    TelegramMessage constructReplyMessage(TelegramBotApi arg0,CallbackQuery query);
+    TelegramMessage constructReplyMessage(TelegramBotApi arg0,CallbackQuery query) throws ParserConfigurationException, SAXException, IOException, TransformerException;
 
 }

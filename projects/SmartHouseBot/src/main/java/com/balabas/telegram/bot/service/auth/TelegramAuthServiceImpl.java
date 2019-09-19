@@ -32,7 +32,6 @@ public class TelegramAuthServiceImpl implements TelegramAuthService,
     @Override
     public boolean checkAuth(CallbackQuery callbackQuery) {
         return checkAuth(callbackQuery.getFrom());
-        //return checkAuth(callbackQuery.getMessage());
     }
 
     @Override
@@ -48,7 +47,7 @@ public class TelegramAuthServiceImpl implements TelegramAuthService,
     @Override
     public boolean checkAuth(int id, String userName) {
         
-        log.info("checkAuth id ="+id+" userName="+userName+" allowedUsers size="+allowedUsers.size());
+        //log.info("checkAuth id ="+id+" userName="+userName+" allowedUsers size="+allowedUsers.size());
         /*     
         for(User user: allowedUsers){
             

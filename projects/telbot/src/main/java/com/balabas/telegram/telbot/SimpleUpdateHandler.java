@@ -17,6 +17,7 @@ import io.fouad.jtb.core.enums.ParseMode;
 public class SimpleUpdateHandler implements UpdateHandler {
 
 	public void onCallbackQueryReceived(TelegramBotApi arg0, int arg1, CallbackQuery arg2) {
+		System.out.println("onCallbackQueryReceived");
 		if(!checkAuth(arg0,arg2)){
 			return;
 		}
@@ -30,22 +31,27 @@ public class SimpleUpdateHandler implements UpdateHandler {
 	}
 
 	public void onChosenInlineResultReceived(TelegramBotApi arg0, int arg1, ChosenInlineResult arg2) {
+		System.out.println("onChosenInlineResultReceived");
 		System.out.println(arg0);		
 	}
 
 	public void onEditedMessageReceived(TelegramBotApi arg0, int arg1, Message arg2) {
+		System.out.println("onEditedMessageReceived");
 		System.out.println(arg0);		
 	}
 
 	public void onGetUpdatesFailure(Exception arg0) {
+		System.out.println("onGetUpdatesFailure");
 		System.out.println(arg0);		
 	}
 
 	public void onInlineQueryReceived(TelegramBotApi arg0, int arg1, InlineQuery arg2) {
+		System.out.println("onInlineQueryReceived");
 		System.out.println(arg0);		
 	}
 
 	public void onMessageReceived(TelegramBotApi arg0, int arg1, Message arg2) {
+		System.out.println("onMessageReceived");
 		if(!checkAuth(arg0,arg2)){
 			return;
 		}

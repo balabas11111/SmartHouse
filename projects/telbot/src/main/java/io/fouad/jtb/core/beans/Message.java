@@ -24,6 +24,7 @@
 
 package io.fouad.jtb.core.beans;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -263,6 +264,11 @@ public class Message
 	@JsonProperty("left_chat_participant")
 	private User left_chat_participant;
 	
+	@JsonProperty("reply_markup")
+	private Message replyMarkUpMessage;
+	
+	@JsonProperty("inline_keyboard")
+	private Object inlineKeyboard;
 	
 	public Message(){}
 	
