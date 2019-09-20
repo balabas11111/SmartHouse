@@ -23,12 +23,12 @@
 #include <ObjectUtils.h>
 #include <FileUtils.h>
 #include <I2C_utils.h>
-#include <Notifiers/EntityManagerNotifier.h>
-
 #include <functional>
 
 #include <Ticker.h>
 #include <Notifiers/Notifier.h>
+#include <Notifiers/NotifierEntityManagerGroupName.h>
+#include <Notifiers/NotifierSmartHouseServerRegister.h>
 
 class EntityApplication {
 public:
@@ -64,11 +64,14 @@ public:
 
 	void initNotifier(Notifier* notifier);
 	void initDefaultNotifier(NotificationTarget* target = nullptr);
-	EntityManagerNotifier* getDefaultNotifier();
+	NotifierEntityManagerGroupName* getDefaultNotifier();
 
 	void notify(char* group = nullptr, char* name = nullptr, NotificationTarget* notifTarget = nullptr);
 
+	void triggerOnServerRegister();
 private:
+	bool triggeredOnServerRegister = false;
+
 	WiFiSettingsBox* conf;
 	WiFiManager* wifiManager;
 	WiFiServerManager* wifiServerManager;
@@ -76,7 +79,9 @@ private:
 	EntityManager* entityManager;
 	EntityUpdateManager* entityUpdateManager;
 
-	EntityManagerNotifier* defaultNotifier;
+	NotifierEntityManagerGroupName* defaultNotifier;
+
+	void executeOnServerRegisterIfTriggered();
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYAPPLICATION_H_ */

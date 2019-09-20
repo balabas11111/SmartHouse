@@ -5,8 +5,8 @@
  *      Author: Vitaliy
  */
 
-#ifndef LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_ENTITYMANAGERNOTIFIER_H_
-#define LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_ENTITYMANAGERNOTIFIER_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_NOTIFIERENTITYMANAGERGROUPNAME_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_NOTIFIERENTITYMANAGERGROUPNAME_H_
 
 #include <Arduino.h>
 #include <EntityManager.h>
@@ -17,12 +17,12 @@
 
 #include <EntityJsonRequestResponse.h>
 
-class EntityManagerNotifier: public Notifier  {
+class NotifierEntityManagerGroupName: public Notifier  {
 public:
-	EntityManagerNotifier(NotificationTarget* target = nullptr, EntityManager* manager = nullptr):Notifier("EntityManagerNotifier", target, manager){
+	NotifierEntityManagerGroupName(NotificationTarget* target = nullptr, EntityManager* manager = nullptr):Notifier("EntityManagerNotifier", target, manager){
 
 	}
-	virtual ~EntityManagerNotifier(){};
+	virtual ~NotifierEntityManagerGroupName(){};
 
 	virtual void notify(char* group = nullptr, char* name = nullptr, NotificationTarget* notifTarget = nullptr){
 		if(!initialized()){
@@ -46,4 +46,4 @@ public:
 
 };
 
-#endif /* LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_ENTITYMANAGERNOTIFIER_H_ */
+#endif /* LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_NOTIFIERENTITYMANAGERGROUPNAME_H_ */

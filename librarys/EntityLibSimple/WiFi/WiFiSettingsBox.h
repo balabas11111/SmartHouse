@@ -32,6 +32,7 @@
 #define _IP_DNS "dns"
 #define _IP_DNS2 "dns2"
 #define _SMART_HOUSE_SERVER_URL "smrtServUrl"
+#define _SMART_HOUSE_SERVER_KEY "smrtServKey"
 //access settings
 #define _USER_LOGIN "userLogin"
 #define _USER_PASS "userPass"
@@ -53,12 +54,21 @@
 #define _WIFI_SETTINGS_DEF_NAME "DeviceSettings"
 #define _WIFI_SETTINGS_DEF_DESCR "Wifi Server Device settings"
 
+#define KEY_URL "url"
+
+#define KEY_IP "ip"
+#define KEY_DATA_URL "dataUrl"
+#define KEY_ROOT_URL "rootUrl"
+#define KEY_TOKEN "keyHash"
+
 #include "Arduino.h"
 #include "ArduinoJson.h"
 #include <Entity.h>
 #include <IPAddress.h>
 #include <sstream>
 #include "ObjectUtils.h"
+#include "Hash.h"
+#include <WiFi/NetConstants.h>
 //#include "JsonObjectUtil.h"
 
 class WiFiSettingsBox: public Entity {
@@ -235,10 +245,28 @@ public:
 		return strcmp(_userPassword,"")!=0;
 	}
 
+	virtual void createRegisterRequest(JsonObject& json){
+		JsonObject& device = json.createNestedObject(_DEVICE);
+
+		addDeviceInfoToResponse(device);
+
+		String baseUrl = HTTP_PREFFIX;
+		baseUrl+= getCurrentIp();
+
+		const char* hash = sha1(this->_smrtServKey).c_str();
+
+		setJsonField(device, KEY_ROOT_URL, baseUrl.concat(URL_ROOT));
+		setJsonField(device, KEY_DATA_URL, baseUrl.concat(URL_DATA));
+		setJsonField(device, KEY_TOKEN, hash);
+
+		setJsonField(device, KEY_URL, this->_smrtServUrl);
+	}
+
 	virtual void addDeviceInfoToResponse(JsonObject& json){
 		setJsonField(json, _DEVICE_ID, this->_devId);
 		setJsonField(json, _DEVICE_FIRMWARE, this->_firmware);
 		setJsonField(json, _DEVICE_DESCR, this->_deviceDescr);
+		setJsonField(json, KEY_IP, this->getCurrentIp());
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
@@ -281,6 +309,7 @@ protected:
 	char* _dns = "192,168,0,1";
 	char* _dns2 = "192,168,0,1";
 	char* _smrtServUrl = "http://192.168.0.103:8080/api/v1/devices/register";
+	char* _smrtServKey = "SomeServerKey";
 
 	char* _userLogin = (char*)"";
 	char* _userPassword = (char*)"";
@@ -312,6 +341,7 @@ protected:
 		chg = getKeyValueIfExistsAndNotEquals(json, _IP_DNS, &this->_dns)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _IP_DNS2, &this->_dns2)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _SMART_HOUSE_SERVER_URL, &this->_smrtServUrl)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _SMART_HOUSE_SERVER_KEY, &this->_smrtServKey)?true:chg;
 
 		chg = getKeyValueIfExistsAndNotEquals(json, _USER_LOGIN, &this->_userLogin)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _USER_PASS, &this->_userPassword)?true:chg;
@@ -332,10 +362,10 @@ protected:
 		setJsonField(json, _DEVICE_DESCR, this->_deviceDescr);
 
 		setJsonField(json, _SSID, this->_ssid);
-		setJsonField(json, _PASS, mask?_MASKED_VALUE:_pass);
+		setJsonField(json, _PASS, mask?_MASKED_VALUE:this->_pass);
 
 		setJsonField(json, _SSID_AP, this->_ssidAp);
-		setJsonField(json, _PASS_AP, mask?_MASKED_VALUE:_passAp);
+		setJsonField(json, _PASS_AP, mask?_MASKED_VALUE:this->_passAp);
 
 		setJsonField(json, _IS_AP, this->_isAp);
 		setJsonField(json, _IS_STAT_IP, this->_isStatIp);
@@ -348,11 +378,12 @@ protected:
 		setJsonField(json, _IP_DNS, this->_dns);
 		setJsonField(json, _IP_DNS2, this->_dns2);
 		setJsonField(json, _SMART_HOUSE_SERVER_URL, this->_smrtServUrl);
+		setJsonField(json, _SMART_HOUSE_SERVER_KEY, mask?_MASKED_VALUE:this->_smrtServKey);
 
 		setJsonField(json, _USER_LOGIN, this->_userLogin);
-		setJsonField(json, _USER_PASS, mask?_MASKED_VALUE:_userPassword);
+		setJsonField(json, _USER_PASS, mask?_MASKED_VALUE:this->_userPassword);
 		setJsonField(json, _ADMIN_LOGIN, this->_adminLogin);
-		setJsonField(json, _ADMIN_PASS, mask?_MASKED_VALUE:_adminPassword);
+		setJsonField(json, _ADMIN_PASS, mask?_MASKED_VALUE:this->_adminPassword);
 		setJsonField(json, _REFRESH_INTERVAL, this->_interval);
 		setJsonField(json, _AP_CHANNEL, this->_apCH);
 		setJsonField(json, _AP_HIDDEN, this->_apH);

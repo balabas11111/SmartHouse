@@ -1,0 +1,17 @@
+{
+  "name": "EntityLibSimple",
+  "keywords": "json, http, entity, framework",
+  "description": "ESP8266 managing requests/responses in Json format",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/balabas11111/SmartHouse.git"
+  },
+  "version": "1.0.0",
+  "authors": {
+    "name": "Vitaliy Vlasov"
+  },
+  "exclude": [
+  ],
+  "frameworks": "arduino",
+  "platforms": "ESP"
+}

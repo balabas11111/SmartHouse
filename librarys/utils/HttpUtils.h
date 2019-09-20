@@ -14,8 +14,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
-
-#include "RestClient.h"
+#include <EntityJsonRequestResponse.h>
 #include <JsonObjectUtil.h>
 
 #define HEADER_CONTENT_TYPE           "Content-Type"
@@ -32,6 +31,8 @@
 
 #define URL_POST "POST "
 #define URL_POST_JSON "POST JSON "
+
+#define PARAM_URL "url"
 
 class HttpUtils {
 public:
@@ -55,7 +56,7 @@ public:
 
 	static int executeGetRequest(String& url, String& params, String& result) {
 
-		int httpCode = httpGetBase(URL_GET, url, params, result);
+		int httpCode = executeGetRequestBase(URL_GET, url, params, result);
 		printStrResponse(result);
 
 		return httpCode;
@@ -65,7 +66,7 @@ public:
 
 		String resultStr;
 
-		int httpCode = httpGetBase(URL_GET_JSON, url, params, resultStr);
+		int httpCode = executeGetRequestBase(URL_GET_JSON, url, params, resultStr);
 
 		printJsonResponse(resultStr, result);
 
@@ -78,7 +79,7 @@ public:
 
 		jsonToStrAsParams(params, paramsStr);
 
-		int httpCode = httpGetBase(URL_GET_JSON, url, paramsStr, result);
+		int httpCode = executeGetRequestBase(URL_GET_JSON, url, paramsStr, result);
 
 		printStrResponse(result);
 
@@ -93,11 +94,18 @@ public:
 
 		jsonToStrAsParams(params, paramsStr);
 
-		int httpCode = httpGetBase(URL_GET_JSON, url, paramsStr, resultStr);
+		int httpCode = executeGetRequestBase(URL_GET_JSON, url, paramsStr, resultStr);
 
 		printJsonResponse( resultStr, result);
 
 		return httpCode;
+	}
+
+	static int executeGetRequest(EntityJsonRequestResponse* req) {
+		String url = req->getRequest().get<char*>(PARAM_URL);
+		req->getRequest().remove(PARAM_URL);
+
+		return executeGetRequest(url,req->getRequest(),req->getResponse());
 	}
 
 	static int executePostRequest(String& url, String& params,
@@ -147,6 +155,14 @@ public:
 
 		return httpCode;
 	}
+
+	static int executePostRequest(EntityJsonRequestResponse* req) {
+		String url = req->getRequest().get<char*>(PARAM_URL);
+		req->getRequest().remove(PARAM_URL);
+
+		return executePostRequest(url,req->getRequest(),req->getResponse());
+	}
+
 private:
 	static void jsonToStrAsParams(JsonObject& params, String& paramsStr, bool isGet = true) {
 		/*if(*params ==nullptr){
@@ -173,38 +189,27 @@ private:
 	static int executePostRequestBase(const char* reqType,String& url, String& params,
 			String& result, const String& contentType) {
 
-		RestClient client = RestClient("192.168.0.103");
-		 String response = "";
-		  int statusCode = client.get("/api/v1/devices", &response);
-		  Serial.print("Status code from server: ");
-		  Serial.println(statusCode);
-		  Serial.print("Response body from server: ");
-		  Serial.println(response);
-
-/*
-		url = "http://192.168.0.103/api/v1/devices";
-
 		Serial.println(FPSTR("--------------------"));
-		Serial.println(FPSTR("Execute GET request"));
+		Serial.println(FPSTR("Execute POST request"));
 
 		printReqDetails(reqType, url, params);
 
 		HTTPClient http;
 
-		http.begin("http://192.168.0.103/api/v1/devices");
+		http.begin(url);
 
-		//http.addHeader(HEADER_CONTENT_TYPE, contentType);
+		http.addHeader(HEADER_CONTENT_TYPE, contentType);
 
-		int httpCode = http.GET();
+		int httpCode = http.POST(params);
 		result = http.getString();
 
 		printHttpCode(httpCode);
 
 		http.end();
-*/
-		return statusCode;
+
+		return httpCode;
 	}
-	static int httpGetBase(const char* reqType, String& url, String& params,
+	static int executeGetRequestBase(const char* reqType, String& url, String& params,
 			String& result) {
 		printReqDetails(reqType, url, params);
 
@@ -225,12 +230,12 @@ private:
 	static void printReqDetails(const char* reqType, String& url) {
 		Serial.print(reqType);
 		Serial.print(FPSTR(" url= "));
-		Serial.print(url);
-		Serial.print(FPSTR(" params = "));
+		Serial.println(url);
 	}
 	static void printReqDetails(const char* reqType, String& url,
 			String& params) {
 		printReqDetails(reqType, url);
+		Serial.print(FPSTR("paramsStr = "));
 		Serial.println(params);
 	}
 
@@ -246,19 +251,15 @@ private:
 	}
 
 	static void printStrResponse(String& result) {
-		Serial.print(FPSTR("result = "));
+		Serial.print(FPSTR("resultStr = "));
 		Serial.println(result);
 	}
 
 	static void printJsonResponse(String& resultStr,
 			JsonObject& result) {
-		Serial.print(FPSTR("resultStr = "));
-		Serial.println(resultStr);
+		printStrResponse(resultStr);
 		JsonObjectUtil::clone(result, resultStr);
 		JsonObjectUtil::print("Result JSON ", result);
-
-		Serial.print(FPSTR("result = "));
-		Serial.println(resultStr);
 	}
 };
 

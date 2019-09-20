@@ -82,6 +82,10 @@ public:
 	void print();
 
 	void setOnEntityChanged(std::function<void(void)> onEntityChanged);
+
+	WiFiSettingsBox* getConf(){
+		return this->conf;
+	}
 protected:
 	std::list<Entity*> entities;
 	int count=0;

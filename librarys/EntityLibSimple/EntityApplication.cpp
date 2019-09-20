@@ -98,6 +98,8 @@ void EntityApplication::loop() {
 	this->entityManager->loop();
 	this->entityUpdateManager->loop();
 	this->wifiServerManager->loop();
+
+	this->executeOnServerRegisterIfTriggered();
 }
 
 void EntityApplication::startWiFi(){
@@ -144,10 +146,10 @@ void EntityApplication::initNotifier(Notifier* notifier){
 }
 
 void EntityApplication::initDefaultNotifier(NotificationTarget* target) {
-	this->defaultNotifier = new EntityManagerNotifier(target, this->getEntityManager());
+	this->defaultNotifier = new NotifierEntityManagerGroupName(target, this->getEntityManager());
 }
 
-EntityManagerNotifier* EntityApplication::getDefaultNotifier() {
+NotifierEntityManagerGroupName* EntityApplication::getDefaultNotifier() {
 	return this->defaultNotifier;
 }
 
@@ -166,4 +168,20 @@ void EntityApplication::setOnEntityChanged(
 
 WiFiManager* EntityApplication::getWiFiManager() {
 	return this->wifiManager;
+}
+
+void EntityApplication::triggerOnServerRegister() {
+	this->triggeredOnServerRegister = true;
+}
+
+void EntityApplication::executeOnServerRegisterIfTriggered() {
+	if(this->triggeredOnServerRegister){
+		EntityJsonRequestResponse* req = this->entityManager->createEntityJsonRequestResponse();
+
+		this->conf->createRegisterRequest(req->getRequest());
+
+		HttpUtils::executePostRequest(req);
+
+		this->entityManager->deleteEntityJsonRequestResponse(req);
+	}
 }

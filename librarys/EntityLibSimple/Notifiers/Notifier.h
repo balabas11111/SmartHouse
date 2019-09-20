@@ -39,7 +39,11 @@ public:
 	}
 
 	bool initialized(){
-		return this->manager != nullptr;
+		bool result = this->manager != nullptr;
+		if(!result){
+			Serial.println(FPSTR("No entity Manager was set"));
+		}
+		return result;
 	}
 
 	virtual void toTarget(JsonObject& json, NotificationTarget* notifTarget = nullptr){

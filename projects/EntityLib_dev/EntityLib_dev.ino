@@ -4,8 +4,7 @@
 #include <EntityApplication.h>
 #include <Entity.h>
 #include <EntityUpdate.h>
-#include <Notifiers/EntityManagerNotifier.h>
-
+#include <Notifiers/NotifierEntityManagerGroupName.h>
 #include <ObjectUtils.h>
 
 #include <WIFi/WiFiSettingsBox.h>
@@ -44,8 +43,9 @@ void loop() {
 }
 
 void printSensorsJson() {
-	//app.notify((char*)GROUP_SENSORS);
-	app.notify();
+	app.notify((char*)GROUP_SENSORS);
+	//app.notify();
+	app.triggerOnServerRegister();
 }
 
 void updateEntities(){
