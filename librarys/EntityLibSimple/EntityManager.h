@@ -18,8 +18,10 @@
 
 #include "Entity.h"
 #include "WiFi/WiFiSettingsBox.h"
+#include "WiFi/SmartHouseServerHelper.h"
 
 #include "EntityJsonRequestResponse.h"
+//#include <ApplicationContext.h>
 
 /*
  #define GROUP "Group"
@@ -31,9 +33,6 @@
 #define PARAMETERS "params"
 #define RESPONSE "resp"
 
-#define GROUP "group"
-#define NAME "name"
-#define BODY "body"
 
 const char DEFAULT_VALUE[] PROGMEM = "DEFAULT";
 const char EMPTY_GROUP[] PROGMEM = "Empty group";
@@ -50,7 +49,7 @@ public:
 	}
 
 	void registerAndPreInitEntity(Entity* entity);
-	void init(WiFiSettingsBox* conf);
+	void init(WiFiSettingsBox* conf, SmartHouseServerHelper* serverHelper);
 
 	void processEntityChangedEvent(int entityIndex);
 
@@ -83,9 +82,9 @@ public:
 
 	void setOnEntityChanged(std::function<void(void)> onEntityChanged);
 
-	WiFiSettingsBox* getConf(){
-		return this->conf;
-	}
+	WiFiSettingsBox* getConf();
+	SmartHouseServerHelper* getServerHelper();
+
 protected:
 	std::list<Entity*> entities;
 	int count=0;
@@ -131,6 +130,7 @@ protected:
 	std::function<void(void)> onEntityChanged;
 
 	WiFiSettingsBox* conf;
+	SmartHouseServerHelper* serverHelper;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYMANAGER_H_ */

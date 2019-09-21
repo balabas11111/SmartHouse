@@ -1,10 +1,11 @@
 #include "Arduino.h"
 #include <ArduinoJson.h>
 
+#include <functional>
+
 #include <EntityApplication.h>
 #include <Entity.h>
 #include <EntityUpdate.h>
-#include <Notifiers/NotifierEntityManagerGroupName.h>
 #include <ObjectUtils.h>
 
 #include <WIFi/WiFiSettingsBox.h>
@@ -32,25 +33,29 @@ void setup() {
 	app.setOnEntityChanged(onEntityChanged);
 
 	app.registerTicker(1000,changeLed);
-	app.registerTicker(10000, printSensorsJson);
+	app.registerTicker(10000, executeHttp);
 	app.registerTicker(updateEntities);
 
-	app.updateEntities(false);
+	//app.updateEntities(false);
 }
+
+
 
 void loop() {
 	app.loop();
 }
 
-void printSensorsJson() {
-	app.notify((char*)GROUP_SENSORS);
-	//app.notify();
-	app.triggerOnServerRegister();
+void executeHttp(){
+	//app.getSmartHouseServerHelper()->triggerOnServerGet();
+	app.getSmartHouseServerHelper()->triggerOnServerRegister();
 }
 
 void updateEntities(){
 	//app.getEntityManager()->print();
+	Serial.println(FPSTR("Update Entities"));
 	app.updateEntities(false);
+	app.notify((char*)GROUP_SENSORS);
+	app.getSmartHouseServerHelper()->triggerOnServerDeviceDataChanged();
 }
 
 void changeLed(){

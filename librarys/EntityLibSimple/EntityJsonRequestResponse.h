@@ -26,13 +26,24 @@ private:
 	*/
 
 public:
+
 	EntityJsonRequestResponse(){
 		this->root= buf.parse("{}").as<JsonObject>();
 
 		getRoot().createNestedObject(REQUEST);
 		getRoot().createNestedObject(RESPONSE);
 	};
-	virtual ~EntityJsonRequestResponse(){};
+	virtual ~EntityJsonRequestResponse(){
+		//Serial.println(FPSTR("EntityJsonRequestResponse destroyed"));
+	};
+
+	static EntityJsonRequestResponse* build(){
+		return new EntityJsonRequestResponse();
+	}
+
+	static void destroy(EntityJsonRequestResponse* reqResp){
+		delete reqResp;
+	}
 
 	void clear(){
 		this->buf.clear();

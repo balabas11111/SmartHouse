@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.balabas.smarthouse.server.auth.ServerAuthService;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.Device;
+import com.balabas.smarthouse.server.model.DeviceOnDataUpdatedRequest;
 import com.balabas.smarthouse.server.model.DeviceRegistrationRequest;
 import com.balabas.smarthouse.server.model.DeviceRegistrationResult;
 import com.balabas.smarthouse.server.model.DeviceRegistrationResult.DeviceRegistrationStatus;
@@ -30,7 +32,6 @@ import com.balabas.smarthouse.server.service.DeviceService;
 import com.balabas.smarthouse.server.util.ServerValuesMockUtil;
 
 import lombok.extern.log4j.Log4j2;
-
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP;
 
 @CrossOrigin(origins = "http://localhost:4200")
@@ -47,6 +48,7 @@ public class DeviceController {
 
 	@GetMapping("/devices")
 	public List<Device> getAllDevices() {
+	    log.info("Get all devices=");
 		return deviceService.getDevices();
 	}
 
@@ -59,18 +61,50 @@ public class DeviceController {
 		return ResponseEntity.ok().body(device);
 	}
 
+	@PostMapping("/devices/registerStr")
+    public ResponseEntity<String> registerDeviceStr(@RequestBody String deviceRequest,
+            HttpServletRequest request) {
+        log.info("registerDeviceStr DeviceController registerDevice Addr=" + request.getRemoteAddr());
+        log.info("deviceRequest=" + deviceRequest);
+        
+        return ResponseEntity.ok().body(deviceRequest);
+    }
+	
+	@PostMapping("/devices/registerSimple")
+    public ResponseEntity<DeviceRegistrationResult> registerDeviceSimple(@RequestBody DeviceRegistrationRequest deviceRequest,
+            HttpServletRequest request) throws UnknownHostException {
+        log.info("registerDeviceSimple DeviceController registerDevice Addr=" + request.getRemoteAddr());
+        
+        if(!authService.checkHashedKey(deviceRequest.getServerKey())){
+            //return ResponseEntity.status(HttpStatus.FORBIDDEN).body(DeviceRegistrationResult.build(DeviceRegistrationStatus.FORBIDDEN));
+        }
+        
+        DeviceRegistrationResult result = deviceService.registerDevice(deviceRequest);
+        return ResponseEntity.ok().body(result);
+    }
+	
 	@PostMapping("/devices/register")
 	public ResponseEntity<DeviceRegistrationResult> registerDevice(@Valid @RequestBody DeviceRegistrationRequest deviceRequest,
-			HttpServletRequest request) {
+			HttpServletRequest request) throws UnknownHostException {
 		log.info("DeviceController registerDevice Addr=" + request.getRemoteAddr());
 		
-		if(!authService.checkHashedKey(deviceRequest.getKeyHash())){
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(DeviceRegistrationResult.build(DeviceRegistrationStatus.FORBIDDEN));
+		if(!authService.checkHashedKey(deviceRequest.getServerKey())){
+			//return ResponseEntity.status(HttpStatus.FORBIDDEN).body(DeviceRegistrationResult.build(DeviceRegistrationStatus.FORBIDDEN));
 		}
+		deviceRequest.setIp(request.getRemoteAddr());
 		
-		DeviceRegistrationResult result = deviceService.registerDevice(deviceRequest.getDevice());
+		DeviceRegistrationResult result = deviceService.registerDevice(deviceRequest);
 		return ResponseEntity.ok().body(result);
 	}
+	
+	@PostMapping("/devices/data")
+    public ResponseEntity<String> dataChangeDispatchedOnDevice(@RequestBody DeviceOnDataUpdatedRequest request) {
+	    log.info("DataChanged dispatched on "+request.getDeviceId()+" hasData "+request.hasData());
+	    
+        deviceService.setDeviceDataRequestCompleted(request.getDeviceId(), request.getData());
+        
+        return ResponseEntity.ok().body("OK");
+    }
 
 	@PostMapping("/devices/activate{deviceId}")
 	public ResponseEntity<Boolean> activateDevice(@PathVariable(value = "deviceId") String deviceId) {

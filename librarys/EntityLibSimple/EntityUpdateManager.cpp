@@ -84,7 +84,7 @@ int EntityUpdateManager::init(int interval) {
 	return totalCount;
 }
 
-void EntityUpdateManager::loop(bool withCheck) {
+void EntityUpdateManager::updateEntities(bool withCheck) {
 	//Serial.println(FPSTR("EntityUpdateManager loop"));
 	for (EntityUpdate* entity : this->entities) {
 			entity->loop();
@@ -95,4 +95,8 @@ void EntityUpdateManager::loop(bool withCheck) {
 	Serial.println(FPSTR("EntityUpdateManager loop DONE"));
 	Serial.println(FPSTR("=================================="));
 	*/
+}
+
+void EntityUpdateManager::loop(bool withCheck) {
+	updateEntities(withCheck);
 }

@@ -127,14 +127,14 @@ public:
 
 	static JsonVariant clone(JsonVariant to, JsonVariant prototype, const char* protoKey = "")
 	{
-		Serial.println(FPSTR("Prototype="));
+		/*Serial.println(FPSTR("Prototype="));
 		prototype.printTo(Serial);
 		Serial.println();
 		Serial.println(FPSTR(" jb="));
 		to.printTo(Serial);
 		Serial.println();
 		Serial.println(FPSTR("..."));
-
+*/
 		if(to.is<JsonObject>()){
 			JsonObject& target = to.as<JsonObject>();
 

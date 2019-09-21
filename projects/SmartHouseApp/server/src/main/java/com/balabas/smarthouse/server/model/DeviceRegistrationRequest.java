@@ -9,7 +9,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DeviceRegistrationRequest {
 
-	private Device device;
+	private String deviceId;
 	
-	private String keyHash;
+	private String deviceFirmware;
+	
+	private String deviceDescr;
+	
+	private String serverKey;
+	
+	private String deviceKey;
+	
+	private String rootUrl;
+	
+	private String dataUrl;
+	
+	private String ip;
 }

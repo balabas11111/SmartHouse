@@ -11,58 +11,88 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
+#include <ObjectUtils.h>
 #include <JsonObjectUtil.h>
 #include <Notifiers/NotificationTarget.h>
+#include <Notifiers/DataSelector.h>
 
 #include <EntityManager.h>
+#include <EntityJsonRequestResponse.h>
 
-#define SENT_TO_DEFAULT_TARGET "toSerialTarget"
-#define SENT_TO_TARGET "toTarget"
+#define SENT_TO_DEFAULT_TARGET "toTarget SERIAL"
+#define SENT_TO_PREDEFINED_TARGET "toTarget PREDEFINED"
+#define SENT_TO_TARGET "toTarget CUSTOM"
 
 class Notifier {
 public:
-	Notifier(const char* name, NotificationTarget* target = nullptr, EntityManager* manager = nullptr){
+	Notifier(const char* name, NotificationTarget* target = nullptr, DataSelector* selector = nullptr){
 		this->name = name;
 		this->target = target;
-		this->manager = manager;
+		this->selector = selector;
 	}
 	virtual ~Notifier(){}
 
-	virtual void init(EntityManager* manager){
-		this->manager = manager;
-	}
+	virtual void notify(char* group = nullptr, char* name = nullptr, char* param = nullptr, NotificationTarget* notifTarget = nullptr){
+		UNUSED(param);
 
-	virtual void notify(){
+		if(!initialized()){
+			Serial.print(FPSTR("Not initialized "));
+			Serial.println(this->name);
+			return;
+		}
+
+		startNotification();
+
 		Serial.println(FPSTR("-----------------------------------------------"));
 		Serial.print(FPSTR("Notify "));
 		Serial.println(this->name);
+
+		ObjectUtils::printHeap();
+
+		EntityJsonRequestResponse* data = EntityJsonRequestResponse::build();
+		if(group!=nullptr){
+			data->addRequestParam((char*)GROUP, group);
+		}
+		if(name!=nullptr){
+			data->addRequestParam((char*)NAME, name);
+		}
+
+		selector->selectData(data);
+		toTarget(data, notifTarget);
+
+		delete data;
+		ObjectUtils::printHeap();
+		finishNotification();
 	}
 
 	bool initialized(){
-		bool result = this->manager != nullptr;
+		bool result = this->selector != nullptr;
 		if(!result){
-			Serial.println(FPSTR("No entity Manager was set"));
+			Serial.println(FPSTR("No DataSelector was set"));
 		}
 		return result;
 	}
 
-	virtual void toTarget(JsonObject& json, NotificationTarget* notifTarget = nullptr){
+	virtual void toTarget(EntityJsonRequestResponse* data, NotificationTarget* notifTarget = nullptr){
+
 		if(notifTarget!=nullptr){
-			JsonObjectUtil::printWithPreffix(SENT_TO_TARGET,json);
-			notifTarget->toTarget(json);
+			Serial.println(SENT_TO_PREDEFINED_TARGET);
+			notifTarget->toTarget(data);
 			return;
 		}
 
 		if(this->target==nullptr){
-			JsonObjectUtil::printWithPreffix(SENT_TO_DEFAULT_TARGET,json);
+			JsonObjectUtil::printWithPreffix(SENT_TO_DEFAULT_TARGET,data->getResponse());
 		}else{
-			JsonObjectUtil::printWithPreffix(SENT_TO_TARGET,json);
-			this->target->toTarget(json);
+			Serial.println(SENT_TO_TARGET);
+			this->target->toTarget(data);
 		}
 	}
 
-	virtual void finishNotification(unsigned long startTime){
-		unsigned long totalTime = millis()-startTime;
+	virtual void finishNotification(){
+		unsigned long totalTime = millis()-start;
+
+		start = 0;
 
 		Serial.print(FPSTR("Notified  time ="));
 		Serial.println(totalTime);
@@ -70,25 +100,24 @@ public:
 
 	}
 
-	virtual unsigned long startNotification(){
-		Notifier::notify();
-		return millis();
+	virtual void startNotification(){
+		start = millis();
 	}
 
-
-
-	virtual EntityManager* getEntityManager(){
-		return manager;
+	virtual DataSelector* getSelector(){
+		return selector;
 	}
 
 	virtual void setTarget(NotificationTarget* target){
 		this->target = target;
 	}
 protected:
-	EntityManager* manager;
+	DataSelector* selector;
+	NotificationTarget* target;
 private:
 	const char* name;
-	NotificationTarget* target;
+	unsigned long start=0;
+
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_NOTIFIERS_NOTIFIER_H_ */

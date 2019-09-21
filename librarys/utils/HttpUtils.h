@@ -101,9 +101,9 @@ public:
 		return httpCode;
 	}
 
-	static int executeGetRequest(EntityJsonRequestResponse* req) {
-		String url = req->getRequest().get<char*>(PARAM_URL);
-		req->getRequest().remove(PARAM_URL);
+	static int executeGetRequest(EntityJsonRequestResponse* req, const char* urlParamName) {
+		String url = req->getRequest().get<char*>(urlParamName);
+		req->getRequest().remove(urlParamName);
 
 		return executeGetRequest(url,req->getRequest(),req->getResponse());
 	}
@@ -147,18 +147,18 @@ public:
 		String paramsStr;
 		String resultStr;
 
-		jsonToStrAsParams(params, paramsStr, false);
+		params.printTo(paramsStr);
 
-		int httpCode = executePostRequestBase(URL_POST_JSON, url, paramsStr, resultStr,	CONTENT_TYPE_APPLICATION_FORM_URL_ENCODED);
+		int httpCode = executePostRequestBase(URL_POST_JSON, url, paramsStr, resultStr,	CONTENT_TYPE_APPLICATION_JSON);
 
 		printJsonResponse(resultStr, result);
 
 		return httpCode;
 	}
 
-	static int executePostRequest(EntityJsonRequestResponse* req) {
-		String url = req->getRequest().get<char*>(PARAM_URL);
-		req->getRequest().remove(PARAM_URL);
+	static int executePostRequest(EntityJsonRequestResponse* req, const char* urlParamName) {
+		String url = req->getRequest().get<char*>(urlParamName);
+		req->getRequest().remove(urlParamName);
 
 		return executePostRequest(url,req->getRequest(),req->getResponse());
 	}
@@ -213,10 +213,20 @@ private:
 			String& result) {
 		printReqDetails(reqType, url, params);
 
+		String paramsStr = (params != nullptr && params.length() > 1) ?	params : "";
+
+		Serial.print(FPSTR("process url ="));
+		Serial.print(url);
+		Serial.print(FPSTR(" params ="));
+		Serial.println(paramsStr);
+
+		String getUrl = String(url) +paramsStr;
+
+		Serial.print(FPSTR("process Get url ="));
+		Serial.println(getUrl);
+
 		HTTPClient http;
-		http.begin(
-				url + (params != nullptr && params.length() > 1) ?
-						params : "");
+		http.begin(getUrl);
 
 		int httpCode = http.GET();
 		result = http.getString();
@@ -257,7 +267,7 @@ private:
 
 	static void printJsonResponse(String& resultStr,
 			JsonObject& result) {
-		printStrResponse(resultStr);
+		//printStrResponse(resultStr);
 		JsonObjectUtil::clone(result, resultStr);
 		JsonObjectUtil::print("Result JSON ", result);
 	}

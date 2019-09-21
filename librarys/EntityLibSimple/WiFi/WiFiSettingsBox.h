@@ -31,6 +31,7 @@
 #define _IP_SUBNET "subnet"
 #define _IP_DNS "dns"
 #define _IP_DNS2 "dns2"
+#define _SMART_HOUSE_SERVER_ADDR "smrtServAddr"
 #define _SMART_HOUSE_SERVER_URL "smrtServUrl"
 #define _SMART_HOUSE_SERVER_KEY "smrtServKey"
 //access settings
@@ -53,13 +54,6 @@
 
 #define _WIFI_SETTINGS_DEF_NAME "DeviceSettings"
 #define _WIFI_SETTINGS_DEF_DESCR "Wifi Server Device settings"
-
-#define KEY_URL "url"
-
-#define KEY_IP "ip"
-#define KEY_DATA_URL "dataUrl"
-#define KEY_ROOT_URL "rootUrl"
-#define KEY_TOKEN "keyHash"
 
 #include "Arduino.h"
 #include "ArduinoJson.h"
@@ -126,7 +120,7 @@ public:
 		Serial.print(FPSTR(" dns2="));
 		Serial.print(this->_dns2);
 		Serial.print(FPSTR(" smrtServUrl="));
-		Serial.print(this->_smrtServUrl);
+		Serial.print(this->_smrtServAddr);
 		Serial.println();
 	}
 
@@ -209,10 +203,6 @@ public:
 		return  (new IPAddress())->fromString(this->_dns2);
 	}
 
-	char* smartHouseServerUrlStr() {
-		return  this->_smrtServUrl;
-	}
-
 	const char* userLogin() {
 		return this->_userLogin;
 	}
@@ -237,36 +227,20 @@ public:
 		return this->_deviceDescr;
 	}
 
+	char* smartServerAddr(){
+		return this->_smrtServAddr;
+	}
+
+	char* smartServerKey(){
+		return this->_smrtServKey;
+	}
+
 	bool hasAdminPassword(){
 		return strcmp(_adminPassword,"")!=0;
 	}
 
 	bool hasUserPassword(){
 		return strcmp(_userPassword,"")!=0;
-	}
-
-	virtual void createRegisterRequest(JsonObject& json){
-		JsonObject& device = json.createNestedObject(_DEVICE);
-
-		addDeviceInfoToResponse(device);
-
-		String baseUrl = HTTP_PREFFIX;
-		baseUrl+= getCurrentIp();
-
-		const char* hash = sha1(this->_smrtServKey).c_str();
-
-		setJsonField(device, KEY_ROOT_URL, baseUrl.concat(URL_ROOT));
-		setJsonField(device, KEY_DATA_URL, baseUrl.concat(URL_DATA));
-		setJsonField(device, KEY_TOKEN, hash);
-
-		setJsonField(device, KEY_URL, this->_smrtServUrl);
-	}
-
-	virtual void addDeviceInfoToResponse(JsonObject& json){
-		setJsonField(json, _DEVICE_ID, this->_devId);
-		setJsonField(json, _DEVICE_FIRMWARE, this->_firmware);
-		setJsonField(json, _DEVICE_DESCR, this->_deviceDescr);
-		setJsonField(json, KEY_IP, this->getCurrentIp());
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
@@ -308,7 +282,7 @@ protected:
 	char* _subnet = "255,255,255,0";
 	char* _dns = "192,168,0,1";
 	char* _dns2 = "192,168,0,1";
-	char* _smrtServUrl = "http://192.168.0.103:8080/api/v1/devices/register";
+	char* _smrtServAddr = "192.168.0.103";
 	char* _smrtServKey = "SomeServerKey";
 
 	char* _userLogin = (char*)"";
@@ -340,7 +314,7 @@ protected:
 		chg = getKeyValueIfExistsAndNotEquals(json, _IP_SUBNET, &this->_subnet)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _IP_DNS, &this->_dns)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _IP_DNS2, &this->_dns2)?true:chg;
-		chg = getKeyValueIfExistsAndNotEquals(json, _SMART_HOUSE_SERVER_URL, &this->_smrtServUrl)?true:chg;
+		chg = getKeyValueIfExistsAndNotEquals(json, _SMART_HOUSE_SERVER_ADDR, &this->_smrtServAddr)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _SMART_HOUSE_SERVER_KEY, &this->_smrtServKey)?true:chg;
 
 		chg = getKeyValueIfExistsAndNotEquals(json, _USER_LOGIN, &this->_userLogin)?true:chg;
@@ -377,7 +351,7 @@ protected:
 		setJsonField(json, _IP_SUBNET, this->_subnet);
 		setJsonField(json, _IP_DNS, this->_dns);
 		setJsonField(json, _IP_DNS2, this->_dns2);
-		setJsonField(json, _SMART_HOUSE_SERVER_URL, this->_smrtServUrl);
+		setJsonField(json, _SMART_HOUSE_SERVER_ADDR, this->_smrtServAddr);
 		setJsonField(json, _SMART_HOUSE_SERVER_KEY, mask?_MASKED_VALUE:this->_smrtServKey);
 
 		setJsonField(json, _USER_LOGIN, this->_userLogin);

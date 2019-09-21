@@ -186,12 +186,3 @@ void WiFiManager::onStationModeGotIP(const WiFiEventStationModeGotIP& evt) {
 		onWiFiConnected();
 	}
 }
-
-boolean WiFiManager::registerOnServer() {
-	EntityJsonRequestResponse* req = new EntityJsonRequestResponse();
-	String url = conf->smartHouseServerUrlStr();
-
-	int status = HttpUtils::executePostRequest(url, req->getRequest(), req->getResponse());
-
-	return status == 200;
-}

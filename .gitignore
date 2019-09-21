@@ -15,3 +15,5 @@
 /projects/EntityLib_dev/.settings
 /projects/EntityLib_dev/Release
 /projects/EntityLib_dev/.gitignore
+/projects/SmartHouseApp/server/bin/logs
+/projects/SmartHouseApp/server/bin/server-2.2.0.M6.jar

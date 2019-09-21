@@ -23,6 +23,7 @@ public:
 
 	int init(int interval);
 
+	void updateEntities(bool withCheck = true);
 	void loop(bool withCheck = true);
 
 private:

@@ -35,8 +35,10 @@ void EntityManager::registerAndPreInitEntity(Entity* entity) {
 
 }
 
-void EntityManager::init(WiFiSettingsBox* conf) {
+void EntityManager::init(WiFiSettingsBox* conf, SmartHouseServerHelper* serverHelper) {
 	this->conf = conf;
+	this->serverHelper = serverHelper;
+
 	Serial.println(FPSTR("----------------------------------"));
 	Serial.println(FPSTR("Init entityManager"));
 	FileUtils::init();
@@ -100,7 +102,7 @@ void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 
 	JsonObject& json = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
 										_DEVICE, _INFO);
-	this->conf->addDeviceInfoToResponse(json);
+	this->serverHelper->addDeviceInfoToJson(json);
 
 	if (hasNoGroupNoName(params) || hasAllGroupNoName(params)) {
 		executeHttpMethodOnAll(params, response, method);
@@ -333,6 +335,14 @@ void EntityManager::print() {
 	Serial.print(FPSTR(" failValidate = "));
 	Serial.println(failValidate);
 
+}
+
+WiFiSettingsBox* EntityManager::getConf() {
+	return this->conf;
+}
+
+SmartHouseServerHelper* EntityManager::getServerHelper() {
+	return this->serverHelper;
 }
 
 void EntityManager::persist(

@@ -52,7 +52,7 @@ public class SmartHouseServerServiceImpl implements InitializingBean, SmartHouse
         List<Device> result = new ArrayList<>();
         
         for(int i=0; i<3; i++){
-            result.add(new Device("deviceId"+i, "deviceFirmware"+i, "deviceDescr"+i, null, "dataUrl"+i, "rootUrl"+i, true));
+            //result.add(new Device("deviceId"+i, "deviceFirmware"+i, "deviceDescr"+i, null, "dataUrl"+i, "rootUrl"+i, true));
         }
         
         return result;

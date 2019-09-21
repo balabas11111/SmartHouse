@@ -30,8 +30,9 @@
 #define RESPONSE_KEY_Server "Server"
 #define RESPONSE_MSG_ServerName "ESP Sync Web Server"
 
-#define JSONKEY_files   "files"
-#define JSONKEY_heap    "heap"
+#define JSONKEY_files       "files"
+#define JSONKEY_heap        "heap"
+#define JSONKEY_url         "url"
 #define DEFAULT_JSON_OBJECT "{}"
 
 //headers
@@ -42,6 +43,18 @@
 #define RESPONSE_MSG_badArgs           "BAD ARGS"
 #define RESPONSE_MSG_badPath           "BAD Path"
 #define RESPONSE_MSG_fileNotFound      "FileNotFound"
+//SmartHouse server constants
+#define SMART_HOUSE_SERVER_REQUEST_REGISTER      "shReg"
+#define SMART_HOUSE_SERVER_REQUEST_SEND_ENTITIES "shSendEnt"
+
+#define SMART_HOUSE_SERVER_URL_SEND_ALL_DATA "shSendAll"
+#define SMART_HOUSE_SERVER_URL_SEND_SENSORS  "shSendSens"
+#define SMART_HOUSE_SERVER_URL_SEND_SETT     "shSendSett"
+
+// default json keys for values in request context
+#define GROUP "group"
+#define NAME "name"
+#define BODY "body"
 
 //content types
 const PROGMEM char CONTENT_TYPE_TEXT_HTML[] = "text/html";
@@ -72,6 +85,7 @@ const PROGMEM char AUTH_REALM_ADMIN_MESSAGE[] = "Enter Admin login/password for:
 const PROGMEM char AUTH_REALM_USER_MESSAGE[] = "Enter User login/password for: ";
 // the Content of the HTML response in case of Unautherized Access Default:empty
 const PROGMEM char AUTH_FAILED_MESSAGE[] = "<html>403. Authentication Failed</html>";
+
 class NetConstants {
 };
 

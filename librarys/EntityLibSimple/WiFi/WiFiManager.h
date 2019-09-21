@@ -33,8 +33,6 @@ public:
 
 	bool disconnect();
 
-	boolean registerOnServer();
-
 protected:
 	bool startAsAP();
 	bool startAsSta();

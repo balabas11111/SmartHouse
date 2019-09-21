@@ -20,6 +20,8 @@ EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 	this->conf = (newConf) ? new WiFiSettingsBox(firmWare) : conf;
 	this->entityManager = new EntityManager(entities, entityCount);
 
+	this->smartHouseServerHelper = new SmartHouseServerHelper(this->conf);
+
 	if (newConf) {
 		this->entityManager->registerAndPreInitEntity(this->conf);
 	}
@@ -32,7 +34,6 @@ EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 	this->wifiServerManager = new WiFiServerManager(this->entityManager,
 			this->conf);
 
-	this->defaultNotifier = nullptr;
 }
 
 void EntityApplication::init(bool initSerial,
@@ -63,8 +64,8 @@ void EntityApplication::init(bool initSerial,
 	ObjectUtils::printHeap();
 	ObjectUtils::printMillis();
 
-	entityManager->init(this->conf);
-	entityUpdateManager->init(this->conf->refreshInterval());
+	this->entityManager->init(this->conf, this->smartHouseServerHelper);
+	this->entityUpdateManager->init(this->conf->refreshInterval());
 
 	if(initWiFi){
 		startWiFi();
@@ -73,9 +74,10 @@ void EntityApplication::init(bool initSerial,
 		startServer();
 	}
 
-	Serial.println(FPSTR("Application Init done"));
+	this->defaultDataSelector = new DataSelectorEntityManager(this->entityManager);
+	this->defaultNotifier = new Notifier("Default Notifier", nullptr, this->getDataSelector());
 
-	initDefaultNotifier();
+	Serial.println(FPSTR("Application Init done"));
 
 	ObjectUtils::printHeap();
 	ObjectUtils::printMillis();
@@ -98,8 +100,7 @@ void EntityApplication::loop() {
 	this->entityManager->loop();
 	this->entityUpdateManager->loop();
 	this->wifiServerManager->loop();
-
-	this->executeOnServerRegisterIfTriggered();
+	this->smartHouseServerHelper->loop();
 }
 
 void EntityApplication::startWiFi(){
@@ -138,18 +139,10 @@ void EntityApplication::registerTicker(uint32_t milliseconds, void (*callback)(v
 }
 
 void EntityApplication::updateEntities(bool withCheck){
-	this->entityUpdateManager->loop(withCheck);
+	this->entityUpdateManager->updateEntities(withCheck);
 }
 
-void EntityApplication::initNotifier(Notifier* notifier){
-	notifier->init(this->entityManager);
-}
-
-void EntityApplication::initDefaultNotifier(NotificationTarget* target) {
-	this->defaultNotifier = new NotifierEntityManagerGroupName(target, this->getEntityManager());
-}
-
-NotifierEntityManagerGroupName* EntityApplication::getDefaultNotifier() {
+Notifier* EntityApplication::getDefaultNotifier() {
 	return this->defaultNotifier;
 }
 
@@ -158,7 +151,7 @@ void EntityApplication::notify(char* group, char* name,
 	if(this->defaultNotifier == nullptr){
 		return;
 	}
-	this->defaultNotifier->notify(group, name, notifTarget);
+	getDefaultNotifier()->notify(group, name, nullptr, notifTarget);
 }
 
 void EntityApplication::setOnEntityChanged(
@@ -170,18 +163,18 @@ WiFiManager* EntityApplication::getWiFiManager() {
 	return this->wifiManager;
 }
 
-void EntityApplication::triggerOnServerRegister() {
-	this->triggeredOnServerRegister = true;
+EntityUpdateManager* EntityApplication::getEntityUpdateManager() {
+	return this->entityUpdateManager;
 }
 
-void EntityApplication::executeOnServerRegisterIfTriggered() {
-	if(this->triggeredOnServerRegister){
-		EntityJsonRequestResponse* req = this->entityManager->createEntityJsonRequestResponse();
+WiFiServerManager* EntityApplication::getWifiServerManager() {
+	return this->wifiServerManager;
+}
 
-		this->conf->createRegisterRequest(req->getRequest());
+SmartHouseServerHelper* EntityApplication::getSmartHouseServerHelper() {
+	return this->smartHouseServerHelper;
+}
 
-		HttpUtils::executePostRequest(req);
-
-		this->entityManager->deleteEntityJsonRequestResponse(req);
-	}
+DataSelector* EntityApplication::getDataSelector() {
+	return this->defaultDataSelector;
 }

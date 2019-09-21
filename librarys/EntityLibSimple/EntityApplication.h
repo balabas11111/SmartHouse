@@ -14,6 +14,7 @@
 
 #include <WiFi/WiFiManager.h>
 #include <WiFi/WiFiServerManager.h>
+#include <WiFi/SmartHouseServerHelper.h>
 
 #include <Entity.h>
 #include <EntityManager.h>
@@ -27,10 +28,12 @@
 
 #include <Ticker.h>
 #include <Notifiers/Notifier.h>
-#include <Notifiers/NotifierEntityManagerGroupName.h>
-#include <Notifiers/NotifierSmartHouseServerRegister.h>
+#include <Notifiers/DataSelector.h>
+#include <Notifiers/DataSelectorEntityManager.h>
 
-class EntityApplication {
+#include <ApplicationContext.h>
+
+class EntityApplication : public ApplicationContext {
 public:
 	EntityApplication(const char* firmWare, Entity* entities[], int entityCount,
 			EntityUpdate* entityUpdate[], int entityUpdateCount,
@@ -52,25 +55,24 @@ public:
 	void startWiFi();
 	void startServer();
 
-	EntityManager* getEntityManager();
-	WiFiManager* getWiFiManager();
-
 	WiFiSettingsBox* getConf();
+	EntityManager* getEntityManager();
+	EntityUpdateManager* getEntityUpdateManager();
+	WiFiManager* getWiFiManager();
+	WiFiServerManager* getWifiServerManager();
+	SmartHouseServerHelper* getSmartHouseServerHelper();
+
+	DataSelector* getDataSelector();
+	Notifier* getDefaultNotifier();
 
 	void registerTicker(void (*callback)(void));
 	void registerTicker(uint32_t milliseconds, void (*callback)(void));
 
 	void updateEntities(bool withCheck = true);
 
-	void initNotifier(Notifier* notifier);
-	void initDefaultNotifier(NotificationTarget* target = nullptr);
-	NotifierEntityManagerGroupName* getDefaultNotifier();
-
 	void notify(char* group = nullptr, char* name = nullptr, NotificationTarget* notifTarget = nullptr);
 
-	void triggerOnServerRegister();
 private:
-	bool triggeredOnServerRegister = false;
 
 	WiFiSettingsBox* conf;
 	WiFiManager* wifiManager;
@@ -79,9 +81,10 @@ private:
 	EntityManager* entityManager;
 	EntityUpdateManager* entityUpdateManager;
 
-	NotifierEntityManagerGroupName* defaultNotifier;
+	SmartHouseServerHelper* smartHouseServerHelper;
 
-	void executeOnServerRegisterIfTriggered();
+	DataSelector* defaultDataSelector;
+	Notifier* defaultNotifier;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYAPPLICATION_H_ */

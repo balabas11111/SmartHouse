@@ -23,7 +23,17 @@ public class ServerAuthServiceImpl implements InitializingBean, ServerAuthServic
 	
 	@Override
 	public boolean checkHashedKey(String keySha1) {
-		return HashUtil.compareSha1(key, keySha1);
+	    boolean result = HashUtil.compareSha1(this.key, keySha1);
+	    if(!result){
+	        log.error("Server key error expected = "+this.key+
+                " actual"+keySha1);
+	    }
+		return result; 
 	}
+
+    @Override
+    public String getServerKeyHashed() {
+        return this.key;
+    }
 
 }
