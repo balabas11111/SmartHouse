@@ -10,7 +10,6 @@ import javax.validation.Valid;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,10 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.balabas.smarthouse.server.auth.ServerAuthService;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.model.DeviceOnDataUpdatedRequest;
-import com.balabas.smarthouse.server.model.DeviceRegistrationRequest;
-import com.balabas.smarthouse.server.model.DeviceRegistrationResult;
-import com.balabas.smarthouse.server.model.DeviceRegistrationResult.DeviceRegistrationStatus;
+import com.balabas.smarthouse.server.model.request.DeviceOnDataUpdatedRequest;
+import com.balabas.smarthouse.server.model.request.DeviceRegistrationRequest;
+import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult;
 import com.balabas.smarthouse.server.service.DeviceService;
 import com.balabas.smarthouse.server.util.ServerValuesMockUtil;
 
@@ -98,25 +96,26 @@ public class DeviceController {
 	}
 	
 	@PostMapping("/devices/data")
-    public ResponseEntity<String> dataChangeDispatchedOnDevice(@RequestBody DeviceOnDataUpdatedRequest request) {
+    public ResponseEntity<String> dataChangeDispatchedOnDevice(@RequestBody DeviceOnDataUpdatedRequest request) throws ResourceNotFoundException {
 	    log.info("DataChanged dispatched on "+request.getDeviceId()+" hasData "+request.hasData());
 	    
-        deviceService.setDeviceDataRequestCompleted(request.getDeviceId(), request.getData());
+        deviceService.processDeviceDataUpdateDispatched(request);
         
         return ResponseEntity.ok().body("OK");
     }
 
-	@PostMapping("/devices/activate{deviceId}")
-	public ResponseEntity<Boolean> activateDevice(@PathVariable(value = "deviceId") String deviceId) {
-		Boolean result = deviceService.activateDevice(deviceId);
-		return ResponseEntity.ok().body(result);
-	}
-
 	@GetMapping("/devices/getData_{deviceId}")
+    public ResponseEntity<JSONObject> executeGetData(@PathVariable(value = "deviceId") String deviceId,
+            @RequestParam(value = GROUP, required = false) String devEntGroup) throws UnsupportedEncodingException, ResourceNotFoundException {
+
+        return ResponseEntity.ok().body(deviceService.executeGetData(deviceId, devEntGroup));
+    }
+	
+	@GetMapping("/devices/getDataOnDevice_{deviceId}")
 	public ResponseEntity<String> executeGetDataOnDevice(@PathVariable(value = "deviceId") String deviceId,
 			@RequestParam(value = GROUP, required = false) String devEntGroup) throws UnsupportedEncodingException {
 
-		return deviceService.executeGetDataOnDevice(deviceId, devEntGroup);
+		return ResponseEntity.ok().body(deviceService.executeGetDataOnDevice(deviceId, devEntGroup));
 	}
 
 	@GetMapping("/devices/mock_{deviceId}")

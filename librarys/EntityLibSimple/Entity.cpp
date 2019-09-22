@@ -100,6 +100,7 @@ void Entity::dispatchChangeEvent(bool clause) {
 			&& eventProcessFunction != nullptr) {
 		eventProcessFunction(id);
 	}
+	//this->changed = clause;
 }
 
 void Entity::executeGet(JsonObject& params, JsonObject& response) {

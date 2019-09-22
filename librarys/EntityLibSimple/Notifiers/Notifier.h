@@ -56,6 +56,9 @@ public:
 		if(name!=nullptr){
 			data->addRequestParam((char*)NAME, name);
 		}
+		if(param!=nullptr){
+			data->addRequestParam((char*)PARAM, param);
+		}
 
 		selector->selectData(data);
 		toTarget(data, notifTarget);

@@ -1,6 +1,5 @@
 package com.balabas.smarthouse.server.util;
 
-import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_ID;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_DEVICE;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SENSORS;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SETTINGS;

@@ -146,12 +146,12 @@ Notifier* EntityApplication::getDefaultNotifier() {
 	return this->defaultNotifier;
 }
 
-void EntityApplication::notify(char* group, char* name,
+void EntityApplication::notify(char* group, char* name,  char* param,
 		NotificationTarget* notifTarget) {
 	if(this->defaultNotifier == nullptr){
 		return;
 	}
-	getDefaultNotifier()->notify(group, name, nullptr, notifTarget);
+	getDefaultNotifier()->notify(group, name, param, notifTarget);
 }
 
 void EntityApplication::setOnEntityChanged(

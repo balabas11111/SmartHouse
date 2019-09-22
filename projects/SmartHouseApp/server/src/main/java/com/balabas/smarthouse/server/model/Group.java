@@ -6,14 +6,13 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 import org.json.JSONObject;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Group implements NameAble {
+public class Group implements NameAble, JsonDataContainer {
 
     public enum GroupType{
         DEVICE(1000*60),
@@ -41,15 +40,25 @@ public class Group implements NameAble {
     
     private GroupType groupType;
     
+    private UpdateTimer timer;
+    
     public Group(String name,JSONObject data){
         this.name = name;
         this.entities = new HashSet<>();
         this.data = data;
         
         this.groupType = getGroupTypeByName(name);
+        
+        if(!this.groupType.equals(GroupType.CUSTOM)){
+            timer = new UpdateTimer(this, this.groupType.refreshInterval);
+        }
     }
     
-    public static GroupType getGroupTypeByName(String name){
+    public void setDataUpdateCompleted(){
+        timer.setDataReceived();
+    }
+    
+    private static GroupType getGroupTypeByName(String name){
         for(GroupType gt: GroupType.values()){
             if(gt.name().equalsIgnoreCase(name)){
                 return gt;

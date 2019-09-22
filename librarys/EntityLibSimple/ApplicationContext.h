@@ -30,7 +30,7 @@ public:
 	virtual WiFiSettingsBox* getConf() = 0;
 	virtual SmartHouseServerHelper* getSmartHouseServerHelper() = 0;
 
-	virtual void notify(char* group = nullptr, char* name = nullptr, NotificationTarget* notifTarget = nullptr) = 0;
+	virtual void notify(char* group = nullptr, char* name = nullptr, char* param = nullptr, NotificationTarget* notifTarget = nullptr) = 0;
 
 
 	virtual Notifier* getDefaultNotifier() =0;

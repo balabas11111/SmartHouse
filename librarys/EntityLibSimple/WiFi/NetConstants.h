@@ -54,6 +54,8 @@
 // default json keys for values in request context
 #define GROUP "group"
 #define NAME "name"
+#define PARAM "param"
+#define DATA "data"
 #define BODY "body"
 
 //content types

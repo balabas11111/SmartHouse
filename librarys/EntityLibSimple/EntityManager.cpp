@@ -86,7 +86,11 @@ void EntityManager::addNotAllowed(JsonObject& response, const char* method) {
 
 void EntityManager::executeHttpMethod(EntityJsonRequestResponse* reqResp,
 		const char* method) {
-	executeHttpMethod(reqResp->getRequest(), reqResp->getResponse(),
+
+	executeHttpMethod(reqResp->getRequest(),
+			(!reqResp->getRequest().containsKey(PARAM))?
+					reqResp->getResponse()
+					:reqResp->getResponse().createNestedObject(reqResp->getRequest().get<char*>(PARAM)),
 			 method);
 }
 

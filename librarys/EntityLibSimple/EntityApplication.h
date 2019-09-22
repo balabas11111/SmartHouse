@@ -70,7 +70,7 @@ public:
 
 	void updateEntities(bool withCheck = true);
 
-	void notify(char* group = nullptr, char* name = nullptr, NotificationTarget* notifTarget = nullptr);
+	void notify(char* group = nullptr, char* name = nullptr, char* param = nullptr, NotificationTarget* notifTarget = nullptr);
 
 private:
 

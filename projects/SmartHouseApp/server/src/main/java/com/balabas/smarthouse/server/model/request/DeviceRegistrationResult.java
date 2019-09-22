@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.model;
+package com.balabas.smarthouse.server.model.request;
 
 public class DeviceRegistrationResult {
 

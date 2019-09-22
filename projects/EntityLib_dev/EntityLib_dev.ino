@@ -54,7 +54,7 @@ void updateEntities(){
 	//app.getEntityManager()->print();
 	Serial.println(FPSTR("Update Entities"));
 	app.updateEntities(false);
-	app.notify((char*)GROUP_SENSORS);
+	app.notify((char*)GROUP_SENSORS, nullptr, (char*) DATA);
 	app.getSmartHouseServerHelper()->triggerOnServerDeviceDataChanged();
 }
 

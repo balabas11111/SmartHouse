@@ -2,27 +2,27 @@ package com.balabas.smarthouse.server.model;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Date;
 import java.util.Set;
 
-import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.balabas.smarthouse.server.model.request.DeviceRegistrationRequest;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-public class Device {
+public class Device implements NameAble, JsonDataContainer {
     
-    public enum DeviceStatus{
+    public enum DeviceState{
         UNKNOWN,
         CONSTRUCTED,
-        CONNECTED
+        REGISTERED,
+        CONNECTED,
+        TIMED_OUT,
+        WAITS_FOR_DEVICE_RESPONSE
     };
 
 	private String deviceId;
@@ -33,51 +33,39 @@ public class Device {
 	private String dataUrl;
 	private String rootUrl;
 	
-	private DeviceStatus status = DeviceStatus.UNKNOWN;
+	private DeviceState state = DeviceState.UNKNOWN;
 	
-	private Date registrationTime;
-	
-	private Date lastRequestTime;
-	
-	private boolean active;
-	
-	private boolean waitsForDeviceRequest;
-	
-	private JSONObject lastData;
+	private JSONObject data;
 	
 	private Set<Group> groups;
 	
-	public boolean isTimeToUpdate(long timeBorder){
-	    if(this.lastRequestTime == null){
-	        return this.waitsForDeviceRequest;
-	    }
-	    long lastTime = this.lastRequestTime.getTime();
-	    long now = (new Date()).getTime();
-	    
-	    boolean result = lastTime  < timeBorder;
-        setWaitsForDeviceRequest(result || this.waitsForDeviceRequest);
-        
-        if(this.waitsForDeviceRequest){
-            log.info("Time to update entity");
-        }
-        
-        return this.waitsForDeviceRequest;
+	private UpdateTimer timer;
+	
+	public Device(String deviceId, long updateInterval){
+	    this.deviceId = deviceId;
+	    timer = new UpdateTimer(this, updateInterval);
 	}
 	
-	public void setDeviceDataRequestCompleted(String jsonStr) throws JSONException{
-	    this.waitsForDeviceRequest = false;
-	    this.active = true;
-	    this.lastRequestTime = new Date();
-	    
-	    this.lastData = new JSONObject(jsonStr); 
-	    
-	    log.info(deviceId+" data update completed data = "+jsonStr);
+	public boolean isRegistered(){
+	    boolean result =
+	            this.state!=DeviceState.UNKNOWN
+	                && this.state!=DeviceState.CONSTRUCTED;
+	    return result;
 	}
 	
-	public static Device from(DeviceRegistrationRequest request) throws UnknownHostException{
-	    Device device = new Device();
+	public boolean isInitialDataReceived(){
+        return isRegistered() && this.state!=DeviceState.REGISTERED;
+    }
+	
+	public void setDataUpdateCompleted(){
+	    this.state=DeviceState.CONNECTED;
 	    
-	    device.setDeviceId(request.getDeviceId());
+	    timer.setDataReceived();
+	}
+	
+	public static Device from(DeviceRegistrationRequest request, long updateInterval) throws UnknownHostException{
+	    Device device = new Device(request.getDeviceId(), updateInterval);
+	    
 	    device.setDeviceFirmware(request.getDeviceFirmware());
 	    device.setDeviceDescr(request.getDeviceDescr());
 	    
@@ -85,11 +73,15 @@ public class Device {
 	    
 	    device.setDataUrl(request.getDataUrl());
 	    device.setRootUrl(request.getRootUrl());
-	    device.setRegistrationTime(new Date());
-	    device.setStatus(DeviceStatus.CONSTRUCTED);
+	    device.setState(DeviceState.CONSTRUCTED);
 	    
-	    device.setWaitsForDeviceRequest(true);
+	    device.getTimer().setWaitsForDataUpdate(true);
 	    
 	    return device;
 	}
+
+    @Override
+    public String getName() {
+        return getDeviceId();
+    }
 }

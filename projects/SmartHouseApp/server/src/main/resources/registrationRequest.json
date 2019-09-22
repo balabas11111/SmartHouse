@@ -1,0 +1,9 @@
+{
+	"deviceId": "ESP_Dev_ID",
+	"deviceFirmware": "EntityLib dev device",
+	"deviceDescr": "Default Device description",
+	"serverKey": "1772a7525d233a067c93867dba7ed5ce4910ef44",
+	"deviceKey": "2a296e43b94510446b28982cde4c4b661f629377",
+	"rootUrl": "http://192.168.0.120/",
+	"dataUrl": "http://192.168.0.120/data"
+}
