@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 
 import com.balabas.smarthouse.server.model.Device;

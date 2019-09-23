@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -44,12 +45,16 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 			throws UnsupportedEncodingException {
 		RestTemplate tmpl = new RestTemplate();
 		String execUrl = url + HttpRequestUtil.getParamsString(params);
-        
-        return (tmpl.exchange(
+		
+		ResponseEntity<List<Device>> result = (tmpl.exchange(
         		execUrl,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<Device>>(){}));
+		
+		log.info(result.getStatusCode());
+		
+		return result;
 	}
-	
+
 }

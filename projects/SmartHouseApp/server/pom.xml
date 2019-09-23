@@ -53,6 +53,7 @@
             <artifactId>h2</artifactId>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.json/json -->
+        
 		<dependency>
 		    <groupId>org.json</groupId>
 		    <artifactId>json</artifactId>
@@ -69,6 +70,10 @@
 				<exclusion>
 					<groupId>org.junit.vintage</groupId>
 					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.vaadin.external.google</groupId>
+					<artifactId>android-json</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -128,7 +133,24 @@
 				  </execution>
 				</executions>
 			  </plugin>
-			
+			  <plugin>
+					<groupId>com.coderplus.maven.plugins</groupId>
+					<artifactId>copy-rename-maven-plugin</artifactId>
+					<version>1.0</version>
+					<executions>
+						<execution>
+							<id>copy-and-rename-file</id>
+							<phase>install</phase>
+							<goals>
+								<goal>rename</goal>
+							</goals>
+							<configuration>
+								<sourceFile>${project.build.directory}/server-2.2.0.M6.jar.original</sourceFile>
+								<destinationFile>${project.build.directory}/server-2.2.0.M6-or.jar</destinationFile>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
 		
 			
         </plugins>

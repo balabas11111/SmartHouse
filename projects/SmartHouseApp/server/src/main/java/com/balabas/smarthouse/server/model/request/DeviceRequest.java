@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeviceRegistrationRequest {
+public class DeviceRequest {
 
 	private String deviceId;
 	
@@ -24,4 +24,10 @@ public class DeviceRegistrationRequest {
 	private String dataUrl;
 	
 	private String ip;
+	
+	private String data;
+	
+	public boolean hasData(){
+        return data!=null && !data.isEmpty();
+    }
 }

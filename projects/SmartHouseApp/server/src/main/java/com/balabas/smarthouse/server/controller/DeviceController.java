@@ -7,7 +7,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.balabas.smarthouse.server.auth.ServerAuthService;
+import com.balabas.smarthouse.server.exception.DeviceOnServerAuthorizationException;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.model.request.DeviceOnDataUpdatedRequest;
-import com.balabas.smarthouse.server.model.request.DeviceRegistrationRequest;
+import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult;
 import com.balabas.smarthouse.server.service.DeviceService;
 import com.balabas.smarthouse.server.util.ServerValuesMockUtil;
@@ -69,46 +68,45 @@ public class DeviceController {
     }
 	
 	@PostMapping("/devices/registerSimple")
-    public ResponseEntity<DeviceRegistrationResult> registerDeviceSimple(@RequestBody DeviceRegistrationRequest deviceRequest,
-            HttpServletRequest request) throws UnknownHostException {
-        log.info("registerDeviceSimple DeviceController registerDevice Addr=" + request.getRemoteAddr());
+    public ResponseEntity<DeviceRegistrationResult> registerDeviceSimple(@RequestBody DeviceRequest registrRequest,
+            HttpServletRequest request) throws UnknownHostException, DeviceOnServerAuthorizationException {
+
+		registrRequest.setIp(request.getRemoteAddr());
+		authService.checkDeviceRegistrationRequest(registrRequest);
+		
+		log.info("registerDeviceSimple DeviceController registerDevice Addr=" + request.getRemoteAddr());
         
-        if(!authService.checkHashedKey(deviceRequest.getServerKey())){
-            //return ResponseEntity.status(HttpStatus.FORBIDDEN).body(DeviceRegistrationResult.build(DeviceRegistrationStatus.FORBIDDEN));
-        }
-        
-        DeviceRegistrationResult result = deviceService.registerDevice(deviceRequest);
+        DeviceRegistrationResult result = deviceService.registerDevice(registrRequest);
         return ResponseEntity.ok().body(result);
     }
 	
 	@PostMapping("/devices/register")
-	public ResponseEntity<DeviceRegistrationResult> registerDevice(@Valid @RequestBody DeviceRegistrationRequest deviceRequest,
-			HttpServletRequest request) throws UnknownHostException {
+	public ResponseEntity<DeviceRegistrationResult> registerDevice(@Valid @RequestBody DeviceRequest registrRequest,
+			HttpServletRequest request) throws UnknownHostException, DeviceOnServerAuthorizationException {
 		log.info("DeviceController registerDevice Addr=" + request.getRemoteAddr());
 		
-		if(!authService.checkHashedKey(deviceRequest.getServerKey())){
-			//return ResponseEntity.status(HttpStatus.FORBIDDEN).body(DeviceRegistrationResult.build(DeviceRegistrationStatus.FORBIDDEN));
-		}
-		deviceRequest.setIp(request.getRemoteAddr());
+		registrRequest.setIp(request.getRemoteAddr());
+		authService.checkDeviceRegistrationRequest(registrRequest);
 		
-		DeviceRegistrationResult result = deviceService.registerDevice(deviceRequest);
+		DeviceRegistrationResult result = deviceService.registerDevice(registrRequest);
 		return ResponseEntity.ok().body(result);
 	}
 	
 	@PostMapping("/devices/data")
-    public ResponseEntity<String> dataChangeDispatchedOnDevice(@RequestBody DeviceOnDataUpdatedRequest request) throws ResourceNotFoundException {
-	    log.info("DataChanged dispatched on "+request.getDeviceId()+" hasData "+request.hasData());
+    public ResponseEntity<String> dataChangeDispatchedOnDevice(@RequestBody DeviceRequest deviceRequest, HttpServletRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
+	    log.info("DataChanged dispatched on "+deviceRequest.getDeviceId()+" hasData "+deviceRequest.hasData());
+	    deviceRequest.setIp(request.getRemoteAddr());
 	    
-        deviceService.processDeviceDataUpdateDispatched(request);
+        deviceService.processDeviceDataUpdateDispatched(deviceRequest);
         
         return ResponseEntity.ok().body("OK");
     }
 
 	@GetMapping("/devices/getData_{deviceId}")
-    public ResponseEntity<JSONObject> executeGetData(@PathVariable(value = "deviceId") String deviceId,
-            @RequestParam(value = GROUP, required = false) String devEntGroup) throws UnsupportedEncodingException, ResourceNotFoundException {
-
-        return ResponseEntity.ok().body(deviceService.executeGetData(deviceId, devEntGroup));
+    public ResponseEntity<String> executeGetData(@PathVariable(value = "deviceId") String deviceId,
+            @RequestParam(value = GROUP, required = false) String devEntGroup) throws ResourceNotFoundException {
+		JSONObject result = deviceService.executeGetData(deviceId, devEntGroup);
+        return ResponseEntity.ok().body(result.toString());
     }
 	
 	@GetMapping("/devices/getDataOnDevice_{deviceId}")
@@ -121,7 +119,7 @@ public class DeviceController {
 	@GetMapping("/devices/mock_{deviceId}")
 	public ResponseEntity<String> executeMockGetDataOnDevice(@PathVariable(value = "deviceId") String deviceId,
 			@RequestParam(value = GROUP, required = false) String devEntGroup)
-			throws UnsupportedEncodingException, JSONException {
+			throws UnsupportedEncodingException {
 		
 		String result = ((devEntGroup==null || devEntGroup.isEmpty())?
 							ServerValuesMockUtil.getSettingsSensors(deviceId):

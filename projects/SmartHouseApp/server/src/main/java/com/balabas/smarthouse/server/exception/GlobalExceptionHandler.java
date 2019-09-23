@@ -16,6 +16,12 @@ public class GlobalExceptionHandler {
 		ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
 		return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
 	}
+	
+	@ExceptionHandler(DeviceOnServerAuthorizationException.class)
+	public ResponseEntity<?> deviceOnServerAuthorizationException(DeviceOnServerAuthorizationException ex, WebRequest request) {
+		ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+		return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
+	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<?> globleExcpetionHandler(Exception ex, WebRequest request) {
