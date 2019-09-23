@@ -41,7 +41,7 @@ public class ReplyConstructServiceImpl implements ReplyConstructService {
         if (constructor != null) {
             try {
             	replyMessage = constructor.constructReplyMessage(msgIn, replyMessage);
-			} catch (UnsupportedEncodingException e) {
+			} catch (Exception e) {
 				log.trace(e);
 				replyMessage.setMessage(BotConstants.DEVICE_ERROR_MSG);
 			}

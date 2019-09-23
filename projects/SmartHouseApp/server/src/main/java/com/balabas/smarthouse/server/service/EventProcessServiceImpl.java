@@ -10,15 +10,14 @@ import com.balabas.smarthouse.server.events.ChangedEvent;
 import com.balabas.smarthouse.server.events.DeviceChangedEvent;
 import com.balabas.smarthouse.server.events.EntityChangedEvent;
 import com.balabas.smarthouse.server.events.GroupChangedEvent;
-import com.balabas.smarthouse.server.model.Device;
 
 @Log4j2
 @Service
-public class DataUpdateEventServiceImpl implements DataUpdateEventService {
+public class EventProcessServiceImpl implements EventProcessService {
 
     @Override
     public void processEvents(List<ChangedEvent<?>> events) {
-        if(events.size()>0){
+        if(!events.isEmpty()){
             log.info("Total "+events.size()+" events received");
             
             for(ChangedEvent<?> event: events){

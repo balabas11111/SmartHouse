@@ -6,13 +6,16 @@ import java.util.Set;
 
 import org.json.JSONObject;
 
-import com.balabas.smarthouse.server.model.request.DeviceRegistrationRequest;
+import com.balabas.smarthouse.server.model.request.DeviceRequest;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class Device implements NameAble, JsonDataContainer {
     
@@ -33,6 +36,9 @@ public class Device implements NameAble, JsonDataContainer {
 	private String dataUrl;
 	private String rootUrl;
 	
+	@JsonIgnore
+	private String deviceKey;
+	
 	private DeviceState state = DeviceState.UNKNOWN;
 	
 	private JSONObject data;
@@ -47,10 +53,8 @@ public class Device implements NameAble, JsonDataContainer {
 	}
 	
 	public boolean isRegistered(){
-	    boolean result =
-	            this.state!=DeviceState.UNKNOWN
+	    return this.state!=DeviceState.UNKNOWN
 	                && this.state!=DeviceState.CONSTRUCTED;
-	    return result;
 	}
 	
 	public boolean isInitialDataReceived(){
@@ -63,7 +67,7 @@ public class Device implements NameAble, JsonDataContainer {
 	    timer.setDataReceived();
 	}
 	
-	public static Device from(DeviceRegistrationRequest request, long updateInterval) throws UnknownHostException{
+	public static Device from(DeviceRequest request, long updateInterval) throws UnknownHostException{
 	    Device device = new Device(request.getDeviceId(), updateInterval);
 	    
 	    device.setDeviceFirmware(request.getDeviceFirmware());
@@ -74,6 +78,8 @@ public class Device implements NameAble, JsonDataContainer {
 	    device.setDataUrl(request.getDataUrl());
 	    device.setRootUrl(request.getRootUrl());
 	    device.setState(DeviceState.CONSTRUCTED);
+	    
+	    device.setDeviceKey(request.getDeviceKey());
 	    
 	    device.getTimer().setWaitsForDataUpdate(true);
 	    

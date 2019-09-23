@@ -7,11 +7,11 @@ import java.util.Optional;
 
 import org.json.JSONObject;
 
+import com.balabas.smarthouse.server.exception.DeviceOnServerAuthorizationException;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.Group;
-import com.balabas.smarthouse.server.model.request.DeviceOnDataUpdatedRequest;
-import com.balabas.smarthouse.server.model.request.DeviceRegistrationRequest;
+import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult;
 
 public interface DeviceService {
@@ -24,25 +24,21 @@ public interface DeviceService {
 
 	DeviceRegistrationResult registerDevice(Device device);
 	
-	DeviceRegistrationResult registerDevice(DeviceRegistrationRequest request) throws UnknownHostException;
+	DeviceRegistrationResult registerDevice(DeviceRequest request) throws UnknownHostException;
 	
 	String executeGetDataOnDevice(String deviceId, String deviceEntityGroup) throws UnsupportedEncodingException;
 	
 	JSONObject executeGetData(String deviceId, String deviceEntityGroup) throws ResourceNotFoundException;
 	
-	void markDeviceAsWaitsForDataUpdate(DeviceOnDataUpdatedRequest request) throws ResourceNotFoundException;
+	void markDeviceAsWaitsForDataUpdate(DeviceRequest request) throws ResourceNotFoundException;
 	
-	void processDeviceDataUpdateDispatched(DeviceOnDataUpdatedRequest request) throws ResourceNotFoundException;
-	
-	void processDeviceDataUpdateDispatched(String deviceId, String deviceData) throws ResourceNotFoundException;
+	void processDeviceDataUpdateDispatched(DeviceRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException;
 	
 	void processDeviceDataUpdate(Device device, String deviceData) throws ResourceNotFoundException;
 	
 	boolean validateDeviceData(String data);
 	
-	void requestDevicesValues(Device device);
+	void requestDevicesValues(Device device, Group group);
 	
-	void requestGroupValues(Device device, Group group);
-
     void requestAllDevicesData();
 }

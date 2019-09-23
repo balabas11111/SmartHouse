@@ -72,12 +72,10 @@ public class SmartHouseServerServiceImpl implements InitializingBean, SmartHouse
 				? Collections.singletonMap(GROUP, groupId) : null;
 		
 		String response = executor.executeGetRequest(url, params).getBody();
+		
 		log.info("response="+response);
-		JSONObject result = new JSONObject(response);
 		
-		log.info("result="+result);
-		
-		return result;
+		return new JSONObject(response);
 	}
 
 }

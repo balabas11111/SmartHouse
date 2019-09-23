@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.balabas.smarthouse.server.events.ChangedEvent;
 
-public interface DataUpdateEventService {
+public interface EventProcessService {
 
     void processEvents(List<ChangedEvent<?>> events);
 }
