@@ -97,8 +97,13 @@ void EntityApplication::initWithoutWiFi(bool deleteFs, bool initI2C,
 }
 
 void EntityApplication::loop() {
-	this->entityManager->loop();
 	this->entityUpdateManager->loop();
+	bool changed = this->entityManager->processEntitiesChange();
+
+	if(changed){
+		this->smartHouseServerHelper->triggerOnServerDeviceDataChanged();
+	}
+
 	this->wifiServerManager->loop();
 	this->smartHouseServerHelper->loop();
 }
@@ -154,9 +159,9 @@ void EntityApplication::notify(char* group, char* name,  char* param,
 	getDefaultNotifier()->notify(group, name, param, notifTarget);
 }
 
-void EntityApplication::setOnEntityChanged(
-		std::function<void(void)> onEntityChanged) {
-	this->getEntityManager()->setOnEntityChanged(onEntityChanged);
+void EntityApplication::setOnEntitiesChanged(
+		std::function<void(void)> onEntitiesChanged) {
+	this->getEntityManager()->setOnEntitiesChanged(onEntitiesChanged);
 }
 
 WiFiManager* EntityApplication::getWiFiManager() {

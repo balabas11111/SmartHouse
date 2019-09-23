@@ -101,7 +101,31 @@ public:
 
 	virtual void doPost(JsonObject& params, JsonObject& response) override {
 		UNUSED(response);
-		setChanged(jsonFromPostToItems(params));
+
+		bool descrChanged = false;
+
+		for (int i = 0; i<itemCount; i++) {
+			String nameKey = String(items[i].uidStr)+ ".";
+
+			nameKey +=DS18D20_SENSOR_NAME;
+
+			Serial.print(nameKey);
+
+			if (JsonObjectUtil::hasField<char*>(params, nameKey.c_str())) {
+				Serial.print(FPSTR(" - found"));
+
+				if (getKeyValueIfExistsAndNotEquals(params, nameKey.c_str(), &items[i].descr)) {
+					Serial.print(FPSTR(" - updated ->"));
+					Serial.println(items[i].descr);
+					descrChanged = true;
+				}else{
+					Serial.println();
+				}
+
+			}
+		}
+		markEntityAsChangedIfTrue(descrChanged);
+		markEntityAsSaveRequiredIfTrue(descrChanged);
 	}
 
 	virtual void doLoad(JsonObject& jsonFromFile) override {
@@ -138,7 +162,7 @@ protected:
 		}
 
 		if (dispatchChange) {
-			dispatchChangeEvent(tChanged);
+			markEntityAsChangedIfTrue(tChanged);
 		}
 	}
 
@@ -162,33 +186,6 @@ protected:
 						chg = true;
 					}
 				}
-			}
-		}
-
-		return chg;
-	}
-
-	bool jsonFromPostToItems(JsonObject& json){
-		bool chg = false;
-
-		for (int i = 0; i<itemCount; i++) {
-			String nameKey = String(items[i].uidStr)+ ".";
-
-			nameKey +=DS18D20_SENSOR_NAME;
-
-			Serial.print(nameKey);
-
-			if (JsonObjectUtil::hasField<char*>(json, nameKey.c_str())) {
-				Serial.print(FPSTR(" - found"));
-
-				if (getKeyValueIfExistsAndNotEquals(json, nameKey.c_str(), &items[i].descr)) {
-					Serial.print(FPSTR(" - updated ->"));
-					Serial.println(items[i].descr);
-					chg = true;
-				}else{
-					Serial.println();
-				}
-
 			}
 		}
 

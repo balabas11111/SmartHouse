@@ -74,6 +74,8 @@ public:
 	void generateDeviceToken();
 	bool validateDeviceToken(String& deviceToken);
 
+	bool connectedAndRegistered();
+
 protected:
 
 	void executeOnServerRegisterIfTriggered();

@@ -49,7 +49,7 @@ public:
 	void init(bool initSerial = true, bool initWiFi = false, bool initServer = false, bool initFs = true,
 			bool deleteFs = false, bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
 
-	void setOnEntityChanged(std::function<void(void)> onEntityChanged);
+	void setOnEntitiesChanged(std::function<void(void)> onEntitiesChanged);
 	void loop();
 
 	void startWiFi();

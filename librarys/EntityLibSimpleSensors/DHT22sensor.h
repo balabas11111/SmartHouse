@@ -23,7 +23,7 @@
 class DHT22sensor: public Entity, public EntityUpdate {
 public:
 	DHT22sensor(int pin) :
-			Entity(GROUP_SENSORS, DHT22_NAME, DHT22_DESCRIPTION) {
+			Entity((char*)GROUP_SENSORS, DHT22_NAME, (char*)DHT22_DESCRIPTION) {
 		//this->dht = new DHT(pin, DHT22);
 		this->dht = new DHT22Mock(pin, DHT22);
 	}
@@ -39,7 +39,7 @@ public:
 		float h = dht->readHumidity();
 		float t = dht->readTemperature();
 
-		dispatchChangeEvent((h!=this->hum) || t!=this->temp);
+		markEntityAsChangedIfTrue((h!=this->hum) || t!=this->temp);
 
 		this->hum = h;
 		this->temp = t;

@@ -47,6 +47,9 @@ public:
 	bool isChanged();
 	void setChanged(bool changed);
 
+	bool isSaveRequired();
+	void setSaveRequired(bool saveRequired);
+
 	const char* getName();
 	const char* getGroup();
 	char* getDescr();
@@ -62,8 +65,8 @@ public:
 	void executeGet(JsonObject& params, JsonObject& response);
 	void executePost(JsonObject& params, JsonObject& response);
 
-	void executeLoad(JsonObject& jsonFromFile);
-	void executeSave(JsonObject& jsonToFile);
+	void setJsonToEntity(JsonObject& jsonFromFile);
+	void getJsonToSave(JsonObject& jsonToFile);
 
 	virtual void doGet(JsonObject& params, JsonObject& response) {
 		UNUSED(params);
@@ -81,9 +84,12 @@ public:
 		UNUSED(jsonToFile);
 	};
 
-	void dispatchChangeEvent(bool clause);
+	void dispatchChangeEventIfChanged();
+	void markEntityAsChangedIfTrue(bool value);
+	void markEntityAsSaveRequiredIfTrue(bool value);
 protected:
 	bool changed;
+	bool saveRequired;
 
 	bool hasGet;bool hasPost;bool dispatcher;
 

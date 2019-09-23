@@ -40,7 +40,7 @@ public:
 		bool ch =  getValue() != value;
 		digitalWrite(pin, value);
 
-		dispatchChangeEvent(ch);
+		markEntityAsChangedIfTrue(ch);
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
@@ -52,10 +52,7 @@ public:
 		UNUSED(response);
 		uint8_t on = isOn();
 		if (isKeyExistsInJsonAndNotEqValue(params, ON_FIELD, on)) {
-			on = (getJsonField<uint8_t>(params, ON_FIELD));
-
-			setChanged(true);
-			setOn(on);
+			setOn(getJsonField<uint8_t>(params, ON_FIELD));
 		}
 	}
 

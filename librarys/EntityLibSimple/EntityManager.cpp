@@ -10,11 +10,11 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
-EntityManager::EntityManager(Entity* entities[], int count, std::function<void(void)> onEntityChanged) {
+EntityManager::EntityManager(Entity* entities[], int count, std::function<void(void)> onEntitiesChanged) {
 	for (int i = 0; i < count; i++) {
 		registerAndPreInitEntity(entities[i]);
 	}
-	this->onEntityChanged = onEntityChanged;
+	this->onEntitiesChanged = onEntitiesChanged;
 }
 
 void EntityManager::registerAndPreInitEntity(Entity* entity) {
@@ -70,6 +70,11 @@ void EntityManager::processEntityChangedEvent(int entityIndex) {
 
 Entity* EntityManager::getEntityByGroupAndName(const char* group,
 		const char* name) {
+
+	if(strcmp(group,DEFAULT_VALUE)==0 || strcmp(name,DEFAULT_VALUE)==0){
+		return nullptr;
+	}
+
 	for (Entity* entity : this->entities) {
 		if (entity->isTarget(group, name)) {
 			return entity;
@@ -77,6 +82,13 @@ Entity* EntityManager::getEntityByGroupAndName(const char* group,
 	}
 
 	return nullptr;
+}
+
+Entity* EntityManager::getEntityByGroupAndNameFromParams(JsonObject& params){
+	return getEntityByGroupAndName(JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, GROUP,
+								DEFAULT_VALUE),
+						JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, NAME,
+								DEFAULT_VALUE));
 }
 
 void EntityManager::addNotAllowed(JsonObject& response, const char* method) {
@@ -97,8 +109,6 @@ void EntityManager::executeHttpMethod(EntityJsonRequestResponse* reqResp,
 void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 		const char* method) {
 
-	this->entitiesChanged = (this->entitiesChanged || false);
-
 	Serial.print(method);
 	Serial.print(FPSTR(" "));
 
@@ -108,71 +118,120 @@ void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 										_DEVICE, _INFO);
 	this->serverHelper->addDeviceInfoToJson(json);
 
+	bool changed = false;
+
 	if (hasNoGroupNoName(params) || hasAllGroupNoName(params)) {
-		executeHttpMethodOnAll(params, response, method);
+		changed = executeMethodOnAll(params, response, method);
 	}else
 	if (hasGroupNoName(params)) {
-		executeHttpMethodOnGroup(params, response, method);
+		changed = executeMethodOnGroup(params, response, method);
 	}else
 	if (hasGroupName(params)) {
-		executeHttpMethodOnEntityOnly(params, response, method);
+		Entity* entity = getEntityByGroupAndNameFromParams(params);
+
+		changed = executeMethodOnEntity(params, response, entity, method);
 	}
 
 	JsonObjectUtil::printWithPreffix(RESPONSE, response);
+
+	this->entitiesChanged = (this->entitiesChanged || changed);
+
+	if(this->entitiesChanged){
+		Serial.print(FPSTR("changed="));
+		Serial.println(this->entitiesChanged);
+	}
 }
 
-void EntityManager::executeHttpMethodOnEntity(JsonObject& params,
-		JsonObject& response, const char* method, Entity* entity) {
-/*
-	Serial.print(FPSTR("Execute method "));
-	Serial.print(method);
-	Serial.print(FPSTR(" Entity = "));
-	Serial.println(entity->getName());
-*/
-	//JsonObjectUtil::print(params);
+bool EntityManager::executeMethodOnAll(JsonObject& params,
+		JsonObject& response, const char* method) {
+
+	bool changed = false;
+
+	for (Entity* entity : this->entities) {
+		executeMethodOnEntity(params, response, entity, method);
+		changed = changed || entity->isChanged();
+	}
+
+	return changed;
+}
+
+bool EntityManager::executeMethodOnGroup(JsonObject& params,
+		JsonObject& response, const char* method) {
+
+	bool changed = false;
+
+	int totalCount = 0;
+
+	const char* group = params[GROUP].as<char*>();
+
+	for (Entity* entity : this->entities) {
+		if(strcmp(entity->getGroup(),group)==0){
+			executeMethodOnEntity(params, response, entity, method);
+
+			changed = changed || entity->isChanged();
+
+			totalCount++;
+		}
+	}
+
+	if (totalCount == 0) {
+		JsonObjectUtil::setField(response, MESSAGE, NOT_FOUND);
+		return false;;
+	}
+
+	return changed;
+}
+
+bool EntityManager::executeMethodOnEntity(JsonObject& params, JsonObject& response, Entity* entity,
+												const char* method) {
 
 	if (entity == nullptr) {
 		JsonObjectUtil::setField(response, MESSAGE, NOT_FOUND);
-		return;
+		return false;
 	}
+
+	bool allowed = false;
 
 	if (strcmp(method, REQUEST_GET) == 0) {
 		if (entity->hasGetMethod()) {
 			entity->executeGet(params,
 					JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
 							entity->getGroup(), entity->getName()));
-			return;
+			allowed = true;
 		}
 	} else if (strcmp(method, REQUEST_POST) == 0) {
 		if (entity->hasPostMethod()) {
-			entity->setChanged(false);
 			entity->executePost(
 					JsonObjectUtil::getFieldIfKeyExistsOrDefault<JsonObject&>(
 							params, BODY, params),
 					JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
 							entity->getGroup(), entity->getName()));
-			return;
+			allowed = true;
 		}
 	} else {
 		JsonObjectUtil::setField(response, MESSAGE, BAD_METHOD);
-		return;
+		return false;
+	}
+
+	if(allowed){
+		return entity->isChanged();
 	}
 
 	addNotAllowed(response, method);
-	return;
+	return false;
 }
 
 void EntityManager::executeLoadOnEntity(JsonObject& jsonFromFile,
 		Entity* entity) {
 	if (entity->canLoadState()) {
-		entity->executeLoad(jsonFromFile);
+		entity->setJsonToEntity(jsonFromFile);
 	}
 }
 
 void EntityManager::executeSaveOnEntity(JsonObject& jsonToFile,
 		Entity* entity) {
 	if (entity->canSaveState()) {
-		entity->executeSave(jsonToFile);
+		entity->getJsonToSave(jsonToFile);
 	}
 }
 
@@ -207,101 +266,69 @@ void EntityManager::deleteEntityJsonRequestResponse(
 	ObjectUtils::printHeap();
 }
 
-void EntityManager::dispatchAllChangedEntities() {
-	if(entitiesChanged){
-		for(Entity* entity: entities){
-
-			if(entity->isChanged()){
-				entity->dispatchChangeEvent(false);
-				entity->setChanged(false);
-			}
-		}
-
-		if(onEntityChanged!=nullptr){
-			onEntityChanged();
-		}
-
-		Serial.println(FPSTR("entities onCHange processed"));
-	}
-	entitiesChanged = false;
-}
-
-void EntityManager::loop() {
+bool EntityManager::processEntitiesChange(EntityJsonRequestResponse* collector){
+	bool result = this->entitiesChanged;
 	dispatchAllChangedEntities();
-}
+	collectAllChangedEntities(collector);
+	result = finishChangesProcess() || result;
 
-bool EntityManager::executeHttpMethodOnAll(JsonObject& params,
-		JsonObject& response, const char* method) {
+	if(result){
 
-	//Serial.println(FPSTR("EntityManager::executeHttpMethodOnAll"));
-	bool changed = false;
-
-	for (Entity* entity : this->entities) {
-		executeHttpMethodOnEntity(params, response, method, entity);
-		changed = changed || entity->isChanged();
 	}
 
-	this->entitiesChanged = (this->entitiesChanged || changed);
-	return changed;
+	return result;
 }
 
-bool EntityManager::executeHttpMethodOnGroup(JsonObject& params,
-		JsonObject& response, const char* method) {
+void EntityManager::dispatchAllChangedEntities() {
+	if(this->entitiesChanged){
+		for(Entity* entity: entities){
+			entity->dispatchChangeEventIfChanged();
+		}
+	}
+}
 
-	//Serial.println(FPSTR("EntityManager::executeHttpMethodOnGroup"));
-	bool changed = false;
+void EntityManager::collectAllChangedEntities(EntityJsonRequestResponse* collector){
+	if(collector!=nullptr){
+		collectAllChangedEntities(collector->getRequest(),collector->getResponse());
+	}
+}
 
-	int totalCount = 0;
+void EntityManager::collectAllChangedEntities(JsonObject& params, JsonObject& response){
+	for(Entity* entity: entities){
+		if(entity->isChanged()){
+			executeMethodOnEntity(params, response,
+					entity);
+		}
+	}
+}
 
-	const char* group = params[GROUP].as<char*>();
+bool EntityManager::finishChangesProcess(){
+	bool dispatch = false;
+	bool toSave = false;
 
-	for (Entity* entity : this->entities) {
-		/*Serial.print(FPSTR("check only ="));
-		Serial.print(entity->getGroup());
-*/
-		if(strcmp(entity->getGroup(),group)==0){
-			executeHttpMethodOnEntity(params, response, method, entity);
-
-			changed = changed || entity->isChanged();
-
-			totalCount++;
+	for(Entity* entity: entities){
+		if(entity->isChanged()){
+			entity->setChanged(false);
+			dispatch = true;
+		}
+		if(entity->isSaveRequired()){
+			entity->setSaveRequired(false);
+			toSave = true;
 		}
 	}
 
-	if (totalCount == 0) {
-		JsonObjectUtil::setField(response, MESSAGE, NOT_FOUND);
-		return false;;
-	}
-
-	if (changed) {
+	if(toSave){
 		saveEntitiesToFile();
 	}
 
-	this->entitiesChanged = (this->entitiesChanged || changed);
-
-	return changed;
-}
-
-bool EntityManager::executeHttpMethodOnEntityOnly(JsonObject& params,
-		JsonObject& response, const char* method) {
-
-	//Serial.println(FPSTR("EntityManager::executeHttpMethodOnEntityOnly"));
-	bool changed = false;
-	Entity* entity = getEntityByGroupAndName(
-			JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, GROUP,
-					DEFAULT_VALUE),
-			JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, NAME,
-					DEFAULT_VALUE));
-	entity->setChanged(false);
-	executeHttpMethodOnEntity(params, response, method, entity);
-
-	if (entity->isChanged()) {
-		saveEntitiesToFile();
+	if(dispatch){
+		if(onEntitiesChanged!=nullptr){
+			onEntitiesChanged();
+		}
+		this->entitiesChanged = false;
 	}
 
-	changed = entity->isChanged();
-
-	return changed;
+	return dispatch;
 }
 
 bool EntityManager::hasNoGroupNoName(JsonObject& params) {
@@ -323,9 +350,9 @@ bool EntityManager::hasAllGroupNoName(JsonObject& params) {
 	return JsonObjectUtil::hasFieldAndValueEquals(params, (char*)GROUP, (char*)GROUP_ALL);
 }
 
-void EntityManager::setOnEntityChanged(
-		std::function<void(void)> onEntityChanged) {
-	this->onEntityChanged = onEntityChanged;
+void EntityManager::setOnEntitiesChanged(
+		std::function<void(void)> onEntitiesChanged) {
+	this->onEntitiesChanged = onEntitiesChanged;
 }
 
 void EntityManager::print() {

@@ -45,6 +45,14 @@ void Entity::setChanged(bool changed) {
 	this->changed = changed;
 }
 
+bool Entity::isSaveRequired(){
+	return this->saveRequired;
+}
+
+void Entity::setSaveRequired(bool saveRequired){
+	this->saveRequired = saveRequired;
+}
+
 const char* Entity::getName() {
 	return name;
 }
@@ -92,15 +100,27 @@ void Entity::print() {
 	Serial.println(descr);
 }
 
-void Entity::dispatchChangeEvent(bool clause) {
-	if(selfEventProcessFunction!=nullptr){
-		selfEventProcessFunction();
+void Entity::dispatchChangeEventIfChanged() {
+	if(this->changed){
+		if(selfEventProcessFunction!=nullptr){
+			selfEventProcessFunction();
+		}
+		if (eventProcessFunction != nullptr) {
+			eventProcessFunction(id);
+		}
 	}
-	if (clause && this->dispatcher && id > -1
-			&& eventProcessFunction != nullptr) {
-		eventProcessFunction(id);
+}
+
+void Entity::markEntityAsChangedIfTrue(bool value){
+	if(value){
+		this->setChanged(true);
 	}
-	//this->changed = clause;
+}
+
+void Entity::markEntityAsSaveRequiredIfTrue(bool value){
+	if(value){
+		this->saveRequired = saveRequired;
+	}
 }
 
 void Entity::executeGet(JsonObject& params, JsonObject& response) {
@@ -114,14 +134,16 @@ void Entity::executePost(JsonObject& params, JsonObject& response) {
 		this->descr = strdup(getJsonField<const char*>(params, this->descrField));
 		setChanged(true);
 	}*/
-	setChanged(getKeyValueIfExistsAndNotEquals(params, DESCR, &this->descr));
+	bool descrChanged = getKeyValueIfExistsAndNotEquals(params, DESCR, &this->descr);
+	markEntityAsChangedIfTrue(descrChanged);
+	markEntityAsSaveRequiredIfTrue(descrChanged);
 
 	doPost(params, response);
 
 	executeGet(params, response);
 }
 
-void Entity::executeLoad(JsonObject& jsonFromFile) {
+void Entity::setJsonToEntity(JsonObject& jsonFromFile) {
 	/*if (isKeyExistsInJsonAndNotEqValue(jsonFromFile, this->descrField, this->descr)) {
 		this->descr = strdup(getJsonField<const char*>(jsonFromFile, this->descrField));
 	}*/
@@ -129,7 +151,7 @@ void Entity::executeLoad(JsonObject& jsonFromFile) {
 	doLoad(jsonFromFile);
 }
 
-void Entity::executeSave(JsonObject& jsonToFile) {
+void Entity::getJsonToSave(JsonObject& jsonToFile) {
 	setKeyValueIfNotExistOrNotEqual(jsonToFile, DESCR, this->descr);
 
 	doSave(jsonToFile);

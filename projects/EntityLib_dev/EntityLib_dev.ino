@@ -30,7 +30,7 @@ EntityApplication app("EntityLib dev device",
 
 void setup() {
 	app.initWithWiFi();
-	app.setOnEntityChanged(onEntityChanged);
+	app.setOnEntitiesChanged(onEntityChanged);
 
 	app.registerTicker(1000,changeLed);
 	app.registerTicker(10000, executeHttp);

@@ -44,7 +44,7 @@ const char EMPTY_GROUP[] PROGMEM = "Empty group";
 
 class EntityManager {
 public:
-	EntityManager(Entity* entities[], int count, std::function<void(void)> onEntityChanged = nullptr);
+	EntityManager(Entity* entities[], int count, std::function<void(void)> onEntitiesChanged = nullptr);
 	virtual ~EntityManager() {
 	}
 
@@ -74,13 +74,11 @@ public:
 	EntityJsonRequestResponse* createEntityJsonRequestResponse();
 	void deleteEntityJsonRequestResponse(EntityJsonRequestResponse* json);
 
-	void dispatchAllChangedEntities();
-
-	void loop();
+	bool processEntitiesChange(EntityJsonRequestResponse* collector = nullptr);
 
 	void print();
 
-	void setOnEntityChanged(std::function<void(void)> onEntityChanged);
+	void setOnEntitiesChanged(std::function<void(void)> onEntitiesChanged);
 
 	WiFiSettingsBox* getConf();
 	SmartHouseServerHelper* getServerHelper();
@@ -95,18 +93,17 @@ protected:
 
 	Entity* getEntityByGroupAndName(const char* group, const char* name);
 
-	void addNotAllowed(JsonObject& response, const char* method);
-	void executeHttpMethodOnEntity(JsonObject& params, JsonObject& response,
-									const char* method, Entity* entity);
+	Entity* getEntityByGroupAndNameFromParams(JsonObject& params);
 
-	bool executeHttpMethodOnAll(JsonObject& params, JsonObject& response,
+	void addNotAllowed(JsonObject& response, const char* method);
+	bool executeMethodOnEntity(JsonObject& params, JsonObject& response, Entity* entity,
+									const char* method = REQUEST_GET);
+
+	bool executeMethodOnAll(JsonObject& params, JsonObject& response,
 			const char* method);
 
-	bool executeHttpMethodOnGroup(JsonObject& params, JsonObject& response,
+	bool executeMethodOnGroup(JsonObject& params, JsonObject& response,
 				const char* method);
-
-	bool executeHttpMethodOnEntityOnly(JsonObject& params, JsonObject& response,
-					const char* method);
 
 	bool hasNoGroupNoName(JsonObject& params);
 
@@ -122,12 +119,20 @@ protected:
 	void persist(std::function<void(JsonObject& json, Entity* entity)> onEntityFunction,
 					std::function<void(JsonObject& json)> postPersistFunction);
 
+	void dispatchAllChangedEntities();
+
+	void collectAllChangedEntities(EntityJsonRequestResponse* collector  = nullptr);
+
+	void collectAllChangedEntities(JsonObject& params, JsonObject& response);
+
+	bool finishChangesProcess();
+
 	DynamicJsonBuffer buf;
 	JsonObject* obj;
 
 	bool entitiesChanged = false;
 
-	std::function<void(void)> onEntityChanged;
+	std::function<void(void)> onEntitiesChanged;
 
 	WiFiSettingsBox* conf;
 	SmartHouseServerHelper* serverHelper;

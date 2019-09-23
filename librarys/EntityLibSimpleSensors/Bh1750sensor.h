@@ -24,7 +24,7 @@
 class Bh1750sensor: public Entity, public EntityUpdate {
 public:
 	Bh1750sensor() :
-			Entity(GROUP_SENSORS, BH1750, BH1750_DESCRIPTION) {
+			Entity((char*)GROUP_SENSORS, BH1750, (char*)BH1750_DESCRIPTION) {
 	}
 
 	virtual void init() override {
@@ -36,7 +36,7 @@ public:
 	virtual void doUpdate() override {
 		uint16_t l = lightMeter->readLightLevel();
 
-		dispatchChangeEvent(l != this->lux);
+		markEntityAsChangedIfTrue(l != this->lux);
 
 		this->lux = l;
 	}

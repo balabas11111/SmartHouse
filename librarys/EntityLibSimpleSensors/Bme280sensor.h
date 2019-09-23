@@ -28,7 +28,7 @@
 class Bme280sensor: public Entity, public EntityUpdate {
 public:
 	Bme280sensor():
-		Entity(GROUP_SENSORS,BME280,BME280_DESCRIPTION){};
+		Entity((char*)GROUP_SENSORS,BME280,(char*)BME280_DESCRIPTION){};
 
 	virtual ~Bme280sensor(){};
 
@@ -43,7 +43,7 @@ public:
 		float t = bme->readTemperature();
 		float p = bme->readPressure();
 
-		dispatchChangeEvent((h!=this->hum) || (t!=this->temp) || (p!=this->press));
+		markEntityAsChangedIfTrue((h!=this->hum) || (t!=this->temp) || (p!=this->press));
 
 		this->hum = h;
 		this->temp = t;

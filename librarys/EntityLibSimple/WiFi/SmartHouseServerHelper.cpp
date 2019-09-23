@@ -46,6 +46,11 @@ void SmartHouseServerHelper::triggerOnServerDeviceDataChanged() {
 	this->triggeredOnServerDataChanged = true;
 }
 
+bool SmartHouseServerHelper::connectedAndRegistered(){
+	return WiFi.status() == WL_CONNECTED
+			&& this->registered;
+}
+
 void SmartHouseServerHelper::executeOnServerRegisterIfTriggered() {
 	if(WiFi.status() == WL_CONNECTED){
 		if(!this->registered){
@@ -98,8 +103,7 @@ void SmartHouseServerHelper::executeOnServerRegisterIfTriggered() {
 }
 
 void SmartHouseServerHelper::executeOnServerDataChangedIfTriggered() {
-	if(WiFi.status() == WL_CONNECTED){
-		if(this->registered){
+	if(connectedAndRegistered()){
 
 			if(this->triggeredOnServerDataChanged){
 				if(!serverDataChangedRuns){
@@ -135,7 +139,6 @@ void SmartHouseServerHelper::executeOnServerDataChangedIfTriggered() {
 				this->connectionErrors = 0;
 				this->registered = false;
 			}
-		}
 	}
 }
 
