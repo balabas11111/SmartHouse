@@ -2,10 +2,12 @@ package com.balabas.smarthouse.server.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.log4j.Log4j2;
 
+import com.balabas.smarthouse.server.bot.BotService;
 import com.balabas.smarthouse.server.events.ChangedEvent;
 import com.balabas.smarthouse.server.events.DeviceChangedEvent;
 import com.balabas.smarthouse.server.events.EntityChangedEvent;
@@ -15,6 +17,9 @@ import com.balabas.smarthouse.server.events.GroupChangedEvent;
 @Service
 public class EventProcessServiceImpl implements EventProcessService {
 
+	@Autowired
+	BotService bot;
+	
     @Override
     public void processEvents(List<ChangedEvent<?>> events) {
         if(!events.isEmpty()){
@@ -42,6 +47,8 @@ public class EventProcessServiceImpl implements EventProcessService {
     
     public void processEvent(DeviceChangedEvent event){
         log.info("process DeviceChangedEvent");
+        
+        bot.sendMessage("Device registered "+event.getTargetName());
     }
     
     public void processEvent(GroupChangedEvent event){
