@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class EventProcessServiceImpl implements EventProcessService {
     public void processEvent(DeviceChangedEvent event){
         log.info("process DeviceChangedEvent");
         
-        bot.sendMessage("Device registered "+event.getTargetName());
+        bot.sendMessage("Device registered "+event.getTarget().getDeviceDescr()+" at "+(new Date()));
     }
     
     public void processEvent(GroupChangedEvent event){

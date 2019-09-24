@@ -9,8 +9,9 @@
 #include <ArduinoJson.h>
 
 Entity::Entity(const char* group, const char* name, char* descr,
-		std::function<void(void)> selfEventProcessFunction,
-bool hasGet, bool hasPost, bool dispatcher,
+		std::function<void(void)> onSetChangedEventFunction,
+		bool applicationDispatcher,
+bool hasGet, bool hasPost,
 bool canLoad, bool canSave) {
 	this->changed = false;
 	this->id = -1;
@@ -20,21 +21,17 @@ bool canLoad, bool canSave) {
 
 	this->hasGet = hasGet;
 	this->hasPost = hasPost;
-	this->dispatcher = dispatcher;
+	this->applicationDispatcher = applicationDispatcher;
 
 	this->canLoad = canLoad;
 	this->canSave = canSave;
 
-	this->selfEventProcessFunction = selfEventProcessFunction;
+	this->onSetChangedEventFunction = onSetChangedEventFunction;
 }
 
 void Entity::preInitialize(int id, std::function<void(int)> eventProcessFunction) {
 	this->id = id;
-	if (this->canDispatchChangeEvent()) {
-		this->eventProcessFunction = eventProcessFunction;
-	} else {
-		this->eventProcessFunction = nullptr;
-	}
+	this->eventProcessFunction = eventProcessFunction;
 }
 
 bool Entity::isChanged() {
@@ -73,8 +70,12 @@ bool Entity::hasPostMethod() {
 	return this->hasPost;
 }
 
-bool Entity::canDispatchChangeEvent() {
-	return this->dispatcher;
+bool Entity::isApplicationDispatcher() {
+	return this->applicationDispatcher;
+}
+
+void Entity::setApplicationDispatcher(bool applicationDispatcher){
+	this->applicationDispatcher = applicationDispatcher;
 }
 
 bool Entity::canLoadState() {
@@ -102,9 +103,6 @@ void Entity::print() {
 
 void Entity::dispatchChangeEventIfChanged() {
 	if(this->changed){
-		if(selfEventProcessFunction!=nullptr){
-			selfEventProcessFunction();
-		}
 		if (eventProcessFunction != nullptr) {
 			eventProcessFunction(id);
 		}
@@ -114,6 +112,14 @@ void Entity::dispatchChangeEventIfChanged() {
 void Entity::markEntityAsChangedIfTrue(bool value){
 	if(value){
 		this->setChanged(true);
+
+		if(onSetChangedEventFunction!=nullptr){
+			onSetChangedEventFunction();
+		}
+
+		if(this->isApplicationDispatcher()){
+			eventProcessFunction(id);
+		}
 	}
 }
 

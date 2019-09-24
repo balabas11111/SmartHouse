@@ -23,8 +23,9 @@
 class OutputPin:public Pin, public Entity, public EntityUpdate {
 public:
 	OutputPin(uint8_t pin, const char* name = strdup(OUTPUT_PIN_NAME), const char* descr = OUTPUT_PIN_DESCRIPTION,
-			std::function<void(void)> selfEventProcessFunction = nullptr) :
-			Pin(pin,OUTPUT), Entity(GROUP_SENSORS, name, strdup(descr), selfEventProcessFunction) {
+			std::function<void(void)> selfEventProcessFunction = nullptr, bool applicationDispatcher = false) :
+			Pin(pin,OUTPUT),
+			Entity(GROUP_SENSORS, name, strdup(descr), selfEventProcessFunction, applicationDispatcher) {
 	}
 
 	virtual ~OutputPin() {

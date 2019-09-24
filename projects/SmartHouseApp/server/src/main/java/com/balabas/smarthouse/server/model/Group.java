@@ -15,10 +15,10 @@ import org.json.JSONObject;
 public class Group implements NameAble, JsonDataContainer {
 
     public enum GroupType{
-        DEVICE(1000*60),
-        SENSORS(1000*30),
-        SETTINGS(1000*240),
-        SERVICES(1000*30),
+        DEVICE(1000*120),
+        SENSORS(1000*120),
+        SETTINGS(1000*580),
+        SERVICES(1000*60),
         CUSTOM(-1);
         
         long refreshInterval;

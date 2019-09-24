@@ -64,8 +64,9 @@ void EntityManager::init(WiFiSettingsBox* conf, SmartHouseServerHelper* serverHe
 }
 
 void EntityManager::processEntityChangedEvent(int entityIndex) {
-	Serial.print(FPSTR("Change event id="));
-	Serial.println(entityIndex);
+	//Serial.print(FPSTR("Change event id="));
+	//Serial.println(entityIndex);
+	this->entitiesChanged = true;
 }
 
 Entity* EntityManager::getEntityByGroupAndName(const char* group,
@@ -267,23 +268,23 @@ void EntityManager::deleteEntityJsonRequestResponse(
 }
 
 bool EntityManager::processEntitiesChange(EntityJsonRequestResponse* collector){
-	bool result = this->entitiesChanged;
-	dispatchAllChangedEntities();
-	collectAllChangedEntities(collector);
-	result = finishChangesProcess() || result;
-
-	if(result){
-
+	if(!this->entitiesChanged){
+		return false;
 	}
+	Serial.println(FPSTR("-------------------------"));
+	unsigned long start = millis();
+	//dispatchAllChangedEntities();
+	collectAllChangedEntities(collector);
 
+	bool result = finishChangesProcess();
+	ObjectUtils::printTimeHeap(start);
+	Serial.println(FPSTR("-------------------------"));
 	return result;
 }
 
 void EntityManager::dispatchAllChangedEntities() {
-	if(this->entitiesChanged){
-		for(Entity* entity: entities){
-			entity->dispatchChangeEventIfChanged();
-		}
+	for(Entity* entity: entities){
+		entity->dispatchChangeEventIfChanged();
 	}
 }
 
@@ -309,7 +310,12 @@ bool EntityManager::finishChangesProcess(){
 	for(Entity* entity: entities){
 		if(entity->isChanged()){
 			entity->setChanged(false);
-			dispatch = true;
+			if(entity->isApplicationDispatcher()){
+				Serial.print(FPSTR("Entity "));
+				Serial.print(entity->getName());
+				Serial.println(FPSTR(" changed"));
+				dispatch = true;
+			}
 		}
 		if(entity->isSaveRequired()){
 			entity->setSaveRequired(false);
@@ -318,15 +324,17 @@ bool EntityManager::finishChangesProcess(){
 	}
 
 	if(toSave){
-		saveEntitiesToFile();
+		Serial.println(FPSTR("Save is required"));
+		//saveEntitiesToFile();
 	}
 
 	if(dispatch){
 		if(onEntitiesChanged!=nullptr){
 			onEntitiesChanged();
 		}
-		this->entitiesChanged = false;
 	}
+
+	this->entitiesChanged = false;
 
 	return dispatch;
 }

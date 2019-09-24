@@ -187,12 +187,16 @@ private:
 		}
 	}
 	static int executePostRequestBase(const char* reqType,String& url, String& params,
-			String& result, const String& contentType) {
+			String& result, char* contentType) {
+		if(WiFi.status()!= WL_CONNECTED){
+			return -1;
+		}
 
 		Serial.println(FPSTR("--------------------"));
-		Serial.println(FPSTR("Execute POST request"));
 
 		printReqDetails(reqType, url, params);
+
+		delay(0);
 
 		HTTPClient http;
 
@@ -211,6 +215,9 @@ private:
 	}
 	static int executeGetRequestBase(const char* reqType, String& url, String& params,
 			String& result) {
+		if(WiFi.status()!= WL_CONNECTED){
+			return -1;
+		}
 		printReqDetails(reqType, url, params);
 
 		String paramsStr = (params != nullptr && params.length() > 1) ?	params : "";
@@ -224,6 +231,8 @@ private:
 
 		Serial.print(FPSTR("process Get url ="));
 		Serial.println(getUrl);
+
+		delay(0);
 
 		HTTPClient http;
 		http.begin(getUrl);

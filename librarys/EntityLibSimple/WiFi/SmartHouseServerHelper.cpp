@@ -55,11 +55,12 @@ void SmartHouseServerHelper::executeOnServerRegisterIfTriggered() {
 	if(WiFi.status() == WL_CONNECTED){
 		if(!this->registered){
 
-			if(timeoutExecuteRegister && nextRegisterExecution-millis()>0){
+			if(this->triggeredOnServerRegister){
+
+			if(timeoutExecuteRegister && nextRegisterExecution + MAX_CONNECTION_ERRORS_REACHED_TIMEOUT > millis()){
 				return;
 			}
 
-			if(this->triggeredOnServerRegister){
 				if(!serverRegisterRuns){
 					this->serverRegisterRuns = true;
 					unsigned long start = millis();
@@ -75,6 +76,7 @@ void SmartHouseServerHelper::executeOnServerRegisterIfTriggered() {
 						this->registered = true;
 						this->registerErrors = 0;
 						this->timeoutExecuteRegister = false;
+						this->triggeredOnServerRegister = false;
 						Serial.println(FPSTR("Device was REGISTERED on server"));
 					}else{
 						Serial.println(FPSTR("ERROR REGISTER on server"));
@@ -86,17 +88,18 @@ void SmartHouseServerHelper::executeOnServerRegisterIfTriggered() {
 					ObjectUtils::printTimeHeap(start);
 					Serial.println(FPSTR("-------------------------"));
 
-					this->triggeredOnServerRegister = false;
 					this->serverRegisterRuns = false;
 				}
 			}
 
-			if(registerErrors>MAX_REGISTER_ERRORS){
+			if(registerErrors>=MAX_REGISTER_ERRORS){
 				this->registerErrors = 0;
 				this->timeoutExecuteRegister = true;
-				this->nextRegisterExecution = millis() + MAX_CONNECTION_ERRORS_REACHED_TIMEOUT;
+				this->nextRegisterExecution = millis();
 
-				Serial.println(FPSTR("Registration will be timedOut"));
+				Serial.print(FPSTR("Registration will be timedOut at "));
+				Serial.print(nextRegisterExecution+ MAX_CONNECTION_ERRORS_REACHED_TIMEOUT);
+				Serial.println(FPSTR(")"));
 			}
 		}
 	}
@@ -124,7 +127,10 @@ void SmartHouseServerHelper::executeOnServerDataChangedIfTriggered() {
 					if(status == 200){
 						Serial.println(FPSTR("DataChange was dispatched"));
 						this->connectionErrors = 0;
-					}else{
+					}else if(status==403){
+						this->registered = false;
+						this->triggerOnServerRegister();
+					} else{
 						Serial.println(FPSTR("DataChange dispatch error"));
 						this->connectionErrors++;
 					}
@@ -135,7 +141,7 @@ void SmartHouseServerHelper::executeOnServerDataChangedIfTriggered() {
 				}
 			}
 
-			if(this->connectionErrors>MAX_CONNECTION_ERRORS){
+			if(this->connectionErrors>=MAX_CONNECTION_ERRORS){
 				this->connectionErrors = 0;
 				this->registered = false;
 			}

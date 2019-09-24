@@ -31,8 +31,9 @@ const char BAD_METHOD[] PROGMEM ="Bad method";
 class Entity {
 public:
 	Entity(const char* group, const char* name, char* descr,
-			std::function<void(void)> selfEventProcessFunction = nullptr,
-			bool hasGet = true, bool hasPost = false, bool dispatcher = false,
+			std::function<void(void)> onSetChangedEventFunction = nullptr,
+			bool applicationDispatcher = true,
+			bool hasGet = true, bool hasPost = false,
 			bool canLoad = true, bool canSave = true);
 	virtual ~Entity() {
 	}
@@ -56,7 +57,10 @@ public:
 
 	bool hasGetMethod();bool hasPostMethod();
 
-	bool canDispatchChangeEvent();bool canLoadState();bool canSaveState();
+	bool isApplicationDispatcher();
+	void setApplicationDispatcher(bool applicationDispatcher);
+
+	bool canLoadState();bool canSaveState();
 
 	void print();
 
@@ -91,7 +95,7 @@ protected:
 	bool changed;
 	bool saveRequired;
 
-	bool hasGet;bool hasPost;bool dispatcher;
+	bool hasGet;bool hasPost;bool applicationDispatcher;
 
 	bool canLoad;bool canSave;
 
@@ -103,7 +107,7 @@ protected:
 	//const char* descrField;
 
 	std::function<void(int)> eventProcessFunction;
-	std::function<void(void)> selfEventProcessFunction;
+	std::function<void(void)> onSetChangedEventFunction;
 
 	template<typename T>
 	T getJsonField(JsonObject& json, const char* key) {

@@ -30,13 +30,13 @@ EntityApplication app("EntityLib dev device",
 
 void setup() {
 	app.initWithWiFi();
-	app.setOnEntitiesChanged(onEntityChanged);
+	app.setOnEntitiesChanged(onEntitiesChanged);
 
 	app.registerTicker(1000,changeLed);
 	app.registerTicker(10000, executeHttp);
 	app.registerTicker(updateEntities);
 
-	//app.updateEntities(false);
+	app.updateEntities(false);
 }
 
 
@@ -54,14 +54,16 @@ void updateEntities(){
 	//app.getEntityManager()->print();
 	Serial.println(FPSTR("Update Entities"));
 	app.updateEntities(false);
+	/*
 	app.notify((char*)GROUP_SENSORS, nullptr, (char*) DATA);
 	app.getSmartHouseServerHelper()->triggerOnServerDeviceDataChanged();
+	*/
 }
 
 void changeLed(){
 	rele.setOnOpposite();
 }
 
-void onEntityChanged(){
-	Serial.println(FPSTR("onEntityChanged"));
+void onEntitiesChanged(){
+	Serial.println(FPSTR("onEntities Changed"));
 }

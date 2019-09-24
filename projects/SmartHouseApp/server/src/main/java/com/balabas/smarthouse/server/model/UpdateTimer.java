@@ -19,6 +19,9 @@ public class UpdateTimer {
     @Getter
     private Date registrationTime;
     
+    @Getter
+    private long lastUpdateTime;
+    
     private long nextUpdateTime = -1;
     
     private boolean waitsForDataUpdate;
@@ -28,6 +31,8 @@ public class UpdateTimer {
         this.parentClass = parent.getClass().getSimpleName();
         this.updateInterval = updateInterval;
         this.registrationTime = new Date();
+        
+        log.info("new UpdateTimer("+parentName+") i="+updateInterval);
     }
     
     public void setWaitsForDataUpdate(boolean value){
@@ -37,13 +42,20 @@ public class UpdateTimer {
     public void setDataReceived(){
         setWaitsForDataUpdate(false);
         setNextTimeToUpdate();
-        
-        log.info(this.parentClass+"("+this.parentName+") DataUpdate completed");
+
+        this.lastUpdateTime = (new Date()).getTime();
+        //log.info(this.parentClass+"("+this.parentName+") DataUpdate completed");
     }
     
-    public void setNextTimeToUpdate(){
+    public void setDataUpdateFailed(){
+        setWaitsForDataUpdate(false);
+        setNextTimeToUpdate();
+    }
+    
+    private void setNextTimeToUpdate(){
         if(updateInterval>-1){
-            this.nextUpdateTime = (new Date()).getTime() + updateInterval;
+            Date now = new Date();
+            this.nextUpdateTime = now.getTime() + updateInterval;
         }else{
             log.error("Wrong updateInterval");
         }
@@ -56,24 +68,26 @@ public class UpdateTimer {
     }
     
     public boolean isTimeToUpdate(){
-        boolean result = this.waitsForDataUpdate; 
+        boolean waits = this.waitsForDataUpdate;
+        boolean timeResult = false;
         
         if(this.nextUpdateTime > -1){
-            long now = (new Date()).getTime();
+            Date now = new Date();
+            long time = now.getTime();
             
-            boolean timeResult = this.nextUpdateTime < now;
-            result = this.waitsForDataUpdate || timeResult;
-            
+            timeResult = this.nextUpdateTime < time;
+            /*
             if(timeResult){
-                log.info(this.parentClass+"("+this.parentName+") Data is OLD nTime"+nextUpdateTime+" now="+now);
-            }
+                log.info(this.parentClass+"("+this.parentName+") Data is OLD lastUpdated="+lastUpdated+" now="+now);
+            }*/
         }
-        
-        if(result){
+        /*
+        if(waits){
             log.info(this.parentClass+"("+this.parentName+") Waits for data update");
         }
+        */
         
-        return result;
+        return waits || timeResult;
     }
    
 }

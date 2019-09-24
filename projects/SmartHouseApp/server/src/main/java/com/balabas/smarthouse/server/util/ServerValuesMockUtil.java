@@ -38,7 +38,7 @@ public class ServerValuesMockUtil {
 	}
 
 	public static DeviceRequest createMockedRequest(int i) {
-		return new DeviceRequest("deviceId" + i, "deviceFirmware" + i, "deviceDescr" + i,
+		return new DeviceRequest("deviceId" + i, "deviceFirmware" + i, "Mocked device Description" + i,
 									HashUtil.getSha1("SomeServerKey"), "deviceKey", "rootUrl" + i,
 									"http://localhost:80/api/v1/devices/mock_deviceId" + i, null, null);
 	}
