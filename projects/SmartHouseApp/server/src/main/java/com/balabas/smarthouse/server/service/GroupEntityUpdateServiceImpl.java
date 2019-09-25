@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.events.ChangedEvent;
-import com.balabas.smarthouse.server.events.ChangedEvent.EventType;
+import com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType;
 import com.balabas.smarthouse.server.events.DeviceChangedEvent;
 import com.balabas.smarthouse.server.events.EntityChangedEvent;
 import com.balabas.smarthouse.server.events.GroupChangedEvent;
@@ -41,7 +41,7 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
         if (!deviceJson.isEmpty()) {
 
             if(!device.isInitialDataReceived()){
-                events.add(new DeviceChangedEvent(device, EventType.ADDED));
+                events.add(new DeviceChangedEvent(device, DeviceEventType.ADDED));
             }
             
             for(String groupName: JSONObject.getNames(deviceJson)) {
@@ -63,7 +63,7 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
                     deviceGroups.add(group);
                     
                     if(device.isInitialDataReceived()){
-                        events.add(new GroupChangedEvent(group, EventType.ADDED));
+                        events.add(new GroupChangedEvent(group, DeviceEventType.ADDED));
                     }
                 } else {
                     group = groupOpt.get();
@@ -94,7 +94,7 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
                             groupEntities.add(entity);
                             
                             if(device.isInitialDataReceived()){
-                                events.add(new EntityChangedEvent(entity, EventType.ADDED));
+                                events.add(new EntityChangedEvent(entity, DeviceEventType.ADDED));
                             }
                         } else {
                             entity = entityOpt.get();
@@ -136,7 +136,7 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
                         }
                         
                         EntityChangedEvent entityValuesChangeEvent = 
-                                EntityChangedEvent.build(entity, EventType.UPDATED, valueEvents);
+                                EntityChangedEvent.build(entity, DeviceEventType.UPDATED, valueEvents);
                         
                         if(entityValuesChangeEvent!=null){
                             entityEvents.add(entityValuesChangeEvent);
@@ -144,7 +144,7 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
                     }
                     
                     if(!entityEvents.isEmpty()){
-                        GroupChangedEvent groupEvent = new GroupChangedEvent(group, EventType.UPDATED, entityEvents);
+                        GroupChangedEvent groupEvent = new GroupChangedEvent(group, DeviceEventType.UPDATED, entityEvents);
                         if(groupEvent!=null){
                             events.add(groupEvent);
                         }

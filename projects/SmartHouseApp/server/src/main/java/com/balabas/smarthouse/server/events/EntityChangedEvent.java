@@ -13,11 +13,11 @@ public class EntityChangedEvent extends ChangedEvent<Entity> {
     @Getter
     private List<ValuesChangeEvent> events =new ArrayList<>();
     
-    public EntityChangedEvent(Entity target, EventType eventType) {
+    public EntityChangedEvent(Entity target, DeviceEventType eventType) {
         super(target, eventType);
     }
     
-    public EntityChangedEvent(Entity target, EventType eventType, List<ValuesChangeEvent> events) {
+    public EntityChangedEvent(Entity target, DeviceEventType eventType, List<ValuesChangeEvent> events) {
         super(target, eventType);
         this.events = events;
     }
@@ -28,10 +28,10 @@ public class EntityChangedEvent extends ChangedEvent<Entity> {
         }
     }
     
-    public static EntityChangedEvent build(Entity target, EventType eventType, List<ValuesChangeEvent> events){
+    public static EntityChangedEvent build(Entity target, DeviceEventType eventType, List<ValuesChangeEvent> events){
         List<ValuesChangeEvent>  nonNulls = events.stream().filter(ev->(ev!=null && ev.hasValues())).collect(Collectors.toList());
         
-        if(nonNulls.isEmpty() && eventType.equals(EventType.UPDATED)){
+        if(nonNulls.isEmpty() && eventType.equals(DeviceEventType.UPDATED)){
             return null;
         }
         

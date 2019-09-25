@@ -6,7 +6,7 @@ import lombok.Getter;
 
 public class ChangedEvent<T extends NameAble> {
 
-    public enum EventType{
+    public enum DeviceEventType{
         UPDATED,
         ADDED,
         REMOVED
@@ -16,9 +16,9 @@ public class ChangedEvent<T extends NameAble> {
     private T target;
     
     @Getter
-    private EventType eventType;
+    private DeviceEventType eventType;
     
-    public ChangedEvent(T target, EventType eventType ){
+    public ChangedEvent(T target, DeviceEventType eventType ){
         this.target = target;
         this.eventType = eventType;
     }

@@ -1,6 +1,5 @@
-package com.balabas.smarthouse.server.bot;
+package com.balabas.smarthouse.telegram.bot.handler;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -8,18 +7,16 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
+import com.balabas.smarthouse.telegram.bot.service.AuthService;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @AllArgsConstructor
-public class SmartHouseBot extends TelegramLongPollingBot {
+public class SmartHouseBotHandler extends TelegramLongPollingBot {
 
-	@Value("${telegram.bot.apiToken}")
-	private String botToken;
-
-	@Value("${telegram.bot.botName}")
-	private String botName;
+	private AuthService authService;
 
 	@Override
 	public void onUpdateReceived(Update update) {
@@ -46,16 +43,15 @@ public class SmartHouseBot extends TelegramLongPollingBot {
 
 	@Override
 	public String getBotUsername() {
-		return botName;
+		return authService.getBotName();
 	}
 
 	@Override
 	public String getBotToken() {
-		return botToken;
+		return authService.getBotToken();
 	}
 
 	@Override
-	public void clearWebhook() throws TelegramApiRequestException {
-	}
+	public void clearWebhook() throws TelegramApiRequestException {}
 
 }

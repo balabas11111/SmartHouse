@@ -12,11 +12,11 @@ public class GroupChangedEvent extends ChangedEvent<Group> {
     @Getter 
     private List<EntityChangedEvent> events = new ArrayList<>();
     
-    public GroupChangedEvent(Group target, EventType eventType) {
+    public GroupChangedEvent(Group target, DeviceEventType eventType) {
         super(target, eventType);
     }
     
-    public GroupChangedEvent(Group target, EventType eventType, List<EntityChangedEvent> events) {
+    public GroupChangedEvent(Group target, DeviceEventType eventType, List<EntityChangedEvent> events) {
         super(target, eventType);
         this.events = events;
     }

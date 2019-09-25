@@ -8,18 +8,19 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.log4j.Log4j2;
 
-import com.balabas.smarthouse.server.bot.BotService;
 import com.balabas.smarthouse.server.events.ChangedEvent;
+import com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType;
 import com.balabas.smarthouse.server.events.DeviceChangedEvent;
 import com.balabas.smarthouse.server.events.EntityChangedEvent;
 import com.balabas.smarthouse.server.events.GroupChangedEvent;
+import com.balabas.smarthouse.telegram.bot.service.BotService;
 
 @Log4j2
 @Service
 public class EventProcessServiceImpl implements EventProcessService {
 
 	@Autowired
-	BotService bot;
+	BotService botService;
 	
     @Override
     public void processEvents(List<ChangedEvent<?>> events) {
@@ -47,9 +48,9 @@ public class EventProcessServiceImpl implements EventProcessService {
     }
     
     public void processEvent(DeviceChangedEvent event){
-        log.info("process DeviceChangedEvent");
-        
-        bot.sendMessage("Device registered "+event.getTarget().getDeviceDescr()+" at "+(new Date()));
+    	if(event.getEventType().equals(DeviceEventType.ADDED)){
+    		botService.sendDeviceRegisteredEvent(event);
+    	}
     }
     
     public void processEvent(GroupChangedEvent event){

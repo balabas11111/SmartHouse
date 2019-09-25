@@ -1,54 +1,51 @@
-package com.balabas.smarthouse.server.bot;
+package com.balabas.smarthouse.telegram.bot.service;
 
 import static java.lang.String.format;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.starter.AfterBotRegistration;
+
+import com.balabas.smarthouse.server.events.DeviceChangedEvent;
+import com.balabas.smarthouse.telegram.bot.handler.SmartHouseBotHandler;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
-public class BotService implements InitializingBean {
+public class BotServiceImpl implements BotService, InitializingBean {
 
-	@Value("${telegram.bot.apiToken}")
-	private String botToken;
-	
-	@Value("${telegram.bot.botName}")
-	private String botName;
-	
 	@Getter
 	private TelegramBotsApi api;
 
 	@Getter
-	private SmartHouseBot bot;
+	private SmartHouseBotHandler bot;
 	
 	
 	@Autowired
-	TelegramAuthService authService;
+	AuthService authService;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.api = new TelegramBotsApi();
-		this.bot = new SmartHouseBot(botToken, botName);
+		this.bot = new SmartHouseBotHandler(authService);
 
 		BotSession session = api.registerBot(bot);
 		handleAfterRegistrationHook(bot, session);
 
 	}
 	
-	public void sendMessage(String text){
+	@Override
+	public void sendMessageToAllUsers(String text){
 		authService.getAllowedUserIds().stream().forEach(chatId->bot.sendTextMessage(chatId, text));
 	}
 
@@ -80,6 +77,11 @@ public class BotService implements InitializingBean {
 			log.error(format("Couldn't invoke Method %s of Type %s", method.getName(),
 					method.getDeclaringClass().getCanonicalName()));
 		}
+	}
+
+	@Override
+	public void sendDeviceRegisteredEvent(DeviceChangedEvent event) {
+		sendMessageToAllUsers(String.format(BotMessageConstants.DEVICE_REGISTERED_MSG, event.getTarget().getDeviceDescr(),new Date()));
 	}
 
 }

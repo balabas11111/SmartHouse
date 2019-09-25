@@ -4,7 +4,7 @@ import com.balabas.smarthouse.server.model.Device;
 
 public class DeviceChangedEvent extends ChangedEvent<Device> {
 
-    public DeviceChangedEvent(Device target, EventType eventType) {
+    public DeviceChangedEvent(Device target, DeviceEventType eventType) {
         super(target, eventType);
     }
 
