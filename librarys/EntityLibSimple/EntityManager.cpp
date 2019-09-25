@@ -96,24 +96,18 @@ void EntityManager::addNotAllowed(JsonObject& response, const char* method) {
 	JsonObjectUtil::setField(response, METHOD, method);
 }
 
-void EntityManager::executeHttpMethod(EntityJsonRequestResponse* reqResp,
-		const char* method) {
-
-	executeHttpMethod(reqResp->getRequest(),
-			(!reqResp->getRequest().containsKey(PARAM))?
-					reqResp->getResponse()
-					:reqResp->getResponse().createNestedObject(reqResp->getRequest().get<char*>(PARAM)),
-			 method);
+void EntityManager::executeMethod(EntityJsonRequestResponse* reqResp, const char* method){
+	executeMethod(reqResp->getRequest(), reqResp->getResponse(), method);
 }
 
-void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
+void EntityManager::executeMethod(JsonObject& params, JsonObject& response,
 		const char* method) {
-
+/*
 	Serial.print(method);
 	Serial.print(FPSTR(" "));
 
 	JsonObjectUtil::printWithPreffix(PARAMETERS, params);
-
+*/
 	JsonObject& json = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
 										_DEVICE, _INFO);
 	this->getConf()->addDeviceInfoToJson(json);
@@ -132,7 +126,7 @@ void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 		changed = executeMethodOnEntity(params, response, entity, method);
 	}
 
-	JsonObjectUtil::printWithPreffix(RESPONSE, response);
+	//JsonObjectUtil::printWithPreffix(RESPONSE, response);
 
 	this->entitiesChanged = (this->entitiesChanged || changed);
 
@@ -385,10 +379,10 @@ void EntityManager::persist(
 }
 
 void EntityManager::get(EntityJsonRequestResponse* reqResp) {
-	executeHttpMethod(reqResp, REQUEST_GET);
+	executeMethod(reqResp->getRequest(),reqResp->getResponse(), REQUEST_GET);
 }
 
 void EntityManager::post(EntityJsonRequestResponse* reqResp) {
-	executeHttpMethod(reqResp, REQUEST_POST);
+	executeMethod(reqResp->getRequest(),reqResp->getResponse(), REQUEST_POST);
 }
 

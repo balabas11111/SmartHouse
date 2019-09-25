@@ -68,7 +68,7 @@ public:
 	void registerTicker(void (*callback)(void));
 	void registerTicker(uint32_t milliseconds, void (*callback)(void));
 
-	void updateEntities(bool withCheck = true);
+	void updateEntities(bool force = false);
 
 	void notify(char* group = nullptr, char* name = nullptr, char* param = nullptr, NotificationTarget* notifTarget = nullptr);
 

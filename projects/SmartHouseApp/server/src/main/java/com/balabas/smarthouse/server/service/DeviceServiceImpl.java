@@ -93,7 +93,7 @@ public class DeviceServiceImpl implements InitializingBean, DeviceService {
     @Override
     public DeviceRegistrationResult registerDevice(
     		DeviceRequest request) throws UnknownHostException {
-        Device device = Device.from(request, deviceUpdateInterval);
+        Device device = Device.from(request, this.deviceUpdateInterval);
         return registerDevice(device);
     }
 	
@@ -104,11 +104,19 @@ public class DeviceServiceImpl implements InitializingBean, DeviceService {
 		if (!isDeviceRegistrationAllowed(device)) {
 			result.setResult(DeviceRegistrationStatus.NOT_ALLOWED);
 		}
-
+		
+		Optional<Device> regDevice = getDeviceByDeviceId(device.getDeviceId());
+		
 		if (result.isOkOrUnknown()) {
-			addDeviceTo(device);
-			result.setResult(DeviceRegistrationStatus.SUCCESS);
-			device.setState(DeviceState.REGISTERED);
+		    if(regDevice.isPresent()){
+		        device = regDevice.get().updateDevice(device);
+		        
+		        result.setResult(DeviceRegistrationStatus.ALREADY_REGISTERED);
+		    }else{
+		        addDeviceTo(device);
+		        result.setResult(DeviceRegistrationStatus.SUCCESS);
+		    }
+		    device.setState(DeviceState.REGISTERED);
 		}
 
 		log.info(device.getDeviceId()+ " REGISTERED " + device.toString() + " status = "
@@ -180,8 +188,8 @@ public class DeviceServiceImpl implements InitializingBean, DeviceService {
     	Device device = getDeviceByDeviceId(request.getDeviceId()).orElse(null);
         
         authService.checkDeviceOnDataUpdatedRequest(request, device);
-        
-        processDeviceDataUpdate(device, request.getData());
+        String deviceData = request.getJsonOrData();
+        processDeviceDataUpdate(device, deviceData);
     }
     
     @Override

@@ -1,5 +1,10 @@
 package com.balabas.smarthouse.server.model.request;
 
+import org.json.JSONObject;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +32,23 @@ public class DeviceRequest {
 	
 	private String data;
 	
+	private JsonNode json;
+	
 	public boolean hasData(){
-        return data!=null && !data.isEmpty();
+        return (data!=null && !data.isEmpty());
     }
+	
+	public boolean hasJson(){
+        return (json!=null && JsonNodeType.OBJECT.equals(json.getNodeType()));
+    }
+	
+	public String getJsonOrData(){
+	    if(hasJson()){
+	        return json.toString();
+	    }
+	    if(hasData()){
+	        return data;
+	    }
+	    return null;
+	}
 }

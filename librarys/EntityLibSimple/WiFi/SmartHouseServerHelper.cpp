@@ -44,12 +44,16 @@ void SmartHouseServerHelper::executeOnServerRegisterIfTriggered() {
 					this->serverRegisterRuns = true;
 					unsigned long start = millis();
 					Serial.println(FPSTR("-------------------------"));
-					Serial.println(FPSTR("Server register triggered"));
+					Serial.println(FPSTR("Registering"));
 					EntityJsonRequestResponse* req = new EntityJsonRequestResponse();
 
 					createDeviceRegistrationRequest(req->getRequest());
 
-					int status = HttpUtils::executePostRequest(req, JSONKEY_url);
+					String url = getServerRegisterUrl();
+					String resultStr;
+
+					//int status = HttpUtils::executePostRequest(req, JSONKEY_url);
+					int status = HttpUtils::executePostRequest(url, req->getRequest(), resultStr);
 
 					if(status == 200){
 						this->registered = true;
@@ -57,6 +61,11 @@ void SmartHouseServerHelper::executeOnServerRegisterIfTriggered() {
 						this->timeoutExecuteRegister = false;
 						this->triggeredOnServerRegister = false;
 						Serial.println(FPSTR("Device was REGISTERED on server"));
+					}else if(status==404){
+						this->registered = false;
+						this->nextRegisterExecution = millis();
+						this->nextRegisterExecution += MAX_CONNECTION_ERRORS_NO_SERVER_FOUND_TIMEOUT;
+						this->triggerOnServerRegister();
 					}else{
 						Serial.println(FPSTR("ERROR REGISTER on server"));
 						this->registerErrors++;
@@ -92,28 +101,36 @@ void SmartHouseServerHelper::executeOnServerDataChangedIfTriggered() {
 				this->serverDataChangedRuns = true;
 				unsigned long start = millis();
 				Serial.println(FPSTR("-------------------------"));
-				Serial.println(FPSTR("Trigerring DataChanged"));
+				Serial.println(FPSTR("Send DC"));
 				EntityJsonRequestResponse* req = new EntityJsonRequestResponse();
-
-				if(this->addDataToChangedRequest){
-					JsonObject& data = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(req->getResponse(), DATA);
-					manager->groupNameToParam(manager->getSensorsGroup(), nullptr, req);
-					manager->get(req);
-				}
 
 				createDeviceDataChangedRequest(req->getRequest());
 
-				JsonObjectUtil::printWithPreffix("DataChanged Request =", req->getRequest());
+				if(this->addDataToChangedRequest){
+					JsonObject& data = JsonObjectUtil::getObjectChildOrCreateNew(req->getRequest(), JSON);
 
-				int status = HttpUtils::executePostRequest(req, JSONKEY_url);
+					manager->groupNameToParam(manager->getSensorsGroup(), nullptr, req);
+					manager->executeMethod(req->getRequest(),data);
+				}
+
+				//String url = serverDatachangeUrlStr;
+				String resultStr;
+				//JsonObjectUtil::printWithPreffix("DataChanged Request =", req->getRequest());
+
+				int status = HttpUtils::executePostRequest(getServerDataChangedUrlStr(), req->getRequest(), resultStr);
 
 				delete req;
 				ObjectUtils::printTimeHeap(start);
 				if(status == 200){
-					Serial.println(FPSTR("DataChange was dispatched"));
+					Serial.println(FPSTR("DC done"));
 					this->connectionErrors = 0;
 				}else if(status==403){
 					this->registered = false;
+					this->triggerOnServerRegister();
+				}else if(status==404){
+					this->registered = false;
+					this->nextRegisterExecution = millis();
+					this->nextRegisterExecution += MAX_CONNECTION_ERRORS_NO_SERVER_FOUND_TIMEOUT;
 					this->triggerOnServerRegister();
 				} else{
 					Serial.println(FPSTR("DataChange dispatch error"));
@@ -134,7 +151,7 @@ void SmartHouseServerHelper::executeOnServerDataChangedIfTriggered() {
 }
 
 void SmartHouseServerHelper::createDeviceRegistrationRequest(
-		JsonObject& request) {
+		JsonObject& request,bool addUrl) {
 
 	JsonObjectUtil::setField(request, _DEVICE_ID, this->manager->getConf()->deviceId());
 	JsonObjectUtil::setField(request, _DEVICE_FIRMWARE, this->manager->getConf()->deviceFirmWare());
@@ -145,15 +162,19 @@ void SmartHouseServerHelper::createDeviceRegistrationRequest(
 	JsonObjectUtil::setField(request, KEY_ROOT_URL, getDeviceRootUrl());
 	JsonObjectUtil::setField(request, KEY_DATA_URL, getDeviceDataUrl());
 
-	JsonObjectUtil::setField(request, JSONKEY_url, getServerRegisterUrl());
+	if(addUrl){
+		JsonObjectUtil::setField(request, JSONKEY_url, getServerRegisterUrl());
+	}
 }
 
 void SmartHouseServerHelper::createDeviceDataChangedRequest(
-		JsonObject& request) {
+		JsonObject& request,bool addUrl) {
 	JsonObjectUtil::setField(request, _DEVICE_ID, this->manager->getConf()->deviceId());
 	JsonObjectUtil::setField(request, KEY_DEVICE_KEY, getDeviceKeyHashed());
 
-	JsonObjectUtil::setField(request, JSONKEY_url, getServerDataChangedUrl());
+	if(addUrl){
+		JsonObjectUtil::setField(request, JSONKEY_url, getServerDataChangedUrl());
+	}
 }
 
 char* SmartHouseServerHelper::getDeviceBaseUrl() {
@@ -196,6 +217,25 @@ char* SmartHouseServerHelper::getDeviceKeyHashed() {
 		generateDeviceToken();
 	}
 	return this->deviceToken;
+}
+
+String& SmartHouseServerHelper::getServerDataChangedUrlStr() {
+	if(sdcg == false){
+	Serial.println(FPSTR("Generate datachangeUrlStr"));
+	serverDatachangeUrlStr = this->manager->getConf()->smartServerAddr();
+
+	if(!serverDatachangeUrlStr.startsWith(HTTP_PREFFIX)){
+		serverDatachangeUrlStr = HTTP_PREFFIX + serverDatachangeUrlStr;
+	}
+
+	serverDatachangeUrlStr += SMART_HOUSE_SERVER_URL_BASE;
+
+	serverDatachangeUrlStr += SMART_HOUSE_SERVER_URL_ON_DATA_CHANGED;
+
+	sdcg = true;
+	}
+
+	return serverDatachangeUrlStr;
 }
 
 void SmartHouseServerHelper::generateDeviceToken() {
@@ -241,17 +281,8 @@ char* SmartHouseServerHelper::getServerRegisterUrl() {
 
 char* SmartHouseServerHelper::getServerDataChangedUrl() {
 	if(this->serverDataChangedUrl == nullptr){
-		String baseUrl = this->manager->getConf()->smartServerAddr();
-
-		if(!baseUrl.startsWith(HTTP_PREFFIX)){
-			baseUrl = HTTP_PREFFIX + baseUrl;
-		}
-
-		baseUrl += SMART_HOUSE_SERVER_URL_BASE;
-
-		baseUrl += SMART_HOUSE_SERVER_URL_SENDDATA;
-
-		this->serverDataChangedUrl = strdup(baseUrl.c_str());
+		Serial.println(FPSTR("Generate datachangeUrl"));
+		this->serverDataChangedUrl = strdup(getServerDataChangedUrlStr().c_str());
 	}
 
 	return this->serverDataChangedUrl;

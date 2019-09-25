@@ -67,19 +67,6 @@ public class DeviceController {
         return ResponseEntity.ok().body(deviceRequest);
     }
 	
-	@PostMapping("/devices/registerSimple")
-    public ResponseEntity<DeviceRegistrationResult> registerDeviceSimple(@RequestBody DeviceRequest registrRequest,
-            HttpServletRequest request) throws UnknownHostException, DeviceOnServerAuthorizationException {
-
-		registrRequest.setIp(request.getRemoteAddr());
-		authService.checkDeviceRegistrationRequest(registrRequest);
-		
-		log.info("registerDeviceSimple DeviceController registerDevice Addr=" + request.getRemoteAddr());
-        
-        DeviceRegistrationResult result = deviceService.registerDevice(registrRequest);
-        return ResponseEntity.ok().body(result);
-    }
-	
 	@PostMapping("/devices/register")
 	public ResponseEntity<DeviceRegistrationResult> registerDevice(@Valid @RequestBody DeviceRequest registrRequest,
 			HttpServletRequest request) throws UnknownHostException, DeviceOnServerAuthorizationException {
@@ -92,9 +79,16 @@ public class DeviceController {
 		return ResponseEntity.ok().body(result);
 	}
 	
+	@PostMapping("/devices/dataStr")
+    public ResponseEntity<String> dataChangeDispatchedOnDeviceStr(@RequestBody String deviceRequest, HttpServletRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
+        log.info("DataChanged dispatched Str on ");
+        
+        return ResponseEntity.ok().body("OK");
+    }
+	
 	@PostMapping("/devices/data")
     public ResponseEntity<String> dataChangeDispatchedOnDevice(@RequestBody DeviceRequest deviceRequest, HttpServletRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
-	    log.info("DataChanged dispatched on "+deviceRequest.getDeviceId()+" hasData "+deviceRequest.hasData());
+	    log.info("DataChanged dispatched on "+deviceRequest.getDeviceId()+(deviceRequest.hasData()?"data"+deviceRequest.getData():(deviceRequest.hasJson()?deviceRequest.getJson():null)));
 	    deviceRequest.setIp(request.getRemoteAddr());
 	    
         deviceService.processDeviceDataUpdateDispatched(deviceRequest);

@@ -111,7 +111,7 @@ public:
 	static int executePostRequest(String& url, String& params,
 			String& result) {
 
-		int httpCode = executePostRequestBase(URL_POST, url, params, result, CONTENT_TYPE_APPLICATION_FORM_URL_ENCODED);
+		int httpCode = executePostRequestBase(URL_POST, url, params, result, (char*)CONTENT_TYPE_APPLICATION_FORM_URL_ENCODED);
 		printStrResponse( result);
 
 		return httpCode;
@@ -121,7 +121,7 @@ public:
 			JsonObject& result) {
 		String resultStr;
 
-		int httpCode = executePostRequestBase(URL_POST, url, params, resultStr, CONTENT_TYPE_APPLICATION_FORM_URL_ENCODED);
+		int httpCode = executePostRequestBase(URL_POST, url, params, resultStr, (char*)CONTENT_TYPE_APPLICATION_FORM_URL_ENCODED);
 
 		printJsonResponse(resultStr, result);
 
@@ -134,9 +134,9 @@ public:
 		String paramsStr;
 		params.printTo(paramsStr);
 
-		int httpCode = executePostRequestBase(URL_POST_JSON, url, paramsStr, result, CONTENT_TYPE_APPLICATION_JSON);
+		int httpCode = executePostRequestBase(URL_POST_JSON, url, paramsStr, result, (char*)CONTENT_TYPE_APPLICATION_JSON);
 
-		printStrResponse(result);
+		//printStrResponse(result);
 
 		return httpCode;
 	}
@@ -149,7 +149,7 @@ public:
 
 		params.printTo(paramsStr);
 
-		int httpCode = executePostRequestBase(URL_POST_JSON, url, paramsStr, resultStr,	CONTENT_TYPE_APPLICATION_JSON);
+		int httpCode = executePostRequestBase(URL_POST_JSON, url, paramsStr, resultStr,	(char*)CONTENT_TYPE_APPLICATION_JSON);
 
 		printJsonResponse(resultStr, result);
 
@@ -192,9 +192,9 @@ private:
 			return -1;
 		}
 
-		Serial.println(FPSTR("--------------------"));
-
-		printReqDetails(reqType, url, params);
+		/*Serial.println(FPSTR("--------------------"));
+		printReqDetails(reqType, url, params);*/
+		Serial.println(url);
 
 		delay(0);
 
@@ -208,7 +208,7 @@ private:
 		result = http.getString();
 
 		printHttpCode(httpCode);
-
+		printStrResponse(result);
 		http.end();
 
 		return httpCode;

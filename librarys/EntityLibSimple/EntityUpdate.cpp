@@ -11,24 +11,25 @@ void EntityUpdate::init(long interv){
 	this->interval = interv * 1000;
 }
 
-void EntityUpdate::update(bool withCheck){
+bool EntityUpdate::update(bool force){
 	if(this->interval<1){
 		//Serial.println(FPSTR("No update    is expected interval<1"));
-		return;
+		return false;
 	}
 
-	if((withCheck && !shouldUpdate())){
+	if((!force && !shouldUpdate())){
 		//Serial.println(FPSTR("No update    is expected"));
-		return;
+		return false;
 	}
 
 	doUpdate();
-	lastUpdate = millis();
+	this->lastUpdate = millis();
+	return true;
 }
 
 
 long EntityUpdate::getInterval(){
-	return interval;
+	return this->interval;
 }
 
 bool EntityUpdate::isAutoupdate(){

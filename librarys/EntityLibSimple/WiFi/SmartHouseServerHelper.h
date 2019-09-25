@@ -28,6 +28,7 @@
 #define MAX_CONNECTION_ERRORS 3
 #define MAX_REGISTER_ERRORS 1
 
+#define MAX_CONNECTION_ERRORS_NO_SERVER_FOUND_TIMEOUT 3600000
 #define MAX_CONNECTION_ERRORS_REACHED_TIMEOUT 30000
 #define MAX_REGISTER_ERRORS_REACHED_TIMEOUT 30000
 
@@ -53,8 +54,8 @@ public:
 	void triggerOnServerRegister();
 	void triggerOnServerDeviceChanged(bool addData = false);
 
-	void createDeviceRegistrationRequest(JsonObject& request);
-	void createDeviceDataChangedRequest(JsonObject& request);
+	void createDeviceRegistrationRequest(JsonObject& request, bool addUrl = false);
+	void createDeviceDataChangedRequest(JsonObject& request, bool addUrl = false);
 
 	bool validateServersKeyHash(char* serverKey);
 
@@ -76,6 +77,8 @@ private:
 
 	char* getServerRegisterUrl();
 	char* getServerDataChangedUrl();
+
+	String& getServerDataChangedUrlStr();
 
 	void generateDeviceToken();
 
@@ -108,6 +111,9 @@ private:
 
 	char* serverRegisterUrl = nullptr;
 	char* serverDataChangedUrl = nullptr;
+
+	String serverDatachangeUrlStr;
+	bool sdcg = false;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_WIFI_SMARTHOUSESERVERHELPER_H_ */

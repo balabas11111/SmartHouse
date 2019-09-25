@@ -22,7 +22,7 @@ public:
 
 	virtual void loop(){}
 
-	virtual void update(bool withCheck = false) final;
+	virtual bool update(bool force = false) final;
 	virtual void doUpdate() = 0;
 
 	long getInterval();

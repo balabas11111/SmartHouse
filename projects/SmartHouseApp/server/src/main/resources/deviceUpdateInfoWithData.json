@@ -1,0 +1,53 @@
+{
+	"deviceId": "ESP_Dev_ID",
+	"deviceKey": "5a09151707a049a9f720deb1cee9c522a4032229",
+	"data": {
+		"device": {
+			"info": {
+				"deviceId": "ESP_Dev_ID",
+				"deviceFirmware": "EntityLib dev device",
+				"deviceDescr": "Default Device description"
+			}
+		},
+		"sensors": {
+			"bme280": {
+				"d": "Temperature/Humidity/AtmPressure",
+				"h": 53,
+				"t": 27,
+				"p": 100514
+			},
+			"bh1750": {
+				"d": "Light level",
+				"l": 1363
+			},
+			"DefaultRele": {
+				"d": "Default relea pin",
+				"on": false
+			},
+			"dht22": {
+				"d": "Temperature/Humidity",
+				"h": 75,
+				"t": 22
+			},
+			"ds18d20": {
+				"d": "Temperature DallasTemperature",
+				"c": 3,
+				"si": {
+					"00000000": {
+						"n": "00000000",
+						"t": 29
+					},
+					"00000001": {
+						"n": "00000001",
+						"t": 23
+					},
+					"00000002": {
+						"n": "00000002",
+						"t": 38
+					}
+				}
+			}
+		}
+	},
+	"group": "sensors"
+}

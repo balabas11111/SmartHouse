@@ -84,11 +84,17 @@ int EntityUpdateManager::init(int interval) {
 	return totalCount;
 }
 
-void EntityUpdateManager::updateEntities(bool withCheck) {
+void EntityUpdateManager::updateEntities(bool force) {
 	//Serial.println(FPSTR("EntityUpdateManager loop"));
+	bool updated = false;
+
 	for (EntityUpdate* entity : this->entities) {
 			entity->loop();
-			entity->update(withCheck);
+			updated = entity->update(force) || updated;
+	}
+
+	if(updated){
+		Serial.println(FPSTR("ENtities updated"));
 	}
 /*
 	Serial.println(FPSTR("----------------------------------"));
@@ -97,6 +103,6 @@ void EntityUpdateManager::updateEntities(bool withCheck) {
 	*/
 }
 
-void EntityUpdateManager::loop(bool withCheck) {
-	updateEntities(withCheck);
+void EntityUpdateManager::loop(bool force) {
+	updateEntities(force);
 }

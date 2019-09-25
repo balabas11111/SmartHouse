@@ -1,9 +1,11 @@
 package com.balabas.smarthouse.server.model.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class DeviceRegistrationResult {
 
 	public enum DeviceRegistrationStatus {
-		UNKNOWN, SUCCESS, FAILED, REJECTED, MANUAL_REJECTED, WAITS, ALREADY_REGISTERED, NOT_ALLOWED, FORBIDDEN
+		UNKNOWN, SUCCESS, FAILED, REJECTED, MANUAL_REJECTED, WAITS, ALREADY_REGISTERED, NOT_ALLOWED, FORBIDDEN,
 	}
 
 	private boolean registered;
@@ -28,10 +30,12 @@ public class DeviceRegistrationResult {
 				|| result.equals(DeviceRegistrationStatus.WAITS)));
 	}
 
+	@JsonIgnore
 	public boolean isOkOrUnknown() {
 		return isOk() || this.result.equals(DeviceRegistrationStatus.UNKNOWN);
 	}
 	
+	@JsonIgnore
 	public boolean isOk() {
 		return this.registered;
 	}

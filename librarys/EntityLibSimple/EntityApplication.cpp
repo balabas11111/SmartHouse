@@ -141,8 +141,8 @@ void EntityApplication::registerTicker(uint32_t milliseconds, void (*callback)(v
 	Serial.println(FPSTR(" done"));
 }
 
-void EntityApplication::updateEntities(bool withCheck){
-	this->entityUpdateManager->updateEntities(withCheck);
+void EntityApplication::updateEntities(bool force){
+	this->entityUpdateManager->updateEntities(force);
 }
 
 Notifier* EntityApplication::getDefaultNotifier() {

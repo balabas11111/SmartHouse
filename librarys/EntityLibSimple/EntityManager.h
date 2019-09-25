@@ -53,11 +53,10 @@ public:
 	void get(EntityJsonRequestResponse* reqResp);
 	void post(EntityJsonRequestResponse* reqResp);
 
-	void executeHttpMethod(JsonObject& params, JsonObject& response,
-			const char* method);
+	void executeMethod(EntityJsonRequestResponse* reqResp, const char* method = REQUEST_GET);
 
-	void executeHttpMethod(EntityJsonRequestResponse* reqResp,
-				const char* method);
+	void executeMethod(JsonObject& params, JsonObject& response,
+			const char* method = REQUEST_GET);
 
 	void loadEntitiesFromFile();
 	void saveEntitiesToFile();

@@ -23,8 +23,8 @@ public:
 
 	int init(int interval);
 
-	void updateEntities(bool withCheck = true);
-	void loop(bool withCheck = true);
+	void updateEntities(bool force = false);
+	void loop(bool force = false);
 
 private:
 	std::list<EntityUpdate*> entities;

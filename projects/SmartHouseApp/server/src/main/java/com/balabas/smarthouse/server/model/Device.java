@@ -73,6 +73,14 @@ public class Device implements NameAble, JsonDataContainer {
 	    this.getGroups().stream().forEach(group -> getTimer().setDataUpdateFailed());
 	}
 	
+	public Device updateDevice(Device from){
+	    this.deviceDescr = from.deviceDescr;
+	    this.deviceFirmware = from.deviceFirmware;
+	    this.deviceKey = from.deviceKey;
+	    
+	    return this;
+	}
+	
 	public static Device from(DeviceRequest request, long updateInterval) throws UnknownHostException{
 	    Device device = new Device(request.getDeviceId(), updateInterval);
 	    

@@ -56,6 +56,7 @@
 #define NAME "name"
 #define PARAM "param"
 #define DATA "data"
+#define JSON "json"
 #define BODY "body"
 
 //content types

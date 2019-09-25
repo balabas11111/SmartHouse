@@ -207,7 +207,7 @@ void WiFiServerManager::onEntityRequest(const char* method) {
 		}
 	}
 
-	manager->executeHttpMethod(req, method);
+	manager->executeMethod(req, method);
 
 	String response;
 	req->getResponseAsString(response);
