@@ -18,9 +18,7 @@ EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 	}
 
 	this->conf = (newConf) ? new WiFiSettingsBox(firmWare) : conf;
-	this->entityManager = new EntityManager(entities, entityCount);
-
-	this->smartHouseServerHelper = new SmartHouseServerHelper(this->conf);
+	this->entityManager = new EntityManager(entities, entityCount,this->conf);
 
 	if (newConf) {
 		this->entityManager->registerAndPreInitEntity(this->conf);
@@ -64,7 +62,7 @@ void EntityApplication::init(bool initSerial,
 	ObjectUtils::printHeap();
 	ObjectUtils::printMillis();
 
-	this->entityManager->init(this->conf, this->smartHouseServerHelper);
+	this->entityManager->init();
 	this->entityUpdateManager->init(this->conf->refreshInterval());
 
 	if(initWiFi){
@@ -74,6 +72,7 @@ void EntityApplication::init(bool initSerial,
 		startServer();
 	}
 
+	this->smartHouseServerHelper = new SmartHouseServerHelper(this->entityManager);
 	this->defaultDataSelector = new DataSelectorEntityManager(this->entityManager);
 	this->defaultNotifier = new Notifier("Default Notifier", nullptr, this->getDataSelector());
 
@@ -98,10 +97,9 @@ void EntityApplication::initWithoutWiFi(bool deleteFs, bool initI2C,
 
 void EntityApplication::loop() {
 	this->entityUpdateManager->loop();
-	bool changed = this->entityManager->processEntitiesChange();
 
-	if(changed){
-		this->smartHouseServerHelper->triggerOnServerDeviceDataChanged();
+	if(this->entityManager->processChangedEntities()){
+		this->smartHouseServerHelper->triggerOnServerDeviceChanged(true);
 	}
 
 	this->wifiServerManager->loop();

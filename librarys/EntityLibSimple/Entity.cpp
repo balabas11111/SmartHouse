@@ -14,6 +14,8 @@ Entity::Entity(const char* group, const char* name, char* descr,
 bool hasGet, bool hasPost,
 bool canLoad, bool canSave) {
 	this->changed = false;
+	this->forceChanged = false;
+	this->saveRequired = false;
 	this->id = -1;
 	this->group = group;
 	this->name = name;
@@ -29,17 +31,14 @@ bool canLoad, bool canSave) {
 	this->onSetChangedEventFunction = onSetChangedEventFunction;
 }
 
-void Entity::preInitialize(int id, std::function<void(int)> eventProcessFunction) {
+void Entity::preInitialize(int id, std::function<void(void)> eventProcessFunction) {
 	this->id = id;
 	this->eventProcessFunction = eventProcessFunction;
 }
 
-bool Entity::isChanged() {
-	return this->changed;
-}
-
-void Entity::setChanged(bool changed) {
+void Entity::setChanged(bool changed, bool forceChanged) {
 	this->changed = changed;
+	this->forceChanged = forceChanged;
 }
 
 bool Entity::isSaveRequired(){
@@ -101,26 +100,30 @@ void Entity::print() {
 	Serial.println(descr);
 }
 
-void Entity::dispatchChangeEventIfChanged() {
-	if(this->changed){
-		if (eventProcessFunction != nullptr) {
-			eventProcessFunction(id);
-		}
+void Entity::dispatchEventProcessFunctionIfChanged() {
+	if(isMarkedAsChanged() && eventProcessFunction != nullptr){
+		eventProcessFunction();
 	}
 }
 
-void Entity::markEntityAsChangedIfTrue(bool value){
-	if(value){
-		this->setChanged(true);
+void Entity::markEntityAsChangedIfTrue(bool value, bool forceChanged){
+	if(value || forceChanged){
+		this->setChanged(value, forceChanged);
 
 		if(onSetChangedEventFunction!=nullptr){
 			onSetChangedEventFunction();
 		}
 
-		if(this->isApplicationDispatcher()){
-			eventProcessFunction(id);
-		}
+		dispatchEventProcessFunctionIfChanged();
 	}
+}
+
+void Entity::markEntityAsUnChanged(){
+	this->setChanged(false, false);
+}
+
+bool Entity::isMarkedAsChanged(){
+	return this->isApplicationDispatcher()?this->changed:this->forceChanged;
 }
 
 void Entity::markEntityAsSaveRequiredIfTrue(bool value){
@@ -136,13 +139,9 @@ void Entity::executeGet(JsonObject& params, JsonObject& response) {
 }
 
 void Entity::executePost(JsonObject& params, JsonObject& response) {
-	/*if (isKeyExistsInJsonAndNotEqValue(params, this->descrField, this->descr)) {
-		this->descr = strdup(getJsonField<const char*>(params, this->descrField));
-		setChanged(true);
-	}*/
-	bool descrChanged = getKeyValueIfExistsAndNotEquals(params, DESCR, &this->descr);
-	markEntityAsChangedIfTrue(descrChanged);
-	markEntityAsSaveRequiredIfTrue(descrChanged);
+	bool chg = getKeyValueIfExistsAndNotEquals(params, DESCR, &this->descr);
+	markEntityAsChangedIfTrue(chg, chg);
+	markEntityAsSaveRequiredIfTrue(chg);
 
 	doPost(params, response);
 

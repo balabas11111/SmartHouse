@@ -81,10 +81,10 @@ private:
 	EntityManager* entityManager;
 	EntityUpdateManager* entityUpdateManager;
 
-	SmartHouseServerHelper* smartHouseServerHelper;
+	SmartHouseServerHelper* smartHouseServerHelper = nullptr;
 
-	DataSelector* defaultDataSelector;
-	Notifier* defaultNotifier;
+	DataSelector* defaultDataSelector = nullptr;
+	Notifier* defaultNotifier = nullptr;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYAPPLICATION_H_ */

@@ -39,14 +39,11 @@ public:
 	}
 
 	virtual bool preValidate(){return true;}
-	void preInitialize(int id, std::function<void(int)> eventProcessFunction =
+	void preInitialize(int id, std::function<void()> eventProcessFunction =
 			nullptr);
 
 	virtual bool validate(){return true;}
 	virtual void init() {};
-
-	bool isChanged();
-	void setChanged(bool changed);
 
 	bool isSaveRequired();
 	void setSaveRequired(bool saveRequired);
@@ -88,10 +85,16 @@ public:
 		UNUSED(jsonToFile);
 	};
 
-	void dispatchChangeEventIfChanged();
-	void markEntityAsChangedIfTrue(bool value);
+	void dispatchEventProcessFunctionIfChanged();
+
+	bool isMarkedAsChanged();
+
+	void markEntityAsChangedIfTrue(bool value, bool forceChanged = false);
+	void markEntityAsUnChanged();
+
 	void markEntityAsSaveRequiredIfTrue(bool value);
 protected:
+	bool forceChanged;
 	bool changed;
 	bool saveRequired;
 
@@ -106,7 +109,7 @@ protected:
 
 	//const char* descrField;
 
-	std::function<void(int)> eventProcessFunction;
+	std::function<void(void)> eventProcessFunction;
 	std::function<void(void)> onSetChangedEventFunction;
 
 	template<typename T>
@@ -137,6 +140,8 @@ protected:
 		return JsonObjectUtil::getObjectFieldNotExistsOrNotEquals(json, key,
 				val);
 	}
+private:
+	void setChanged(bool changed, bool forceChanged = false);
 
 };
 

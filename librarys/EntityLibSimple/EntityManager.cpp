@@ -10,11 +10,13 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
-EntityManager::EntityManager(Entity* entities[], int count, std::function<void(void)> onEntitiesChanged) {
+EntityManager::EntityManager(Entity* entities[], int count, WiFiSettingsBox* conf, std::function<void(void)> onEntitiesChanged) {
 	for (int i = 0; i < count; i++) {
 		registerAndPreInitEntity(entities[i]);
 	}
 	this->onEntitiesChanged = onEntitiesChanged;
+
+	this->conf = conf;
 }
 
 void EntityManager::registerAndPreInitEntity(Entity* entity) {
@@ -22,7 +24,7 @@ void EntityManager::registerAndPreInitEntity(Entity* entity) {
 	entity->print();
 
 	entity->preInitialize(this->count,
-								[this](int val) {processEntityChangedEvent(val);});
+								[this]() {markEntitiesAsChanged();});
 
 	if(entity->preValidate()){
 		this->entities.push_back(entity);
@@ -35,9 +37,8 @@ void EntityManager::registerAndPreInitEntity(Entity* entity) {
 
 }
 
-void EntityManager::init(WiFiSettingsBox* conf, SmartHouseServerHelper* serverHelper) {
+void EntityManager::init() {
 	this->conf = conf;
-	this->serverHelper = serverHelper;
 
 	Serial.println(FPSTR("----------------------------------"));
 	Serial.println(FPSTR("Init entityManager"));
@@ -63,9 +64,7 @@ void EntityManager::init(WiFiSettingsBox* conf, SmartHouseServerHelper* serverHe
 	Serial.println(FPSTR("==============================="));
 }
 
-void EntityManager::processEntityChangedEvent(int entityIndex) {
-	//Serial.print(FPSTR("Change event id="));
-	//Serial.println(entityIndex);
+void EntityManager::markEntitiesAsChanged() {
 	this->entitiesChanged = true;
 }
 
@@ -117,7 +116,7 @@ void EntityManager::executeHttpMethod(JsonObject& params, JsonObject& response,
 
 	JsonObject& json = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
 										_DEVICE, _INFO);
-	this->serverHelper->addDeviceInfoToJson(json);
+	this->getConf()->addDeviceInfoToJson(json);
 
 	bool changed = false;
 
@@ -149,8 +148,7 @@ bool EntityManager::executeMethodOnAll(JsonObject& params,
 	bool changed = false;
 
 	for (Entity* entity : this->entities) {
-		executeMethodOnEntity(params, response, entity, method);
-		changed = changed || entity->isChanged();
+		changed = executeMethodOnEntity(params, response, entity, method) || changed;
 	}
 
 	return changed;
@@ -167,9 +165,7 @@ bool EntityManager::executeMethodOnGroup(JsonObject& params,
 
 	for (Entity* entity : this->entities) {
 		if(strcmp(entity->getGroup(),group)==0){
-			executeMethodOnEntity(params, response, entity, method);
-
-			changed = changed || entity->isChanged();
+			changed = executeMethodOnEntity(params, response, entity, method) || changed;
 
 			totalCount++;
 		}
@@ -192,6 +188,7 @@ bool EntityManager::executeMethodOnEntity(JsonObject& params, JsonObject& respon
 	}
 
 	bool allowed = false;
+	bool changed = false;
 
 	if (strcmp(method, REQUEST_GET) == 0) {
 		if (entity->hasGetMethod()) {
@@ -208,6 +205,7 @@ bool EntityManager::executeMethodOnEntity(JsonObject& params, JsonObject& respon
 					JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
 							entity->getGroup(), entity->getName()));
 			allowed = true;
+			changed = entity->isMarkedAsChanged();
 		}
 	} else {
 		JsonObjectUtil::setField(response, MESSAGE, BAD_METHOD);
@@ -215,7 +213,7 @@ bool EntityManager::executeMethodOnEntity(JsonObject& params, JsonObject& respon
 	}
 
 	if(allowed){
-		return entity->isChanged();
+		return changed;
 	}
 
 	addNotAllowed(response, method);
@@ -267,55 +265,23 @@ void EntityManager::deleteEntityJsonRequestResponse(
 	ObjectUtils::printHeap();
 }
 
-bool EntityManager::processEntitiesChange(EntityJsonRequestResponse* collector){
+bool EntityManager::processChangedEntities(){
 	if(!this->entitiesChanged){
 		return false;
 	}
 	Serial.println(FPSTR("-------------------------"));
 	unsigned long start = millis();
-	//dispatchAllChangedEntities();
-	collectAllChangedEntities(collector);
 
-	bool result = finishChangesProcess();
-	ObjectUtils::printTimeHeap(start);
-	Serial.println(FPSTR("-------------------------"));
-	return result;
-}
-
-void EntityManager::dispatchAllChangedEntities() {
-	for(Entity* entity: entities){
-		entity->dispatchChangeEventIfChanged();
-	}
-}
-
-void EntityManager::collectAllChangedEntities(EntityJsonRequestResponse* collector){
-	if(collector!=nullptr){
-		collectAllChangedEntities(collector->getRequest(),collector->getResponse());
-	}
-}
-
-void EntityManager::collectAllChangedEntities(JsonObject& params, JsonObject& response){
-	for(Entity* entity: entities){
-		if(entity->isChanged()){
-			executeMethodOnEntity(params, response,
-					entity);
-		}
-	}
-}
-
-bool EntityManager::finishChangesProcess(){
-	bool dispatch = false;
+	bool result = false;
 	bool toSave = false;
 
 	for(Entity* entity: entities){
-		if(entity->isChanged()){
-			entity->setChanged(false);
-			if(entity->isApplicationDispatcher()){
-				Serial.print(FPSTR("Entity "));
-				Serial.print(entity->getName());
-				Serial.println(FPSTR(" changed"));
-				dispatch = true;
-			}
+		if(entity->isMarkedAsChanged()){
+			Serial.print(FPSTR("Entity "));
+			Serial.print(entity->getName());
+			Serial.println(FPSTR(" changed"));
+			result = true;
+			entity->markEntityAsUnChanged();
 		}
 		if(entity->isSaveRequired()){
 			entity->setSaveRequired(false);
@@ -328,7 +294,7 @@ bool EntityManager::finishChangesProcess(){
 		//saveEntitiesToFile();
 	}
 
-	if(dispatch){
+	if(result){
 		if(onEntitiesChanged!=nullptr){
 			onEntitiesChanged();
 		}
@@ -336,7 +302,13 @@ bool EntityManager::finishChangesProcess(){
 
 	this->entitiesChanged = false;
 
-	return dispatch;
+	ObjectUtils::printTimeHeap(start);
+	Serial.println(FPSTR("-------------------------"));
+	return result;
+}
+
+char* EntityManager::getSensorsGroup() {
+	return (char*)GROUP_SENSORS;
 }
 
 bool EntityManager::hasNoGroupNoName(JsonObject& params) {
@@ -378,10 +350,6 @@ void EntityManager::print() {
 
 WiFiSettingsBox* EntityManager::getConf() {
 	return this->conf;
-}
-
-SmartHouseServerHelper* EntityManager::getServerHelper() {
-	return this->serverHelper;
 }
 
 void EntityManager::persist(

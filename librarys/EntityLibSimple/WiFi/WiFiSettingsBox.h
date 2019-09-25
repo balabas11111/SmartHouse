@@ -250,7 +250,7 @@ public:
 
 	virtual void doPost(JsonObject& params, JsonObject& response) override {
 		UNUSED(response);
-		setChanged(jsonToItems(params));
+		markEntityAsChangedIfTrue(jsonToItems(params));
 	}
 
 	virtual void doLoad(JsonObject& jsonFromFile) override {
@@ -259,6 +259,12 @@ public:
 
 	virtual void doSave(JsonObject& jsonToFile) override {
 		itemsToJson(jsonToFile, false);
+	}
+
+	void addDeviceInfoToJson(JsonObject& json){
+		JsonObjectUtil::setField(json, _DEVICE_ID, deviceId());
+		JsonObjectUtil::setField(json, _DEVICE_FIRMWARE, deviceFirmWare());
+		JsonObjectUtil::setField(json, _DEVICE_DESCR, deviceDescr());
 	}
 
 protected:

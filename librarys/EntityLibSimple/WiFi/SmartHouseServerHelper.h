@@ -39,66 +39,49 @@
 #include <HttpUtils.h>
 
 #include <WiFi/NetConstants.h>
-#include <WiFi/WiFiSettingsBox.h>
+#include <EntityManager.h>
 
 #include <EntityJsonRequestResponse.h>
 
 class SmartHouseServerHelper {
 public:
-	SmartHouseServerHelper(WiFiSettingsBox* conf);
+	SmartHouseServerHelper(EntityManager* conf);
 	virtual ~SmartHouseServerHelper(){};
 
 	void loop();
 
-	int sendRegisterRequest(EntityJsonRequestResponse* req);
-	int sendDataUpdateRequest(EntityJsonRequestResponse* req);
-	int sendGetDataRequest(EntityJsonRequestResponse* req);
-
 	void triggerOnServerRegister();
-	void triggerOnServerDeviceDataChanged();
-
-	void prepareRegisterRequestTest(JsonObject& json, const char* urlPath);
-	void prepareRegisterRequest(JsonObject& json);
-	void prepareSendDataUpdateRequest(JsonObject& json);
-
-	void addDeviceInfoToJson(JsonObject& json);
+	void triggerOnServerDeviceChanged(bool addData = false);
 
 	void createDeviceRegistrationRequest(JsonObject& request);
 	void createDeviceDataChangedRequest(JsonObject& request);
 
-	char* getServersToken();
-	void setServersToken(String& serverToken);
-	bool validateServersToken(String& serverToken);
+	bool validateServersKeyHash(char* serverKey);
 
 	char* getDeviceKeyHashed();
-	void generateDeviceToken();
-	bool validateDeviceToken(String& deviceToken);
+	bool validateDeviceKeyHash(String& devicekey);
 
 	bool connectedAndRegistered();
 
-protected:
+private:
 
 	void executeOnServerRegisterIfTriggered();
 	void executeOnServerDataChangedIfTriggered();
 
-	void getServerBaseUrl(String& baseUrl);
-	void getServerKeyHashed(String& serverKeyHash);
 	char* getServerKeyHashed();
-
-	void addDeviceTokenToJson(JsonObject& json);
-
-	void addServerTokenToJson(JsonObject& json);
-	void addServerKeyHashToJson(JsonObject& json);
-	void addServerUrlToJson(JsonObject& json, const char* serviceUrl, const char* jsonKey);
-	void addDeviceUrlsToJson(JsonObject& json);
 
 	char* getDeviceBaseUrl();
 	char* getDeviceRootUrl();
 	char* getDeviceDataUrl();
 
-private:
+	char* getServerRegisterUrl();
+	char* getServerDataChangedUrl();
+
+	void generateDeviceToken();
+
 	bool triggeredOnServerRegister = false;
-	bool triggeredOnServerDataChanged = false;
+	bool triggeredOnServerDeviceChanged = false;
+	bool addDataToChangedRequest = false;
 
 	bool serverRegisterRuns = false;
 	bool serverDataChangedRuns = false;
@@ -114,7 +97,7 @@ private:
 
 	bool registered = false;
 
-	WiFiSettingsBox* conf;
+	EntityManager* manager;
 
 	char* serverToken = nullptr;
 	char* deviceToken = nullptr;
@@ -122,6 +105,9 @@ private:
 	char* deviceBaseUrl = nullptr;
 	char* deviceRootUrl = nullptr;
 	char* deviceDataUrl = nullptr;
+
+	char* serverRegisterUrl = nullptr;
+	char* serverDataChangedUrl = nullptr;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_WIFI_SMARTHOUSESERVERHELPER_H_ */

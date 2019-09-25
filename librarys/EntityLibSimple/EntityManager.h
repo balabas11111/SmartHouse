@@ -18,7 +18,6 @@
 
 #include "Entity.h"
 #include "WiFi/WiFiSettingsBox.h"
-#include "WiFi/SmartHouseServerHelper.h"
 
 #include "EntityJsonRequestResponse.h"
 //#include <ApplicationContext.h>
@@ -44,14 +43,12 @@ const char EMPTY_GROUP[] PROGMEM = "Empty group";
 
 class EntityManager {
 public:
-	EntityManager(Entity* entities[], int count, std::function<void(void)> onEntitiesChanged = nullptr);
+	EntityManager(Entity* entities[], int count, WiFiSettingsBox* conf, std::function<void(void)> onEntitiesChanged = nullptr);
 	virtual ~EntityManager() {
 	}
 
 	void registerAndPreInitEntity(Entity* entity);
-	void init(WiFiSettingsBox* conf, SmartHouseServerHelper* serverHelper);
-
-	void processEntityChangedEvent(int entityIndex);
+	void init();
 
 	void get(EntityJsonRequestResponse* reqResp);
 	void post(EntityJsonRequestResponse* reqResp);
@@ -74,14 +71,15 @@ public:
 	EntityJsonRequestResponse* createEntityJsonRequestResponse();
 	void deleteEntityJsonRequestResponse(EntityJsonRequestResponse* json);
 
-	bool processEntitiesChange(EntityJsonRequestResponse* collector = nullptr);
+	bool processChangedEntities();
 
 	void print();
 
 	void setOnEntitiesChanged(std::function<void(void)> onEntitiesChanged);
 
 	WiFiSettingsBox* getConf();
-	SmartHouseServerHelper* getServerHelper();
+
+	char* getSensorsGroup();
 
 protected:
 	std::list<Entity*> entities;
@@ -119,13 +117,9 @@ protected:
 	void persist(std::function<void(JsonObject& json, Entity* entity)> onEntityFunction,
 					std::function<void(JsonObject& json)> postPersistFunction);
 
-	void dispatchAllChangedEntities();
-
-	void collectAllChangedEntities(EntityJsonRequestResponse* collector  = nullptr);
-
-	void collectAllChangedEntities(JsonObject& params, JsonObject& response);
-
 	bool finishChangesProcess();
+
+	void markEntitiesAsChanged();
 
 	DynamicJsonBuffer buf;
 	JsonObject* obj;
@@ -135,7 +129,6 @@ protected:
 	std::function<void(void)> onEntitiesChanged;
 
 	WiFiSettingsBox* conf;
-	SmartHouseServerHelper* serverHelper;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYMANAGER_H_ */
