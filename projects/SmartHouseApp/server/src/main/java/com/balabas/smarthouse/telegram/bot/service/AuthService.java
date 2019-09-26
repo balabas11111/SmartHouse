@@ -4,14 +4,16 @@ import java.util.Set;
 
 public interface AuthService {
 
-    Set<String> getAllowedUserIds();
+    Set<Integer> getAllowedUserIds();
     
-    boolean isUserIdAllowed(String id);
+    boolean isUserIdAllowed(Integer id);
     
     boolean isUserNameAllowed(String name);
     
     String getBotToken();
     
     String getBotName();
+    
+    String getServerName();
     
 }

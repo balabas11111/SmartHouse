@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.auth.ServerAuthService;
@@ -30,6 +31,7 @@ import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult;
 import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult.DeviceRegistrationStatus;
 import com.balabas.smarthouse.server.util.ServerValuesMockUtil;
 
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP;
 
@@ -38,6 +40,7 @@ import static com.balabas.smarthouse.server.DeviceConstants.GROUP;
 public class DeviceServiceImpl implements InitializingBean, DeviceService {
 
 	@Value("${smarthouse.server.mock}")
+	@Getter
     private boolean mock;
 	
 	@Value("${smarthouse.server.devices.request.interval}")
@@ -184,10 +187,12 @@ public class DeviceServiceImpl implements InitializingBean, DeviceService {
     }
 
     @Override
-    public void processDeviceDataUpdateDispatched(DeviceRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
+    public void processDeviceDataUpdateDispatched(DeviceRequest request, boolean withAuthCheck) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
     	Device device = getDeviceByDeviceId(request.getDeviceId()).orElse(null);
         
-        authService.checkDeviceOnDataUpdatedRequest(request, device);
+    	if(withAuthCheck){
+    		authService.checkDeviceOnDataUpdatedRequest(request, device);
+    	}
         String deviceData = request.getJsonOrData();
         processDeviceDataUpdate(device, deviceData);
     }
@@ -208,8 +213,7 @@ public class DeviceServiceImpl implements InitializingBean, DeviceService {
         }
     }
     
-    @Override
-    public boolean validateDeviceData(String data){
+    private boolean validateDeviceData(String data){
         boolean result = data!=null && !data.isEmpty();
         
         try{

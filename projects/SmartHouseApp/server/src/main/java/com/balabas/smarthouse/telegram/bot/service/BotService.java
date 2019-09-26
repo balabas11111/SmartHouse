@@ -4,7 +4,9 @@ import com.balabas.smarthouse.server.events.DeviceChangedEvent;
 
 public interface BotService {
 
-	void sendMessageToAllUsers(String text);
+	void sendHtmlMessageToAllUsers(String text);
+	
+	void sendTextMessageToAllUsers(String text);
 	
 	void sendDeviceRegisteredEvent(DeviceChangedEvent event);
 

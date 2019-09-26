@@ -16,6 +16,8 @@ import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult;
 
 public interface DeviceService {
 	
+	boolean isMock();
+	
 	List<Device> getDevices();
 
 	Optional<Device> getDeviceByDeviceId(String deviceId);
@@ -32,11 +34,9 @@ public interface DeviceService {
 	
 	void markDeviceAsWaitsForDataUpdate(DeviceRequest request) throws ResourceNotFoundException;
 	
-	void processDeviceDataUpdateDispatched(DeviceRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException;
+	void processDeviceDataUpdateDispatched(DeviceRequest request, boolean withAuthCheck) throws ResourceNotFoundException, DeviceOnServerAuthorizationException;
 	
 	void processDeviceDataUpdate(Device device, String deviceData) throws ResourceNotFoundException;
-	
-	boolean validateDeviceData(String data);
 	
 	void requestDevicesValues(Device device, Group group);
 	

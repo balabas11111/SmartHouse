@@ -28,25 +28,29 @@ public class BotServiceImpl implements BotService, InitializingBean {
 	private TelegramBotsApi api;
 
 	@Getter
+	@Autowired
 	private SmartHouseBotHandler bot;
-	
-	
+
 	@Autowired
 	AuthService authService;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.api = new TelegramBotsApi();
-		this.bot = new SmartHouseBotHandler(authService);
 
 		BotSession session = api.registerBot(bot);
 		handleAfterRegistrationHook(bot, session);
-
 	}
-	
+
 	@Override
-	public void sendMessageToAllUsers(String text){
-		authService.getAllowedUserIds().stream().forEach(chatId->bot.sendTextMessage(chatId, text));
+	public void sendHtmlMessageToAllUsers(String text) {
+		authService.getAllowedUserIds().stream().forEach(chatId -> bot.sendHtmlMessage(chatId.longValue(), text));
+	}
+
+	@Override
+	public void sendTextMessageToAllUsers(String text) {
+		authService.getAllowedUserIds().stream().forEach(chatId -> bot.sendTextMessage(chatId.longValue(), text));
+
 	}
 
 	private void handleAfterRegistrationHook(Object bot, BotSession botSession) {
@@ -81,7 +85,8 @@ public class BotServiceImpl implements BotService, InitializingBean {
 
 	@Override
 	public void sendDeviceRegisteredEvent(DeviceChangedEvent event) {
-		sendMessageToAllUsers(String.format(BotMessageConstants.DEVICE_REGISTERED_MSG, event.getTarget().getDeviceDescr(),new Date()));
+		sendHtmlMessageToAllUsers(String.format(BotMessageConstants.DEVICE_REGISTERED_MSG, Emoji.HOUSE_BUILDING,
+				event.getTarget().getDeviceDescr(), new Date()));
 	}
 
 }

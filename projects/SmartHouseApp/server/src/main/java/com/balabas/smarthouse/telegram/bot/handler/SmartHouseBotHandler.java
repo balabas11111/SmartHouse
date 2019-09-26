@@ -1,57 +1,115 @@
 package com.balabas.smarthouse.telegram.bot.handler;
 
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import java.util.Date;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import org.telegram.telegrambots.starter.AfterBotRegistration;
 
-import com.balabas.smarthouse.telegram.bot.service.AuthService;
+import com.balabas.smarthouse.server.model.Device;
+import com.balabas.smarthouse.server.service.DeviceService;
+import com.balabas.smarthouse.telegram.bot.service.BotMessageConstants;
+import com.balabas.smarthouse.telegram.bot.service.Emoji;
+import com.balabas.smarthouse.telegram.bot.service.KeyboardService;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+@Component
+public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 
-@Log4j2
-@AllArgsConstructor
-public class SmartHouseBotHandler extends TelegramLongPollingBot {
-
-	private AuthService authService;
+	@Autowired
+	DeviceService deviceService;
+	
+	@AfterBotRegistration
+	public void onBotRegistered(){
+		authService.getAllowedUserIds().stream().forEach(
+			chatId -> { 
+						sendHtmlMessage( chatId.longValue(), 
+								String.format(BotMessageConstants.BOT_REGISTERED_MSG, Emoji.CHECK_MARK, authService.getServerName(), new Date()));
+						sendMessage(createWelcomMessage(null, chatId.longValue()));
+			});
+	}
 
 	@Override
 	public void onUpdateReceived(Update update) {
 		if (update.hasMessage()) {
 			Message message = update.getMessage();
 
-			if (message.hasText()) {
-				sendTextMessage(message.getChatId().toString(), message.getText());
+			if(!checkAuthorization(message)){
+				sendMessage(createUnauthorizedMessage(message.getChatId()));
 			}
-		}
-
-	}
-
-	public void sendTextMessage(String chatId, String text) {
-		SendMessage sendMessageRequest = new SendMessage();
-		sendMessageRequest.setChatId(chatId);
-		sendMessageRequest.setText(text);
-		try {
-			execute(sendMessageRequest);
-		} catch (TelegramApiException e) {
-			log.error(e);
+			
+			if(processCommand(message)){
+				return;
+			}
+			if (message.hasText()) {
+				sendEchoMessage(message.getChatId(), message.getText());
+			}
+		}else if(update.hasCallbackQuery()){
+			processCallback(update.getCallbackQuery());
 		}
 	}
-
-	@Override
-	public String getBotUsername() {
-		return authService.getBotName();
+	
+	private boolean processCallback(CallbackQuery callback){
+		boolean result = false;
+			String[] data = callback.getData().split(KeyboardService.PREFFIX_SPLITTER);
+			
+			if(data.length>1){
+				if(data[0].equals(KeyboardService.DEVICE_PREFFIX)){
+					String deviceId = data[1];
+					Device device = deviceService.getDeviceByDeviceId(deviceId).orElseGet(null);
+					
+					result = true;
+					
+					if(device!=null){
+						sendDevicesGroupKeyboard(device,callback.getMessage().getMessageId(),callback.getMessage().getChatId());
+					}else{
+						sendEchoMessage(callback.getMessage().getChatId(), BotMessageConstants.NOT_FOUND);
+					}
+					
+					
+				}
+			
+			}else{
+				sendEchoMessage(callback.getMessage().getChatId(), callback.getMessage().getText());
+			}
+		
+		return result;
 	}
-
-	@Override
-	public String getBotToken() {
-		return authService.getBotToken();
+	
+	private boolean processCommand(Message message){
+		String text = message.getText();
+		boolean result = false; 
+		
+		if(keyboardService.isHomeKey(text) || keyboardService.isRefreshKey(text) || BotMessageConstants.COMMAND_HOME.equals(text)){
+			result = true;
+			sendDevicesKeyboard(message.getMessageId(), message.getChatId());
+		}
+		
+		return result;
 	}
-
-	@Override
-	public void clearWebhook() throws TelegramApiRequestException {}
+	
+	private void sendDevicesKeyboard(Integer messageId, Long chatId){
+		SendMessage msg = createKeyBoardInlineMessage(keyboardService.getDevicesInlineKeyboard(deviceService.getDevices()),
+				messageId, chatId,
+				String.format(BotMessageConstants.SELECT_DEVICE_MSG,Emoji.OUTBOX_TRAY));
+		sendMessage(msg);
+	}
+	
+	private void sendDevicesGroupKeyboard(Device device, Integer messageId, Long chatId){
+		SendMessage msg = createKeyBoardInlineMessage(keyboardService.getGroupsInlineKeyboard(device),
+				messageId, chatId,
+				String.format(BotMessageConstants.SELECT_GROUP_MSG,Emoji.OUTBOX_TRAY, device.getDeviceDescr()));
+		sendMessage(msg);
+	}
+	
+	private void sendCommandHome(Integer messageId, Long chatId){
+		SendMessage msg = createKeyBoardMessage(keyboardService.getRefreshKeyboard(), messageId,chatId,
+				"Выберите действие");
+		sendMessage(msg);
+	}
 
 }

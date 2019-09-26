@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthServiceImpl implements AuthService,
         InitializingBean {
-
+	
     @Value("${telegram.bot.allowednames}")
     private String allowedNames;
 
@@ -27,9 +27,13 @@ public class AuthServiceImpl implements AuthService,
 	@Value("${telegram.bot.botName}")
 	@Getter
 	private String botName;
+	
+	@Value("${smarthouse.server.name}")
+	@Getter
+	private String serverName;
 
 	@Getter
-    private Set<String> allowedUserIds = new HashSet<>();
+    private Set<Integer> allowedUserIds = new HashSet<>();
 
     private Set<String> allowedUserNames = new HashSet<>();
 
@@ -43,14 +47,14 @@ public class AuthServiceImpl implements AuthService,
         }
 
         for (int i = 0; i < arrayNames.length; i++) {
-            allowedUserIds.add(arrayIds[i]);
+            allowedUserIds.add(Integer.valueOf(arrayIds[i]));
             allowedUserNames.add(arrayNames[i]);
         }
     }
 
 
 	@Override
-	public boolean isUserIdAllowed(String id) {
+	public boolean isUserIdAllowed(Integer id) {
 		return presented(id, allowedUserIds);
 	}
 

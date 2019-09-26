@@ -39,13 +39,13 @@ public class DeviceController {
 
 	@Autowired
 	private DeviceService deviceService;
-	
+
 	@Autowired
 	private ServerAuthService authService;
 
 	@GetMapping("/devices")
 	public List<Device> getAllDevices() {
-	    log.info("Get all devices=");
+		log.info("Get all devices=");
 		return deviceService.getDevices();
 	}
 
@@ -58,51 +58,50 @@ public class DeviceController {
 		return ResponseEntity.ok().body(device);
 	}
 
-	@PostMapping("/devices/registerStr")
-    public ResponseEntity<String> registerDeviceStr(@RequestBody String deviceRequest,
-            HttpServletRequest request) {
-        log.info("registerDeviceStr DeviceController registerDevice Addr=" + request.getRemoteAddr());
-        log.info("deviceRequest=" + deviceRequest);
-        
-        return ResponseEntity.ok().body(deviceRequest);
-    }
-	
 	@PostMapping("/devices/register")
 	public ResponseEntity<DeviceRegistrationResult> registerDevice(@Valid @RequestBody DeviceRequest registrRequest,
 			HttpServletRequest request) throws UnknownHostException, DeviceOnServerAuthorizationException {
 		log.info("DeviceController registerDevice Addr=" + request.getRemoteAddr());
-		
+
 		registrRequest.setIp(request.getRemoteAddr());
 		authService.checkDeviceRegistrationRequest(registrRequest);
-		
+
 		DeviceRegistrationResult result = deviceService.registerDevice(registrRequest);
 		return ResponseEntity.ok().body(result);
 	}
-	
-	@PostMapping("/devices/dataStr")
-    public ResponseEntity<String> dataChangeDispatchedOnDeviceStr(@RequestBody String deviceRequest, HttpServletRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
-        log.info("DataChanged dispatched Str on ");
-        
-        return ResponseEntity.ok().body("OK");
-    }
-	
+
+	@GetMapping("/devices/data")
+	public ResponseEntity<String> dataChangeDispatchedOnDeviceStr(@RequestParam(value = "deviceId") String deviceId,
+			HttpServletRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
+		log.info("DataChanged GET dispatched on " + deviceId);
+		
+		DeviceRequest deviceRequest = new DeviceRequest();
+		deviceRequest.setDeviceId(deviceId);
+		deviceRequest.setIp(request.getRemoteAddr());
+		
+		deviceService.processDeviceDataUpdateDispatched(deviceRequest, false);
+
+		return ResponseEntity.ok().body("OK");
+	}
+
 	@PostMapping("/devices/data")
-    public ResponseEntity<String> dataChangeDispatchedOnDevice(@RequestBody DeviceRequest deviceRequest, HttpServletRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
-	    log.info("DataChanged dispatched on "+deviceRequest.getDeviceId()+(deviceRequest.hasData()?"data"+deviceRequest.getData():(deviceRequest.hasJson()?deviceRequest.getJson():null)));
-	    deviceRequest.setIp(request.getRemoteAddr());
-	    
-        deviceService.processDeviceDataUpdateDispatched(deviceRequest);
-        
-        return ResponseEntity.ok().body("OK");
-    }
+	public ResponseEntity<String> dataChangeDispatchedOnDevice(@RequestBody DeviceRequest deviceRequest,
+			HttpServletRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
+		log.info("DataChanged dispatched on " + deviceRequest.getDeviceId() + " " + deviceRequest.getJsonOrData());
+		deviceRequest.setIp(request.getRemoteAddr());
+
+		deviceService.processDeviceDataUpdateDispatched(deviceRequest, true);
+
+		return ResponseEntity.ok().body("OK");
+	}
 
 	@GetMapping("/devices/getData_{deviceId}")
-    public ResponseEntity<String> executeGetData(@PathVariable(value = "deviceId") String deviceId,
-            @RequestParam(value = GROUP, required = false) String devEntGroup) throws ResourceNotFoundException {
+	public ResponseEntity<String> executeGetData(@PathVariable(value = "deviceId") String deviceId,
+			@RequestParam(value = GROUP, required = false) String devEntGroup) throws ResourceNotFoundException {
 		JSONObject result = deviceService.executeGetData(deviceId, devEntGroup);
-        return ResponseEntity.ok().body(result.toString());
-    }
-	
+		return ResponseEntity.ok().body(result.toString());
+	}
+
 	@GetMapping("/devices/getDataOnDevice_{deviceId}")
 	public ResponseEntity<String> executeGetDataOnDevice(@PathVariable(value = "deviceId") String deviceId,
 			@RequestParam(value = GROUP, required = false) String devEntGroup) throws UnsupportedEncodingException {
@@ -112,13 +111,12 @@ public class DeviceController {
 
 	@GetMapping("/devices/mock_{deviceId}")
 	public ResponseEntity<String> executeMockGetDataOnDevice(@PathVariable(value = "deviceId") String deviceId,
-			@RequestParam(value = GROUP, required = false) String devEntGroup)
-			throws UnsupportedEncodingException {
-		
-		String result = ((devEntGroup==null || devEntGroup.isEmpty())?
-							ServerValuesMockUtil.getSettingsSensors(deviceId):
-							ServerValuesMockUtil.getSensors(deviceId)).toString();
-		
+			@RequestParam(value = GROUP, required = false) String devEntGroup) throws UnsupportedEncodingException {
+
+		String result = ((devEntGroup == null || devEntGroup.isEmpty())
+				? ServerValuesMockUtil.getSettingsSensors(deviceId) : ServerValuesMockUtil.getSensors(deviceId))
+						.toString();
+
 		log.info("Mock result =" + result);
 
 		return ResponseEntity.ok().body(result);

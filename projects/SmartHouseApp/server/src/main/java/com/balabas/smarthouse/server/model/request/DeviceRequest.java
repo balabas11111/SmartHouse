@@ -1,7 +1,5 @@
 package com.balabas.smarthouse.server.model.request;
 
-import org.json.JSONObject;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 
