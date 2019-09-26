@@ -131,7 +131,7 @@ void EntityManager::executeMethod(JsonObject& params, JsonObject& response,
 	this->entitiesChanged = (this->entitiesChanged || changed);
 
 	if(this->entitiesChanged){
-		Serial.print(FPSTR("changed="));
+		Serial.print(FPSTR("chg="));
 		Serial.println(this->entitiesChanged);
 	}
 }
@@ -249,21 +249,21 @@ void EntityManager::groupNameToParam(char* group, char* name,
 }
 
 EntityJsonRequestResponse* EntityManager::createEntityJsonRequestResponse() {
-	ObjectUtils::printHeap();
+	//ObjectUtils::printHeap();
 	return new EntityJsonRequestResponse();
 }
 
 void EntityManager::deleteEntityJsonRequestResponse(
 		EntityJsonRequestResponse* json) {
 	delete json;
-	ObjectUtils::printHeap();
+	//ObjectUtils::printHeap();
 }
 
 bool EntityManager::processChangedEntities(){
 	if(!this->entitiesChanged){
 		return false;
 	}
-	Serial.println(FPSTR("-------------------------"));
+	Serial.print(FPSTR("---E Chg:  "));
 	unsigned long start = millis();
 
 	bool result = false;
@@ -271,9 +271,8 @@ bool EntityManager::processChangedEntities(){
 
 	for(Entity* entity: entities){
 		if(entity->isMarkedAsChanged()){
-			Serial.print(FPSTR("Entity "));
 			Serial.print(entity->getName());
-			Serial.println(FPSTR(" changed"));
+			Serial.print(FPSTR("; "));
 			result = true;
 			entity->markEntityAsUnChanged();
 		}
@@ -297,7 +296,7 @@ bool EntityManager::processChangedEntities(){
 	this->entitiesChanged = false;
 
 	ObjectUtils::printTimeHeap(start);
-	Serial.println(FPSTR("-------------------------"));
+	Serial.println(FPSTR("---"));
 	return result;
 }
 

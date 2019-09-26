@@ -155,7 +155,6 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
                 group.setDataUpdateCompleted();
             }
         
-            log.info("Device's JSON parsed");
             device.setDataUpdateCompleted();
         }else{
             device.setDataUpdateFailed();

@@ -143,6 +143,7 @@ public class DeviceServiceImpl implements InitializingBean, DeviceService {
 					
 					if(result.getStatusCodeValue()==HttpStatus.OK.value()){
 					    try {
+					        log.info("data="+result.getBody());
                             processDeviceDataUpdate(device, result.getBody());
                         } catch (ResourceNotFoundException e) {
                             log.error(e.getMessage());

@@ -189,8 +189,7 @@ const char* WiFiServerManager::getContentType(String& path) {
 }
 
 void WiFiServerManager::onEntityRequest(const char* method) {
-	Serial.println(FPSTR("----------------------------"));
-	Serial.println(FPSTR("on Entity request"));
+	Serial.print(FPSTR("------ER "));
 
 	unsigned long start = millis();
 
@@ -217,11 +216,9 @@ void WiFiServerManager::onEntityRequest(const char* method) {
 	server->sendHeader(RESPONSE_KEY_Server,getServerName());
 	server->send(200, CONTENT_TYPE_TEXT_JSON_UTF8, response);
 
-	unsigned long totalTime = millis()-start;
+	ObjectUtils::printTimeHeap(start);
 
-	Serial.print(FPSTR("HTTP sent  time ="));
-	Serial.println(totalTime);
-	Serial.println(FPSTR("============================================="));
+	Serial.println(FPSTR("==="));
 }
 
 void WiFiServerManager::loop() {

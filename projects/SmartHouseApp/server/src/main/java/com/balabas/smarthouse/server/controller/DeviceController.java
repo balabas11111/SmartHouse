@@ -73,7 +73,7 @@ public class DeviceController {
 	@GetMapping("/devices/data")
 	public ResponseEntity<String> dataChangeDispatchedOnDeviceStr(@RequestParam(value = "deviceId") String deviceId,
 			HttpServletRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
-		log.info("DataChanged GET dispatched on " + deviceId);
+		log.info("DataChanged GET dispatched on " + deviceId + " from "+request.getRemoteAddr());
 		
 		DeviceRequest deviceRequest = new DeviceRequest();
 		deviceRequest.setDeviceId(deviceId);

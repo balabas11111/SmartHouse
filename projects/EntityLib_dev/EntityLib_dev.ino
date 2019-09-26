@@ -32,11 +32,11 @@ void setup() {
 	app.initWithWiFi();
 	app.setOnEntitiesChanged(onEntitiesChanged);
 
-	app.registerTicker(1000,changeLed);
-	app.registerTicker(10000, executeHttp);
-	app.registerTicker(updateEntities);
+	//app.registerTicker(1000,changeLed);
+	app.registerTicker(30000, executeHttp);
+	//app.registerTicker(20000, updateEntities);
 
-	app.updateEntities(false);
+	app.updateEntities(true);
 }
 
 
@@ -52,7 +52,7 @@ void executeHttp(){
 
 void updateEntities(){
 	//app.getEntityManager()->print();
-	Serial.println(FPSTR("Update Entities"));
+	Serial.print(FPSTR("Update Entities"));
 	app.updateEntities(false);
 	/*
 	app.notify((char*)GROUP_SENSORS, nullptr, (char*) DATA);
@@ -65,5 +65,5 @@ void changeLed(){
 }
 
 void onEntitiesChanged(){
-	Serial.println(FPSTR("onEntities Changed"));
+	Serial.print(FPSTR("-CF dispatched"));
 }

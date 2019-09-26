@@ -96,12 +96,20 @@ public:
 		Serial.println();
 	}
 
+	static void printlnTimeHeap(unsigned long start){
+		unsigned long total = millis()-start;
+		Serial.print(FPSTR(" t="));
+		Serial.print(total);
+		Serial.print(FPSTR(" fh="));
+		Serial.println(ESP.getFreeHeap());
+	}
+
 	static void printTimeHeap(unsigned long start){
 		unsigned long total = millis()-start;
-		Serial.print(FPSTR("Time = "));
+		Serial.print(FPSTR(" t="));
 		Serial.print(total);
-		Serial.print(FPSTR(" heap = "));
-		Serial.println(ESP.getFreeHeap());
+		Serial.print(FPSTR(" fh="));
+		Serial.print(ESP.getFreeHeap());
 	}
 
 

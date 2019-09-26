@@ -20,6 +20,7 @@
 #define SMART_HOUSE_SERVER_URL_BASE "/api/v1"
 #define SMART_HOUSE_SERVER_URL_REGISTER        "/devices/register/"
 #define SMART_HOUSE_SERVER_URL_ON_DATA_CHANGED "/devices/data/"
+#define SMART_HOUSE_SERVER_URL_ON_DATA_CHANGED_GET "/devices/data?deviceId="
 #define SMART_HOUSE_SERVER_URL_SENDDATA        "/data/"
 
 #define SMART_HOUSE_SERVER_URL_REGISTERSTR    "/devices/registerStr/"
@@ -69,6 +70,9 @@ private:
 	void executeOnServerRegisterIfTriggered();
 	void executeOnServerDataChangedIfTriggered();
 
+	int sendDataUpdatedRequestPost();
+	int sendDataUpdatedRequestGet();
+
 	char* getServerKeyHashed();
 
 	char* getDeviceBaseUrl();
@@ -79,6 +83,7 @@ private:
 	char* getServerDataChangedUrl();
 
 	String& getServerDataChangedUrlStr();
+	String& getServerDataChangedUrlStrGet();
 
 	void generateDeviceToken();
 
@@ -112,8 +117,12 @@ private:
 	char* serverRegisterUrl = nullptr;
 	char* serverDataChangedUrl = nullptr;
 
+	bool usePostAsDC = false;
+
 	String serverDatachangeUrlStr;
+	String serverDatachangeUrlGet;
 	bool sdcg = false;
+	bool sdcgg = false;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_WIFI_SMARTHOUSESERVERHELPER_H_ */
