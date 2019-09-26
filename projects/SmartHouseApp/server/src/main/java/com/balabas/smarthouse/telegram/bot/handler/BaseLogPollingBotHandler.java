@@ -44,6 +44,16 @@ public abstract class BaseLogPollingBotHandler  extends TelegramLongPollingBot {
 		sendMessage(msg);
 	}
 	
+	public void sendTextMessageToAllUsers(String text){
+        authService.getAllowedUserIds().stream().forEach(
+                chatId -> sendTextMessage(chatId.longValue(), text));
+    }
+	
+	public void sendHtmlMessageToAllUsers(String text){
+        authService.getAllowedUserIds().stream().forEach(
+                chatId -> sendHtmlMessage(chatId.longValue(), text));
+    }
+	
 	protected SendMessage createMessage(Long chatId, String text){
 		SendMessage sendMessageRequest = new SendMessage();
 		sendMessageRequest.setChatId(chatId.toString());
@@ -72,7 +82,9 @@ public abstract class BaseLogPollingBotHandler  extends TelegramLongPollingBot {
         sendMessage.enableMarkdown(true);
 
         sendMessage.setReplyMarkup(markup);
-        sendMessage.setReplyToMessageId(messageId);
+        if(messageId!=null){
+            sendMessage.setReplyToMessageId(messageId);
+        }
         sendMessage.setChatId(chatId);
         sendMessage.setText(text);
         sendMessage.enableHtml(true);
@@ -80,14 +92,12 @@ public abstract class BaseLogPollingBotHandler  extends TelegramLongPollingBot {
         return sendMessage;
 	}
 	
-	protected SendMessage createWelcomMessage(String userName,Long chatId){
-		String text = String.format(BotMessageConstants.HELLO_MSG, Emoji.WAVING_HAND_SIGN, (userName==null?BotMessageConstants.USER:userName),
-				BotMessageConstants.COMMAND_HOME);
-		
-		SendMessage msg = createMessage(chatId, text);
-		
-		msg.enableHtml(true);
-        
+	protected SendMessage createDeviceRegisteredMessage(Long chatId, String serverName){
+	    String text = String.format(BotMessageConstants.DEVICE_REGISTERED_MSG, Emoji.HAPPY_PERSON_RAISING_ONE_HAND,
+	            serverName, new Date());
+	    
+	    SendMessage msg = createMessage(chatId, text);
+        msg.enableHtml(true);
         return msg;
 	}
 	

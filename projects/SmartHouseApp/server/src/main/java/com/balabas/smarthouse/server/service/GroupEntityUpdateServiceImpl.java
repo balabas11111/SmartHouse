@@ -24,7 +24,6 @@ import com.balabas.smarthouse.server.model.Group;
 import com.balabas.smarthouse.server.model.NameAble;
 import com.balabas.smarthouse.server.model.SensorItem;
 
-@Log4j2
 @Service
 public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
 

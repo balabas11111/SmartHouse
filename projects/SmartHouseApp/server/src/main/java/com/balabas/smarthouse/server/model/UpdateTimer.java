@@ -12,8 +12,6 @@ public class UpdateTimer {
 
     private String parentName;
     
-    private String parentClass;
-    
     private long updateInterval;
     
     @Getter
@@ -28,7 +26,6 @@ public class UpdateTimer {
     
     public UpdateTimer(NameAble parent,  long updateInterval) {
         this.parentName = parent.getName();
-        this.parentClass = parent.getClass().getSimpleName();
         this.updateInterval = updateInterval;
         this.registrationTime = new Date();
         

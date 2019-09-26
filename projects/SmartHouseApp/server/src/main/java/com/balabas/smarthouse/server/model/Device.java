@@ -73,6 +73,11 @@ public class Device implements NameAble, JsonDataContainer {
 	    this.getGroups().stream().forEach(group -> getTimer().setDataUpdateFailed());
 	}
 	
+	public Group getGroup(String name){
+	    return getGroups().stream().filter(group->group.getName().equals(name))
+	    .findFirst().orElse(null);
+	}
+	
 	public Device updateDevice(Device from){
 	    this.deviceDescr = from.deviceDescr;
 	    this.deviceFirmware = from.deviceFirmware;

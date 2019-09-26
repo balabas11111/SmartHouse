@@ -10,6 +10,8 @@ public class BotMessageConstants {
 	
 	public static final String BUTTON = "%s %s";
 	
+	public static final String REFRESH_BUTTON = "%s Список устройств";
+	
 	public static final String DEVICE_BUTTON = "%s %s";
 	public static final String GROUP_BUTTON = "%s %s";
 	
@@ -18,7 +20,12 @@ public class BotMessageConstants {
 	public static final String UNAUTHORIZED_MSG = "%s No Access = No success. Suck, man";
 	
 	public static final String SELECT_DEVICE_MSG = "%s Выберите устройство";
-	public static final String SELECT_GROUP_MSG = "%s Выберите группу устройства: %s";
+	public static final String SERVER_SELECT_DEVICE_MSG = "%s Сервер %s";
+	public static final String NO_DEVICE_MSG = "%s На сервере не зарегистрировано ни одно устройство";
+	public static final String SELECT_GROUP_MSG = 
+	        "%s Устройство \n"+
+	        "<b>: %s </b>\n"+
+	        ": %s ";
 	
 	public static final String SPACE = " ";
 	public static final String USER = "Пользователь";

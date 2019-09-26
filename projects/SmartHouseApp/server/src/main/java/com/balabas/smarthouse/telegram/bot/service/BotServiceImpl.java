@@ -4,7 +4,6 @@ import static java.lang.String.format;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Date;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -44,12 +43,12 @@ public class BotServiceImpl implements BotService, InitializingBean {
 
 	@Override
 	public void sendHtmlMessageToAllUsers(String text) {
-		authService.getAllowedUserIds().stream().forEach(chatId -> bot.sendHtmlMessage(chatId.longValue(), text));
+		bot.sendHtmlMessageToAllUsers(text);
 	}
 
 	@Override
 	public void sendTextMessageToAllUsers(String text) {
-		authService.getAllowedUserIds().stream().forEach(chatId -> bot.sendTextMessage(chatId.longValue(), text));
+		bot.sendTextMessageToAllUsers(text);
 
 	}
 
@@ -85,8 +84,7 @@ public class BotServiceImpl implements BotService, InitializingBean {
 
 	@Override
 	public void sendDeviceRegisteredEvent(DeviceChangedEvent event) {
-		sendHtmlMessageToAllUsers(String.format(BotMessageConstants.DEVICE_REGISTERED_MSG, Emoji.HOUSE_BUILDING,
-				event.getTarget().getDeviceDescr(), new Date()));
+	    bot.sendDeviceRegisteredToAllUsers();
 	}
 
 }

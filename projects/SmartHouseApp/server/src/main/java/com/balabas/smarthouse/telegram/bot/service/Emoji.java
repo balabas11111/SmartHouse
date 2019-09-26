@@ -7,7 +7,13 @@ public enum Emoji {
 	CHECK_MARK('\u2705', null,"check"),
 	HOUSE_BUILDING('\uD83C','\uDFE2',"Home"),
 	OUTBOX_TRAY('\uD83D','\uDCE4',"outbox"),
-	WAVING_HAND_SIGN('\uD83D','\uDC4B')	;
+	WAVING_HAND_SIGN('\uD83D','\uDC4B'),
+	HAPPY_PERSON_RAISING_ONE_HAND('\uD83D','\uDE4B'),
+	WARNING('\u26A0',null),
+	SETTINGS('\uD83D','\uDD27'),
+	STAR('\u2B50',null),
+	BRIEFCASE('\uD83D','\uDCBC'),
+	RIGHT_HAND('\uD83D','\uDC49');
 	
     Character chr1;
     Character chr2;
