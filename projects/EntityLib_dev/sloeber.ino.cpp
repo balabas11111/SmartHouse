@@ -2,15 +2,15 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2019-09-13 04:24:18
+//This file has been generated on 2019-09-25 15:26:45
 
 #include "Arduino.h"
 #include "Arduino.h"
 #include <ArduinoJson.h>
+#include <functional>
 #include <EntityApplication.h>
 #include <Entity.h>
 #include <EntityUpdate.h>
-#include <Notifiers/EntityManagerNotifier.h>
 #include <ObjectUtils.h>
 #include <WIFi/WiFiSettingsBox.h>
 #include "Bme280sensor.h"
@@ -21,9 +21,10 @@
 
 void setup() ;
 void loop() ;
-void printSensorsJson() ;
+void executeHttp();
 void updateEntities();
-void onEntityChanged();
+void changeLed();
+void onEntitiesChanged();
 
 #include "EntityLib_dev.ino"
 
