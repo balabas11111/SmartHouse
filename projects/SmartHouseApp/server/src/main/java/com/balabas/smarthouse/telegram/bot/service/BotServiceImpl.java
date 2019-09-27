@@ -83,7 +83,7 @@ public class BotServiceImpl implements BotService, InitializingBean {
 	}
 
 	@Override
-	public void sendDeviceRegisteredEvent(DeviceChangedEvent event) {
+	public void sendDeviceRegisteredEventToAllUsers(DeviceChangedEvent event) {
 	    bot.sendDeviceRegisteredToAllUsers();
 	}
 
