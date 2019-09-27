@@ -1,15 +1,16 @@
-package com.balabas.smarthouse.telegram.bot.service;
+package com.balabas.smarthouse.telegram.bot.message;
 
 public enum Emoji {
     
 	REFRESH('\uD83D','\uDD03',"Refresh"),
+	WARNING('\u26A0',null),
+	ERROR('\u274C',null),
 	FACE_WITH_TONGUE_AND_CLOSED_ONE_EYE('\uD83D', '\uDE1C',"smile"),
 	CHECK_MARK('\u2705', null,"check"),
 	HOUSE_BUILDING('\uD83C','\uDFE2',"Home"),
 	OUTBOX_TRAY('\uD83D','\uDCE4',"outbox"),
 	WAVING_HAND_SIGN('\uD83D','\uDC4B'),
 	HAPPY_PERSON_RAISING_ONE_HAND('\uD83D','\uDE4B'),
-	WARNING('\u26A0',null),
 	SETTINGS('\uD83D','\uDD27'),
 	STAR('\u2B50',null),
 	BRIEFCASE('\uD83D','\uDCBC'),

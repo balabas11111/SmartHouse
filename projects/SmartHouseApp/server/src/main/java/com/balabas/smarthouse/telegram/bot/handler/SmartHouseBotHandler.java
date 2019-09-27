@@ -1,7 +1,6 @@
 package com.balabas.smarthouse.telegram.bot.handler;
 
-import java.util.Date;
-import java.util.List;
+import javax.xml.transform.TransformerException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,13 +10,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.starter.AfterBotRegistration;
 
-import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.model.Group;
 import com.balabas.smarthouse.server.service.DeviceService;
-import com.balabas.smarthouse.telegram.bot.service.BotMessageConstants;
-import com.balabas.smarthouse.telegram.bot.service.Emoji;
-import com.balabas.smarthouse.telegram.bot.service.KeyboardService;
+import com.balabas.smarthouse.telegram.bot.BotConstants;
+import com.balabas.smarthouse.telegram.bot.message.BotMessageConstants;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 @Component
 public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 
@@ -30,14 +29,14 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			Message message = update.getMessage();
 
 			if(!checkAuthorization(message)){
-				sendMessage(createUnauthorizedMessage(message.getChatId()));
+				sendMessage(messageBuilder.createUnauthorized(message.getChatId()));
 			}
 			
 			if(processCommand(message)){
 				return;
 			}
 			if (message.hasText()) {
-				sendEchoMessage(message.getChatId(), message.getText());
+				sendMessage(messageBuilder.createUnknown(message.getText(), message.getChatId(), message.getMessageId()));
 			}
 		}else if(update.hasCallbackQuery()){
 			processCallback(update.getCallbackQuery());
@@ -46,56 +45,35 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 	
 	private boolean processCallback(CallbackQuery callback){
 		boolean result = false;
-			String[] data = callback.getData().split(KeyboardService.PREFFIX_SPLITTER);
+			String[] data = callback.getData().split(BotConstants.CALLBACK_SPLITTER);
 			
-			if(data.length>1){
-			    if(data[0].equals(KeyboardService.REFRESH_PREFFIX) 
-                        && data[1].equals(KeyboardService.DEVICE_PREFFIX)){
-                
-			        result = true;
-			        sendDevicesKeyboard(null, callback.getMessage().getChatId());
-			        
-			    }else
-				if(data[0].equals(KeyboardService.DEVICE_PREFFIX)){
-					String deviceId = data[1];
-					Device device = deviceService.getDeviceByDeviceId(deviceId).orElseGet(null);
-					
-					result = true;
-					
-					if(device!=null){
-						sendDevicesGroupKeyboard(device,callback.getMessage().getMessageId(),callback.getMessage().getChatId());
-					}else{
-						sendEchoMessage(callback.getMessage().getChatId(), BotMessageConstants.NOT_FOUND);
-					}
-				} else
-	                if(data[0].equals(KeyboardService.DEVICE_GROUP_PREFFIX)){
-	                    Long chatId = callback.getMessage().getChatId();
-	                    
-	                    String deviceId = data[1];
-	                    String groupId = data[2];
-	                    Device device = deviceService.getDeviceByDeviceId(deviceId).orElseGet(null);
-	                    
-	                    result = true;
-	                    
-	                    if(device==null){
-	                        sendEchoMessage(chatId, BotMessageConstants.NOT_FOUND);
-	                        return false;
-	                    }
-	                    
-	                    Group group = device.getGroup(groupId);
-	                    
-	                    if(group == null){
-	                        sendEchoMessage(chatId, BotMessageConstants.NOT_FOUND);
-                            return false;
-	                    }
-	                    
-	                    sendHtmlMessage(chatId, group.getData().toString());
-	                } 
+			String originator = messageBuilder.getReplyOriginator(data);
+			Integer messageId = null;
+			Long chatId = callback.getMessage().getChatId();
 			
-			}else{
-				sendEchoMessage(callback.getMessage().getChatId(), callback.getMessage().getText());
+			SendMessage msg = null;
+			
+			try{
+				switch(originator){
+					case BotConstants.REFRESH_PREFFIX:
+						msg = messageBuilder.createDevicesList(authService.getServerName(), messageId, chatId);
+						break;
+					case BotConstants.DEVICE_PREFFIX:
+						msg = messageBuilder.createGroupsOfDevice(data[1], messageId, chatId);
+						break;
+					case BotConstants.DEVICE_GROUP_PREFFIX:
+						msg = messageBuilder.createGroupView(data[1], data[2], messageId, chatId);
+						break;
+					default:
+						msg = messageBuilder.createUnknown(null, chatId, callback.getMessage().getMessageId());
+				}
+			}catch(NullPointerException | TransformerException ex){
+				log.error(ex);
+				msg = messageBuilder.createError(null, chatId);
 			}
-		
+			
+			
+			sendMessage(msg);
 		return result;
 	}
 	
@@ -105,7 +83,7 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 		
 		if(BotMessageConstants.COMMAND_HOME.equals(text)){
 			result = true;
-			sendDevicesKeyboard(message.getMessageId(), message.getChatId());
+			sendMessage(messageBuilder.createRefreshDevicesList(message.getMessageId(), message.getChatId()));
 		}
 		
 		return result;
@@ -114,53 +92,16 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 	@AfterBotRegistration
 	public void sendServerStartedToAllUsers(){
 	    authService.getAllowedUserIds().stream().forEach(
-	            chatId -> { 
-	                        sendHtmlMessage( chatId.longValue(), 
-	                                String.format(BotMessageConstants.BOT_REGISTERED_MSG, Emoji.CHECK_MARK, authService.getServerName(), new Date()));
-	            });
+	            chatId -> sendMessage(messageBuilder.createServerStartedMessage(chatId.longValue(), authService.getServerName())));
     }
 	
 	public void sendDeviceRegisteredToAllUsers(){
         authService.getAllowedUserIds().stream().forEach(
             chatId -> {
-                sendMessage(createDeviceRegisteredMessage(chatId.longValue(), authService.getServerName()));
-                sendDevicesRefreshKeyboard(null, chatId.longValue());
+                sendMessage(messageBuilder.createDeviceRegisteredMessage(chatId.longValue(), authService.getServerName()));
+                sendMessage(messageBuilder.createRefreshDevicesList(null, chatId.longValue()));
             });
     }
 	
-	private void sendDevicesRefreshKeyboard(Integer messageId, Long chatId){
-        List<Device> devices = deviceService.getDevices();
-        
-        String text = (devices.size()==0)?
-                        String.format(BotMessageConstants.NO_DEVICE_MSG,Emoji.WARNING):
-                        String.format(BotMessageConstants.SELECT_DEVICE_MSG,Emoji.OUTBOX_TRAY);    
-        
-        SendMessage msg = createKeyBoardInlineMessage(
-                keyboardService.getDeviceRefreshInlineKeyboard(),
-                messageId, chatId, text);
-        sendMessage(msg);
-    }
 	
-	private void sendDevicesKeyboard(Integer messageId, Long chatId){
-	    List<Device> devices = deviceService.getDevices();
-	    
-	    String text = (devices.size()==0)?
-	                    String.format(BotMessageConstants.NO_DEVICE_MSG,Emoji.WARNING):
-                        String.format(BotMessageConstants.SERVER_SELECT_DEVICE_MSG,
-                                        Emoji.OUTBOX_TRAY, authService.getServerName());    
-	    
-		SendMessage msg = createKeyBoardInlineMessage(
-		        keyboardService.getDevicesInlineKeyboard(deviceService.getDevices()),
-		        null, chatId, text);
-		sendMessage(msg);
-	}
-	
-	private void sendDevicesGroupKeyboard(Device device, Integer messageId, Long chatId){
-		SendMessage msg = createKeyBoardInlineMessage(
-		        keyboardService.getGroupsInlineKeyboard(device),
-				null, chatId,
-				String.format(BotMessageConstants.SELECT_GROUP_MSG,Emoji.OUTBOX_TRAY, device.getDeviceDescr(),
-				        device.getDeviceFirmware()));
-		sendMessage(msg);
-	}
 }
