@@ -4,4 +4,6 @@ public interface NameAble {
 
     String getName();
     
+    String getDescription();
+    
 }

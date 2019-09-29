@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.service;
+package com.balabas.smarthouse.server.service.events;
 
 import java.util.List;
 
@@ -12,13 +12,14 @@ import com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType;
 import com.balabas.smarthouse.server.events.DeviceChangedEvent;
 import com.balabas.smarthouse.server.events.EntityChangedEvent;
 import com.balabas.smarthouse.server.events.GroupChangedEvent;
+import com.balabas.smarthouse.server.model.Device;
 
 @Log4j2
 @Service
-public class EventProcessServiceImpl implements EventProcessService {
+public class EventProcessorsServiceImpl implements EventProcessorsService {
 
 	@Autowired
-	NotifyUserService botService;
+	List<EventProcessor<Device, DeviceChangedEvent>> deviceEventsProcessors;
 	
     @Override
     public void processEvents(List<ChangedEvent<?>> events) {
@@ -47,7 +48,8 @@ public class EventProcessServiceImpl implements EventProcessService {
     
     public void processEvent(DeviceChangedEvent event){
     	if(event.getEventType().equals(DeviceEventType.ADDED)){
-    		botService.sendDeviceRegisteredEventToAllUsers(event);
+    		deviceEventsProcessors.stream()
+    			.forEach(proc-> proc.processEvent(event));
     	}
     }
     

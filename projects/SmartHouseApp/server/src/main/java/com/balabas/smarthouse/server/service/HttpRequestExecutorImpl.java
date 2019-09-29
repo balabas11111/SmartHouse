@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -51,5 +54,32 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
                 null,
                 new ParameterizedTypeReference<List<Device>>(){}));
 	}
+
+	@Override
+	public ResponseEntity<String> executePostRequest(String url, String body) throws UnsupportedEncodingException {
+		RestTemplate rest = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_JSON);
+	    
+		HttpEntity<String> request = new HttpEntity<String>(body, headers);
+		return rest.postForEntity(url, request, String.class);
+	}
 	
+	@Override
+	public ResponseEntity<String> executePostRequest(String url, HttpHeaders headers, String body) {
+		RestTemplate rest = new RestTemplate();
+	    
+		HttpEntity<String> request = new HttpEntity<String>(body, headers);
+		return rest.postForEntity(url, request, String.class);
+	}
+	
+	@Override
+	public ResponseEntity<String> executeGetRequest(String url, HttpHeaders headers, Map<String,String> params){
+		RestTemplate restTemplate = new RestTemplate();
+		
+		HttpEntity ent = new HttpEntity(headers);
+		
+		return restTemplate.exchange(url, HttpMethod.GET, ent, String.class, params);
+		
+	}
 }

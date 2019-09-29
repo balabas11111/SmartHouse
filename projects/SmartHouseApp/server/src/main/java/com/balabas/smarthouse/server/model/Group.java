@@ -32,7 +32,11 @@ public class Group implements NameAble, JsonDataContainer {
         }
     }
     
+    private String deviceId;
+    
     private String name;
+    
+    private String description;
     
     private Set<Entity> entities;
     
@@ -42,7 +46,8 @@ public class Group implements NameAble, JsonDataContainer {
     
     private UpdateTimer timer;
     
-    public Group(String name,JSONObject data){
+    public Group(String deviceId, String name,JSONObject data){
+    	this.deviceId = deviceId;
         this.name = name;
         this.entities = new HashSet<>();
         this.data = data;
@@ -58,6 +63,10 @@ public class Group implements NameAble, JsonDataContainer {
         timer.setDataReceived();
     }
     
+    public Entity getEntity(String name) {
+    	return entities.stream().filter(entity->entity.name.equals(name)).findFirst().orElse(null);
+    }
+    
     private static GroupType getGroupTypeByName(String name){
         for(GroupType gt: GroupType.values()){
             if(gt.name().equalsIgnoreCase(name)){
@@ -66,4 +75,6 @@ public class Group implements NameAble, JsonDataContainer {
         }
         return GroupType.CUSTOM;
     }
+    
+    
 }

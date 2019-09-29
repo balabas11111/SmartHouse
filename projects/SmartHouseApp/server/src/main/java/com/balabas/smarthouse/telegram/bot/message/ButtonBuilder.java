@@ -38,13 +38,26 @@ public class ButtonBuilder {
     }
 	
 	public String getDeviceButton(String deviceDescr) {
-		return String.format(BotMessageConstants.DEVICE_BUTTON,Emoji.OUTBOX_TRAY, deviceDescr);
+		return getButton(Emoji.OUTBOX_TRAY, deviceDescr);
 	}
 	
 	public String getGroupButton(String groupName) {
 	    Emoji emoji = getEmojiByGroupName(groupName);
 	    String name = getGroupNameTranslation(groupName);
 	    
-		return String.format(BotMessageConstants.GROUP_BUTTON,emoji, name);
+		return getButton(emoji, name);
 	}
+	
+	public String getButton(Emoji emoji, String text) {
+		return getButton(BotMessageConstants.BUTTON, emoji, text);
+	}
+	
+	public String getButton(String format, Emoji emoji, String text) {
+		return String.format(format,emoji==null?"":emoji, text);
+	}
+	
+	public String getButton(String format, Emoji emoji) {
+		return String.format(format,emoji==null?"":emoji);
+	}
+	
 }

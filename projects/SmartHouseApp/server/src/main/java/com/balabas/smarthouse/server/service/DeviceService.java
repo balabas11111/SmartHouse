@@ -1,22 +1,19 @@
 package com.balabas.smarthouse.server.service;
 
-import java.io.UnsupportedEncodingException;
-import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.json.JSONObject;
 
-import com.balabas.smarthouse.server.exception.DeviceOnServerAuthorizationException;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.Group;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
+import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult;
 
 public interface DeviceService {
-	
-	boolean isMock();
 	
 	List<Device> getDevices();
 
@@ -26,19 +23,23 @@ public interface DeviceService {
 
 	DeviceRegistrationResult registerDevice(Device device);
 	
-	DeviceRegistrationResult registerDevice(DeviceRequest request) throws UnknownHostException;
+	DeviceRegistrationResult registerDevice(DeviceRequest request);
 	
-	String executeGetDataOnDevice(String deviceId, String deviceEntityGroup) throws UnsupportedEncodingException;
+	String sendDataToDevice(String deviceId, String groupId, String entityId,
+			Map<String,Object> values) throws ResourceNotFoundException;
 	
 	JSONObject executeGetData(String deviceId, String deviceEntityGroup) throws ResourceNotFoundException;
 	
 	void markDeviceAsWaitsForDataUpdate(DeviceRequest request) throws ResourceNotFoundException;
 	
-	void processDeviceDataUpdateDispatched(DeviceRequest request, boolean withAuthCheck) throws ResourceNotFoundException, DeviceOnServerAuthorizationException;
+	void processDeviceDataUpdateDispatched(DeviceRequest request) throws ResourceNotFoundException;
 	
-	void processDeviceDataUpdate(Device device, String deviceData) throws ResourceNotFoundException;
+	void processDataReceivedFromDevice(Device device, String deviceData) throws ResourceNotFoundException;
 	
 	void requestDevicesValues(Device device, Group group);
 	
-    void requestAllDevicesData();
+    void requestAllDevicesDataWithUpdateRequired();
+
+	void processDeviceAction(Action action);
+
 }

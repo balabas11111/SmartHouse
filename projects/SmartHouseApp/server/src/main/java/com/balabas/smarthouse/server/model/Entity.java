@@ -12,15 +12,23 @@ import org.json.JSONObject;
 
 import com.balabas.smarthouse.server.events.ValueChanger;
 
+import static com.balabas.smarthouse.server.model.ModelConstants.ENTITY_FIELD_SENSOR_ITEMS;
+
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Entity extends ValueContainer  {
 
+	private String deviceId;
+	
+	private String groupName;
+	
     private Set<SensorItem> sensorItems;
     
-    public Entity(String name){
-        this.name = name;
+    public Entity(String deviceId, String groupName, String entityName){
+    	this.deviceId = deviceId;
+    	this.groupName = groupName;
+        this.name = entityName;
     }
     
     @Override
@@ -36,7 +44,7 @@ public class Entity extends ValueContainer  {
     
     private void checkToCreateSensorItems(JSONObject data){
         boolean doCreate = this.sensorItems == null &&
-                            data.has(SensorItem.SENSOR_ITEMS_KEY);
+                            data.has(ENTITY_FIELD_SENSOR_ITEMS);
         if(doCreate){
             this.sensorItems = new HashSet<>();
         }

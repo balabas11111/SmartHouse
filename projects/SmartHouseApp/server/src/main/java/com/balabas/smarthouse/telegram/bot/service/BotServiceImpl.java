@@ -8,11 +8,13 @@ import java.util.stream.Stream;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.starter.AfterBotRegistration;
 
+import com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType;
 import com.balabas.smarthouse.server.events.DeviceChangedEvent;
 import com.balabas.smarthouse.telegram.bot.handler.SmartHouseBotHandler;
 
@@ -23,6 +25,9 @@ import lombok.extern.log4j.Log4j2;
 @Service
 public class BotServiceImpl implements BotService, InitializingBean {
 
+	@Value("${telegram.bot.enabled}")
+	private boolean botEnabled;
+	
 	@Getter
 	private TelegramBotsApi api;
 
@@ -35,6 +40,10 @@ public class BotServiceImpl implements BotService, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		if(!botEnabled) {
+			log.warn("Telegram bot is disabled");
+			return;
+		}
 		this.api = new TelegramBotsApi();
 
 		BotSession session = api.registerBot(bot);
@@ -43,11 +52,19 @@ public class BotServiceImpl implements BotService, InitializingBean {
 
 	@Override
 	public void sendHtmlMessageToAllUsers(String text) {
+		if(!botEnabled) {
+			log.warn("Telegram DISABLED :"+text);
+			return;
+		}
 		bot.sendHtmlMessageToAllUsers(text);
 	}
 
 	@Override
 	public void sendTextMessageToAllUsers(String text) {
+		if(!botEnabled) {
+			log.warn("Telegram DISABLED :"+text);
+			return;
+		}
 		bot.sendTextMessageToAllUsers(text);
 
 	}
@@ -83,8 +100,16 @@ public class BotServiceImpl implements BotService, InitializingBean {
 	}
 
 	@Override
-	public void sendDeviceRegisteredEventToAllUsers(DeviceChangedEvent event) {
-	    bot.sendDeviceRegisteredToAllUsers();
+	public void processEvent(DeviceChangedEvent event) {
+		if(DeviceEventType.ADDED.equals(event.getEventType())) {
+			if(!botEnabled) {
+				log.warn("Telegram DISABLED but device registered");
+				return;
+			}
+			
+			bot.sendDeviceRegisteredToAllUsers(event.getTarget().getDeviceDescr());
+		}
+		
 	}
 
 }

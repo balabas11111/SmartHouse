@@ -5,16 +5,18 @@ import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.Group;
 import com.balabas.smarthouse.server.service.DeviceService;
+import com.google.common.collect.Lists;
+
+import lombok.Getter;
 
 @Component
 public class SendMessageBuilder {
@@ -23,98 +25,131 @@ public class SendMessageBuilder {
 	private DeviceService deviceService;
 	
 	@Autowired
-	private InlineKeyboardBuilder keyboard;
+	private ButtonBuilder buttonBuilder;
+	
+	@Autowired
+	private InlineKeyboardBuilder inlineKeyboard;
+	
+	@Autowired
+	@Getter
+	private ReplyKeyboardBuilder replyKeyboard;
 	
 	@Autowired
 	private GroupViewBuilder groupViewBuilder;
 	
-	public SendMessage createKeyBoardInlineMessage(InlineKeyboardMarkup markup, Integer messageId, Long chatId, String text){
-		SendMessage sendMessage = new SendMessage();
-        sendMessage.enableMarkdown(true);
-
-        sendMessage.setReplyMarkup(markup);
-        if(messageId!=null){
-            sendMessage.setReplyToMessageId(messageId);
-        }
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(text);
-        sendMessage.enableHtml(true);
-        
-        return sendMessage;
-	}
+	@Autowired
+	private ItemRendererBuilder itemRendererBuilder;
 	
-	public String getReplyOriginator(String[] data){
-		return keyboard.getReplyOriginator(data);
-	}
-	
-	public SendMessage createServerStartedMessage(Long chatId, String serverName){
-	    String text = String.format(BotMessageConstants.DEVICE_REGISTERED_MSG, Emoji.HAPPY_PERSON_RAISING_ONE_HAND,
+	public List<SendMessage> createServerStartedMessages(Long chatId, String serverName){
+		List<SendMessage> msgs = Lists.newArrayList();
+	    String text = String.format(BotMessageConstants.BOT_REGISTERED_MSG, Emoji.HAPPY_PERSON_RAISING_ONE_HAND,
 	            serverName, new Date());
-	    
+	    /*
 	    SendMessage msg = createHtmlMessage(chatId, text);
         msg.enableHtml(true);
-        return msg;
+        msgs.add(msg);
+        */
+        msgs.add(createHideReplyKeyboardMessage(chatId.longValue(), null, text));
+        
+        return msgs;
 	}
 	
-	public SendMessage createDeviceRegisteredMessage(Long chatId, String serverName){
-	    String text = String.format(BotMessageConstants.BOT_REGISTERED_MSG, Emoji.CHECK_MARK, serverName, new Date());
+	public List<SendMessage> createDeviceRegisteredMessages(String deviceName, Long chatId){
+		List<SendMessage> msgs = Lists.newArrayList();
+		
+	    String text = String.format(BotMessageConstants.DEVICE_REGISTERED_MSG, Emoji.CHECK_MARK, deviceName, new Date());
 	    
+	    msgs.add(createRefreshDevicesListReplyKeyboard(chatId, text));
+	    /*
 	    SendMessage msg = createHtmlMessage(chatId, text);
         msg.enableHtml(true);
-        return msg;
+        msgs.add(msg);
+        */
+        return msgs;
 	}
 	
-	public SendMessage createRefreshDevicesList(Integer replyToMessageId, Long chatId){
-        List<Device> devices = deviceService.getDevices();
+	public List<SendMessage> createRefreshDevicesListReplyKeyboard(ReplyContext context){
+		List<SendMessage> msgs = Lists.newArrayList();
+		//context.setText("Список устройств");
+		msgs.add(context.createMsg(replyKeyboard.getRefreshDevicesListReplyKeyboard()));
         
-        String text = (devices.isEmpty())?
-                        String.format(BotMessageConstants.NO_DEVICE_MSG,Emoji.WARNING):
-                        String.format(BotMessageConstants.SELECT_DEVICE_MSG,Emoji.OUTBOX_TRAY);    
-        
-        return createKeyBoardInlineMessage(
-        		keyboard.getRefreshDevicesListInlineKeyboard(),
-        		replyToMessageId, chatId, text);
+        return msgs;
     }
 	
-	public SendMessage createDevicesList(String serverName, Integer messageId, Long chatId){
+	public SendMessage createRefreshDevicesListReplyKeyboard(Long chatId, String text){
+		return ReplyContext.createMsg(replyKeyboard.getRefreshDevicesListReplyKeyboard(), null, chatId, text, true);
+    }
+	
+	public SendMessage createRefreshDevicesListInlineKeyboard(ReplyContext cont){
+        List<Device> devices = deviceService.getDevices();
+        
+        cont.setText(
+    		(devices.isEmpty())?
+                    String.format(BotMessageConstants.NO_DEVICE_MSG,Emoji.WARNING):
+                    String.format(BotMessageConstants.SELECT_DEVICE_MSG,Emoji.OUTBOX_TRAY));    
+        
+        return cont.createMsg(inlineKeyboard.getRefreshDevicesListInlineKeyboard());
+    }
+	
+	public SendMessage createDevicesListInlineKeyboard(String serverName, ReplyContext cont){
 	    List<Device> devices = deviceService.getDevices();
 	    
-	    String text = (devices.isEmpty())?
-	                    String.format(BotMessageConstants.NO_DEVICE_MSG,Emoji.WARNING):
-                        String.format(BotMessageConstants.SERVER_SELECT_DEVICE_MSG,
-                                        Emoji.OUTBOX_TRAY, serverName);    
+	    cont.setText(
+			(devices.isEmpty())?
+					String.format(BotMessageConstants.NO_DEVICE_MSG,Emoji.WARNING):
+					String.format(BotMessageConstants.SERVER_SELECT_DEVICE_MSG,
+                            Emoji.OUTBOX_TRAY, serverName));    
 	    
-		return createKeyBoardInlineMessage(
-		        keyboard.getDevicesListInlineKeyboard(devices),
-		        messageId, chatId, text);
+		return cont.createMsg(inlineKeyboard.getDevicesOfServerInlineKeyboard(devices));
 	}
 	
-	public SendMessage createGroupsOfDevice(String deviceId, Integer messageId, Long chatId) {
+	public SendMessage createGroupsOfDeviceInlineKeyboard(String deviceId, ReplyContext cont) {
 		Device device = deviceService.getDeviceByDeviceId(deviceId).orElse(null);
 		
-		return createKeyBoardInlineMessage(
-		        keyboard.getGroupsOfDeviceInlineKeyboard(device),
-		        messageId, chatId,
-				String.format(BotMessageConstants.SELECT_GROUP_MSG,Emoji.OUTBOX_TRAY, device.getDeviceDescr(),
-				        device.getDeviceFirmware()));
+		cont.setText(
+			String.format(BotMessageConstants.SELECT_GROUP_MSG,
+							Emoji.OUTBOX_TRAY, device.getDeviceDescr(),
+							device.getDeviceFirmware()));
+		
+		return cont.createMsg(inlineKeyboard.getGroupsOfDeviceInlineKeyboard(device));
 	}
 	
-	public SendMessage createGroupView(String deviceId, String groupId, Integer messageId, Long chatId) throws TransformerException{
+	public SendMessage getEntitiesOfGroupInlineKeyboard(String deviceId, String groupName, ReplyContext cont) throws TransformerException{
+		Device device = deviceService.getDeviceByDeviceId(deviceId).orElse(null);
+		Group group = device.getGroup(groupName);
+		
+		Emoji groupEmoji = buttonBuilder.getEmojiByGroupName(groupName);
+		String trans = buttonBuilder.getGroupNameTranslation(groupName);
+		
+		String text = String.format(BotMessageConstants.BUTTON,
+				groupEmoji.toString(), trans);
+		
+		//cont.setText(text);
+		cont.setText(text);
+		
+		return cont.createMsg(inlineKeyboard.getEntitiesOfGroupInlineKeyboard(device, group));
+	}
+	
+	public List<SendMessage> createGroupView(String deviceId, String groupId,ReplyContext context) throws TransformerException{
+		List<SendMessage> result = Lists.newArrayList();
+		
+		result.add(getEntitiesOfGroupInlineKeyboard(deviceId, groupId, context));
+		
 		Device device = deviceService.getDeviceByDeviceId(deviceId).orElse(null);
 		Group group = device.getGroup(groupId);
 		
-		String text = //String.format(BotMessageConstants.GROUP_DISPLAY_HEADER_MSG, Emoji.OUTBOX_TRAY, device.getDeviceDescr(), group.getName())  
-						groupViewBuilder.build(device, group);
+		String groupText = groupViewBuilder.build(device, group);  
+		result.add(createHtmlMessage(context.getChatId(), groupText));
 		
-		return createKeyBoardInlineMessage(
-		        keyboard.getGroupViewInlineKeyboard(device, group),
-		        messageId, chatId, text);
+		itemRendererBuilder.build(group.getEntities(), context.getChatId()).forEach(result::add);
+		
+		return result;
 	}
 	
-	public SendMessage createUnknown(String msg, Long chatId, Integer replytoMessageId){
-		String text = String.format(BotMessageConstants.DONT_UNDERSTAND_MSG, Emoji.FACE_WITH_TONGUE_AND_CLOSED_ONE_EYE, (msg == null || msg.isEmpty())?"":msg);
+	public SendMessage createUnknown(ReplyContext context){
+		String text = String.format(BotMessageConstants.DONT_UNDERSTAND_MSG, Emoji.FACE_WITH_TONGUE_AND_CLOSED_ONE_EYE, (context.getText() == null || context.getText().isEmpty())?"":context.getText());
 		
-		return createHtmlMessage(chatId, text, replytoMessageId);
+		return createHtmlMessage(context.getChatId(), text, context.getReplyToMessageIdIfUnknown());
 		
 	}
 	
@@ -126,17 +161,20 @@ public class SendMessageBuilder {
 	}
 	
 	public SendMessage createError(String msg, Long chatId){
-		String text = String.format(BotMessageConstants.ERROR_MSG, Emoji.FACE_WITH_TONGUE_AND_CLOSED_ONE_EYE, (msg == null || msg.isEmpty())?"":msg);
+		String text = String.format(BotMessageConstants.ERROR_MSG, Emoji.STOP, (msg == null || msg.isEmpty())?"":msg);
 		
 		return createHtmlMessage(chatId, text);
 	}
 	
-	public SendMessage sendHideKeyboard(Long chatId, Integer messageId) {
+	public SendMessage createHideReplyKeyboardMessage(Long chatId, Integer messageId, String msgText) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId.toString());
         sendMessage.enableMarkdown(true);
         sendMessage.setReplyToMessageId(messageId);
-        sendMessage.setText(Emoji.WAVING_HAND_SIGN.toString());
+        
+        String text = Strings.isNotEmpty(msgText)?msgText:Emoji.WAVING_HAND_SIGN.toString();
+        
+        sendMessage.setText(text);
 
         ReplyKeyboardRemove replyKeyboardRemove = new ReplyKeyboardRemove();
         replyKeyboardRemove.setSelective(true);
@@ -145,19 +183,17 @@ public class SendMessageBuilder {
         return sendMessage;
     }
 	
-	public SendMessage createHtmlMessage(Long chatId, String text, Integer replyToMessageId) {
-		SendMessage msg = createHtmlMessage(chatId, text);
-		if(replyToMessageId!=null){
-			msg.setReplyToMessageId(replyToMessageId);
-		}
-		
-		return msg;
-	}
-	
 	public SendMessage createHtmlMessage(Long chatId, String text) {
 		SendMessage msg = createTextMessage(chatId, text);
 		
 		msg.enableHtml(true);
+		
+		return msg;
+	}
+	
+	public SendMessage createHtmlMessage(Long chatId, String text, Integer replyToMessageId) {
+		SendMessage msg = createHtmlMessage(chatId, text);
+		msg.setReplyToMessageId(replyToMessageId);
 		
 		return msg;
 	}
@@ -169,21 +205,5 @@ public class SendMessageBuilder {
 		
 		return msg;
 	}
-	
-	protected SendMessage createKeyBoardMessage(ReplyKeyboardMarkup markup, Integer messageId, Long chatId, String text){
-		SendMessage sendMessage = new SendMessage();
-        sendMessage.enableMarkdown(true);
-
-        sendMessage.setReplyMarkup(markup);
-        if(messageId!=null){
-        	sendMessage.setReplyToMessageId(messageId);
-        }
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(text);
-        sendMessage.enableHtml(true);
-        
-        return sendMessage;
-	}
-	
 	
 }

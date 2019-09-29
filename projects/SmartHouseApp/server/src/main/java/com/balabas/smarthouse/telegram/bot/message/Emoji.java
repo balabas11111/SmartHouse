@@ -2,19 +2,23 @@ package com.balabas.smarthouse.telegram.bot.message;
 
 public enum Emoji {
     
-	REFRESH('\uD83D','\uDD03',"Refresh"),
-	WARNING('\u26A0',null),
-	ERROR('\u274C',null),
-	FACE_WITH_TONGUE_AND_CLOSED_ONE_EYE('\uD83D', '\uDE1C',"smile"),
-	CHECK_MARK('\u2705', null,"check"),
-	HOUSE_BUILDING('\uD83C','\uDFE2',"Home"),
-	OUTBOX_TRAY('\uD83D','\uDCE4',"outbox"),
+	REFRESH('\uD83D','\uDD03'),
+	WARNING('\u26A0'),
+	ERROR('\u274C'),
+	FACE_WITH_TONGUE_AND_CLOSED_ONE_EYE('\uD83D', '\uDE1C'),
+	CHECK_MARK('\u2705'),
+	HOUSE_BUILDING('\uD83C','\uDFE2'),
+	OUTBOX_TRAY('\uD83D','\uDCE4'),
 	WAVING_HAND_SIGN('\uD83D','\uDC4B'),
 	HAPPY_PERSON_RAISING_ONE_HAND('\uD83D','\uDE4B'),
 	SETTINGS('\uD83D','\uDD27'),
-	STAR('\u2B50',null),
+	STAR('\u2B50'),
 	BRIEFCASE('\uD83D','\uDCBC'),
-	RIGHT_HAND('\uD83D','\uDC49');
+	RIGHT_HAND('\uD83D','\uDC49'),
+	SUN('\uD83C','\uDF1E'),
+	STOP('\u26D4'),
+	PHONE_ON('\uD83D','\uDCF1'), 
+	PHONE_OFF('\uD83D','\uDCF4');
 	
     Character chr1;
     Character chr2;
@@ -29,6 +33,10 @@ public enum Emoji {
     Emoji(Character chr1,Character chr2) {
         this.chr1 = chr1;
         this.chr2 = chr2;
+    }
+    
+    Emoji(Character chr1) {
+        this.chr1 = chr1;
     }
 
     @Override

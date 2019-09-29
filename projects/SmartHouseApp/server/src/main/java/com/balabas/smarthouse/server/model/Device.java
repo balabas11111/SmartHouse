@@ -1,7 +1,5 @@
 package com.balabas.smarthouse.server.model;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Set;
 
 import org.json.JSONObject;
@@ -32,7 +30,7 @@ public class Device implements NameAble, JsonDataContainer {
 	private String deviceFirmware;
 	private String deviceDescr;
 	
-	private InetAddress ip;
+	private String ip;
 	private String dataUrl;
 	private String rootUrl;
 	
@@ -86,13 +84,13 @@ public class Device implements NameAble, JsonDataContainer {
 	    return this;
 	}
 	
-	public static Device from(DeviceRequest request, long updateInterval) throws UnknownHostException{
+	public static Device from(DeviceRequest request, long updateInterval) {
 	    Device device = new Device(request.getDeviceId(), updateInterval);
 	    
 	    device.setDeviceFirmware(request.getDeviceFirmware());
 	    device.setDeviceDescr(request.getDeviceDescr());
 	    
-	    device.setIp(InetAddress.getByName(request.getIp()));
+	    device.setIp(request.getIp());
 	    
 	    device.setDataUrl(request.getDataUrl());
 	    device.setRootUrl(request.getRootUrl());
@@ -108,5 +106,10 @@ public class Device implements NameAble, JsonDataContainer {
     @Override
     public String getName() {
         return getDeviceId();
+    }
+    
+    @Override
+    public String getDescription() {
+        return getDeviceDescr();
     }
 }

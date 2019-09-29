@@ -14,10 +14,20 @@ import org.json.JSONObject;
 import com.balabas.smarthouse.server.events.ValueChanger;
 import com.balabas.smarthouse.server.events.ValuesChangeEvent;
 
+import static com.balabas.smarthouse.server.model.ModelConstants.ENTITY_FIELD_SENSOR_ITEMS;
+import static com.balabas.smarthouse.server.model.ModelConstants.ENTITY_FIELD_ITEM_CLASS;
+import static com.balabas.smarthouse.server.model.ModelConstants.ENTITY_FIELD_DESCRIPTION;
+
 public class ValueContainer implements JsonDataContainer, NameAble{
 
+	@Getter
+	protected EntityClass entityRenderer = EntityClass.DEFAULT;
+	
     @Getter
     protected String name;
+    
+    @Getter
+    protected String description;
     
     @Getter
     protected Map<String, String> values = new HashMap<>();
@@ -26,8 +36,11 @@ public class ValueContainer implements JsonDataContainer, NameAble{
     protected JSONObject data;
     
     public String getValue(String key){
-        return (!hasKey(key))?
-                    null:values.get(key);
+        return values.getOrDefault(key, null);
+    }
+    
+    public boolean hasRenderer() {
+    	return !this.entityRenderer.equals(EntityClass.DEFAULT);
     }
     
     public boolean hasKey(String key){
@@ -56,7 +69,15 @@ public class ValueContainer implements JsonDataContainer, NameAble{
         Map<String, Object> jsonMap = data.toMap();
         
         for(Entry<String,Object> entry: jsonMap.entrySet()){
-            if(!entry.getKey().equals(SensorItem.SENSOR_ITEMS_KEY)
+        	String key = entry.getKey();
+        	
+        	if(ENTITY_FIELD_ITEM_CLASS.equals(key)) {
+        		this.entityRenderer = EntityClass.getByKey(entry.getValue().toString());
+        	}
+        	if(ENTITY_FIELD_DESCRIPTION.equals(key)) {
+        		this.description = entry.getValue().toString();
+        	}
+            if(!key.equals(ENTITY_FIELD_SENSOR_ITEMS)
                     && !(entry.getValue() instanceof JSONObject)
                     && !(entry.getValue() instanceof JSONArray)){
                 

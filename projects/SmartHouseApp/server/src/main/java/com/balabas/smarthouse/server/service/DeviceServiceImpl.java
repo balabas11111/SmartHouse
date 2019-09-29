@@ -1,9 +1,6 @@
 package com.balabas.smarthouse.server.service;
 
-import java.io.UnsupportedEncodingException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,16 +8,12 @@ import java.util.Optional;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.balabas.smarthouse.server.auth.ServerAuthService;
+import com.balabas.smarthouse.server.controller.service.DeviceRequestorService;
 import com.balabas.smarthouse.server.events.ChangedEvent;
-import com.balabas.smarthouse.server.exception.DeviceOnServerAuthorizationException;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.Device.DeviceState;
@@ -28,34 +21,30 @@ import com.balabas.smarthouse.server.model.Group;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult;
 import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult.DeviceRegistrationStatus;
-import com.balabas.smarthouse.server.util.ServerValuesMockUtil;
+import com.balabas.smarthouse.server.security.DeviceSecurityService;
+import com.balabas.smarthouse.server.service.events.EventProcessorsService;
+import com.balabas.smarthouse.server.view.Action;
 
-import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import static com.balabas.smarthouse.server.DeviceConstants.GROUP;
 
 @Log4j2
 @Service
-public class DeviceServiceImpl implements InitializingBean, DeviceService {
+public class DeviceServiceImpl implements DeviceService {
 
-	@Value("${smarthouse.server.mock}")
-	@Getter
-    private boolean mock;
-	
 	@Value("${smarthouse.server.devices.request.interval}")
     private long deviceUpdateInterval;
 	
 	@Autowired
-	HttpRequestExecutor executor;
-
-	@Autowired
-	ServerAuthService authService;
+	DeviceSecurityService authService;
 	
 	@Autowired
 	GroupEntityUpdateService groupEntityUpdateService;
 	
 	@Autowired
-	EventProcessService eventProcessService;
+	EventProcessorsService eventProcessService;
+	
+	@Autowired
+	DeviceRequestorService deviceRequestor;
 	
 	private List<Device> devices;
 
@@ -66,16 +55,6 @@ public class DeviceServiceImpl implements InitializingBean, DeviceService {
 	@Override
 	public List<Device> getDevices() {
 		return this.devices;
-	}
-	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		if(this.mock){
-			log.warn("Device service filled with mock data");
-			List<Device> dev = ServerValuesMockUtil.getDevicesMock(1);
-			
-			dev.stream().forEach(this::registerDevice);
-		}
 	}
 
 	@Override
@@ -94,7 +73,7 @@ public class DeviceServiceImpl implements InitializingBean, DeviceService {
 
     @Override
     public DeviceRegistrationResult registerDevice(
-    		DeviceRequest request) throws UnknownHostException {
+    		DeviceRequest request) {
         Device device = Device.from(request, this.deviceUpdateInterval);
         return registerDevice(device);
     }
@@ -125,35 +104,6 @@ public class DeviceServiceImpl implements InitializingBean, DeviceService {
 				+ result.getResult().toString());
 
 		return result;
-	}
-
-	@Override
-	public String executeGetDataOnDevice(String deviceId, String deviceEntityGroup) throws UnsupportedEncodingException {
-		Optional<Device> deviceOpt = getDeviceByDeviceId(deviceId);
-
-		if (deviceOpt.isPresent()) {
-			Device device = deviceOpt.get();
-
-			if (device.getDataUrl() != null) {
-				Map<String, String> params = (deviceEntityGroup != null && !deviceEntityGroup.isEmpty())
-						? Collections.singletonMap(GROUP, deviceEntityGroup) : null;
-
-					ResponseEntity<String> result = executor.executeGetRequest(device.getDataUrl(), params);
-					
-					if(result.getStatusCodeValue()==HttpStatus.OK.value()){
-					    try {
-					        log.info("data="+result.getBody());
-                            processDeviceDataUpdate(device, result.getBody());
-                        } catch (ResourceNotFoundException e) {
-                            log.error(e.getMessage());
-                        }
-					}
-			}else{
-				log.error("Empty data url deviceId=" +deviceId);
-			}
-		}
-
-		return null;
 	}
 	
 	@Override
@@ -187,18 +137,15 @@ public class DeviceServiceImpl implements InitializingBean, DeviceService {
     }
 
     @Override
-    public void processDeviceDataUpdateDispatched(DeviceRequest request, boolean withAuthCheck) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
+    public void processDeviceDataUpdateDispatched(DeviceRequest request) throws ResourceNotFoundException {
     	Device device = getDeviceByDeviceId(request.getDeviceId()).orElse(null);
         
-    	if(withAuthCheck){
-    		authService.checkDeviceOnDataUpdatedRequest(request, device);
-    	}
         String deviceData = request.getJsonOrData();
-        processDeviceDataUpdate(device, deviceData);
+        processDataReceivedFromDevice(device, deviceData);
     }
     
     @Override
-    public void processDeviceDataUpdate(Device device, String deviceData) throws ResourceNotFoundException{
+    public void processDataReceivedFromDevice(Device device, String deviceData) throws ResourceNotFoundException{
         
         if(device == null){
             log.error("Device is not registered");
@@ -227,7 +174,7 @@ public class DeviceServiceImpl implements InitializingBean, DeviceService {
     }
 
     @Override
-    public void requestAllDevicesData() {
+    public void requestAllDevicesDataWithUpdateRequired() {
         if(!getDevices().isEmpty()){
             
             Map<String,String> deviceIds = new HashMap<>();
@@ -252,16 +199,48 @@ public class DeviceServiceImpl implements InitializingBean, DeviceService {
     
     @Override
     public void requestDevicesValues(Device device, Group group) {
-    	
-    	
         try {
-        	String deviceId = device.getDeviceId();
+        	//String deviceId = device.getDeviceId();
             String groupId = group!=null?group.getName():null;
             
-			executeGetDataOnDevice(deviceId, groupId);
+            String result = deviceRequestor.executeGetDataOnDevice(device, groupId);
+            processDataReceivedFromDevice(device, result);
         } catch (Exception e) {
         	log.error("Error request device values",e);
         }
     }
+    
+    @Override
+    public void processDeviceAction(Action action) {
+    	log.info("Action received :"+action.getCallbackData());
+    	Map<String,Object> params = (new JSONObject(action.getData())).toMap(); 
+    	
+    	try {
+			sendDataToDevice(action.getDeviceId(), action.getGroupId(), action.getEntityId(), params);
+		} catch (ResourceNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+
+	@Override
+	public String sendDataToDevice(String deviceId, String groupId, String entityId, Map<String, Object> values)
+			throws ResourceNotFoundException {
+		
+		JSONObject json = new JSONObject();
+		json.put(groupId, new JSONObject().put(entityId, values));
+		
+		Optional<Device> device = getDeviceByDeviceId(deviceId);
+		
+		if(!device.isPresent()) {
+			throw new ResourceNotFoundException(deviceId);
+		}
+		
+		String result = deviceRequestor.executePostDataOnDevice(device.get(), json);
+		processDataReceivedFromDevice(device.get(), result);
+		
+		return result;
+		
+	}
     
 }

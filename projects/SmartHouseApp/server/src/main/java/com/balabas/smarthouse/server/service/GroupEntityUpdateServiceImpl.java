@@ -7,8 +7,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import lombok.extern.log4j.Log4j2;
-
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +19,12 @@ import com.balabas.smarthouse.server.events.ValuesChangeEvent;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.Entity;
 import com.balabas.smarthouse.server.model.Group;
+import com.balabas.smarthouse.server.model.ModelConstants;
 import com.balabas.smarthouse.server.model.NameAble;
 import com.balabas.smarthouse.server.model.SensorItem;
+import com.google.common.collect.Lists;
+
+import static com.balabas.smarthouse.server.model.ModelConstants.ENTITY_FIELD_SENSOR_ITEMS;
 
 @Service
 public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
@@ -35,7 +37,6 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
             device.setGroups(new HashSet<Group>());
         }
         device.setData(deviceJson);
-        Set<Group> deviceGroups = device.getGroups();
         
         if (!deviceJson.isEmpty()) {
 
@@ -44,59 +45,38 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
             }
             
             for(String groupName: JSONObject.getNames(deviceJson)) {
+            	if(ModelConstants.ENTITY_FIELD_DESCRIPTION.equals(groupName)) {
+            		continue;
+            	}
                 
-                JSONObject groupJson = null;
+                Group group = getGroupOrCreateNew(device, groupName, events);
                 
-                try{
-                    groupJson = deviceJson.getJSONObject(groupName);
-                }catch(Exception e){
-                    continue;
-                }
-                
-                Optional<Group> groupOpt = getGroupByName(deviceGroups, groupName);
-
-                Group group = null;
-
-                if (!groupOpt.isPresent()) {
-                    group = new Group(groupName, groupJson);
-                    deviceGroups.add(group);
-                    
-                    if(device.isInitialDataReceived()){
-                        events.add(new GroupChangedEvent(group, DeviceEventType.ADDED));
-                    }
-                } else {
-                    group = groupOpt.get();
-                    group.setData(groupJson);
+                if(group==null) {
+                	continue;
                 }
 
-                if (!groupJson.isEmpty()) {
-                    Set<Entity> groupEntities = group.getEntities();
+                if (!group.getData().isEmpty()) {
                     List<EntityChangedEvent> entityEvents = new ArrayList<>();
 
-                    for(String entityName: JSONObject.getNames(groupJson)) {
+                    for(String entityName: JSONObject.getNames(group.getData())) {
+                    	
+                    	if(ModelConstants.ENTITY_FIELD_DESCRIPTION.equals(entityName)) {
+                    		group.setDescription(group.getData().getString(ModelConstants.ENTITY_FIELD_DESCRIPTION));
+                    		continue;
+                    	}
                         
-                        JSONObject entityJson = null;
+                    	JSONObject entityJson = null;
                         
                         try{
-                            entityJson = groupJson.getJSONObject(entityName);
+                            entityJson = group.getData().getJSONObject(entityName);
                         }catch(Exception e){
-                            continue;
+                           continue;
                         }
+                    	
+                        Entity entity = getEntityOrCreateNew(device.isInitialDataReceived(), group, entityName, events);
                         
-                        Optional<Entity> entityOpt = Optional
-                                .ofNullable(getItemByName(groupEntities,
-                                        entityName));
-                        Entity entity = null;
-                        
-                        if (!entityOpt.isPresent()) {
-                            entity = new Entity( entityName);
-                            groupEntities.add(entity);
-                            
-                            if(device.isInitialDataReceived()){
-                                events.add(new EntityChangedEvent(entity, DeviceEventType.ADDED));
-                            }
-                        } else {
-                            entity = entityOpt.get();
+                        if(entity == null) {
+                        	continue;
                         }
                         
                         List<ValuesChangeEvent> valueEvents = new ArrayList<>();
@@ -104,35 +84,7 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
                         valueEvents.add(entity.
                                 setValuesFromJsonBuildEvent(entityJson, device.isInitialDataReceived()));
                         
-                        if(entityJson.has(SensorItem.SENSOR_ITEMS_KEY)){
-                            JSONObject sensorItemsJson = entityJson.getJSONObject(SensorItem.SENSOR_ITEMS_KEY);
-                            
-                            Set<SensorItem> sensorItems = entity.getSensorItems();
-                            
-                            for(Entry<String,Object> siEntry: sensorItemsJson.toMap().entrySet()){
-                            
-                                if(!isJsonObject(siEntry.getValue())){
-                                    continue;
-                                }
-                                String siName = siEntry.getKey();
-                                
-                                Optional<SensorItem> siOpt = Optional
-                                        .ofNullable(getItemByName(sensorItems,
-                                                siName));
-                                
-                                SensorItem si = null;
-                                JSONObject siJson = sensorItemsJson.getJSONObject(siName);
-                                
-                                if(!siOpt.isPresent()){
-                                    si = new SensorItem(siName);
-                                    sensorItems.add(si);
-                                }else{
-                                    si = siOpt.get();
-                                }
-                                
-                                valueEvents.add(si.setValuesFromJsonBuildEvent(siJson, device.isInitialDataReceived()));
-                            }
-                        }
+                        valueEvents.addAll(processSensorItems(device, entity, entityJson));
                         
                         EntityChangedEvent entityValuesChangeEvent = 
                                 EntityChangedEvent.build(entity, DeviceEventType.UPDATED, valueEvents);
@@ -164,15 +116,83 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
         
         return events;
     }
+    
+    private Entity getEntityOrCreateNew(boolean devInitFlag, Group group, String entityName, List<ChangedEvent<?>> events) {
+        Entity entity = group.getEntity(entityName);
+        
+        if (entity == null) {
+            entity = new Entity( group.getDeviceId(), group.getName(), entityName);
+            group.getEntities().add(entity);
+            
+            if(devInitFlag){
+                events.add(new EntityChangedEvent(entity, DeviceEventType.ADDED));
+            }
+        } 
+        
+        return entity;
+    }
+    
+    private Group getGroupOrCreateNew(Device device, String groupName, List<ChangedEvent<?>> events) {
+    	JSONObject deviceJson = device.getData();
+    	JSONObject groupJson = null;
+        
+        try{
+            groupJson = deviceJson.getJSONObject(groupName);
+        }catch(Exception e){
+            return null;
+        }
+        
+        Group group = device.getGroup(groupName);
 
-    @Override
-    public Optional<Group> getGroupByName(Set<Group> groups, String name) {
-
-        Group group = (groups != null) ? getItemByName(groups, name) : null;
-
-        Optional<Group> result = Optional.ofNullable(group);
-
-        return result;
+        if (group == null) {
+            group = new Group(device.getDeviceId(), groupName, groupJson);
+            device.getGroups().add(group);
+            
+            if(device.isInitialDataReceived()){
+                events.add(new GroupChangedEvent(group, DeviceEventType.ADDED));
+            }
+        } else {
+            group.setData(groupJson);
+        }
+        
+        return group;
+    }
+    
+    private List<ValuesChangeEvent> processSensorItems(Device device, Entity entity, JSONObject entityJson) {
+    	
+    	List<ValuesChangeEvent> valueEvents = Lists.newArrayList();
+    	
+    	if(entityJson.has(ENTITY_FIELD_SENSOR_ITEMS)){
+            JSONObject sensorItemsJson = entityJson.getJSONObject(ENTITY_FIELD_SENSOR_ITEMS);
+            
+            Set<SensorItem> sensorItems = entity.getSensorItems();
+            
+            for(Entry<String,Object> siEntry: sensorItemsJson.toMap().entrySet()){
+            
+                if(!isJsonObject(siEntry.getValue())){
+                    continue;
+                }
+                String siName = siEntry.getKey();
+                
+                Optional<SensorItem> siOpt = Optional
+                        .ofNullable(getItemByName(sensorItems,
+                                siName));
+                
+                SensorItem si = null;
+                JSONObject siJson = sensorItemsJson.getJSONObject(siName);
+                
+                if(!siOpt.isPresent()){
+                    si = new SensorItem(siName);
+                    sensorItems.add(si);
+                }else{
+                    si = siOpt.get();
+                }
+                
+                valueEvents.add(si.setValuesFromJsonBuildEvent(siJson, device.isInitialDataReceived()));
+            }
+        }
+    	
+    	return valueEvents;
     }
 
     private static boolean isJsonObject(Object obj) {

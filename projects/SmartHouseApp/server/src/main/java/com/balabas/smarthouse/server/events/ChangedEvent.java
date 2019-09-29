@@ -9,7 +9,8 @@ public class ChangedEvent<T extends NameAble> {
     public enum DeviceEventType{
         UPDATED,
         ADDED,
-        REMOVED
+        REMOVED,
+        POST_RESULT_RECEIVED
     }
     
     @Getter

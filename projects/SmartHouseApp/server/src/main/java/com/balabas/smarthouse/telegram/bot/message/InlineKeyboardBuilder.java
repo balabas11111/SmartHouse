@@ -10,14 +10,13 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.Group;
+import com.balabas.smarthouse.server.view.Action;
 
 import lombok.Getter;
 
-import static com.balabas.smarthouse.telegram.bot.BotConstants.CALLBACK_SPLITTER;
-import static com.balabas.smarthouse.telegram.bot.BotConstants.REFRESH_PREFFIX;
-import static com.balabas.smarthouse.telegram.bot.BotConstants.DEVICE_PREFFIX;
-import static com.balabas.smarthouse.telegram.bot.BotConstants.DEVICE_GROUP_PREFFIX;
-import static com.balabas.smarthouse.telegram.bot.BotConstants.GROUP_PREFFIX;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_DEVICE_LIST;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_GROUPS_OF_DEVICE;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
 
 import static com.balabas.smarthouse.telegram.bot.BotConstants.GROUP_DEVICE;
 
@@ -32,73 +31,50 @@ public class InlineKeyboardBuilder {
 		return new InlineKeyboardButton().setText(text).setCallbackData(callbackData);
 	}
 	
-	public static String buildCallbackData(String... arg){
-		StringBuilder result = new StringBuilder("");
-		
-		for(int i=0; i<arg.length; i++){
-			result.append(arg[i]!=null?arg[i]:"");
-			result.append(CALLBACK_SPLITTER);
-		}
-		
-		return result.toString();
-	}
-	
-	public String getReplyOriginator(String[] data){
-		if(data.length>1){
-			String key = data[0];
-			if(REFRESH_PREFFIX.equals(key)
-					|| DEVICE_PREFFIX.equals(key)
-					|| DEVICE_GROUP_PREFFIX.equals(key)
-					|| GROUP_PREFFIX.equals(key)){
-				return key;
-			}
-		}
-		return REFRESH_PREFFIX;
-	}
-	
 	public void addRefreshButtonToKeyboard(List<List<InlineKeyboardButton>> rowsInline){
-        List<InlineKeyboardButton> refreshRow = new ArrayList<>();
-        refreshRow.add(createInlineKeyboardButton(
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        row.add(createInlineKeyboardButton(
         					buttons.getRefreshDeviceListButton(),
-        					buildCallbackData(REFRESH_PREFFIX, DEVICE_PREFFIX))
+        					Action.callback(ACTION_TYPE_VIEW_DEVICE_LIST))
         				);
-        rowsInline.add(refreshRow);
+        rowsInline.add(row);
 	}
 	
 	public InlineKeyboardMarkup getRefreshDevicesListInlineKeyboard( ) {
         InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
         
-        List<InlineKeyboardButton> rowEmpty = new ArrayList<>();
-        rowsInline.add(rowEmpty);
-        
-        addRefreshButtonToKeyboard(rowsInline);
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        row.add(createInlineKeyboardButton(
+				buttons.getRefreshDeviceListButton(),
+				Action.callback(ACTION_TYPE_VIEW_DEVICE_LIST))
+			);
+        rowsInline.add(row);
         
         markup.setKeyboard(rowsInline);
         return markup;
     }
-
-	public InlineKeyboardMarkup getDevicesListInlineKeyboard( List<Device> devices) {
+	
+	public InlineKeyboardMarkup getDevicesOfServerInlineKeyboard(List<Device> devices) {
 		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		
-		addRefreshButtonToKeyboard(rowsInline);
-		
 		for (Device device : devices) {
-			List<InlineKeyboardButton> row = new ArrayList<>();
+    			
+	    	List<InlineKeyboardButton> row = new ArrayList<>();
 			row.add(createInlineKeyboardButton(
-						buttons.getDeviceButton(device.getDeviceDescr()),
-						buildCallbackData(DEVICE_PREFFIX, device.getDeviceId()))
-			        );
+						buttons.getDeviceButton(device.getDescription()),
+						Action.callback(ACTION_TYPE_VIEW_GROUPS_OF_DEVICE,"", device.getDeviceId()))
+					);
 			
 			rowsInline.add(row);
 		}
-
+		
 		markup.setKeyboard(rowsInline);
 
 		return markup;
 	}
-	
+
 	public InlineKeyboardMarkup getGroupsOfDeviceInlineKeyboard(Device device) {
 		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
@@ -109,33 +85,55 @@ public class InlineKeyboardBuilder {
 		    	List<InlineKeyboardButton> row = new ArrayList<>();
     			row.add(createInlineKeyboardButton(
 							buttons.getGroupButton(group.getName()),
-							buildCallbackData(DEVICE_GROUP_PREFFIX, device.getDeviceId(), group.getName()))
+							Action.callback(ACTION_TYPE_VIEW_ENTITIES_OF_GROUP,"", device.getDeviceId(), group.getName()))
     					);
     			
     			rowsInline.add(row);
 		    }
 		}
 		
-		addRefreshButtonToKeyboard(rowsInline);
-
 		markup.setKeyboard(rowsInline);
 
 		return markup;
 	}
 	
-	public InlineKeyboardMarkup getGroupViewInlineKeyboard(Device device, Group group) {
+	public InlineKeyboardMarkup getEntitiesOfGroupInlineKeyboard(Device device, Group group) {
 		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		
+		String callback = Action.callback(ACTION_TYPE_VIEW_GROUPS_OF_DEVICE,"", device.getDeviceId(), group.getName()); 
 		
 		List<InlineKeyboardButton> row = new ArrayList<>();
 		row.add(createInlineKeyboardButton(
 					buttons.getDeviceButton(device.getDeviceDescr()),
-					buildCallbackData(GROUP_PREFFIX, device.getDeviceId(), group.getName()))
+					callback
+					)
 		        );
 		
 		rowsInline.add(row);
 		
-		addRefreshButtonToKeyboard(rowsInline);
+		markup.setKeyboard(rowsInline);
+
+		return markup;
+	}
+	
+	public InlineKeyboardMarkup getToggleOnOffInlineKeyboard(String text, String onText, String offText, String actionOn, String actionOff) {
+		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		
+		List<InlineKeyboardButton> row = new ArrayList<>();
+		
+		row.add(createInlineKeyboardButton(
+				buttons.getButton(null, onText),
+				actionOn)
+		    );
+		
+		row.add(createInlineKeyboardButton(
+				buttons.getButton(null, offText),
+				actionOff)
+	        );	
+		
+		rowsInline.add(row);
 
 		markup.setKeyboard(rowsInline);
 

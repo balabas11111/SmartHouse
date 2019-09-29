@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.telegram.bot.handler;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -30,6 +32,10 @@ public abstract class BaseLogPollingBotHandler  extends TelegramLongPollingBot {
         authService.getAllowedUserIds().stream().forEach(
                 chatId -> sendMessage(messageBuilder.createHtmlMessage(chatId.longValue(), text)));
     }
+	
+	protected void sendMessages(List<SendMessage> msgs){
+		msgs.stream().forEach(this::sendMessage);
+	}
 	
 	protected void sendMessage(SendMessage msg){
 		try {
