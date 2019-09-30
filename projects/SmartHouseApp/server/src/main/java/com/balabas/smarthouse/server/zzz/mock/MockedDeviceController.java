@@ -24,7 +24,7 @@ import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.service.DeviceService;
 
 import lombok.extern.log4j.Log4j2;
-import static com.balabas.smarthouse.server.DeviceConstants.GROUP;
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_GROUP;
 
 @CrossOrigin(origins = {ControllerConstants.CROSS_ORIGIN_4200, ControllerConstants.CROSS_ORIGIN_80 })
 @RestController
@@ -63,14 +63,14 @@ public class MockedDeviceController {
 	@GetMapping("/getData_{deviceId}")
 	public ResponseEntity<String> executeGetData(
 			@PathVariable(value = "deviceId") String deviceId,
-			@RequestParam(value = GROUP, required = false) String group) throws ResourceNotFoundException {
+			@RequestParam(value = DEVICE_FIELD_GROUP, required = false) String group) throws ResourceNotFoundException {
 		JSONObject result = deviceService.executeGetData(deviceId, group);
 		return ResponseEntity.ok().body(result.toString());
 	}
 
 	@GetMapping("/getDataOnDevice_{deviceId}")
 	public ResponseEntity<String> executeGetDataOnDevice(@PathVariable(value = "deviceId") String deviceId,
-			@RequestParam(value = GROUP, required = false) String group) throws UnsupportedEncodingException, ResourceNotFoundException {
+			@RequestParam(value = DEVICE_FIELD_GROUP, required = false) String group) throws UnsupportedEncodingException, ResourceNotFoundException {
 
 		return ResponseEntity.ok().body(deviceService.executeGetData(deviceId, group).toString());
 	}
@@ -79,7 +79,7 @@ public class MockedDeviceController {
 	public ResponseEntity<String> executeMockGetDataOnDevice(
 			@PathVariable(value = "deviceId") String deviceId,
 			@RequestHeader HttpHeaders headers,
-			@RequestParam(value = GROUP, required = false) String devEntGroup) throws UnsupportedEncodingException {
+			@RequestParam(value = DEVICE_FIELD_GROUP, required = false) String devEntGroup) throws UnsupportedEncodingException {
 
 		String result = ((devEntGroup == null || devEntGroup.isEmpty())
 				? ServerValuesMockUtil.getSettingsSensors(deviceId) : ServerValuesMockUtil.getSensors(deviceId))
@@ -101,7 +101,7 @@ public class MockedDeviceController {
 			@PathVariable(value = "deviceId") String deviceId,
 			@RequestHeader HttpHeaders headers,
 			@RequestBody String body,
-			@RequestParam(value = GROUP, required = false) String devEntGroup) throws UnsupportedEncodingException {
+			@RequestParam(value = DEVICE_FIELD_GROUP, required = false) String devEntGroup) throws UnsupportedEncodingException {
 
 
 		log.info("POST Mock");

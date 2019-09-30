@@ -2,11 +2,10 @@ package com.balabas.smarthouse.telegram.bot.handler;
 
 import java.util.List;
 
-import javax.xml.transform.TransformerException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -49,6 +48,19 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 	
 	private void processMessage(Message message) {
 		String data = message.getText();
+		if("/input".equals(data)){
+			/*
+			EditMessageText editMarkup = new EditMessageText();
+			editMarkup.setChatId(callbackquery.getMessage().getChatId().toString());
+			editMarkup.setInlineMessageId(callbackquery.getInlineMessageId());
+			editMarkup.setText("[​](" + this.urls.get(index)[1] + ")");
+			editMarkup.enableMarkdown(true);
+			editMarkup.setMessageId(callbackquery.getMessage().getMessageId());
+			editMarkup.setReplyMarkup(markup);
+			*/
+		}
+		
+		
 		Action action = messageBuilder.getReplyKeyboard().getActionByReplyButton(data);
 
 		ReplyContext cont = ReplyContext.builder()
@@ -64,8 +76,17 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 
 	private void processCallback(CallbackQuery callback) {
 		Action action = Action.fromCallbackData(callback.getData());
-		
+		/*
+		EditMessageText editMarkup = new EditMessageText();
+		editMarkup.setChatId(callback.getMessage().getChatId().toString());
+		editMarkup.setInlineMessageId(callback.getInlineMessageId());
+		editMarkup.setText("[​](" + this.urls.get(index)[1] + ")");
+		editMarkup.enableMarkdown(true);
+		editMarkup.setMessageId(callback.getMessage().getMessageId());
+		editMarkup.setReplyMarkup(markup);
+		*/
 		ReplyContext cont = ReplyContext.builder()
+				//.replyToMessageId(callback.getMessage().getMessageId())
 				.replyToMessageIdIfUnknown(callback.getMessage().getMessageId())
 				.chatId(callback.getMessage().getChatId()).build();
 		
@@ -82,8 +103,6 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			switch (action.getAction()) {
 			case ACTION_TYPE_VIEW_DEVICE_LIST:
 				msgs.add(messageBuilder.createDevicesListInlineKeyboard(authService.getServerName(), context));
-				//messageBuilder.createDevicesListInlineKeyboard(authService.getServerName(), context);
-				//msgs.addAll(messageBuilder.createRefreshDevicesListReplyKeyboard(context));
 				break;
 			case ACTION_TYPE_VIEW_GROUPS_OF_DEVICE:
 				msgs.add(messageBuilder.createGroupsOfDeviceInlineKeyboard(action.getDeviceId(),context));
@@ -93,28 +112,35 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 						action.getGroupId(), context));
 				break;
 			case ACTION_TYPE_SEND_DATA_TO_DEVICE:
-					deviceService.processDeviceAction(action);
-					action.setActionRebuildData(ACTION_TYPE_VIEW_ENTITIES_OF_GROUP);
-					executeReplyAction(action, context);
-					break;
+				sendDataToDevice(action, context, msgs);
+				break;
 			default:
 				context.setText(null);
 				msgs.add(messageBuilder.createUnknown(context));
 			}
-		} catch (NullPointerException | TransformerException ex) {
+		} catch (Exception ex) {
 			log.error(ex);
-			msgs.add(messageBuilder.createError(null, context.getChatId()));
+			msgs.add(messageBuilder.createServerError(null, context.getChatId()));
 		}
 		
 		return msgs;
+	}
+	
+	private void sendDataToDevice(Action action, ReplyContext context, List<SendMessage> msgs){
+		try{
+			deviceService.processDeviceAction(action);
+		}catch(Throwable e){
+			msgs.add(messageBuilder.createDeviceError(null, context.getChatId()));
+		}
+			msgs.add(messageBuilder.createDeviceRefreshed(null, context.getChatId()));
+			msgs.addAll(messageBuilder.createGroupView(action.getDeviceId(), 
+					action.getGroupId(), context));
 	}
 
 	@AfterBotRegistration
 	public void sendServerStartedToAllUsers() {
 		authService.getAllowedUserIds().stream().forEach(chatId -> { 
 			sendMessages(messageBuilder.createServerStartedMessages(chatId.longValue(), authService.getServerName()));
-			//sendMessage(messageBuilder.createHideReplyKeyboardMessage(chatId.longValue(), null));
-			//sendMessage(messageBuilder.createRefreshDevicesListReplyKeyboard(chatId.longValue()));
 		});
 		
 	}
@@ -122,7 +148,6 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 	public void sendDeviceRegisteredToAllUsers(String deviceName) {
 		authService.getAllowedUserIds().stream().forEach(chatId -> {
 			sendMessages(messageBuilder.createDeviceRegisteredMessages(deviceName, chatId.longValue() ));
-			//sendMessages(messageBuilder.createRefreshDevicesListReplyKeyboard(chatId.longValue()));
 		});
 	}
 

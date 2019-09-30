@@ -6,7 +6,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import com.balabas.smarthouse.server.model.Entity;
 import com.balabas.smarthouse.server.model.EntityClass;
-import com.balabas.smarthouse.server.model.ModelConstants;
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.telegram.bot.message.Emoji;
 import com.balabas.smarthouse.telegram.bot.message.InlineKeyboardBuilder;
@@ -16,6 +15,7 @@ import lombok.Getter;
 
 import static com.balabas.smarthouse.server.util.ObjectUtil.getBooleanValue;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ON;
 
 @Component
 public class EntityRendererToggleButtons implements EntityRenderer<Entity> {
@@ -38,7 +38,7 @@ public class EntityRendererToggleButtons implements EntityRenderer<Entity> {
 
 	@Override
 	public SendMessage render(Entity item, Long chatId) {
-		Boolean on = getBooleanValue(item.getValue(ModelConstants.ENTITY_FIELD_ON));
+		Boolean on = getBooleanValue(item.getValue(ENTITY_FIELD_ON));
 		String text = String.format(TOOGLE_BUTTON_STR, 
 						Emoji.STAR, item.getDescription(),getTextByOnOffValue(on));
 		

@@ -18,7 +18,8 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_DEVICE_
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_GROUPS_OF_DEVICE;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
 
-import static com.balabas.smarthouse.telegram.bot.BotConstants.GROUP_DEVICE;
+import static com.balabas.smarthouse.server.DeviceConstants.GROUP_DEVICE;
+import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SENSORS;
 
 @Component
 public class InlineKeyboardBuilder {
@@ -64,7 +65,7 @@ public class InlineKeyboardBuilder {
 	    	List<InlineKeyboardButton> row = new ArrayList<>();
 			row.add(createInlineKeyboardButton(
 						buttons.getDeviceButton(device.getDescription()),
-						Action.callback(ACTION_TYPE_VIEW_GROUPS_OF_DEVICE,"", device.getDeviceId()))
+						Action.callback(ACTION_TYPE_VIEW_ENTITIES_OF_GROUP,"", device.getDeviceId(), GROUP_SENSORS))
 					);
 			
 			rowsInline.add(row);

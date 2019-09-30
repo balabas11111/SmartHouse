@@ -19,12 +19,12 @@ import com.balabas.smarthouse.server.events.ValuesChangeEvent;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.Entity;
 import com.balabas.smarthouse.server.model.Group;
-import com.balabas.smarthouse.server.model.ModelConstants;
 import com.balabas.smarthouse.server.model.NameAble;
 import com.balabas.smarthouse.server.model.SensorItem;
 import com.google.common.collect.Lists;
 
-import static com.balabas.smarthouse.server.model.ModelConstants.ENTITY_FIELD_SENSOR_ITEMS;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_ITEMS;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_DESCRIPTION;
 
 @Service
 public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
@@ -45,7 +45,7 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
             }
             
             for(String groupName: JSONObject.getNames(deviceJson)) {
-            	if(ModelConstants.ENTITY_FIELD_DESCRIPTION.equals(groupName)) {
+            	if(ENTITY_FIELD_DESCRIPTION.equals(groupName)) {
             		continue;
             	}
                 
@@ -60,8 +60,8 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
 
                     for(String entityName: JSONObject.getNames(group.getData())) {
                     	
-                    	if(ModelConstants.ENTITY_FIELD_DESCRIPTION.equals(entityName)) {
-                    		group.setDescription(group.getData().getString(ModelConstants.ENTITY_FIELD_DESCRIPTION));
+                    	if(ENTITY_FIELD_DESCRIPTION.equals(entityName)) {
+                    		group.setDescription(group.getData().getString(ENTITY_FIELD_DESCRIPTION));
                     		continue;
                     	}
                         

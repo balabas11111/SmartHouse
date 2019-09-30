@@ -40,6 +40,6 @@ public interface DeviceService {
 	
     void requestAllDevicesDataWithUpdateRequired();
 
-	void processDeviceAction(Action action);
+	void processDeviceAction(Action action) throws Throwable;
 
 }

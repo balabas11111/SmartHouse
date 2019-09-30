@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.service;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.balabas.smarthouse.server.HttpRequestUtil;
 import com.balabas.smarthouse.server.model.Device;
 
 import lombok.extern.log4j.Log4j2;
@@ -25,7 +25,7 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 	@Override
 	public ResponseEntity<String> executeGetRequest(String url, Map<String, String> params) throws UnsupportedEncodingException {
 		RestTemplate restTemplate = new RestTemplate();
-		String execUrl = url + HttpRequestUtil.getParamsString(params);
+		String execUrl = url + getParamsString(params);
 		
 		log.info("GET "+execUrl);
 		
@@ -35,7 +35,7 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 	@Override
 	public ResponseEntity<Device> executeGetRequestDevice(String url, Map<String, String> params) throws UnsupportedEncodingException {
 		RestTemplate restTemplate = new RestTemplate();
-		String execUrl = url + HttpRequestUtil.getParamsString(params);
+		String execUrl = url + getParamsString(params);
 		
 		log.info("GET "+execUrl);
 		
@@ -46,7 +46,7 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 	public ResponseEntity<List<Device>> executeGetRequestDeviceList(String url, Map<String, String> params)
 			throws UnsupportedEncodingException {
 		RestTemplate tmpl = new RestTemplate();
-		String execUrl = url + HttpRequestUtil.getParamsString(params);
+		String execUrl = url + getParamsString(params);
         
         return (tmpl.exchange(
         		execUrl,
@@ -61,7 +61,7 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 		HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.APPLICATION_JSON);
 	    
-		HttpEntity<String> request = new HttpEntity<String>(body, headers);
+		HttpEntity<String> request = new HttpEntity<>(body, headers);
 		return rest.postForEntity(url, request, String.class);
 	}
 	
@@ -69,7 +69,7 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 	public ResponseEntity<String> executePostRequest(String url, HttpHeaders headers, String body) {
 		RestTemplate rest = new RestTemplate();
 	    
-		HttpEntity<String> request = new HttpEntity<String>(body, headers);
+		HttpEntity<String> request = new HttpEntity<>(body, headers);
 		return rest.postForEntity(url, request, String.class);
 	}
 	
@@ -77,9 +77,27 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 	public ResponseEntity<String> executeGetRequest(String url, HttpHeaders headers, Map<String,String> params){
 		RestTemplate restTemplate = new RestTemplate();
 		
-		HttpEntity ent = new HttpEntity(headers);
+		HttpEntity<String> request = new HttpEntity<>(headers);
 		
-		return restTemplate.exchange(url, HttpMethod.GET, ent, String.class, params);
+		return restTemplate.exchange(url, HttpMethod.GET, request, String.class, params);
 		
+	}
+	
+	public static String getParamsString(Map<String, String> params) throws UnsupportedEncodingException {
+		StringBuilder result = new StringBuilder();
+
+		if (params != null && !params.isEmpty()) {
+			result.append("?");
+
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+				result.append("=");
+				result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+				result.append("&");
+			}
+		}
+
+		String resultString = result.toString();
+		return resultString.length() > 0 ? resultString.substring(0, resultString.length() - 1) : resultString;
 	}
 }

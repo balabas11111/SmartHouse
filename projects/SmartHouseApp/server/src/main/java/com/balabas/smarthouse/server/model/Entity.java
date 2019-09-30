@@ -12,7 +12,7 @@ import org.json.JSONObject;
 
 import com.balabas.smarthouse.server.events.ValueChanger;
 
-import static com.balabas.smarthouse.server.model.ModelConstants.ENTITY_FIELD_SENSOR_ITEMS;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_ITEMS;
 
 @Data
 @NoArgsConstructor

@@ -3,17 +3,17 @@ package com.balabas.smarthouse.server.zzz.mock;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_DEVICE;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SENSORS;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SETTINGS;
-import static com.balabas.smarthouse.server.DeviceConstants.TAG_DEVICE_ID;
 
-import static com.balabas.smarthouse.server.model.ModelConstants.ENTITY_FIELD_DESCRIPTION;
-import static com.balabas.smarthouse.server.model.ModelConstants.ENTITY_FIELD_ITEM_CLASS;
-import static com.balabas.smarthouse.server.model.ModelConstants.ENTITY_FIELD_ON;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_ID;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_FIRMWARE;
+
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_DESCRIPTION;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ITEM_CLASS;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ON;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static com.balabas.smarthouse.server.DeviceConstants.TAG_DEVICE_FIRMWARE;
 
 import org.json.JSONObject;
 
@@ -58,7 +58,7 @@ public class ServerValuesMockUtil {
 	}
 
 	private static JSONObject getDeviceJson(String deviceId) {
-		return new JSONObject().put(TAG_DEVICE_ID, deviceId).put(TAG_DEVICE_FIRMWARE, FIRMWARE1);
+		return new JSONObject().put(ENTITY_DEVICE_DEVICE_ID, deviceId).put(ENTITY_DEVICE_DEVICE_FIRMWARE, FIRMWARE1);
 	}
 
 	private static JSONObject getSensorsJson() {

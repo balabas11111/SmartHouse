@@ -1,6 +1,6 @@
 package com.balabas.smarthouse.server.controller.service;
 
-import static com.balabas.smarthouse.server.DeviceConstants.GROUP;
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_GROUP;
 
 import java.util.Collections;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 		if (device != null) {
 			if (device.getDataUrl() != null) {
 				Map<String, String> params = (deviceEntityGroup != null && !deviceEntityGroup.isEmpty())
-						? Collections.singletonMap(GROUP, deviceEntityGroup)
+						? Collections.singletonMap(DEVICE_FIELD_GROUP, deviceEntityGroup)
 						: Collections.emptyMap();
 
 				String serverKey = securityService.getServerKey(device.getDeviceId());		

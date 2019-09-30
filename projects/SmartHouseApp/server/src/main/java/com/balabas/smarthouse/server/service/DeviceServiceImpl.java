@@ -94,13 +94,14 @@ public class DeviceServiceImpl implements DeviceService {
 		        
 		        result.setResult(DeviceRegistrationStatus.ALREADY_REGISTERED);
 		    }else{
-		        addDeviceTo(device);
-		        result.setResult(DeviceRegistrationStatus.SUCCESS);
+		    		log.debug("Device added :" + device.toString());
+		    		devices.add(device);
+		    		result.setResult(DeviceRegistrationStatus.SUCCESS);
 		    }
 		    device.setState(DeviceState.REGISTERED);
 		}
 
-		log.info(device.getDeviceId()+ " REGISTERED " + device.toString() + " status = "
+		log.debug(device.getDeviceId()+ " REGISTERED " + device.toString() + " status = "
 				+ result.getResult().toString());
 
 		return result;
@@ -124,11 +125,6 @@ public class DeviceServiceImpl implements DeviceService {
 		return device != null;
 	}
 
-	private void addDeviceTo(Device device) {
-		log.info("Device added :" + device.toString());
-		devices.add(device);
-	}
-	
     @Override
     public void markDeviceAsWaitsForDataUpdate(DeviceRequest request) throws ResourceNotFoundException {
         Device device = getDevice(request.getDeviceId());
@@ -200,7 +196,6 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public void requestDevicesValues(Device device, Group group) {
         try {
-        	//String deviceId = device.getDeviceId();
             String groupId = group!=null?group.getName():null;
             
             String result = deviceRequestor.executeGetDataOnDevice(device, groupId);
@@ -211,16 +206,11 @@ public class DeviceServiceImpl implements DeviceService {
     }
     
     @Override
-    public void processDeviceAction(Action action) {
-    	log.info("Action received :"+action.getCallbackData());
+    public void processDeviceAction(Action action)  throws Throwable{
+    	log.debug("Action received :"+action.getCallbackData());
     	Map<String,Object> params = (new JSONObject(action.getData())).toMap(); 
     	
-    	try {
-			sendDataToDevice(action.getDeviceId(), action.getGroupId(), action.getEntityId(), params);
-		} catch (ResourceNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		sendDataToDevice(action.getDeviceId(), action.getGroupId(), action.getEntityId(), params);
     }
 
 	@Override
