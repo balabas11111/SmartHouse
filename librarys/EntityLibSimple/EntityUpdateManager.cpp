@@ -38,9 +38,11 @@ int EntityUpdateManager::init(int interval) {
 	int intervalCounts = 0;
 	uint32_t intervals[this->entities.size()];
 
+	unsigned long time = millis();
+
 	for (EntityUpdate* entity:this->entities) {
 		if (entity->getInterval() == SETTINGS_BOX_INTERVAL) {
-			entity->init(interval);
+			entity->init(interval, time);
 			totalCount++;
 		}
 
@@ -87,10 +89,11 @@ int EntityUpdateManager::init(int interval) {
 void EntityUpdateManager::updateEntities(bool force) {
 	//Serial.println(FPSTR("EntityUpdateManager loop"));
 	bool updated = false;
+	unsigned long time = millis();
 
 	for (EntityUpdate* entity : this->entities) {
 			entity->loop();
-			updated = entity->update(force) || updated;
+			updated = entity->update(time, force) || updated;
 	}
 
 	if(updated){

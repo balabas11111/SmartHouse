@@ -18,18 +18,18 @@ public:
 	EntityUpdate(){};
 	virtual ~EntityUpdate(){};
 
-	void init(long interv);
+	void init(long interv,unsigned long initTime);
 
 	virtual void loop(){}
 
-	virtual bool update(bool force = false) final;
+	virtual bool update(unsigned long time,bool force = false) final;
 	virtual void doUpdate() = 0;
 
 	long getInterval();
 	bool isAutoupdate();
 
 protected:
-	virtual bool shouldUpdate();
+	virtual bool shouldUpdate(unsigned long time);
 
 	long interval = SETTINGS_BOX_INTERVAL;
 	unsigned long lastUpdate = millis();

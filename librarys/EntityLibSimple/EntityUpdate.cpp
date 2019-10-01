@@ -7,25 +7,26 @@
 
 #include <EntityUpdate.h>
 
-void EntityUpdate::init(long interv){
+void EntityUpdate::init(long interv, unsigned long initTime){
 	this->interval = interv * 1000;
+	this->lastUpdate = initTime;
 	Serial.print(FPSTR("EntityUpdate interval="));
 	Serial.println(this->interval);
 }
 
-bool EntityUpdate::update(bool force){
+bool EntityUpdate::update(unsigned long time,bool force){
 	if(this->interval<1){
 		//Serial.println(FPSTR("No update    is expected interval<1"));
 		return false;
 	}
 
-	if((!force && !shouldUpdate())){
+	if((!force && !shouldUpdate(time))){
 		//Serial.println(FPSTR("No update    is expected"));
 		return false;
 	}
 
 	doUpdate();
-	this->lastUpdate = millis();
+	this->lastUpdate = time;
 	return true;
 }
 
@@ -38,8 +39,8 @@ bool EntityUpdate::isAutoupdate(){
 	return interval>0;
 }
 
-bool EntityUpdate::shouldUpdate(){
-	return (lastUpdate + interval < millis());
+bool EntityUpdate::shouldUpdate(unsigned long time){
+	return (lastUpdate + interval < time);
 }
 
 
