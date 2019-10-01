@@ -17,6 +17,7 @@ import com.balabas.smarthouse.server.exception.DeviceRequestValidateException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.security.repository.HashedValuesRepository;
 import com.balabas.smarthouse.server.security.repository.HashedValuesRepositoryImpl;
+import com.balabas.smarthouse.server.util.SecurityUtil;
 import com.google.common.hash.Hashing;
 
 import lombok.extern.log4j.Log4j2;
@@ -36,16 +37,12 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 	@Qualifier(HashedValuesRepositoryImpl.DISABLED_DEVICE_IDS_REPO)
 	private HashedValuesRepository disabledDeviceIds;
 	
-	@Autowired
-	@Qualifier(HashedValuesRepositoryImpl.DEVICE_TOKEN_REPO)
-	private HashedValuesRepository deviceTokenRepo;
-	
 	private Map<String, DeviceSecurityContext> secContext = new HashMap<>();
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.serverKeyHash = Hashing.sha1().hashString(serverKey, StandardCharsets.UTF_8).toString();
-		log.info("Key hashed =" + this.serverKeyHash);
+		log.debug("Key hashed =" + this.serverKeyHash);
 	}
 
 	
@@ -54,27 +51,29 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 
 		validateDeviceRequestBase(request);
 		
-		String deviceToken = request.getDeviceKey();
+		String tempDeviceKey = request.getDeviceKey();
 		
-		String serverToken = deviceTokenRepo.getSaltedValueHash(deviceToken);
+		String tempServerKey = SecurityUtil.generateTempServerKey(tempDeviceKey);
 		
-		String unhashedDeviceToken = deviceTokenRepo.split(serverKeyHash, serverToken, deviceToken);
-		String unhashedServerToken = serverToken+serverKey+request.getDeviceId();
+		String unhashedDeviceToken = 
+				SecurityUtil.split(serverKeyHash, tempServerKey, tempDeviceKey);
 		
-		String deviceHash = deviceTokenRepo.hashValue(unhashedDeviceToken);
-		String serverHash = deviceTokenRepo.hashValue(unhashedServerToken);
+		String unhashedServerToken = 
+				SecurityUtil.split(tempServerKey, serverKey, request.getDeviceId());
 		
-		deviceTokenRepo.removeValue(unhashedDeviceToken);
-		deviceTokenRepo.removeValue(unhashedServerToken);
+		String deviceHash = SecurityUtil.getHashed(unhashedDeviceToken);
+		String serverHash = SecurityUtil.getHashed(unhashedServerToken);
+		
 		
 		log.info("---------------Security service--------------");
-		log.info("serverToken = "+ serverToken);
+		log.info("tempDeviceKey = "+ tempDeviceKey);
+		log.info("tempServerKey = "+ tempServerKey);
 		log.info("deviceHash = "+ deviceHash);
 		log.info("serverHash = "+ serverHash);
 		
 		secContext.put(request.getDeviceId(), new DeviceSecurityContext(serverHash, deviceHash));
 		
-		return serverToken;
+		return tempServerKey;
 	}
 
 	@Override
