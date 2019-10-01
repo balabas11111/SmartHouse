@@ -21,19 +21,19 @@ public class DeviceRequestResult<T> {
 	private T body;
 	
 	public static DeviceRequestResult<String> from(HttpStatus status){
-		return new DeviceRequestResult<String>(status, new HttpHeaders() , status.name());
+		return new DeviceRequestResult<>(status, new HttpHeaders() , status.name());
 	}
 	
 	public static DeviceRequestResult<String> from (HttpStatus status, HttpHeaders headers){
-		return new DeviceRequestResult<String>(status, headers , "");
+		return new DeviceRequestResult<>(status, headers , "");
 	}
 	
 	public static <T> DeviceRequestResult<T> from (HttpStatus status, T body){
-		return new DeviceRequestResult<T>(status, new HttpHeaders() , body);
+		return new DeviceRequestResult<>(status, new HttpHeaders() , body);
 	}
 	
 	public static <T> DeviceRequestResult<T> from (HttpStatus status, HttpHeaders headers, T body){
-		return new DeviceRequestResult<T>(status, headers , body);
+		return new DeviceRequestResult<>(status, headers , body);
 	}
 	
 	public ResponseEntity<T> toResponseEntity(){

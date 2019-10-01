@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +27,11 @@ import com.balabas.smarthouse.server.service.events.EventProcessorsService;
 import com.balabas.smarthouse.server.view.Action;
 
 import lombok.extern.log4j.Log4j2;
+
+
+import static com.balabas.smarthouse.server.DeviceConstants.HTTP_PREFFIX;
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_URL_ROOT;
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_URL_DATA;
 
 @Log4j2
 @Service
@@ -56,6 +62,10 @@ public class DeviceServiceImpl implements DeviceService {
 	public List<Device> getDevices() {
 		return this.devices;
 	}
+	@Override
+	public List<Device> getDevicesInitialized(){
+		return this.devices.stream().filter(Device::isInitialDataReceived).collect(Collectors.toList());
+	}
 
 	@Override
 	public Optional<Device> getDeviceByDeviceId(String deviceId) {
@@ -72,9 +82,23 @@ public class DeviceServiceImpl implements DeviceService {
 
 
     @Override
-    public DeviceRegistrationResult registerDevice(
-    		DeviceRequest request) {
-        Device device = Device.from(request, this.deviceUpdateInterval);
+    public DeviceRegistrationResult registerDevice(DeviceRequest request) {
+    	Device device = new Device(request.getDeviceId(), this.deviceUpdateInterval);
+	    
+	    device.setDeviceFirmware(request.getDeviceFirmware());
+	    device.setDeviceDescr(request.getDeviceDescr());
+	    
+	    device.setIp(request.getIp());
+	    
+	    String baseUrl = HTTP_PREFFIX + request.getIp();
+	    
+	    device.setDataUrl(baseUrl + DEVICE_URL_DATA);
+	    device.setRootUrl(baseUrl + DEVICE_URL_ROOT);
+	    device.setState(DeviceState.CONSTRUCTED);
+	    
+	    device.setDeviceKey(request.getDeviceKey());
+	    
+	    device.getTimer().setWaitsForDataUpdate(true);
         return registerDevice(device);
     }
 	

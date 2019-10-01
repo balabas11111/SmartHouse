@@ -11,7 +11,7 @@
 //#include <EntityManager.h>
 #include <EntityUpdateManager.h>
 #include <WiFi/WiFiSettingsBox.h>
-#include <WiFi/SmartHouseServerHelper.h>
+#include <server/SecurityManager.h>
 #include <WiFi/WiFiManager.h>
 #include <WiFi/WiFiServerManager.h>
 #include <Notifiers/Notifier.h>
@@ -28,7 +28,7 @@ public:
 	virtual WiFiManager* getWiFiManager() = 0;
 
 	virtual WiFiSettingsBox* getConf() = 0;
-	virtual SmartHouseServerHelper* getSmartHouseServerHelper() = 0;
+	virtual SecurityManager* getSecurityManager() = 0;
 
 	virtual void notify(char* group = nullptr, char* name = nullptr, char* param = nullptr, NotificationTarget* notifTarget = nullptr) = 0;
 

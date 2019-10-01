@@ -24,11 +24,14 @@ void SecurityManager::triggerDataChanged(bool trigger) {
 }
 
 void SecurityManager::init(){
+	if(strcmp(conf->smartServerAddr(), "")==0){
+		Serial.println(FPSTR("SecurityManager DISABLED"));
+		return;
+	}
 	if(!this->initComplete){
+		Serial.println(FPSTR("SecurityManager init"));
 		generateServerUrls();
 		generateTempDeviceKey();
-
-		Serial.println(FPSTR("SecurityManager init"));
 		Serial.print(FPSTR("tempDeviceKey="));
 		Serial.println(tempDeviceKey);
 		Serial.print(FPSTR("urlPing="));
@@ -48,7 +51,7 @@ void SecurityManager::generateTempDeviceKey() {
 		tmp += ESP.getCoreVersion();
 		tmp += random(1, 10000);
 
-		this->tempDeviceKey = sha1(tmp);
+		this->tempDeviceKey = strdup(sha1(tmp).c_str());
 
 		this->serverKeyHash = sha1(conf->smartServerKey());
 }
@@ -69,18 +72,19 @@ void SecurityManager::generateServerUrls() {
 }
 
 void SecurityManager::generateDeviceAuthorization(String& tempServerKey) {
+	Serial.print(FPSTR("generate deviceAuthorization="));
 	String tmp = serverKeyHash + tempServerKey + tempDeviceKey;
 	this->deviceAuthorization = strdup(sha1(tmp).c_str());
+	Serial.print(deviceAuthorization);
+	Serial.println(FPSTR("...done"));
 }
 
 void SecurityManager::generateServerAuthorization(String& tempServerKey) {
+	Serial.print(FPSTR("generate deviceAuthorization="));
 	String tmp = tempServerKey + conf->smartServerKey() + conf->deviceId();
-	this->serverAuthorization = strdup(sha1(tmp).c_str());
-}
-
-bool SecurityManager::validateServerAuthorization(
-		String& serverAuthorization) {
-	return serverAuthorization = this->serverAuthorization;
+	conf->setServerAuthorization(sha1(tmp));
+	Serial.print(conf->getServerAuthorization());
+	Serial.println(FPSTR("...done"));
 }
 
 void SecurityManager::sendPingRequest() {
@@ -107,6 +111,40 @@ void SecurityManager::sendPingRequest() {
 }
 
 void SecurityManager::sendRegisterRequest() {
+	this->runsRegisterRequest = true;
+	EntityJsonRequestResponse* req = new EntityJsonRequestResponse();
+
+	JsonObject& request = req->getRequest();
+
+	JsonObjectUtil::setField(request, _DEVICE_ID, this->conf->deviceId());
+	JsonObjectUtil::setField(request, _DEVICE_FIRMWARE, this->conf->deviceFirmWare());
+	JsonObjectUtil::setField(request, _DEVICE_DESCR, this->conf->deviceDescr());
+
+	String paramsStr;
+	request.printTo(paramsStr);
+
+	String resultStr;
+
+	HTTPClient http;
+
+	http.begin(urlRegister);
+
+	http.setAuthorization(tempDeviceKey);
+
+	int httpCode = http.POST(paramsStr);
+
+	if(httpCode == 200){
+		String tempServerKey = http.getString();
+		this->generateDeviceAuthorization(tempServerKey);
+		this->generateServerAuthorization(tempServerKey);
+		this->deviceRegistered = true;
+		this->triggeredServerRegister = false;
+	}else{
+		setRequestPostPoned(20000);
+	}
+
+
+	this->runsRegisterRequest = false;
 }
 
 void SecurityManager::sendDataChangedRequest() {
@@ -120,6 +158,20 @@ void SecurityManager::sendDataChangedRequest() {
 	int httpCode = http.GET();
 
 	http.end();
+
+	if(httpCode==200){
+
+	}else if(httpCode==403){
+		setRequestPostPoned(10000);
+		this->deviceRegistered = false;
+		this->triggeredServerRegister = true;
+	}else{
+		setRequestPostPoned(10000);
+	}
+
+	this->triggeredServerPing = false;
+
+	this->runsDataChangeRequest = false;
 }
 
 void SecurityManager::loop(){
@@ -135,11 +187,6 @@ void SecurityManager::loop(){
 	}
 	if(triggeredDataChange && !runsDataChangeRequest && isRequestEnabled() && isRegistered()){
 		sendDataChangedRequest();
-	}
-	if(requestPostPoned){
-		if(millis()>nextReqTime){
-			requestPostPoned = false;
-		}
 	}
 	checkRequestPostPonedTime();
 }
@@ -164,7 +211,7 @@ void SecurityManager::sendDataChangedPostMethod(JsonObject& data) {
 }
 
 bool SecurityManager::isRequestEnabled(){
-	return !requestPostPoned && initComplete && isConnected();
+	return initComplete && isConnected() && !requestPostPoned;
 }
 
 bool SecurityManager::isConnected() {

@@ -59,6 +59,9 @@
 #define JSON "json"
 #define BODY "body"
 
+
+//default headers
+#define AUTHORIZATION "Authorization"
 //content types
 const PROGMEM char CONTENT_TYPE_TEXT_HTML[] = "text/html";
 const PROGMEM char CONTENT_TYPE_JSON[] = "application/json";
@@ -88,6 +91,9 @@ const PROGMEM char AUTH_REALM_ADMIN_MESSAGE[] = "Enter Admin login/password for:
 const PROGMEM char AUTH_REALM_USER_MESSAGE[] = "Enter User login/password for: ";
 // the Content of the HTML response in case of Unautherized Access Default:empty
 const PROGMEM char AUTH_FAILED_MESSAGE[] = "<html>403. Authentication Failed</html>";
+
+
+
 
 class NetConstants {
 };

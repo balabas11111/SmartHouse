@@ -23,6 +23,11 @@ import com.balabas.smarthouse.server.model.NameAble;
 import com.balabas.smarthouse.server.model.SensorItem;
 import com.google.common.collect.Lists;
 
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_DEVICE;
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_DEVICE_INFO;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_FIRMWARE;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_DESCRIPTION;
+
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_ITEMS;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_DESCRIPTION;
 
@@ -40,6 +45,8 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
         
         if (!deviceJson.isEmpty()) {
 
+        	processDeviceInfo(device);
+        	
             if(!device.isInitialDataReceived()){
                 events.add(new DeviceChangedEvent(device, DeviceEventType.ADDED));
             }
@@ -115,6 +122,25 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
         
         
         return events;
+    }
+    
+    private void processDeviceInfo(Device device){
+    	JSONObject deviceJson = device.getData();
+    	
+    	if(deviceJson.has(DEVICE_FIELD_DEVICE)){
+    		JSONObject info = deviceJson.getJSONObject(DEVICE_FIELD_DEVICE).getJSONObject(DEVICE_FIELD_DEVICE_INFO);
+    		
+    		String deviceDescr = info.optString(ENTITY_DEVICE_DEVICE_DESCRIPTION);
+    		String deviceFirmware = info.optString(ENTITY_DEVICE_DEVICE_FIRMWARE);
+    		
+    		if(!deviceDescr.isEmpty() && !deviceDescr.equals(device.getDescription())){
+    			device.setDeviceDescr(deviceDescr);
+    		}
+    		if(!deviceFirmware.isEmpty() && !deviceFirmware.equals(device.getDeviceFirmware())){
+    			device.setDeviceFirmware(deviceFirmware);
+    		}
+    		
+    	}
     }
     
     private Entity getEntityOrCreateNew(boolean devInitFlag, Group group, String entityName, List<ChangedEvent<?>> events) {

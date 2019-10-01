@@ -118,9 +118,8 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 		validateDeviceRequestBase(request);
 		validateDeviceRequestBaseSecurity(request);
 		
-		if(Strings.isEmpty(request.getDataUrl())
-				|| Strings.isEmpty(request.getRootUrl())
-				|| Strings.isEmpty(request.getDeviceFirmware())) {
+		if(Strings.isEmpty(request.getDeviceFirmware())
+				|| Strings.isEmpty(request.getDeviceDescr())) {
 			throw new DeviceRequestValidateException(HttpStatus.BAD_REQUEST);
 		}
 		
@@ -150,7 +149,7 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 				throw new DeviceRequestValidateException(HttpStatus.UNAUTHORIZED);
 			}
 			
-			if(!authHeaders.stream().anyMatch(h->devKeyExpected.equals(h))) {
+			if(authHeaders.stream().noneMatch(h->(devKeyExpected.equals(h) || devKeyExpected.equals(h.substring(h.lastIndexOf("Basic ") + 1))) )) {
 				throw new DeviceRequestValidateException(HttpStatus.UNAUTHORIZED);
 			}
 		}

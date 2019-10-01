@@ -2,7 +2,13 @@ package com.balabas.smarthouse.server;
 
 public class DeviceConstants {
 
-	//Reserved device request params
+	public static final String HTTP_PREFFIX  = "http://";
+	public static final String DEVICE_URL_ROOT = "/";
+	public static final String DEVICE_URL_DATA = "/data/";
+	//Ddevice info params
+	public static final String DEVICE_FIELD_DEVICE = "device";
+	public static final String DEVICE_FIELD_DEVICE_INFO = "info";
+	
 	public static final String DEVICE_FIELD_GROUP = "group";
 	public static final String DEVICE_FIELD_ENTITY_NAME = "name";
 	
@@ -24,6 +30,7 @@ public class DeviceConstants {
 	//Group device reserved field names
 	public static final String ENTITY_DEVICE_DEVICE_ID = "deviceId";
 	public static final String ENTITY_DEVICE_DEVICE_FIRMWARE = "deviceFirmware";
+	public static final String ENTITY_DEVICE_DEVICE_DESCRIPTION = "deviceDescr";
 	
 	//URL properties
 	public static final String DEVICE_ID  = "deviceId";

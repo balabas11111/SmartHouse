@@ -32,8 +32,9 @@ void setup() {
 	app.initWithWiFi();
 	app.setOnEntitiesChanged(onEntitiesChanged);
 
+	app.triggerRegisterOnServer();
 	//app.registerTicker(1000,changeLed);
-	app.registerTicker(30000, executeHttp);
+	//app.registerTicker(30000, executeHttp);
 	//app.registerTicker(20000, updateEntities);
 
 	app.updateEntities(true);
@@ -47,7 +48,6 @@ void loop() {
 
 void executeHttp(){
 	//app.getSmartHouseServerHelper()->triggerOnServerGet();
-	app.getSmartHouseServerHelper()->triggerOnServerRegister();
 }
 
 void updateEntities(){

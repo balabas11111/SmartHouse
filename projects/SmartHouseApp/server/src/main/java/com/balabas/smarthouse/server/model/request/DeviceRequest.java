@@ -35,10 +35,6 @@ public class DeviceRequest {
 	
 	private String deviceKey;
 	
-	private String rootUrl;
-	
-	private String dataUrl;
-	
 	private String ip;
 	
 	private String data;

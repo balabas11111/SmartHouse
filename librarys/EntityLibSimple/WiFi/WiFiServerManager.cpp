@@ -188,12 +188,47 @@ const char* WiFiServerManager::getContentType(String& path) {
 	  return (CONTENT_TYPE_TEXT_PLAIN);
 }
 
+bool WiFiServerManager::authenticateRequest(const char* method){
+	bool result = true;
+
+	if(strcmp(method, REQUEST_GET)){
+		result = isAuthenticatedRequest(conf->userLogin(), conf->userPassword());
+	} else
+	if(strcmp(method, REQUEST_POST)==0){
+		if(server->hasHeader(AUTHORIZATION)){
+			result = server->header(AUTHORIZATION).equals(conf->getServerAuthorization());
+			if(!result){
+				Serial.print(FPSTR("Failed auth="));
+				Serial.print(server->header(AUTHORIZATION));
+				Serial.print(FPSTR("; exp="));
+				Serial.println(conf->getServerAuthorization());
+			}
+		}
+		if(!result){
+			result = isAuthenticatedRequest(conf->adminLogin(), conf->adminPassword());
+		}
+	}
+
+	return result;
+}
+
+bool WiFiServerManager::isAuthenticatedRequest(char* login, char* password){
+	if(strcmp(login,"")!=0 && strcmp(password,"")!=0){
+		return server->authenticate(login, password);
+	}
+	return true;
+}
+
 void WiFiServerManager::onEntityRequest(const char* method) {
 	Serial.print(FPSTR("------ER "));
 
+	if(!authenticateRequest(method)){
+		return server->requestAuthentication();
+	}
+
 	unsigned long start = millis();
 
-	EntityJsonRequestResponse * req = manager->createEntityJsonRequestResponse();
+	EntityJsonRequestResponse * req = new EntityJsonRequestResponse();
 	JsonObject& params = req->getRequest();
 
 	if(server->hasArg(BODY)){
@@ -209,7 +244,7 @@ void WiFiServerManager::onEntityRequest(const char* method) {
 	manager->executeMethod(req, method);
 
 	String response;
-	req->getResponseAsString(response);
+	delete req;
 
 	manager->deleteEntityJsonRequestResponse(req);
 

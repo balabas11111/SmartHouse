@@ -72,7 +72,8 @@ void EntityApplication::init(bool initSerial,
 		startServer();
 	}
 
-	this->smartHouseServerHelper = new SmartHouseServerHelper(this->entityManager);
+	this->securityManager = new SecurityManager(this->conf);
+	this->securityManager->init();
 	this->defaultDataSelector = new DataSelectorEntityManager(this->entityManager);
 	this->defaultNotifier = new Notifier("Default Notifier", nullptr, this->getDataSelector());
 
@@ -99,11 +100,11 @@ void EntityApplication::loop() {
 	this->entityUpdateManager->loop();
 
 	if(this->entityManager->processChangedEntities()){
-		this->smartHouseServerHelper->triggerOnServerDeviceChanged(true);
+		this->securityManager->triggerDataChanged();
 	}
 
 	this->wifiServerManager->loop();
-	this->smartHouseServerHelper->loop();
+	this->securityManager->loop();
 }
 
 void EntityApplication::startWiFi(){
@@ -174,10 +175,14 @@ WiFiServerManager* EntityApplication::getWifiServerManager() {
 	return this->wifiServerManager;
 }
 
-SmartHouseServerHelper* EntityApplication::getSmartHouseServerHelper() {
-	return this->smartHouseServerHelper;
+SecurityManager* EntityApplication::getSecurityManager() {
+	return this->securityManager;
 }
 
 DataSelector* EntityApplication::getDataSelector() {
 	return this->defaultDataSelector;
+}
+
+void EntityApplication::triggerRegisterOnServer(bool trigger) {
+	this->getSecurityManager()->triggerRegisterOnServer(trigger);
 }

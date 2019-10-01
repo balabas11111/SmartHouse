@@ -50,6 +50,10 @@ protected:
 
 	void onEntityRequest(const char* method);
 
+	bool authenticateRequest(const char* method);
+
+	bool isAuthenticatedRequest(char* login, char* password);
+
 private:
 	ESP8266WebServer* server;
 	EntityManager* manager;

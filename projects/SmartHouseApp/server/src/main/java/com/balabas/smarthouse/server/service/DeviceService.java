@@ -16,6 +16,8 @@ import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult;
 public interface DeviceService {
 	
 	List<Device> getDevices();
+	
+	List<Device> getDevicesInitialized();
 
 	Optional<Device> getDeviceByDeviceId(String deviceId);
 	

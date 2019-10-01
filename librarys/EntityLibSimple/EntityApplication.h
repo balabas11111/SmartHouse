@@ -14,7 +14,7 @@
 
 #include <WiFi/WiFiManager.h>
 #include <WiFi/WiFiServerManager.h>
-#include <WiFi/SmartHouseServerHelper.h>
+#include <server/SecurityManager.h>
 
 #include <Entity.h>
 #include <EntityManager.h>
@@ -60,10 +60,12 @@ public:
 	EntityUpdateManager* getEntityUpdateManager();
 	WiFiManager* getWiFiManager();
 	WiFiServerManager* getWifiServerManager();
-	SmartHouseServerHelper* getSmartHouseServerHelper();
+	SecurityManager* getSecurityManager();
 
 	DataSelector* getDataSelector();
 	Notifier* getDefaultNotifier();
+
+	void triggerRegisterOnServer(bool trigger = true);
 
 	void registerTicker(void (*callback)(void));
 	void registerTicker(uint32_t milliseconds, void (*callback)(void));
@@ -81,7 +83,7 @@ private:
 	EntityManager* entityManager;
 	EntityUpdateManager* entityUpdateManager;
 
-	SmartHouseServerHelper* smartHouseServerHelper = nullptr;
+	SecurityManager* securityManager = nullptr;
 
 	DataSelector* defaultDataSelector = nullptr;
 	Notifier* defaultNotifier = nullptr;

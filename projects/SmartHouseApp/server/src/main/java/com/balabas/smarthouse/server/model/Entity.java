@@ -39,7 +39,7 @@ public class Entity extends ValueContainer  {
     }
     
     public boolean hasSensorItems(){
-        return sensorItems!=null && sensorItems.size()>0;
+        return sensorItems!=null && !sensorItems.isEmpty();
     }
     
     private void checkToCreateSensorItems(JSONObject data){

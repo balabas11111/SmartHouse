@@ -21,7 +21,7 @@
 #include "ESP8266HTTPClient.h"
 #include "WiFi/WiFiSettingsBox.h"
 #include "WiFi/NetConstants.h"
-
+#include "EntityJsonRequestResponse.h"
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
@@ -36,7 +36,6 @@ public:
 	void triggerRegisterOnServer(bool trigger = true);
 
 	void triggerDataChanged(bool trigger = true);
-	bool validateServerAuthorization(String& serverAuthorization);
 
 	void sendDataChangedPostMethod(JsonObject& data);
 
@@ -77,11 +76,10 @@ private:
 	bool runsRegisterRequest = false;
 	bool runsDataChangeRequest = false;
 
-	String tempDeviceKey;
 	String serverKeyHash;
 
-	const char* deviceAuthorization;
-	const char* serverAuthorization;
+	char* tempDeviceKey = (char*)"";
+	char* deviceAuthorization = (char*)"";
 
 	String urlPing;
 	String urlRegister;

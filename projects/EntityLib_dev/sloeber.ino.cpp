@@ -2,11 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-<<<<<<< HEAD
-//This file has been generated on 2019-09-26 23:33:38
-=======
-//This file has been generated on 2019-09-25 15:26:45
->>>>>>> 22d90edbfdbe16cc1f75115c355268743bca4e3c
+//This file has been generated on 2019-10-01 20:12:40
 
 #include "Arduino.h"
 #include "Arduino.h"

@@ -10,6 +10,7 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_DESCRIPTION;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ITEM_CLASS;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ON;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_ITEMS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +45,8 @@ public class ServerValuesMockUtil {
 			.deviceDescr("Mocked device Description" + i)
 			//.serverKey(HashUtil.getSha1("SomeServerKey"))
 			.deviceKey("deviceKey" + i)
-			.rootUrl("rootUrl")
-			.dataUrl("http://localhost:80/api/v1/devices/mock_deviceId" + i).build();
+//			.dataUrl("http://localhost:80/api/v1/devices/mock_deviceId" + i)
+			.build();
 	}
 
 	public static JSONObject getSettingsSensors(String deviceId) {
@@ -74,7 +75,22 @@ public class ServerValuesMockUtil {
 				.put("DefaultRele", new JSONObject()
 						.put(ENTITY_FIELD_DESCRIPTION, "Default relea pin")
 						.put(ENTITY_FIELD_ITEM_CLASS, EntityClass.TOGGLE_BUTTON.getItemClass())
-						.put(ENTITY_FIELD_ON, getRandomBool())
+						.put(ENTITY_FIELD_ON, getRandomBool())						)
+				.put("ds18d20", new JSONObject()
+						.put(ENTITY_FIELD_DESCRIPTION, "Temperature DallasTemperature")
+						.put("c", 3)
+						.put(ENTITY_FIELD_SENSOR_ITEMS, new JSONObject()
+								.put("00000000", new JSONObject()
+													.put(ENTITY_FIELD_DESCRIPTION, "00000000")
+													.put("t", getRandom(20, 30)))
+								.put("00000001", new JSONObject()
+													.put(ENTITY_FIELD_DESCRIPTION, "00000001")
+													.put("t", getRandom(20, 30)))
+								.put("00000002", new JSONObject()
+													.put(ENTITY_FIELD_DESCRIPTION, "00000002")
+													.put("t", getRandom(20, 30)))
+								
+							)
 						);
 		
 	}

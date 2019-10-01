@@ -59,7 +59,7 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(HttpHeaders.AUTHORIZATION, token);
 			
-			return DeviceRequestResult.from(HttpStatus.OK, headers);
+			return DeviceRequestResult.from(HttpStatus.OK, token);
 			
 		} catch (DeviceRequestValidateException e) {
 			return DeviceRequestResult.from(e.getStatus());

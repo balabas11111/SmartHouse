@@ -203,17 +203,17 @@ public:
 		return  (new IPAddress())->fromString(this->_dns2);
 	}
 
-	const char* userLogin() {
+	char* userLogin() {
 		return this->_userLogin;
 	}
-	const char* userPassword() {
+	char* userPassword() {
 		return this->_userPassword;
 	}
 
-	const char* adminLogin() {
+	char* adminLogin() {
 		return this->_adminLogin;
 	}
-	const char* adminPassword() {
+	char* adminPassword() {
 		return this->_adminPassword;
 	}
 
@@ -262,9 +262,19 @@ public:
 	}
 
 	void addDeviceInfoToJson(JsonObject& json){
-		JsonObjectUtil::setField(json, _DEVICE_ID, deviceId());
-		JsonObjectUtil::setField(json, _DEVICE_FIRMWARE, deviceFirmWare());
-		JsonObjectUtil::setField(json, _DEVICE_DESCR, deviceDescr());
+		JsonObject& info = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(json,
+												_DEVICE, _INFO);
+		JsonObjectUtil::setField(info, _DEVICE_ID, deviceId());
+		JsonObjectUtil::setField(info, _DEVICE_FIRMWARE, deviceFirmWare());
+		JsonObjectUtil::setField(info, _DEVICE_DESCR, deviceDescr());
+	}
+
+	const String& getServerAuthorization() const {
+		return serverAuthorization;
+	}
+
+	void setServerAuthorization(const String& serverAuthorization) {
+		this->serverAuthorization = serverAuthorization;
 	}
 
 protected:
@@ -282,14 +292,14 @@ protected:
 	uint8_t _apH = 0;
 	uint8_t _apMC = 4;
 
-	char* _ip = "192,168,0,120";
-	char* _ipAP = "192,168,0,4";
-	char* _gateway = "192,168,0,1";
-	char* _subnet = "255,255,255,0";
-	char* _dns = "192,168,0,1";
-	char* _dns2 = "192,168,0,1";
-	char* _smrtServAddr = "192.168.0.103";
-	char* _smrtServKey = "SomeServerKey";
+	char* _ip = (char*)"192,168,0,120";
+	char* _ipAP = (char*)"192,168,0,4";
+	char* _gateway = (char*)"192,168,0,1";
+	char* _subnet = (char*)"255,255,255,0";
+	char* _dns = (char*)"192,168,0,1";
+	char* _dns2 = (char*)"192,168,0,1";
+	char* _smrtServAddr = (char*)"192.168.0.103";
+	char* _smrtServKey = (char*)"SomeServerKey";
 
 	char* _userLogin = (char*)"";
 	char* _userPassword = (char*)"";
@@ -298,6 +308,9 @@ protected:
 	uint16_t _interval = 60;
 
 	char* currentIp;
+
+	//Device current security information
+	String serverAuthorization;
 
 	bool jsonToItems(JsonObject& json){
 		bool chg = false;

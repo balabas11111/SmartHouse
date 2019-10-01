@@ -107,10 +107,11 @@ void EntityManager::executeMethod(JsonObject& params, JsonObject& response,
 	Serial.print(FPSTR(" "));
 
 	JsonObjectUtil::printWithPreffix(PARAMETERS, params);
-*/
+
 	JsonObject& json = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
 										_DEVICE, _INFO);
-	this->getConf()->addDeviceInfoToJson(json);
+										*/
+	this->getConf()->addDeviceInfoToJson(response);
 
 	bool changed = false;
 

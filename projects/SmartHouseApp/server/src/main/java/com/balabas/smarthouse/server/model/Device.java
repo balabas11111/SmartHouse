@@ -4,7 +4,6 @@ import java.util.Set;
 
 import org.json.JSONObject;
 
-import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -82,25 +81,6 @@ public class Device implements NameAble, JsonDataContainer {
 	    this.deviceKey = from.deviceKey;
 	    
 	    return this;
-	}
-	
-	public static Device from(DeviceRequest request, long updateInterval) {
-	    Device device = new Device(request.getDeviceId(), updateInterval);
-	    
-	    device.setDeviceFirmware(request.getDeviceFirmware());
-	    device.setDeviceDescr(request.getDeviceDescr());
-	    
-	    device.setIp(request.getIp());
-	    
-	    device.setDataUrl(request.getDataUrl());
-	    device.setRootUrl(request.getRootUrl());
-	    device.setState(DeviceState.CONSTRUCTED);
-	    
-	    device.setDeviceKey(request.getDeviceKey());
-	    
-	    device.getTimer().setWaitsForDataUpdate(true);
-	    
-	    return device;
 	}
 
     @Override
