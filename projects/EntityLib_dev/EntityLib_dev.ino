@@ -32,12 +32,12 @@ void setup() {
 	app.initWithWiFi();
 	app.setOnEntitiesChanged(onEntitiesChanged);
 
-	app.triggerRegisterOnServer();
 	//app.registerTicker(1000,changeLed);
 	//app.registerTicker(30000, executeHttp);
 	//app.registerTicker(20000, updateEntities);
 
 	app.updateEntities(true);
+	app.registerOnServer();
 }
 
 
@@ -53,7 +53,7 @@ void executeHttp(){
 void updateEntities(){
 	//app.getEntityManager()->print();
 	Serial.print(FPSTR("Update Entities"));
-	app.updateEntities(false);
+	//app.updateEntities(false);
 	/*
 	app.notify((char*)GROUP_SENSORS, nullptr, (char*) DATA);
 	app.getSmartHouseServerHelper()->triggerOnServerDeviceDataChanged();

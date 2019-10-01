@@ -273,7 +273,7 @@ public:
 		return serverAuthorization;
 	}
 
-	void setServerAuthorization(const String& serverAuthorization) {
+	void setServerAuthorization(String serverAuthorization) {
 		this->serverAuthorization = serverAuthorization;
 	}
 
@@ -305,7 +305,7 @@ protected:
 	char* _userPassword = (char*)"";
 	char* _adminLogin = (char*)"admin";
 	char* _adminPassword = (char*)"admin";
-	uint16_t _interval = 60;
+	uint16_t _interval = 20;
 
 	char* currentIp;
 

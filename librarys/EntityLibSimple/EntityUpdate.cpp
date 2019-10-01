@@ -9,6 +9,8 @@
 
 void EntityUpdate::init(long interv){
 	this->interval = interv * 1000;
+	Serial.print(FPSTR("EntityUpdate interval="));
+	Serial.println(this->interval);
 }
 
 bool EntityUpdate::update(bool force){

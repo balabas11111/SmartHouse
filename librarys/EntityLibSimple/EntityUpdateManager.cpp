@@ -94,7 +94,8 @@ void EntityUpdateManager::updateEntities(bool force) {
 	}
 
 	if(updated){
-		Serial.println(FPSTR("ENtities updated"));
+		Serial.print(FPSTR("ENtities updated force="));
+		Serial.println(force);
 	}
 /*
 	Serial.println(FPSTR("----------------------------------"));

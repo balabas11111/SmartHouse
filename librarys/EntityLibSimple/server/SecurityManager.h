@@ -9,8 +9,8 @@
 #define LIBRARIES_ENTITYLIBSIMPLE_SERVER_SECURITYMANAGER_H_
 
 #define SMART_HOUSE_SERVER_URL_BASE "/api/v1"
-#define SMART_HOUSE_SERVER_URL_PING        "/devices/online/"
-#define SMART_HOUSE_SERVER_URL_REGISTER        "/devices/register/"
+#define SMART_HOUSE_SERVER_URL_PING        "/security/online/"
+#define SMART_HOUSE_SERVER_URL_REGISTER        "/security/register/"
 #define SMART_HOUSE_SERVER_URL_ON_DATA_CHANGED "/devices/data/"
 #define SMART_HOUSE_SERVER_URL_ON_DATA_CHANGED_GET "/devices/data?deviceId="
 

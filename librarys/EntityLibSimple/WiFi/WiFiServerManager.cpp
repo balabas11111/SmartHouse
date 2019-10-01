@@ -191,15 +191,15 @@ const char* WiFiServerManager::getContentType(String& path) {
 bool WiFiServerManager::authenticateRequest(const char* method){
 	bool result = true;
 
-	if(strcmp(method, REQUEST_GET)){
+	if(strcmp(method, REQUEST_GET)==0){
 		result = isAuthenticatedRequest(conf->userLogin(), conf->userPassword());
 	} else
 	if(strcmp(method, REQUEST_POST)==0){
-		if(server->hasHeader(AUTHORIZATION)){
-			result = server->header(AUTHORIZATION).equals(conf->getServerAuthorization());
+		if(server->hasHeader(HEADER_AUTHORIZATION)){
+			result = server->header(HEADER_AUTHORIZATION).equals(conf->getServerAuthorization());
 			if(!result){
 				Serial.print(FPSTR("Failed auth="));
-				Serial.print(server->header(AUTHORIZATION));
+				Serial.print(server->header(HEADER_AUTHORIZATION));
 				Serial.print(FPSTR("; exp="));
 				Serial.println(conf->getServerAuthorization());
 			}
@@ -208,6 +208,8 @@ bool WiFiServerManager::authenticateRequest(const char* method){
 			result = isAuthenticatedRequest(conf->adminLogin(), conf->adminPassword());
 		}
 	}
+	Serial.print(FPSTR(" Auth = "));
+	Serial.print(result);
 
 	return result;
 }
@@ -244,9 +246,9 @@ void WiFiServerManager::onEntityRequest(const char* method) {
 	manager->executeMethod(req, method);
 
 	String response;
-	delete req;
+	req->printResponseTo(response);
 
-	manager->deleteEntityJsonRequestResponse(req);
+	delete req;
 
 	server->sendHeader(RESPONSE_KEY_Server,getServerName());
 	server->send(200, CONTENT_TYPE_TEXT_JSON_UTF8, response);

@@ -40,18 +40,21 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 			return DeviceRequestResult.from(HttpStatus.NOT_ACCEPTABLE, IS_OFFLINE_MESSAGE);
 		}
 		
-		try {
+		return DeviceRequestResult.from(HttpStatus.OK, IS_ONLINE_MESSAGE);
+		
+		/*try {
 			securityService.validateDeviceRequestBase(request);
 			return DeviceRequestResult.from(HttpStatus.OK, IS_ONLINE_MESSAGE);
 			
 		} catch (DeviceRequestValidateException e) {
 			return DeviceRequestResult.from(e.getStatus());
-		}
+		}*/
 	}
 	
 	@Override
 	public DeviceRequestResult<String> processDeviceRegistrationRequest(DeviceRequest request) {
 		try {
+			log.info("Register device "+request.toString());
 			String token = securityService.processDeviceRegistrationRequest(request);
 			
 			deviceService.registerDevice(request);

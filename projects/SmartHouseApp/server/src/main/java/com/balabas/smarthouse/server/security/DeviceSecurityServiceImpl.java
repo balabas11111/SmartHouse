@@ -27,6 +27,7 @@ import lombok.extern.log4j.Log4j2;
 public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 
 	public static final String HEADER_DEVICE = "device";
+	public static final String BASIC_ = "Basic ";
 	
 	@Value("${smarthouse.server.key}")
 	private String serverKey;
@@ -50,8 +51,9 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 	public String processDeviceRegistrationRequest(DeviceRequest request) throws DeviceRequestValidateException {
 
 		validateDeviceRequestBase(request);
+		validateDeviceRequestBaseSecurity(request);
 		
-		String tempDeviceKey = request.getDeviceKey();
+		String tempDeviceKey = cleanBasicFromAuthHeader(request.getDeviceKey());
 		
 		String tempServerKey = SecurityUtil.generateTempServerKey(tempDeviceKey);
 		
@@ -66,6 +68,8 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 		
 		
 		log.info("---------------Security service--------------");
+		log.info("unhashedDeviceToken = "+ unhashedDeviceToken);
+		log.info("unhashedServerToken = "+ unhashedServerToken);
 		log.info("tempDeviceKey = "+ tempDeviceKey);
 		log.info("tempServerKey = "+ tempServerKey);
 		log.info("deviceHash = "+ deviceHash);
@@ -107,7 +111,7 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 		}
 
 		if(Strings.isEmpty(request.getDeviceKey())){
-			request.setDeviceKey(request.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0));
+			request.setDeviceKey(cleanBasicFromAuthHeader(request.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0)));
 		}
 		
 		return true;
@@ -139,6 +143,7 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 		String devKeyExpected = secContext.get(request.getDeviceId()).getDeviceKeyHash();
 		
 		if(devKeyExpected == null) {
+			log.error("Empty devKeyExpected");
 			throw new DeviceRequestValidateException(HttpStatus.UNAUTHORIZED);
 		}
 		
@@ -146,10 +151,12 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 			List<String> authHeaders = request.getHeaders().getOrDefault(HttpHeaders.AUTHORIZATION, null);
 			
 			if(authHeaders==null) {
+				log.error("Empty authHeaders");
 				throw new DeviceRequestValidateException(HttpStatus.UNAUTHORIZED);
 			}
 			
-			if(authHeaders.stream().noneMatch(h->(devKeyExpected.equals(h) || devKeyExpected.equals(h.substring(h.lastIndexOf("Basic ") + 1))) )) {
+			if(authHeaders.stream().noneMatch(h->(devKeyExpected.equals(cleanBasicFromAuthHeader(h))) )) {
+				log.error("Expected = "+devKeyExpected + " actual=" + String.join(",", authHeaders));
 				throw new DeviceRequestValidateException(HttpStatus.UNAUTHORIZED);
 			}
 		}
@@ -176,6 +183,10 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 		DeviceSecurityContext cont = getDeviceSecurityContext(deviceId);
 		
 		return cont==null?null:cont.getServerKeyHash();
+	}
+	
+	private String cleanBasicFromAuthHeader(String header) {
+		return header.contains(BASIC_)?header.substring(header.lastIndexOf(BASIC_) + BASIC_.length()).trim():header;
 	}
 
 }

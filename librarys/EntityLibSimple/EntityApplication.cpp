@@ -183,6 +183,6 @@ DataSelector* EntityApplication::getDataSelector() {
 	return this->defaultDataSelector;
 }
 
-void EntityApplication::triggerRegisterOnServer(bool trigger) {
+void EntityApplication::registerOnServer(bool trigger) {
 	this->getSecurityManager()->triggerRegisterOnServer(trigger);
 }

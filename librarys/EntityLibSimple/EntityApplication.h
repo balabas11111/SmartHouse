@@ -65,7 +65,7 @@ public:
 	DataSelector* getDataSelector();
 	Notifier* getDefaultNotifier();
 
-	void triggerRegisterOnServer(bool trigger = true);
+	void registerOnServer(bool trigger = true);
 
 	void registerTicker(void (*callback)(void));
 	void registerTicker(uint32_t milliseconds, void (*callback)(void));

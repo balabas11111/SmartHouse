@@ -57,8 +57,8 @@ void EntityManager::init() {
 		}
 	}
 
-	loadEntitiesFromFile();
-	saveEntitiesToFile();
+	//loadEntitiesFromFile();
+	//saveEntitiesToFile();
 
 	Serial.println(FPSTR("Init entityManager completed"));
 	Serial.println(FPSTR("==============================="));

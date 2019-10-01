@@ -59,6 +59,8 @@ public class SecurityController {
 			@RequestHeader HttpHeaders headers,
 			HttpServletRequest httpRequest) throws UnknownHostException, DeviceOnServerAuthorizationException {
 
+		log.debug("/register");
+		
 		request.setIp(httpRequest.getRemoteAddr());
 		request.setHeaders(headers);
 		request.setRequestType(DeviceRequestType.REGISTER);

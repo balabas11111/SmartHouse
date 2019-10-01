@@ -38,6 +38,7 @@
 //headers
 #define HEADER_CONTENT_TYPE           "Content-Type"
 #define HEADER_LOCATION               "Location"
+#define HEADER_AUTHORIZATION          "Authorization"
 
 //default responses
 #define RESPONSE_MSG_badArgs           "BAD ARGS"
@@ -60,8 +61,9 @@
 #define BODY "body"
 
 
-//default headers
-#define AUTHORIZATION "Authorization"
+//content types def
+#define CONTENT_TYPE_APPLICATION_JSON "application/json"
+
 //content types
 const PROGMEM char CONTENT_TYPE_TEXT_HTML[] = "text/html";
 const PROGMEM char CONTENT_TYPE_JSON[] = "application/json";

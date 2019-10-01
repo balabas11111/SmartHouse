@@ -4,7 +4,7 @@ public class DeviceConstants {
 
 	public static final String HTTP_PREFFIX  = "http://";
 	public static final String DEVICE_URL_ROOT = "/";
-	public static final String DEVICE_URL_DATA = "/data/";
+	public static final String DEVICE_URL_DATA = "/data";
 	//Ddevice info params
 	public static final String DEVICE_FIELD_DEVICE = "device";
 	public static final String DEVICE_FIELD_DEVICE_INFO = "info";

@@ -16,6 +16,7 @@ void SecurityManager::triggerServerPing(bool trigger) {
 }
 
 void SecurityManager::triggerRegisterOnServer(bool trigger) {
+	Serial.println(FPSTR("Trigger registration"));
 	this->triggeredServerRegister = trigger;
 }
 
@@ -41,6 +42,7 @@ void SecurityManager::init(){
 		Serial.print(FPSTR("urlData="));
 		Serial.println(urlData);
 		Serial.println(FPSTR("------------------------------"));
+		this->initComplete = true;
 	}
 }
 
@@ -72,17 +74,34 @@ void SecurityManager::generateServerUrls() {
 }
 
 void SecurityManager::generateDeviceAuthorization(String& tempServerKey) {
-	Serial.print(FPSTR("generate deviceAuthorization="));
+	Serial.print(FPSTR("generate Authorization-------------------------"));
+	Serial.print(FPSTR("tempDeviceKey="));
+	Serial.println(tempDeviceKey);
+	Serial.print(FPSTR("tempServerKey="));
+	Serial.println(tempServerKey);
 	String tmp = serverKeyHash + tempServerKey + tempDeviceKey;
+
+	Serial.print(FPSTR("unhashedDeviceToken="));
+	Serial.println(tmp);
+
 	this->deviceAuthorization = strdup(sha1(tmp).c_str());
-	Serial.print(deviceAuthorization);
+
+	String tmp2 = tempServerKey + conf->smartServerKey() + conf->deviceId();
+	conf->setServerAuthorization(sha1(tmp2));
+
+	Serial.print(FPSTR("unhashedServerToken="));
+	Serial.println(tmp2);
+
+	Serial.print(FPSTR("deviceHash="));
+	Serial.println(this->deviceAuthorization);
+	Serial.print(FPSTR("serverHash="));
+	Serial.println(conf->getServerAuthorization());
 	Serial.println(FPSTR("...done"));
 }
 
 void SecurityManager::generateServerAuthorization(String& tempServerKey) {
-	Serial.print(FPSTR("generate deviceAuthorization="));
-	String tmp = tempServerKey + conf->smartServerKey() + conf->deviceId();
-	conf->setServerAuthorization(sha1(tmp));
+	//Serial.print(FPSTR("generate serverAuthorization="));
+
 	Serial.print(conf->getServerAuthorization());
 	Serial.println(FPSTR("...done"));
 }
@@ -96,13 +115,16 @@ void SecurityManager::sendPingRequest() {
 
 	int httpCode = http.GET();
 
-	Serial.println(httpCode);
+	//Serial.println(httpCode);
 
 	http.end();
 	if(httpCode == 200){
+		Serial.println(FPSTR("...ok"));
 		triggeredServerPing = false;
 		serverPinged = true;
 	}else{
+		Serial.print(FPSTR("...ERROR "));
+		Serial.println(httpCode);
 		setRequestPostPoned(10000);
 		serverPinged = false;
 	}
@@ -111,6 +133,8 @@ void SecurityManager::sendPingRequest() {
 }
 
 void SecurityManager::sendRegisterRequest() {
+	Serial.print(FPSTR("Register device"));
+	unsigned long start = millis();
 	this->runsRegisterRequest = true;
 	EntityJsonRequestResponse* req = new EntityJsonRequestResponse();
 
@@ -130,26 +154,33 @@ void SecurityManager::sendRegisterRequest() {
 	http.begin(urlRegister);
 
 	http.setAuthorization(tempDeviceKey);
+	http.addHeader(HEADER_CONTENT_TYPE, CONTENT_TYPE_APPLICATION_JSON, 0, 1);
 
 	int httpCode = http.POST(paramsStr);
 
 	if(httpCode == 200){
+		Serial.println(FPSTR("...ok"));
 		String tempServerKey = http.getString();
+		http.end();
 		this->generateDeviceAuthorization(tempServerKey);
 		this->generateServerAuthorization(tempServerKey);
 		this->deviceRegistered = true;
 		this->triggeredServerRegister = false;
 	}else{
-		setRequestPostPoned(20000);
+		http.end();
+		Serial.print(FPSTR("...ERROR "));
+		Serial.println(httpCode);
+		setRequestPostPoned(60000);
+		this->serverPinged = false;
 	}
 
-
+	ObjectUtils::printlnTimeHeap(start);
 	this->runsRegisterRequest = false;
 }
 
 void SecurityManager::sendDataChangedRequest() {
 	this->runsDataChangeRequest = true;
-	Serial.print(FPSTR("Data send ->"));
+	unsigned long start = millis();
 	HTTPClient http;
 	http.begin(urlData);
 
@@ -158,18 +189,17 @@ void SecurityManager::sendDataChangedRequest() {
 	int httpCode = http.GET();
 
 	http.end();
-
 	if(httpCode==200){
-
-	}else if(httpCode==403){
+		triggeredDataChange = false;
+	}else {
+		Serial.print(FPSTR("Data send ->...ERROR"));
+		Serial.println(httpCode);
+		ObjectUtils::printlnTimeHeap(start);
 		setRequestPostPoned(10000);
+		this->serverPinged = false;
 		this->deviceRegistered = false;
 		this->triggeredServerRegister = true;
-	}else{
-		setRequestPostPoned(10000);
 	}
-
-	this->triggeredServerPing = false;
 
 	this->runsDataChangeRequest = false;
 }
