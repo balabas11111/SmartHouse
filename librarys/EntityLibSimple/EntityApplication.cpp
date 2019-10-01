@@ -143,6 +143,7 @@ void EntityApplication::registerTicker(uint32_t milliseconds, void (*callback)(v
 }
 
 void EntityApplication::updateEntities(bool force){
+	Serial.println(FPSTR("Entity update triggered by app"));
 	this->entityUpdateManager->updateEntities(force);
 }
 
