@@ -1,13 +1,10 @@
 package com.balabas.smarthouse.server.security;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,8 +12,6 @@ import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.exception.DeviceRequestValidateException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
-import com.balabas.smarthouse.server.security.repository.HashedValuesRepository;
-import com.balabas.smarthouse.server.security.repository.HashedValuesRepositoryImpl;
 import com.balabas.smarthouse.server.util.SecurityUtil;
 import com.google.common.hash.Hashing;
 
@@ -35,10 +30,7 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 	private String serverKeyHash;
 	
 	@Autowired
-	@Qualifier(HashedValuesRepositoryImpl.DISABLED_DEVICE_IDS_REPO)
-	private HashedValuesRepository disabledDeviceIds;
-	
-	private Map<String, DeviceSecurityContext> secContext = new HashMap<>();
+	private SecurityContextRepository secContext;
 	
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -75,7 +67,7 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 		log.info("deviceHash = "+ deviceHash);
 		log.info("serverHash = "+ serverHash);
 		
-		secContext.put(request.getDeviceId(), new DeviceSecurityContext(serverHash, deviceHash));
+		secContext.put(request.getDeviceId(), serverHash, deviceHash);
 		
 		return tempServerKey;
 	}
@@ -90,10 +82,10 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 		if(Strings.isEmpty(request.getDeviceId())) {
 			request.setDeviceKey(request.getHeaders().get(HEADER_DEVICE).get(0));
 		}
-		
+		/*
 		if(disabledDeviceIds.containsValue(request.getDeviceId())) {
 			throw new DeviceRequestValidateException(HttpStatus.FORBIDDEN);
-		}
+		}*/
 		
 		return true;
 	}
@@ -135,8 +127,7 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 		validateDeviceRequestBase(request);
 		validateDeviceRequestBaseSecurity(request);
 		
-		if(!secContext.containsKey(request.getDeviceId()) 
-				|| secContext.get(request.getDeviceId()) == null){
+		if(secContext.get(request.getDeviceId()) == null){
 			throw new DeviceRequestValidateException(HttpStatus.UNAUTHORIZED);
 		}
 		
@@ -166,7 +157,7 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 
 	@Override
 	public DeviceSecurityContext getDeviceSecurityContext(String deviceId) {
-		return secContext.getOrDefault(deviceId, null);
+		return secContext.get(deviceId);
 	}
 
 
