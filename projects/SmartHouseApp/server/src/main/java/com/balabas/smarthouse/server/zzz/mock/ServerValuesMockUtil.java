@@ -12,14 +12,21 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ITEM_CL
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ON;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_ITEMS;
 
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_URL_ROOT;
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_URL_DATA;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import org.json.JSONObject;
 
+import com.balabas.smarthouse.server.controller.ControllerConstants;
 import com.balabas.smarthouse.server.model.EntityClass;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.experimental.UtilityClass;
 
@@ -28,7 +35,7 @@ public class ServerValuesMockUtil {
 
 	public static final String FIRMWARE1 = "FirmWare1";
 
-	public static List<DeviceRequest> getDevicesMock(int count) {
+	public static List<DeviceRequest> getDevicesMock(int count) throws IOException {
 		List<DeviceRequest> result = new ArrayList<>();
 
 		for (int i = 0; i < count; i++) {
@@ -38,14 +45,20 @@ public class ServerValuesMockUtil {
 		return result;
 	}
 
-	public static DeviceRequest createMockedRequest(int i) {
+	public static DeviceRequest createMockedRequest(int i) throws IOException {
+		JSONObject data = new JSONObject()
+							.put(DEVICE_FIELD_URL_ROOT, "/")
+							.put(DEVICE_FIELD_URL_DATA, ControllerConstants.API_V1+ControllerConstants.DEVICES_ROOT+"/mock_deviceId" + i);
+		
+		ObjectMapper mapper = new ObjectMapper();
+	    JsonNode dataJson = mapper.readTree(data.toString());
+		
 		return DeviceRequest.builder()
 			.deviceId("deviceId" + i)
 			.deviceFirmware("deviceFirmware" + i)
 			.deviceDescr("Mocked device Description" + i)
-			//.serverKey(HashUtil.getSha1("SomeServerKey"))
 			.deviceKey("deviceKey" + i)
-//			.dataUrl("http://localhost:80/api/v1/devices/mock_deviceId" + i)
+			.dataJson(dataJson)
 			.build();
 	}
 

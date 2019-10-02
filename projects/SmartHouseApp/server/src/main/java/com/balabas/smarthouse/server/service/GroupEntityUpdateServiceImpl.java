@@ -3,6 +3,7 @@ package com.balabas.smarthouse.server.service;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -101,6 +102,8 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
                         }
                     }
                     
+                    events.addAll(entityEvents);
+                    
                     if(!entityEvents.isEmpty()){
                         GroupChangedEvent groupEvent = new GroupChangedEvent(group, DeviceEventType.UPDATED, entityEvents);
                         if(groupEvent!=null){
@@ -128,16 +131,20 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
     	JSONObject deviceJson = device.getData();
     	
     	if(deviceJson.has(DEVICE_FIELD_DEVICE)){
-    		JSONObject info = deviceJson.getJSONObject(DEVICE_FIELD_DEVICE).getJSONObject(DEVICE_FIELD_DEVICE_INFO);
-    		
-    		String deviceDescr = info.optString(ENTITY_DEVICE_DEVICE_DESCRIPTION);
-    		String deviceFirmware = info.optString(ENTITY_DEVICE_DEVICE_FIRMWARE);
-    		
-    		if(!deviceDescr.isEmpty() && !deviceDescr.equals(device.getDescription())){
-    			device.setDeviceDescr(deviceDescr);
-    		}
-    		if(!deviceFirmware.isEmpty() && !deviceFirmware.equals(device.getDeviceFirmware())){
-    			device.setDeviceFirmware(deviceFirmware);
+    		JSONObject deviceDeviceJson = deviceJson.getJSONObject(DEVICE_FIELD_DEVICE);
+    				
+    		if(deviceDeviceJson.has(DEVICE_FIELD_DEVICE_INFO)){
+				JSONObject info = deviceDeviceJson.getJSONObject(DEVICE_FIELD_DEVICE_INFO);
+	    		
+	    		String deviceDescr = info.optString(ENTITY_DEVICE_DEVICE_DESCRIPTION);
+	    		String deviceFirmware = info.optString(ENTITY_DEVICE_DEVICE_FIRMWARE);
+	    		
+	    		if(!deviceDescr.isEmpty() && !deviceDescr.equals(device.getDescription())){
+	    			device.setDeviceDescr(deviceDescr);
+	    		}
+	    		if(!deviceFirmware.isEmpty() && !deviceFirmware.equals(device.getDeviceFirmware())){
+	    			device.setDeviceFirmware(deviceFirmware);
+	    		}
     		}
     		
     	}
@@ -222,7 +229,7 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
     }
 
     private static boolean isJsonObject(Object obj) {
-        return (obj instanceof JSONObject);
+        return (obj instanceof JSONObject) || (obj instanceof Map<?, ?>);
     }
 
     private static <T extends NameAble> T getItemByName(Set<T> items,

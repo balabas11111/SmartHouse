@@ -39,7 +39,7 @@ public class DeviceRequest {
 	
 	private String data;
 	
-	private JsonNode json;
+	private JsonNode dataJson;
 	
 	@JsonIgnore
 	private HttpHeaders headers;
@@ -51,13 +51,13 @@ public class DeviceRequest {
         return (data!=null && !data.isEmpty());
     }
 	
-	public boolean hasJson(){
-        return (json!=null && JsonNodeType.OBJECT.equals(json.getNodeType()));
+	public boolean hasDataJson(){
+        return (dataJson!=null && JsonNodeType.OBJECT.equals(dataJson.getNodeType()));
     }
 	
 	public String getJsonOrData(){
-	    if(hasJson()){
-	        return json.toString();
+	    if(hasDataJson()){
+	        return dataJson.toString();
 	    }
 	    if(hasData()){
 	        return data;

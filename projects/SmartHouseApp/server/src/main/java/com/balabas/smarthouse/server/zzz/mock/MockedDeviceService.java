@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.zzz.mock;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +57,8 @@ public class MockedDeviceService implements InitializingBean {
 	
 	private boolean initDone = false;
 	
+	private int initStep = 0;
+	
 	@Autowired
 	private DeviceService deviceService;
 	
@@ -73,7 +76,7 @@ public class MockedDeviceService implements InitializingBean {
 		log.info("Mock Key hashed =" + this.serverKeyHash);
 	}
 	
-	public void initMocks() {
+	public void initMocks() throws IOException {
 		log.info("-----Server context was started MockedDevice-----");
 		reqs = ServerValuesMockUtil.getDevicesMock(3);
 		 
@@ -82,21 +85,28 @@ public class MockedDeviceService implements InitializingBean {
 			 sendRegistrationRequest(request);
 		 });
 		 
-		 initDone = true;
-		
-		this.contStarted = true;
 	}
 	
 	@Scheduled(fixedRate = 10000)
-    public void mockDeviceDataUpdateRequest() {
-		if(!mockActive || !initDone || !contStarted) {
+    public void mockDeviceDataUpdateRequest() throws IOException {
+		if(!mockActive || !contStarted) {
 			return;
 		}
+		if(initStep<1){
+			initStep++;
+		}else{
+			if(!initDone){
+				initMocks();
+				initDone = true;
+			}
+		}
+		
         log.info("Mock data update dispatched");
-        
+        if(initDone){
         reqs.stream().forEach(request->{
         	sendDataUpdatedRequest(request);
 		 });
+        }
     }
 	
 	private boolean sendIsOnlineRequest(DeviceRequest request) {
@@ -105,7 +115,7 @@ public class MockedDeviceService implements InitializingBean {
 		
 		HttpHeaders headers = new HttpHeaders();
 		
-		HttpEntity ent = new HttpEntity(headers);
+		HttpEntity ent = new HttpEntity<>(headers);
 		Map<String,String> params = new HashMap<>();
 		
 		
@@ -126,16 +136,17 @@ public class MockedDeviceService implements InitializingBean {
 		
 		ResponseEntity<String> result = restTemplate.exchange(url, HttpMethod.POST, ent, String.class, params);
 		
-		OnDevice_processRegistrationRequest(result, request);
+		OnDeviceProcessRegistrationRequest(result, request);
 		
 		return result.getStatusCode().equals(HttpStatus.OK);
 	}
 	
-	private boolean OnDevice_processRegistrationRequest(ResponseEntity<String> result, DeviceRequest request) {
+	private boolean OnDeviceProcessRegistrationRequest(ResponseEntity<String> result, DeviceRequest request) {
 		
-		String serverToken = result.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
+		List<String> authHeaders = result.getHeaders().getOrEmpty(HttpHeaders.AUTHORIZATION);
+		String serverToken = (!authHeaders.isEmpty())?authHeaders.get(0):result.getBody();
 		
-		String uDeviceToken = serverKeyHash+":"+serverToken+":"+request.getDeviceKey();
+		String uDeviceToken = serverKeyHash+serverToken+request.getDeviceKey();
 		String uServerToken = serverToken+serverKey+request.getDeviceId();
 		
 		String deviceHash = hash(uDeviceToken);
@@ -154,7 +165,7 @@ public class MockedDeviceService implements InitializingBean {
 		return true;
 	}
 	
-	public boolean OnDevice_validateServerKey(HttpHeaders headers, String deviceId) {
+	public boolean OnDeviceValidateServerKey(HttpHeaders headers, String deviceId) {
 		boolean hasAuthHeader = headers!=null 
 				&& headers.containsKey(HttpHeaders.AUTHORIZATION)
 				&& !headers.get(HttpHeaders.AUTHORIZATION).isEmpty();
@@ -175,7 +186,7 @@ public class MockedDeviceService implements InitializingBean {
 		return true;
 	}
 	
-	private boolean OnDevice_appendDeviceKeyToRequest(HttpHeaders headers, String deviceId) {
+	private boolean OnDeviceAppendDeviceKeyToRequest(HttpHeaders headers, String deviceId) {
 		String deviceKey = deviceKeys.get(deviceId);
 		
 		headers.set(HttpHeaders.AUTHORIZATION, deviceKey);
@@ -193,7 +204,7 @@ public class MockedDeviceService implements InitializingBean {
 		
 		HttpHeaders headers = new HttpHeaders();
 		
-		OnDevice_appendDeviceKeyToRequest(headers, req.getDeviceId());
+		OnDeviceAppendDeviceKeyToRequest(headers, req.getDeviceId());
 		
 		HttpEntity ent = new HttpEntity(headers);
 		Map<String,String> params = new HashMap<>();
@@ -207,6 +218,12 @@ public class MockedDeviceService implements InitializingBean {
 	
 	private String hash(String value) {
 		return Hashing.sha1().hashString(value, StandardCharsets.UTF_8).toString();
+	}
+	
+	@EventListener(classes = {ContextRefreshedEvent.class})
+	public void onContextStarted() {
+		log.info("-----Server context was started-----");
+		this.contStarted = true;
 	}
 	
 }

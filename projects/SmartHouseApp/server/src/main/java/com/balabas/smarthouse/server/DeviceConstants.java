@@ -8,6 +8,8 @@ public class DeviceConstants {
 	//Ddevice info params
 	public static final String DEVICE_FIELD_DEVICE = "device";
 	public static final String DEVICE_FIELD_DEVICE_INFO = "info";
+	public static final String DEVICE_FIELD_URL_ROOT = "urlRoot";
+	public static final String DEVICE_FIELD_URL_DATA = "urlData";
 	
 	public static final String DEVICE_FIELD_GROUP = "group";
 	public static final String DEVICE_FIELD_ENTITY_NAME = "name";

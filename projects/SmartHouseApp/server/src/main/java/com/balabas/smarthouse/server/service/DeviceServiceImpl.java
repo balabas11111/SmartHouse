@@ -25,6 +25,7 @@ import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult.Devi
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
 import com.balabas.smarthouse.server.service.events.EventProcessorsService;
 import com.balabas.smarthouse.server.view.Action;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -32,6 +33,9 @@ import lombok.extern.log4j.Log4j2;
 import static com.balabas.smarthouse.server.DeviceConstants.HTTP_PREFFIX;
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_URL_ROOT;
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_URL_DATA;
+
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_URL_ROOT;
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_URL_DATA;
 
 @Log4j2
 @Service
@@ -92,8 +96,22 @@ public class DeviceServiceImpl implements DeviceService {
 	    
 	    String baseUrl = HTTP_PREFFIX + request.getIp();
 	    
-	    device.setDataUrl(baseUrl + DEVICE_URL_DATA);
-	    device.setRootUrl(baseUrl + DEVICE_URL_ROOT);
+	    String deviceRootUrl = DEVICE_URL_ROOT;
+	    String deviceDataUrl = DEVICE_URL_DATA;
+	    
+	    if(request.hasDataJson()){
+	    	JsonNode dataJson = request.getDataJson();
+	    	
+	    	if(dataJson.hasNonNull(DEVICE_FIELD_URL_ROOT)){
+	    		deviceDataUrl = dataJson.get(DEVICE_FIELD_URL_ROOT).asText();
+	    	}
+	    	if(dataJson.hasNonNull(DEVICE_FIELD_URL_DATA)){
+	    		deviceDataUrl = dataJson.get(DEVICE_FIELD_URL_DATA).asText();
+	    	}
+	    }
+	    
+	    device.setDataUrl(baseUrl + deviceDataUrl);
+	    device.setRootUrl(baseUrl + deviceRootUrl);
 	    device.setState(DeviceState.CONSTRUCTED);
 	    
 	    device.setDeviceKey(request.getDeviceKey());

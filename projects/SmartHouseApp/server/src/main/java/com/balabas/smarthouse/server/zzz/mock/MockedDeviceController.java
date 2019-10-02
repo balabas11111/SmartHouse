@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.zzz.mock;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class MockedDeviceController {
 	}
 	
 	@GetMapping("/mock")
-	public void mockAllDevices() {
+	public void mockAllDevices() throws IOException {
 		log.info("mock all devices=");
 		mockService.initMocks();
 	}
@@ -85,7 +86,7 @@ public class MockedDeviceController {
 				? ServerValuesMockUtil.getSettingsSensors(deviceId) : ServerValuesMockUtil.getSensors(deviceId))
 						.toString();
 
-		boolean isServerRequestValid = mockService.OnDevice_validateServerKey(headers, deviceId);
+		boolean isServerRequestValid = mockService.OnDeviceValidateServerKey(headers, deviceId);
 		
 		if(!isServerRequestValid) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("suck man");

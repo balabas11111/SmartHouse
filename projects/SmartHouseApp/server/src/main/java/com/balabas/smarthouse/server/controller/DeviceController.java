@@ -36,7 +36,7 @@ public class DeviceController {
 			@RequestParam(value = "deviceId") String deviceId,
 			@RequestHeader HttpHeaders headers,
 			HttpServletRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
-		log.info("DataChanged GET dispatched on " + deviceId + " from "+request.getRemoteAddr());
+		log.debug("DataChanged GET dispatched on " + deviceId + " from "+request.getRemoteAddr());
 		
 		DeviceRequest deviceRequest = new DeviceRequest();
 		deviceRequest.setDeviceId(deviceId);
