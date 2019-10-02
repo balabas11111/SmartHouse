@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.service.events;
+package com.balabas.smarthouse.server.events.service;
 
 import java.util.List;
 
@@ -20,13 +20,13 @@ import com.balabas.smarthouse.server.model.Group;
 public class EventProcessorsServiceImpl implements EventProcessorsService {
 
 	@Autowired
-	List<EventProcessor<Device, DeviceChangedEvent>> deviceEventsProcessors;
+	List<EventProcessorBase<DeviceChangedEvent>> deviceEventsProcessors;
 	
 	@Autowired(required = false)
-	List<EventProcessor<Group, GroupChangedEvent>> groupEventsProcessors;
+	List<EventProcessorBase<GroupChangedEvent>> groupEventsProcessors;
 	
 	@Autowired(required = false)
-	List<EventProcessor<Entity, EntityChangedEvent>> entityEventsProcessors;
+	List<EventProcessorBase<EntityChangedEvent>> entityEventsProcessors;
 	
     @Override
     public void processEvents(List<ChangedEvent<?>> events) {
@@ -54,9 +54,9 @@ public class EventProcessorsServiceImpl implements EventProcessorsService {
     }
     
     public void processEvent(DeviceChangedEvent event){
-    	if(groupEventsProcessors!=null && !deviceEventsProcessors.isEmpty()){
+    	if(deviceEventsProcessors!=null && !deviceEventsProcessors.isEmpty()){
     		deviceEventsProcessors.stream()
-    			.forEach(proc-> proc.processEvent(event));
+    			.forEach(proc-> proc.process(event));
     	}else{
     		log.warn("DeviceChangedEvent : " + event.toString());
     	}
@@ -65,7 +65,7 @@ public class EventProcessorsServiceImpl implements EventProcessorsService {
     public void processEvent(GroupChangedEvent event){
     	if(groupEventsProcessors!=null && !groupEventsProcessors.isEmpty()){
     		groupEventsProcessors.stream()
-				.forEach(proc-> proc.processEvent(event));
+				.forEach(proc-> proc.process(event));
     	}else{
     		log.warn("GroupChangedEvent : " + event.printDetails());
     	}
@@ -74,7 +74,7 @@ public class EventProcessorsServiceImpl implements EventProcessorsService {
     public void processEvent(EntityChangedEvent event){
     	if(entityEventsProcessors!=null && !entityEventsProcessors.isEmpty()){
     		entityEventsProcessors.stream()
-				.forEach(proc-> proc.processEvent(event));
+				.forEach(proc-> proc.process(event));
     	}else{
     		log.warn("EntityChangedEvent "+event.toString());
     	}

@@ -18,16 +18,22 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ITEM_CLASS;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_DESCRIPTION;
 
-public class ValueContainer implements JsonDataContainer, NameAble{
+public class ValueContainer implements JsonDataContainer, SmartHouseItem{
 
 	@Getter
 	protected EntityClass entityRenderer = EntityClass.DEFAULT;
+	
+	@Getter
+	protected String deviceId;
 	
     @Getter
     protected String name;
     
     @Getter
     protected String description;
+    
+    @Getter
+    protected String parentName = null;
     
     @Getter
     protected Map<String, String> values = new HashMap<>();

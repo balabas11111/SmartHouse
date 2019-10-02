@@ -12,7 +12,7 @@ import org.json.JSONObject;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Group implements NameAble, JsonDataContainer {
+public class Group implements SmartHouseItem, JsonDataContainer {
 
     public enum GroupType{
         DEVICE(1000*120),

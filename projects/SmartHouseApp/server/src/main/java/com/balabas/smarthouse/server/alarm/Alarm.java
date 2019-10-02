@@ -3,21 +3,33 @@ package com.balabas.smarthouse.server.alarm;
 import java.util.Date;
 import java.util.List;
 
-import com.balabas.smarthouse.server.model.NameAble;
+import com.balabas.smarthouse.server.model.SmartHouseItem;
+import com.balabas.smarthouse.server.notification.Message;
 
-public interface Alarm<T extends NameAble> {
+public interface Alarm<T extends SmartHouseItem> {
 
+	Class<T> getClazz();
+	
 	T getItem();
 	
-	List<String> getMessages();
+	void setItem(T item) throws IllegalArgumentException;
 	
-	Date getCreateDate();
+	List<Message> getMessages();
 	
-	Date getLastNotifiedDate();
-	
-	Date getNextNotifyDateTime();
+	Date getNotifyDate();
 	
 	boolean isActive();
 	
-	boolean check(T item);
+	boolean isAlarmDetected();
+	
+	boolean checkItemForAlarm();
+	
+	String getDeviceId();
+	
+	boolean sendRequired();
+	
+	void reschedule();
+
+	List<Message> checkItemForAlarmAndReschedule();
+	
 }

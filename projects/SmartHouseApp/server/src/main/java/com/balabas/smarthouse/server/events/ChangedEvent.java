@@ -1,10 +1,10 @@
 package com.balabas.smarthouse.server.events;
 
-import com.balabas.smarthouse.server.model.NameAble;
+import com.balabas.smarthouse.server.model.SmartHouseItem;
 
 import lombok.Getter;
 
-public class ChangedEvent<T extends NameAble> {
+public class ChangedEvent<T extends SmartHouseItem> {
 
     public enum DeviceEventType{
         UPDATED,

@@ -24,7 +24,7 @@ public class UpdateTimer {
     
     private boolean waitsForDataUpdate;
     
-    public UpdateTimer(NameAble parent,  long updateInterval) {
+    public UpdateTimer(SmartHouseItem parent,  long updateInterval) {
         this.parentName = parent.getName();
         this.updateInterval = updateInterval;
         this.registrationTime = new Date();

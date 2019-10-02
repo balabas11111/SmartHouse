@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Device implements NameAble, JsonDataContainer {
+public class Device implements SmartHouseItem, JsonDataContainer {
     
     public enum DeviceState{
         UNKNOWN,

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.controller.service.DeviceRequestorService;
 import com.balabas.smarthouse.server.events.ChangedEvent;
+import com.balabas.smarthouse.server.events.service.EventProcessorsService;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.Device.DeviceState;
@@ -23,7 +24,6 @@ import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult;
 import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult.DeviceRegistrationStatus;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
-import com.balabas.smarthouse.server.service.events.EventProcessorsService;
 import com.balabas.smarthouse.server.view.Action;
 import com.fasterxml.jackson.databind.JsonNode;
 

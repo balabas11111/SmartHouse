@@ -20,7 +20,7 @@ import com.balabas.smarthouse.server.events.ValuesChangeEvent;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.Entity;
 import com.balabas.smarthouse.server.model.Group;
-import com.balabas.smarthouse.server.model.NameAble;
+import com.balabas.smarthouse.server.model.SmartHouseItem;
 import com.balabas.smarthouse.server.model.SensorItem;
 import com.google.common.collect.Lists;
 
@@ -215,7 +215,7 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
                 JSONObject siJson = sensorItemsJson.getJSONObject(siName);
                 
                 if(!siOpt.isPresent()){
-                    si = new SensorItem(siName);
+                    si = new SensorItem(siName, entity.getName());
                     sensorItems.add(si);
                 }else{
                     si = siOpt.get();
@@ -232,7 +232,7 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
         return (obj instanceof JSONObject) || (obj instanceof Map<?, ?>);
     }
 
-    private static <T extends NameAble> T getItemByName(Set<T> items,
+    private static <T extends SmartHouseItem> T getItemByName(Set<T> items,
             String name) {
         for (T item : items) {
             if (item.getName().equals(name)) {

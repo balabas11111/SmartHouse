@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
+import lombok.ToString;
 
 import com.balabas.smarthouse.server.model.Entity;
 
+@ToString(callSuper = true)
 public class EntityChangedEvent extends ChangedEvent<Entity> {
 
     @Getter

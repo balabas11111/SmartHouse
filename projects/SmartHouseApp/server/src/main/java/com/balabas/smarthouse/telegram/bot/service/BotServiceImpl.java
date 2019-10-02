@@ -100,7 +100,7 @@ public class BotServiceImpl implements BotService, InitializingBean {
 	}
 
 	@Override
-	public void processEvent(DeviceChangedEvent event) {
+	public void process(DeviceChangedEvent event) {
 		if(DeviceEventType.ADDED.equals(event.getEventType())) {
 			if(!botEnabled) {
 				log.warn("Telegram DISABLED but device registered");

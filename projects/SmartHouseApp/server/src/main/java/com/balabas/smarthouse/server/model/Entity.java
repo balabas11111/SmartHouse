@@ -6,6 +6,7 @@ import java.util.Set;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import org.json.JSONObject;
@@ -19,8 +20,7 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_
 @EqualsAndHashCode(callSuper = true)
 public class Entity extends ValueContainer  {
 
-	private String deviceId;
-	
+	@Getter
 	private String groupName;
 	
     private Set<SensorItem> sensorItems;

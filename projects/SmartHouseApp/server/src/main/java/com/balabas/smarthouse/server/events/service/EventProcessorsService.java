@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.service.events;
+package com.balabas.smarthouse.server.events.service;
 
 import java.util.List;
 
