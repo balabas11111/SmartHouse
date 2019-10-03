@@ -8,7 +8,10 @@ public interface Notification<T extends SmartHouseItem> {
 
 	T  getItem();
 	
+	Message getHeader();
+	
 	List<Message> getMessages();
 	
 	boolean valid();
+	
 }

@@ -11,9 +11,6 @@ import com.balabas.smarthouse.server.events.ChangedEvent;
 import com.balabas.smarthouse.server.events.DeviceChangedEvent;
 import com.balabas.smarthouse.server.events.EntityChangedEvent;
 import com.balabas.smarthouse.server.events.GroupChangedEvent;
-import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.model.Entity;
-import com.balabas.smarthouse.server.model.Group;
 
 @Log4j2
 @Service
@@ -29,11 +26,11 @@ public class EventProcessorsServiceImpl implements EventProcessorsService {
 	List<EventProcessorBase<EntityChangedEvent>> entityEventsProcessors;
 	
     @Override
-    public void processEvents(List<ChangedEvent<?>> events) {
+    public void processEvents(List<? extends ChangedEvent> events) {
         if(!events.isEmpty()){
             log.debug("Total "+events.size()+" events received");
             
-            for(ChangedEvent<?> event: events){
+            for(ChangedEvent event: events){
                 log.debug("Target "+
                         event.getClass().getSimpleName()+" "+
                         event.getTargetClass().getSimpleName()+"("+event.getTargetName()+") eventType="+

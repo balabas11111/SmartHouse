@@ -35,31 +35,21 @@ public class ValuesChangeEvent {
         return keyOldValueMap.get(key);
     }
     
-    public String getNewValue(String key){
-        if(!isValueChanged(key)){
-            return null;
-        }
-        
-        return keyOldValueMap.get(key);
-    }
-    
-    public void putFromChanger(ValueChanger changer){
+    public void putOperation(ValueChangeOperation changer){
         if(target.hasKey(changer.getKey())){
             keyOldValueMap.put(changer.getKey(), changer.getOldValue());
         }
     }
     
-    public static ValuesChangeEvent build(ValueContainer target, List<ValueChanger> changers){
-        if(changers== null || changers.isEmpty()){
+    public static ValuesChangeEvent build(ValueContainer target, List<ValueChangeOperation> operations){
+        if(operations== null || operations.isEmpty()){
             return null;
         }
         
         ValuesChangeEvent result = new ValuesChangeEvent(target);
         
-        changers.stream().filter(chg->chg.isValueChanged())
-            .forEach(chg->{
-                    result.putFromChanger(chg);
-                });
+        operations.stream().filter(ValueChangeOperation::isValueChanged)
+            .forEach(chg -> result.putOperation(chg));
         
         return result;
     }

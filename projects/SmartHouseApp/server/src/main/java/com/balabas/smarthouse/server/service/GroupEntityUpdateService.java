@@ -7,8 +7,9 @@ import org.json.JSONObject;
 import com.balabas.smarthouse.server.events.ChangedEvent;
 import com.balabas.smarthouse.server.model.Device;
 
+@SuppressWarnings("rawtypes")
 public interface GroupEntityUpdateService {
 
-    List<ChangedEvent<?>> parseJsonToModel(Device device, JSONObject json);
+    List<ChangedEvent> parseJsonToModel(Device device, JSONObject json);
     
 }

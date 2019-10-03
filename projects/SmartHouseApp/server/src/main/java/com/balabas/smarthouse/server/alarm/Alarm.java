@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.balabas.smarthouse.server.model.SmartHouseItem;
 import com.balabas.smarthouse.server.notification.Message;
+import com.balabas.smarthouse.server.notification.Notification;
 
 public interface Alarm<T extends SmartHouseItem> {
 
@@ -30,6 +31,6 @@ public interface Alarm<T extends SmartHouseItem> {
 	
 	void reschedule();
 
-	List<Message> checkItemForAlarmAndReschedule();
+	Notification<T> checkItemForAlarmAndReschedule();
 	
 }

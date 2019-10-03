@@ -1,26 +1,18 @@
 package com.balabas.smarthouse.server.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import lombok.Getter;
+import lombok.Setter;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.balabas.smarthouse.server.events.ValueChanger;
-import com.balabas.smarthouse.server.events.ValuesChangeEvent;
-
-import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_ITEMS;
-import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ITEM_CLASS;
-import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_DESCRIPTION;
+import com.balabas.smarthouse.server.events.ValueChangeOperation;
 
 public class ValueContainer implements JsonDataContainer, SmartHouseItem{
 
-	@Getter
+	@Getter 
 	protected EntityClass entityRenderer = EntityClass.DEFAULT;
 	
 	@Getter
@@ -38,8 +30,16 @@ public class ValueContainer implements JsonDataContainer, SmartHouseItem{
     @Getter
     protected Map<String, String> values = new HashMap<>();
     
-    @Getter
+    @Getter @Setter
     protected JSONObject data;
+    
+    public void setEntityRenderer(String entityRenderer){
+    	this.entityRenderer = EntityClass.getByKey(entityRenderer);
+    }
+    
+    public void setDescription(String description){
+    	this.description = description;
+    }
     
     public String getValue(String key){
         return values.getOrDefault(key, null);
@@ -57,44 +57,8 @@ public class ValueContainer implements JsonDataContainer, SmartHouseItem{
         return setValueWithChanger(key, value).isValueChanged();
     }
     
-    public ValueChanger setValueWithChanger(String key,String value){
-        return new ValueChanger(key, value, this.values);
-    }
-    
-    public ValuesChangeEvent setValuesFromJsonBuildEvent(JSONObject data, boolean getChangers){
-        List<ValueChanger> changers = setValuesFromJson(data, getChangers);
-        
-        return ValuesChangeEvent.build(this, changers);
-    }
-    
-    public List<ValueChanger> setValuesFromJson(JSONObject data, boolean getChangers){
-        List<ValueChanger> result = new ArrayList<>();
-        
-        this.data = data;
-        
-        Map<String, Object> jsonMap = data.toMap();
-        
-        for(Entry<String,Object> entry: jsonMap.entrySet()){
-        	String key = entry.getKey();
-        	
-        	if(ENTITY_FIELD_ITEM_CLASS.equals(key)) {
-        		this.entityRenderer = EntityClass.getByKey(entry.getValue().toString());
-        	}
-        	if(ENTITY_FIELD_DESCRIPTION.equals(key)) {
-        		this.description = entry.getValue().toString();
-        	}
-            if(!key.equals(ENTITY_FIELD_SENSOR_ITEMS)
-                    && !(entry.getValue() instanceof JSONObject)
-                    && !(entry.getValue() instanceof JSONArray)){
-                
-                ValueChanger changer = new ValueChanger(entry, this.values);
-                if(getChangers && changer.isValueChanged()){
-                    result.add(changer);
-                }
-            }
-        }
-        
-        return result;
+    public ValueChangeOperation setValueWithChanger(String key,String value){
+        return ValueChangeOperation.build(key, value, this.values, true);
     }
     
 }

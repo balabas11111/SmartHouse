@@ -1,19 +1,11 @@
 package com.balabas.smarthouse.server.model;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import org.json.JSONObject;
-
-import com.balabas.smarthouse.server.events.ValueChanger;
-
-import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_ITEMS;
 
 @Data
 @NoArgsConstructor
@@ -23,6 +15,7 @@ public class Entity extends ValueContainer  {
 	@Getter
 	private String groupName;
 	
+	
     private Set<SensorItem> sensorItems;
     
     public Entity(String deviceId, String groupName, String entityName){
@@ -31,23 +24,8 @@ public class Entity extends ValueContainer  {
         this.name = entityName;
     }
     
-    @Override
-    public List<ValueChanger> setValuesFromJson(JSONObject data, boolean getChangers){
-        checkToCreateSensorItems(data);
-        
-        return super.setValuesFromJson(data, getChangers);
-    }
-    
     public boolean hasSensorItems(){
         return sensorItems!=null && !sensorItems.isEmpty();
-    }
-    
-    private void checkToCreateSensorItems(JSONObject data){
-        boolean doCreate = this.sensorItems == null &&
-                            data.has(ENTITY_FIELD_SENSOR_ITEMS);
-        if(doCreate){
-            this.sensorItems = new HashSet<>();
-        }
     }
     
 }

@@ -1,22 +1,30 @@
 package com.balabas.smarthouse.server.alarm;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.core.GenericTypeResolver;
 
 import com.balabas.smarthouse.server.model.SmartHouseItem;
+import com.balabas.smarthouse.server.notification.AbstractNotification;
 import com.balabas.smarthouse.server.notification.Message;
+import com.balabas.smarthouse.server.notification.Notification;
+import com.balabas.smarthouse.server.notification.Message.MessageParent;
+import com.balabas.smarthouse.server.notification.Message.MessageSeverity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Strings;
 
 import lombok.Getter;
 import lombok.Setter;
 
-public abstract class AbstractAlarm<T extends SmartHouseItem> implements Alarm<T> {
+public abstract class AbstractAlarm<T extends SmartHouseItem, V extends Object> implements Alarm<T> {
 
 	@Getter
 	private Class<T> clazz;
-	
+
+	@JsonIgnore
 	@Getter 
 	protected T item;
 	
@@ -38,10 +46,13 @@ public abstract class AbstractAlarm<T extends SmartHouseItem> implements Alarm<T
 	@Getter @Setter
 	private String itemName;
 	
+	@Getter @Setter
+	private String descriptionHead;
+	
 	private Long notifyInterval = 30000L;
 	
 	@Getter
-	protected List<Message> messages;
+	protected List<Message> messages = new ArrayList<>();
 	
 	@SuppressWarnings("unchecked")
 	public AbstractAlarm() {
@@ -56,14 +67,20 @@ public abstract class AbstractAlarm<T extends SmartHouseItem> implements Alarm<T
 	}
 	
 	@Override
-	public List<Message> checkItemForAlarmAndReschedule(){
+	public Notification<T> checkItemForAlarmAndReschedule(){
+		boolean wasInAlarm = alarmDetected;
+		
 		checkItemForAlarm();
 		
 		if(sendRequired()) {
 			reschedule();
-			return this.messages;
+			return new AbstractNotification<>(item, getAlarmHeaderMessage(), this.messages);
 		}
-		return null;
+		
+		if(wasInAlarm){
+			return new AbstractNotification<>(item, getNoAlarmHeaderMessage(), Collections.emptyList());
+		}
+		return new AbstractNotification<>();
 	}
 	
 	@Override
@@ -72,7 +89,7 @@ public abstract class AbstractAlarm<T extends SmartHouseItem> implements Alarm<T
 			return false;
 		}
 		
-		this.messages = new ArrayList<>();
+		this.messages.clear();
 		
 		alarmDetected = doCheckItem();
 		if(notifyDate == null && alarmDetected) {
@@ -93,13 +110,33 @@ public abstract class AbstractAlarm<T extends SmartHouseItem> implements Alarm<T
 	}
 	
 	protected boolean validateItem(T item) throws IllegalArgumentException {
-		if(this.itemName==null || this.deviceId==null || (this.itemName!=null && !this.itemName.equals(item.getName()))
-				|| (this.deviceId!=null && !this.deviceId.equals(item.getDeviceId()))) {
+		if(this.itemName==null || this.deviceId==null || (!this.itemName.equals(item.getName()))
+				|| (!this.deviceId.equals(item.getDeviceId()))) {
 			throw new IllegalArgumentException("Alarm is not target for specified item");
 		}
 		return true;
 	}
 	
 	protected abstract boolean doCheckItem();
+	
+	protected Message getAlarmHeaderMessage(){
+		String target =(Strings.isNullOrEmpty(descriptionHead)?item.getDescription():descriptionHead);
+		target = String.format("%s - Режим тревоги ", target);
+		
+		return new Message(MessageSeverity.ERROR, MessageParent.DEVICE, target);
+	}
+	
+	protected Message getNoAlarmHeaderMessage(){
+		String target =(Strings.isNullOrEmpty(descriptionHead)?item.getDescription():descriptionHead);
+		target = String.format("%s - значения в пределах нормы", target);
+		
+		return new Message(MessageSeverity.INFO, MessageParent.DEVICE, target);
+	}
+	
+	protected abstract V doCast(String value) throws Exception;
+	
+	protected void putErrorMessage(String message){
+		this.messages.add(new Message(MessageSeverity.ERROR, MessageParent.DEVICE, message));
+	}
 
 }

@@ -7,10 +7,14 @@ import lombok.Getter;
 public class ChangedEvent<T extends SmartHouseItem> {
 
     public enum DeviceEventType{
+    	REGISTERED,
+    	REREGISTERED,
+    	ADDED,
         UPDATED,
-        ADDED,
         REMOVED,
-        POST_RESULT_RECEIVED
+        DATA_UPDATE_DISPATCHED,
+        DATA_RECEIVED,
+        DATA_EXPIRED
     }
     
     @Getter

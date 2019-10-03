@@ -39,6 +39,7 @@ import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_URL_DAT
 
 @Log4j2
 @Service
+@SuppressWarnings("rawtypes")
 public class DeviceServiceImpl implements DeviceService {
 
 	@Value("${smarthouse.server.devices.request.interval}")
@@ -192,11 +193,15 @@ public class DeviceServiceImpl implements DeviceService {
         }
         
         if(validateDeviceData(deviceData)){
-            List<ChangedEvent<?>> events = groupEntityUpdateService.parseJsonToModel(device, new JSONObject(deviceData));
-            eventProcessService.processEvents(events);
+			List<ChangedEvent> events = groupEntityUpdateService.parseJsonToModel(device, new JSONObject(deviceData));
+            dispatchEvents(events);
         }else{
             device.getTimer().setWaitsForDataUpdate(true);
         }
+    }
+    
+    protected void dispatchEvents(List<? extends ChangedEvent> events){
+    	eventProcessService.processEvents(events);
     }
     
     private boolean validateDeviceData(String data){

@@ -10,14 +10,21 @@ public class AbstractNotification<T extends SmartHouseItem> implements Notificat
 
 	@Getter
 	private T item;
+	
+	@Getter
+	private Message header;
 
 	@Getter
 	private List<Message> messages;
 
-	public AbstractNotification(T item, List<Message> messages) {
+	public AbstractNotification(T item, Message header, List<Message> messages) {
 		super();
 		this.item = item;
+		this.header = header;
 		this.messages = messages;
+	}
+	
+	public AbstractNotification() {
 	}
 
 	@Override

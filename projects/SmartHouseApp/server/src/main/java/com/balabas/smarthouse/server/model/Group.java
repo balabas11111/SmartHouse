@@ -30,6 +30,15 @@ public class Group implements SmartHouseItem, JsonDataContainer {
         long getRefreshInterval(){
             return this.refreshInterval;
         }
+        
+        public static GroupType getGroupTypeByName(String name){
+        	for(GroupType gt: GroupType.values()){
+                if(gt.name().equalsIgnoreCase(name)){
+                    return gt;
+                }
+            }
+            return GroupType.CUSTOM;
+        }
     }
     
     private String deviceId;
@@ -52,7 +61,7 @@ public class Group implements SmartHouseItem, JsonDataContainer {
         this.entities = new HashSet<>();
         this.data = data;
         
-        this.groupType = getGroupTypeByName(name);
+        this.groupType = GroupType.getGroupTypeByName(name);
         
         if(!this.groupType.equals(GroupType.CUSTOM)){
             timer = new UpdateTimer(this, this.groupType.refreshInterval);
@@ -66,15 +75,5 @@ public class Group implements SmartHouseItem, JsonDataContainer {
     public Entity getEntity(String name) {
     	return entities.stream().filter(entity->entity.name.equals(name)).findFirst().orElse(null);
     }
-    
-    private static GroupType getGroupTypeByName(String name){
-        for(GroupType gt: GroupType.values()){
-            if(gt.name().equalsIgnoreCase(name)){
-                return gt;
-            }
-        }
-        return GroupType.CUSTOM;
-    }
-    
     
 }

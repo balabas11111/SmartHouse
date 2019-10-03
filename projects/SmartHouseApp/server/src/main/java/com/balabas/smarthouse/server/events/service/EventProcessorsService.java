@@ -6,5 +6,5 @@ import com.balabas.smarthouse.server.events.ChangedEvent;
 
 public interface EventProcessorsService {
 
-    void processEvents(List<ChangedEvent<?>> events);
+    void processEvents(List<? extends ChangedEvent> events);
 }
