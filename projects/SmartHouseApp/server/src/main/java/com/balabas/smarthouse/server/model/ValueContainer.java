@@ -5,11 +5,11 @@ import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import org.json.JSONObject;
 
-import com.balabas.smarthouse.server.events.ValueChangeOperation;
-
+@ToString
 public class ValueContainer implements JsonDataContainer, SmartHouseItem{
 
 	@Getter 
@@ -41,10 +41,6 @@ public class ValueContainer implements JsonDataContainer, SmartHouseItem{
     	this.description = description;
     }
     
-    public String getValue(String key){
-        return values.getOrDefault(key, null);
-    }
-    
     public boolean hasRenderer() {
     	return !this.entityRenderer.equals(EntityClass.DEFAULT);
     }
@@ -53,12 +49,12 @@ public class ValueContainer implements JsonDataContainer, SmartHouseItem{
         return values.containsKey(key);
     }
     
-    public boolean setValue(String key,String value){
-        return setValueWithChanger(key, value).isValueChanged();
+    public String getValue(String key){
+        return values.getOrDefault(key, null);
     }
     
-    public ValueChangeOperation setValueWithChanger(String key,String value){
-        return ValueChangeOperation.build(key, value, this.values, true);
+    public void setValue(String key,String value){
+        values.put(key, value);
     }
     
 }

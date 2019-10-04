@@ -49,7 +49,7 @@ public class DeviceServiceImpl implements DeviceService {
 	DeviceSecurityService authService;
 	
 	@Autowired
-	GroupEntityUpdateService groupEntityUpdateService;
+	DeviceJsonAdapter deviceJsonAdapter;
 	
 	@Autowired
 	EventProcessorsService eventProcessService;
@@ -193,7 +193,7 @@ public class DeviceServiceImpl implements DeviceService {
         }
         
         if(validateDeviceData(deviceData)){
-			List<ChangedEvent> events = groupEntityUpdateService.parseJsonToModel(device, new JSONObject(deviceData));
+			List<ChangedEvent> events = deviceJsonAdapter.adapt(deviceData, device);
             dispatchEvents(events);
         }else{
             device.getTimer().setWaitsForDataUpdate(true);

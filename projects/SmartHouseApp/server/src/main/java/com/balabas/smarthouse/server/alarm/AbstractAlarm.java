@@ -18,9 +18,12 @@ import com.google.common.base.Strings;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public abstract class AbstractAlarm<T extends SmartHouseItem, V extends Object> implements Alarm<T> {
 
+	@JsonIgnore
 	@Getter
 	private Class<T> clazz;
 
@@ -28,15 +31,19 @@ public abstract class AbstractAlarm<T extends SmartHouseItem, V extends Object> 
 	@Getter 
 	protected T item;
 	
+	@JsonIgnore
 	@Getter @Setter
 	private Date createDate;
 	
+	@JsonIgnore
 	@Getter @Setter
 	private Date notifyDate;
 	
-	@Getter
-	private boolean active;
+	@JsonIgnore
+	@Getter @Setter
+	private boolean active = false;
 	
+	@JsonIgnore
 	@Getter
 	private boolean alarmDetected;
 	
@@ -49,14 +56,17 @@ public abstract class AbstractAlarm<T extends SmartHouseItem, V extends Object> 
 	@Getter @Setter
 	private String descriptionHead;
 	
+	@Getter
 	private Long notifyInterval = 30000L;
 	
 	@Getter
+	@JsonIgnore
 	protected List<Message> messages = new ArrayList<>();
 	
 	@SuppressWarnings("unchecked")
 	public AbstractAlarm() {
-		this.clazz = (Class<T>)GenericTypeResolver.resolveTypeArgument(getClass(), AbstractAlarm.class);
+		Class<T> c = (Class<T>)GenericTypeResolver.resolveTypeArguments(getClass(), AbstractAlarm.class)[0];
+		this.clazz = c;
 	}
 
 	@Override 
@@ -64,6 +74,9 @@ public abstract class AbstractAlarm<T extends SmartHouseItem, V extends Object> 
 		validateItem(item);
 		this.item = item;
 		notifyDate = null;
+		if(this.descriptionHead==null){
+			this.descriptionHead = item.getDescription();
+		}
 	}
 	
 	@Override
@@ -101,7 +114,17 @@ public abstract class AbstractAlarm<T extends SmartHouseItem, V extends Object> 
 
 	@Override
 	public boolean sendRequired() {
-		return (alarmDetected && notifyDate!=null && notifyDate.before(new Date()));
+		if(!alarmDetected || notifyDate==null){
+			return false;
+		}
+		Date now = new Date();
+		boolean dateBefore = notifyDate.before(now);
+		
+		if(dateBefore){
+			log.info("Send required now="+now+" notify="+notifyDate);
+		}
+		
+		return dateBefore;
 	}
 	
 	@Override
@@ -115,6 +138,10 @@ public abstract class AbstractAlarm<T extends SmartHouseItem, V extends Object> 
 			throw new IllegalArgumentException("Alarm is not target for specified item");
 		}
 		return true;
+	}
+	
+	protected boolean checkPutValue(String key, V obj){
+		return key!=null && obj!=null;
 	}
 	
 	protected abstract boolean doCheckItem();

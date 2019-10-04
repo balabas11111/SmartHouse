@@ -8,7 +8,7 @@ img.temperature-icon {
 </style>
 <script type="text/javascript">
 const SENSOR_ITEMS  = 'si';
-const SENSOR_ITEM_DESCR  = 'n';
+const SENSOR_ITEM_DESCR  = 'd';
 const SENSOR_ITEM_TEMP   = 't';
 
 registerViewDescriptorDefault("sensors.ds18d20", handleDs18d20View);
@@ -23,12 +23,20 @@ function handleDs18d20View(entity,key,item){
 	itemsDivClean('sensors.ds18d20.items.div.edit');
 	
 	for (var uid in item){
+		var tempValue = '???';
+		
+		if(entity[uid+':'+SENSOR_ITEM_TEMP]!=undefined){
+			tempValue = entity[uid+':'+SENSOR_ITEM_TEMP];
+		}else if(item[uid]!=undefined && item[uid][SENSOR_ITEM_TEMP]!=undefined){
+			tempValue = item[uid][SENSOR_ITEM_TEMP];
+		}
+		
 		itemToDiv(
 				'sensors.ds18d20.'+uid+'.'+SENSOR_ITEM_TEMP,
 				item[uid][SENSOR_ITEM_DESCR],
 				uid+'.'+SENSOR_ITEM_TEMP,
 				true,
-				item[uid][SENSOR_ITEM_TEMP], 'entityLib-input-view', 'sensors.ds18d20.items.div');
+				tempValue, 'entityLib-input-view', 'sensors.ds18d20.items.div');
 		
 		itemToDiv(
 				'sensors.ds18d20.'+uid+'.'+SENSOR_ITEM_DESCR+'.edit',

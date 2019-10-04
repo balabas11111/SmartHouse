@@ -6,10 +6,14 @@ import java.util.Map.Entry;
 
 import com.balabas.smarthouse.server.model.ValueContainer;
 
+import lombok.Getter;
+
 public class AbstractAlarmValueContainerMinMaxValue<T extends ValueContainer> extends AbstractAlarm<T, Float>  {
 
+	@Getter
 	private Map<String, Float> minValues = new HashMap<>();
 	
+	@Getter
 	private Map<String, Float> maxValues = new HashMap<>();
 	
 	public void removeMinValue(String key) {
@@ -21,35 +25,28 @@ public class AbstractAlarmValueContainerMinMaxValue<T extends ValueContainer> ex
 	}
 	
 	public boolean putMinValue(String key, Float value) {
-		boolean ok = value!=null && item!=null && item.hasKey(key);
-		
-		if(ok) {
-			minValues.put(key, value);
-		}
-		
-		return ok;
+		return putValueMap(key, value, minValues);
 	}
 	
 	public boolean putMaxValue(String key, Float value) {
-		boolean ok = value!=null && item!=null && item.hasKey(key);
-		
-		if(ok) {
-			maxValues.put(key, value);
+		return putValueMap(key, value, maxValues);
+	}
+	
+	private boolean putValueMap(String key, Float value, Map<String, Float> vals){
+		if(!checkPutValue(key, value)){
+			return false;
 		}
-		
-		return ok;
+		vals.put(key, value);
+		return true;
 	}
 	
 	@Override
 	protected boolean doCheckItem() {
-		Boolean passed = true;
+		boolean passed = maxValues.entrySet().stream()
+							.anyMatch(e-> executeItemKeyCheck(e, true));
 		
-		maxValues.entrySet().stream()
-			.forEach(e-> executeItemKeyCheck(e, true));
-		
-		minValues.entrySet().stream()
-			
-			.forEach(e-> executeItemKeyCheck(e, false));
+		passed = minValues.entrySet().stream()
+				.anyMatch(e-> executeItemKeyCheck(e, false)) || passed;
 		
 		return passed;
 	}

@@ -13,7 +13,6 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.events.ChangedEvent;
-import com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType;
 import com.balabas.smarthouse.server.events.DeviceChangedEvent;
 import com.balabas.smarthouse.server.events.EntityChangedEvent;
 import com.balabas.smarthouse.server.events.GroupChangedEvent;
@@ -27,6 +26,8 @@ import com.balabas.smarthouse.server.model.ValueContainer;
 import com.balabas.smarthouse.server.model.SensorItem;
 import com.google.common.collect.Lists;
 
+import static com.balabas.smarthouse.server.DeviceConstants.FIELD_SPLITTER;
+
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_DEVICE;
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_DEVICE_INFO;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_FIRMWARE;
@@ -36,12 +37,17 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_DESCRIPTION;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ITEM_CLASS;
 
+import static com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType.ADDED;
+import static com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType.UPDATED;
+
 @Service
 @SuppressWarnings("rawtypes")
-public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
+public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 
     @Override
-    public List<ChangedEvent> parseJsonToModel(Device device, JSONObject deviceJson) {
+    public List<ChangedEvent> adapt(String data, Device device) {
+    	
+    	JSONObject deviceJson = new JSONObject(data);
         List<ChangedEvent> events = new ArrayList<>();
         
         if (device.getGroups()==null) {
@@ -54,7 +60,7 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
         	processDeviceInfo(device);
         	
             if(!device.isInitialDataReceived()){
-                events.add(new DeviceChangedEvent(device, DeviceEventType.ADDED));
+                events.add(new DeviceChangedEvent(device, ADDED));
             }
             
             for(String groupName: JSONObject.getNames(deviceJson)) {
@@ -64,44 +70,40 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
                 
                 Group group = getGroupOrCreateNew(device, groupName, events);
                 
-                if(group==null) {
-                	continue;
-                }
+                if(group!=null) {
 
-                if (!group.getData().isEmpty()) {
-                    List<EntityChangedEvent> entityEvents = new ArrayList<>();
-
-                    for(String entityName: JSONObject.getNames(group.getData())) {
-                    	
-                    	if(ENTITY_FIELD_DESCRIPTION.equals(entityName)) {
-                    		group.setDescription(group.getData().getString(ENTITY_FIELD_DESCRIPTION));
-                    		continue;
-                    	}
-                        
-                    	processEntityJson(!device.isInitialDataReceived(), group, entityName, entityEvents);
-                    }
-                    
-                    if(!entityEvents.isEmpty()){
-                    	events.addAll(entityEvents);
-                    	
-                        GroupChangedEvent groupEvent = new GroupChangedEvent(group, DeviceEventType.UPDATED, entityEvents);
-                        if(groupEvent!=null){
-                            events.add(groupEvent);
-                        }
-                        
-                    }
+	                if (!group.getData().isEmpty()) {
+	                    List<EntityChangedEvent> entityEvents = new ArrayList<>();
+	
+	                    for(String entityName: JSONObject.getNames(group.getData())) {
+	                    	
+	                    	if(ENTITY_FIELD_DESCRIPTION.equals(entityName)) {
+	                    		group.setDescription(group.getData().getString(ENTITY_FIELD_DESCRIPTION));
+	                    		continue;
+	                    	}
+	                        
+	                    	processEntityJson(!device.isInitialDataReceived(), group, entityName, entityEvents);
+	                    }
+	                    
+	                    if(!entityEvents.isEmpty()){
+	                    	events.addAll(entityEvents);
+	                    	
+	                        GroupChangedEvent groupEvent = new GroupChangedEvent(group, UPDATED, entityEvents);
+	                        if(groupEvent!=null){
+	                            events.add(groupEvent);
+	                        }
+	                        
+	                    }
+	                }
+	                
+	                group.setDataUpdateCompleted();
                 }
-                
-                group.setDataUpdateCompleted();
             }
         
             device.setDataUpdateCompleted();
         }else{
             device.setDataUpdateFailed();
         }
-
-        
-        
         
         return events;
     }
@@ -146,7 +148,7 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
             device.getGroups().add(group);
             
             if(device.isInitialDataReceived()){
-                events.add(new GroupChangedEvent(group, DeviceEventType.ADDED));
+                events.add(new GroupChangedEvent(group, ADDED));
             }
         } else {
             group.setData(groupJson);
@@ -173,7 +175,7 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
         valueEvents.addAll(processSensorItemsValues(noEventProduceApplyOnly, entity, entityJson));
         
         EntityChangedEvent entityValuesChangeEvent = 
-                EntityChangedEvent.build(entity, DeviceEventType.UPDATED, valueEvents);
+                EntityChangedEvent.build(entity, UPDATED, valueEvents);
         
         if(entityValuesChangeEvent!=null){
         	events.add(entityValuesChangeEvent);
@@ -187,9 +189,7 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
             entity = new Entity( group.getDeviceId(), group.getName(), entityName);
             group.getEntities().add(entity);
             
-            if(!noEventProduceApplyOnly){
-                events.add(new EntityChangedEvent(entity, DeviceEventType.ADDED));
-            }
+            events.add(new EntityChangedEvent(entity, ADDED));
         } 
         
         return entity;
@@ -268,11 +268,40 @@ public class GroupEntityUpdateServiceImpl implements GroupEntityUpdateService {
                     si = siOpt.get();
                 }
                 
+                
+                String removePreffix = siName + FIELD_SPLITTER;
+                
+                //get SensorItem value if presented in Entity instead of sensorItem
+                entity.getValues().entrySet().stream()
+                		.filter(entry -> entry.getKey().startsWith(removePreffix))
+                		.forEach(entry -> putCleanedSensorItemToJson(entry, removePreffix, siJson));
+                		
+                
                 valueEvents.add(putJsonToValueContainer(noEventProduceApplyOnly, si, siJson));
+                
+                for(Entry<String,Object> siInnerEntry: siJson.toMap().entrySet()){
+                	if(!ENTITY_FIELD_DESCRIPTION.equals(siInnerEntry.getKey())){
+                		String expectedKey = siName + FIELD_SPLITTER + siInnerEntry.getKey();
+                		String expectedValue = siInnerEntry.getValue().toString();
+                		if(!entity.hasKey(expectedKey)){
+                			entity.setValue(expectedKey, expectedValue);
+                		}
+                		if(!entity.getData().has(expectedKey)){
+                			entity.getData().put(expectedKey, expectedValue);
+                		}
+                	}
+                }
             }
         }
     	
     	return valueEvents;
+    }
+    
+    private void putCleanedSensorItemToJson(Entry<String,String> entry, String removePreffix, JSONObject siJson){
+    	String key = entry.getKey();
+    	String cleanedKey = key.substring(key.lastIndexOf(removePreffix) + removePreffix.length());
+    	
+    	siJson.put(cleanedKey, entry.getValue());
     }
 
     private static boolean isJsonObject(Object obj) {

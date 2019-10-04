@@ -6,15 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.naming.AuthenticationException;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,9 +19,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.function.EntityResponse;
 
-import com.balabas.smarthouse.server.model.Device;
+import com.balabas.smarthouse.server.alarm.AlarmRepositoryBaseValueContainer;
+import com.balabas.smarthouse.server.alarm.EntityMinMaxValueAlarm;
+import com.balabas.smarthouse.server.model.Entity;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
 import com.balabas.smarthouse.server.service.DeviceService;
@@ -60,6 +56,9 @@ public class MockedDeviceService implements InitializingBean {
 	private int initStep = 0;
 	
 	@Autowired
+	private AlarmRepositoryBaseValueContainer<Entity, EntityMinMaxValueAlarm> minMaxAlarmRepository;
+	
+	@Autowired
 	private DeviceService deviceService;
 	
 	@Autowired
@@ -70,16 +69,35 @@ public class MockedDeviceService implements InitializingBean {
 	private Map<String, String> serverKeys = new HashMap<>();
 	private Map<String, String> deviceKeys = new HashMap<>();
 	
+	private boolean doAlert = false;
+	
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.serverKeyHash = hash(serverKey);
 		log.info("Mock Key hashed =" + this.serverKeyHash);
 	}
 	
+	public void doAlertBme(boolean alert){
+		this.doAlert = alert;
+	}
+	
 	public void initMocks() throws IOException {
 		log.info("-----Server context was started MockedDevice-----");
 		reqs = ServerValuesMockUtil.getDevicesMock(3);
-		 
+		
+		if(minMaxAlarmRepository.getAlarms().isEmpty()){
+			EntityMinMaxValueAlarm alarm = new EntityMinMaxValueAlarm();
+			
+			alarm.setDeviceId(reqs.get(0).getDeviceId());
+			alarm.setItemName("bme280");
+			
+			alarm.putMaxValue("t", 25f);
+			
+			minMaxAlarmRepository.putAlarm(alarm);
+			
+			minMaxAlarmRepository.saveAlarms(minMaxAlarmRepository.getAlarms());
+		}
+		
 		reqs.stream().forEach(request->{
 			 sendIsOnlineRequest(request);
 			 sendRegistrationRequest(request);

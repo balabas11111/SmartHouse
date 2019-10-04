@@ -24,15 +24,15 @@
 #define DS18D20_DESCRIPTION "Temperature DallasTemperature"
 
 #define DS18D20_SENSOR_COUNT "c"
-#define DS18D20_SENSOR_ID "i"
-#define DS18D20_SENSOR_NAME "n"
-#define DS18D20_SENSOR_TEMPERATURE "t"
 
-#define DS18D20_SENSOR_ITEMS "si"
+#define SENSOR_ITEM_TEMP "t"
+#define SENSOR_ITEM_TEMP_SUF ":t"
+
 
 class DS18D20item {
 public:
 	DeviceAddress uid;
+	char* uidTempKey;
 	char* uidStr;
 	char* descr;
 	float temp;
@@ -58,6 +58,8 @@ public:
 			DS18D20item item = DS18D20item();
 
 			item.uidStr = strdup(dallasTemperature->getAddress(item.uid, i).c_str());
+			strcpy(item.uidTempKey, item.uidStr);
+			strcat(item.uidTempKey, SENSOR_ITEM_TEMP_SUF);
 			item.descr = item.uidStr;
 			item.temp = 127;
 
@@ -107,7 +109,7 @@ public:
 		for (int i = 0; i<itemCount; i++) {
 			String nameKey = String(items[i].uidStr)+ ".";
 
-			nameKey +=DS18D20_SENSOR_NAME;
+			nameKey += ENTITY_FIELD_DESCRIPTION;
 
 			Serial.print(nameKey);
 
@@ -174,15 +176,15 @@ protected:
 	bool jsonFromFileToItems(JsonObject& json) {
 		bool chg = false;
 
-		if (JsonObjectUtil::hasField<JsonObject>(json, DS18D20_SENSOR_ITEMS)) {
-			JsonObject& sensors = JsonObjectUtil::getFieldAsObject(json, DS18D20_SENSOR_ITEMS);
+		if (JsonObjectUtil::hasField<JsonObject>(json, ENTITY_FIELD_SENSOR_ITEMS)) {
+			JsonObject& sensors = JsonObjectUtil::getFieldAsObject(json, ENTITY_FIELD_SENSOR_ITEMS);
 
 			for (int i = 0; i<itemCount; i++) {
 				if (JsonObjectUtil::hasField<JsonObject>(sensors, items[i].uidStr)) {
 
 					JsonObject& sensor = JsonObjectUtil::getFieldAsObject(json, items[i].uidStr);
 
-					if (getKeyValueIfExistsAndNotEquals(sensor,	DS18D20_SENSOR_NAME, &items[i].descr)) {
+					if (getKeyValueIfExistsAndNotEquals(sensor,	ENTITY_FIELD_DESCRIPTION, &items[i].descr)) {
 						chg = true;
 					}
 				}
@@ -195,7 +197,7 @@ protected:
 	void itemsToJson(JsonObject& json, bool addTemp) {
 		setJsonField(json, DS18D20_SENSOR_COUNT, this->itemCount);
 		JsonObject& sensors = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(
-				json, DS18D20_SENSOR_ITEMS);
+				json, ENTITY_FIELD_SENSOR_ITEMS);
 
 
 		for (int i = 0; i < itemCount; i++) {
@@ -203,9 +205,9 @@ protected:
 					JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(sensors,
 							items[i].uidStr);
 
-			setJsonField(sensor, (DS18D20_SENSOR_NAME), items[i].descr);
+			setJsonField(sensor, (ENTITY_FIELD_DESCRIPTION), items[i].descr);
 			if (addTemp) {
-				setJsonField(sensor, (DS18D20_SENSOR_TEMPERATURE),
+				setJsonField(json, items[i].uidTempKey ,
 						items[i].temp);
 			}
 

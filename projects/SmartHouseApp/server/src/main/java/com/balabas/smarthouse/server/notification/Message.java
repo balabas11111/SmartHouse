@@ -1,7 +1,9 @@
 package com.balabas.smarthouse.server.notification;
 
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 public class Message {
 
 	public enum MessageSeverity{

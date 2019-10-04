@@ -5,7 +5,10 @@ import java.util.List;
 import com.balabas.smarthouse.server.model.SmartHouseItem;
 
 import lombok.Getter;
+import lombok.ToString;
 
+
+@ToString
 public class AbstractNotification<T extends SmartHouseItem> implements Notification<T> {
 
 	@Getter

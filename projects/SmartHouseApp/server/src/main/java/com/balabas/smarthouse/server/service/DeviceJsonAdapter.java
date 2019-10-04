@@ -2,14 +2,12 @@ package com.balabas.smarthouse.server.service;
 
 import java.util.List;
 
-import org.json.JSONObject;
-
 import com.balabas.smarthouse.server.events.ChangedEvent;
 import com.balabas.smarthouse.server.model.Device;
 
 @SuppressWarnings("rawtypes")
-public interface GroupEntityUpdateService {
+public interface DeviceJsonAdapter {
 
-    List<ChangedEvent> parseJsonToModel(Device device, JSONObject json);
+    List<ChangedEvent> adapt(String data, Device device);
     
 }

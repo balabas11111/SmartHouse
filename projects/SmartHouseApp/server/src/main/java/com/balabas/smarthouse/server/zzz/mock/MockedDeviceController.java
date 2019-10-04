@@ -39,6 +39,8 @@ public class MockedDeviceController {
 	
 	@Autowired
 	private MockedDeviceService mockService;
+	
+	boolean doAlert;
 
 	@GetMapping()
 	public List<Device> getAllDevices() {
@@ -50,6 +52,18 @@ public class MockedDeviceController {
 	public void mockAllDevices() throws IOException {
 		log.info("mock all devices=");
 		mockService.initMocks();
+	}
+	
+	@GetMapping("/alertbme")
+	public void alertBme() throws IOException {
+		log.info("mock all devices=");
+		doAlert=true;
+	}
+	
+	@GetMapping("/noalertbme")
+	public void noAlertBme() throws IOException {
+		log.info("mock all devices=");
+		doAlert=false;
 	}
 
 	@GetMapping("{deviceId}")
@@ -83,7 +97,7 @@ public class MockedDeviceController {
 			@RequestParam(value = DEVICE_FIELD_GROUP, required = false) String devEntGroup) throws UnsupportedEncodingException {
 
 		String result = ((devEntGroup == null || devEntGroup.isEmpty())
-				? ServerValuesMockUtil.getSettingsSensors(deviceId) : ServerValuesMockUtil.getSensors(deviceId))
+				? ServerValuesMockUtil.getSettingsSensors(deviceId,doAlert) : ServerValuesMockUtil.getSensors(deviceId,doAlert))
 						.toString();
 
 		boolean isServerRequestValid = mockService.OnDeviceValidateServerKey(headers, deviceId);

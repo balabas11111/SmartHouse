@@ -14,6 +14,7 @@ import com.balabas.smarthouse.server.events.GroupChangedEvent;
 
 @Log4j2
 @Service
+@SuppressWarnings("rawtypes") 
 public class EventProcessorsServiceImpl implements EventProcessorsService {
 
 	@Autowired

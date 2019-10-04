@@ -133,13 +133,12 @@ void Entity::markEntityAsSaveRequiredIfTrue(bool value){
 }
 
 void Entity::executeGet(JsonObject& params, JsonObject& response) {
-	setJsonField(response, DESCR, this->descr);
-
+	setJsonField(response, ENTITY_FIELD_DESCRIPTION, this->descr);
 	doGet(params, response);
 }
 
 void Entity::executePost(JsonObject& params, JsonObject& response) {
-	bool chg = getKeyValueIfExistsAndNotEquals(params, DESCR, &this->descr);
+	bool chg = getKeyValueIfExistsAndNotEquals(params, ENTITY_FIELD_DESCRIPTION, &this->descr);
 	markEntityAsChangedIfTrue(chg, chg);
 	markEntityAsSaveRequiredIfTrue(chg);
 
@@ -152,12 +151,12 @@ void Entity::setJsonToEntity(JsonObject& jsonFromFile) {
 	/*if (isKeyExistsInJsonAndNotEqValue(jsonFromFile, this->descrField, this->descr)) {
 		this->descr = strdup(getJsonField<const char*>(jsonFromFile, this->descrField));
 	}*/
-	getKeyValueIfExistsAndNotEquals(jsonFromFile, DESCR, &this->descr);
+	getKeyValueIfExistsAndNotEquals(jsonFromFile, ENTITY_FIELD_DESCRIPTION, &this->descr);
 	doLoad(jsonFromFile);
 }
 
 void Entity::getJsonToSave(JsonObject& jsonToFile) {
-	setKeyValueIfNotExistOrNotEqual(jsonToFile, DESCR, this->descr);
+	setKeyValueIfNotExistOrNotEqual(jsonToFile, ENTITY_FIELD_DESCRIPTION, this->descr);
 
 	doSave(jsonToFile);
 }

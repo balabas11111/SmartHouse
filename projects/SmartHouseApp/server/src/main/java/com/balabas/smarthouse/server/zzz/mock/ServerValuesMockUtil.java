@@ -62,20 +62,20 @@ public class ServerValuesMockUtil {
 			.build();
 	}
 
-	public static JSONObject getSettingsSensors(String deviceId) {
-		return new JSONObject().put(GROUP_SETTINGS, getSettingsJson()).put(GROUP_SENSORS, getSensorsJson())
+	public static JSONObject getSettingsSensors(String deviceId, boolean doAlert) {
+		return new JSONObject().put(GROUP_SETTINGS, getSettingsJson()).put(GROUP_SENSORS, getSensorsJson(doAlert))
 				.put(GROUP_DEVICE, getDeviceJson(deviceId));
 	}
 
-	public static JSONObject getSensors(String deviceId) {
-		return new JSONObject().put(GROUP_SENSORS, getSensorsJson()).put(GROUP_DEVICE, getDeviceJson(deviceId));
+	public static JSONObject getSensors(String deviceId, boolean doAlert) {
+		return new JSONObject().put(GROUP_SENSORS, getSensorsJson(doAlert)).put(GROUP_DEVICE, getDeviceJson(deviceId));
 	}
 
 	private static JSONObject getDeviceJson(String deviceId) {
 		return new JSONObject().put(ENTITY_DEVICE_DEVICE_ID, deviceId).put(ENTITY_DEVICE_DEVICE_FIRMWARE, FIRMWARE1);
 	}
 
-	private static JSONObject getSensorsJson() {
+	private static JSONObject getSensorsJson(boolean doAlertBme) {
 		return new JSONObject()
 				.put("bh1750", new JSONObject()
 						.put(ENTITY_FIELD_DESCRIPTION, "bh1750-descr")
@@ -84,7 +84,7 @@ public class ServerValuesMockUtil {
 						.put(ENTITY_FIELD_DESCRIPTION, "bme280-descr")
 						.put("p", getRandom(500, 600))
 						.put("h", getRandom(0, 100))
-						.put("t", getRandom(20, 30)))
+						.put("t", doAlertBme?getRandom(20, 30):5))
 				.put("DefaultRele", new JSONObject()
 						.put(ENTITY_FIELD_DESCRIPTION, "Default relea pin")
 						.put(ENTITY_FIELD_ITEM_CLASS, EntityClass.TOGGLE_BUTTON.getItemClass())
@@ -92,16 +92,22 @@ public class ServerValuesMockUtil {
 				.put("ds18d20", new JSONObject()
 						.put(ENTITY_FIELD_DESCRIPTION, "Temperature DallasTemperature")
 						.put("c", 3)
+						.put("00000000:t",getRandom(20, 30))
+						.put("00000001:t",getRandom(20, 30))
+						.put("00000002:t",getRandom(20, 30))
 						.put(ENTITY_FIELD_SENSOR_ITEMS, new JSONObject()
 								.put("00000000", new JSONObject()
 													.put(ENTITY_FIELD_DESCRIPTION, "00000000")
-													.put("t", getRandom(20, 30)))
+													//.put("t", getRandom(20, 30))
+													)
 								.put("00000001", new JSONObject()
 													.put(ENTITY_FIELD_DESCRIPTION, "00000001")
-													.put("t", getRandom(20, 30)))
+													//.put("t", getRandom(20, 30))
+													)
 								.put("00000002", new JSONObject()
 													.put(ENTITY_FIELD_DESCRIPTION, "00000002")
-													.put("t", getRandom(20, 30)))
+													//.put("t", getRandom(20, 30))
+													)
 								
 							)
 						);

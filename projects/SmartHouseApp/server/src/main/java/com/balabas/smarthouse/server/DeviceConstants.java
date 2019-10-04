@@ -2,6 +2,8 @@ package com.balabas.smarthouse.server;
 
 public class DeviceConstants {
 
+	public static final String FIELD_SPLITTER = ":";
+	
 	public static final String HTTP_PREFFIX  = "http://";
 	public static final String DEVICE_URL_ROOT = "/";
 	public static final String DEVICE_URL_DATA = "/data";
@@ -24,7 +26,7 @@ public class DeviceConstants {
 	//Entity reserved fields keys
 	public static final String ENTITY_FIELD_DESCRIPTION = "d";
 	public static final String ENTITY_FIELD_SENSOR_ITEMS = "si";
-	public static final String ENTITY_FIELD_ITEM_CLASS = "ir";
+	public static final String ENTITY_FIELD_ITEM_CLASS = "ic";
 	
 	//Entity standard key names
 	public static final String ENTITY_FIELD_ON = "on";

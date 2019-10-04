@@ -6,26 +6,34 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class Entity extends ValueContainer  {
+@ToString(callSuper = true)
+public class Entity extends ValueContainer {
 
 	@Getter
 	private String groupName;
-	
-	
-    private Set<SensorItem> sensorItems;
-    
-    public Entity(String deviceId, String groupName, String entityName){
-    	this.deviceId = deviceId;
-    	this.groupName = groupName;
-        this.name = entityName;
-    }
-    
-    public boolean hasSensorItems(){
-        return sensorItems!=null && !sensorItems.isEmpty();
-    }
-    
+
+	private Set<SensorItem> sensorItems;
+
+	public Entity(String deviceId, String groupName, String entityName) {
+		this.deviceId = deviceId;
+		this.groupName = groupName;
+		this.name = entityName;
+	}
+
+	public boolean hasSensorItems() {
+		return sensorItems != null && !sensorItems.isEmpty();
+	}
+
+	public SensorItem getSensorItem(String sensorItemKey) {
+		if (!hasSensorItems()) {
+			return null;
+		}
+		return sensorItems.stream().filter(si -> si.name.equals(sensorItemKey)).findFirst().orElse(null);
+	}
+
 }

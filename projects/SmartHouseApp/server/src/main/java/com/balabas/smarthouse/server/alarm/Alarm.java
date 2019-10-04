@@ -21,11 +21,15 @@ public interface Alarm<T extends SmartHouseItem> {
 	
 	boolean isActive();
 	
+	void setActive(boolean active);
+	
 	boolean isAlarmDetected();
 	
 	boolean checkItemForAlarm();
 	
 	String getDeviceId();
+	
+	String getItemName();
 	
 	boolean sendRequired();
 	
