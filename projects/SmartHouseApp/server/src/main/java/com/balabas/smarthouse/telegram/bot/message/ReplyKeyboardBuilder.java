@@ -13,6 +13,9 @@ import com.balabas.smarthouse.server.view.Action;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_UNKNOWN;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_DEVICE_LIST;
 
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_HOME;
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_ROOT;
+
 @Component
 public class ReplyKeyboardBuilder {
 	
@@ -22,7 +25,8 @@ public class ReplyKeyboardBuilder {
 	public Action getActionByReplyButton(String data){
 		if(data!=null && !data.isEmpty()) {
 			if(data.startsWith(button.getRefreshDeviceListButton())
-					|| BotMessageConstants.COMMAND_HOME.equals(data)){
+					|| COMMAND_HOME.equals(data)
+					|| COMMAND_ROOT.equals(data)){
 				return Action.fromColumnList(ACTION_TYPE_VIEW_DEVICE_LIST); 
 			}
 		}

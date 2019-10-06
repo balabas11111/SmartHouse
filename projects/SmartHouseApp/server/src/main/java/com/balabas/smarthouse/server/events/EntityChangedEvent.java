@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.ToString;
 
+import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.Entity;
 
 @ToString(callSuper = true)
@@ -15,8 +16,12 @@ public class EntityChangedEvent extends ChangedEvent<Entity> {
     @Getter
     private List<ValuesChangeEvent> events =new ArrayList<>();
     
-    public EntityChangedEvent(Entity target, DeviceEventType eventType) {
-        super(target, eventType);
+    @Getter
+    private Device device;
+    
+    public EntityChangedEvent(Device device, Entity target, DeviceEventType eventType) {
+    	super(target, eventType);
+    	this.device = device;
     }
     
     public EntityChangedEvent(Entity target, DeviceEventType eventType, List<ValuesChangeEvent> events) {

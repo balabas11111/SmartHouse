@@ -26,5 +26,5 @@ public interface AlarmRepository<T extends SmartHouseItem, S extends Alarm<T>> {
 	
 	void activateAlarmsForDevice(Device device);
 
-	void activateAlarmsForItem(T item);
+	void activateAlarmsForItem(Device device, T item);
 }

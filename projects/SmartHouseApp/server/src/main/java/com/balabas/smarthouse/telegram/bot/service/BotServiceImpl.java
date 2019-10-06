@@ -12,10 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.generics.BotSession;
-import org.telegram.telegrambots.starter.AfterBotRegistration;
 
-import com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType;
-import com.balabas.smarthouse.server.events.DeviceChangedEvent;
+import com.balabas.smarthouse.server.notification.Notification;
+import com.balabas.smarthouse.telegram.bot.AfterBotRegistration;
 import com.balabas.smarthouse.telegram.bot.handler.SmartHouseBotHandler;
 
 import lombok.Getter;
@@ -98,18 +97,15 @@ public class BotServiceImpl implements BotService, InitializingBean {
 					method.getDeclaringClass().getCanonicalName()));
 		}
 	}
-
+	
+	@SuppressWarnings("rawtypes")
 	@Override
-	public void process(DeviceChangedEvent event) {
-		if(DeviceEventType.ADDED.equals(event.getEventType())) {
-			if(!botEnabled) {
-				log.warn("Telegram DISABLED but device registered");
-				return;
-			}
-			
-			bot.sendDeviceRegisteredToAllUsers(event.getTarget().getDeviceDescr());
+	public void sendNotification(Notification notification) {
+		if(!botEnabled) {
+			log.warn("Telegram DISABLED :"+notification);
+			return;
 		}
-		
+		bot.sendNotificationToAllUsers(notification);
 	}
-
+	
 }

@@ -13,6 +13,10 @@ public interface Alarm<T extends SmartHouseItem> {
 	
 	T getItem();
 	
+	public void activate(Long alarmIntervalSec, T item, String descriptionHead) ;
+	
+	Notification<T> checkItemForAlarmAndReschedule();
+	
 	void setItem(T item) throws IllegalArgumentException;
 	
 	List<Message> getMessages();
@@ -22,6 +26,8 @@ public interface Alarm<T extends SmartHouseItem> {
 	boolean isActive();
 	
 	void setActive(boolean active);
+	
+	void setNotifyIntervalSec(Long sec);
 	
 	boolean isAlarmDetected();
 	
@@ -34,7 +40,7 @@ public interface Alarm<T extends SmartHouseItem> {
 	boolean sendRequired();
 	
 	void reschedule();
-
-	Notification<T> checkItemForAlarmAndReschedule();
+	
+	String getMessageView();
 	
 }

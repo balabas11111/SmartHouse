@@ -54,16 +54,10 @@ public class MockedDeviceController {
 		mockService.initMocks();
 	}
 	
-	@GetMapping("/alertbme")
-	public void alertBme() throws IOException {
-		log.info("mock all devices=");
-		doAlert=true;
-	}
-	
-	@GetMapping("/noalertbme")
-	public void noAlertBme() throws IOException {
-		log.info("mock all devices=");
-		doAlert=false;
+	@GetMapping("/alertBme")
+	public void noAlertBme(@RequestParam(value = "doAlert") boolean alert) throws IOException {
+		log.info("Mocking doAlert = " + alert);
+		doAlert=alert;
 	}
 
 	@GetMapping("{deviceId}")
@@ -106,7 +100,7 @@ public class MockedDeviceController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("suck man");
 		}
 		
-		log.info("Mock result =" + result);
+		log.debug("Mock result =" + result);
 
 		return ResponseEntity.ok().body(result);
 	}

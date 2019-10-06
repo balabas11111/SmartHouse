@@ -1,0 +1,39 @@
+package com.balabas.smarthouse.server.events.processors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.balabas.smarthouse.server.alarm.AlarmProcessService;
+import com.balabas.smarthouse.server.alarm.AlarmProcessServiceEntity;
+import com.balabas.smarthouse.server.events.EntityChangedEvent;
+import com.balabas.smarthouse.server.events.service.EventProcessorNotificationDispatcherExecutor;
+import com.balabas.smarthouse.server.model.Entity;
+
+import lombok.extern.log4j.Log4j2;
+
+import static com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType.ADDED;
+import static com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType.UPDATED;
+
+@Component
+@Log4j2
+public class EntityEventProcessorAlarm
+		extends EventProcessorNotificationDispatcherExecutor<Entity, EntityChangedEvent> {
+
+	@Autowired
+	private AlarmProcessService<Entity> entityAlarmService;
+
+	@Override
+	public void process(EntityChangedEvent event) {
+		if (ADDED.equals(event.getEventType())) {
+			log.debug("Entity alarms activation");
+
+			entityAlarmService.activateAlarms(event.getDevice(), event.getTarget());
+		} else if (UPDATED.equals(event.getEventType())) {
+
+			entityAlarmService.getALarms(event.getTarget()).forEach(alarm -> {
+				dispatch(alarm.checkItemForAlarmAndReschedule());
+			});
+		}
+	}
+
+}

@@ -65,7 +65,7 @@ public class EventProcessorsServiceImpl implements EventProcessorsService {
     		groupEventsProcessors.stream()
 				.forEach(proc-> proc.process(event));
     	}else{
-    		log.warn("GroupChangedEvent : " + event.printDetails());
+    		//log.warn("GroupChangedEvent : " + event.printDetails());
     	}
     }
     

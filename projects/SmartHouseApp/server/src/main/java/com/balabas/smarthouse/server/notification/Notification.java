@@ -14,4 +14,6 @@ public interface Notification<T extends SmartHouseItem> {
 	
 	boolean valid();
 	
+	
+	
 }

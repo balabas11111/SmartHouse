@@ -1,8 +1,10 @@
 package com.balabas.smarthouse.server.notification;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
+@Builder
 @ToString
 public class Message {
 

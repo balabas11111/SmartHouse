@@ -88,10 +88,11 @@ public class MockedDeviceService implements InitializingBean {
 		if(minMaxAlarmRepository.getAlarms().isEmpty()){
 			EntityMinMaxValueAlarm alarm = new EntityMinMaxValueAlarm();
 			
-			alarm.setDeviceId(reqs.get(0).getDeviceId());
-			alarm.setItemName("bme280");
+			DeviceRequest req = reqs.get(0);
 			
-			alarm.putMaxValue("t", 25f);
+			alarm.setDeviceId(req.getDeviceId());
+			alarm.setItemName("bme280");
+			alarm.putMaxValue("t", 10f);
 			
 			minMaxAlarmRepository.putAlarm(alarm);
 			
@@ -119,7 +120,7 @@ public class MockedDeviceService implements InitializingBean {
 			}
 		}
 		
-        log.info("Mock data update dispatched");
+        log.debug("Mock data update dispatched");
         if(initDone){
         reqs.stream().forEach(request->{
         	sendDataUpdatedRequest(request);

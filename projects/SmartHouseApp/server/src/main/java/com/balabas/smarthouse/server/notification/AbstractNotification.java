@@ -7,7 +7,6 @@ import com.balabas.smarthouse.server.model.SmartHouseItem;
 import lombok.Getter;
 import lombok.ToString;
 
-
 @ToString
 public class AbstractNotification<T extends SmartHouseItem> implements Notification<T> {
 
@@ -32,7 +31,7 @@ public class AbstractNotification<T extends SmartHouseItem> implements Notificat
 
 	@Override
 	public boolean valid() {
-		return item!=null && messages!=null && !messages.isEmpty();
+		return item!=null && header!=null && messages!=null;
 	}
 	
 	

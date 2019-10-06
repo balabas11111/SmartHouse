@@ -1,12 +1,14 @@
 package com.balabas.smarthouse.telegram.bot.service;
 
-import com.balabas.smarthouse.server.events.DeviceChangedEvent;
-import com.balabas.smarthouse.server.events.service.EventProcessorBase;
+import com.balabas.smarthouse.server.notification.Notification;
 
-public interface BotService extends EventProcessorBase<DeviceChangedEvent> {
+public interface BotService {
 
 	void sendHtmlMessageToAllUsers(String text);
 
 	void sendTextMessageToAllUsers(String text);
+
+	@SuppressWarnings("rawtypes")
+	void sendNotification(Notification notification);
 
 }

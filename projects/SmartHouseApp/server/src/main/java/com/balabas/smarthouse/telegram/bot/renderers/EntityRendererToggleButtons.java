@@ -22,7 +22,7 @@ public class EntityRendererToggleButtons implements EntityRenderer<Entity> {
 
 	public static final String TOOGLE_BUTTON_DATA_ON = "{\"on\":1}";
 	public static final String TOOGLE_BUTTON_DATA_OFF = "{\"on\":0}";
-	public static final String TOOGLE_BUTTON_STR = "%s %s \n\n состояние %s";
+	public static final String TOOGLE_BUTTON_STR = "%s %s ( %s )";
 	
 	public static final String VALUE_ENTITY_TURN_ON = "Включить";
 	public static final String VALUE_ENTITY_TURN_OFF = "Отключить";
@@ -48,7 +48,9 @@ public class EntityRendererToggleButtons implements EntityRenderer<Entity> {
 				Action.fromEntity(ACTION_TYPE_SEND_DATA_TO_DEVICE, item, TOOGLE_BUTTON_DATA_OFF).getCallbackData();
 		
 		return ReplyContext.createMsg(inlineKeyboardBuilder.getToggleOnOffInlineKeyboard(
-				text,VALUE_ENTITY_TURN_ON, VALUE_ENTITY_TURN_OFF,
+				text,
+				VALUE_ENTITY_TURN_ON,
+				VALUE_ENTITY_TURN_OFF,
 				onAction, offAction),
 				null, chatId, text, true);
 		

@@ -8,10 +8,11 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.starter.AfterBotRegistration;
 
+import com.balabas.smarthouse.server.notification.Notification;
 import com.balabas.smarthouse.server.service.DeviceService;
 import com.balabas.smarthouse.server.view.Action;
+import com.balabas.smarthouse.telegram.bot.AfterBotRegistration;
 import com.balabas.smarthouse.telegram.bot.message.ReplyContext;
 import com.google.common.collect.Lists;
 
@@ -101,7 +102,7 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 		try {
 			switch (action.getAction()) {
 			case ACTION_TYPE_VIEW_DEVICE_LIST:
-				msgs.add(messageBuilder.createDevicesListInlineKeyboard(authService.getServerName(), context));
+				msgs.addAll(messageBuilder.createDevicesListInlineKeyboard(authService.getServerName(), context));
 				break;
 			case ACTION_TYPE_VIEW_GROUPS_OF_DEVICE:
 				msgs.add(messageBuilder.createGroupsOfDeviceInlineKeyboard(action.getDeviceId(),context));
@@ -148,6 +149,15 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 		authService.getAllowedUserIds().stream().forEach(chatId -> {
 			sendMessages(messageBuilder.createDeviceRegisteredMessages(deviceName, chatId.longValue() ));
 		});
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public void sendNotificationToAllUsers(Notification notification) {
+		String text = messageBuilder.createNotificationMessage(notification);
+		
+		authService.getAllowedUserIds().stream().forEach(chatId -> 
+			sendMessage(messageBuilder.createHtmlMessage(chatId.longValue(), text))
+		);
 	}
 
 }

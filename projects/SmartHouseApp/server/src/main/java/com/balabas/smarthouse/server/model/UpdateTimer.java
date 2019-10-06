@@ -29,7 +29,7 @@ public class UpdateTimer {
         this.updateInterval = updateInterval;
         this.registrationTime = new Date();
         
-        log.info("new UpdateTimer("+parentName+") i="+updateInterval);
+        log.debug("new UpdateTimer("+parentName+") i="+updateInterval);
     }
     
     public void setWaitsForDataUpdate(boolean value){

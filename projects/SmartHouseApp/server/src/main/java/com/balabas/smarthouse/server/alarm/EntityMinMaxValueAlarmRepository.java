@@ -21,85 +21,80 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Repository
-public class EntityMinMaxValueAlarmRepository implements AlarmRepositoryBaseValueContainer<Entity, EntityMinMaxValueAlarm>, InitializingBean  {
+public class EntityMinMaxValueAlarmRepository
+		implements AlarmRepositoryBaseValueContainer<Entity, EntityMinMaxValueAlarm>, InitializingBean {
 
 	@Getter
 	private List<EntityMinMaxValueAlarm> alarms = new ArrayList<>();
-	
+
 	@Getter
 	@Value("${smarthouse.server.repository.path}")
 	private String storagePath = "repository/alarm/";
-	
-	private String getStorageFilePath(){
-		return storagePath + this.getClass().getSimpleName()+".json";
+
+	@Getter
+	@Value("${smarthouse.server.alarm.interval:30}")
+	private Long alarmInterval;
+
+	private String getStorageFilePath() {
+		return storagePath + this.getClass().getSimpleName() + ".json";
 	}
-	
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		init();
 	}
-	
+
 	@Override
 	public void init() throws IOException {
 		File file = new File(getStorageFilePath());
-		if(file.exists()){
-			 ObjectMapper mapper = new ObjectMapper();
-			
-			List<EntityMinMaxValueAlarm> loaded = mapper.readValue(file, new TypeReference<List<EntityMinMaxValueAlarm>>(){});
-			
+		if (file.exists()) {
+			ObjectMapper mapper = new ObjectMapper();
+
+			List<EntityMinMaxValueAlarm> loaded = mapper.readValue(file,
+					new TypeReference<List<EntityMinMaxValueAlarm>>() {
+					});
+
 			alarms = loaded;
 		}
 	}
-	
+
 	@Override
 	public void saveAlarms(List<EntityMinMaxValueAlarm> alarms) throws IOException {
 		File file = new File(getStorageFilePath());
-		
+
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.writeValue(file, alarms);
-		
+
 		log.info("Alarms saved");
 	}
-	
+
 	@Override
 	public void activateAlarmsForDevice(Device device) {
-		alarms.stream().filter(a->device.getDeviceId().equals(a.getDeviceId()))
-		.forEach(alarm->
-					device.getGroups().stream().flatMap(g->g.getEntities().stream())
-					.filter(e->e.getName().equals(alarm.getItemName()))
-					.forEach(e->{
-						alarm.setItem(e);
-						alarm.setActive(true);
-						log.info("Alarm activated " + alarm.getItemName());
-					})
-				);
+		alarms.stream().filter(a -> device.getDeviceId().equals(a.getDeviceId()))
+				.forEach(alarm -> device.getGroups().stream().flatMap(g -> g.getEntities().stream())
+						.filter(e -> e.getName().equals(alarm.getItemName())).forEach(entity -> {
+							alarm.activate(alarmInterval, entity, device.getDeviceDescr() + " : " + entity.getDescription());
+						}));
 	}
-	
+
 	@Override
-	public void activateAlarmsForItem(Entity entity) {
-		alarms.stream()
-			.filter(a-> !a.isActive() && a.getDeviceId().equals(entity.getDeviceId()) && a.getItemName().equals(entity.getName()))
-			.forEach(alarm->{
-						alarm.setItem(entity);
-						alarm.setActive(true);
-						log.info("Alarm activated " + alarm.getItemName());
-					});
+	public void activateAlarmsForItem(Device device, Entity entity) {
+		alarms.stream().filter(a -> !a.isActive() && a.getDeviceId().equals(entity.getDeviceId())
+				&& a.getItemName().equals(entity.getName())).forEach(alarm -> {
+					alarm.activate(alarmInterval, entity, device.getDeviceDescr() + " : " + entity.getDescription());
+				});
 	}
 
 	@Override
 	public void putAlarm(EntityMinMaxValueAlarm alarm) {
-		/*if(alarm.getItem() == null){
-			throw new IllegalArgumentException("bad alarm");
-		}
-		*/
 		int index = IntStream.range(0, alarms.size())
-				.filter(i -> alarms.get(i).getItem()!=null && alarms.get(i).getItem().equals(alarm.getItem()))
+				.filter(i -> alarms.get(i).getItem() != null && alarms.get(i).getItem().equals(alarm.getItem()))
 				.findFirst().orElse(-1);
-		
-		if(index>-1){
+
+		if (index > -1) {
 			alarms.set(index, alarm);
 			log.debug("Alarm refreshed");
-		}else{
+		} else {
 			alarms.add(alarm);
 			log.debug("new alarm added");
 		}
@@ -112,18 +107,21 @@ public class EntityMinMaxValueAlarmRepository implements AlarmRepositoryBaseValu
 
 	@Override
 	public List<EntityMinMaxValueAlarm> getActiveAlarms(String deviceId) {
-		return alarms.stream().filter(a-> a.isActive() && a.getDeviceId().equals(deviceId)).collect(Collectors.toList());
+		return alarms.stream().filter(a -> a.isActive() && a.getDeviceId().equals(deviceId))
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<EntityMinMaxValueAlarm> getActiveAlarms(String deviceId, String itemName) {
-		return alarms.stream().filter(a-> a.isActive() && a.getDeviceId().equals(deviceId) && a.getItemName().equals(itemName)).collect(Collectors.toList());
+		return alarms.stream()
+				.filter(a -> a.isActive() && a.getDeviceId().equals(deviceId) && a.getItemName().equals(itemName))
+				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<EntityMinMaxValueAlarm> getAlarmsForItem(Entity entity) {
 		return alarms.stream()
-				.filter(a-> a.getDeviceId().equals(entity.getDeviceId()) && a.getItemName().equals(entity.getName()))
+				.filter(a -> a.getDeviceId().equals(entity.getDeviceId()) && a.getItemName().equals(entity.getName()))
 				.collect(Collectors.toList());
 	}
 

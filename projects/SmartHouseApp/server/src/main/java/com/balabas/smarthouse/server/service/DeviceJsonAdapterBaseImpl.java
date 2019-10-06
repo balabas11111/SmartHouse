@@ -82,7 +82,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 	                    		continue;
 	                    	}
 	                        
-	                    	processEntityJson(!device.isInitialDataReceived(), group, entityName, entityEvents);
+	                    	processEntityJson(!device.isInitialDataReceived(), device, group, entityName, entityEvents);
 	                    }
 	                    
 	                    if(!entityEvents.isEmpty()){
@@ -157,7 +157,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
         return group;
     }
     
-    private void processEntityJson(boolean noEventProduceApplyOnly,Group group, String entityName, List<EntityChangedEvent> events){
+    private void processEntityJson(boolean noEventProduceApplyOnly, Device device, Group group, String entityName, List<EntityChangedEvent> events){
     	JSONObject entityJson = null;
         
         try{
@@ -166,7 +166,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
            return;
         }
     	
-        Entity entity = getEntityOrCreateNew(noEventProduceApplyOnly, group, entityName, events);
+        Entity entity = getEntityOrCreateNew(noEventProduceApplyOnly, device, group, entityName, events);
         
         List<ValuesChangeEvent> valueEvents = new ArrayList<>();
         
@@ -182,14 +182,14 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
         }
     }
     
-    private Entity getEntityOrCreateNew(boolean noEventProduceApplyOnly, Group group, String entityName, List<EntityChangedEvent> events) {
+    private Entity getEntityOrCreateNew(boolean noEventProduceApplyOnly, Device device, Group group, String entityName, List<EntityChangedEvent> events) {
         Entity entity = group.getEntity(entityName);
         
         if (entity == null) {
             entity = new Entity( group.getDeviceId(), group.getName(), entityName);
             group.getEntities().add(entity);
             
-            events.add(new EntityChangedEvent(entity, ADDED));
+            events.add(new EntityChangedEvent(device, entity, ADDED));
         } 
         
         return entity;
