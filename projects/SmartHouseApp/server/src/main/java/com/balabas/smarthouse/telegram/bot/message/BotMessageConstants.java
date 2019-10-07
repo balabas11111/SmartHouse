@@ -2,6 +2,8 @@ package com.balabas.smarthouse.telegram.bot.message;
 
 public class BotMessageConstants {
 
+	public static final String BOT_TEMPLATES_PATH = "telegram/templates/text/";
+	
 	public static final String BOT_REGISTERED_MSG = "%s \"%s\" запущен в %tT";
 	
 	public static final String DEVICE_REGISTERED_MSG = "%s <b>Зарегистрировано устройство </b> \" %s \" время %tT";

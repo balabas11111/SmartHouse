@@ -200,6 +200,11 @@ public class SendMessageBuilder {
 				group.getEntities().stream().forEach(entity ->{
 					alarms.stream().filter(alarm -> entity.getName().equals(alarm.getItemName()))
 						.forEach(alarm -> {
+							if(alarm.isAlarmDetected()) {
+								builder.append(" ");
+								builder.append(Emoji.ERROR.toString());
+								builder.append(" ");
+							}
 							builder.append(alarm.getMessageView());
 							builder.append("\n");
 						});
@@ -232,10 +237,9 @@ public class SendMessageBuilder {
 			return;
 		}
 		String result = "";
-		String baseTmplPath = "templates/bot/text/";
 
 		try {
-			String tmplPath = baseTmplPath + entName + ".txt";
+			String tmplPath = BotMessageConstants.BOT_TEMPLATES_PATH + entName + ".txt";
 
 			URL u = this.getClass().getClassLoader().getResource(tmplPath);
 			result = Resources.toString(u, Charsets.UTF_8);
