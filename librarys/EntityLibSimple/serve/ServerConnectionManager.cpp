@@ -73,7 +73,7 @@ void ServerConnectionManager::generateServerUrls() {
 
 }
 
-void ServerConnectionManager::generateDeviceAuthorization(String& tempServerKey) {
+void ServerConnectionManager::generateAuthorization(String& tempServerKey) {
 	Serial.print(FPSTR("generate Authorization-------------------------"));
 	Serial.print(FPSTR("tempDeviceKey="));
 	Serial.println(tempDeviceKey);
@@ -96,13 +96,6 @@ void ServerConnectionManager::generateDeviceAuthorization(String& tempServerKey)
 	Serial.println(this->deviceAuthorization);
 	Serial.print(FPSTR("serverHash="));
 	Serial.println(conf->getServerAuthorization());
-	Serial.println(FPSTR("...done"));
-}
-
-void ServerConnectionManager::generateServerAuthorization(String& tempServerKey) {
-	//Serial.print(FPSTR("generate serverAuthorization="));
-
-	Serial.print(conf->getServerAuthorization());
 	Serial.println(FPSTR("...done"));
 }
 
@@ -162,8 +155,7 @@ void ServerConnectionManager::sendRegisterRequest() {
 		Serial.println(FPSTR("...ok"));
 		String tempServerKey = http.getString();
 		http.end();
-		this->generateDeviceAuthorization(tempServerKey);
-		this->generateServerAuthorization(tempServerKey);
+		this->generateAuthorization(tempServerKey);
 		this->deviceRegistered = true;
 		this->triggeredServerRegister = false;
 		this->registrationFailures = 0;

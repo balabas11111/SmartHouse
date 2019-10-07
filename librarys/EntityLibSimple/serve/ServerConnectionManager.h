@@ -41,7 +41,7 @@
 #endif
 
 #ifndef SERVER_CONNECTION_REGISTRATION_FAILED_MIN_HEAP_TO_RESTART
-	#define SERVER_CONNECTION_REGISTRATION_FAILED_MIN_HEAP_TO_RESTART 20000
+	#define SERVER_CONNECTION_REGISTRATION_FAILED_MIN_HEAP_TO_RESTART 18000
 #endif
 
 #ifndef SERVER_CONNECTION_DATA_UPDATE_REQUEST_FAILED_TIMEOUT
@@ -69,8 +69,7 @@ protected:
 	void generateTempDeviceKey();
 	void generateServerUrls();
 
-	void generateDeviceAuthorization(String& tempServerKey);
-	void generateServerAuthorization(String& tempServerKey);
+	void generateAuthorization(String& tempServerKey);
 
 	void sendPingRequest();
 	void sendRegisterRequest();
