@@ -250,14 +250,14 @@ void EntityManager::groupNameToParam(char* group, char* name,
 }
 
 EntityJsonRequestResponse* EntityManager::createEntityJsonRequestResponse() {
-	//ObjectUtils::printHeap();
+	//DeviceUtils::printHeap();
 	return new EntityJsonRequestResponse();
 }
 
 void EntityManager::deleteEntityJsonRequestResponse(
 		EntityJsonRequestResponse* json) {
 	delete json;
-	//ObjectUtils::printHeap();
+	//DeviceUtils::printHeap();
 }
 
 bool EntityManager::processChangedEntities(){
@@ -296,7 +296,7 @@ bool EntityManager::processChangedEntities(){
 
 	this->entitiesChanged = false;
 
-	ObjectUtils::printTimeHeap(start);
+	DeviceUtils::printTimeHeap(start);
 	Serial.println(FPSTR("---"));
 	return result;
 }

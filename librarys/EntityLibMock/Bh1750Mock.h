@@ -8,9 +8,9 @@
 #ifndef LIBRARIES_ENTITYLIBMOCK_BH1750MOCK_H_
 #define LIBRARIES_ENTITYLIBMOCK_BH1750MOCK_H_
 
+#include <DeviceUtils.h>
 #include "Arduino.h"
 #include "AMock.h"
-#include "ObjectUtils.h"
 
 class Bh1750Mock:public AMock {
 public:

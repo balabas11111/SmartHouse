@@ -14,14 +14,11 @@
 
 #include <WiFi/WiFiManager.h>
 #include <WiFi/WiFiServerManager.h>
-#include <server/SecurityManager.h>
-
 #include <Entity.h>
 #include <EntityManager.h>
 #include <EntityUpdate.h>
 #include <EntityUpdateManager.h>
 
-#include <ObjectUtils.h>
 #include <FileUtils.h>
 #include <I2C_utils.h>
 #include <functional>
@@ -32,6 +29,9 @@
 #include <Notifiers/DataSelectorEntityManager.h>
 
 #include <ApplicationContext.h>
+#include <DeviceUtils.h>
+#include <serve/ServerConnectionManager.h>
+#include <serve/DeviceManager.h>
 
 class EntityApplication : public ApplicationContext {
 public:
@@ -60,12 +60,14 @@ public:
 	EntityUpdateManager* getEntityUpdateManager();
 	WiFiManager* getWiFiManager();
 	WiFiServerManager* getWifiServerManager();
-	SecurityManager* getSecurityManager();
+	ServerConnectionManager* getServerConnectionManager();
 
 	DataSelector* getDataSelector();
 	Notifier* getDefaultNotifier();
 
 	void registerOnServer(bool trigger = true);
+
+	void restart();
 
 	void registerTicker(void (*callback)(void));
 	void registerTicker(uint32_t milliseconds, void (*callback)(void));
@@ -83,10 +85,11 @@ private:
 	EntityManager* entityManager;
 	EntityUpdateManager* entityUpdateManager;
 
-	SecurityManager* securityManager = nullptr;
-
 	DataSelector* defaultDataSelector = nullptr;
 	Notifier* defaultNotifier = nullptr;
+
+	ServerConnectionManager* serverConnectionManager = nullptr;
+	DeviceManager deviceManager;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYAPPLICATION_H_ */

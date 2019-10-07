@@ -14,7 +14,6 @@
 #include <Ticker.h>
 
 #include <EntityUpdate.h>
-#include <Entity.h>
 
 class EntityUpdateManager {
 public:
@@ -22,6 +21,8 @@ public:
 	virtual ~EntityUpdateManager(){}
 
 	int init(int interval);
+
+	void registerEntity(EntityUpdate* entity);
 
 	void updateEntities(bool force = false);
 	void loop(bool force = false);

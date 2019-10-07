@@ -20,10 +20,10 @@ public:
 
 	void init(long interv,unsigned long initTime);
 
-	virtual void loop(){}
+	virtual void loop(){};
 
 	virtual bool update(unsigned long time,bool force = false) final;
-	virtual void doUpdate() = 0;
+	virtual void doUpdate() {};
 
 	long getInterval();
 	bool isAutoupdate();

@@ -59,8 +59,8 @@ public:
 				interruptProcessFunction();
 			}
 
-			if(selfEventProcessFunction!=nullptr){
-				selfEventProcessFunction();
+			if(onSetChangedEventFunction!=nullptr){
+				onSetChangedEventFunction();
 			}
 		}
 	}

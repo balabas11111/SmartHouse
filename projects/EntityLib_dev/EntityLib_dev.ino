@@ -1,19 +1,20 @@
 #include "Arduino.h"
 #include <ArduinoJson.h>
+#include <DeviceUtils.h>
 
 #include <functional>
 
 #include <EntityApplication.h>
 #include <Entity.h>
 #include <EntityUpdate.h>
-#include <ObjectUtils.h>
-
 #include <WIFi/WiFiSettingsBox.h>
 #include "Bme280sensor.h"
 #include "Bh1750sensor.h"
 #include "DHT22sensor.h"
 #include "DS18D20sensor.h"
 #include "OutputPin.h"
+
+#define DEVICE_MANAGER_MIN_HEAP_RESTART 1000
 
 Bme280sensor bme280;
 Bh1750sensor bh1750;

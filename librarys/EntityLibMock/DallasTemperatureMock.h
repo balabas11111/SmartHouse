@@ -8,10 +8,9 @@
 #ifndef LIBRARIES_ENTITYLIBMOCK_DALLASTEMPERATUREMOCK_H_
 #define LIBRARIES_ENTITYLIBMOCK_DALLASTEMPERATUREMOCK_H_
 
+#include <DeviceUtils.h>
 #include "Arduino.h"
 #include "AMock.h"
-#include "ObjectUtils.h"
-
 #include "OneWireMock.h"
 #include "DallasTemperature.h"
 
@@ -31,7 +30,7 @@ public:
 		uint8_t addrLoc[8]={0,0,0,0,0,0,0,index};
 
 		/*Serial.println(FPSTR("getAddress"));
-		ObjectUtils::printInt8Arr(addr);
+		DeviceUtils::printInt8Arr(addr);
 		*/
 		return "0000000"+String(index);
 	}

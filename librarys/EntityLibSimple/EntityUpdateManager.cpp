@@ -11,11 +11,10 @@ EntityUpdateManager::EntityUpdateManager(EntityUpdate* entities[], int count) {
 	for (int i=0;i<count;i++) {
 		EntityUpdate* entity = entities[i];
 		this->entities.push_back(entity);
-
-		if (entity->isAutoupdate()) {
-		}
 	}
+}
 
+void EntityUpdateManager::registerEntity(EntityUpdate* entity) {
 }
 
 int EntityUpdateManager::init(int interval) {
@@ -87,7 +86,6 @@ int EntityUpdateManager::init(int interval) {
 }
 
 void EntityUpdateManager::updateEntities(bool force) {
-	//Serial.println(FPSTR("EntityUpdateManager loop"));
 	bool updated = false;
 	unsigned long time = millis();
 
@@ -97,7 +95,7 @@ void EntityUpdateManager::updateEntities(bool force) {
 	}
 
 	if(updated){
-		Serial.print(FPSTR("ENtities updated force="));
+		Serial.print(FPSTR("Entities updated force="));
 		Serial.println(force);
 	}
 /*

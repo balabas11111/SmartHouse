@@ -1,12 +1,12 @@
 /*
- * ObjectUtils.h
+ * DeviceUtils.h
  *
  *  Created on: 3 мар. 2019 г.
  *      Author: Vitaliy
  */
 
-#ifndef LIBRARIES_UTILS_OBJECTUTILS_H_
-#define LIBRARIES_UTILS_OBJECTUTILS_H_
+#ifndef LIBRARIES_UTILS_DEVICEUTILS_H_
+#define LIBRARIES_UTILS_DEVICEUTILS_H_
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 #define VAR_NAME(var) #var
@@ -14,9 +14,9 @@
 
 #include "IPAddress.h"
 
-class ObjectUtils {
+class DeviceUtils {
 public:
-	virtual ~ObjectUtils(){};
+	virtual ~DeviceUtils(){};
 
 	static IPAddress stringToIp(const char* ipStr){
 
@@ -96,6 +96,23 @@ public:
 		Serial.println();
 	}
 
+	static bool isHeapLessThan(uint32_t minHeap){
+		if(ESP.getFreeHeap() < minHeap){
+			Serial.print(FPSTR("Min heap size ="));
+			Serial.print(minHeap);
+			Serial.print(FPSTR(" current ="));
+			Serial.println(ESP.getFreeHeap());
+			return true;
+		}
+		return false;
+	}
+
+	static void restart(){
+		Serial.println(FPSTR(" Restarting..."));
+		delay(50);
+		ESP.restart();
+	}
+
 	static void printlnTimeHeap(unsigned long start){
 		unsigned long total = millis()-start;
 		Serial.print(FPSTR(" t="));
@@ -115,4 +132,4 @@ public:
 
 };
 
-#endif /* LIBRARIES_UTILS_OBJECTUTILS_H_ */
+#endif /* LIBRARIES_UTILS_DEVICEUTILS_H_ */

@@ -1,36 +1,36 @@
 /*
- * SecurityManager.cpp
+ * ServerConnectionManager.cpp
  *
  *  Created on: 28 сент. 2019 г.
  *      Author: Vitaliy
  */
 
-#include <server/SecurityManager.h>
+#include <serve/ServerConnectionManager.h>
 
-SecurityManager::SecurityManager(WiFiSettingsBox* conf) {
+ServerConnectionManager::ServerConnectionManager(WiFiSettingsBox* conf) {
 	this->conf = conf;
 }
 
-void SecurityManager::triggerServerPing(bool trigger) {
+void ServerConnectionManager::triggerServerPing(bool trigger) {
 	this->triggeredServerPing = trigger;
 }
 
-void SecurityManager::triggerRegisterOnServer(bool trigger) {
+void ServerConnectionManager::triggerRegisterOnServer(bool trigger) {
 	Serial.println(FPSTR("Trigger registration"));
 	this->triggeredServerRegister = trigger;
 }
 
-void SecurityManager::triggerDataChanged(bool trigger) {
+void ServerConnectionManager::triggerDataChanged(bool trigger) {
 	this->triggeredDataChange = trigger;
 }
 
-void SecurityManager::init(){
+void ServerConnectionManager::init(){
 	if(strcmp(conf->smartServerAddr(), "")==0){
-		Serial.println(FPSTR("SecurityManager DISABLED"));
+		Serial.println(FPSTR("ServerConnectionManager DISABLED"));
 		return;
 	}
 	if(!this->initComplete){
-		Serial.println(FPSTR("SecurityManager init"));
+		Serial.println(FPSTR("ServerConnectionManager init"));
 		generateServerUrls();
 		generateTempDeviceKey();
 		Serial.print(FPSTR("tempDeviceKey="));
@@ -46,7 +46,7 @@ void SecurityManager::init(){
 	}
 }
 
-void SecurityManager::generateTempDeviceKey() {
+void ServerConnectionManager::generateTempDeviceKey() {
 		String tmp = "";
 		tmp += random(1, 10000);
 		tmp += ESP.getChipId();
@@ -58,7 +58,7 @@ void SecurityManager::generateTempDeviceKey() {
 		this->serverKeyHash = sha1(conf->smartServerKey());
 }
 
-void SecurityManager::generateServerUrls() {
+void ServerConnectionManager::generateServerUrls() {
 	String baseUrl = this->conf->smartServerAddr();
 
 	if(!baseUrl.startsWith(HTTP_PREFFIX)){
@@ -73,7 +73,7 @@ void SecurityManager::generateServerUrls() {
 
 }
 
-void SecurityManager::generateDeviceAuthorization(String& tempServerKey) {
+void ServerConnectionManager::generateDeviceAuthorization(String& tempServerKey) {
 	Serial.print(FPSTR("generate Authorization-------------------------"));
 	Serial.print(FPSTR("tempDeviceKey="));
 	Serial.println(tempDeviceKey);
@@ -99,14 +99,14 @@ void SecurityManager::generateDeviceAuthorization(String& tempServerKey) {
 	Serial.println(FPSTR("...done"));
 }
 
-void SecurityManager::generateServerAuthorization(String& tempServerKey) {
+void ServerConnectionManager::generateServerAuthorization(String& tempServerKey) {
 	//Serial.print(FPSTR("generate serverAuthorization="));
 
 	Serial.print(conf->getServerAuthorization());
 	Serial.println(FPSTR("...done"));
 }
 
-void SecurityManager::sendPingRequest() {
+void ServerConnectionManager::sendPingRequest() {
 	this->runsPingRequest = true;
 	Serial.print(FPSTR("Ping server ->"));
 
@@ -125,14 +125,14 @@ void SecurityManager::sendPingRequest() {
 	}else{
 		Serial.print(FPSTR("...ERROR "));
 		Serial.println(httpCode);
-		setRequestPostPoned(10000);
+		setRequestPostPoned(SERVER_CONNECTION_PING_FAILED_TIMEOUT);
 		serverPinged = false;
 	}
 
 	this->runsPingRequest = false;
 }
 
-void SecurityManager::sendRegisterRequest() {
+void ServerConnectionManager::sendRegisterRequest() {
 	Serial.print(FPSTR("Register device"));
 	unsigned long start = millis();
 	this->runsRegisterRequest = true;
@@ -166,19 +166,35 @@ void SecurityManager::sendRegisterRequest() {
 		this->generateServerAuthorization(tempServerKey);
 		this->deviceRegistered = true;
 		this->triggeredServerRegister = false;
+		this->registrationFailures = 0;
 	}else{
 		http.end();
+		this->serverPinged = false;
+		this->registrationFailures++;
+
 		Serial.print(FPSTR("...ERROR "));
 		Serial.println(httpCode);
-		setRequestPostPoned(60000);
-		this->serverPinged = false;
+
+#ifdef SERVER_CONNECTION_REGISTRATION_FAILED_MIN_HEAP_TO_RESTART
+		if(DeviceUtils::isHeapLessThan(SERVER_CONNECTION_REGISTRATION_FAILED_MIN_HEAP_TO_RESTART)){
+			DeviceUtils::restart();
+		}
+#endif
+
+		if(registrationFailures > SERVER_CONNECTION_NEXT_REGISTRATION_NEXT_COUNT){
+			setRequestPostPoned(SERVER_CONNECTION_REGISTRATION_FAILED_FIRST_TIMEOUT);
+		}else{
+			setRequestPostPoned(SERVER_CONNECTION_REGISTRATION_FAILED_NEXT_TIMEOUT);
+		}
+
+
 	}
 
-	ObjectUtils::printlnTimeHeap(start);
+	DeviceUtils::printlnTimeHeap(start);
 	this->runsRegisterRequest = false;
 }
 
-void SecurityManager::sendDataChangedRequest() {
+void ServerConnectionManager::sendDataChangedRequest() {
 	this->runsDataChangeRequest = true;
 	unsigned long start = millis();
 	HTTPClient http;
@@ -194,8 +210,8 @@ void SecurityManager::sendDataChangedRequest() {
 	}else {
 		Serial.print(FPSTR("Data send ->...ERROR"));
 		Serial.println(httpCode);
-		ObjectUtils::printlnTimeHeap(start);
-		setRequestPostPoned(10000);
+		DeviceUtils::printlnTimeHeap(start);
+		setRequestPostPoned(SERVER_CONNECTION_DATA_UPDATE_REQUEST_FAILED_TIMEOUT);
 		this->serverPinged = false;
 		this->deviceRegistered = false;
 		this->triggeredServerRegister = true;
@@ -204,7 +220,7 @@ void SecurityManager::sendDataChangedRequest() {
 	this->runsDataChangeRequest = false;
 }
 
-void SecurityManager::loop(){
+void ServerConnectionManager::loop(){
 	if(triggeredServerPing && !runsPingRequest && isRequestEnabled() && !isRegistered()){
 		sendPingRequest();
 	}
@@ -221,14 +237,14 @@ void SecurityManager::loop(){
 	checkRequestPostPonedTime();
 }
 
-void SecurityManager::setRequestPostPoned(unsigned long delay) {
+void ServerConnectionManager::setRequestPostPoned(unsigned long delay) {
 	requestPostPoned = true;
 	nextReqTime = millis() + delay;
 
 	Serial.println(FPSTR("Req DISABLED"));
 }
 
-void SecurityManager::checkRequestPostPonedTime() {
+void ServerConnectionManager::checkRequestPostPonedTime() {
 	if(requestPostPoned){
 		if(millis()>nextReqTime){
 			Serial.println(FPSTR("Req ENABLED"));
@@ -237,18 +253,18 @@ void SecurityManager::checkRequestPostPonedTime() {
 	}
 }
 
-void SecurityManager::sendDataChangedPostMethod(JsonObject& data) {
+void ServerConnectionManager::sendDataChangedPostMethod(JsonObject& data) {
 }
 
-bool SecurityManager::isRequestEnabled(){
+bool ServerConnectionManager::isRequestEnabled(){
 	return initComplete && isConnected() && !requestPostPoned;
 }
 
-bool SecurityManager::isConnected() {
+bool ServerConnectionManager::isConnected() {
 	return WiFi.status() == WL_CONNECTED;
 }
 
-bool SecurityManager::isRegistered() {
+bool ServerConnectionManager::isRegistered() {
 	return this->deviceRegistered;
 }
 

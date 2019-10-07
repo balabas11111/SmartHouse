@@ -8,9 +8,9 @@
 #ifndef LIBRARIES_ENTITYLIBMOCK_DHT22MOCK_H_
 #define LIBRARIES_ENTITYLIBMOCK_DHT22MOCK_H_
 
+#include <DeviceUtils.h>
 #include "Arduino.h"
 #include "AMock.h"
-#include "ObjectUtils.h"
 
 class DHT22Mock:public AMock {
 public:

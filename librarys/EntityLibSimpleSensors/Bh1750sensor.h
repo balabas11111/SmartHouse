@@ -8,12 +8,15 @@
 #ifndef LIBRARIES_ENTITYLIBSENSORS_BH1750SENSOR_H_
 #define LIBRARIES_ENTITYLIBSENSORS_BH1750SENSOR_H_
 
-#include "Entity.h"
+#include "Arduino.h"
 #include <ArduinoJson.h>
+#include "Entity.h"
+#include <EntityUpdate.h>
+
 #include <Wire.h>
 #include <BH1750.h>
 #include <Bh1750Mock.h>
-#include <EntityUpdate.h>
+
 
 //---------------------------------------
 #define BH1750 "bh1750"

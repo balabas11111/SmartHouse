@@ -9,13 +9,12 @@
 #define LIBRARIES_ENTITYLIBSENSORS_DS18D20SENSOR_H_
 
 #include <ArduinoJson.h>
+#include <DeviceUtils.h>
 #include <Entity.h>
 #include <EntityUpdate.h>
 
 #include <OneWire.h>
 #include "DallasTemperature.h"
-#include "ObjectUtils.h"
-
 #include <OneWireMock.h>
 #include "DallasTemperatureMock.h"
 

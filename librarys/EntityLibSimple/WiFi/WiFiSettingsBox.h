@@ -60,7 +60,7 @@
 #include <Entity.h>
 #include <IPAddress.h>
 #include <sstream>
-#include "ObjectUtils.h"
+#include <DeviceUtils.h>
 #include "Hash.h"
 #include <WiFi/NetConstants.h>
 //#include "JsonObjectUtil.h"

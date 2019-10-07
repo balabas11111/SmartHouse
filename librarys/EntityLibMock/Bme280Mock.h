@@ -8,9 +8,9 @@
 #ifndef LIBRARIES_ENTITYLIBMOCK_BME280MOCK_H_
 #define LIBRARIES_ENTITYLIBMOCK_BME280MOCK_H_
 
+#include <DeviceUtils.h>
 #include "Arduino.h"
 #include "AMock.h"
-#include "ObjectUtils.h"
 
 class Bme280Mock:public AMock {
 public:

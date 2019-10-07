@@ -10,8 +10,8 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include <DeviceUtils.h>
 
-#include <ObjectUtils.h>
 #include <JsonObjectUtil.h>
 #include <Notifiers/NotificationTarget.h>
 #include <Notifiers/DataSelector.h>
@@ -47,7 +47,7 @@ public:
 		Serial.print(FPSTR("Notify "));
 		Serial.println(this->name);
 
-		ObjectUtils::printHeap();
+		DeviceUtils::printHeap();
 
 		EntityJsonRequestResponse* data = EntityJsonRequestResponse::build();
 		if(group!=nullptr){
@@ -64,7 +64,7 @@ public:
 		toTarget(data, notifTarget);
 
 		delete data;
-		ObjectUtils::printHeap();
+		DeviceUtils::printHeap();
 		finishNotification();
 	}
 

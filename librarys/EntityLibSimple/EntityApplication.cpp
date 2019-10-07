@@ -23,9 +23,11 @@ EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 	if (newConf) {
 		this->entityManager->registerAndPreInitEntity(this->conf);
 	}
+	this->entityManager->registerAndPreInitEntity(&this->deviceManager);
 
 	this->entityUpdateManager = new EntityUpdateManager(entityUpdate,
 			entityUpdateCount);
+	this->entityUpdateManager->registerEntity(&this->deviceManager);
 
 	this->wifiManager = new WiFiManager(this->conf, onWiFiConnected,
 			onWiFiDisConnected);
@@ -41,7 +43,7 @@ void EntityApplication::init(bool initSerial,
 		bool initI2C, uint8_t clockPin, uint8_t dataPin) {
 
 	if (initSerial) {
-		ObjectUtils::initSerial();
+		DeviceUtils::initSerial();
 	}
 
 	if (initFs) {
@@ -59,8 +61,8 @@ void EntityApplication::init(bool initSerial,
 	Serial.print(FPSTR("Init application "));
 	Serial.println(this->conf->deviceFirmWare());
 
-	ObjectUtils::printHeap();
-	ObjectUtils::printMillis();
+	DeviceUtils::printHeap();
+	DeviceUtils::printMillis();
 
 	this->entityManager->init();
 	this->entityUpdateManager->init(this->conf->refreshInterval());
@@ -72,15 +74,15 @@ void EntityApplication::init(bool initSerial,
 		startServer();
 	}
 
-	this->securityManager = new SecurityManager(this->conf);
-	this->securityManager->init();
+	this->serverConnectionManager = new ServerConnectionManager(this->conf);
+	this->serverConnectionManager->init();
 	this->defaultDataSelector = new DataSelectorEntityManager(this->entityManager);
 	this->defaultNotifier = new Notifier("Default Notifier", nullptr, this->getDataSelector());
 
 	Serial.println(FPSTR("Application Init done"));
 
-	ObjectUtils::printHeap();
-	ObjectUtils::printMillis();
+	DeviceUtils::printHeap();
+	DeviceUtils::printMillis();
 	Serial.println(FPSTR("===================================="));
 }
 
@@ -100,11 +102,11 @@ void EntityApplication::loop() {
 	this->entityUpdateManager->loop();
 
 	if(this->entityManager->processChangedEntities()){
-		this->securityManager->triggerDataChanged();
+		this->serverConnectionManager->triggerDataChanged();
 	}
 
 	this->wifiServerManager->loop();
-	this->securityManager->loop();
+	this->serverConnectionManager->loop();
 }
 
 void EntityApplication::startWiFi(){
@@ -176,8 +178,8 @@ WiFiServerManager* EntityApplication::getWifiServerManager() {
 	return this->wifiServerManager;
 }
 
-SecurityManager* EntityApplication::getSecurityManager() {
-	return this->securityManager;
+ServerConnectionManager* EntityApplication::getServerConnectionManager() {
+	return this->serverConnectionManager;
 }
 
 DataSelector* EntityApplication::getDataSelector() {
@@ -185,5 +187,9 @@ DataSelector* EntityApplication::getDataSelector() {
 }
 
 void EntityApplication::registerOnServer(bool trigger) {
-	this->getSecurityManager()->triggerRegisterOnServer(trigger);
+	this->getServerConnectionManager()->triggerRegisterOnServer(trigger);
+}
+
+void EntityApplication::restart() {
+	this->deviceManager.triggerRestart();
 }

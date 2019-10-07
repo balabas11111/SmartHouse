@@ -161,10 +161,12 @@ void WiFiServerManager::onFileRead(const char* fileName) {
 	Serial.print(FPSTR(" pathWithGz ="));
 	Serial.print(pathWithGz);
 	Serial.print(FPSTR(" contentType ="));
-	Serial.println(contentType);
+	Serial.print(contentType);
 
 	File file = SPIFFS.open(path, "r");
 	size_t sent = server->streamFile(file, contentType);
+	Serial.print(FPSTR(" sent ="));
+	Serial.println(sent);
 	file.close();
 	return;
 	}
@@ -253,7 +255,7 @@ void WiFiServerManager::onEntityRequest(const char* method) {
 	server->sendHeader(RESPONSE_KEY_Server,getServerName());
 	server->send(200, CONTENT_TYPE_TEXT_JSON_UTF8, response);
 
-	ObjectUtils::printTimeHeap(start);
+	DeviceUtils::printTimeHeap(start);
 
 	Serial.println(FPSTR("==="));
 }
