@@ -33,6 +33,10 @@
 #include <serve/ServerConnectionManager.h>
 #include <serve/DeviceManager.h>
 
+#include <display/DisplayManager.h>
+#include <display/DisplayPage.h>
+#include <display/PageToDisplayAdapter.h>
+
 class EntityApplication : public ApplicationContext {
 public:
 	EntityApplication(const char* firmWare, Entity* entities[], int entityCount,
@@ -42,6 +46,13 @@ public:
 			std::function<void(void)> onWiFiDisConnected = nullptr);
 	virtual ~EntityApplication() {
 	}
+
+	void construct(const char* firmWare, Entity* entities[], int entityCount,
+				EntityUpdate* entityUpdate[], int entityUpdateCount,
+				WiFiSettingsBox* conf = nullptr,
+				std::function<void(void)> onWiFiConnected = nullptr,
+				std::function<void(void)> onWiFiDisConnected = nullptr
+				);
 
 	void initWithWiFi(bool deleteFs = false, bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
 	void initWithoutWiFi(bool deleteFs = false, bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
@@ -78,7 +89,9 @@ public:
 
 private:
 
-	WiFiSettingsBox* conf;
+	DisplayManager* displayManager = nullptr;
+
+	WiFiSettingsBox* conf = nullptr;
 	WiFiManager* wifiManager;
 	WiFiServerManager* wifiServerManager;
 

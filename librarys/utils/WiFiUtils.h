@@ -26,6 +26,8 @@ public:
 
 	static bool isAp();
 
+	static bool isConnected();
+
 	static void printInitResults(int confOk,int startOk);
 
 	static void printSoftAPModeProbeRequestReceived(const WiFiEventSoftAPModeProbeRequestReceived& evt);

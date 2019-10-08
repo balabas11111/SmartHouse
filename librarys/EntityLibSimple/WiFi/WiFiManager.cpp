@@ -175,6 +175,7 @@ void WiFiManager::onStationModeDisconnected(
 	if (onWiFiDisConnected != nullptr) {
 		onWiFiDisConnected();
 	}
+	//conf->setCurrentIp(EMPTY_STR);
 }
 
 void WiFiManager::onStationModeGotIP(const WiFiEventStationModeGotIP& evt) {

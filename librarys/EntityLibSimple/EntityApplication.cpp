@@ -12,6 +12,15 @@ EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 		WiFiSettingsBox* conf, std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
 
+	this->construct(firmWare, entities, entityCount, entityUpdate, entityUpdateCount, conf, onWiFiConnected, onWiFiDisConnected);
+
+}
+
+void EntityApplication::construct(const char* firmWare, Entity* entities[],
+		int entityCount, EntityUpdate* entityUpdate[], int entityUpdateCount,
+		WiFiSettingsBox* conf, std::function<void(void)> onWiFiConnected,
+		std::function<void(void)> onWiFiDisConnected) {
+
 	bool newConf = conf == nullptr;
 	if (newConf) {
 		Serial.println(FPSTR("New WiFISettingsBox will be created"));
@@ -33,7 +42,6 @@ EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 			onWiFiDisConnected);
 	this->wifiServerManager = new WiFiServerManager(this->entityManager,
 			this->conf);
-
 }
 
 void EntityApplication::init(bool initSerial,
@@ -193,3 +201,4 @@ void EntityApplication::registerOnServer(bool trigger) {
 void EntityApplication::restart() {
 	this->deviceManager.triggerRestart();
 }
+

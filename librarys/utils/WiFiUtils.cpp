@@ -96,3 +96,7 @@ void WiFiUtils::printStationModeGotIP(const WiFiEventStationModeGotIP& evt){
 	Serial.print(FPSTR("onStationModeGotIP IP="));
 	Serial.println(evt.ip);
 }
+
+bool WiFiUtils::isConnected() {
+	return WiFi.status() == WL_CONNECTED;
+}

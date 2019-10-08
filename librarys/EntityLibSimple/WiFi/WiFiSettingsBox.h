@@ -63,7 +63,17 @@
 #include <DeviceUtils.h>
 #include "Hash.h"
 #include <WiFi/NetConstants.h>
-//#include "JsonObjectUtil.h"
+#include "functional"
+
+#define DEVICE_STATUS_INITIALIZING "Initializing..."
+#define DEVICE_STATUS_LOAD_ENTITIES "Loading Entities..."
+#define DEVICE_STATUS_CONNECTING "Connecting WiFi..."
+#define DEVICE_STATUS_DEPLOYING "Deploy urls..."
+#define DEVICE_STATUS_REGISTERING "Registering..."
+#define DEVICE_STATUS_UPDATE_SENSORS "Update sensors..."
+#define DEVICE_STATUS_READY "Connecting..."
+
+#define EMPTY_LINE ""
 
 class WiFiSettingsBox: public Entity {
 public:
@@ -277,6 +287,26 @@ public:
 		this->serverAuthorization = serverAuthorization;
 	}
 
+	char* getDeviceStatus() const {
+		return deviceStatus;
+	}
+
+	void setDeviceStatus(char* deviceStatus) {
+		this->deviceStatus = deviceStatus;
+		if (this->onDeviceStatusChanged != nullptr){
+			onDeviceStatusChanged();
+		}
+	}
+
+	std::function<void(void)> getOnDeviceStatusChanged() {
+		return onDeviceStatusChanged;
+	}
+
+	void setOnDeviceStatusChanged(
+			std::function<void(void)> onDeviceStatusChanged = nullptr) {
+		this->onDeviceStatusChanged = onDeviceStatusChanged;
+	}
+
 protected:
 	const char* _devId;
 	const char* _firmware;
@@ -307,10 +337,13 @@ protected:
 	char* _adminPassword = (char*)"admin";
 	uint16_t _interval = 20;
 
-	char* currentIp;
+	char* currentIp = "";
 
 	//Device current security information
 	String serverAuthorization;
+
+	std::function<void(void)> onDeviceStatusChanged = nullptr;
+	char* deviceStatus;
 
 	bool jsonToItems(JsonObject& json){
 		bool chg = false;

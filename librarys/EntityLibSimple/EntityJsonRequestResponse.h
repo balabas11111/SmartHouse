@@ -33,6 +33,7 @@ public:
 		getRoot().createNestedObject(REQUEST);
 		getRoot().createNestedObject(RESPONSE);
 	};
+
 	virtual ~EntityJsonRequestResponse(){
 		//Serial.println(FPSTR("EntityJsonRequestResponse destroyed"));
 	};
