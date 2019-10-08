@@ -9,17 +9,17 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class NotificationDispatcherExecutor<T extends SmartHouseItem> implements NotificationDispatcher<T> {
+public class NotificationDispatcherBase<T extends SmartHouseItem> implements NotificationDispatcher<T> {
 
 	@Autowired(required = false)
 	@Getter
-	private List<NotificationProcessorService<T>> notifiers;
+	private List<NotificationListenerBase<T>> notifiers;
 
 	@Override
 	public void dispatch(Notification<T> notification) {
 		if (notification != null && notification.valid()) {
 			log.debug("Notification :" + notification.toString());
-			notifiers.stream().forEach(notifier -> notifier.process(notification));
+			notifiers.stream().forEach(notifier -> notifier.processNotification(notification));
 		}
 	}
 

@@ -4,9 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.balabas.smarthouse.server.alarm.AlarmProcessService;
-import com.balabas.smarthouse.server.alarm.AlarmProcessServiceEntity;
 import com.balabas.smarthouse.server.events.EntityChangedEvent;
-import com.balabas.smarthouse.server.events.service.EventProcessorNotificationDispatcherExecutor;
+import com.balabas.smarthouse.server.events.service.EventListenerNotificationDispatcherAbstract;
 import com.balabas.smarthouse.server.model.Entity;
 
 import lombok.extern.log4j.Log4j2;
@@ -17,13 +16,13 @@ import static com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType.
 @Component
 @Log4j2
 public class EntityEventProcessorAlarm
-		extends EventProcessorNotificationDispatcherExecutor<Entity, EntityChangedEvent> {
+		extends EventListenerNotificationDispatcherAbstract<Entity, EntityChangedEvent> {
 
 	@Autowired
 	private AlarmProcessService<Entity> entityAlarmService;
 
 	@Override
-	public void process(EntityChangedEvent event) {
+	public void processEvent(EntityChangedEvent event) {
 		if (ADDED.equals(event.getEventType())) {
 			log.debug("Entity alarms activation");
 

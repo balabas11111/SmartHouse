@@ -239,10 +239,4 @@ public class MockedDeviceService implements InitializingBean {
 		return Hashing.sha1().hashString(value, StandardCharsets.UTF_8).toString();
 	}
 	
-	@EventListener(classes = {ContextRefreshedEvent.class})
-	public void onContextStarted() {
-		log.info("-----Server context was started-----");
-		this.contStarted = true;
-	}
-	
 }

@@ -96,7 +96,97 @@
 	
 
 	<build>
+		<resources>
+	        <resource>
+	            <directory>src/main/resources</directory>
+	            <excludes>
+	                <exclude>*.properties</exclude>
+	                <exclude>**/repository/**</exclude>
+	            </excludes>
+	            <filtering>false</filtering>
+	        </resource>
+	    </resources>
+	
         <plugins>
+        	<plugin>
+	            <artifactId>maven-resources-plugin</artifactId>
+	            <version>3.0.2</version>
+	            <executions>
+	                
+	                <execution>
+	                    <id>copy-appProperties-totarget</id>
+	                    <phase>compile</phase>
+	                    <goals>
+	                        <goal>copy-resources</goal>
+	                    </goals>
+	                    <configuration>
+	                        <outputDirectory>${basedir}/target</outputDirectory>
+	                        <resources>
+	                            <resource>
+	                                <directory>src/main/resources</directory>
+	                                <includes>
+							          <include>application.properties</include>
+							           <include>repository/**</include>
+							        </includes>
+	                                <filtering>true</filtering>
+	                            </resource>
+	                        </resources>
+	                    </configuration>
+	                </execution>
+	                
+	                <execution>
+	                    <id>copy-bin-totarget</id>
+	                    <phase>compile</phase>
+	                    <goals>
+	                        <goal>copy-resources</goal>
+	                    </goals>
+	                    <configuration>
+	                        <outputDirectory>${basedir}/target</outputDirectory>
+	                        <resources>
+	                            <resource>
+	                                <directory>src/main/resources/bin</directory>
+	                            </resource>
+	                        </resources>
+	                    </configuration>
+	                </execution>
+	                
+	                <execution>
+	                    <id>copy-appProperties-tobin</id>
+	                    <phase>compile</phase>
+	                    <goals>
+	                        <goal>copy-resources</goal>
+	                    </goals>
+	                    <configuration>
+	                        <outputDirectory>${basedir}/bin</outputDirectory>
+	                        <resources>
+	                            <resource>
+	                                <directory>src/main/resources</directory>
+	                                <includes>
+							          <include>application.properties</include>
+							          <include>repository/**</include>
+							        </includes>
+	                                <filtering>true</filtering>
+	                            </resource>
+	                        </resources>
+	                    </configuration>
+	                </execution>
+	                 <execution>
+	                    <id>copy-bin-tobin</id>
+	                    <phase>compile</phase>
+	                    <goals>
+	                        <goal>copy-resources</goal>
+	                    </goals>
+	                    <configuration>
+	                        <outputDirectory>${basedir}/bin</outputDirectory>
+	                        <resources>
+	                            <resource>
+	                                <directory>src/main/resources/bin</directory>
+	                            </resource>
+	                        </resources>
+	                    </configuration>
+	                </execution>
+	            </executions>
+	        </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>

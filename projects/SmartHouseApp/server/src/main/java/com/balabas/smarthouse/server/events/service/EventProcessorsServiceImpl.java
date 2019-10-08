@@ -18,13 +18,13 @@ import com.balabas.smarthouse.server.events.GroupChangedEvent;
 public class EventProcessorsServiceImpl implements EventProcessorsService {
 
 	@Autowired
-	List<EventProcessorBase<DeviceChangedEvent>> deviceEventsProcessors;
+	List<EventListenerBase<DeviceChangedEvent>> deviceEventListeners;
 	
 	@Autowired(required = false)
-	List<EventProcessorBase<GroupChangedEvent>> groupEventsProcessors;
+	List<EventListenerBase<GroupChangedEvent>> groupEventListeners;
 	
 	@Autowired(required = false)
-	List<EventProcessorBase<EntityChangedEvent>> entityEventsProcessors;
+	List<EventListenerBase<EntityChangedEvent>> entityEventListeners;
 	
     @Override
     public void processEvents(List<? extends ChangedEvent> events) {
@@ -52,27 +52,27 @@ public class EventProcessorsServiceImpl implements EventProcessorsService {
     }
     
     public void processEvent(DeviceChangedEvent event){
-    	if(deviceEventsProcessors!=null && !deviceEventsProcessors.isEmpty()){
-    		deviceEventsProcessors.stream()
-    			.forEach(proc-> proc.process(event));
+    	if(deviceEventListeners!=null && !deviceEventListeners.isEmpty()){
+    		deviceEventListeners.stream()
+    			.forEach(proc-> proc.processEvent(event));
     	}else{
     		log.warn("DeviceChangedEvent : " + event.toString());
     	}
     }
     
     public void processEvent(GroupChangedEvent event){
-    	if(groupEventsProcessors!=null && !groupEventsProcessors.isEmpty()){
-    		groupEventsProcessors.stream()
-				.forEach(proc-> proc.process(event));
+    	if(groupEventListeners!=null && !groupEventListeners.isEmpty()){
+    		groupEventListeners.stream()
+				.forEach(proc-> proc.processEvent(event));
     	}else{
     		//log.warn("GroupChangedEvent : " + event.printDetails());
     	}
     }
     
     public void processEvent(EntityChangedEvent event){
-    	if(entityEventsProcessors!=null && !entityEventsProcessors.isEmpty()){
-    		entityEventsProcessors.stream()
-				.forEach(proc-> proc.process(event));
+    	if(entityEventListeners!=null && !entityEventListeners.isEmpty()){
+    		entityEventListeners.stream()
+				.forEach(proc-> proc.processEvent(event));
     	}else{
     		log.warn("EntityChangedEvent "+event.toString());
     	}

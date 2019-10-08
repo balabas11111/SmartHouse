@@ -7,7 +7,7 @@ import com.balabas.smarthouse.server.notification.Notification;
 
 public interface NotificationDispatcher<T extends SmartHouseItem> {
 
-	List<NotificationProcessorService<T>> getNotifiers();
+	List<NotificationListenerBase<T>> getNotifiers();
 	
 	void dispatch(Notification<T> notification);
 }

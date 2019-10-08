@@ -2,7 +2,7 @@ package com.balabas.smarthouse.server.events.service;
 
 import com.balabas.smarthouse.server.events.ChangedEvent;
 
-public interface EventProcessorBase<T extends ChangedEvent<?>> {
+public interface EventListenerBase<T extends ChangedEvent<?>> {
 
-	 void process(T event);
+	 void processEvent(T event);
 }
