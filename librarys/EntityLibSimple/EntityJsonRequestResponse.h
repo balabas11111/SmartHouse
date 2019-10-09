@@ -24,7 +24,7 @@ private:
 public:
 
 	EntityJsonRequestResponse(){
-		this->root= buf.parse(EMPTY_JSON_OBJECT).as<JsonObject>();
+		this->root= buf.parse("{}").as<JsonObject>();
 
 		getRoot().createNestedObject(REQUEST);
 		getRoot().createNestedObject(RESPONSE);

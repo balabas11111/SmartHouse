@@ -138,12 +138,17 @@ void Entity::executeGet(JsonObject& params, JsonObject& response) {
 }
 
 void Entity::executePost(JsonObject& params, JsonObject& response) {
+	//Serial.println(FPSTR("Execute post"));
 	bool chg = getKeyValueIfExistsAndNotEquals(params, ENTITY_FIELD_DESCRIPTION, &this->descr);
+
+	/*Serial.print(FPSTR("chg"));
+	Serial.print(chg);
+	*/
 	markEntityAsChangedIfTrue(chg, chg);
 	markEntityAsSaveRequiredIfTrue(chg);
-
+	/*Serial.println(FPSTR("Execute post"));
+*/
 	doPost(params, response);
-
 	executeGet(params, response);
 }
 

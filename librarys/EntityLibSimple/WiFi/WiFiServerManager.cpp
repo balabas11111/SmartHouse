@@ -236,14 +236,16 @@ void WiFiServerManager::onEntityRequest(const char* method) {
 	Serial.print(FPSTR("------ER "));
 
 	if(!authenticateRequest(method)){
+		Serial.println(FPSTR("request authentication"));
 		return server->requestAuthentication();
 	}
 
 	unsigned long start = millis();
-
-	EntityJsonRequestResponse * req = new EntityJsonRequestResponse();
+	//Serial.println(FPSTR("Create request"));
+	EntityJsonRequestResponse* req = new EntityJsonRequestResponse();
 	JsonObject& params = req->getRequest();
 
+	//Serial.println(FPSTR("Fill params"));
 	if(server->hasArg(BODY)){
 		req->putRequestJsonParam(server->arg(BODY), BODY);
 	}
@@ -253,7 +255,7 @@ void WiFiServerManager::onEntityRequest(const char* method) {
 			params.set(server->argName(i), server->arg(i));
 		}
 	}
-
+	//Serial.println(FPSTR("Execute method"));
 	manager->executeMethod(req, method);
 
 	String response;

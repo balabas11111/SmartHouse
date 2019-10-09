@@ -21,6 +21,7 @@ void ServerConnectionManager::triggerRegisterOnServer(bool trigger) {
 }
 
 void ServerConnectionManager::triggerDataChanged(bool trigger) {
+	//Serial.println(FPSTR("Trigger data updated request"));
 	this->triggeredDataChange = trigger;
 }
 
@@ -75,7 +76,7 @@ void ServerConnectionManager::generateServerUrls() {
 
 void ServerConnectionManager::generateAuthorization(String& tempServerKey) {
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED
-	Serial.print(FPSTR("generate Authorization-------------------------"));
+	Serial.println(FPSTR("generate Authorization-------------------------"));
 	Serial.print(FPSTR("tempDeviceKey="));
 	Serial.println(tempDeviceKey);
 	Serial.print(FPSTR("tempServerKey="));
@@ -189,6 +190,7 @@ void ServerConnectionManager::sendRegisterRequest() {
 }
 
 void ServerConnectionManager::sendDataChangedRequest() {
+	Serial.println(FPSTR("DUR"));
 	this->runsDataChangeRequest = true;
 	unsigned long start = millis();
 	HTTPClient http;

@@ -23,9 +23,10 @@
 class OutputPin:public Pin, public Entity, public EntityUpdate {
 public:
 	OutputPin(uint8_t pin, const char* name = strdup(OUTPUT_PIN_NAME), const char* descr = OUTPUT_PIN_DESCRIPTION,
+			uint8_t onLevel = HIGH,
 			std::function<void(void)> selfEventProcessFunction = nullptr, bool applicationDispatcher = false) :
-			Pin(pin,OUTPUT),
-			Entity(GROUP_SENSORS, name, strdup(descr), selfEventProcessFunction, applicationDispatcher) {
+			Pin(pin,OUTPUT,onLevel),
+			Entity(GROUP_SENSORS, name, strdup(descr), selfEventProcessFunction, applicationDispatcher, true, true) {
 	}
 
 	virtual ~OutputPin() {
@@ -53,8 +54,15 @@ public:
 	virtual void doPost(JsonObject& params, JsonObject& response) override {
 		UNUSED(response);
 		uint8_t on = isOn();
-		if (isKeyExistsInJsonAndNotEqValue(params, ON_FIELD, on)) {
-			setOn(getJsonField<uint8_t>(params, ON_FIELD));
+		uint8_t onPosted = 0;
+		if(params.is<char*>(ON_FIELD) && strcmp("1",params[ON_FIELD])==0){
+			onPosted = 1;
+		}
+		if (on !=onPosted) {
+			Serial.print(this->getName());
+			Serial.print(FPSTR(" on="));
+			Serial.println(onPosted);
+			setOn(onPosted);
 		}
 	}
 

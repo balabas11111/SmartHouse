@@ -55,10 +55,11 @@ public:
 
 		for (uint8_t i = 0; i < itemCount; i++) {
 			DS18D20item item = DS18D20item();
+			String tmp = dallasTemperature->getAddress(item.uid, i);
+			item.uidStr = strdup(tmp.c_str());
 
-			item.uidStr = strdup(dallasTemperature->getAddress(item.uid, i).c_str());
-			strcpy(item.uidTempKey, item.uidStr);
-			strcat(item.uidTempKey, SENSOR_ITEM_TEMP_SUF);
+			tmp += SENSOR_ITEM_TEMP_SUF;
+			item.uidTempKey = strdup(tmp.c_str());
 			item.descr = item.uidStr;
 			item.temp = 127;
 
@@ -82,14 +83,16 @@ public:
 		for (uint8_t i = 0; i < itemCount; i++) {
 			Serial.print(FPSTR("i="));
 			Serial.print(i);
-			Serial.print(FPSTR(" address="));
+			Serial.print(FPSTR("; address="));
 			Serial.print(getDeviceAddress(i));
 
-			Serial.print(FPSTR(" uidStr="));
+			Serial.print(FPSTR("; uidStr="));
 			Serial.print(items[i].uidStr);
-			Serial.print(FPSTR(" descr="));
+			Serial.print(FPSTR("; uidTempKey="));
+			Serial.print(items[i].uidTempKey);
+			Serial.print(FPSTR("; descr="));
 			Serial.print(items[i].descr);
-			Serial.print(FPSTR(" val="));
+			Serial.print(FPSTR("; val="));
 			Serial.println(items[i].temp);
 		}
 		Serial.println(FPSTR("-----"));
@@ -197,15 +200,26 @@ protected:
 		setJsonField(json, DS18D20_SENSOR_COUNT, this->itemCount);
 		JsonObject& sensors = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(
 				json, ENTITY_FIELD_SENSOR_ITEMS);
-
-
+/*
+		Serial.println("sensors done");
+		JsonObjectUtil::print(sensors);
+*/
 		for (int i = 0; i < itemCount; i++) {
 			JsonObject& sensor =
 					JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(sensors,
 							items[i].uidStr);
+	//		JsonObjectUtil::print("sensor created =", sensor);
+			setJsonField(sensor, ENTITY_FIELD_DESCRIPTION, items[i].descr);
+		//	JsonObjectUtil::print("description added =", sensor);
 
-			setJsonField(sensor, (ENTITY_FIELD_DESCRIPTION), items[i].descr);
 			if (addTemp) {
+				/*Serial.print(FPSTR("i="));
+				Serial.print(i);
+				Serial.print(FPSTR(" items[i].uidTempKey="));
+				Serial.print(items[i].uidTempKey);
+				Serial.print(FPSTR(" items[i].temp="));
+				Serial.println(items[i].temp);
+*/
 				setJsonField(json, items[i].uidTempKey ,
 						items[i].temp);
 			}

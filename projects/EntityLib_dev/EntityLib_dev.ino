@@ -7,7 +7,6 @@
 #include <EntityApplication.h>
 #include <Entity.h>
 #include <EntityUpdate.h>
-#include <WIFi/WiFiSettingsBox.h>
 #include "Bme280sensor.h"
 #include "Bh1750sensor.h"
 #include "DHT22sensor.h"
@@ -18,7 +17,7 @@
 
 Bme280sensor bme280;
 Bh1750sensor bh1750;
-OutputPin rele(BUILTIN_LED, "DefaultRele", "Default relea pin");
+OutputPin rele(BUILTIN_LED, "DefaultRele", "Default relea pin", LOW);
 DHT22sensor dht22(D5);
 DS18D20sensor ds18d20(D6);
 

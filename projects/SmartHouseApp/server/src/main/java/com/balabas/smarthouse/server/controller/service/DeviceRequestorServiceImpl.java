@@ -1,9 +1,12 @@
 package com.balabas.smarthouse.server.controller.service;
 
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_GROUP;
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_ENTITY_NAME;
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_DATA;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +15,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import com.balabas.smarthouse.server.model.Device;
+import com.balabas.smarthouse.server.model.Entity;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
 import com.balabas.smarthouse.server.service.HttpRequestExecutor;
 
@@ -70,5 +76,20 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey(device.getDeviceId()));
 		
 		return executor.executePostRequest(device.getDataUrl(), headers, json.toString()).getBody();
+	}
+
+	@Override
+	public String executePostDataOnDeviceEntity(Device device, Entity entity, Map<String, Object> values) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey(device.getDeviceId()));
+		
+		MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+		map.add(DEVICE_FIELD_GROUP, entity.getGroupName());
+		map.add(DEVICE_FIELD_ENTITY_NAME, entity.getName());
+		
+		values.entrySet().stream().forEach(e->map.add(e.getKey(), e.getValue()));
+		
+		return executor.executePostRequest(device.getDataUrl(), headers, map).getBody();
 	}
 }

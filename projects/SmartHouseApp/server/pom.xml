@@ -113,7 +113,8 @@
 	-->
 
 	<build>
-		 <resources>
+	
+		<resources>
 	        <resource>
 	            <directory>src/main/resources</directory>
 	            <excludes>
@@ -123,7 +124,7 @@
 	            <filtering>false</filtering>
 	        </resource>
 	    </resources>
-	
+	<!--  -->
         <plugins>
         	<plugin>
 	            <artifactId>maven-resources-plugin</artifactId>
@@ -137,7 +138,7 @@
 	                        <goal>copy-resources</goal>
 	                    </goals>
 	                    <configuration>
-	                        <outputDirectory>${basedir}/target/classes</outputDirectory>
+	                        <outputDirectory>${basedir}/target</outputDirectory>
 	                        <resources>
 	                            <resource>
 	                                <directory>src/main/resources</directory>

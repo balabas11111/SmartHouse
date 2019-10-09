@@ -26,8 +26,8 @@
 #define RESPONSE "resp"
 
 
-const char DEFAULT_VALUE[] PROGMEM = "DEFAULT";
-const char EMPTY_GROUP[] PROGMEM = "Empty group";
+#define DEFAULT_VALUE "DEFAULT"
+#define EMPTY_GROUP "Empty group"
 
 
 #define METHOD "Method"

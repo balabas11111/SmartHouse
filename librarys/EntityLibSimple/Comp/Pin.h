@@ -13,9 +13,17 @@
 
 class Pin {
 public:
-	Pin(uint8_t pin, uint8_t pinMod){
+	Pin(uint8_t pin, uint8_t pinMod, uint8_t onLevel){
 		this->pin = pin;
 		this->pinMod = pinMod;
+
+		if(onLevel != HIGH){
+			this->offLevel = HIGH;
+		}else{
+			this->offLevel = LOW;
+		}
+
+		this->onLevel = onLevel;
 
 		if(validateMode()){
 			pinMode(pin, pinMod);
@@ -58,8 +66,8 @@ protected:
 	}
 	virtual bool validateMode() {return true;}
 
-	const uint8_t onLevel = HIGH;
-	const uint8_t offLevel = LOW;
+	uint8_t onLevel = HIGH;
+	uint8_t offLevel = LOW;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_COMP_PIN_H_ */

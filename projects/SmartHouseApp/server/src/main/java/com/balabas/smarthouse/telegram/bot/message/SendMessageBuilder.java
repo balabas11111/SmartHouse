@@ -241,15 +241,20 @@ public class SendMessageBuilder {
 		try {
 			String tmplPath = BotMessageConstants.BOT_TEMPLATES_PATH + entName + ".txt";
 
-			URL u = this.getClass().getClassLoader().getResource(tmplPath);
-			result = Resources.toString(u, Charsets.UTF_8);
+			try {
+				URL u = this.getClass().getClassLoader().getResource(tmplPath);
+				result = Resources.toString(u, Charsets.UTF_8);
 
-			for (Entry<String, String> entry : values.entrySet()) {
-				String tmplKey = "_" + entry.getKey() + "_";
-
-				if(result.contains(tmplKey)) {
-					result = result.replaceAll(tmplKey, entry.getValue());
+				for (Entry<String, String> entry : values.entrySet()) {
+					String tmplKey = "_" + entry.getKey() + "_";
+	
+					if(result.contains(tmplKey)) {
+						result = result.replaceAll(tmplKey, entry.getValue());
+					}
 				}
+			}catch(NullPointerException e) {
+				log.error("No template for "+entName);
+				result = Joiner.on(",").withKeyValueSeparator("=").join(values);
 			}
 
 			if(addNextLine) {

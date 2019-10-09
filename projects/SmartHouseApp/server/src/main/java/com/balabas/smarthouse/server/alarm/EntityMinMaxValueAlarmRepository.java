@@ -35,10 +35,15 @@ public class EntityMinMaxValueAlarmRepository
 	@Value("${smarthouse.server.alarm.interval:30}")
 	private Long alarmInterval;
 
-	private String getStorageFilePath() {
-		return storagePath + this.getClass().getSimpleName() + ".json";
+	private File getStorageFile(boolean create) throws IOException {
+		File file = new File(storagePath + this.getClass().getSimpleName() + ".json");
+		log.info("Storage =" + file.getAbsolutePath());
+		if(create && !file.exists()) {
+			file.createNewFile();
+		}
+		return file;
+		
 	}
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		init();
@@ -46,7 +51,7 @@ public class EntityMinMaxValueAlarmRepository
 
 	@Override
 	public void init() throws IOException {
-		File file = new File(getStorageFilePath());
+		File file = getStorageFile(false);
 		if (file.exists()) {
 			ObjectMapper mapper = new ObjectMapper();
 
@@ -60,7 +65,7 @@ public class EntityMinMaxValueAlarmRepository
 
 	@Override
 	public void saveAlarms(List<EntityMinMaxValueAlarm> alarms) throws IOException {
-		File file = new File(getStorageFilePath());
+		File file = getStorageFile(true);
 
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.writeValue(file, alarms);

@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.balabas.smarthouse.server.model.Device;
@@ -66,14 +67,6 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 	}
 	
 	@Override
-	public ResponseEntity<String> executePostRequest(String url, HttpHeaders headers, String body) {
-		RestTemplate rest = new RestTemplate();
-	    
-		HttpEntity<String> request = new HttpEntity<>(body, headers);
-		return rest.postForEntity(url, request, String.class);
-	}
-	
-	@Override
 	public ResponseEntity<String> executeGetRequest(String url, HttpHeaders headers, Map<String,String> params){
 		RestTemplate restTemplate = new RestTemplate();
 		
@@ -99,5 +92,26 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 
 		String resultString = result.toString();
 		return resultString.length() > 0 ? resultString.substring(0, resultString.length() - 1) : resultString;
+	}
+	
+	@Override
+	public ResponseEntity<String> executePostRequest(String url, HttpHeaders headers, String body) {
+		RestTemplate rest = new RestTemplate();
+	    
+		HttpEntity<String> request = new HttpEntity<>(body, headers);
+		
+		return rest.postForEntity(url, request, String.class);
+	}
+
+	@Override
+	public ResponseEntity<String> executePostRequest(String url, HttpHeaders headers,
+			MultiValueMap<String, Object> map) {
+		RestTemplate rest = new RestTemplate();
+		
+		HttpEntity<MultiValueMap<String, Object>> request= 
+                new HttpEntity<MultiValueMap<String, Object>>(map, headers);
+		
+		ResponseEntity<String> result =  rest.postForEntity(url, request, String.class);
+		return result;
 	}
 }

@@ -15,6 +15,7 @@ public class DeviceConstants {
 	
 	public static final String DEVICE_FIELD_GROUP = "group";
 	public static final String DEVICE_FIELD_ENTITY_NAME = "name";
+	public static final String DEVICE_FIELD_DATA = "data";
 	
 	//Standard group names
 	public static final String GROUP_DEFAULT = "default";

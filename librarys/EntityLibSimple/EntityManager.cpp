@@ -85,10 +85,16 @@ Entity* EntityManager::getEntityByGroupAndName(const char* group,
 }
 
 Entity* EntityManager::getEntityByGroupAndNameFromParams(JsonObject& params){
-	return getEntityByGroupAndName(JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, GROUP,
-								DEFAULT_VALUE),
-						JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, NAME,
-								DEFAULT_VALUE));
+	const char* group = JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, GROUP,
+			(const char*)DEFAULT_VALUE);
+	const char* name = JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, NAME,
+			(const char*)DEFAULT_VALUE);
+	/*Serial.print(FPSTR("group="));
+	Serial.print(group);
+	Serial.print(FPSTR(" name="));
+	Serial.println(name);
+*/
+	return getEntityByGroupAndName(group, name);
 }
 
 void EntityManager::addNotAllowed(JsonObject& response, const char* method) {
@@ -102,17 +108,26 @@ void EntityManager::executeMethod(EntityJsonRequestResponse* reqResp, const char
 
 void EntityManager::executeMethod(JsonObject& params, JsonObject& response,
 		const char* method) {
-/*
+	/*
+	JsonObjectUtil::printWithPreffix(PARAMETERS, params);
+		JsonObjectUtil::printWithPreffix(RESPONSE, response);
+
 	Serial.print(method);
 	Serial.print(FPSTR(" "));
 
-	JsonObjectUtil::printWithPreffix(PARAMETERS, params);
+
 
 	JsonObject& json = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
 										_DEVICE, _INFO);
-										*/
-	this->getConf()->addDeviceInfoToJson(response);
 
+	Serial.println(FPSTR("Add device info"));
+	if(this->getConf()!=nullptr){
+		Serial.println(FPSTR("not nullptr"));
+	}
+*/
+
+	this->getConf()->addDeviceInfoToJson(response);
+	//Serial.println(FPSTR("info added"));
 	bool changed = false;
 
 	if (hasNoGroupNoName(params) || hasAllGroupNoName(params)) {
@@ -122,6 +137,7 @@ void EntityManager::executeMethod(JsonObject& params, JsonObject& response,
 		changed = executeMethodOnGroup(params, response, method);
 	}else
 	if (hasGroupName(params)) {
+		//Serial.println(FPSTR("HasGroupName"));
 		Entity* entity = getEntityByGroupAndNameFromParams(params);
 
 		changed = executeMethodOnEntity(params, response, entity, method);
@@ -178,6 +194,7 @@ bool EntityManager::executeMethodOnEntity(JsonObject& params, JsonObject& respon
 												const char* method) {
 
 	if (entity == nullptr) {
+		Serial.println(FPSTR("Entity not found"));
 		JsonObjectUtil::setField(response, MESSAGE, NOT_FOUND);
 		return false;
 	}
@@ -193,12 +210,20 @@ bool EntityManager::executeMethodOnEntity(JsonObject& params, JsonObject& respon
 			allowed = true;
 		}
 	} else if (strcmp(method, REQUEST_POST) == 0) {
+		Serial.print(FPSTR("POST"));
 		if (entity->hasPostMethod()) {
-			entity->executePost(
-					JsonObjectUtil::getFieldIfKeyExistsOrDefault<JsonObject&>(
-							params, BODY, params),
-					JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
-							entity->getGroup(), entity->getName()));
+			/*Serial.print(FPSTR("entity="));
+			Serial.println(entity->getName());*/
+
+			JsonObject& paramsToPost = JsonObjectUtil::getFieldIfKeyExistsOrDefault<JsonObject&>(
+					params, BODY, params);
+			JsonObject& responceToPost = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
+					entity->getGroup(), entity->getName());
+
+			JsonObjectUtil::printWithPreffix("paramsToPost", paramsToPost);
+			JsonObjectUtil::printWithPreffix("responceToPost", responceToPost);
+
+			entity->executePost(paramsToPost, responceToPost);
 			allowed = true;
 			changed = entity->isMarkedAsChanged();
 		}

@@ -48,13 +48,13 @@ public class ServerValuesMockUtil {
 	public static DeviceRequest createMockedRequest(int i) throws IOException {
 		JSONObject data = new JSONObject()
 							.put(DEVICE_FIELD_URL_ROOT, "/")
-							.put(DEVICE_FIELD_URL_DATA, ControllerConstants.API_V1+ControllerConstants.DEVICES_ROOT+"/mock_deviceId" + i);
+							.put(DEVICE_FIELD_URL_DATA, ControllerConstants.API_V1+ControllerConstants.DEVICES_ROOT+"/mock_MockedDeviceId" + i);
 		
 		ObjectMapper mapper = new ObjectMapper();
 	    JsonNode dataJson = mapper.readTree(data.toString());
 		
 		return DeviceRequest.builder()
-			.deviceId("deviceId" + i)
+			.deviceId("MockedDeviceId" + i)
 			.deviceFirmware("deviceFirmware" + i)
 			.deviceDescr("Mocked device Description" + i)
 			.deviceKey("deviceKey" + i)

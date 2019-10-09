@@ -12,6 +12,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import com.balabas.smarthouse.server.controller.service.DeviceRequestorService;
 import com.balabas.smarthouse.server.events.ChangedEvent;
@@ -21,6 +23,7 @@ import com.balabas.smarthouse.server.events.service.EventProcessorsService;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.Device.DeviceState;
+import com.balabas.smarthouse.server.model.Entity;
 import com.balabas.smarthouse.server.model.Group;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult;
@@ -196,7 +199,14 @@ public class DeviceServiceImpl implements DeviceService {
     	Device device = getDeviceByDeviceId(request.getDeviceId()).orElse(null);
         
         String deviceData = request.getJsonOrData();
-        processDataReceivedFromDevice(device, deviceData, withData);
+        if(!withData) {
+        	if(!request.getDeviceId().startsWith("MockedDeviceId")) {
+        		log.info("Device marked as waits for update " + request.getDeviceId());
+        	}
+        	device.getTimer().setWaitsForDataUpdate(true);
+        } else {
+        	processDataReceivedFromDevice(device, deviceData, withData);
+        }
     }
     
     @Override
@@ -209,15 +219,18 @@ public class DeviceServiceImpl implements DeviceService {
         
         if(dataExpected){
 	        if(validateDeviceData(deviceData)){
+	        	
 	        	boolean isInitial = !device.wasInitialDataReceived(); 
 				List<ChangedEvent> events = deviceJsonAdapter.adapt(deviceData, device);
 				 if(isInitial){
-	                events.add(new DeviceEvent(device, INITIAL_DATA_RECEIVED));
+					 log.info("Initial data received " +device.getDeviceId()+" data = "+deviceData); 
+					 events.add(new DeviceEvent(device, INITIAL_DATA_RECEIVED));
 	             }
 	            dispatchEvents(events);
 	        }else{
 	            device.getTimer().setWaitsForDataUpdate(true);
 	            dispatchEvent(new DeviceEvent(device, DATA_PARSE_FAILED));
+	            log.error("Data parse failed");
 	        }
         }
     }
@@ -295,7 +308,9 @@ public class DeviceServiceImpl implements DeviceService {
     @Override
     public void requestDevicesValues(Device device, Group group) {
         try {
-        	
+        	if(!device.getDeviceId().startsWith("MockedDeviceId")) {
+        		log.info("Request device data "+device.getDeviceId());
+        	}
             String groupId = group!=null?group.getName():null;
             
             String result = deviceRequestor.executeGetDataOnDevice(device, groupId);
@@ -317,8 +332,8 @@ public class DeviceServiceImpl implements DeviceService {
 	public String sendDataToDevice(String deviceId, String groupId, String entityId, Map<String, Object> values)
 			throws ResourceNotFoundException {
 		
-		JSONObject json = new JSONObject();
-		json.put(groupId, new JSONObject().put(entityId, values));
+		JSONObject json = new JSONObject(values);
+		//json.put(groupId, new JSONObject().put(entityId, values));
 		
 		Optional<Device> device = getDeviceByDeviceId(deviceId);
 		
@@ -326,7 +341,9 @@ public class DeviceServiceImpl implements DeviceService {
 			throw new ResourceNotFoundException(deviceId);
 		}
 		
-		String result = deviceRequestor.executePostDataOnDevice(device.get(), json);
+		Entity entity = device.get().getGroup(groupId).getEntity(entityId);
+		
+		String result = deviceRequestor.executePostDataOnDeviceEntity(device.get(), entity, values);
 		processDataReceivedFromDevice(device.get(), result, true);
 		
 		return result;
