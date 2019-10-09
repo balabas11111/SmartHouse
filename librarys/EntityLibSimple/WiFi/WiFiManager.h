@@ -14,14 +14,14 @@
 #include <Hash.h>
 
 #include <WiFiUtils.h>
-#include <WiFi/WiFiSettingsBox.h>
+#include <SettingsStorage.h>
 
 #include <EntityJsonRequestResponse.h>
 #include <HttpUtils.h>
 
 class WiFiManager {
 public:
-	WiFiManager(WiFiSettingsBox* conf,
+	WiFiManager(SettingsStorage* conf,
 			std::function<void(void)> onWiFiConnected = nullptr,
 			std::function<void(void)> onWiFiDisConnected = nullptr);
 	virtual ~WiFiManager() {
@@ -46,7 +46,7 @@ protected:
 	void onStationModeGotIP(const WiFiEventStationModeGotIP& evt);
 
 private:
-	WiFiSettingsBox* conf;
+	SettingsStorage* conf;
 
 	wl_status_t oldWiFistatus;
 	bool reconnected=false;

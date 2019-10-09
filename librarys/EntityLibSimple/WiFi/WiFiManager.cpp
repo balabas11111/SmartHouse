@@ -7,9 +7,9 @@
 
 #include <WiFi/WiFiManager.h>
 
-#include <WiFi/WiFiSettingsBox.h>
+#include <SettingsStorage.h>
 
-WiFiManager::WiFiManager(WiFiSettingsBox* conf,
+WiFiManager::WiFiManager(SettingsStorage* conf,
 		std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
 	this->conf = conf;
@@ -21,6 +21,8 @@ WiFiManager::WiFiManager(WiFiSettingsBox* conf,
 }
 
 bool WiFiManager::begin(bool resetToAp) {
+	conf->setDeviceStatus((char*)DEVICE_STATUS_CONNECTING);
+
 	bool res = false;
 	Serial.println(FPSTR("WiFi begin"));
 
@@ -176,6 +178,7 @@ void WiFiManager::onStationModeDisconnected(
 		onWiFiDisConnected();
 	}
 	//conf->setCurrentIp(EMPTY_STR);
+	conf->setDeviceStatus((char*)DEVICE_STATUS_DISCONNECTED);
 }
 
 void WiFiManager::onStationModeGotIP(const WiFiEventStationModeGotIP& evt) {
@@ -186,4 +189,6 @@ void WiFiManager::onStationModeGotIP(const WiFiEventStationModeGotIP& evt) {
 	if (onWiFiConnected != nullptr) {
 		onWiFiConnected();
 	}
+
+	conf->setDeviceStatus((char*)DEVICE_STATUS_CONNECTED);
 }

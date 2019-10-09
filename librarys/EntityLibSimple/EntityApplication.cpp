@@ -9,31 +9,40 @@
 
 EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 		int entityCount, EntityUpdate* entityUpdate[], int entityUpdateCount,
-		WiFiSettingsBox* conf, std::function<void(void)> onWiFiConnected,
+		SettingsStorage* conf, std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
 
-	this->construct(firmWare, entities, entityCount, entityUpdate, entityUpdateCount, conf, onWiFiConnected, onWiFiDisConnected);
-
+	this->construct(
+#ifdef SETTINGS_DISPLAY_ENABLED
+			nullptr, nullptr, 0,
+#endif
+			firmWare, entities, entityCount, entityUpdate, entityUpdateCount, conf, onWiFiConnected, onWiFiDisConnected);
 }
 
-void EntityApplication::construct(const char* firmWare, Entity* entities[],
+void EntityApplication::construct(
+#ifdef SETTINGS_DISPLAY_ENABLED
+		PageToDisplayAdapter* displayAdapter, DisplayPage* pages[], unsigned char pageCount,
+#endif
+		const char* firmWare, Entity* entities[],
 		int entityCount, EntityUpdate* entityUpdate[], int entityUpdateCount,
-		WiFiSettingsBox* conf, std::function<void(void)> onWiFiConnected,
+		SettingsStorage* conf, std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
 
 	bool newConf = conf == nullptr;
 	if (newConf) {
-		Serial.println(FPSTR("New WiFISettingsBox will be created"));
+		Serial.println(FPSTR("New SettingsStorage will be created"));
 	}
 
-	this->conf = (newConf) ? new WiFiSettingsBox(firmWare) : conf;
+	this->conf = (newConf) ? new SettingsStorage(firmWare) : conf;
 	this->entityManager = new EntityManager(entities, entityCount,this->conf);
 
 	if (newConf) {
 		this->entityManager->registerAndPreInitEntity(this->conf);
 	}
 	this->entityManager->registerAndPreInitEntity(&this->deviceManager);
-
+#ifdef SETTINGS_DISPLAY_ENABLED
+	this->displayManager = new DisplayManager(displayAdapter, pages, pageCount, this->conf);
+#endif
 	this->entityUpdateManager = new EntityUpdateManager(entityUpdate,
 			entityUpdateCount);
 	this->entityUpdateManager->registerEntity(&this->deviceManager);
@@ -71,19 +80,22 @@ void EntityApplication::init(bool initSerial,
 
 	DeviceUtils::printHeap();
 	DeviceUtils::printMillis();
-
+#ifdef SETTINGS_DISPLAY_ENABLED
+	this->displayManager->init();
+#endif
 	this->entityManager->init();
 	this->entityUpdateManager->init(this->conf->refreshInterval());
 
 	if(initWiFi){
-		startWiFi();
+		this->wifiManager->begin();
 	}
 	if(initServer){
-		startServer();
+		this->wifiServerManager->begin();
 	}
-
+#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 	this->serverConnectionManager = new ServerConnectionManager(this->conf);
 	this->serverConnectionManager->init();
+#endif
 	this->defaultDataSelector = new DataSelectorEntityManager(this->entityManager);
 	this->defaultNotifier = new Notifier("Default Notifier", nullptr, this->getDataSelector());
 
@@ -108,27 +120,24 @@ void EntityApplication::initWithoutWiFi(bool deleteFs, bool initI2C,
 
 void EntityApplication::loop() {
 	this->entityUpdateManager->loop();
-
+#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 	if(this->entityManager->processChangedEntities()){
 		this->serverConnectionManager->triggerDataChanged();
 	}
 
 	this->wifiServerManager->loop();
 	this->serverConnectionManager->loop();
-}
-
-void EntityApplication::startWiFi(){
-	this->wifiManager->begin();
-}
-void EntityApplication::startServer(){
-	this->wifiServerManager->begin();
+#else
+	this->entityManager->processChangedEntities()
+	this->wifiServerManager->loop();
+#endif
 }
 
 EntityManager* EntityApplication::getEntityManager() {
 	return this->entityManager;
 }
 
-WiFiSettingsBox* EntityApplication::getConf(){
+SettingsStorage* EntityApplication::getConf(){
 	return this->conf;
 }
 
@@ -186,16 +195,18 @@ WiFiServerManager* EntityApplication::getWifiServerManager() {
 	return this->wifiServerManager;
 }
 
+#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 ServerConnectionManager* EntityApplication::getServerConnectionManager() {
 	return this->serverConnectionManager;
 }
 
-DataSelector* EntityApplication::getDataSelector() {
-	return this->defaultDataSelector;
-}
-
 void EntityApplication::registerOnServer(bool trigger) {
 	this->getServerConnectionManager()->triggerRegisterOnServer(trigger);
+}
+#endif
+
+DataSelector* EntityApplication::getDataSelector() {
+	return this->defaultDataSelector;
 }
 
 void EntityApplication::restart() {

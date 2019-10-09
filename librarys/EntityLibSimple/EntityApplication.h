@@ -10,8 +10,8 @@
 
 #include <Arduino.h>
 
-#include <WiFi/WiFiSettingsBox.h>
-
+#include <SettingsStorage.h>
+#include <DeviceConfig.h>
 #include <WiFi/WiFiManager.h>
 #include <WiFi/WiFiServerManager.h>
 #include <Entity.h>
@@ -28,28 +28,33 @@
 #include <Notifiers/DataSelector.h>
 #include <Notifiers/DataSelectorEntityManager.h>
 
-#include <ApplicationContext.h>
 #include <DeviceUtils.h>
 #include <serve/ServerConnectionManager.h>
 #include <serve/DeviceManager.h>
 
-#include <display/DisplayManager.h>
-#include <display/DisplayPage.h>
-#include <display/PageToDisplayAdapter.h>
+#ifdef SETTINGS_DISPLAY_ENABLED
+	#include <display/DisplayManager.h>
+	#include <display/DisplayPage.h>
+	#include <display/PageToDisplayAdapter.h>
+#endif
 
-class EntityApplication : public ApplicationContext {
+class EntityApplication {
 public:
 	EntityApplication(const char* firmWare, Entity* entities[], int entityCount,
 			EntityUpdate* entityUpdate[], int entityUpdateCount,
-			WiFiSettingsBox* conf = nullptr,
+			SettingsStorage* conf = nullptr,
 			std::function<void(void)> onWiFiConnected = nullptr,
 			std::function<void(void)> onWiFiDisConnected = nullptr);
 	virtual ~EntityApplication() {
 	}
 
-	void construct(const char* firmWare, Entity* entities[], int entityCount,
+	void construct(
+#ifdef SETTINGS_DISPLAY_ENABLED
+			PageToDisplayAdapter* displayAdapter, DisplayPage* pages[], unsigned char pageCount,
+#endif
+				const char* firmWare, Entity* entities[], int entityCount,
 				EntityUpdate* entityUpdate[], int entityUpdateCount,
-				WiFiSettingsBox* conf = nullptr,
+				SettingsStorage* conf = nullptr,
 				std::function<void(void)> onWiFiConnected = nullptr,
 				std::function<void(void)> onWiFiDisConnected = nullptr
 				);
@@ -63,20 +68,17 @@ public:
 	void setOnEntitiesChanged(std::function<void(void)> onEntitiesChanged);
 	void loop();
 
-	void startWiFi();
-	void startServer();
-
-	WiFiSettingsBox* getConf();
+	SettingsStorage* getConf();
 	EntityManager* getEntityManager();
 	EntityUpdateManager* getEntityUpdateManager();
 	WiFiManager* getWiFiManager();
 	WiFiServerManager* getWifiServerManager();
+#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 	ServerConnectionManager* getServerConnectionManager();
-
+	void registerOnServer(bool trigger = true);
+#endif
 	DataSelector* getDataSelector();
 	Notifier* getDefaultNotifier();
-
-	void registerOnServer(bool trigger = true);
 
 	void restart();
 
@@ -88,21 +90,24 @@ public:
 	void notify(char* group = nullptr, char* name = nullptr, char* param = nullptr, NotificationTarget* notifTarget = nullptr);
 
 private:
+	SettingsStorage* conf = nullptr;
+	WiFiManager* wifiManager = nullptr;
+	WiFiServerManager* wifiServerManager = nullptr;
 
-	DisplayManager* displayManager = nullptr;
-
-	WiFiSettingsBox* conf = nullptr;
-	WiFiManager* wifiManager;
-	WiFiServerManager* wifiServerManager;
-
-	EntityManager* entityManager;
-	EntityUpdateManager* entityUpdateManager;
+	EntityManager* entityManager = nullptr;
+	EntityUpdateManager* entityUpdateManager = nullptr;
 
 	DataSelector* defaultDataSelector = nullptr;
 	Notifier* defaultNotifier = nullptr;
-
-	ServerConnectionManager* serverConnectionManager = nullptr;
 	DeviceManager deviceManager;
+
+#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
+	ServerConnectionManager* serverConnectionManager = nullptr;
+#endif
+
+#ifdef SETTINGS_DISPLAY_ENABLED
+	DisplayManager* displayManager = nullptr;
+#endif
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYAPPLICATION_H_ */

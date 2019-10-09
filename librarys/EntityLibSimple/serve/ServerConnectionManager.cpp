@@ -7,7 +7,7 @@
 
 #include <serve/ServerConnectionManager.h>
 
-ServerConnectionManager::ServerConnectionManager(WiFiSettingsBox* conf) {
+ServerConnectionManager::ServerConnectionManager(SettingsStorage* conf) {
 	this->conf = conf;
 }
 
@@ -74,6 +74,7 @@ void ServerConnectionManager::generateServerUrls() {
 }
 
 void ServerConnectionManager::generateAuthorization(String& tempServerKey) {
+#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 	Serial.print(FPSTR("generate Authorization-------------------------"));
 	Serial.print(FPSTR("tempDeviceKey="));
 	Serial.println(tempDeviceKey);
@@ -97,6 +98,7 @@ void ServerConnectionManager::generateAuthorization(String& tempServerKey) {
 	Serial.print(FPSTR("serverHash="));
 	Serial.println(conf->getServerAuthorization());
 	Serial.println(FPSTR("...done"));
+#endif
 }
 
 void ServerConnectionManager::sendPingRequest() {

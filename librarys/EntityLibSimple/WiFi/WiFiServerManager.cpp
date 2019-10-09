@@ -8,7 +8,7 @@
 #include <WiFi/WiFiServerManager.h>
 #include <ArduinoJson.h>
 
-WiFiServerManager::WiFiServerManager(EntityManager* manager, WiFiSettingsBox* conf, int port) {
+WiFiServerManager::WiFiServerManager(EntityManager* manager, SettingsStorage* conf, int port) {
 	this->server = new ESP8266WebServer(port);
 	this->manager = manager;
 	this->conf = conf;
@@ -79,6 +79,8 @@ void WiFiServerManager::onDir() {
 	String response;
 	req->printResponseTo(response);
 
+	delete req;
+
 	server->sendHeader(RESPONSE_KEY_Server,getServerName());
 	server->send(200, CONTENT_TYPE_TEXT_JSON_UTF8, response);
 }
@@ -86,10 +88,13 @@ void WiFiServerManager::onDir() {
 void WiFiServerManager::onInfo() {
 	EntityJsonRequestResponse * req = new EntityJsonRequestResponse();
 
+	conf->addDeviceInfoToJson(req->getResponse());
 	JsonObjectUtil::setField(req->getResponse(), JSONKEY_heap, ESP.getFreeHeap());
 
 	String response;
 	req->printResponseTo(response);
+
+	delete req;
 
 	server->sendHeader(RESPONSE_KEY_Server,getServerName());
 	server->send(200, CONTENT_TYPE_TEXT_JSON_UTF8, response);
@@ -197,6 +202,7 @@ bool WiFiServerManager::authenticateRequest(const char* method){
 		result = isAuthenticatedRequest(conf->userLogin(), conf->userPassword());
 	} else
 	if(strcmp(method, REQUEST_POST)==0){
+#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 		if(server->hasHeader(HEADER_AUTHORIZATION)){
 			result = server->header(HEADER_AUTHORIZATION).equals(conf->getServerAuthorization());
 			if(!result){
@@ -209,6 +215,9 @@ bool WiFiServerManager::authenticateRequest(const char* method){
 		if(!result){
 			result = isAuthenticatedRequest(conf->adminLogin(), conf->adminPassword());
 		}
+#else
+		result = isAuthenticatedRequest(conf->adminLogin(), conf->adminPassword());
+#endif
 	}
 	Serial.print(FPSTR(" Auth = "));
 	Serial.print(result);

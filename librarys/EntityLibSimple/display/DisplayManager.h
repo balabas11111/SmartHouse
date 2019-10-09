@@ -11,11 +11,12 @@
 #include "Arduino.h"
 #include "ArduinoJson.h"
 #include "functional"
-#include "WiFi/WiFiSettingsBox.h"
+#include "SettingsStorage.h"
 #include "WiFiUtils.h"
 #include "display/PageToDisplayAdapter.h"
 #include "display/DisplayPage.h"
 #include "EntityJsonRequestResponse.h"
+#include "DeviceConstants.h"
 
 #define DISPLAY_MANAGER_STATUS_PAGE_INDEX 0
 #define DISPLAY_MANAGER_STATUS_PAGE_HEADER "Balabas-soft"
@@ -23,8 +24,8 @@
 
 class DisplayManager {
 public:
-	DisplayManager(PageToDisplayAdapter* displayAdapter, DisplayPage* pages[], unsigned char pageCount, WiFiSettingsBox* conf);
-	virtual ~DisplayManager(){};
+	DisplayManager(PageToDisplayAdapter* displayAdapter, DisplayPage** pages, unsigned char pageCount, SettingsStorage* conf);
+	virtual ~DisplayManager(){}
 	virtual void init();
 
 	virtual void switchToStatusPageReturnToPrevious();
@@ -41,7 +42,7 @@ private:
 	PageToDisplayAdapter* displayAdapter;
 	DisplayPage** pages;
 	unsigned char pageCount = 0;
-	WiFiSettingsBox* conf;
+	SettingsStorage* conf;
 	unsigned char currentPage = DISPLAY_MANAGER_STATUS_PAGE_INDEX;
 	unsigned char previousPage = DISPLAY_MANAGER_STATUS_PAGE_INDEX;
 

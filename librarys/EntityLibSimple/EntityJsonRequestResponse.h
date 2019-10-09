@@ -14,29 +14,23 @@
 
 #define REQUEST "req"
 #define RESPONSE "resp"
+#define EMPTY_JSON_OBJECT "{}"
 
 class EntityJsonRequestResponse {
 private:
 	DynamicJsonBuffer buf;
 
 	JsonVariant root;
-	/*
-	JsonVariant request;
-	JsonVariant response;
-	*/
-
 public:
 
 	EntityJsonRequestResponse(){
-		this->root= buf.parse("{}").as<JsonObject>();
+		this->root= buf.parse(EMPTY_JSON_OBJECT).as<JsonObject>();
 
 		getRoot().createNestedObject(REQUEST);
 		getRoot().createNestedObject(RESPONSE);
 	};
 
-	virtual ~EntityJsonRequestResponse(){
-		//Serial.println(FPSTR("EntityJsonRequestResponse destroyed"));
-	};
+	virtual ~EntityJsonRequestResponse(){};
 
 	static EntityJsonRequestResponse* build(){
 		return new EntityJsonRequestResponse();
@@ -96,6 +90,10 @@ public:
 	String& printResponseTo(String& str){
 		getResponse().printTo(str);
 		return str;
+	}
+
+	JsonObject& createNestedObject(const char* key){
+		return getRoot().createNestedObject(key);
 	}
 
 };

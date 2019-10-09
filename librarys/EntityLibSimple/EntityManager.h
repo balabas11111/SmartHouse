@@ -17,16 +17,9 @@
 #include <functional>
 
 #include "Entity.h"
-#include "WiFi/WiFiSettingsBox.h"
+#include "SettingsStorage.h"
 
 #include "EntityJsonRequestResponse.h"
-//#include <ApplicationContext.h>
-
-/*
- #define GROUP "Group"
- #define  NAME "Name";
- #define  BODY "Body";
- */
 
 #define FILE_PATH "/data/entity/entity.json"
 #define PARAMETERS "params"
@@ -43,7 +36,7 @@ const char EMPTY_GROUP[] PROGMEM = "Empty group";
 
 class EntityManager {
 public:
-	EntityManager(Entity* entities[], int count, WiFiSettingsBox* conf, std::function<void(void)> onEntitiesChanged = nullptr);
+	EntityManager(Entity* entities[], int count, SettingsStorage* conf, std::function<void(void)> onEntitiesChanged = nullptr);
 	virtual ~EntityManager() {
 	}
 
@@ -76,7 +69,7 @@ public:
 
 	void setOnEntitiesChanged(std::function<void(void)> onEntitiesChanged);
 
-	WiFiSettingsBox* getConf();
+	SettingsStorage* getConf();
 
 	char* getSensorsGroup();
 
@@ -127,7 +120,7 @@ protected:
 
 	std::function<void(void)> onEntitiesChanged;
 
-	WiFiSettingsBox* conf;
+	SettingsStorage* conf;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYMANAGER_H_ */

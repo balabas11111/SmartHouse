@@ -8,7 +8,7 @@
 #include <display/DisplayManager.h>
 
 DisplayManager::DisplayManager(PageToDisplayAdapter* displayAdapter,
-		DisplayPage* pages[], unsigned char pageCount, WiFiSettingsBox* conf) {
+		DisplayPage** pages, unsigned char pageCount, SettingsStorage* conf) {
 	this->displayAdapter = displayAdapter;
 	this->pages = pages;
 	this->pageCount = pageCount;
@@ -28,12 +28,12 @@ void DisplayManager::init() {
 	int initDoneCount = 0;
 
 	for(int i = 1; i <= this->pageCount; i++){
-		DisplayPage* page = this->pages[i-1];
-		page->init();
-		if(page->isInitDone()){
+		if((this->pages[i-1])->init()){
 			initDoneCount++;
 		}
 	}
+	Serial.print(FPSTR("DisplayManager pages="));
+	Serial.println(initDoneCount);
 }
 
 void DisplayManager::switchToStatusPage(bool backToPrev) {
@@ -42,7 +42,7 @@ void DisplayManager::switchToStatusPage(bool backToPrev) {
 	displayAdapter->setPowerOn();
 	renderStatusPage();
 
-	if(backToPrev){
+	if(backToPrev && this->currentPage != this->previousPage){
 		this->currentPage = this->previousPage;
 		renderCurrentPage();
 	}
@@ -81,7 +81,6 @@ void DisplayManager::renderStatusPage() {
 	if(!this->initDone){
 		return;
 	}
-
 	EntityJsonRequestResponse* resp = new EntityJsonRequestResponse();
 
 	JsonArray& pageData = resp->getResponse().createNestedArray(DISPLAY_DATA);

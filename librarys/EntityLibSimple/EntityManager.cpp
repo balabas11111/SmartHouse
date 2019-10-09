@@ -10,7 +10,7 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
-EntityManager::EntityManager(Entity* entities[], int count, WiFiSettingsBox* conf, std::function<void(void)> onEntitiesChanged) {
+EntityManager::EntityManager(Entity* entities[], int count, SettingsStorage* conf, std::function<void(void)> onEntitiesChanged) {
 	for (int i = 0; i < count; i++) {
 		registerAndPreInitEntity(entities[i]);
 	}
@@ -57,8 +57,8 @@ void EntityManager::init() {
 		}
 	}
 
-	//loadEntitiesFromFile();
-	//saveEntitiesToFile();
+	loadEntitiesFromFile();
+	saveEntitiesToFile();
 
 	Serial.println(FPSTR("Init entityManager completed"));
 	Serial.println(FPSTR("==============================="));
@@ -230,17 +230,21 @@ void EntityManager::executeSaveOnEntity(JsonObject& jsonToFile,
 }
 
 void EntityManager::loadEntitiesFromFile() {
+#ifdef SETTINGS_ENTITIES_PERSISTANCE_ENABLED
 	Serial.println(FPSTR("Load entities"));
 	persist(
 			[this](JsonObject& json, Entity* entity) {executeLoadOnEntity(json,entity);},
 			nullptr);
+#endif
 }
 
 void EntityManager::saveEntitiesToFile() {
+#ifdef SETTINGS_ENTITIES_PERSISTANCE_ENABLED
 	Serial.println(FPSTR("Save entities"));
 	persist(
 			[this](JsonObject& json, Entity* entity) {executeSaveOnEntity(json,entity);},
 			[this](JsonObject& json) {FileUtils::saveJsonToFileIfDiff(FILE_PATH, json);});
+#endif
 }
 
 void EntityManager::groupNameToParam(char* group, char* name,
@@ -285,7 +289,7 @@ bool EntityManager::processChangedEntities(){
 
 	if(toSave){
 		Serial.println(FPSTR("Save is required"));
-		//saveEntitiesToFile();
+		saveEntitiesToFile();
 	}
 
 	if(result){
@@ -342,7 +346,7 @@ void EntityManager::print() {
 
 }
 
-WiFiSettingsBox* EntityManager::getConf() {
+SettingsStorage* EntityManager::getConf() {
 	return this->conf;
 }
 

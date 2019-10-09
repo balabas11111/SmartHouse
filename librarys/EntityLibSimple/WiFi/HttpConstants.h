@@ -1,16 +1,21 @@
 /*
- * NetConstants.h
+ * HttpConstants.h
  *
- *  Created on: Sep 20, 2019
+ *  Created on: Oct 9, 2019
  *      Author: Vitaliy_Vlasov
  */
 
-#ifndef LIBRARIES_ENTITYLIBSIMPLE_WIFI_NETCONSTANTS_H_
-#define LIBRARIES_ENTITYLIBSIMPLE_WIFI_NETCONSTANTS_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_WIFI_HTTPCONSTANTS_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_WIFI_HTTPCONSTANTS_H_
 
 #include "Arduino.h"
 
 #define HTTP_PREFFIX  "http://"
+//headers
+#define HEADER_CONTENT_TYPE           "Content-Type"
+#define HEADER_LOCATION               "Location"
+#define HEADER_AUTHORIZATION          "Authorization"
+
 //http Root URLs
 #define URL_ROOT  "/"
 #define URL_INFO  "/info"
@@ -30,39 +35,17 @@
 #define RESPONSE_KEY_Server "Server"
 #define RESPONSE_MSG_ServerName "ESP Sync Web Server"
 
+//response keys
 #define JSONKEY_files       "files"
 #define JSONKEY_heap        "heap"
-#define JSONKEY_url         "url"
-#define DEFAULT_JSON_OBJECT "{}"
-
-//headers
-#define HEADER_CONTENT_TYPE           "Content-Type"
-#define HEADER_LOCATION               "Location"
-#define HEADER_AUTHORIZATION          "Authorization"
 
 //default responses
 #define RESPONSE_MSG_badArgs           "BAD ARGS"
 #define RESPONSE_MSG_badPath           "BAD Path"
 #define RESPONSE_MSG_fileNotFound      "FileNotFound"
-//SmartHouse server constants
-#define SMART_HOUSE_SERVER_REQUEST_REGISTER      "shReg"
-#define SMART_HOUSE_SERVER_REQUEST_SEND_ENTITIES "shSendEnt"
 
-#define SMART_HOUSE_SERVER_URL_SEND_ALL_DATA "shSendAll"
-#define SMART_HOUSE_SERVER_URL_SEND_SENSORS  "shSendSens"
-#define SMART_HOUSE_SERVER_URL_SEND_SETT     "shSendSett"
-
-// default json keys for values in request context
-#define GROUP "group"
-#define NAME "name"
-#define PARAM "param"
-#define DATA "data"
-#define JSON "json"
-#define BODY "body"
-
-
-//content types def
 #define CONTENT_TYPE_APPLICATION_JSON "application/json"
+#define CONTENT_TYPE_APPLICATION_FORM_URL_ENCODED "application/x-www-form-urlencoded"
 
 //content types
 const PROGMEM char CONTENT_TYPE_TEXT_HTML[] = "text/html";
@@ -93,11 +76,7 @@ const PROGMEM char AUTH_REALM_ADMIN_MESSAGE[] = "Enter Admin login/password for:
 const PROGMEM char AUTH_REALM_USER_MESSAGE[] = "Enter User login/password for: ";
 // the Content of the HTML response in case of Unautherized Access Default:empty
 const PROGMEM char AUTH_FAILED_MESSAGE[] = "<html>403. Authentication Failed</html>";
-
-
-
-
-class NetConstants {
+class HttpConstants {
 };
 
-#endif /* LIBRARIES_ENTITYLIBSIMPLE_WIFI_NETCONSTANTS_H_ */
+#endif /* LIBRARIES_ENTITYLIBSIMPLE_WIFI_HTTPCONSTANTS_H_ */

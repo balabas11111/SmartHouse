@@ -13,17 +13,17 @@
 #include <ArduinoJson.h>
 
 #include <FileUtils.h>
-#include <WiFi/WiFiSettingsBox.h>
-#include <WiFi/NetConstants.h>
+#include <SettingsStorage.h>
+#include <DeviceConstants.h>
 #include <ESP8266WebServer.h>
 #include <EntityManager.h>
 #include <EntityJsonRequestResponse.h>
-
+#include <WiFi/HttpConstants.h>
 #include <functional>
 
 class WiFiServerManager {
 public:
-	WiFiServerManager(EntityManager* manager, WiFiSettingsBox* conf,
+	WiFiServerManager(EntityManager* manager, SettingsStorage* conf,
 			int port = 80);
 	virtual ~WiFiServerManager() {
 	}
@@ -57,7 +57,7 @@ protected:
 private:
 	ESP8266WebServer* server;
 	EntityManager* manager;
-	WiFiSettingsBox* conf;
+	SettingsStorage* conf;
 
 	File fsUploadFile;
 };

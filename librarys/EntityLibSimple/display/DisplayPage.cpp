@@ -66,3 +66,7 @@ bool DisplayPage::renderKey(const char* key) {
 
 	return false;
 }
+
+bool DisplayPage::isInitDone() {
+	return this->initDone;
+}

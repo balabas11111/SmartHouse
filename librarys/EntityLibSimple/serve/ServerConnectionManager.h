@@ -18,41 +18,17 @@
 #include "ArduinoJson.h"
 #include "Hash.h"
 #include "ESP8266HTTPClient.h"
-#include "WiFi/WiFiSettingsBox.h"
-#include "WiFi/NetConstants.h"
+#include "SettingsStorage.h"
+#include "DeviceConfig.h"
+#include "DeviceConstants.h"
+#include "WiFi/HttpConstants.h"
 #include "EntityJsonRequestResponse.h"
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-#ifndef SERVER_CONNECTION_PING_FAILED_TIMEOUT
-	#define SERVER_CONNECTION_PING_FAILED_TIMEOUT 10000
-#endif
-
-#ifndef SERVER_CONNECTION_REGISTRATION_FAILED_FIRST_TIMEOUT
-	#define SERVER_CONNECTION_REGISTRATION_FAILED_FIRST_TIMEOUT 60000
-#endif
-
-#ifndef SERVER_CONNECTION_REGISTRATION_FAILED_NEXT_COUNT
-	#define SERVER_CONNECTION_NEXT_REGISTRATION_NEXT_COUNT 1
-#endif
-
-#ifndef SERVER_CONNECTION_REGISTRATION_FAILED_NEXT_TIMEOUT
-	#define SERVER_CONNECTION_REGISTRATION_FAILED_NEXT_TIMEOUT 600000
-#endif
-
-#ifndef SERVER_CONNECTION_REGISTRATION_FAILED_MIN_HEAP_TO_RESTART
-	#define SERVER_CONNECTION_REGISTRATION_FAILED_MIN_HEAP_TO_RESTART 18000
-#endif
-
-#ifndef SERVER_CONNECTION_DATA_UPDATE_REQUEST_FAILED_TIMEOUT
-	#define SERVER_CONNECTION_DATA_UPDATE_REQUEST_FAILED_TIMEOUT 10000
-#endif
-
-
-
 class ServerConnectionManager {
 public:
-	ServerConnectionManager(WiFiSettingsBox* conf);
+	ServerConnectionManager(SettingsStorage* conf);
 	virtual ~ServerConnectionManager(){};
 
 	void init();
@@ -109,7 +85,7 @@ private:
 	String urlRegister;
 	String urlData;
 
-	WiFiSettingsBox* conf;
+	SettingsStorage* conf;
 
 	unsigned char registrationFailures = 0;
 };

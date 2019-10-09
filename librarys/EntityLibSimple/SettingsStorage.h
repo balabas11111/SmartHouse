@@ -62,22 +62,13 @@
 #include <sstream>
 #include <DeviceUtils.h>
 #include "Hash.h"
-#include <WiFi/NetConstants.h>
+#include <DeviceConfig.h>
+#include <DeviceConstants.h>
 #include "functional"
 
-#define DEVICE_STATUS_INITIALIZING "Initializing..."
-#define DEVICE_STATUS_LOAD_ENTITIES "Loading Entities..."
-#define DEVICE_STATUS_CONNECTING "Connecting WiFi..."
-#define DEVICE_STATUS_DEPLOYING "Deploy urls..."
-#define DEVICE_STATUS_REGISTERING "Registering..."
-#define DEVICE_STATUS_UPDATE_SENSORS "Update sensors..."
-#define DEVICE_STATUS_READY "Connecting..."
-
-#define EMPTY_LINE ""
-
-class WiFiSettingsBox: public Entity {
+class SettingsStorage: public Entity {
 public:
-	WiFiSettingsBox(const char* firmware) :
+	SettingsStorage(const char* firmware) :
 			Entity(GROUP_SETTINGS, _WIFI_SETTINGS_DEF_NAME,
 					(char*)_WIFI_SETTINGS_DEF_DESCR) {
 		this->_firmware = firmware;
@@ -85,7 +76,7 @@ public:
 
 		this->_ssidAp = strdup(deviceId());
 	}
-	virtual ~WiFiSettingsBox() {
+	virtual ~SettingsStorage() {
 	}
 
 	virtual void init() override {
@@ -129,8 +120,10 @@ public:
 		Serial.print(this->_dns);
 		Serial.print(FPSTR(" dns2="));
 		Serial.print(this->_dns2);
+#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 		Serial.print(FPSTR(" smrtServUrl="));
 		Serial.print(this->_smrtServAddr);
+#endif
 		Serial.println();
 	}
 
@@ -237,14 +230,6 @@ public:
 		return this->_deviceDescr;
 	}
 
-	char* smartServerAddr(){
-		return this->_smrtServAddr;
-	}
-
-	char* smartServerKey(){
-		return this->_smrtServKey;
-	}
-
 	bool hasAdminPassword(){
 		return strcmp(_adminPassword,"")!=0;
 	}
@@ -278,7 +263,7 @@ public:
 		JsonObjectUtil::setField(info, _DEVICE_FIRMWARE, deviceFirmWare());
 		JsonObjectUtil::setField(info, _DEVICE_DESCR, deviceDescr());
 	}
-
+#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 	const String& getServerAuthorization() const {
 		return serverAuthorization;
 	}
@@ -287,6 +272,14 @@ public:
 		this->serverAuthorization = serverAuthorization;
 	}
 
+	char* smartServerAddr(){
+		return this->_smrtServAddr;
+	}
+
+	char* smartServerKey(){
+		return this->_smrtServKey;
+	}
+#endif
 	char* getDeviceStatus() const {
 		return deviceStatus;
 	}
@@ -312,8 +305,8 @@ protected:
 	const char* _firmware;
 	char* _deviceDescr = (char*)"Default Device description";
 
-	char* _ssid = (char*)"balabasKiev5";
-	char* _pass = (char*)"wuWylKegayg2wu22";
+	char* _ssid = (char*)SETTINGS_WIFI_SSSID;
+	char* _pass = (char*)SETTINGS_WIFI_PASSWORD;
 	char* _ssidAp = (char*)"";
 	char* _passAp = (char*)"";
 	bool _isAp = 0;bool _isStatIp = 0;bool _disStIfCon = 0;
@@ -328,8 +321,6 @@ protected:
 	char* _subnet = (char*)"255,255,255,0";
 	char* _dns = (char*)"192,168,0,1";
 	char* _dns2 = (char*)"192,168,0,1";
-	char* _smrtServAddr = (char*)"192.168.0.103";
-	char* _smrtServKey = (char*)"SomeServerKey";
 
 	char* _userLogin = (char*)"";
 	char* _userPassword = (char*)"";
@@ -337,10 +328,15 @@ protected:
 	char* _adminPassword = (char*)"admin";
 	uint16_t _interval = 20;
 
-	char* currentIp = "";
+	char* currentIp = (char*)EMPTY_LINE;
 
+#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 	//Device current security information
 	String serverAuthorization;
+
+	char* _smrtServAddr = (char*)SETTINGS_SMART_SERVER_ADDRESS;
+	char* _smrtServKey = (char*)SETTINGS_SMART_SERVER_KEY;
+#endif
 
 	std::function<void(void)> onDeviceStatusChanged = nullptr;
 	char* deviceStatus;
@@ -366,9 +362,10 @@ protected:
 		chg = getKeyValueIfExistsAndNotEquals(json, _IP_SUBNET, &this->_subnet)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _IP_DNS, &this->_dns)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _IP_DNS2, &this->_dns2)?true:chg;
+#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 		chg = getKeyValueIfExistsAndNotEquals(json, _SMART_HOUSE_SERVER_ADDR, &this->_smrtServAddr)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _SMART_HOUSE_SERVER_KEY, &this->_smrtServKey)?true:chg;
-
+#endif
 		chg = getKeyValueIfExistsAndNotEquals(json, _USER_LOGIN, &this->_userLogin)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _USER_PASS, &this->_userPassword)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _ADMIN_LOGIN, &this->_adminLogin)?true:chg;
@@ -403,9 +400,10 @@ protected:
 		setJsonField(json, _IP_SUBNET, this->_subnet);
 		setJsonField(json, _IP_DNS, this->_dns);
 		setJsonField(json, _IP_DNS2, this->_dns2);
+#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 		setJsonField(json, _SMART_HOUSE_SERVER_ADDR, this->_smrtServAddr);
 		setJsonField(json, _SMART_HOUSE_SERVER_KEY, mask?_MASKED_VALUE:this->_smrtServKey);
-
+#endif
 		setJsonField(json, _USER_LOGIN, this->_userLogin);
 		setJsonField(json, _USER_PASS, mask?_MASKED_VALUE:this->_userPassword);
 		setJsonField(json, _ADMIN_LOGIN, this->_adminLogin);

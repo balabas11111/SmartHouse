@@ -16,10 +16,7 @@
 #include <ESP8266HTTPClient.h>
 #include <EntityJsonRequestResponse.h>
 #include <JsonObjectUtil.h>
-
-#define HEADER_CONTENT_TYPE           "Content-Type"
-#define CONTENT_TYPE_APPLICATION_JSON "application/json"
-#define CONTENT_TYPE_APPLICATION_FORM_URL_ENCODED "application/x-www-form-urlencoded"
+#include <WiFi/HttpConstants.h>
 
 #define EMPTY_STR " "
 #define QUESTION_STR "?"
