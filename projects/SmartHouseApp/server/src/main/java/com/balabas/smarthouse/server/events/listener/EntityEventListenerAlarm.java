@@ -1,29 +1,29 @@
-package com.balabas.smarthouse.server.events.processors;
+package com.balabas.smarthouse.server.events.listener;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.balabas.smarthouse.server.alarm.AlarmProcessService;
-import com.balabas.smarthouse.server.events.EntityChangedEvent;
+import com.balabas.smarthouse.server.events.EntityEvent;
 import com.balabas.smarthouse.server.events.service.EventListenerNotificationDispatcherAbstract;
 import com.balabas.smarthouse.server.model.Entity;
 
 import lombok.extern.log4j.Log4j2;
 
-import static com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType.ADDED;
-import static com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType.UPDATED;
+import static com.balabas.smarthouse.server.events.ChangedEvent.EventType.INITIAL_DATA_RECEIVED;
+import static com.balabas.smarthouse.server.events.ChangedEvent.EventType.UPDATED;
 
 @Component
 @Log4j2
-public class EntityEventProcessorAlarm
-		extends EventListenerNotificationDispatcherAbstract<Entity, EntityChangedEvent> {
+public class EntityEventListenerAlarm
+		extends EventListenerNotificationDispatcherAbstract<Entity, EntityEvent> {
 
 	@Autowired
 	private AlarmProcessService<Entity> entityAlarmService;
 
 	@Override
-	public void processEvent(EntityChangedEvent event) {
-		if (ADDED.equals(event.getEventType())) {
+	public void processEvent(EntityEvent event) {
+		if (INITIAL_DATA_RECEIVED.equals(event.getEventType())) {
 			log.debug("Entity alarms activation");
 
 			entityAlarmService.activateAlarms(event.getDevice(), event.getTarget());

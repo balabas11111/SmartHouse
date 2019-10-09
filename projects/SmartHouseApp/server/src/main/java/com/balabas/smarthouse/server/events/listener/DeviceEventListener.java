@@ -1,12 +1,12 @@
-package com.balabas.smarthouse.server.events.processors;
+package com.balabas.smarthouse.server.events.listener;
 
-import com.balabas.smarthouse.server.events.DeviceChangedEvent;
+import com.balabas.smarthouse.server.events.DeviceEvent;
 
 import java.util.Collections;
 
 import org.springframework.stereotype.Component;
 
-import com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType;
+import com.balabas.smarthouse.server.events.ChangedEvent.EventType;
 import com.balabas.smarthouse.server.events.service.EventListenerNotificationDispatcherAbstract;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.notification.AbstractNotification;
@@ -15,11 +15,11 @@ import com.balabas.smarthouse.server.notification.Message.MessageParent;
 import com.balabas.smarthouse.server.notification.Message.MessageSeverity;
 
 @Component
-public class DeviceEventProcessor extends EventListenerNotificationDispatcherAbstract<Device, DeviceChangedEvent> {
+public class DeviceEventListener extends EventListenerNotificationDispatcherAbstract<Device, DeviceEvent> {
 
 	@Override
-	public void processEvent(DeviceChangedEvent event) {
-		if(DeviceEventType.ADDED.equals(event.getEventType())) {
+	public void processEvent(DeviceEvent event) {
+		if(EventType.INITIAL_DATA_RECEIVED.equals(event.getEventType())) {
 			
 			String message = "Устройство зарегистрировано : "+event.getTarget().getDeviceDescr();
 			

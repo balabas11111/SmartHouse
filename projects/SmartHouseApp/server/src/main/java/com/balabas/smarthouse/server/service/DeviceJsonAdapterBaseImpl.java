@@ -13,9 +13,8 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.events.ChangedEvent;
-import com.balabas.smarthouse.server.events.DeviceChangedEvent;
-import com.balabas.smarthouse.server.events.EntityChangedEvent;
-import com.balabas.smarthouse.server.events.GroupChangedEvent;
+import com.balabas.smarthouse.server.events.EntityEvent;
+import com.balabas.smarthouse.server.events.GroupEvent;
 import com.balabas.smarthouse.server.events.ValueChangeOperation;
 import com.balabas.smarthouse.server.events.ValuesChangeEvent;
 import com.balabas.smarthouse.server.model.Device;
@@ -37,8 +36,8 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_DESCRIPTION;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ITEM_CLASS;
 
-import static com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType.ADDED;
-import static com.balabas.smarthouse.server.events.ChangedEvent.DeviceEventType.UPDATED;
+import static com.balabas.smarthouse.server.events.ChangedEvent.EventType.INITIAL_DATA_RECEIVED;
+import static com.balabas.smarthouse.server.events.ChangedEvent.EventType.UPDATED;
 
 @Service
 @SuppressWarnings("rawtypes")
@@ -59,10 +58,6 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 
         	processDeviceInfo(device);
         	
-            if(!device.isInitialDataReceived()){
-                events.add(new DeviceChangedEvent(device, ADDED));
-            }
-            
             for(String groupName: JSONObject.getNames(deviceJson)) {
             	if(ENTITY_FIELD_DESCRIPTION.equals(groupName)) {
             		continue;
@@ -73,7 +68,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
                 if(group!=null) {
 
 	                if (!group.getData().isEmpty()) {
-	                    List<EntityChangedEvent> entityEvents = new ArrayList<>();
+	                    List<EntityEvent> entityEvents = new ArrayList<>();
 	
 	                    for(String entityName: JSONObject.getNames(group.getData())) {
 	                    	
@@ -82,13 +77,13 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 	                    		continue;
 	                    	}
 	                        
-	                    	processEntityJson(!device.isInitialDataReceived(), device, group, entityName, entityEvents);
+	                    	processEntityJson(!device.wasInitialDataReceived(), device, group, entityName, entityEvents);
 	                    }
 	                    
 	                    if(!entityEvents.isEmpty()){
 	                    	events.addAll(entityEvents);
 	                    	
-	                        GroupChangedEvent groupEvent = new GroupChangedEvent(group, UPDATED, entityEvents);
+	                        GroupEvent groupEvent = new GroupEvent(group, UPDATED, entityEvents);
 	                        if(groupEvent!=null){
 	                            events.add(groupEvent);
 	                        }
@@ -147,8 +142,8 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
             group = new Group(device.getDeviceId(), groupName, groupJson);
             device.getGroups().add(group);
             
-            if(device.isInitialDataReceived()){
-                events.add(new GroupChangedEvent(group, ADDED));
+            if(device.wasInitialDataReceived()){
+                events.add(new GroupEvent(group, INITIAL_DATA_RECEIVED));
             }
         } else {
             group.setData(groupJson);
@@ -157,7 +152,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
         return group;
     }
     
-    private void processEntityJson(boolean noEventProduceApplyOnly, Device device, Group group, String entityName, List<EntityChangedEvent> events){
+    private void processEntityJson(boolean noEventProduceApplyOnly, Device device, Group group, String entityName, List<EntityEvent> events){
     	JSONObject entityJson = null;
         
         try{
@@ -174,22 +169,22 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
         
         valueEvents.addAll(processSensorItemsValues(noEventProduceApplyOnly, entity, entityJson));
         
-        EntityChangedEvent entityValuesChangeEvent = 
-                EntityChangedEvent.build(entity, UPDATED, valueEvents);
+        EntityEvent entityValuesChangeEvent = 
+                EntityEvent.build(entity, UPDATED, valueEvents);
         
         if(entityValuesChangeEvent!=null){
         	events.add(entityValuesChangeEvent);
         }
     }
     
-    private Entity getEntityOrCreateNew(boolean noEventProduceApplyOnly, Device device, Group group, String entityName, List<EntityChangedEvent> events) {
+    private Entity getEntityOrCreateNew(boolean noEventProduceApplyOnly, Device device, Group group, String entityName, List<EntityEvent> events) {
         Entity entity = group.getEntity(entityName);
         
         if (entity == null) {
             entity = new Entity( group.getDeviceId(), group.getName(), entityName);
             group.getEntities().add(entity);
             
-            events.add(new EntityChangedEvent(device, entity, ADDED));
+            events.add(new EntityEvent(device, entity, INITIAL_DATA_RECEIVED));
         } 
         
         return entity;

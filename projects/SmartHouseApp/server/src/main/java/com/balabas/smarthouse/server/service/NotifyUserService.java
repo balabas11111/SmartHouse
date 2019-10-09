@@ -1,8 +1,8 @@
 package com.balabas.smarthouse.server.service;
 
-import com.balabas.smarthouse.server.events.DeviceChangedEvent;
+import com.balabas.smarthouse.server.events.DeviceEvent;
 
 public interface NotifyUserService {
 
-	void sendDeviceRegisteredEventToAllUsers(DeviceChangedEvent event);
+	void sendDeviceRegisteredEventToAllUsers(DeviceEvent event);
 }

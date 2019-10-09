@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import lombok.extern.log4j.Log4j2;
 
 import com.balabas.smarthouse.server.events.ChangedEvent;
-import com.balabas.smarthouse.server.events.DeviceChangedEvent;
-import com.balabas.smarthouse.server.events.EntityChangedEvent;
-import com.balabas.smarthouse.server.events.GroupChangedEvent;
+import com.balabas.smarthouse.server.events.DeviceEvent;
+import com.balabas.smarthouse.server.events.EntityEvent;
+import com.balabas.smarthouse.server.events.GroupEvent;
 
 @Log4j2
 @Service
@@ -18,13 +18,13 @@ import com.balabas.smarthouse.server.events.GroupChangedEvent;
 public class EventProcessorsServiceImpl implements EventProcessorsService {
 
 	@Autowired
-	List<EventListenerBase<DeviceChangedEvent>> deviceEventListeners;
+	List<EventListenerBase<DeviceEvent>> deviceEventListeners;
 	
 	@Autowired(required = false)
-	List<EventListenerBase<GroupChangedEvent>> groupEventListeners;
+	List<EventListenerBase<GroupEvent>> groupEventListeners;
 	
 	@Autowired(required = false)
-	List<EventListenerBase<EntityChangedEvent>> entityEventListeners;
+	List<EventListenerBase<EntityEvent>> entityEventListeners;
 	
     @Override
     public void processEvents(List<? extends ChangedEvent> events) {
@@ -42,16 +42,16 @@ public class EventProcessorsServiceImpl implements EventProcessorsService {
     }
     
     public void processEvent(ChangedEvent<?> event){
-        if(event.getClass().equals(DeviceChangedEvent.class)){
-            processEvent((DeviceChangedEvent) event);
-        }else if(event.getClass().equals(GroupChangedEvent.class)){
-            processEvent((GroupChangedEvent) event);
-        }else if(event.getClass().equals(EntityChangedEvent.class)){
-            processEvent((EntityChangedEvent) event);
+        if(event.getClass().equals(DeviceEvent.class)){
+            processEvent((DeviceEvent) event);
+        }else if(event.getClass().equals(GroupEvent.class)){
+            processEvent((GroupEvent) event);
+        }else if(event.getClass().equals(EntityEvent.class)){
+            processEvent((EntityEvent) event);
         }
     }
     
-    public void processEvent(DeviceChangedEvent event){
+    public void processEvent(DeviceEvent event){
     	if(deviceEventListeners!=null && !deviceEventListeners.isEmpty()){
     		deviceEventListeners.stream()
     			.forEach(proc-> proc.processEvent(event));
@@ -60,7 +60,7 @@ public class EventProcessorsServiceImpl implements EventProcessorsService {
     	}
     }
     
-    public void processEvent(GroupChangedEvent event){
+    public void processEvent(GroupEvent event){
     	if(groupEventListeners!=null && !groupEventListeners.isEmpty()){
     		groupEventListeners.stream()
 				.forEach(proc-> proc.processEvent(event));
@@ -69,7 +69,7 @@ public class EventProcessorsServiceImpl implements EventProcessorsService {
     	}
     }
     
-    public void processEvent(EntityChangedEvent event){
+    public void processEvent(EntityEvent event){
     	if(entityEventListeners!=null && !entityEventListeners.isEmpty()){
     		entityEventListeners.stream()
 				.forEach(proc-> proc.processEvent(event));

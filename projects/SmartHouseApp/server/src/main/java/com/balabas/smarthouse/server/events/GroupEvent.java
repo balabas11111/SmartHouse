@@ -7,16 +7,16 @@ import lombok.Getter;
 
 import com.balabas.smarthouse.server.model.Group;
 
-public class GroupChangedEvent extends ChangedEvent<Group> {
+public class GroupEvent extends ChangedEvent<Group> {
 
     @Getter 
-    private List<EntityChangedEvent> events = new ArrayList<>();
+    private List<EntityEvent> events = new ArrayList<>();
     
-    public GroupChangedEvent(Group target, DeviceEventType eventType) {
+    public GroupEvent(Group target, EventType eventType) {
         super(target, eventType);
     }
     
-    public GroupChangedEvent(Group target, DeviceEventType eventType, List<EntityChangedEvent> events) {
+    public GroupEvent(Group target, EventType eventType, List<EntityEvent> events) {
         super(target, eventType);
         this.events = events;
     }
@@ -36,7 +36,7 @@ public class GroupChangedEvent extends ChangedEvent<Group> {
         int index = 0;
         
         if(events!=null && events.size()>0){
-            for(EntityChangedEvent e: events){
+            for(EntityEvent e: events){
                 str.append("{ t=");
                 str.append(e.getTargetName());
                 str.append(", c=");

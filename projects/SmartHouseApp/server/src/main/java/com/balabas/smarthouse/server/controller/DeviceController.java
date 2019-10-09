@@ -44,7 +44,7 @@ public class DeviceController {
 		deviceRequest.setHeaders(headers);
 		deviceRequest.setRequestType(DeviceRequestType.DATA_UPDATE_EVENT);
 		
-		return service.processDataChangedOnDeviceRequest(deviceRequest).toResponseEntity();
+		return service.processDataChangedOnDeviceRequest(deviceRequest, false).toResponseEntity();
 	}
 
 	@PostMapping("/data")
@@ -58,7 +58,7 @@ public class DeviceController {
 		deviceRequest.setHeaders(headers);
 		deviceRequest.setRequestType(DeviceRequestType.DATA_UPDATE_EVENT);
 
-		return service.processDataChangedOnDeviceRequest(deviceRequest).toResponseEntity();
+		return service.processDataChangedOnDeviceRequest(deviceRequest, true).toResponseEntity();
 	}
 	
 }

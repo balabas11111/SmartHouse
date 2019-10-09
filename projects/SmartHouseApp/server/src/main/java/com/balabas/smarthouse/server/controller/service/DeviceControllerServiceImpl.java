@@ -70,10 +70,10 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 	}
 	
 	@Override 
-	public DeviceRequestResult<String> processDataChangedOnDeviceRequest(DeviceRequest request){
+	public DeviceRequestResult<String> processDataChangedOnDeviceRequest(DeviceRequest request, boolean withData){
 		try {
 			securityService.validateDeviceRequestDataUpdate(request);
-			deviceService.processDeviceDataUpdateDispatched(request);
+			deviceService.processDeviceDataUpdateDispatched(request, withData);
 		
 			return DeviceRequestResult.from(HttpStatus.OK);
 			

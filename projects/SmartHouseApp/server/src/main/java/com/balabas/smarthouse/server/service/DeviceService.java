@@ -34,9 +34,9 @@ public interface DeviceService {
 	
 	void markDeviceAsWaitsForDataUpdate(DeviceRequest request) throws ResourceNotFoundException;
 	
-	void processDeviceDataUpdateDispatched(DeviceRequest request) throws ResourceNotFoundException;
+	void processDeviceDataUpdateDispatched(DeviceRequest request, boolean dataExpected) throws ResourceNotFoundException;
 	
-	void processDataReceivedFromDevice(Device device, String deviceData) throws ResourceNotFoundException;
+	void processDataReceivedFromDevice(Device device, String deviceData, boolean dataExpected) throws ResourceNotFoundException;
 	
 	void requestDevicesValues(Device device, Group group);
 	

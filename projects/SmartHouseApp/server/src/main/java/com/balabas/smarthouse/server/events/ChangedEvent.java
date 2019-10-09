@@ -6,24 +6,25 @@ import lombok.Getter;
 
 public class ChangedEvent<T extends SmartHouseItem> {
 
-    public enum DeviceEventType{
+    public enum EventType{
     	REGISTERED,
     	REREGISTERED,
-    	ADDED,
+    	INITIAL_DATA_RECEIVED,
         UPDATED,
         REMOVED,
         DATA_UPDATE_DISPATCHED,
         DATA_RECEIVED,
-        DATA_EXPIRED
+        DATA_TIMED_OUT,
+        DATA_PARSE_FAILED
     }
     
     @Getter
     private T target;
     
     @Getter
-    private DeviceEventType eventType;
+    private EventType eventType;
     
-    public ChangedEvent(T target, DeviceEventType eventType ){
+    public ChangedEvent(T target, EventType eventType ){
         this.target = target;
         this.eventType = eventType;
     }

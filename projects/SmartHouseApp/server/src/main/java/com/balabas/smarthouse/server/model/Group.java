@@ -76,4 +76,11 @@ public class Group implements SmartHouseItem, JsonDataContainer {
     	return entities.stream().filter(entity->entity.name.equals(name)).findFirst().orElse(null);
     }
     
+    public boolean isTimeToUpdate(){
+		boolean waits = this.getTimer().isWaitsForDataUpdate();
+		boolean dataTooOld = this.getTimer().isNextUpdateTimeReached();
+		
+		return waits || dataTooOld;
+	}
+    
 }

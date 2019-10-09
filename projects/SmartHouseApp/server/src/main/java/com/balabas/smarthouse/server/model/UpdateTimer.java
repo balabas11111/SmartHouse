@@ -58,33 +58,20 @@ public class UpdateTimer {
         }
     }
     
-    public void setNextTimeToUpdate(long nextTime){
+    public void setNextTimeToUpdate(long nextTime) {
         if(nextTime>-1){
             this.nextUpdateTime = nextTime;
         }
     }
     
-    public boolean isTimeToUpdate(){
-        boolean waits = this.waitsForDataUpdate;
-        boolean timeResult = false;
-        
-        if(this.nextUpdateTime > -1){
-            Date now = new Date();
-            long time = now.getTime();
-            
-            timeResult = this.nextUpdateTime < time;
-            /*
-            if(timeResult){
-                log.info(this.parentClass+"("+this.parentName+") Data is OLD lastUpdated="+lastUpdated+" now="+now);
-            }*/
-        }
-        /*
-        if(waits){
-            log.info(this.parentClass+"("+this.parentName+") Waits for data update");
-        }
-        */
-        
-        return waits || timeResult;
+    public boolean isWaitsForDataUpdate() {
+    	return this.waitsForDataUpdate;
     }
-   
+    
+    public boolean isNextUpdateTimeReached() {
+    	if(this.nextUpdateTime > -1){
+            return this.nextUpdateTime < (new Date()).getTime();
+        }
+    	return false;
+    }
 }

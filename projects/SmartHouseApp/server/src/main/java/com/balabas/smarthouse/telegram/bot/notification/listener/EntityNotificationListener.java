@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.telegram.bot.notification.processors;
+package com.balabas.smarthouse.telegram.bot.notification.listener;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
