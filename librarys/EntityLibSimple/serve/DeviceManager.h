@@ -10,6 +10,7 @@
 
 #include "Arduino.h"
 #include <ArduinoJson.h>
+#include <DeviceConfig.h>
 #include <DeviceUtils.h>
 #include "Entity.h"
 #include <EntityUpdate.h>

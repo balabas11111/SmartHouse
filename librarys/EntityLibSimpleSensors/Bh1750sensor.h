@@ -26,8 +26,8 @@
 
 class Bh1750sensor: public Entity, public EntityUpdate {
 public:
-	Bh1750sensor() :
-			Entity((char*)GROUP_SENSORS, BH1750, (char*)BH1750_DESCRIPTION) {
+	Bh1750sensor(char* description = (char*)BH1750_DESCRIPTION, const char* name = BH1750) :
+			Entity(GROUP_SENSORS, name, description) {
 	}
 
 	virtual void init() override {

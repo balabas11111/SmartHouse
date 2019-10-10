@@ -7,7 +7,7 @@
 
 #include <EntityApplication.h>
 
-EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
+EntityApplication::EntityApplication(const char* firmWare, char* description, Entity* entities[],
 		int entityCount, EntityUpdate* entityUpdate[], int entityUpdateCount,
 		SettingsStorage* conf, std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
@@ -16,14 +16,14 @@ EntityApplication::EntityApplication(const char* firmWare, Entity* entities[],
 #ifdef SETTINGS_DISPLAY_ENABLED
 			nullptr, nullptr, 0,
 #endif
-			firmWare, entities, entityCount, entityUpdate, entityUpdateCount, conf, onWiFiConnected, onWiFiDisConnected);
+			firmWare, description, entities, entityCount, entityUpdate, entityUpdateCount, conf, onWiFiConnected, onWiFiDisConnected);
 }
 
 void EntityApplication::construct(
 #ifdef SETTINGS_DISPLAY_ENABLED
 		PageToDisplayAdapter* displayAdapter, DisplayPage* pages[], unsigned char pageCount,
 #endif
-		const char* firmWare, Entity* entities[],
+		const char* firmWare, char* description, Entity* entities[],
 		int entityCount, EntityUpdate* entityUpdate[], int entityUpdateCount,
 		SettingsStorage* conf, std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
@@ -33,7 +33,8 @@ void EntityApplication::construct(
 		Serial.println(FPSTR("New SettingsStorage will be created"));
 	}
 
-	this->conf = (newConf) ? new SettingsStorage(firmWare) : conf;
+	this->conf = (newConf) ? new SettingsStorage(firmWare, description) : conf;
+
 	this->entityManager = new EntityManager(entities, entityCount,this->conf);
 
 	if (newConf) {
@@ -74,9 +75,7 @@ void EntityApplication::init(bool initSerial,
 		I2C_utils::initStatic(clockPin, dataPin);
 	}
 
-	Serial.println(FPSTR("--------------------"));
-	Serial.print(FPSTR("Init application "));
-	Serial.println(this->conf->deviceFirmWare());
+	this->conf->initDeviceId();
 
 	DeviceUtils::printHeap();
 	DeviceUtils::printMillis();
@@ -106,16 +105,16 @@ void EntityApplication::init(bool initSerial,
 	Serial.println(FPSTR("===================================="));
 }
 
-void EntityApplication::initWithWiFi(bool deleteFs, bool initI2C,
+void EntityApplication::initWithWiFi(bool initI2C,
 		uint8_t clockPin, uint8_t dataPin) {
 	init(true, true, true, true,
-				deleteFs, initI2C, clockPin, dataPin);
+				false, initI2C, clockPin, dataPin);
 }
 
-void EntityApplication::initWithoutWiFi(bool deleteFs, bool initI2C,
+void EntityApplication::initWithoutWiFi(bool initI2C,
 		uint8_t clockPin, uint8_t dataPin) {
 	init(true, false, false, true,
-					deleteFs, initI2C, clockPin, dataPin);
+					false, initI2C, clockPin, dataPin);
 }
 
 void EntityApplication::loop() {

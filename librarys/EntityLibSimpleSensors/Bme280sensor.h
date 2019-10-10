@@ -27,8 +27,8 @@
 
 class Bme280sensor: public Entity, public EntityUpdate {
 public:
-	Bme280sensor():
-		Entity((char*)GROUP_SENSORS,BME280,(char*)BME280_DESCRIPTION){};
+	Bme280sensor(char* description = (char*)BME280_DESCRIPTION, const char* name = BME280):
+		Entity(GROUP_SENSORS, name, description){};
 
 	virtual ~Bme280sensor(){};
 

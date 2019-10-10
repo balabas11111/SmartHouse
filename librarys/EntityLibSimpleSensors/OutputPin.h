@@ -22,11 +22,11 @@
 
 class OutputPin:public Pin, public Entity, public EntityUpdate {
 public:
-	OutputPin(uint8_t pin, const char* name = strdup(OUTPUT_PIN_NAME), const char* descr = OUTPUT_PIN_DESCRIPTION,
+	OutputPin(uint8_t pin, char* descr = OUTPUT_PIN_DESCRIPTION, const char* name = OUTPUT_PIN_NAME,
 			uint8_t onLevel = HIGH,
 			std::function<void(void)> selfEventProcessFunction = nullptr, bool applicationDispatcher = false) :
-			Pin(pin,OUTPUT,onLevel),
-			Entity(GROUP_SENSORS, name, strdup(descr), selfEventProcessFunction, applicationDispatcher, true, true) {
+			Pin(pin, OUTPUT, onLevel),
+			Entity(GROUP_SENSORS, name, descr, selfEventProcessFunction, applicationDispatcher, true, true) {
 	}
 
 	virtual ~OutputPin() {

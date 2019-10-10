@@ -40,7 +40,7 @@
 
 class EntityApplication {
 public:
-	EntityApplication(const char* firmWare, Entity* entities[], int entityCount,
+	EntityApplication(const char* firmWare, char* description, Entity* entities[], int entityCount,
 			EntityUpdate* entityUpdate[], int entityUpdateCount,
 			SettingsStorage* conf = nullptr,
 			std::function<void(void)> onWiFiConnected = nullptr,
@@ -52,15 +52,15 @@ public:
 #ifdef SETTINGS_DISPLAY_ENABLED
 			PageToDisplayAdapter* displayAdapter, DisplayPage* pages[], unsigned char pageCount,
 #endif
-				const char* firmWare, Entity* entities[], int entityCount,
+				const char* firmWare, char* description, Entity* entities[], int entityCount,
 				EntityUpdate* entityUpdate[], int entityUpdateCount,
 				SettingsStorage* conf = nullptr,
 				std::function<void(void)> onWiFiConnected = nullptr,
 				std::function<void(void)> onWiFiDisConnected = nullptr
 				);
 
-	void initWithWiFi(bool deleteFs = false, bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
-	void initWithoutWiFi(bool deleteFs = false, bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
+	void initWithWiFi(bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
+	void initWithoutWiFi(bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
 
 	void init(bool initSerial = true, bool initWiFi = false, bool initServer = false, bool initFs = true,
 			bool deleteFs = false, bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);

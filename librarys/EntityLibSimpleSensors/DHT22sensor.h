@@ -22,8 +22,8 @@
 
 class DHT22sensor: public Entity, public EntityUpdate {
 public:
-	DHT22sensor(int pin) :
-			Entity((char*)GROUP_SENSORS, DHT22_NAME, (char*)DHT22_DESCRIPTION) {
+	DHT22sensor(uint8_t pin, char* description = (char*)DHT22_DESCRIPTION, const char* name = DHT22_NAME) :
+			Entity(GROUP_SENSORS, name, description) {
 		//this->dht = new DHT(pin, DHT22);
 		this->dht = new DHT22Mock(pin, DHT22);
 	}

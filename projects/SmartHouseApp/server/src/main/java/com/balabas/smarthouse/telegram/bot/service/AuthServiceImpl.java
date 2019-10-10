@@ -20,9 +20,16 @@ public class AuthServiceImpl implements AuthService,
     @Value("${telegram.bot.allowedids}")
     private String allowedIds;
     
-    @Value("${telegram.bot.apiToken}")
+    @Value("${smarthouse.server.mock}")
     @Getter
+	private boolean mock;
+    
+    @Value("${telegram.bot.apiToken}")
 	private String botToken;
+    
+    @Value("${telegram.bot.apiToken.mock}")
+    @Getter
+	private String botTokenMock;
 	
 	@Value("${telegram.bot.botName}")
 	@Getter
@@ -62,6 +69,15 @@ public class AuthServiceImpl implements AuthService,
 	@Override
 	public boolean isUserNameAllowed(String name) {
 		return presented(name, allowedUserNames);
+	}
+	
+	@Override
+	public String getBotToken() {
+		if (!mock){
+			return this.botToken;
+		} else {
+			return this.botTokenMock;
+		}
 	}
 
 	private <T> boolean  presented(T el, Set<T> set){

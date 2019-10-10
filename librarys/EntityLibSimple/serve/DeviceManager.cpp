@@ -30,7 +30,7 @@ void DeviceManager::loop() {
 }
 
 void DeviceManager::doUpdate() {
-	#if defined(DEVICE_MANAGER_PRINT_HEAP) || defined(DEVICE_MANAGER_MIN_HEAP_RESTART)
+	#ifdef DEVICE_MANAGER_PRINT_HEAP
 		DeviceUtils::printHeap();
 	#endif
 	#ifdef DEVICE_MANAGER_MIN_HEAP_RESTART

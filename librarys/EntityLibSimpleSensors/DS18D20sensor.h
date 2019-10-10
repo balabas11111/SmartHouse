@@ -39,8 +39,8 @@ public:
 
 class DS18D20sensor: public Entity, public EntityUpdate {
 public:
-	DS18D20sensor(int pin) :
-			Entity(GROUP_SENSORS, DS18D20_NAME, (char*)DS18D20_DESCRIPTION) {
+	DS18D20sensor(uint8_t pin, char* description = (char*)DS18D20_DESCRIPTION, const char* name = DS18D20_NAME) :
+			Entity(GROUP_SENSORS, name, description) {
 		construct(pin);
 	}
 

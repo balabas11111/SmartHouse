@@ -13,7 +13,7 @@
 
 class Pin {
 public:
-	Pin(uint8_t pin, uint8_t pinMod, uint8_t onLevel){
+	Pin(uint8_t pin, uint8_t pinMod, uint8_t onLevel = HIGH){
 		this->pin = pin;
 		this->pinMod = pinMod;
 

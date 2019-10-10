@@ -68,20 +68,28 @@
 
 class SettingsStorage: public Entity {
 public:
-	SettingsStorage(const char* firmware) :
+	SettingsStorage(const char* firmware, char* description) :
 			Entity(GROUP_SETTINGS, _WIFI_SETTINGS_DEF_NAME,
 					(char*)_WIFI_SETTINGS_DEF_DESCR) {
 		this->_firmware = firmware;
-		this->_devId = "ESP_Dev_ID";
-
-		this->_ssidAp = strdup(deviceId());
+		this->_deviceDescr = description;
 	}
 	virtual ~SettingsStorage() {
 	}
 
-	virtual void init() override {
-		//String devIdTmp="ESP_"+String(ESP.getChipId());
-		//this->devId=strdup(devIdTmp.c_str());
+	void initDeviceId(){
+		String devIdTmp="ESP_"+String(ESP.getChipId());
+		this->_devId=strdup(devIdTmp.c_str());
+
+		this->_ssidAp = strdup(deviceId());
+
+		Serial.println(FPSTR("---------Init device---------"));
+		Serial.print(FPSTR("DeviceId = "));
+		Serial.print(this->deviceId());
+		Serial.print(FPSTR("; firmware = "));
+		Serial.print(this->deviceFirmWare());
+		Serial.print(FPSTR("; descr = "));
+		Serial.println(this->deviceDescr());
 	}
 
 	void setCurrentIp(char* ip) {
@@ -301,7 +309,7 @@ public:
 	}
 
 protected:
-	const char* _devId;
+	char* _devId = (char*)" ";
 	const char* _firmware;
 	char* _deviceDescr = (char*)"Default Device description";
 
@@ -339,7 +347,7 @@ protected:
 #endif
 
 	std::function<void(void)> onDeviceStatusChanged = nullptr;
-	char* deviceStatus;
+	char* deviceStatus = DEVICE_STATUS_INITIALIZING;
 
 	bool jsonToItems(JsonObject& json){
 		bool chg = false;
