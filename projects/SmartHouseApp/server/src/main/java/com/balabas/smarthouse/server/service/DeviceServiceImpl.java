@@ -28,7 +28,6 @@ import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult;
 import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult.DeviceRegistrationStatus;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
 import com.balabas.smarthouse.server.view.Action;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;
 
 import lombok.extern.log4j.Log4j2;

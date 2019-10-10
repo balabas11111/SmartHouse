@@ -3,8 +3,6 @@ package com.balabas.smarthouse.server.model.request;
 import org.springframework.http.HttpHeaders;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.google.common.collect.Lists;
 
 import lombok.AllArgsConstructor;

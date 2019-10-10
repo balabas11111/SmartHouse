@@ -50,15 +50,12 @@ public class ServerValuesMockUtil {
 							.put(DEVICE_FIELD_URL_ROOT, "/")
 							.put(DEVICE_FIELD_URL_DATA, ControllerConstants.API_V1+ControllerConstants.DEVICES_ROOT+"/mock_MockedDeviceId" + i);
 		
-		ObjectMapper mapper = new ObjectMapper();
-	    JsonNode dataJson = mapper.readTree(data.toString());
-		
 		return DeviceRequest.builder()
 			.deviceId("MockedDeviceId" + i)
 			.deviceFirmware("deviceFirmware" + i)
 			.deviceDescr("Mocked device Description" + i)
 			.deviceKey("deviceKey" + i)
-			.dataJson(dataJson)
+			.data(data.toString())
 			.build();
 	}
 
