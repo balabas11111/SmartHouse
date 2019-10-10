@@ -11,9 +11,9 @@ const GROUP_SETTINGS = 'settings';
 const GROUPS = [GROUP_SENSORS, GROUP_SETTINGS];
 
 const FIELD_ID = "id";
-const FIELD_GROUP = "group";
-const FIELD_NAME = "name";
-const FIELD_DESCR = "descr";
+const DEVICE_FIELD_GROUP = "group";
+const DEVICE_FIELD_ENTITY_NAME = "name";
+const ENTITY_FIELD_DESCRIPTION = "d";
 
 const COMMAND_restart           =     "restart"
 const COMMAND_deleteSettings    =     "delSett"
@@ -88,8 +88,8 @@ function prepareEntity(group, name, entities){
 	var entity = entities[name];
 	
 	if(entity!=undefined){
-		if(entity[FIELD_GROUP] == undefined){entity[FIELD_GROUP] = group;}
-		if(entity[FIELD_NAME] == undefined){ entity[FIELD_NAME] = name;}
+		if(entity[DEVICE_FIELD_GROUP] == undefined){entity[DEVICE_FIELD_GROUP] = group;}
+		if(entity[DEVICE_FIELD_ENTITY_NAME] == undefined){ entity[DEVICE_FIELD_ENTITY_NAME] = name;}
 	}
 	
 	return entity;
@@ -329,9 +329,9 @@ function processEventSourceMessage(message){
 		console.log("changed entity = ",entity);
 		
 		if(entity!=undefined){
-			if(entity[FIELD_ID]!=undefined && entity[FIELD_GROUP]!=undefined && entity[FIELD_NAME]!=undefined){
+			if(entity[FIELD_ID]!=undefined && entity[DEVICE_FIELD_GROUP]!=undefined && entity[DEVICE_FIELD_ENTITY_NAME]!=undefined){
 				
-				var divId=entity[FIELD_GROUP]+'.'+entity[FIELD_NAME]+'.div';
+				var divId=entity[DEVICE_FIELD_GROUP]+'.'+entity[DEVICE_FIELD_ENTITY_NAME]+'.div';
 				removeGrayScale(divId);
 				
 				for (var key in entity) {

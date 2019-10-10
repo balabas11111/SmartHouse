@@ -63,7 +63,9 @@ public:
 	EntityJsonRequestResponse* createEntityJsonRequestResponse();
 	void deleteEntityJsonRequestResponse(EntityJsonRequestResponse* json);
 
-	bool processChangedEntities();
+	bool isEntitiesChanged();
+
+	bool processChangedEntities(EntityJsonRequestResponse* data = nullptr);
 
 	void print();
 
@@ -86,6 +88,9 @@ protected:
 	Entity* getEntityByGroupAndNameFromParams(JsonObject& params);
 
 	void addNotAllowed(JsonObject& response, const char* method);
+
+	bool executeGetMethodOnEntity(EntityJsonRequestResponse* data, Entity* entity);
+
 	bool executeMethodOnEntity(JsonObject& params, JsonObject& response, Entity* entity,
 									const char* method = REQUEST_GET);
 

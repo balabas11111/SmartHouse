@@ -27,9 +27,9 @@ public:
 	}
 	String getAddress(DeviceAddress deviceAddress,uint8_t index){
 		UNUSED(deviceAddress);
-		uint8_t addrLoc[8]={0,0,0,0,0,0,0,index};
+		/*uint8_t addrLoc[8]={0,0,0,0,0,0,0,index};
 
-		/*Serial.println(FPSTR("getAddress"));
+		Serial.println(FPSTR("getAddress"));
 		DeviceUtils::printInt8Arr(addr);
 		*/
 		return "0000000"+String(index);
@@ -38,6 +38,7 @@ public:
 		//Serial.println(FPSTR("DallasTemperatureMock->requestTemperatures"));
 	}
 	float getTempCByIndex(int i){
+		UNUSED(i);
 		return 20+random(0, 20);
 	}
 

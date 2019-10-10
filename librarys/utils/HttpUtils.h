@@ -185,6 +185,7 @@ private:
 	}
 	static int executePostRequestBase(const char* reqType,String& url, String& params,
 			String& result, char* contentType) {
+		UNUSED(reqType);
 		if(WiFi.status()!= WL_CONNECTED){
 			return -1;
 		}

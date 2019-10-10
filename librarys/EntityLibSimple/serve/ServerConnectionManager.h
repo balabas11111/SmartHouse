@@ -38,9 +38,11 @@ public:
 
 	void triggerDataChanged(bool trigger = true);
 
-	void sendDataChangedPostMethod(JsonObject& data);
+	void triggerDataChangedDoSend(bool trigger = true);
 
 	void loop();
+
+	EntityJsonRequestResponse* getBuffer();
 protected:
 	void generateTempDeviceKey();
 	void generateServerUrls();
@@ -50,6 +52,9 @@ protected:
 	void sendPingRequest();
 	void sendRegisterRequest();
 	void sendDataChangedRequest();
+	void sendDataChangedGetMethod();
+	void sendDataChangedPostMethod();
+
 
 	bool isConnected();
 	bool isRegistered();
@@ -88,6 +93,9 @@ private:
 	SettingsStorage* conf;
 
 	unsigned char registrationFailures = 0;
+	boolean bufferUnsent = false;
+
+	EntityJsonRequestResponse* buffer;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_SERVE_SERVERCONNECTIONMANAGER_H_ */

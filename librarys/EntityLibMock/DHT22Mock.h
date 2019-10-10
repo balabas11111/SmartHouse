@@ -17,7 +17,10 @@ public:
 	DHT22Mock(){};
 	virtual ~DHT22Mock(){};
 
-	DHT22Mock(uint8_t pin, uint8_t type){ }
+	DHT22Mock(uint8_t pin, uint8_t type){
+		UNUSED(pin);
+		UNUSED(type);
+	}
 
 	float readHumidity(){
 		return 60+random(1, 15);

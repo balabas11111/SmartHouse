@@ -35,6 +35,7 @@ public class DeviceController {
 	public ResponseEntity<String> dataChangeDispatchedOnDeviceGet(
 			@RequestParam(value = "deviceId") String deviceId,
 			@RequestHeader HttpHeaders headers,
+			@RequestParam(value = "data", required = false) String data,
 			HttpServletRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
 		log.debug("DataChanged GET dispatched on " + deviceId + " from "+request.getRemoteAddr());
 		
@@ -43,8 +44,9 @@ public class DeviceController {
 		deviceRequest.setIp(request.getRemoteAddr());
 		deviceRequest.setHeaders(headers);
 		deviceRequest.setRequestType(DeviceRequestType.DATA_UPDATE_EVENT);
+		deviceRequest.setData(data);
 		
-		return service.processDataChangedOnDeviceRequest(deviceRequest, false).toResponseEntity();
+		return service.processDataChangedOnDeviceRequest(deviceRequest, data != null).toResponseEntity();
 	}
 
 	@PostMapping("/data")
@@ -53,7 +55,7 @@ public class DeviceController {
 			@RequestHeader HttpHeaders headers,
 			HttpServletRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
 		
-		log.info("DataChanged dispatched on " + deviceRequest.getDeviceId() + " " + deviceRequest.getJsonOrData());
+		log.info("DataChanged dispatched on " + deviceRequest.getDeviceId() + " " + deviceRequest.getData());
 		deviceRequest.setIp(request.getRemoteAddr());
 		deviceRequest.setHeaders(headers);
 		deviceRequest.setRequestType(DeviceRequestType.DATA_UPDATE_EVENT);

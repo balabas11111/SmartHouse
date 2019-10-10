@@ -55,6 +55,18 @@
 #define _WIFI_SETTINGS_DEF_NAME "DeviceSettings"
 #define _WIFI_SETTINGS_DEF_DESCR "Wifi Server Device settings"
 
+//device statuses
+#define DEVICE_STATUS_INITIALIZING "Initializing"
+#define DEVICE_STATUS_LOAD_ENTITIES "Loading Entities"
+#define DEVICE_STATUS_CONNECTING "Connecting WiFi"
+#define DEVICE_STATUS_DISCONNECTED "DisConnected"
+#define DEVICE_STATUS_CONNECTED "Connected"
+#define DEVICE_STATUS_DEPLOYING "Deploy urls"
+#define DEVICE_STATUS_REGISTERING "Registering"
+#define DEVICE_STATUS_UPDATE_SENSORS "Update sensors"
+#define DEVICE_STATUS_READY "Ready"
+#define DEVICE_STATUS_RESTARTING "Restart"
+
 #include "Arduino.h"
 #include "ArduinoJson.h"
 #include <Entity.h>
@@ -347,7 +359,7 @@ protected:
 #endif
 
 	std::function<void(void)> onDeviceStatusChanged = nullptr;
-	char* deviceStatus = DEVICE_STATUS_INITIALIZING;
+	char* deviceStatus = (char*)DEVICE_STATUS_INITIALIZING;
 
 	bool jsonToItems(JsonObject& json){
 		bool chg = false;

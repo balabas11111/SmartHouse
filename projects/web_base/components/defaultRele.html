@@ -21,9 +21,9 @@ registerViewDescriptorDefault("sensors.DefaultRele", updateDefaultReleViewValue)
 function updateDefaultReleViewValue(entity,key,val){
 	if(key==FIELD_ON){
 		console.log("on=",val);
-		var containerId = entity[FIELD_NAME]+'ImagesBody';
-		var hideImageClass =entity[FIELD_NAME]+"_Image";
-		var showImageId =(entity[FIELD_NAME]+"_"+entity[FIELD_ON]);
+		var containerId = entity[DEVICE_FIELD_ENTITY_NAME]+'ImagesBody';
+		var hideImageClass =entity[DEVICE_FIELD_ENTITY_NAME]+"_Image";
+		var showImageId =(entity[DEVICE_FIELD_ENTITY_NAME]+"_"+entity[FIELD_ON]);
 		
 		showOnlyOneImageInContainer(containerId, hideImageClass, showImageId);
 	}else{

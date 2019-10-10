@@ -51,10 +51,10 @@ public:
 
 		EntityJsonRequestResponse* data = EntityJsonRequestResponse::build();
 		if(group!=nullptr){
-			data->addRequestParam((char*)GROUP, group);
+			data->addRequestParam((char*)DEVICE_FIELD_GROUP, group);
 		}
 		if(name!=nullptr){
-			data->addRequestParam((char*)NAME, name);
+			data->addRequestParam((char*)DEVICE_FIELD_ENTITY_NAME, name);
 		}
 		if(param!=nullptr){
 			data->addRequestParam((char*)PARAM, param);

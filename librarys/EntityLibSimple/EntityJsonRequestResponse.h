@@ -44,6 +44,19 @@ public:
 		this->buf.clear();
 	}
 
+	void construct(){
+		Serial.print(FPSTR("Prepare buffer"));
+
+		buf.clear();
+		Serial.print(FPSTR("..."));
+		this->root = buf.parse("{}").as<JsonObject>();
+
+		getRoot().createNestedObject(REQUEST);
+		getRoot().createNestedObject(RESPONSE);
+
+		Serial.println(FPSTR("done"));
+	}
+
 	JsonObject& getRoot(){
 		return this->root.as<JsonObject>();
 	}

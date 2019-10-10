@@ -13,6 +13,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_DATA;
+
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,8 +43,6 @@ public class DeviceRequest {
 	
 	private String data;
 	
-	private JsonNode dataJson;
-	
 	@JsonIgnore
 	private HttpHeaders headers;
 	
@@ -51,16 +53,15 @@ public class DeviceRequest {
         return (data!=null && !data.isEmpty());
     }
 	
-	public boolean hasDataJson(){
-        return (dataJson!=null && JsonNodeType.OBJECT.equals(dataJson.getNodeType()));
-    }
-	
-	public String getJsonOrData(){
-	    if(hasDataJson()){
-	        return dataJson.toString();
-	    }
+	public String getData(){
+		if(headers.containsKey(DEVICE_FIELD_DATA)){
+			List<String> dataHead = headers.get(DEVICE_FIELD_DATA);
+			if(!dataHead.isEmpty()){
+				return dataHead.get(0);
+			}
+		}
 	    if(hasData()){
-	        return data;
+	        return this.data;
 	    }
 	    return null;
 	}

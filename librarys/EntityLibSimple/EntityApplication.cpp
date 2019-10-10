@@ -120,10 +120,18 @@ void EntityApplication::initWithoutWiFi(bool initI2C,
 void EntityApplication::loop() {
 	this->entityUpdateManager->loop();
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED
+
+	#ifdef SETTINGS_SERVER_SEND_DATA_METHOD_GET
+
+	if(this->entityManager->processChangedEntities(this->serverConnectionManager->getBuffer())){
+		this->serverConnectionManager->triggerDataChangedDoSend();
+	}
+
+	#else
 	if(this->entityManager->processChangedEntities()){
 		this->serverConnectionManager->triggerDataChanged();
 	}
-
+	#endif
 	this->wifiServerManager->loop();
 	this->serverConnectionManager->loop();
 #else

@@ -12,8 +12,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import com.balabas.smarthouse.server.controller.service.DeviceRequestorService;
 import com.balabas.smarthouse.server.events.ChangedEvent;
@@ -114,14 +112,16 @@ public class DeviceServiceImpl implements DeviceService {
 	    String deviceRootUrl = DEVICE_URL_ROOT;
 	    String deviceDataUrl = DEVICE_URL_DATA;
 	    
-	    if(request.hasDataJson()){
-	    	JsonNode dataJson = request.getDataJson();
+	    if(request.hasData()){
+	    	String data = request.getData();
 	    	
-	    	if(dataJson.hasNonNull(DEVICE_FIELD_URL_ROOT)){
-	    		deviceDataUrl = dataJson.get(DEVICE_FIELD_URL_ROOT).asText();
+	    	JSONObject dataJson = new JSONObject(data);
+	    	
+	    	if(dataJson.has(DEVICE_FIELD_URL_ROOT)){
+	    		deviceRootUrl = dataJson.optString(DEVICE_FIELD_URL_ROOT, DEVICE_URL_ROOT);
 	    	}
-	    	if(dataJson.hasNonNull(DEVICE_FIELD_URL_DATA)){
-	    		deviceDataUrl = dataJson.get(DEVICE_FIELD_URL_DATA).asText();
+	    	if(dataJson.has(DEVICE_FIELD_URL_DATA)){
+	    		deviceDataUrl = dataJson.optString(DEVICE_FIELD_URL_DATA, DEVICE_URL_ROOT);
 	    	}
 	    }
 	    
@@ -198,12 +198,14 @@ public class DeviceServiceImpl implements DeviceService {
     public void processDeviceDataUpdateDispatched(DeviceRequest request, boolean withData) throws ResourceNotFoundException {
     	Device device = getDeviceByDeviceId(request.getDeviceId()).orElse(null);
         
-        String deviceData = request.getJsonOrData();
+        String deviceData = request.getData();
         if(!withData) {
         	if(!request.getDeviceId().startsWith("MockedDeviceId")) {
         		log.info("Device marked as waits for update " + request.getDeviceId());
         	}
-        	device.getTimer().setWaitsForDataUpdate(true);
+        	if(device!=null){
+        		device.getTimer().setWaitsForDataUpdate(true);
+        	}
         } else {
         	processDataReceivedFromDevice(device, deviceData, withData);
         }
@@ -260,7 +262,6 @@ public class DeviceServiceImpl implements DeviceService {
 		boolean dataTooOld = group.getTimer().isNextUpdateTimeReached();
 		
 		if(dataTooOld && !device.getState().equals(TIMED_OUT)){
-			//device.setState(TIMED_OUT);
 			dispatchEvent(new GroupEvent(group, DATA_TIMED_OUT));
 		}
 		
@@ -331,9 +332,6 @@ public class DeviceServiceImpl implements DeviceService {
 	@Override
 	public String sendDataToDevice(String deviceId, String groupId, String entityId, Map<String, Object> values)
 			throws ResourceNotFoundException {
-		
-		JSONObject json = new JSONObject(values);
-		//json.put(groupId, new JSONObject().put(entityId, values));
 		
 		Optional<Device> device = getDeviceByDeviceId(deviceId);
 		

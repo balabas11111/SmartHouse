@@ -85,9 +85,9 @@ Entity* EntityManager::getEntityByGroupAndName(const char* group,
 }
 
 Entity* EntityManager::getEntityByGroupAndNameFromParams(JsonObject& params){
-	const char* group = JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, GROUP,
+	const char* group = JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, DEVICE_FIELD_GROUP,
 			(const char*)DEFAULT_VALUE);
-	const char* name = JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, NAME,
+	const char* name = JsonObjectUtil::getFieldIfKeyExistsOrDefault(params, DEVICE_FIELD_ENTITY_NAME,
 			(const char*)DEFAULT_VALUE);
 	/*Serial.print(FPSTR("group="));
 	Serial.print(group);
@@ -172,7 +172,7 @@ bool EntityManager::executeMethodOnGroup(JsonObject& params,
 
 	int totalCount = 0;
 
-	const char* group = params[GROUP].as<char*>();
+	const char* group = params[DEVICE_FIELD_GROUP].as<char*>();
 
 	for (Entity* entity : this->entities) {
 		if(strcmp(entity->getGroup(),group)==0){
@@ -188,6 +188,10 @@ bool EntityManager::executeMethodOnGroup(JsonObject& params,
 	}
 
 	return changed;
+}
+
+bool EntityManager::executeGetMethodOnEntity(EntityJsonRequestResponse* data, Entity* entity){
+	return executeMethodOnEntity(data->getRequest(), data->getResponse(), entity, REQUEST_GET);
 }
 
 bool EntityManager::executeMethodOnEntity(JsonObject& params, JsonObject& response, Entity* entity,
@@ -274,8 +278,8 @@ void EntityManager::saveEntitiesToFile() {
 
 void EntityManager::groupNameToParam(char* group, char* name,
 		EntityJsonRequestResponse* json) {
-	json->addRequestParam((char*)GROUP, group);
-	json->addRequestParam((char*)NAME, name);
+	json->addRequestParam((char*)DEVICE_FIELD_GROUP, group);
+	json->addRequestParam((char*)DEVICE_FIELD_ENTITY_NAME, name);
 }
 
 EntityJsonRequestResponse* EntityManager::createEntityJsonRequestResponse() {
@@ -289,7 +293,11 @@ void EntityManager::deleteEntityJsonRequestResponse(
 	//DeviceUtils::printHeap();
 }
 
-bool EntityManager::processChangedEntities(){
+bool EntityManager::isEntitiesChanged(){
+	return this->entitiesChanged;
+}
+
+bool EntityManager::processChangedEntities(EntityJsonRequestResponse* data){
 	if(!this->entitiesChanged){
 		return false;
 	}
@@ -305,6 +313,10 @@ bool EntityManager::processChangedEntities(){
 			Serial.print(FPSTR("; "));
 			result = true;
 			entity->markEntityAsUnChanged();
+
+			if (data != nullptr){
+				executeGetMethodOnEntity(data, entity);
+			}
 		}
 		if(entity->isSaveRequired()){
 			entity->setSaveRequired(false);
@@ -335,22 +347,22 @@ char* EntityManager::getSensorsGroup() {
 }
 
 bool EntityManager::hasNoGroupNoName(JsonObject& params) {
-	return !JsonObjectUtil::hasFieldWithAnyType(params, GROUP)
-				&& !JsonObjectUtil::hasFieldWithAnyType(params, NAME);
+	return !JsonObjectUtil::hasFieldWithAnyType(params, DEVICE_FIELD_GROUP)
+				&& !JsonObjectUtil::hasFieldWithAnyType(params, DEVICE_FIELD_ENTITY_NAME);
 }
 
 bool EntityManager::hasGroupNoName(JsonObject& params) {
-	return JsonObjectUtil::hasFieldWithAnyType(params, GROUP)
-					&& !JsonObjectUtil::hasFieldWithAnyType(params, NAME);
+	return JsonObjectUtil::hasFieldWithAnyType(params, DEVICE_FIELD_GROUP)
+					&& !JsonObjectUtil::hasFieldWithAnyType(params, DEVICE_FIELD_ENTITY_NAME);
 }
 
 bool EntityManager::hasGroupName(JsonObject& params) {
-	return JsonObjectUtil::hasFieldWithAnyType(params, GROUP)
-					&& JsonObjectUtil::hasFieldWithAnyType(params, NAME);
+	return JsonObjectUtil::hasFieldWithAnyType(params, DEVICE_FIELD_GROUP)
+					&& JsonObjectUtil::hasFieldWithAnyType(params, DEVICE_FIELD_ENTITY_NAME);
 }
 
 bool EntityManager::hasAllGroupNoName(JsonObject& params) {
-	return JsonObjectUtil::hasFieldAndValueEquals(params, (char*)GROUP, (char*)GROUP_ALL);
+	return JsonObjectUtil::hasFieldAndValueEquals(params, (char*)DEVICE_FIELD_GROUP, (char*)GROUP_ALL);
 }
 
 void EntityManager::setOnEntitiesChanged(

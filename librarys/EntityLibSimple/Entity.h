@@ -11,20 +11,9 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <DeviceUtils.h>
+#include <DeviceConstants.h>
 #include <JsonObjectUtil.h>
 #include <functional>
-
-#define GROUP_ALL "all"
-#define GROUP_SENSORS "sensors"
-#define GROUP_SETTINGS "settings"
-#define GROUP_SERVICES "services"
-
-#define ENTITY_FIELD_DESCRIPTION "d"
-#define ENTITY_FIELD_SENSOR_ITEMS "si"
-#define ENTITY_FIELD_ITEM_CLASS "ic"
-
-#define ENTITY_ITEM_CLASS_TOOGLE_BUTTON "tb"
-
 
 const char MESSAGE[] PROGMEM ="Message";
 

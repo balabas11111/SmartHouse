@@ -9,6 +9,7 @@
 
 ServerConnectionManager::ServerConnectionManager(SettingsStorage* conf) {
 	this->conf = conf;
+	this->buffer = new EntityJsonRequestResponse();
 }
 
 void ServerConnectionManager::triggerServerPing(bool trigger) {
@@ -23,6 +24,19 @@ void ServerConnectionManager::triggerRegisterOnServer(bool trigger) {
 void ServerConnectionManager::triggerDataChanged(bool trigger) {
 	//Serial.println(FPSTR("Trigger data updated request"));
 	this->triggeredDataChange = trigger;
+}
+
+void ServerConnectionManager::triggerDataChangedDoSend(bool trigger) {
+	//Serial.println(FPSTR("Trigger data updated request"));
+	this->triggeredDataChange = trigger;
+	this -> bufferUnsent = trigger;
+}
+
+EntityJsonRequestResponse* ServerConnectionManager::getBuffer() {
+	if(!bufferUnsent){
+		this->buffer->construct();
+	}
+	return this->buffer;
 }
 
 void ServerConnectionManager::init(){
@@ -216,6 +230,48 @@ void ServerConnectionManager::sendDataChangedRequest() {
 	this->runsDataChangeRequest = false;
 }
 
+void ServerConnectionManager::sendDataChangedGetMethod() {
+	Serial.print(FPSTR("DUR_GM "));
+	this->runsDataChangeRequest = true;
+	unsigned long start = millis();
+
+	String dataStr;
+	this->buffer->printResponseTo(dataStr);
+
+	dataStr = this->urlData + DEVICE_FIELD_DATA_PARAM_GET + dataStr;
+
+	Serial.println(dataStr);
+	HTTPClient http;
+	http.begin(dataStr);
+
+	http.setAuthorization(deviceAuthorization);
+
+	int httpCode = http.GET();
+
+	http.end();
+
+	if(httpCode==200){
+		this->triggeredDataChange = false;
+		this->bufferUnsent = false;
+
+		DeviceUtils::printlnTimeHeap(start);
+	}else {
+		Serial.print(FPSTR("Data send ->...ERROR"));
+		Serial.println(httpCode);
+		DeviceUtils::printlnTimeHeap(start);
+		setRequestPostPoned(SERVER_CONNECTION_DATA_UPDATE_REQUEST_FAILED_TIMEOUT);
+		this->serverPinged = false;
+		this->deviceRegistered = false;
+		this->triggeredServerRegister = true;
+	}
+
+	this->runsDataChangeRequest = false;
+}
+
+void ServerConnectionManager::sendDataChangedPostMethod() {
+}
+
+
 void ServerConnectionManager::loop(){
 	if(triggeredServerPing && !runsPingRequest && isRequestEnabled() && !isRegistered()){
 		sendPingRequest();
@@ -228,7 +284,15 @@ void ServerConnectionManager::loop(){
 		}
 	}
 	if(triggeredDataChange && !runsDataChangeRequest && isRequestEnabled() && isRegistered()){
+	#ifdef SETTINGS_SERVER_SEND_DATA_METHOD_GET
+		if(!bufferUnsent){
+			sendDataChangedRequest();
+		} else {
+			sendDataChangedGetMethod();
+		}
+	#else
 		sendDataChangedRequest();
+	#endif
 	}
 	checkRequestPostPonedTime();
 }
@@ -247,9 +311,6 @@ void ServerConnectionManager::checkRequestPostPonedTime() {
 			requestPostPoned = false;
 		}
 	}
-}
-
-void ServerConnectionManager::sendDataChangedPostMethod(JsonObject& data) {
 }
 
 bool ServerConnectionManager::isRequestEnabled(){
