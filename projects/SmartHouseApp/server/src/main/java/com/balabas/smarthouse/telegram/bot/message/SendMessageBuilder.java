@@ -124,15 +124,6 @@ public class SendMessageBuilder {
 		return ReplyContext.createMsg(replyKeyboard.getRefreshDevicesListReplyKeyboard(), null, chatId, text, true);
 	}
 
-	public SendMessage createRefreshDevicesListInlineKeyboard(ReplyContext cont) {
-		List<Device> devices = deviceService.getDevicesInitialized();
-
-		cont.setText((devices.isEmpty()) ? String.format(BotMessageConstants.NO_DEVICE_MSG, Emoji.WARNING)
-				: String.format(BotMessageConstants.SELECT_DEVICE_MSG, Emoji.OUTBOX_TRAY));
-
-		return cont.createMsg(inlineKeyboard.getRefreshDevicesListInlineKeyboard());
-	}
-
 	public List<SendMessage> createDevicesListInlineKeyboard(String serverName, ReplyContext cont) {
 		List<SendMessage> msgs = Lists.newArrayList();
 		List<Device> devices = deviceService.getDevicesInitialized();

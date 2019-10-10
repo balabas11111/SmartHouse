@@ -46,6 +46,7 @@
 
 #define CONTENT_TYPE_APPLICATION_JSON "application/json"
 #define CONTENT_TYPE_APPLICATION_FORM_URL_ENCODED "application/x-www-form-urlencoded"
+#define CONTENT_TYPE_TEXT_JSON_CHARSET_UTF8 "text/json; charset=UTF-8"
 
 //content types
 const PROGMEM char CONTENT_TYPE_TEXT_HTML[] = "text/html";

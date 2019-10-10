@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.controller.service.DeviceRequestorService;
 import com.balabas.smarthouse.server.events.ChangedEvent;
+import com.balabas.smarthouse.server.events.ChangedEvent.EventType;
 import com.balabas.smarthouse.server.events.DeviceEvent;
 import com.balabas.smarthouse.server.events.GroupEvent;
 import com.balabas.smarthouse.server.events.service.EventProcessorsService;
@@ -80,7 +81,7 @@ public class DeviceServiceImpl implements DeviceService {
 	}
 	@Override
 	public List<Device> getDevicesInitialized(){
-		return this.devices.stream().filter(Device::wasInitialDataReceived).collect(Collectors.toList());
+		return this.devices.stream().filter(Device::isInitialDataReceived).collect(Collectors.toList());
 	}
 
 	@Override
@@ -149,11 +150,11 @@ public class DeviceServiceImpl implements DeviceService {
 		        device = regDevice.get().updateDevice(device);
 		        
 		        result.setResult(DeviceRegistrationStatus.ALREADY_REGISTERED);
-		        log.info("Device ReRegistered :" + device.toString());
+		        log.info("ReRegistered :" + device.toString());
 		        
 		        dispatchEvent(new DeviceEvent(device, REREGISTERED));
 		    }else{
-	    		log.info("Device added :" + device.toString());
+	    		log.info("Registered :" + device.toString());
 	    		devices.add(device);
 	    		result.setResult(DeviceRegistrationStatus.SUCCESS);
 	    		
@@ -198,14 +199,17 @@ public class DeviceServiceImpl implements DeviceService {
     	Device device = getDeviceByDeviceId(request.getDeviceId()).orElse(null);
         
         String deviceData = request.getData();
+        
+        withData = deviceData!=null && !deviceData.isEmpty();
         if(!withData) {
-        	if(!request.getDeviceId().startsWith("MockedDeviceId")) {
-        		log.info("Device marked as waits for update " + request.getDeviceId());
-        	}
+        	log.debug("Device marked as waits for update " + request.getDeviceId());
+        	
         	if(device!=null){
         		device.getTimer().setWaitsForDataUpdate(true);
+        		
         	}
         } else {
+        	log.debug("Data received from device " + deviceData);
         	processDataReceivedFromDevice(device, deviceData, withData);
         }
     }
@@ -218,10 +222,12 @@ public class DeviceServiceImpl implements DeviceService {
             throw new ResourceNotFoundException(Device.class, "");
         }
         
+        log.debug("DataReceived : " + deviceData);
+        
         if(dataExpected){
 	        if(validateDeviceData(deviceData)){
 	        	
-	        	boolean isInitial = !device.wasInitialDataReceived(); 
+	        	boolean isInitial = !device.isInitialDataReceived(); 
 				List<ChangedEvent> events = deviceJsonAdapter.adapt(deviceData, device);
 				 if(isInitial){
 					 log.info("Initial data received " +device.getDeviceId()+" data = "+deviceData); 
@@ -229,11 +235,25 @@ public class DeviceServiceImpl implements DeviceService {
 	             }
 	            dispatchEvents(events);
 	        }else{
+	        	device.setState(DeviceState.FAILED);
 	            device.getTimer().setWaitsForDataUpdate(true);
 	            dispatchEvent(new DeviceEvent(device, DATA_PARSE_FAILED));
 	            log.error("Data parse failed");
 	        }
+        } else {
+        	updateBadDeviceState(device, DeviceState.REGISTERED);
         }
+    }
+    
+    protected void updateBadDeviceState(Device device, DeviceState newState) {
+    	DeviceState state = device.getState();
+    	
+    	if(DeviceState.FAILED.equals(state)
+    			|| DeviceState.DISCONNECTED.equals(state)
+    			|| DeviceState.TIMED_OUT.equals(state)) {
+    		device.setState(newState);
+    	}
+    	
     }
     
     protected void dispatchEvent(ChangedEvent event){
@@ -248,7 +268,8 @@ public class DeviceServiceImpl implements DeviceService {
     	boolean waits = device.getTimer().isWaitsForDataUpdate();
 		boolean dataTooOld = device.getTimer().isNextUpdateTimeReached();
 		
-		if(dataTooOld && !device.getState().equals(TIMED_OUT)){
+		if(dataTooOld && !device.getState().equals(TIMED_OUT) 
+				&& !device.getState().equals(DeviceState.DISCONNECTED)){
 			device.setState(TIMED_OUT);
 			dispatchEvent(new DeviceEvent(device, DATA_TIMED_OUT));
 		}
@@ -288,14 +309,14 @@ public class DeviceServiceImpl implements DeviceService {
             Map<String,String> deviceIds = new HashMap<>();
             
             getDevices().stream()
-                .filter(dev->dev.wasRegistered() && checkDeviceDataRequiresUpdate(dev))
+                .filter(dev->dev.isRegistered() && checkDeviceDataRequiresUpdate(dev))
                 .forEach(device->{
                         deviceIds.put(device.getDeviceId(), null);
                         requestDevicesValues(device, null);
                     });
             
             getDevices().stream()
-            .filter(device->device.wasRegistered() && device.getGroups()!=null 
+            .filter(device->device.isRegistered() && device.getGroups()!=null 
                         && !deviceIds.containsKey(device.getDeviceId()))
             .forEach(device->
                 device.getGroups().stream()
@@ -307,16 +328,24 @@ public class DeviceServiceImpl implements DeviceService {
     
     @Override
     public void requestDevicesValues(Device device, Group group) {
-        try {
-        	if(!device.getDeviceId().startsWith("MockedDeviceId")) {
-        		log.info("Request device data "+device.getDeviceId());
-        	}
-            String groupId = group!=null?group.getName():null;
+    	boolean isDisconnected = DeviceState.DISCONNECTED.equals(device.getState()); 
+
+    	try {
+       		log.debug("Request data "+device.getDeviceId());
+
+       		String groupId = group!=null?group.getName():null;
             
             String result = deviceRequestor.executeGetDataOnDevice(device, groupId);
             processDataReceivedFromDevice(device, result, true);
         } catch (Exception e) {
-        	log.error("Error request device values",e);
+        	device.setState(DeviceState.DISCONNECTED);
+        	device.getTimer().setWaitsForDataUpdate(false);
+        	device.getTimer().setNextTimeToUpdate(60000);
+        	
+        	if(!isDisconnected) {
+        		dispatchEvent(new DeviceEvent(device, EventType.DISCONNECTED));
+        		log.error("Error request device values",e);
+        	}
         }
     }
     

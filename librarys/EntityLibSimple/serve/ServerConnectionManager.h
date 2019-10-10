@@ -95,7 +95,11 @@ private:
 	unsigned char registrationFailures = 0;
 	boolean bufferUnsent = false;
 
+	void checkServerAnswer(int httpCode, unsigned long start);
+
 	EntityJsonRequestResponse* buffer;
+
+	uint8_t errorCount = 0;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_SERVE_SERVERCONNECTIONMANAGER_H_ */

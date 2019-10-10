@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class Device implements SmartHouseItem, JsonDataContainer {
 
 	public enum DeviceState {
-		UNKNOWN, CONSTRUCTED, REGISTERED, CONNECTED, FAILED, TIMED_OUT, WAITS_FOR_DEVICE_RESPONSE
+		UNKNOWN, CONSTRUCTED, REGISTERED, CONNECTED, FAILED, TIMED_OUT, DISCONNECTED
 	};
 
 	private String deviceId;
@@ -32,10 +32,12 @@ public class Device implements SmartHouseItem, JsonDataContainer {
 
 	private DeviceState state = DeviceState.UNKNOWN;
 
+	@JsonIgnore
 	private JSONObject data;
 
 	private Set<Group> groups;
 
+	@JsonIgnore
 	private UpdateTimer timer;
 
 	public Device(String deviceId, long updateInterval) {
@@ -43,11 +45,11 @@ public class Device implements SmartHouseItem, JsonDataContainer {
 		timer = new UpdateTimer(this, updateInterval);
 	}
 
-	public boolean wasRegistered() {
+	public boolean isRegistered() {
 		return this.state.compareTo(DeviceState.CONSTRUCTED) > 0;
 	}
 
-	public boolean wasInitialDataReceived() {
+	public boolean isInitialDataReceived() {
 		return this.state.compareTo(DeviceState.REGISTERED) > 0;
 	}
 

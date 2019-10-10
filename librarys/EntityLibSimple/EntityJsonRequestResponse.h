@@ -45,16 +45,17 @@ public:
 	}
 
 	void construct(){
-		Serial.print(FPSTR("Prepare buffer"));
+		//Serial.print(FPSTR("Prepare buffer"));
+		if(buf.size()>0){
+			buf.clear();
+		//Serial.print(FPSTR("..."));
+			this->root = buf.parse("{}").as<JsonObject>();
 
-		buf.clear();
-		Serial.print(FPSTR("..."));
-		this->root = buf.parse("{}").as<JsonObject>();
+			getRoot().createNestedObject(REQUEST);
+			getRoot().createNestedObject(RESPONSE);
 
-		getRoot().createNestedObject(REQUEST);
-		getRoot().createNestedObject(RESPONSE);
-
-		Serial.println(FPSTR("done"));
+		//Serial.println(FPSTR("done"));
+		}
 	}
 
 	JsonObject& getRoot(){

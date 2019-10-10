@@ -2,11 +2,9 @@ package com.balabas.smarthouse.server.controller.service;
 
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_GROUP;
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_ENTITY_NAME;
-import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_DATA;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;

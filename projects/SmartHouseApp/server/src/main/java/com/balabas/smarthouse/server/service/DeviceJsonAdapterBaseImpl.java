@@ -25,6 +25,8 @@ import com.balabas.smarthouse.server.model.ValueContainer;
 import com.balabas.smarthouse.server.model.SensorItem;
 import com.google.common.collect.Lists;
 
+import lombok.extern.log4j.Log4j2;
+
 import static com.balabas.smarthouse.server.DeviceConstants.FIELD_SPLITTER;
 
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_DEVICE;
@@ -39,13 +41,14 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ITEM_CL
 import static com.balabas.smarthouse.server.events.ChangedEvent.EventType.INITIAL_DATA_RECEIVED;
 import static com.balabas.smarthouse.server.events.ChangedEvent.EventType.UPDATED;
 
+@Log4j2
 @Service
 @SuppressWarnings("rawtypes")
 public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 
     @Override
     public List<ChangedEvent> adapt(String data, Device device) {
-    	
+    	log.debug("Adapt data " + data);
     	JSONObject deviceJson = new JSONObject(data);
         List<ChangedEvent> events = new ArrayList<>();
         
@@ -77,7 +80,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 	                    		continue;
 	                    	}
 	                        
-	                    	processEntityJson(!device.wasInitialDataReceived(), device, group, entityName, entityEvents);
+	                    	processEntityJson(!device.isInitialDataReceived(), device, group, entityName, entityEvents);
 	                    }
 	                    
 	                    if(!entityEvents.isEmpty()){
@@ -142,7 +145,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
             group = new Group(device.getDeviceId(), groupName, groupJson);
             device.getGroups().add(group);
             
-            if(device.wasInitialDataReceived()){
+            if(device.isInitialDataReceived()){
                 events.add(new GroupEvent(group, INITIAL_DATA_RECEIVED));
             }
         } else {

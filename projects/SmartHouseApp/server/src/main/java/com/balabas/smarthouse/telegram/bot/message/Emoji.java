@@ -18,7 +18,12 @@ public enum Emoji {
 	SUN('\uD83C','\uDF1E'),
 	STOP('\u26D4'),
 	PHONE_ON('\uD83D','\uDCF1'), 
-	PHONE_OFF('\uD83D','\uDCF4');
+	PHONE_OFF('\uD83D','\uDCF4'),
+	PAGER('\uD83D','\uDCDF'),
+	GHOST('\uD83D', '\uDC7B'),
+	SKULL('\uD83D', '\uDC80'),
+	RED_CIRCLE('\u2B55'),
+	HOURGLASS('\u23F3') ;
 	
     Character chr1;
     Character chr2;

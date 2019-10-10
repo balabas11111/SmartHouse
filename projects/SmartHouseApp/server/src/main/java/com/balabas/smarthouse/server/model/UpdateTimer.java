@@ -50,18 +50,16 @@ public class UpdateTimer {
     }
     
     private void setNextTimeToUpdate(){
-        if(updateInterval>-1){
-            Date now = new Date();
-            this.nextUpdateTime = now.getTime() + updateInterval;
+    	setNextTimeToUpdate(this.updateInterval);
+    }
+    
+    public void setNextTimeToUpdate(long incrementMs) {
+        if(incrementMs>-1){
+        	 this.nextUpdateTime =(new Date()).getTime() + incrementMs;
         }else{
             log.error("Wrong updateInterval");
         }
-    }
-    
-    public void setNextTimeToUpdate(long nextTime) {
-        if(nextTime>-1){
-            this.nextUpdateTime = nextTime;
-        }
+
     }
     
     public boolean isWaitsForDataUpdate() {

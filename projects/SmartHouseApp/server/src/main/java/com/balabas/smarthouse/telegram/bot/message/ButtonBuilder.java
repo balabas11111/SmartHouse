@@ -44,6 +44,10 @@ public class ButtonBuilder {
     	return String.format(BotMessageConstants.REFRESH_BUTTON,Emoji.REFRESH);
     }
 	
+    public String getDeviceButton(Emoji emoji, String deviceDescr) {
+		return getButton(emoji, deviceDescr);
+	}
+    
 	public String getDeviceButton(String deviceDescr) {
 		return getButton(Emoji.OUTBOX_TRAY, deviceDescr);
 	}

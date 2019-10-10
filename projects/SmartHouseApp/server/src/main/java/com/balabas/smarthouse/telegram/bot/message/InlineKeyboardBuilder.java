@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import com.balabas.smarthouse.server.model.Device;
+import com.balabas.smarthouse.server.model.Device.DeviceState;
 import com.balabas.smarthouse.server.model.Group;
 import com.balabas.smarthouse.server.view.Action;
 
@@ -63,10 +64,33 @@ public class InlineKeyboardBuilder {
 		for (Device device : devices) {
     			
 	    	List<InlineKeyboardButton> row = new ArrayList<>();
-			row.add(createInlineKeyboardButton(
-						buttons.getDeviceButton(device.getDescription()),
-						Action.callback(ACTION_TYPE_VIEW_ENTITIES_OF_GROUP,"", device.getDeviceId(), GROUP_SENSORS))
-					);
+	    	
+	    	Emoji emoji = Emoji.PAGER;
+	    	String description = device.getDescription();
+	    	String action = ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
+	    	
+	    	if (!device.isInitialDataReceived()) {
+	    		emoji = Emoji.HOURGLASS;
+	    		description += " (Не инициализировано)";
+	    		action = ACTION_TYPE_VIEW_DEVICE_LIST;
+	    	} else if(DeviceState.TIMED_OUT.equals(device.getState())){
+	    		emoji = Emoji.GHOST;
+	    		description += " (Не подключено)";
+	    		action = ACTION_TYPE_VIEW_DEVICE_LIST;
+	    	} else if(DeviceState.FAILED.equals(device.getState())){
+	    		emoji = Emoji.RED_CIRCLE;
+	    		description += " (Ошибка данных)";
+	    		action = ACTION_TYPE_VIEW_DEVICE_LIST;
+	    	} else if(DeviceState.DISCONNECTED.equals(device.getState())){
+	    		emoji = Emoji.SKULL;
+	    		description += " (Ошибка подключения)";
+	    		action = ACTION_TYPE_VIEW_DEVICE_LIST;
+	    	}
+	    	
+	    	String text = buttons.getDeviceButton(emoji, description);
+	    	String callback = Action.callback(action,"", device.getDeviceId(), GROUP_SENSORS);
+	    	
+			row.add(createInlineKeyboardButton(text, callback));
 			
 			rowsInline.add(row);
 		}

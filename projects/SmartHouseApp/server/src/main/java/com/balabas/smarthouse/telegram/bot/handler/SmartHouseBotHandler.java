@@ -129,12 +129,12 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 	private void sendDataToDevice(Action action, ReplyContext context, List<SendMessage> msgs){
 		try{
 			deviceService.processDeviceAction(action);
+			
+			msgs.add(messageBuilder.createDeviceRefreshed(null, context.getChatId()));
+			msgs.addAll(messageBuilder.createGroupView(action.getDeviceId(), action.getGroupId(), context));
 		}catch(Throwable e){
 			msgs.add(messageBuilder.createDeviceError(null, context.getChatId()));
 		}
-			msgs.add(messageBuilder.createDeviceRefreshed(null, context.getChatId()));
-			msgs.addAll(messageBuilder.createGroupView(action.getDeviceId(), 
-					action.getGroupId(), context));
 	}
 
 	@AfterBotRegistration

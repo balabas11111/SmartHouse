@@ -215,17 +215,7 @@ void ServerConnectionManager::sendDataChangedRequest() {
 	int httpCode = http.GET();
 
 	http.end();
-	if(httpCode==200){
-		triggeredDataChange = false;
-	}else {
-		Serial.print(FPSTR("Data send ->...ERROR"));
-		Serial.println(httpCode);
-		DeviceUtils::printlnTimeHeap(start);
-		setRequestPostPoned(SERVER_CONNECTION_DATA_UPDATE_REQUEST_FAILED_TIMEOUT);
-		this->serverPinged = false;
-		this->deviceRegistered = false;
-		this->triggeredServerRegister = true;
-	}
+	checkServerAnswer(httpCode, start);
 
 	this->runsDataChangeRequest = false;
 }
@@ -238,34 +228,53 @@ void ServerConnectionManager::sendDataChangedGetMethod() {
 	String dataStr;
 	this->buffer->printResponseTo(dataStr);
 
-	dataStr = this->urlData + DEVICE_FIELD_DATA_PARAM_GET + dataStr;
+	//dataStr = this->urlData + DEVICE_FIELD_DATA_PARAM_GET + dataStr;
 
 	Serial.println(dataStr);
 	HTTPClient http;
-	http.begin(dataStr);
+	http.begin(this->urlData);
 
 	http.setAuthorization(deviceAuthorization);
+	http.addHeader(DEVICE_FIELD_DATA, dataStr);
+	http.addHeader(HEADER_CONTENT_TYPE, CONTENT_TYPE_TEXT_JSON_CHARSET_UTF8);
 
 	int httpCode = http.GET();
 
 	http.end();
 
-	if(httpCode==200){
-		this->triggeredDataChange = false;
-		this->bufferUnsent = false;
-
-		DeviceUtils::printlnTimeHeap(start);
-	}else {
-		Serial.print(FPSTR("Data send ->...ERROR"));
-		Serial.println(httpCode);
-		DeviceUtils::printlnTimeHeap(start);
-		setRequestPostPoned(SERVER_CONNECTION_DATA_UPDATE_REQUEST_FAILED_TIMEOUT);
-		this->serverPinged = false;
-		this->deviceRegistered = false;
-		this->triggeredServerRegister = true;
-	}
+	checkServerAnswer(httpCode, start);
 
 	this->runsDataChangeRequest = false;
+}
+
+void ServerConnectionManager::checkServerAnswer(int httpCode,
+		unsigned long start) {
+	bool deregister = false;
+
+		if(httpCode==200){
+			this->errorCount = 0;
+			this->triggeredDataChange = false;
+			this->bufferUnsent = false;
+
+			DeviceUtils::printlnTimeHeap(start);
+		}else if((httpCode < 600 && httpCode > 399) || httpCode == -1 ){
+			this->errorCount++;
+			setRequestPostPoned(SERVER_CONNECTION_DATA_UPDATE_REQUEST_FAILED_TIMEOUT);
+			deregister = this->errorCount > SERVER_CONNECTION_DATA_UPDATE_REQUEST_FAILED_NOT_DEREGISTER_COUNT;
+		}else{
+			deregister = true;
+		}
+
+		if (deregister)	{
+			Serial.print(FPSTR("Data send ->...ERROR "));
+			Serial.println(httpCode);
+			DeviceUtils::printlnTimeHeap(start);
+			setRequestPostPoned(SERVER_CONNECTION_DATA_UPDATE_REQUEST_FAILED_TIMEOUT);
+			this->serverPinged = false;
+			this->deviceRegistered = false;
+			this->triggeredServerRegister = true;
+		}
+
 }
 
 void ServerConnectionManager::sendDataChangedPostMethod() {

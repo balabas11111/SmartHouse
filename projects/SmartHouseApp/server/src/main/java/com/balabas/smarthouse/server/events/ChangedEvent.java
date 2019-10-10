@@ -15,7 +15,8 @@ public class ChangedEvent<T extends SmartHouseItem> {
         DATA_UPDATE_DISPATCHED,
         DATA_RECEIVED,
         DATA_TIMED_OUT,
-        DATA_PARSE_FAILED
+        DATA_PARSE_FAILED,
+        DISCONNECTED
     }
     
     @Getter
