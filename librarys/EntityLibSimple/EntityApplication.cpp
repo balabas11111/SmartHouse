@@ -41,6 +41,8 @@ void EntityApplication::construct(
 		this->entityManager->registerAndPreInitEntity(this->conf);
 	}
 	this->entityManager->registerAndPreInitEntity(&this->deviceManager);
+
+
 #ifdef SETTINGS_DISPLAY_ENABLED
 	this->displayManager = new DisplayManager(displayAdapter, pages, pageCount, this->conf);
 #endif
@@ -82,8 +84,14 @@ void EntityApplication::init(bool initSerial,
 #ifdef SETTINGS_DISPLAY_ENABLED
 	this->displayManager->init();
 #endif
+
 	this->entityManager->init();
 	this->entityUpdateManager->init(this->conf->refreshInterval());
+
+#ifndef SETTINGS_SERVER_MQTT_DISABLED
+	MqttManager* mqttManager = new MqttManager(this->conf);
+	mqttManager->init();
+#endif
 
 	if(initWiFi){
 		this->wifiManager->begin();
@@ -98,7 +106,7 @@ void EntityApplication::init(bool initSerial,
 	this->defaultDataSelector = new DataSelectorEntityManager(this->entityManager);
 	this->defaultNotifier = new Notifier("Default Notifier", nullptr, this->getDataSelector());
 
-	Serial.println(FPSTR("Application Init done"));
+	Serial.println(FPSTR("Init done"));
 
 	DeviceUtils::printHeap();
 	DeviceUtils::printMillis();
@@ -135,8 +143,14 @@ void EntityApplication::loop() {
 	this->wifiServerManager->loop();
 	this->serverConnectionManager->loop();
 #else
-	this->entityManager->processChangedEntities()
-	this->wifiServerManager->loop();
+	#ifndef SETTINGS_SERVER_MQTT_DISABLED
+	if(this->entityManager->processChangedEntities(this->mqttManager->getBuffer())){
+		this->mqttManager->publishBuffer();
+	}
+	#else
+		this->entityManager->processChangedEntities();
+		this->wifiServerManager->loop();
+	#endif
 #endif
 }
 
@@ -207,10 +221,13 @@ ServerConnectionManager* EntityApplication::getServerConnectionManager() {
 	return this->serverConnectionManager;
 }
 
-void EntityApplication::registerOnServer(bool trigger) {
-	this->getServerConnectionManager()->triggerRegisterOnServer(trigger);
-}
 #endif
+
+void EntityApplication::registerOnServer(bool trigger) {
+#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
+	this->getServerConnectionManager()->triggerRegisterOnServer(trigger);
+#endif
+}
 
 DataSelector* EntityApplication::getDataSelector() {
 	return this->defaultDataSelector;

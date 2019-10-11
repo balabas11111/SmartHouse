@@ -113,6 +113,8 @@ void ServerConnectionManager::generateAuthorization(String& tempServerKey) {
 	Serial.print(FPSTR("serverHash="));
 	Serial.println(conf->getServerAuthorization());
 	Serial.println(FPSTR("...done"));
+#else
+	UNUSED(tempServerKey);
 #endif
 }
 

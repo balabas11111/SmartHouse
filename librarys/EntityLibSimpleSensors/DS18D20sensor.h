@@ -66,7 +66,7 @@ public:
 			items[i] = item;
 		}
 		readTemperatures(false);
-		print();
+		//print();
 	}
 
 	virtual void doUpdate() override {

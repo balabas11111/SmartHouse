@@ -291,7 +291,7 @@ public:
 	void setServerAuthorization(String serverAuthorization) {
 		this->serverAuthorization = serverAuthorization;
 	}
-
+#endif
 	char* smartServerAddr(){
 		return this->_smrtServAddr;
 	}
@@ -299,7 +299,7 @@ public:
 	char* smartServerKey(){
 		return this->_smrtServKey;
 	}
-#endif
+
 	char* getDeviceStatus() const {
 		return deviceStatus;
 	}
@@ -353,10 +353,10 @@ protected:
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 	//Device current security information
 	String serverAuthorization;
-
+#endif
 	char* _smrtServAddr = (char*)SETTINGS_SMART_SERVER_ADDRESS;
 	char* _smrtServKey = (char*)SETTINGS_SMART_SERVER_KEY;
-#endif
+
 
 	std::function<void(void)> onDeviceStatusChanged = nullptr;
 	char* deviceStatus = (char*)DEVICE_STATUS_INITIALIZING;

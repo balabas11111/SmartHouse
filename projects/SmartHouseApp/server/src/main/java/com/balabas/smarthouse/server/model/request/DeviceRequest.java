@@ -52,7 +52,7 @@ public class DeviceRequest {
     }
 	
 	public String getData(){
-		if(headers.containsKey(DEVICE_FIELD_DATA)){
+		if(headers!=null && headers.containsKey(DEVICE_FIELD_DATA)){
 			List<String> dataHead = headers.get(DEVICE_FIELD_DATA);
 			if(!dataHead.isEmpty()){
 				return dataHead.get(0);

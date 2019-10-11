@@ -31,6 +31,7 @@
 #include <DeviceUtils.h>
 #include <serve/ServerConnectionManager.h>
 #include <serve/DeviceManager.h>
+#include <serve/MqttManager.h>
 
 #ifdef SETTINGS_DISPLAY_ENABLED
 	#include <display/DisplayManager.h>
@@ -75,8 +76,10 @@ public:
 	WiFiServerManager* getWifiServerManager();
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 	ServerConnectionManager* getServerConnectionManager();
-	void registerOnServer(bool trigger = true);
 #endif
+
+	void registerOnServer(bool trigger = true);
+
 	DataSelector* getDataSelector();
 	Notifier* getDefaultNotifier();
 
@@ -100,6 +103,9 @@ private:
 	DataSelector* defaultDataSelector = nullptr;
 	Notifier* defaultNotifier = nullptr;
 	DeviceManager deviceManager;
+#ifndef SETTINGS_SERVER_MQTT_DISABLED
+	MqttManager* mqttManager = nullptr;
+#endif
 
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 	ServerConnectionManager* serverConnectionManager = nullptr;
