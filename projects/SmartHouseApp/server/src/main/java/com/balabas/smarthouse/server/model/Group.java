@@ -47,7 +47,7 @@ public class Group implements SmartHouseItem, JsonDataContainer {
     
     private String description;
     
-    private Set<Entity> entities;
+    private Set<DeviceEntity> entities;
     
     private JSONObject data;
     
@@ -72,7 +72,7 @@ public class Group implements SmartHouseItem, JsonDataContainer {
         timer.setDataReceived();
     }
     
-    public Entity getEntity(String name) {
+    public DeviceEntity getEntity(String name) {
     	return entities.stream().filter(entity->entity.name.equals(name)).findFirst().orElse(null);
     }
     

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.model.Entity;
+import com.balabas.smarthouse.server.model.DeviceEntity;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,7 +22,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Repository
 public class EntityMinMaxValueAlarmRepository
-		implements AlarmRepositoryBaseValueContainer<Entity, EntityMinMaxValueAlarm>, InitializingBean {
+		implements AlarmRepositoryBaseValueContainer<DeviceEntity, EntityMinMaxValueAlarm>, InitializingBean {
 
 	@Getter
 	private List<EntityMinMaxValueAlarm> alarms = new ArrayList<>();
@@ -83,7 +83,7 @@ public class EntityMinMaxValueAlarmRepository
 	}
 
 	@Override
-	public void activateAlarmsForItem(Device device, Entity entity) {
+	public void activateAlarmsForItem(Device device, DeviceEntity entity) {
 		alarms.stream().filter(a -> !a.isActive() && a.getDeviceId().equals(entity.getDeviceId())
 				&& a.getItemName().equals(entity.getName())).forEach(alarm -> {
 					alarm.activate(alarmInterval, entity, device.getDeviceDescr() + " : " + entity.getDescription());
@@ -124,7 +124,7 @@ public class EntityMinMaxValueAlarmRepository
 	}
 
 	@Override
-	public List<EntityMinMaxValueAlarm> getAlarmsForItem(Entity entity) {
+	public List<EntityMinMaxValueAlarm> getAlarmsForItem(DeviceEntity entity) {
 		return alarms.stream()
 				.filter(a -> a.getDeviceId().equals(entity.getDeviceId()) && a.getItemName().equals(entity.getName()))
 				.collect(Collectors.toList());

@@ -22,7 +22,7 @@ import com.balabas.smarthouse.server.events.service.EventProcessorsService;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.Device.DeviceState;
-import com.balabas.smarthouse.server.model.Entity;
+import com.balabas.smarthouse.server.model.DeviceEntity;
 import com.balabas.smarthouse.server.model.Group;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.model.request.DeviceRegistrationResult;
@@ -367,7 +367,7 @@ public class DeviceServiceImpl implements DeviceService {
 			throw new ResourceNotFoundException(deviceId);
 		}
 		
-		Entity entity = device.get().getGroup(groupId).getEntity(entityId);
+		DeviceEntity entity = device.get().getGroup(groupId).getEntity(entityId);
 		
 		String result = deviceRequestor.executePostDataOnDeviceEntity(device.get(), entity, values);
 		processDataReceivedFromDevice(device.get(), result, true);

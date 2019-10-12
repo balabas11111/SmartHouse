@@ -17,7 +17,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.model.Entity;
+import com.balabas.smarthouse.server.model.DeviceEntity;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
 import com.balabas.smarthouse.server.service.HttpRequestExecutor;
 
@@ -77,7 +77,7 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 	}
 
 	@Override
-	public String executePostDataOnDeviceEntity(Device device, Entity entity, Map<String, Object> values) {
+	public String executePostDataOnDeviceEntity(Device device, DeviceEntity entity, Map<String, Object> values) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey(device.getDeviceId()));

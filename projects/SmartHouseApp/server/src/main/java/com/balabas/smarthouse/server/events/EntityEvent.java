@@ -8,10 +8,10 @@ import lombok.Getter;
 import lombok.ToString;
 
 import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.model.Entity;
+import com.balabas.smarthouse.server.model.DeviceEntity;
 
 @ToString(callSuper = true)
-public class EntityEvent extends ChangedEvent<Entity> {
+public class EntityEvent extends ChangedEvent<DeviceEntity> {
 
     @Getter
     private List<ValuesChangeEvent> events =new ArrayList<>();
@@ -19,12 +19,12 @@ public class EntityEvent extends ChangedEvent<Entity> {
     @Getter
     private Device device;
     
-    public EntityEvent(Device device, Entity target, EventType eventType) {
+    public EntityEvent(Device device, DeviceEntity target, EventType eventType) {
     	super(target, eventType);
     	this.device = device;
     }
     
-    public EntityEvent(Entity target, EventType eventType, List<ValuesChangeEvent> events) {
+    public EntityEvent(DeviceEntity target, EventType eventType, List<ValuesChangeEvent> events) {
         super(target, eventType);
         this.events = events;
     }
@@ -35,7 +35,7 @@ public class EntityEvent extends ChangedEvent<Entity> {
         }
     }
     
-    public static EntityEvent build(Entity target, EventType eventType, List<ValuesChangeEvent> events){
+    public static EntityEvent build(DeviceEntity target, EventType eventType, List<ValuesChangeEvent> events){
         List<ValuesChangeEvent>  nonNulls = events.stream().filter(ev->(ev!=null && ev.hasValues())).collect(Collectors.toList());
         
         if(nonNulls.isEmpty() && eventType.equals(EventType.UPDATED)){

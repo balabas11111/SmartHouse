@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.model.Entity;
+import com.balabas.smarthouse.server.model.DeviceEntity;
 import com.balabas.smarthouse.server.model.Group;
 
 import lombok.AllArgsConstructor;
@@ -91,7 +91,7 @@ public class Action {
 		return new Action(action, data, group.getDeviceId(), group.getName());
 	}
 	
-	public static Action fromEntity(String action, Entity entity, String data) {
+	public static Action fromEntity(String action, DeviceEntity entity, String data) {
 		return new Action(action, data, entity.getDeviceId(), entity.getGroupName(), entity.getName());
 	}
 	

@@ -16,7 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRem
 import com.balabas.smarthouse.server.alarm.Alarm;
 import com.balabas.smarthouse.server.alarm.AlarmProcessService;
 import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.model.Entity;
+import com.balabas.smarthouse.server.model.DeviceEntity;
 import com.balabas.smarthouse.server.model.EntityClass;
 import com.balabas.smarthouse.server.model.Group;
 import com.balabas.smarthouse.server.notification.Message;
@@ -40,7 +40,7 @@ public class SendMessageBuilder {
 	private DeviceService deviceService;
 	
 	@Autowired
-	private AlarmProcessService<Entity> entityAlarmService;
+	private AlarmProcessService<DeviceEntity> entityAlarmService;
 
 	@Autowired
 	private InlineKeyboardBuilder inlineKeyboard;
@@ -174,7 +174,7 @@ public class SendMessageBuilder {
 				.sorted((e1, e2) -> e1.getDescription().compareToIgnoreCase(e2.getDescription()))
 				.forEach(ent -> entityToTemplate(ent, builder));
 
-			List<Alarm<Entity>> alarms = entityAlarmService.getActiveAlarms(device);
+			List<Alarm<DeviceEntity>> alarms = entityAlarmService.getActiveAlarms(device);
 			
 			if(!alarms.isEmpty()) {
 				
@@ -209,7 +209,7 @@ public class SendMessageBuilder {
 		return result;
 	}
 
-	private void entityToTemplate(Entity entity, StringBuilder builder) {
+	private void entityToTemplate(DeviceEntity entity, StringBuilder builder) {
 		entityValueMapToTemplate(entity.getName(), entity.getValues(), builder, true);
 
 		if (entity.hasSensorItems()) {

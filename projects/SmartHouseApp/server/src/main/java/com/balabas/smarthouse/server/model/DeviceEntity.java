@@ -12,14 +12,14 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class Entity extends ValueContainer {
+public class DeviceEntity extends ValueContainer {
 
 	@Getter
 	private String groupName;
 
 	private Set<SensorItem> sensorItems;
 
-	public Entity(String deviceId, String groupName, String entityName) {
+	public DeviceEntity(String deviceId, String groupName, String entityName) {
 		this.deviceId = deviceId;
 		this.groupName = groupName;
 		this.name = entityName;

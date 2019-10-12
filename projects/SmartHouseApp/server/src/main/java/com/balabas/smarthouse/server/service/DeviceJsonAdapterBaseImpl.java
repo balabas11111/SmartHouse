@@ -18,7 +18,7 @@ import com.balabas.smarthouse.server.events.GroupEvent;
 import com.balabas.smarthouse.server.events.ValueChangeOperation;
 import com.balabas.smarthouse.server.events.ValuesChangeEvent;
 import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.model.Entity;
+import com.balabas.smarthouse.server.model.DeviceEntity;
 import com.balabas.smarthouse.server.model.Group;
 import com.balabas.smarthouse.server.model.SmartHouseItem;
 import com.balabas.smarthouse.server.model.ValueContainer;
@@ -164,7 +164,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
            return;
         }
     	
-        Entity entity = getEntityOrCreateNew(noEventProduceApplyOnly, device, group, entityName, events);
+        DeviceEntity entity = getEntityOrCreateNew(noEventProduceApplyOnly, device, group, entityName, events);
         
         List<ValuesChangeEvent> valueEvents = new ArrayList<>();
         
@@ -180,11 +180,11 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
         }
     }
     
-    private Entity getEntityOrCreateNew(boolean noEventProduceApplyOnly, Device device, Group group, String entityName, List<EntityEvent> events) {
-        Entity entity = group.getEntity(entityName);
+    private DeviceEntity getEntityOrCreateNew(boolean noEventProduceApplyOnly, Device device, Group group, String entityName, List<EntityEvent> events) {
+        DeviceEntity entity = group.getEntity(entityName);
         
         if (entity == null) {
-            entity = new Entity( group.getDeviceId(), group.getName(), entityName);
+            entity = new DeviceEntity( group.getDeviceId(), group.getName(), entityName);
             group.getEntities().add(entity);
             
             events.add(new EntityEvent(device, entity, INITIAL_DATA_RECEIVED));
@@ -232,7 +232,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
         return event;
     }
     
-    private List<ValuesChangeEvent> processSensorItemsValues(boolean noEventProduceApplyOnly, Entity entity, JSONObject entityJson) {
+    private List<ValuesChangeEvent> processSensorItemsValues(boolean noEventProduceApplyOnly, DeviceEntity entity, JSONObject entityJson) {
     	
     	List<ValuesChangeEvent> valueEvents = Lists.newArrayList();
     	

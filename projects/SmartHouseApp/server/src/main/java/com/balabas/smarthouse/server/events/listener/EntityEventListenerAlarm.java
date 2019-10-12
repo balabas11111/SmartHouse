@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import com.balabas.smarthouse.server.alarm.AlarmProcessService;
 import com.balabas.smarthouse.server.events.EntityEvent;
 import com.balabas.smarthouse.server.events.service.EventListenerNotificationDispatcherAbstract;
-import com.balabas.smarthouse.server.model.Entity;
+import com.balabas.smarthouse.server.model.DeviceEntity;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -16,10 +16,10 @@ import static com.balabas.smarthouse.server.events.ChangedEvent.EventType.UPDATE
 @Component
 @Log4j2
 public class EntityEventListenerAlarm
-		extends EventListenerNotificationDispatcherAbstract<Entity, EntityEvent> {
+		extends EventListenerNotificationDispatcherAbstract<DeviceEntity, EntityEvent> {
 
 	@Autowired
-	private AlarmProcessService<Entity> entityAlarmService;
+	private AlarmProcessService<DeviceEntity> entityAlarmService;
 
 	@Override
 	public void processEvent(EntityEvent event) {
