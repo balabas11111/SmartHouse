@@ -75,9 +75,9 @@ public class Device implements SmartHouseItem, JsonDataContainer {
 	}
 
 	public Device updateDevice(Device from) {
-		this.deviceDescr = from.deviceDescr;
-		this.deviceFirmware = from.deviceFirmware;
-		this.deviceKey = from.deviceKey;
+		this.deviceDescr = from.deviceDescr!=null?from.deviceDescr:this.deviceDescr;
+		this.deviceFirmware = from.deviceFirmware!=null?from.deviceFirmware:this.deviceFirmware;
+		this.deviceKey = from.deviceKey!=null?from.deviceKey:this.deviceKey;
 
 		return this;
 	}

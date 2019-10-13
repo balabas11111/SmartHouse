@@ -88,20 +88,20 @@ void EntityApplication::init(bool initSerial,
 	this->entityManager->init();
 	this->entityUpdateManager->init(this->conf->refreshInterval());
 
-#ifndef SETTINGS_SERVER_MQTT_DISABLED
-	MqttManager* mqttManager = new MqttManager(this->conf);
-	mqttManager->init();
-#endif
-
 	if(initWiFi){
 		this->wifiManager->begin();
 	}
 	if(initServer){
 		this->wifiServerManager->begin();
 	}
+
+#ifndef SETTINGS_SERVER_MQTT_DISABLED
+	this->mqttManager = new MqttManager(this->conf);
+#endif
+
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 	this->serverConnectionManager = new ServerConnectionManager(this->conf);
-	this->serverConnectionManager->init();
+	this->serverConnectionManager->init([this](){onServerRegistered();});
 #endif
 	this->defaultDataSelector = new DataSelectorEntityManager(this->entityManager);
 	this->defaultNotifier = new Notifier("Default Notifier", nullptr, this->getDataSelector());
@@ -127,6 +127,7 @@ void EntityApplication::initWithoutWiFi(bool initI2C,
 
 void EntityApplication::loop() {
 	this->entityUpdateManager->loop();
+
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 
 	#ifdef SETTINGS_SERVER_SEND_DATA_METHOD_GET
@@ -136,22 +137,30 @@ void EntityApplication::loop() {
 	}
 
 	#else
-	if(this->entityManager->processChangedEntities()){
-		this->serverConnectionManager->triggerDataChanged();
-	}
+		#ifndef SETTINGS_SERVER_HTTP_DATA_UPDATE_DISPATCH_DISABLED
+			if(this->entityManager->processChangedEntities()){
+				this->serverConnectionManager->triggerDataChanged();
+			}
+		#endif
 	#endif
-	this->wifiServerManager->loop();
 	this->serverConnectionManager->loop();
-#else
+#endif
 	#ifndef SETTINGS_SERVER_MQTT_DISABLED
-	if(this->entityManager->processChangedEntities(this->mqttManager->getBuffer())){
-		this->mqttManager->publishBuffer();
-	}
+
+	#ifdef SETTINGS_SERVER_HTTP_DATA_UPDATE_DISPATCH_DISABLED
+		if(this->entityManager->processChangedEntities()){
+			this->mqttManager->publishBuffer();
+		}
+	#endif
+
+	this->mqttManager->loop();
+	this->wifiServerManager->loop();
+
 	#else
 		this->entityManager->processChangedEntities();
 		this->wifiServerManager->loop();
 	#endif
-#endif
+
 }
 
 EntityManager* EntityApplication::getEntityManager() {
@@ -237,3 +246,7 @@ void EntityApplication::restart() {
 	this->deviceManager.triggerRestart();
 }
 
+void EntityApplication::onServerRegistered() {
+	Serial.println(FPSTR("OnServerRegistered"));
+	this->mqttManager->init(entityManager->getBuffer());
+}

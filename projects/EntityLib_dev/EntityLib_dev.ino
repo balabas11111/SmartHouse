@@ -8,6 +8,12 @@
 #include "DS18D20sensor.h"
 #include "OutputPin.h"
 
+#include "ESP8266WiFi.h"
+#include "PubSubClient.h"
+/*
+WiFiClient wclient;
+PubSubClient client(wclient);
+*/
 Bme280sensor bme280( (char*) "Микроклимат воздуха");
 Bh1750sensor bh1750( (char*) "Уровень освещения");
 OutputPin rele(BUILTIN_LED,  (char*) "Диод на плате", "built In LED",  LOW);
@@ -22,7 +28,7 @@ EntityApplication app("EntityLib dev device", (char*)"Тестовое устр�
 		updateableEntities, ARRAY_SIZE(updateableEntities));
 
 void setup() {
-	app.initWithWiFi();
+	app.initWithWiFi(nullptr);
 	app.setOnEntitiesChanged(onEntitiesChanged);
 	app.updateEntities(true);
 	app.registerOnServer();

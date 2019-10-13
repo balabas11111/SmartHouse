@@ -283,7 +283,6 @@ public:
 		JsonObjectUtil::setField(info, _DEVICE_FIRMWARE, deviceFirmWare());
 		JsonObjectUtil::setField(info, _DEVICE_DESCR, deviceDescr());
 	}
-#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 	const String& getServerAuthorization() const {
 		return serverAuthorization;
 	}
@@ -291,7 +290,44 @@ public:
 	void setServerAuthorization(String serverAuthorization) {
 		this->serverAuthorization = serverAuthorization;
 	}
-#endif
+
+	const String& getDeviceAuthorization() const {
+		return deviceAuthorization;
+	}
+
+	void setDeviceAuthorization(String deviceAuthorization) {
+		this->deviceAuthorization = deviceAuthorization;
+	}
+
+	void generateAuthorization(String& tempServerKey, char* tempDevKey) {
+		Serial.println(FPSTR("generate Authorization-------------------------"));
+		String serverKeyHash = sha1(smartServerKey());
+		String tempDeviceKey = tempDevKey;
+
+		Serial.print(FPSTR("tempDeviceKey="));
+		Serial.println(tempDeviceKey);
+		Serial.print(FPSTR("tempServerKey="));
+		Serial.println(tempServerKey);
+		String tmp = serverKeyHash + tempServerKey + tempDeviceKey;
+
+		Serial.print(FPSTR("unhashedDeviceToken="));
+		Serial.println(tmp);
+
+		setDeviceAuthorization(sha1(tmp));
+
+		String tmp2 = tempServerKey + smartServerKey() + deviceId();
+		setServerAuthorization(sha1(tmp2));
+
+		Serial.print(FPSTR("unhashedServerToken="));
+		Serial.println(tmp2);
+
+		Serial.print(FPSTR("deviceHash="));
+		Serial.println(getDeviceAuthorization());
+		Serial.print(FPSTR("serverHash="));
+		Serial.println(getServerAuthorization());
+		Serial.println(FPSTR("...done"));
+	}
+
 	char* smartServerAddr(){
 		return this->_smrtServAddr;
 	}
@@ -350,10 +386,10 @@ protected:
 
 	char* currentIp = (char*)EMPTY_LINE;
 
-#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 	//Device current security information
 	String serverAuthorization;
-#endif
+	String deviceAuthorization;
+
 	char* _smrtServAddr = (char*)SETTINGS_SMART_SERVER_ADDRESS;
 	char* _smrtServKey = (char*)SETTINGS_SMART_SERVER_KEY;
 
@@ -382,10 +418,8 @@ protected:
 		chg = getKeyValueIfExistsAndNotEquals(json, _IP_SUBNET, &this->_subnet)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _IP_DNS, &this->_dns)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _IP_DNS2, &this->_dns2)?true:chg;
-#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 		chg = getKeyValueIfExistsAndNotEquals(json, _SMART_HOUSE_SERVER_ADDR, &this->_smrtServAddr)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _SMART_HOUSE_SERVER_KEY, &this->_smrtServKey)?true:chg;
-#endif
 		chg = getKeyValueIfExistsAndNotEquals(json, _USER_LOGIN, &this->_userLogin)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _USER_PASS, &this->_userPassword)?true:chg;
 		chg = getKeyValueIfExistsAndNotEquals(json, _ADMIN_LOGIN, &this->_adminLogin)?true:chg;
@@ -420,10 +454,8 @@ protected:
 		setJsonField(json, _IP_SUBNET, this->_subnet);
 		setJsonField(json, _IP_DNS, this->_dns);
 		setJsonField(json, _IP_DNS2, this->_dns2);
-#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 		setJsonField(json, _SMART_HOUSE_SERVER_ADDR, this->_smrtServAddr);
 		setJsonField(json, _SMART_HOUSE_SERVER_KEY, mask?_MASKED_VALUE:this->_smrtServKey);
-#endif
 		setJsonField(json, _USER_LOGIN, this->_userLogin);
 		setJsonField(json, _USER_PASS, mask?_MASKED_VALUE:this->_userPassword);
 		setJsonField(json, _ADMIN_LOGIN, this->_adminLogin);

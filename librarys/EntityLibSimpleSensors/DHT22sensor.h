@@ -39,10 +39,16 @@ public:
 		float h = dht->readHumidity();
 		float t = dht->readTemperature();
 
-		markEntityAsChangedIfTrue((h!=this->hum) || t!=this->temp);
+		bool hchg = h!=this->hum;
+		bool tchg = t!=this->temp;
+
+		markEntityAsChangedIfTrue(hchg || tchg);
 
 		this->hum = h;
 		this->temp = t;
+
+		if(hchg){putToBuffer(BME280_HUMIDITY, this->hum);}
+		if(tchg){putToBuffer(BME280_TEMPERATURE, this->temp);}
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {

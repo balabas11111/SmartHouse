@@ -38,6 +38,7 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_DESCRIPTION;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ITEM_CLASS;
 
+import static com.balabas.smarthouse.server.events.ChangedEvent.EventType.ADDED;
 import static com.balabas.smarthouse.server.events.ChangedEvent.EventType.INITIAL_DATA_RECEIVED;
 import static com.balabas.smarthouse.server.events.ChangedEvent.EventType.UPDATED;
 
@@ -187,6 +188,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
             entity = new DeviceEntity( group.getDeviceId(), group.getName(), entityName);
             group.getEntities().add(entity);
             
+            events.add(new EntityEvent(device, entity, ADDED));
             events.add(new EntityEvent(device, entity, INITIAL_DATA_RECEIVED));
         } 
         

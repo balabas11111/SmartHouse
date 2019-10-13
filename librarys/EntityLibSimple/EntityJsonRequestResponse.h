@@ -30,6 +30,10 @@ public:
 		getRoot().createNestedObject(RESPONSE);
 	};
 
+	EntityJsonRequestResponse(char* json){
+		this->root= buf.parse(json).as<JsonObject>();
+	};
+
 	virtual ~EntityJsonRequestResponse(){};
 
 	static EntityJsonRequestResponse* build(){

@@ -9,6 +9,7 @@ public class ChangedEvent<T extends SmartHouseItem> {
     public enum EventType{
     	REGISTERED,
     	REREGISTERED,
+    	ADDED,
     	INITIAL_DATA_RECEIVED,
         UPDATED,
         REMOVED,

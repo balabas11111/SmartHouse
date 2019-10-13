@@ -196,6 +196,9 @@ const char* WiFiServerManager::getContentType(String& path) {
 }
 
 bool WiFiServerManager::authenticateRequest(const char* method){
+#ifdef REQUEST_SECURITY_DISABLED
+	return true;
+#else
 	bool result = true;
 
 	if(strcmp(method, REQUEST_GET)==0){
@@ -223,6 +226,7 @@ bool WiFiServerManager::authenticateRequest(const char* method){
 	Serial.print(result);
 
 	return result;
+#endif
 }
 
 bool WiFiServerManager::isAuthenticatedRequest(char* login, char* password){

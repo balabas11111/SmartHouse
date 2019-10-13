@@ -21,6 +21,4 @@ public class Entity extends EntityAbstractDescripted implements IEntity {
 	@Getter @Setter
 	private Set<IEntityAlarm> alarms;
 	
-	@Getter @Setter
-	IEntityChangeListener watcher;
 }

@@ -31,6 +31,18 @@
 #define ENTITY_FIELD_SENSOR_ITEMS "si"
 #define ENTITY_FIELD_ITEM_CLASS "ic"
 
+#define ENTITY_FIELD_DEVICE_KEY "deviceKey"
+#define ENTITY_FIELD_DATA "data"
+#define ENTITY_FIELD_ID "id"
+#define ENTITY_FIELD_IP "ip"
+#define ENTITY_FIELD_MODEL "model"
+#define ENTITY_FIELD_URL_ROOT "urlRoot"
+#define ENTITY_FIELD_URL_DATA "urlData"
+#define ENTITY_FIELD_ROOT "root"
+#define ENTITY_FIELD_DATA "data"
+#define ENTITY_FIELD_TO_DEVICE_TOPIC "toDTopic"
+#define ENTITY_FIELD_TO_SERVER_TOPIC "toSTopic"
+
 #define ENTITY_ITEM_CLASS_TOOGLE_BUTTON "tb"
 
 #define EMPTY_LINE ""

@@ -121,12 +121,19 @@ public class DeviceServiceImpl implements DeviceService {
 	    		deviceRootUrl = dataJson.optString(DEVICE_FIELD_URL_ROOT, DEVICE_URL_ROOT);
 	    	}
 	    	if(dataJson.has(DEVICE_FIELD_URL_DATA)){
-	    		deviceDataUrl = dataJson.optString(DEVICE_FIELD_URL_DATA, DEVICE_URL_ROOT);
+	    		deviceDataUrl = dataJson.optString(DEVICE_FIELD_URL_DATA, DEVICE_URL_DATA);
 	    	}
 	    }
 	    
-	    device.setDataUrl(baseUrl + deviceDataUrl);
-	    device.setRootUrl(baseUrl + deviceRootUrl);
+	    if(!deviceRootUrl.startsWith(HTTP_PREFFIX)) {
+	    	deviceRootUrl = baseUrl + deviceRootUrl;
+	    }
+	    if(!deviceDataUrl.startsWith(HTTP_PREFFIX)) {
+	    	deviceDataUrl = baseUrl + deviceDataUrl;
+	    }
+	    
+	    device.setDataUrl(deviceDataUrl);
+	    device.setRootUrl(deviceRootUrl);
 	    device.setState(DeviceState.CONSTRUCTED);
 	    
 	    device.setDeviceKey(request.getDeviceKey());

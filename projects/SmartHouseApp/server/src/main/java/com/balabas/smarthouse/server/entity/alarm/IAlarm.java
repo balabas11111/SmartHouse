@@ -13,6 +13,4 @@ public interface IAlarm<T extends IEntityAbstract> extends IEntityAbstract {
 	boolean isActive();
 	boolean isAlarmed();
 	
-	IAlarmListener getListener();
-	void setListener(IAlarmListener listener);
 }

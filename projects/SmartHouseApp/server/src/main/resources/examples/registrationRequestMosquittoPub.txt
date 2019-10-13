@@ -1,0 +1,1 @@
+mosquitto_pub -d -t fromDevice/register -m "{\"deviceId\": \"ESP_Dev_ID\",\"deviceFirmware\": \"EntityLib dev device\",\"deviceDescr\": \"Default Device description\",	\"deviceKey\": \"SomeKey\", \"ip\": \"192.168.0.120\",\"data\": {\"urlRoot\": \"http://192.168.0.120/\",\"urlData\": \"http://192.168.0.120/data\",\"model\": {}}}" -u mqttuser -P mqttpassword

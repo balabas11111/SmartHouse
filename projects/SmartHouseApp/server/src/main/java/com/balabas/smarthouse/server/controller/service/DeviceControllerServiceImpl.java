@@ -16,6 +16,7 @@ import com.balabas.smarthouse.server.model.request.DeviceRequestResult;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
 import com.balabas.smarthouse.server.service.DeviceService;
 
+
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -24,75 +25,76 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 
 	public static final String IS_OFFLINE_MESSAGE = "{\"status\":\"OFFLINE\"}";
 	public static final String IS_ONLINE_MESSAGE = "{\"status\":\"ONLINE\"}";
-	
+
 	@Autowired
 	private DeviceService deviceService;
-	
+
 	@Autowired
 	private DeviceSecurityService securityService;
-	
+
 	private boolean isOnline = false;
-	
+
 	@Override
 	public DeviceRequestResult<String> processIsServerOnlineRequest(DeviceRequest request) {
-		
-		if(!isOnline) {
+
+		if (!isOnline) {
 			return DeviceRequestResult.from(HttpStatus.NOT_ACCEPTABLE, IS_OFFLINE_MESSAGE);
 		}
-		
+
 		return DeviceRequestResult.from(HttpStatus.OK, IS_ONLINE_MESSAGE);
-		
-		/*try {
-			securityService.validateDeviceRequestBase(request);
-			return DeviceRequestResult.from(HttpStatus.OK, IS_ONLINE_MESSAGE);
-			
-		} catch (DeviceRequestValidateException e) {
-			return DeviceRequestResult.from(e.getStatus());
-		}*/
+
+		/*
+		 * try { securityService.validateDeviceRequestBase(request); return
+		 * DeviceRequestResult.from(HttpStatus.OK, IS_ONLINE_MESSAGE);
+		 * 
+		 * } catch (DeviceRequestValidateException e) { return
+		 * DeviceRequestResult.from(e.getStatus()); }
+		 */
 	}
-	
+
 	@Override
 	public DeviceRequestResult<String> processDeviceRegistrationRequest(DeviceRequest request) {
 		try {
-			log.info("Register device "+request.toString());
+			log.info("Register device " + request.toString());
 			String token = securityService.processDeviceRegistrationRequest(request);
-			
+
 			deviceService.registerDevice(request);
-			
+
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(HttpHeaders.AUTHORIZATION, token);
-			
+
 			return DeviceRequestResult.from(HttpStatus.OK, token);
-			
+
 		} catch (DeviceRequestValidateException e) {
 			return DeviceRequestResult.from(e.getStatus());
 		}
 	}
-	
-	@Override 
-	public DeviceRequestResult<String> processDataChangedOnDeviceRequest(DeviceRequest request, boolean withData){
+
+	@Override
+	public DeviceRequestResult<String> processDataChangedOnDeviceRequest(DeviceRequest request, boolean withData) {
 		try {
 			securityService.validateDeviceRequestDataUpdate(request);
 			deviceService.processDeviceDataUpdateDispatched(request, withData);
-		
+
 			return DeviceRequestResult.from(HttpStatus.OK);
-			
+
 		} catch (DeviceRequestValidateException e) {
 			return DeviceRequestResult.from(e.getStatus());
 		} catch (ResourceNotFoundException e) {
 			return DeviceRequestResult.from(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	@EventListener(classes = {ContextRefreshedEvent.class})
+
+	@EventListener(classes = { ContextRefreshedEvent.class })
 	public void onContextStarted() {
 		log.info("-----Server context was started-----");
 		this.isOnline = true;
 	}
-	
-	@EventListener(classes = {ContextStoppedEvent.class, ContextClosedEvent.class})
+
+	@EventListener(classes = { ContextStoppedEvent.class, ContextClosedEvent.class })
 	public void onContextDestroyed() {
 		log.info("-----Server context was destroyed-----");
 		this.isOnline = false;
 	}
+
 }

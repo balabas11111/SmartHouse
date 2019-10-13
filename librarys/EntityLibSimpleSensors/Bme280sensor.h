@@ -43,11 +43,20 @@ public:
 		float t = bme->readTemperature();
 		float p = bme->readPressure();
 
-		markEntityAsChangedIfTrue((h!=this->hum) || (t!=this->temp) || (p!=this->press));
+		bool hchg = h!=this->hum;
+		bool tchg = t!=this->temp;
+		bool pchg = p!=this->press;
+
+		markEntityAsChangedIfTrue(hchg || tchg || pchg);
 
 		this->hum = h;
 		this->temp = t;
 		this->press = p;
+
+		if(hchg){putToBuffer(BME280_HUMIDITY, this->hum);}
+		if(tchg){putToBuffer(BME280_TEMPERATURE, this->temp);}
+		if(pchg){putToBuffer(BME280_PRESSURE, this->press);}
+
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {

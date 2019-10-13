@@ -2,8 +2,11 @@
 	"deviceId": "ESP_Dev_ID",
 	"deviceFirmware": "EntityLib dev device",
 	"deviceDescr": "Default Device description",
-	"json": {
-		"rootUrl": "http://192.168.0.120/",
-		"dataUrl": "http://192.168.0.120/data"
+	"deviceKey": "SomeKey",
+	"ip": "192.168.0.120",
+	"data": {
+		"urlRoot": "http://192.168.0.120/",
+		"urlData": "http://192.168.0.120/data",
+		"model": {}
 	}
 }

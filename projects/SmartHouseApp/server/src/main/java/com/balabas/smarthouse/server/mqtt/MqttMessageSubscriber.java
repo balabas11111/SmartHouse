@@ -1,10 +1,18 @@
 package com.balabas.smarthouse.server.mqtt;
 
-import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-public interface MqttMessageSubscriber extends IMqttMessageListener {
+import lombok.Getter;
 
-	String getTopicName();
+public abstract class MqttMessageSubscriber implements IMqttMessageSubscriber {
+
+	@Getter
+	protected String topicName;
 	
-	boolean onMessageReceived(String message);
+	@Override
+	public void messageArrived(String topic, MqttMessage message) throws Exception {
+		if(topic.equals(getTopicName())){
+			onMessageReceived(topic, new String(message.getPayload()));
+		}
+	}
 }

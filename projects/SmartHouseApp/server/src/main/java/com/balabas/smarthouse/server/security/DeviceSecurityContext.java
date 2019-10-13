@@ -11,5 +11,6 @@ public class DeviceSecurityContext {
 
 	private String serverKeyHash;
 	private String deviceKeyHash;
+	private String serverToken;
 	
 }

@@ -8,58 +8,285 @@
 #include <serve/MqttManager.h>
 
 MqttManager::MqttManager(SettingsStorage* conf) {
-	this->buffer = new EntityJsonRequestResponse();
+	Serial.print(FPSTR("constructor MqttManager"));
 
-	this->toServerQueue = strdup((String(MQTT_FROM_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
-	this->toDeviceQueue = strdup((String(MQTT_TO_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
-
-	this->lastReconnectAttempt = millis();
+	this->conf = conf;
+	/*this->toServerTopic = strdup((String(MQTT_FROM_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
+	this->toDeviceTopic = strdup((String(MQTT_TO_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
+*/
+	this->toServerTopic = String(conf->deviceId()) + MQTT_SLASH_SUFFIX;
+	this->toDeviceTopic = strdup((String(MQTT_TO_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
+	this->fromDeviceTopic = strdup((String(MQTT_FROM_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
 }
 
-void MqttManager::init() {
-	this->client = new PubSubClient(MQTT_HOST, MQTT_PORT,
-			/*[this](char* topic, uint8_t* payload, unsigned int length){ callback(topic, payload, length);},*/
-					this->wclient);
+void MqttManager::init(EntityJsonRequestResponse* buf, bool registered) {
+	if(buf!=nullptr){
+		this->buffer = buf;
+	} else {
+		this->buffer = new EntityJsonRequestResponse();
+	}
+
+		this->lastReconnectAttempt = millis();
+		this->lastRegisterAttempt = millis();
+
+		IPAddress adress = IPAddress(192,168,0,101);
+
+		this->wclient = new WiFiClient();
+		Serial.print(FPSTR(" wifiClient "));
+		this->client = new PubSubClient(adress, MQTT_PORT,
+					[this](char* topic, uint8_t* payload,
+							unsigned int length){ callback(topic, payload, length);},
+							*this->wclient);
+
+		this->initDone = true;
+		this->registered = registered;
+
+		serverSubscribed = subscribe(toDeviceTopic, true);
+
+		Serial.print(FPSTR("host ="));
+		Serial.print(adress.toString());
+		Serial.print(FPSTR(":"));
+		Serial.print(MQTT_PORT);
+		Serial.print(FPSTR("  toServerTopic ="));
+		Serial.print(toServerTopic);
+		Serial.print(FPSTR("  toDeviceTopic ="));
+		Serial.print(toDeviceTopic);
+		Serial.print(FPSTR("  fromDeviceTopic ="));
+		Serial.print(fromDeviceTopic);
+		Serial.print(FPSTR("  serverSubscribed ="));
+		Serial.println(serverSubscribed);
+
+		Serial.println(FPSTR("MqttManager initialized"));
 }
+
 
 EntityJsonRequestResponse* MqttManager::getBuffer() {
-		if(!bufferUnsent){
+		if(!bufferUnsent && registered){
 			this->buffer->construct();
 		}
 		return this->buffer;
 }
 
 bool MqttManager::publishBuffer() {
-	unsigned long start = millis();
-	Serial.print(FPSTR("MQTT sent="));
-
-	if(connectMqtt()){
-		String msg;
-		this->buffer->printResponseTo(msg);
-		bool sent = client->publish(((registered)?toServerQueue:MQTT_REGISTRATION_TOPIC), msg.c_str());
-		this->bufferUnsent = !sent;
-		Serial.print(sent);
-		Serial.print(FPSTR(" "));
-
-		return sent;
-	} else {
-		Serial.print(FPSTR("nc "));
+	if(!this->initDone){
 		return false;
 	}
+	if(!this->registered){
+		#ifndef MQTT_REGISTRATION_DISABLED
+			return sendRegistrationRequest();
+		#else
+			return false;
+		#endif
+	} else {
+		if(!serverSubscribed){
+			serverSubscribed = subscribe(toDeviceTopic, true);
+			if(serverSubscribed){
+				Serial.println(FPSTR("Server subscribed"));
+			}
+		} else {
+			if(!this->serverResponseReceived){
+				sendRegistrationRequest();
+			}
+		}
 
+		if(this->serverResponseReceived){
+			return sendDataRequest();
+		}else{
+			return false;
+		}
+	}
+}
+
+bool MqttManager::sendRegistrationRequest() {
+	unsigned long now = millis();
+	if (now - lastRegisterAttempt < 30000){
+		return false;
+	}
+	Serial.println(FPSTR("Send registration request"));
+	if(connectMqtt()){
+		buildRegistrationRequest();
+		//bool subscribed = subscribe(toDeviceTopic);
+		bool published = publish((char*)MQTT_REGISTRATION_TOPIC, this->buffer->getRequest());
+
+		lastRegisterAttempt = millis();
+
+		return published;
+	}
+	return false;
+}
+
+bool MqttManager::buildRegistrationRequest() {
+	if(!registrationRequestBuilt){
+
+		JsonObject& req = getBuffer()->getRequest();
+
+		req[ENTITY_FIELD_ID] = this->conf->deviceId();
+		req[ENTITY_FIELD_IP] = conf->getCurrentIp();
+		req[ENTITY_FIELD_ROOT] = URL_ROOT;
+		req[ENTITY_FIELD_DATA] = URL_DATA;
+
+		registrationRequestBuilt = true;
+
+		JsonObjectUtil::printWithPreffix("registr req=", req);
+	}
+	return true;
+}
+
+bool MqttManager::processRegistrationResponse() {
+	Serial.println(FPSTR("Server response received MQTT enabled"));
+	this->registered = true;
+	this->serverResponseReceived = true;
+	return true;
+}
+
+bool MqttManager::sendDataRequest() {
+	unsigned long start = millis();
+
+	this->bufferUnsent = true;
+
+	JsonObject& bufFrom = getBuffer()->getResponse();
+	JsonObject& bufTo = getBuffer()->getRequest();
+
+	bool sentResult = true;
+
+	for (const auto& groupkvp : bufFrom) {
+	  bool groupResult = true;
+
+	  JsonObject& bufFromGroup = bufFrom.get<JsonObject>(groupkvp.key);
+	  JsonObject& bufToGroup = bufTo.createNestedObject(groupkvp.key);
+
+		  for (const auto& entitykvp : bufFromGroup) {
+			  const char* key = entitykvp.key;
+
+			  String targetTopicStr = toServerTopic + entitykvp.key;
+			  char* targetTopic = (char*) targetTopicStr.c_str();
+
+			  JsonObject& bufFromEntity = bufFromGroup.get<JsonObject>(key);
+			  bool result = publish(targetTopic, bufFromEntity);
+
+			  if(result){
+				 bufFromGroup.remove(key);
+			  } else {
+				  JsonObject& bufToEntity = bufToGroup.createNestedObject(key);
+				  bool resultByField = true;
+
+				  for (const auto& entityFieldkvp : bufFromEntity) {
+					  bufToEntity.set(entityFieldkvp.key, entityFieldkvp.value);
+
+					  bool result2 = publish(targetTopic, bufToEntity);
+
+					  if(result2){
+						  bufFromEntity.remove(entityFieldkvp.key);
+					  }
+
+					  	  bufToEntity.remove(entityFieldkvp.key);
+
+					  	  resultByField = resultByField && result2;
+				  }
+
+				  result = resultByField;
+			  }
+
+
+			  bufToGroup.remove(key);
+
+			  sentResult = sentResult && result;
+			  groupResult = groupResult && result;
+		  }
+
+		  if(groupResult){
+			  bufFrom.remove(groupkvp.key);
+		  }
+
+		  bufTo.remove(groupkvp.key);
+	}
+
+	if(sentResult){
+		this->bufferUnsent = true;
+		this->buffer->construct();
+	}
+	Serial.print(FPSTR("SB pub="));
+	Serial.print(sentResult);
+	Serial.print(FPSTR(" "));
 	DeviceUtils::printlnTimeHeap(start);
+	return sentResult;
 }
 
 void MqttManager::callback(char* topic, uint8_t* payload, unsigned int length) {
+	Serial.print(FPSTR("topic ="));
+	Serial.print(topic);
+	Serial.print(FPSTR(" message="));
+
 	String payloadIn = (char*)payload;
-			String topicIn=String(topic);
 
-			String msg;
-				for(int i=0;i<length;i++){
-					msg+=(char)payload[i];
-				}
+	String msg;
+	for(unsigned int i=0;i<length;i++){
+		msg+=(char)payload[i];
+	}
 
-			String messageIn="Message received payload="+msg+" topic="+topic +" length="+length;
+	Serial.println(msg);
+
+	if(strcmp(topic, toDeviceTopic)==0){
+		if(msg.indexOf(MQTT_GOOD_STATUS)>-1 || msg.indexOf(MQTT_GOOD_STATUS_STR)>-1){
+			Serial.println(FPSTR("registered"));
+			processRegistrationResponse();
+		} else{
+			Serial.println(FPSTR("Bad registration response"));
+		}
+	}
+}
+
+void MqttManager::loop() {
+	if(!initDone){
+		return;
+	}
+	client->loop();
+}
+
+bool MqttManager::subscribe(char* topic, bool showLog) {
+	if(connectMqtt()){
+		bool sub = client->subscribe(topic);
+
+		if(!sub || showLog){
+			Serial.print(FPSTR("SUB t="));
+			Serial.print(topic);
+			Serial.print(FPSTR(" sub="));
+			Serial.print(sub);
+			Serial.print(FPSTR(" "));
+		}
+		return sub;
+	} else {
+		Serial.print(FPSTR("NOT CONNECTED"));
+		return false;
+	}
+}
+
+bool MqttManager::publish(char* topic, JsonObject& data, bool showLog) {
+	if(connectMqtt()){
+		unsigned long start = millis();
+
+		String msg;
+		data.printTo(msg);
+
+		bool pub = client->publish(topic, msg.c_str());
+		this->bufferUnsent = !pub;
+
+		if(!pub || showLog){
+			Serial.print(FPSTR("PUB t="));
+			Serial.print(topic);
+			Serial.print(FPSTR(" data:"));
+			Serial.print(msg);
+			Serial.print(FPSTR(" pub="));
+			Serial.println(pub);
+		}
+		//Serial.println(FPSTR(" "));
+		//DeviceUtils::printlnTimeHeap(start);
+
+		return pub;
+	} else {
+		Serial.print(FPSTR("NOT CONNECTED"));
+		return false;
+	}
 }
 
 bool MqttManager::connectMqtt() {
@@ -69,10 +296,15 @@ bool MqttManager::connectMqtt() {
 		    if (now - lastReconnectAttempt > 5000) {
 		      lastReconnectAttempt = now;
 
-		      this->client->connect(MQTT_PUBLISHER, MQTT_USER, MQTT_PASSWORD);
+		      Serial.print(FPSTR("Connect..."));
+		      bool result = this->client->connect(MQTT_PUBLISHER, MQTT_USER, MQTT_PASSWORD);
+
+		      Serial.print(FPSTR("res="));
+		      Serial.println(result);
 
 		      if (this->client->connected()) {
 		        lastReconnectAttempt = 0;
+		        //Serial.println(FPSTR("Client connected 1"));
 		        return true;
 		      }
 		    }
@@ -82,3 +314,4 @@ bool MqttManager::connectMqtt() {
 	}
 	return false;
 }
+

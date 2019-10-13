@@ -11,46 +11,72 @@
 #include "Arduino.h"
 #include "ArduinoJson.h"
 #include "DeviceConfig.h"
+#include "WiFi/HttpConstants.h"
 #include "functional"
 #include "SettingsStorage.h"
 #include "EntityJsonRequestResponse.h"
-#include "PubSubClient.h"
+
 #include "ESP8266WiFi.h"
-#include "WiFiClient.h"
+#include "PubSubClient.h"
 #include "DeviceUtils.h"
 
 #define MQTT_REGISTRATION_TOPIC     "fromDevice/register"
 #define MQTT_TO_DEVICE_TOPIC_TMPL   "toDevice/"
 #define MQTT_FROM_DEVICE_TOPIC_TMPL "fromDevice/"
+#define MQTT_GOOD_STATUS "\"status\":200"
+#define MQTT_GOOD_STATUS_STR "\"status\":\"200\""
+#define MQTT_SLASH_SUFFIX "/"
 
 class MqttManager {
 public:
 	MqttManager(SettingsStorage* conf);
 	virtual ~MqttManager(){};
 
-	void init();
+	void init(EntityJsonRequestResponse* buf, bool registered = true);
+	void loop();
 
 	EntityJsonRequestResponse* getBuffer();
 
 	bool publishBuffer();
 private:
 	bool bufferUnsent = false;
-	EntityJsonRequestResponse* buffer = nullptr;
-	PubSubClient* client = nullptr;
+	SettingsStorage* conf;
+	EntityJsonRequestResponse* buffer;
 
-	char* toServerQueue = (char*)"";
-	char* toDeviceQueue = (char*)"";
+	//IPAddress adress;
+	WiFiClient* wclient;
+	PubSubClient* client;
 
-	WiFiClient wclient;
+	boolean initDone = false;
+
+	char* rootUrl = (char*)"";
+	char* dataUrl = (char*)"";
+
+	String toServerTopic;
+	char* fromDeviceTopic;//strdup((String(MQTT_FROM_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
+	char* toDeviceTopic;//strdup((String(MQTT_TO_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
 
 	unsigned long lastReconnectAttempt;
+	unsigned long lastRegisterAttempt;
 
 	bool registered = false;
+	bool serverSubscribed = false;
+	bool serverResponseReceived = false;
+	bool registrationRequestBuilt = false;
 
 	void callback(char* topic, uint8_t* payload, unsigned int length);
 
 	bool connectMqtt();
-	bool sendBuffer();
+
+	bool buildRegistrationRequest();
+	bool sendRegistrationRequest();
+	bool processRegistrationResponse();
+	bool sendDataRequest();
+
+	bool subscribe(char* topic, bool showLog = false);
+	bool publish(char* topic, JsonObject& data, bool showLog = false);
+
+	bool isDataSendEnabled();
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_SERVE_MQTTMANAGER_H_ */

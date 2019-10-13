@@ -31,9 +31,17 @@ bool canLoad, bool canSave) {
 	this->onSetChangedEventFunction = onSetChangedEventFunction;
 }
 
-void Entity::preInitialize(int id, std::function<void(void)> eventProcessFunction) {
+void Entity::preInitialize(int id, std::function<void(void)> eventProcessFunction,
+		std::function<void(const char*, const char*, const char*, JsonVariant)> putToBuffer) {
 	this->id = id;
 	this->eventProcessFunction = eventProcessFunction;
+	this->putToChangedBuffer = putToBuffer;
+}
+
+void Entity::putToBuffer(const char* key, JsonVariant value) {
+	if(putToChangedBuffer!=nullptr){
+		putToChangedBuffer(this->getGroup(), this->getName(), key, value);
+	}
 }
 
 void Entity::setChanged(bool changed, bool forceChanged) {
@@ -133,6 +141,7 @@ void Entity::markEntityAsSaveRequiredIfTrue(bool value){
 }
 
 void Entity::executeGet(JsonObject& params, JsonObject& response) {
+	setJsonField(response, ENTITY_FIELD_ID, this->id);
 	setJsonField(response, ENTITY_FIELD_DESCRIPTION, this->descr);
 	doGet(params, response);
 }
@@ -141,6 +150,9 @@ void Entity::executePost(JsonObject& params, JsonObject& response) {
 	//Serial.println(FPSTR("Execute post"));
 	bool chg = getKeyValueIfExistsAndNotEquals(params, ENTITY_FIELD_DESCRIPTION, &this->descr);
 
+	if(chg){
+		putToBuffer(ENTITY_FIELD_DESCRIPTION, &this->descr);
+	}
 	/*Serial.print(FPSTR("chg"));
 	Serial.print(chg);
 	*/

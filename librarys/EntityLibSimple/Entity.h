@@ -34,7 +34,8 @@ public:
 
 	virtual bool preValidate(){return true;}
 	void preInitialize(int id, std::function<void()> eventProcessFunction =
-			nullptr);
+			nullptr,
+			std::function<void(const char*, const char*, const char*, JsonVariant)> putToBuffer = nullptr);
 
 	virtual bool validate(){return true;}
 	virtual void init() {};
@@ -106,6 +107,8 @@ protected:
 	std::function<void(void)> eventProcessFunction;
 	std::function<void(void)> onSetChangedEventFunction;
 
+	std::function<void(const char*, const char*, const char*, JsonVariant)> putToChangedBuffer;
+
 	template<typename T>
 	T getJsonField(JsonObject& json, const char* key) {
 		return JsonObjectUtil::getField<T>(json, key);
@@ -134,6 +137,8 @@ protected:
 		return JsonObjectUtil::getObjectFieldNotExistsOrNotEquals(json, key,
 				val);
 	}
+
+	void putToBuffer(const char* key, JsonVariant value);
 private:
 	void setChanged(bool changed, bool forceChanged = false);
 

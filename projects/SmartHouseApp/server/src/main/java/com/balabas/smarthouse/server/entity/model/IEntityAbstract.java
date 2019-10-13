@@ -1,5 +1,9 @@
 package com.balabas.smarthouse.server.entity.model;
 
+import java.util.Set;
+
+import com.balabas.smarthouse.server.entity.watcher.IWatcherAbstract;
+
 public interface IEntityAbstract {
 
 	Long getId();
@@ -23,4 +27,8 @@ public interface IEntityAbstract {
 	EntityState getState();
 	void setState(EntityState state);
 	
+	Set<IWatcherAbstract> getWatchers();
+	void setWatchers(Set<IWatcherAbstract> watchers);
+	
+	void watch();
 }

@@ -38,10 +38,14 @@ public:
 
 	virtual void doUpdate() override {
 		uint16_t l = lightMeter->readLightLevel();
-
-		markEntityAsChangedIfTrue(l != this->lux);
+		bool chg = l != this->lux;
+		markEntityAsChangedIfTrue(chg);
 
 		this->lux = l;
+
+		if(chg){
+			putToBuffer(BH1750_LUX, this->lux);
+		}
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {

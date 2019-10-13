@@ -12,15 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.balabas.smarthouse.server.model.Device;
-
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
 public class MqttServiceImpl implements InitializingBean, MqttService {
 	
-	public static final String MQTT_REGISTRATION_TOPIC = "fromDevice/register";
+	public static final String MQTT_TOPIC_REGISTRATION = "fromDevice/register";
+	public static final String MQTT_TOPIC_DATA = "fromDevice/data";
 	public static final String MQTT_TO_DEVICE_TOPIC_TMPL = "toDevice/%s";
 	public static final String MQTT_FROM_DEVICE_TOPIC_TMPL = "fromDevice/%s";
 	
@@ -42,7 +41,7 @@ public class MqttServiceImpl implements InitializingBean, MqttService {
 	private IMqttClient mqClient;
 	
 	@Autowired
-	private Set<MqttMessageSubscriber> subscribers;
+	private Set<IMqttMessageSubscriber> subscribers;
 		
 	
 	@Override
@@ -62,7 +61,7 @@ public class MqttServiceImpl implements InitializingBean, MqttService {
 	}
 
 	@Override
-	public void registerSubscriber(MqttMessageSubscriber subscriber) {
+	public void registerSubscriber(IMqttMessageSubscriber subscriber) {
 		if(!enabled){
 			log.error("Failed register subscriber");
 			return;
@@ -76,16 +75,16 @@ public class MqttServiceImpl implements InitializingBean, MqttService {
 	}
 
 	@Override
-	public String getFromDeviceTopic(Device device) {
-		return String.format(MQTT_FROM_DEVICE_TOPIC_TMPL, device.getDeviceId());
+	public String getFromDeviceTopic(String deviceId) {
+		return String.format(MQTT_FROM_DEVICE_TOPIC_TMPL, deviceId);
 	}
 
 	@Override
-	public String getToDeviceTopic(Device device) {
-		return String.format(MQTT_TO_DEVICE_TOPIC_TMPL, device.getDeviceId());
+	public String getToDeviceTopic(String deviceId) {
+		return String.format(MQTT_TO_DEVICE_TOPIC_TMPL, deviceId);
 	}
 	
-	protected void subscribe(MqttMessageSubscriber subscriber){
+	protected void subscribe(IMqttMessageSubscriber subscriber){
 		try {
 			getClient().subscribe(subscriber.getTopicName(), subscriber);
 		} catch (MqttException e) {

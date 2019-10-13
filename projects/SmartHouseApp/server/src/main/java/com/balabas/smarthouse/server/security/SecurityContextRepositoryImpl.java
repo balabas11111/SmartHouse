@@ -11,11 +11,11 @@ public class SecurityContextRepositoryImpl implements SecurityContextRepository 
 	private Map<String, DeviceSecurityContext> cont = new HashMap<>();
 	
 	@Override
-	public DeviceSecurityContext put(String deviceId, String serverHash, String deviceHash) {
+	public DeviceSecurityContext put(String deviceId, String serverHash, String deviceHash, String serverToken) {
 		DeviceSecurityContext result = get(deviceId);
 		
 		if(result==null){
-			result = new DeviceSecurityContext(serverHash, deviceHash);
+			result = new DeviceSecurityContext(serverHash, deviceHash, serverToken);
 			cont.put(deviceId, result);
 		}else{
 			result.setDeviceKeyHash(deviceHash);

@@ -92,6 +92,7 @@ public:
 
 	void notify(char* group = nullptr, char* name = nullptr, char* param = nullptr, NotificationTarget* notifTarget = nullptr);
 
+	void onServerRegistered();
 private:
 	SettingsStorage* conf = nullptr;
 	WiFiManager* wifiManager = nullptr;
@@ -103,8 +104,9 @@ private:
 	DataSelector* defaultDataSelector = nullptr;
 	Notifier* defaultNotifier = nullptr;
 	DeviceManager deviceManager;
+
 #ifndef SETTINGS_SERVER_MQTT_DISABLED
-	MqttManager* mqttManager = nullptr;
+	MqttManager* mqttManager;
 #endif
 
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED

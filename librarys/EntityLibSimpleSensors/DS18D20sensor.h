@@ -116,12 +116,15 @@ public:
 			Serial.print(nameKey);
 
 			if (JsonObjectUtil::hasField<char*>(params, nameKey.c_str())) {
-				Serial.print(FPSTR(" - found"));
+				//Serial.print(FPSTR(" - found"));
 
 				if (getKeyValueIfExistsAndNotEquals(params, nameKey.c_str(), &items[i].descr)) {
-					Serial.print(FPSTR(" - updated ->"));
-					Serial.println(items[i].descr);
+					/*Serial.print(FPSTR(" - updated ->"));
+					Serial.println(items[i].descr);*/
 					descrChanged = true;
+					if(descrChanged){
+						putToBuffer(nameKey.c_str(), &items[i].descr);
+					}
 				}else{
 					Serial.println();
 				}
@@ -163,6 +166,10 @@ protected:
 				tChanged = true;
 			}
 			items[i].temp = t;
+
+			if(tChanged){
+				putToBuffer(items[i].uidTempKey, t);
+			}
 		}
 
 		if (dispatchChange) {

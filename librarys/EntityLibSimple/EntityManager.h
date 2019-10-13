@@ -75,6 +75,16 @@ public:
 
 	char* getSensorsGroup();
 
+	EntityJsonRequestResponse* getBuffer() {
+		return buffer;
+	}
+
+	void setBuffer(EntityJsonRequestResponse* buffer) {
+		this->buffer = buffer;
+	}
+
+	void putToBuffer(const char* group, const char* name, const char* key, JsonVariant value);
+
 protected:
 	std::list<Entity*> entities;
 	int count=0;
@@ -126,6 +136,8 @@ protected:
 	std::function<void(void)> onEntitiesChanged;
 
 	SettingsStorage* conf;
+
+	EntityJsonRequestResponse* buffer;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYMANAGER_H_ */

@@ -9,7 +9,7 @@
 #define LIBRARIES_ENTITYLIBSIMPLE_SERVE_SERVERCONNECTIONMANAGER_H_
 
 #define SMART_HOUSE_SERVER_URL_BASE "/api/v1"
-#define SMART_HOUSE_SERVER_URL_PING        "/security/online/"
+#define SMART_HOUSE_SERVER_URL_PING        "/security/online?deviceId="
 #define SMART_HOUSE_SERVER_URL_REGISTER        "/security/register/"
 #define SMART_HOUSE_SERVER_URL_ON_DATA_CHANGED "/devices/data/"
 #define SMART_HOUSE_SERVER_URL_ON_DATA_CHANGED_GET "/devices/data?deviceId="
@@ -21,6 +21,7 @@
 #include "SettingsStorage.h"
 #include "DeviceConfig.h"
 #include "DeviceConstants.h"
+#include <functional>
 #include "WiFi/HttpConstants.h"
 #include "EntityJsonRequestResponse.h"
 #include <ESP8266WiFi.h>
@@ -31,7 +32,7 @@ public:
 	ServerConnectionManager(SettingsStorage* conf);
 	virtual ~ServerConnectionManager(){};
 
-	void init();
+	void init(std::function<void(void)> onServerRegistered);
 
 	void triggerServerPing(bool trigger = true);
 	void triggerRegisterOnServer(bool trigger = true);
@@ -100,6 +101,8 @@ private:
 	EntityJsonRequestResponse* buffer;
 
 	uint8_t errorCount = 0;
+
+	std::function<void(void)> onServerRegistered;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_SERVE_SERVERCONNECTIONMANAGER_H_ */

@@ -10,5 +10,5 @@ public interface DeviceControllerService {
 	DeviceRequestResult<String> processDeviceRegistrationRequest(DeviceRequest request);
 
 	DeviceRequestResult<String> processDataChangedOnDeviceRequest(DeviceRequest request, boolean withData);
-
+	
 }

@@ -24,7 +24,8 @@ void EntityManager::registerAndPreInitEntity(Entity* entity) {
 	entity->print();
 
 	entity->preInitialize(this->count,
-								[this]() {markEntitiesAsChanged();});
+								[this]() {markEntitiesAsChanged();},
+								[this](const char* group, const char* name, const char* key, JsonVariant value) {putToBuffer(group, name, key, value);});
 
 	if(entity->preValidate()){
 		this->entities.push_back(entity);
@@ -39,6 +40,7 @@ void EntityManager::registerAndPreInitEntity(Entity* entity) {
 
 void EntityManager::init() {
 	this->conf = conf;
+	this->buffer = new EntityJsonRequestResponse();
 
 	Serial.println(FPSTR("----------------------------------"));
 	Serial.println(FPSTR("Init entityManager"));
@@ -427,3 +429,12 @@ void EntityManager::post(EntityJsonRequestResponse* reqResp) {
 	executeMethod(reqResp->getRequest(),reqResp->getResponse(), REQUEST_POST);
 }
 
+void EntityManager::putToBuffer(const char* group, const char* name,
+		const char* key, JsonVariant value) {
+	if(this->buffer!=nullptr){
+		JsonObject& obj =
+		JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(this->buffer->getResponse(), group, name);
+
+		obj[key] = value;
+	}
+}

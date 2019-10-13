@@ -28,9 +28,6 @@ public class EntityField<T> extends EntityAbstractDescripted implements IEntityF
 	@Getter @Setter
 	private Set<IEntityFieldAlarm> alarms;
 	
-	@Getter @Setter
-	private IEntityFieldChangeListener watcher;
-	
 	public EntityField() {
 		this.clazz = ResolvableType.forClass(EntityField.class).getClass();
 	}
@@ -43,9 +40,7 @@ public class EntityField<T> extends EntityAbstractDescripted implements IEntityF
 		this.valueStr = fromValueToString(value);
 		this.value = value;
 		
-		if(changed && this.watcher!=null) {
-			watcher.dispatch(this);
-		}
+		watch();
 	}
 
 	@Override
@@ -56,9 +51,7 @@ public class EntityField<T> extends EntityAbstractDescripted implements IEntityF
 		this.valueStr = valueStr; 
 		this.value = fromStringToValue(valueStr);
 		
-		if(changed && this.watcher!=null) {
-			watcher.dispatch(this);
-		}
+		watch();
 	}
 	
 	protected T fromStringToValue(String value) throws BadValueException {
