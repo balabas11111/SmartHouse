@@ -56,7 +56,7 @@ public class DeviceEntityDescriptor implements IDeviceEntityDescriptor {
 		IEntityDescriptor descr = descrs.getOrDefault(descrField, null);
 		
 		IDeviceEntityDescriptor result = new DeviceEntityDescriptor(id, name, emoji, descr, descrs);
-		log.info("DeviceEntity descr : " + result);
+		log.debug("DeviceEntity descr : " + result);
 		
 		return result;
 	}

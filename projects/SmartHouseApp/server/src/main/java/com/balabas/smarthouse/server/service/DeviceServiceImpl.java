@@ -158,11 +158,11 @@ public class DeviceServiceImpl implements DeviceService {
 		        device = regDevice.get().updateDevice(device);
 		        
 		        result.setResult(DeviceRegistrationStatus.ALREADY_REGISTERED);
-		        log.info("ReRegistered :" + device.toString());
+		        log.info("ReRegistered :" + device.getDeviceId());
 		        
 		        dispatchEvent(new DeviceEvent(device, REREGISTERED));
 		    }else{
-	    		log.info("Registered :" + device.toString());
+	    		log.info("Registered :" + device.getDeviceId());
 	    		devices.add(device);
 	    		result.setResult(DeviceRegistrationStatus.SUCCESS);
 	    		
