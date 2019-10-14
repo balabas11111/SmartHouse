@@ -11,9 +11,17 @@
 #include "Arduino.h"
 #include "ArduinoJson.h"
 #include "JsonObjectUtil.h"
+#include "Emoji.h"
 
 #define EDC_ENTITY_FIELDS          "f"
 #define EDC_FIELD_ENABLED_VALUES   "val"
+
+#define EDC_FIELD_ID           "i"
+#define EDC_FIELD_NAME         "n"
+#define EDC_FIELD_DESCRIPTION  "d"
+#define EDC_FIELD_ACTION_DESCR "ad"
+#define EDC_FIELD_DESCR_FIELD  "df"
+#define EDC_FIELD_EMOJI        "img"
 
 #define EDC_READ_ONLY    "ro"
 #define EDC_TIME_TO_LIVE "ttl"
@@ -47,81 +55,148 @@
 #define EDC_CLASS_VIEW_BUTTON_BOOLEAN   "btb"
 #define EDC_CLASS_VIEW_BUTTON_OPTIONS   "bto"
 
-#define EDC_FIELD_ID          "i"
-#define EDC_FIELD_NAME        "n"
-#define EDC_FIELD_DESCRIPTION "d"
-
 #define EDC_FIELD_BOOLEAN_VALUE_ON  "true"
 #define EDC_FIELD_BOOLEAN_VALUE_OFF "false"
 
-#define EDC_FIELD_BOOLEAN_VALUE_ON_DESCR       "Включить"
-#define EDC_FIELD_BOOLEAN_VALUE_OFF_DESCR      "Отключить"
-#define EDC_FIELD_BOOLEAN_VALUE_RESTART_DESCR  "Перезапустить"
+#define EDC_DESCR_ON       "Включено"
+#define EDC_DESCR_OFF      "Отключено"
+#define EDC_DESCR_RESTART  "Перезапускаем"
+
+#define EDC_DESCR_ACTION_ON       "Включить"
+#define EDC_DESCR_ACTION_OFF      "Отключить"
+#define EDC_DESCR_ACTION_RESTART  "Перезапустить"
+
+//entities descriptions
+#define EDC_DESCR_SETTINGS      "Настройки"
+#define EDC_DESCR_SENSOR        "Датчик"
+#define EDC_DESCR_SERVICE       "Сервис"
+#define EDC_DESCR_COUNT         "Кол-во датчиков"
+#define EDC_DESCR_TEMPERATURE   "Температура"
+#define EDC_DESCR_HUMIDITY      "Влажность"
+#define EDC_DESCR_ATMPRESSURE   "Атм. давление"
+#define EDC_DESCR_LIGHT_LEVEL   "Освещенность"
+#define EDC_DESCR_STATE         "Состояние"
 
 class EntityDescriptor{
 public:
-	static void appendSwgField(JsonObject& fieldsJson, const char* name,
-			const char* fieldClass,
-			const char* fieldViewClass = EDC_CLASS_VIEW_LABEL, bool readOnly = true, int id =-1) {
+	static void appendSwgEntityField(JsonObject& swgJson, const char* key, const char* value){
+		swgJson[key] = value;
+	}
+
+	static void appendSwgField(JsonObject& swgJson, const char* name,
+			const char* description = nullptr,
+			const char* fieldClass = EDC_CLASS_VIEW_LABEL,
+			const char* fieldViewClass = EDC_CLASS_VIEW_LABEL, bool readOnly = true,
+			const char* emoji = nullptr, int id =-1) {
+
+		JsonObject& fieldsJson =
+				JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(swgJson, EDC_ENTITY_FIELDS);
 		JsonObject& field =
-					JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(fieldsJson, name);
-		if(id>-1){
-			JsonObjectUtil::setField(field, EDC_FIELD_ID, id);
+				JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(fieldsJson, name);
+
+		if(description != nullptr){
+			field[EDC_FIELD_DESCRIPTION]=description;
 		}
-		JsonObjectUtil::setField(field, EDC_CLASS, fieldClass);
-		JsonObjectUtil::setField(field, EDC_CLASS_VIEW, fieldViewClass);
+		field[EDC_CLASS]=fieldClass;
+		field[EDC_CLASS_VIEW]=fieldViewClass;
 		if (readOnly){
-			JsonObjectUtil::setField(field, EDC_READ_ONLY, 1);
+			field[EDC_READ_ONLY]=1;
+		}
+		if (emoji != nullptr){
+			field[EDC_FIELD_EMOJI] =emoji;
+		}
+		if(id>-1){
+			field[EDC_FIELD_ID]=id;
 		}
 	}
 
-	static void appendSwgFieldBooleanCommand(JsonObject& fieldsJson,
-				const char* name, bool readOnly = false,
-				const char* onKey = EDC_FIELD_BOOLEAN_VALUE_ON,
-				const char* onValue = EDC_FIELD_BOOLEAN_VALUE_ON_DESCR) {
+	static void appendSwgEntityParams(JsonObject& swgJson, const char* emoji,
+			const char* descriptionField = EDC_FIELD_DESCRIPTION){
+		appendSwgEntityField(swgJson, EDC_FIELD_EMOJI, emoji);
 
-		appendSwgField(fieldsJson, name, EDC_CLASS_BOOLEAN,
-				(readOnly?EDC_CLASS_VIEW_LABEL:EDC_CLASS_VIEW_BUTTON_COMMAND), readOnly);
-
-		appendEnabledValue(fieldsJson, name, onKey, onValue);
+		if(descriptionField != nullptr){
+			appendSwgEntityField(swgJson, EDC_FIELD_DESCR_FIELD, descriptionField);
+		}
 	}
 
-	static void appendSwgFieldBooleanOnOff(JsonObject& fieldsJson,
-				const char* name, bool readOnly = false,
+	static void appendSwgFieldBooleanCommand(JsonObject& swgJson,
+				const char* name,
+				const char* description = nullptr,
+				bool readOnly = false,
+				const char* emoji = nullptr,
+				const char* onKey = EDC_FIELD_BOOLEAN_VALUE_ON,
+				const char* onDescription = EDC_DESCR_ON,
+				const char* onActionDescription = EDC_DESCR_ACTION_ON,
+				const char* onEmoji = EMOJI_DIM_BUTTON) {
+
+		appendSwgField(swgJson, name, description, EDC_CLASS_BOOLEAN,
+				(readOnly?EDC_CLASS_VIEW_LABEL:EDC_CLASS_VIEW_BUTTON_COMMAND), readOnly, emoji);
+
+		appendEnabledValue(swgJson, name, onKey, onDescription, onActionDescription, onEmoji);
+	}
+
+	static void appendSwgFieldBooleanOnOff(JsonObject& swgJson,
+				const char* name,
+				const char* description = nullptr,
+				const char* emoji =nullptr,
+				bool readOnly = false,
 				const char* onKey = EDC_FIELD_BOOLEAN_VALUE_ON,
 				const char* offKey = EDC_FIELD_BOOLEAN_VALUE_OFF,
-				const char* onValue = EDC_FIELD_BOOLEAN_VALUE_ON_DESCR,
-				const char* offValue = EDC_FIELD_BOOLEAN_VALUE_OFF_DESCR) {
-		appendSwgField(fieldsJson, name, EDC_CLASS_BOOLEAN,
-				(readOnly?EDC_CLASS_VIEW_LABEL:EDC_CLASS_VIEW_BUTTON_BOOLEAN), readOnly);
+				const char* onDescription = EDC_DESCR_ON,
+				const char* offDescription = EDC_DESCR_OFF,
+				const char* onActionDescription = EDC_DESCR_ACTION_OFF,
+				const char* offActionDescription = EDC_DESCR_ACTION_ON,
+				const char* onEmoji = EMOJI_DIM_BUTTON,
+				const char* offEmoji = EMOJI_RADIO_BUTTON) {
 
-		appendEnabledValue(fieldsJson, name, onKey, onValue);
-		appendEnabledValue(fieldsJson, name, offKey, offValue);
+		appendSwgField(swgJson, name, description, EDC_CLASS_BOOLEAN,
+				(readOnly?EDC_CLASS_VIEW_LABEL:EDC_CLASS_VIEW_BUTTON_BOOLEAN), readOnly, emoji);
+
+		appendEnabledValue(swgJson, name, onKey, onDescription, onActionDescription, onEmoji);
+		appendEnabledValue(swgJson, name, offKey, offDescription, offActionDescription, offEmoji);
 	}
 
-	static void appendSwgFieldInteger(JsonObject& fieldsJson,
-					const char* name, bool readOnly = true) {
-		appendSwgField(fieldsJson, name, EDC_CLASS_INTEGER,
-				(readOnly?EDC_CLASS_VIEW_LABEL:EDC_CLASS_VIEW_INPUT), readOnly);
+	static void appendSwgFieldInteger(JsonObject& swgJson,
+					const char* name, const char* description = nullptr,
+					const char* emoji = nullptr, bool readOnly = true) {
+
+		appendSwgField(swgJson, name, description, EDC_CLASS_INTEGER,
+				(readOnly?EDC_CLASS_VIEW_LABEL:EDC_CLASS_VIEW_INPUT), readOnly, emoji);
 	}
 
-	static void appendSwgFieldFloat(JsonObject& fieldsJson,
-			const char* name, bool readOnly = true) {
-		appendSwgField(fieldsJson, name, EDC_CLASS_FLOAT,
-				(readOnly?EDC_CLASS_VIEW_LABEL:EDC_CLASS_VIEW_INPUT), readOnly);
+	static void appendSwgFieldFloat(JsonObject& swgJson,
+			const char* name, const char* description = nullptr,
+			const char* emoji = nullptr, bool readOnly = true) {
+
+		appendSwgField(swgJson, name, description, EDC_CLASS_FLOAT,
+				(readOnly?EDC_CLASS_VIEW_LABEL:EDC_CLASS_VIEW_INPUT), readOnly, emoji);
 	}
 
-	static void appendSwgFieldString(JsonObject& fieldsJson,
-			const char* name, bool readOnly = false) {
-		appendSwgField(fieldsJson, name, EDC_CLASS_STRING,
-				(readOnly?EDC_CLASS_VIEW_LABEL:EDC_CLASS_VIEW_INPUT), readOnly);
+	static void appendSwgFieldString(JsonObject& swgJson,
+			const char* name, const char* description = nullptr,
+			const char* emoji = nullptr, bool readOnly = false) {
+
+		appendSwgField(swgJson, name, description, EDC_CLASS_STRING,
+				(readOnly?EDC_CLASS_VIEW_LABEL:EDC_CLASS_VIEW_INPUT), readOnly, emoji);
 	}
 
-	static void appendEnabledValue(JsonObject& fieldsJson, const char* name, const char* key, const char* value) {
-		JsonObject& enabledValuesJson =
-				JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(fieldsJson, name, EDC_FIELD_ENABLED_VALUES);
+	static void appendEnabledValue(JsonObject& swgJson,
+			const char* name,
+			const char* key, const char* description, const char* actionDescription,
+			const char* emoji = nullptr) {
 
-		enabledValuesJson[key] = value;
+		JsonObject& enabledValue =
+			JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(
+						JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(swgJson, EDC_ENTITY_FIELDS, name)
+						, EDC_FIELD_ENABLED_VALUES, key);
+
+		if(description != nullptr){
+			enabledValue[EDC_FIELD_DESCRIPTION] = description;
+		}
+		enabledValue[EDC_FIELD_ACTION_DESCR] = actionDescription;
+		if(emoji != nullptr){
+			enabledValue[EDC_FIELD_EMOJI] = emoji;
+		}
 	}
 };
 

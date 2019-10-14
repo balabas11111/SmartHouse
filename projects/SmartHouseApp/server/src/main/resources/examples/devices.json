@@ -1,0 +1,820 @@
+[
+	{
+		"deviceId": "ESP_962570",
+		"deviceFirmware": "EntityLib dev device",
+		"deviceDescr": "Тестовое устройство",
+		"ip": "192.168.0.106",
+		"dataUrl": "http://192.168.0.106/data",
+		"rootUrl": "http://192.168.0.106/",
+		"state": "CONNECTED",
+		"groups": [
+			{
+				"deviceId": "ESP_962570",
+				"name": "sensors",
+				"entities": [
+					{
+						"entityRenderer": "DEFAULT",
+						"deviceId": "ESP_962570",
+						"name": "dht22",
+						"description": "Микроклимат воздуха DHT",
+						"parentName": null,
+						"values": {
+							"t": "24",
+							"h": "62",
+							"id": "3"
+						},
+						"descriptor": {
+							"remoteId": 3,
+							"name": "dht22",
+							"emoji": "SUN_CLOUD",
+							"descriptionDescriptor": {
+								"id": 0,
+								"parentId": 0,
+								"rootId": 0,
+								"name": "d",
+								"description": "Датчик",
+								"path": null,
+								"state": "NONE",
+								"watchers": [
+								],
+								"remoteId": -1,
+								"entityClassType": "STRING",
+								"entityClassView": "EDC_CLASS_VIEW_INPUT",
+								"timeToLive": 60000,
+								"readOnly": false,
+								"emoji": null,
+								"enabledValues": {
+								}
+							},
+							"descriptors": {
+								"d": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "d",
+									"description": "Датчик",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "STRING",
+									"entityClassView": "EDC_CLASS_VIEW_INPUT",
+									"timeToLive": 60000,
+									"readOnly": false,
+									"emoji": null,
+									"enabledValues": {
+									}
+								},
+								"t": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "t",
+									"description": "Температура",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "FLOAT",
+									"entityClassView": "EDC_CLASS_VIEW_LABEL",
+									"timeToLive": 60000,
+									"readOnly": true,
+									"emoji": "THERMOMETER",
+									"enabledValues": {
+									}
+								},
+								"h": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "h",
+									"description": "Влажность",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "FLOAT",
+									"entityClassView": "EDC_CLASS_VIEW_LABEL",
+									"timeToLive": 60000,
+									"readOnly": true,
+									"emoji": "DROPLET",
+									"enabledValues": {
+									}
+								}
+							}
+						},
+						"data": {
+							"empty": false
+						},
+						"groupName": "sensors",
+						"sensorItems": null,
+						"topicSend": false
+					},
+					{
+						"entityRenderer": "DEFAULT",
+						"deviceId": "ESP_962570",
+						"name": "ds18d20",
+						"description": "Температура пола",
+						"parentName": null,
+						"values": {
+							"0:d": "00000000",
+							"0:t": "40",
+							"id": "4",
+							"1:d": "00000001",
+							"1:t": "26",
+							"2:d": "00000002",
+							"2:t": "33"
+						},
+						"descriptor": {
+							"remoteId": 4,
+							"name": "ds18d20",
+							"emoji": "THERMOMETER",
+							"descriptionDescriptor": {
+								"id": 0,
+								"parentId": 0,
+								"rootId": 0,
+								"name": "d",
+								"description": "Датчик",
+								"path": null,
+								"state": "NONE",
+								"watchers": [
+								],
+								"remoteId": -1,
+								"entityClassType": "STRING",
+								"entityClassView": "EDC_CLASS_VIEW_INPUT",
+								"timeToLive": 60000,
+								"readOnly": false,
+								"emoji": null,
+								"enabledValues": {
+								}
+							},
+							"descriptors": {
+								"d": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "d",
+									"description": "Датчик",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "STRING",
+									"entityClassView": "EDC_CLASS_VIEW_INPUT",
+									"timeToLive": 60000,
+									"readOnly": false,
+									"emoji": null,
+									"enabledValues": {
+									}
+								},
+								"0:d": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "0:d",
+									"description": "",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "STRING",
+									"entityClassView": "EDC_CLASS_VIEW_INPUT",
+									"timeToLive": 60000,
+									"readOnly": false,
+									"emoji": null,
+									"enabledValues": {
+									}
+								},
+								"0:t": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "0:t",
+									"description": "",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "FLOAT",
+									"entityClassView": "EDC_CLASS_VIEW_LABEL",
+									"timeToLive": 60000,
+									"readOnly": true,
+									"emoji": null,
+									"enabledValues": {
+									}
+								},
+								"1:d": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "1:d",
+									"description": "",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "STRING",
+									"entityClassView": "EDC_CLASS_VIEW_INPUT",
+									"timeToLive": 60000,
+									"readOnly": false,
+									"emoji": null,
+									"enabledValues": {
+									}
+								},
+								"1:t": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "1:t",
+									"description": "",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "FLOAT",
+									"entityClassView": "EDC_CLASS_VIEW_LABEL",
+									"timeToLive": 60000,
+									"readOnly": true,
+									"emoji": null,
+									"enabledValues": {
+									}
+								},
+								"2:d": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "2:d",
+									"description": "",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "STRING",
+									"entityClassView": "EDC_CLASS_VIEW_INPUT",
+									"timeToLive": 60000,
+									"readOnly": false,
+									"emoji": null,
+									"enabledValues": {
+									}
+								},
+								"2:t": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "2:t",
+									"description": "",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "FLOAT",
+									"entityClassView": "EDC_CLASS_VIEW_LABEL",
+									"timeToLive": 60000,
+									"readOnly": true,
+									"emoji": null,
+									"enabledValues": {
+									}
+								}
+							}
+						},
+						"data": {
+							"empty": false
+						},
+						"groupName": "sensors",
+						"sensorItems": [
+						],
+						"topicSend": false
+					},
+					{
+						"entityRenderer": "TOGGLE_BUTTON",
+						"deviceId": "ESP_962570",
+						"name": "built In LED",
+						"description": "Диод на плате",
+						"parentName": null,
+						"values": {
+							"id": "2",
+							"on": "true"
+						},
+						"descriptor": {
+							"remoteId": 2,
+							"name": "built In LED",
+							"emoji": "BULB",
+							"descriptionDescriptor": {
+								"id": 0,
+								"parentId": 0,
+								"rootId": 0,
+								"name": "d",
+								"description": "Датчик",
+								"path": null,
+								"state": "NONE",
+								"watchers": [
+								],
+								"remoteId": -1,
+								"entityClassType": "STRING",
+								"entityClassView": "EDC_CLASS_VIEW_INPUT",
+								"timeToLive": 60000,
+								"readOnly": false,
+								"emoji": null,
+								"enabledValues": {
+								}
+							},
+							"descriptors": {
+								"d": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "d",
+									"description": "Датчик",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "STRING",
+									"entityClassView": "EDC_CLASS_VIEW_INPUT",
+									"timeToLive": 60000,
+									"readOnly": false,
+									"emoji": null,
+									"enabledValues": {
+									}
+								},
+								"on": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "on",
+									"description": "",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "BOOLEAN",
+									"entityClassView": "EDC_CLASS_VIEW_BUTTON_BOOLEAN",
+									"timeToLive": 60000,
+									"readOnly": false,
+									"emoji": null,
+									"enabledValues": {
+										"true": {
+											"key": "true",
+											"description": "Включено",
+											"actionDescription": "Отключить",
+											"emoji": "DIM_BUTTON"
+										},
+										"false": {
+											"key": "false",
+											"description": "Отключено",
+											"actionDescription": "Включить",
+											"emoji": "RADIO_BUTTON"
+										}
+									}
+								}
+							}
+						},
+						"data": {
+							"empty": false
+						},
+						"groupName": "sensors",
+						"sensorItems": null,
+						"topicSend": false
+					},
+					{
+						"entityRenderer": "DEFAULT",
+						"deviceId": "ESP_962570",
+						"name": "bh1750",
+						"description": "Уровень освещения",
+						"parentName": null,
+						"values": {
+							"id": "1",
+							"l": "1196"
+						},
+						"descriptor": {
+							"remoteId": 1,
+							"name": "bh1750",
+							"emoji": "SUN_WITH_FACE",
+							"descriptionDescriptor": {
+								"id": 0,
+								"parentId": 0,
+								"rootId": 0,
+								"name": "d",
+								"description": "Датчик",
+								"path": null,
+								"state": "NONE",
+								"watchers": [
+								],
+								"remoteId": -1,
+								"entityClassType": "STRING",
+								"entityClassView": "EDC_CLASS_VIEW_INPUT",
+								"timeToLive": 60000,
+								"readOnly": false,
+								"emoji": null,
+								"enabledValues": {
+								}
+							},
+							"descriptors": {
+								"d": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "d",
+									"description": "Датчик",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "STRING",
+									"entityClassView": "EDC_CLASS_VIEW_INPUT",
+									"timeToLive": 60000,
+									"readOnly": false,
+									"emoji": null,
+									"enabledValues": {
+									}
+								},
+								"l": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "l",
+									"description": "Освещенность",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "FLOAT",
+									"entityClassView": "EDC_CLASS_VIEW_LABEL",
+									"timeToLive": 60000,
+									"readOnly": true,
+									"emoji": "DIM_BUTTON",
+									"enabledValues": {
+									}
+								}
+							}
+						},
+						"data": {
+							"empty": false
+						},
+						"groupName": "sensors",
+						"sensorItems": null,
+						"topicSend": false
+					},
+					{
+						"entityRenderer": "DEFAULT",
+						"deviceId": "ESP_962570",
+						"name": "bme280",
+						"description": "Микроклимат воздуха",
+						"parentName": null,
+						"values": {
+							"p": "100522",
+							"t": "22",
+							"h": "55",
+							"id": "0"
+						},
+						"descriptor": {
+							"remoteId": 0,
+							"name": "bme280",
+							"emoji": "SUN_CLOUD_RAIN",
+							"descriptionDescriptor": {
+								"id": 0,
+								"parentId": 0,
+								"rootId": 0,
+								"name": "d",
+								"description": "Датчик",
+								"path": null,
+								"state": "NONE",
+								"watchers": [
+								],
+								"remoteId": -1,
+								"entityClassType": "STRING",
+								"entityClassView": "EDC_CLASS_VIEW_INPUT",
+								"timeToLive": 60000,
+								"readOnly": false,
+								"emoji": null,
+								"enabledValues": {
+								}
+							},
+							"descriptors": {
+								"p": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "p",
+									"description": "Атм. давление",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "FLOAT",
+									"entityClassView": "EDC_CLASS_VIEW_LABEL",
+									"timeToLive": 60000,
+									"readOnly": true,
+									"emoji": "ARROW_DOWN",
+									"enabledValues": {
+									}
+								},
+								"d": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "d",
+									"description": "Датчик",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "STRING",
+									"entityClassView": "EDC_CLASS_VIEW_INPUT",
+									"timeToLive": 60000,
+									"readOnly": false,
+									"emoji": null,
+									"enabledValues": {
+									}
+								},
+								"t": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "t",
+									"description": "Температура",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "FLOAT",
+									"entityClassView": "EDC_CLASS_VIEW_LABEL",
+									"timeToLive": 60000,
+									"readOnly": true,
+									"emoji": "THERMOMETER",
+									"enabledValues": {
+									}
+								},
+								"h": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "h",
+									"description": "Влажность",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "FLOAT",
+									"entityClassView": "EDC_CLASS_VIEW_LABEL",
+									"timeToLive": 60000,
+									"readOnly": true,
+									"emoji": "DROPLET",
+									"enabledValues": {
+									}
+								}
+							}
+						},
+						"data": {
+							"empty": false
+						},
+						"groupName": "sensors",
+						"sensorItems": null,
+						"topicSend": false
+					}
+				],
+				"groupType": "SENSORS",
+				"timeToUpdate": false
+			},
+			{
+				"deviceId": "ESP_962570",
+				"name": "settings",
+				"entities": [
+					{
+						"entityRenderer": "DEFAULT",
+						"deviceId": "ESP_962570",
+						"name": "DeviceSettings",
+						"description": "Wifi Server Device settings",
+						"parentName": null,
+						"values": {
+							"subnet": "255,255,255,0",
+							"smrtServAddr": "192.168.0.103",
+							"dns2": "192,168,0,1",
+							"isAp": "false",
+							"adminPass": "******",
+							"deviceId": "ESP_962570",
+							"deviceDescr": "Тестовое устройство",
+							"ssid": "balabasKiev5",
+							"smrtServKey": "******",
+							"deviceFirmware": "EntityLib dev device",
+							"id": "5",
+							"isStatIp": "false",
+							"disStIfCon": "false",
+							"pass": "******",
+							"ip": "192,168,0,120",
+							"ipAP": "192,168,0,4",
+							"userPass": "******",
+							"dns": "192,168,0,1",
+							"apMC": "4",
+							"ssidAP": "ESP_962570",
+							"passAP": "******",
+							"adminLogin": "admin",
+							"userLogin": "",
+							"apH": "0",
+							"apCH": "1",
+							"interval": "20",
+							"gateway": "192,168,0,1"
+						},
+						"descriptor": {
+							"remoteId": 5,
+							"name": "DeviceSettings",
+							"emoji": null,
+							"descriptionDescriptor": {
+								"id": 0,
+								"parentId": 0,
+								"rootId": 0,
+								"name": "d",
+								"description": "Настройки",
+								"path": null,
+								"state": "NONE",
+								"watchers": [
+								],
+								"remoteId": -1,
+								"entityClassType": "STRING",
+								"entityClassView": "EDC_CLASS_VIEW_INPUT",
+								"timeToLive": 60000,
+								"readOnly": false,
+								"emoji": null,
+								"enabledValues": {
+								}
+							},
+							"descriptors": {
+								"d": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "d",
+									"description": "Настройки",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "STRING",
+									"entityClassView": "EDC_CLASS_VIEW_INPUT",
+									"timeToLive": 60000,
+									"readOnly": false,
+									"emoji": null,
+									"enabledValues": {
+									}
+								}
+							}
+						},
+						"data": {
+							"empty": false
+						},
+						"groupName": "settings",
+						"sensorItems": null,
+						"topicSend": false
+					}
+				],
+				"groupType": "SETTINGS",
+				"timeToUpdate": false
+			},
+			{
+				"deviceId": "ESP_962570",
+				"name": "services",
+				"entities": [
+					{
+						"entityRenderer": "DEFAULT",
+						"deviceId": "ESP_962570",
+						"name": "DeviceManager",
+						"description": "ESP8266 DeviceManager",
+						"parentName": null,
+						"values": {
+							"restart": "false",
+							"id": "6"
+						},
+						"descriptor": {
+							"remoteId": 6,
+							"name": "DeviceManager",
+							"emoji": null,
+							"descriptionDescriptor": {
+								"id": 0,
+								"parentId": 0,
+								"rootId": 0,
+								"name": "d",
+								"description": "Сервис",
+								"path": null,
+								"state": "NONE",
+								"watchers": [
+								],
+								"remoteId": -1,
+								"entityClassType": "STRING",
+								"entityClassView": "EDC_CLASS_VIEW_INPUT",
+								"timeToLive": 60000,
+								"readOnly": false,
+								"emoji": null,
+								"enabledValues": {
+								}
+							},
+							"descriptors": {
+								"d": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "d",
+									"description": "Сервис",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "STRING",
+									"entityClassView": "EDC_CLASS_VIEW_INPUT",
+									"timeToLive": 60000,
+									"readOnly": false,
+									"emoji": null,
+									"enabledValues": {
+									}
+								},
+								"restart": {
+									"id": 0,
+									"parentId": 0,
+									"rootId": 0,
+									"name": "restart",
+									"description": "",
+									"path": null,
+									"state": "NONE",
+									"watchers": [
+									],
+									"remoteId": -1,
+									"entityClassType": "BOOLEAN",
+									"entityClassView": "EDC_CLASS_VIEW_BUTTON_COMMAND",
+									"timeToLive": 60000,
+									"readOnly": false,
+									"emoji": null,
+									"enabledValues": {
+										"true": {
+											"key": "true",
+											"description": "Перезапускаем",
+											"actionDescription": "Перезапустить",
+											"emoji": "DIM_BUTTON"
+										}
+									}
+								}
+							}
+						},
+						"data": {
+							"empty": false
+						},
+						"groupName": "services",
+						"sensorItems": null,
+						"topicSend": false
+					}
+				],
+				"groupType": "SERVICES",
+				"timeToUpdate": false
+			},
+			{
+				"deviceId": "ESP_962570",
+				"name": "device",
+				"entities": [
+					{
+						"entityRenderer": "DEFAULT",
+						"deviceId": "ESP_962570",
+						"name": "info",
+						"description": null,
+						"parentName": null,
+						"values": {
+							"deviceFirmware": "EntityLib dev device",
+							"deviceId": "ESP_962570",
+							"deviceDescr": "Тестовое устройство"
+						},
+						"descriptor": null,
+						"data": {
+							"empty": false
+						},
+						"groupName": "device",
+						"sensorItems": null,
+						"topicSend": false
+					}
+				],
+				"groupType": "DEVICE",
+				"timeToUpdate": false
+			}
+		],
+		"name": "ESP_962570",
+		"registered": true,
+		"description": "Тестовое устройство",
+		"initialDataReceived": true
+	}
+]

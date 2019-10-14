@@ -16,4 +16,5 @@ public interface IDeviceMessageService {
 	
 	void subscribeFromDeviceEntityTopic(DeviceEntity entity);
 	
+	void onDeviceEntityDataReceived(DeviceEntity entity, String message);
 }

@@ -28,6 +28,7 @@
 #define GROUP_DEVICE "device"
 
 #define ENTITY_FIELD_DESCRIPTION "d"
+#define ENTITY_FIELD_FIELDS_ARRAY "fa"
 #define ENTITY_FIELD_SENSOR_ITEMS "si"
 #define ENTITY_FIELD_ITEM_CLASS "ic"
 

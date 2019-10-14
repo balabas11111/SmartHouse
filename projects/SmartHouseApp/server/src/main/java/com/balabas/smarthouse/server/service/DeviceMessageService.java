@@ -41,11 +41,14 @@ public class DeviceMessageService implements IDeviceMessageService {
 
 	@Autowired
 	private IMessageService messageService;
+	
+	@Autowired
+	private DeviceService deviceService;
 
 	@Override
 	public boolean onRegistrationTopicMessageReceived(String message) {
 		try {
-			log.info("processRegistrationRequest " + message);
+			log.info("register Device MQ " + message);
 			JSONObject requestJson = new JSONObject(message);
 			
 			if (requestJson.has(ENTITY_FIELD_ID) && requestJson.has(ENTITY_FIELD_IP)) {
@@ -122,7 +125,7 @@ public class DeviceMessageService implements IDeviceMessageService {
 	@Override
 	public void subscribeFromDeviceEntityTopic(DeviceEntity entity) {
 		String topicName = messageService.getFromDeviceEntityTopicId(entity.getDeviceId(), entity.getName());
-		messageService.registerSubscriberOrResubscribeExisting(new DataEntitySubscribtion(topicName, entity));
+		messageService.registerSubscriberOrResubscribeExisting(new DataEntitySubscribtion(topicName, entity, this));
 	}
 
 	protected JSONObject constructRegisterResponse(String deviceId) {
@@ -138,6 +141,27 @@ public class DeviceMessageService implements IDeviceMessageService {
 		}
 
 		return result;
+	}
+
+	@Override
+	public void onDeviceEntityDataReceived(DeviceEntity entity, String message) {
+		try {
+			JSONObject messageJson = new JSONObject(message);
+			
+			if(messageJson != null && !messageJson.isEmpty()) {
+				
+				JSONObject data = new JSONObject()
+						.put(entity.getGroupName(), 
+								new JSONObject().put(entity.getName(), messageJson));
+				
+				log.debug("MQ Data received : " + data);
+				
+				deviceService.processDataReceivedFromDevice(entity.getDeviceId(), data);
+			}
+			
+		}catch(Exception e) {
+			log.error(e);
+		}
 	}
 
 }

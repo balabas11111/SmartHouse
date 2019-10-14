@@ -51,8 +51,10 @@ public:
 		setJsonField(response, ENTITY_FIELD_ITEM_CLASS,ENTITY_ITEM_CLASS_TOOGLE_BUTTON);
 	}
 
-	virtual void doAppendFieldsSwg(JsonObject& fieldsJson) override{
-		EntityDescriptor::appendSwgFieldBooleanOnOff(fieldsJson, ON_FIELD);
+	virtual void doAppendFieldsSwg(JsonObject& swgJson) override{
+		EntityDescriptor::appendSwgEntityParams(swgJson, EMOJI_BULB);
+
+		EntityDescriptor::appendSwgFieldBooleanOnOff(swgJson, ON_FIELD);
 	}
 
 	virtual void doPost(JsonObject& params, JsonObject& response) override {

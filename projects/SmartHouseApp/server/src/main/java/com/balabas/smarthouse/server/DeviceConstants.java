@@ -33,6 +33,8 @@ public class DeviceConstants {
 	public static final String ENTITY_FIELD_STATUS = "status";
 	public static final String ENTITY_FIELD_DESCRIPTION = "d";
 	public static final String ENTITY_FIELD_SENSOR_ITEMS = "si";
+	public static final String ENTITY_FIELD_FIELDS_ARRAY = "fa";
+	public static final String ENTITY_FIELD_KEYS_ARRAY = "ka";
 	public static final String ENTITY_FIELD_ITEM_CLASS = "ic";
 	
 	public static final String ENTITY_FIELD_ID = "id";
@@ -40,6 +42,7 @@ public class DeviceConstants {
 	public static final String ENTITY_FIELD_ROOT = "root";
 	public static final String ENTITY_FIELD_DATA = "data";
 	public static final String ENTITY_FIELD_SWG = "swg";
+	public static final String ENTITY_FIELD_COUNT = "c";
 	
 	public static final String ENTITY_FIELD_SWG_EQ_1 = "?swg=1";
 	//Entity standard key names

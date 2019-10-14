@@ -10,7 +10,8 @@ public interface IEntityDescriptor extends IEntityAbstract {
 	EntityClassView getEntityClassView();
 	Long getTimeToLive();
 	boolean isReadOnly();
-	Map<String, String> getEnabledValues();
+	Map<String, IFieldEnabledValue> getEnabledValues();
+	Emoji getEmoji();
 	/*
 	EntityClassEditors getEntityClassEditor();
 	EntityClassSubstance getEntityClassSubstance();

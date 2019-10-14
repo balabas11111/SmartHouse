@@ -13,10 +13,12 @@ void DeviceManager::doGet(JsonObject& params, JsonObject& response) {
 	//response[DEVICE_MANAGER_FIELD_FREE_HEAP] = ESP.getFreeHeap();
 }
 
-void DeviceManager::doAppendFieldsSwg(JsonObject& fieldsJson){
-	EntityDescriptor::appendSwgFieldBooleanCommand(fieldsJson,
-			DEVICE_MANAGER_FIELD_RESTART,
-			false, EDC_FIELD_BOOLEAN_VALUE_ON, EDC_FIELD_BOOLEAN_VALUE_RESTART_DESCR);
+void DeviceManager::doAppendFieldsSwg(JsonObject& swgJson){
+	EntityDescriptor::appendSwgFieldString(swgJson, ENTITY_FIELD_DESCRIPTION, EDC_DESCR_SERVICE);
+
+	EntityDescriptor::appendSwgFieldBooleanCommand(swgJson,
+			DEVICE_MANAGER_FIELD_RESTART, nullptr,
+			false, nullptr, EDC_FIELD_BOOLEAN_VALUE_ON, EDC_DESCR_RESTART, EDC_DESCR_ACTION_RESTART);
 }
 
 void DeviceManager::doPost(JsonObject& params, JsonObject& response) {

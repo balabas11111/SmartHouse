@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 
 import org.json.JSONObject;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -45,14 +47,17 @@ public class Group implements SmartHouseItem, JsonDataContainer {
     
     private String name;
     
+    @JsonIgnore
     private String description;
     
     private Set<DeviceEntity> entities;
     
+    @JsonIgnore
     private JSONObject data;
     
     private GroupType groupType;
     
+    @JsonIgnore
     private UpdateTimer timer;
     
     public Group(String deviceId, String name,JSONObject data){

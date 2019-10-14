@@ -17,6 +17,7 @@
 #include <Wire.h>
 #include <BH1750.h>
 #include <Bh1750Mock.h>
+#include "Emoji.h"
 
 
 //---------------------------------------
@@ -54,8 +55,10 @@ public:
 		response[BH1750_LUX] = this->lux;
 	}
 
-	virtual void doAppendFieldsSwg(JsonObject& fieldsJson) override{
-		EntityDescriptor::appendSwgFieldFloat(fieldsJson, BH1750_LUX);
+	virtual void doAppendFieldsSwg(JsonObject& swgJson) override{
+		EntityDescriptor::appendSwgEntityParams(swgJson, EMOJI_SUN_WITH_FACE);
+
+		EntityDescriptor::appendSwgFieldFloat(swgJson, BH1750_LUX, EDC_DESCR_LIGHT_LEVEL, EMOJI_DIM_BUTTON);
 	}
 
 protected:

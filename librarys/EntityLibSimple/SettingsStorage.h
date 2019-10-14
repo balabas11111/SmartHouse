@@ -76,6 +76,8 @@
 #include "Hash.h"
 #include <DeviceConfig.h>
 #include <DeviceConstants.h>
+#include <EntityDescriptor.h>
+#include "Emoji.h"
 #include "functional"
 
 class SettingsStorage: public Entity {
@@ -263,6 +265,10 @@ public:
 		itemsToJson(response, true);
 	}
 
+	void doAppendFieldsSwg(JsonObject& swgJson){
+		EntityDescriptor::appendSwgFieldString(swgJson, ENTITY_FIELD_DESCRIPTION, EDC_DESCR_SETTINGS);
+	}
+
 	virtual void doPost(JsonObject& params, JsonObject& response) override {
 		UNUSED(response);
 		markEntityAsChangedIfTrue(jsonToItems(params));
@@ -282,6 +288,11 @@ public:
 		JsonObjectUtil::setField(info, _DEVICE_ID, deviceId());
 		JsonObjectUtil::setField(info, _DEVICE_FIRMWARE, deviceFirmWare());
 		JsonObjectUtil::setField(info, _DEVICE_DESCR, deviceDescr());
+#ifndef SETTINGS_DEVICE_EMOJI
+		JsonObjectUtil::setField(info, EDC_FIELD_EMOJI, EMOJI_PAGER);
+#else
+		JsonObjectUtil::setField(info, EDC_FIELD_EMOJI, SETTINGS_DEVICE_EMOJI);
+#endif
 	}
 	const String& getServerAuthorization() const {
 		return serverAuthorization;

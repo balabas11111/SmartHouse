@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.model.DeviceEntity;
 import com.balabas.smarthouse.server.model.EntityClass;
 import com.balabas.smarthouse.server.view.Action;
-import com.balabas.smarthouse.telegram.bot.message.Emoji;
 import com.balabas.smarthouse.telegram.bot.message.InlineKeyboardBuilder;
 import com.balabas.smarthouse.telegram.bot.message.ReplyContext;
 

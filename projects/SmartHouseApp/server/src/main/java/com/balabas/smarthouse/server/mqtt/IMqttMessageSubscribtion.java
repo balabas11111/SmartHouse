@@ -6,5 +6,5 @@ public interface IMqttMessageSubscribtion extends IMqttMessageListener {
 
 	String getTopicName();
 	
-	boolean onMessageReceived(String topic, String message);
+	void onMessageReceived(String topic, String message);
 }

@@ -20,6 +20,7 @@ import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassC
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_FIELD_NAME;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_FIELD_ENABLED_VALUES;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_FIELD_ID;
+import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_FIELD_EMOJI;
 
 import org.json.JSONObject;
 import org.springframework.util.StringUtils;
@@ -56,7 +57,9 @@ public class EntityDescriptor extends EntityAbstract implements IEntityDescripto
 	@Getter
 	private boolean readOnly;
 	@Getter
-	private Map<String, String> enabledValues;
+	private Emoji emoji;
+	@Getter
+	private Map<String, IFieldEnabledValue> enabledValues;
 	
 	protected boolean validate() {
 		
@@ -68,7 +71,7 @@ public class EntityDescriptor extends EntityAbstract implements IEntityDescripto
 			return Collections.emptyMap();
 		}
 		
-		log.info("Parse fieldsJson : " + fieldsJson.toString());
+		log.debug("Parse fieldsJson : " + fieldsJson.toString());
 		
 		Map<String, IEntityDescriptor> result = new HashMap<>();
 		
@@ -95,10 +98,12 @@ public class EntityDescriptor extends EntityAbstract implements IEntityDescripto
 			JSONObject fieldEnabledValues =
 					Optional.ofNullable(dJson.optJSONObject(EDC_FIELD_ENABLED_VALUES)).orElse(new JSONObject());
 			
-			Map<String, String> enabledVals = 
-					Optional.ofNullable(fieldEnabledValues.optJSONObject(nameOver)).orElse(new JSONObject())
-					.toMap().entrySet().stream()
-					.collect(Collectors.toMap(Map.Entry::getKey, e -> (String)e.getValue()));
+			Map<String, IFieldEnabledValue> enabledVals = 
+					fieldEnabledValues.toMap().entrySet().stream()
+					.collect(Collectors.toMap(Map.Entry::getKey, e -> FieldEnabledValue.fromJson(e.getKey(), (Object)e.getValue())))
+					.entrySet().stream().filter(e -> (e.getKey() != null && e.getValue() != null))
+					.collect(Collectors.toMap(Map.Entry::getKey, e -> (IFieldEnabledValue) e.getValue()));
+					
 			
 			result = EntityDescriptor.builder()
 					/*.entityClassEditor(EntityClassEditors.from(dJson.optString(ENTITY_CLASS_EDITORS, null)))
@@ -111,6 +116,7 @@ public class EntityDescriptor extends EntityAbstract implements IEntityDescripto
 					.entityClassView(EntityClassView.from(dJson.optString(EDC_CLASS_VIEW, null)))
 					.readOnly( booleanFromString(dJson.optString(EDC_READ_ONLY, FALSE)))
 					.timeToLive( Long.valueOf(dJson.optLong(EDC_TIME_TO_LIVE, 60000)))
+					.emoji( Emoji.getByCode(dJson.optString(EDC_FIELD_EMOJI, null)))
 					.enabledValues(enabledVals)
 					.build();
 

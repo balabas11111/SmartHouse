@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
+
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SENSORS;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SETTINGS;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SERVICES;
@@ -27,9 +29,9 @@ public class ButtonBuilder {
         groupNameMap.put(GROUP_SERVICES, GROUP_SERVICES_NAME);
         groupNameMap.put(GROUP_SETTINGS, GROUP_SETTINGS_NAME);
         
-        groupImageMap.put(GROUP_SENSORS, Emoji.RIGHT_HAND);
+        groupImageMap.put(GROUP_SENSORS, Emoji.HAND_RIGHT);
         groupImageMap.put(GROUP_SERVICES, Emoji.BRIEFCASE);
-        groupImageMap.put(GROUP_SETTINGS, Emoji.SETTINGS);
+        groupImageMap.put(GROUP_SETTINGS, Emoji.HAMMER_AND_WRENCH);
     }
     
     public Emoji getEmojiByGroupName(String groupName){

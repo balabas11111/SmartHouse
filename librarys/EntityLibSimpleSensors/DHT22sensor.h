@@ -12,6 +12,7 @@
 #include <EntityUpdate.h>
 #include <DHT.h>
 #include <DHT22Mock.h>
+#include "Emoji.h"
 
 //--------------------------------
 #define DHT22_NAME "dht22"
@@ -57,9 +58,11 @@ public:
 		response[DHT22_TEMPERATURE] = this->temp;
 	}
 
-	virtual void doAppendFieldsSwg(JsonObject& fieldsJson) override{
-		EntityDescriptor::appendSwgFieldFloat(fieldsJson, DHT22_HUMIDITY);
-		EntityDescriptor::appendSwgFieldFloat(fieldsJson, DHT22_TEMPERATURE);
+	virtual void doAppendFieldsSwg(JsonObject& swgJson) override{
+		EntityDescriptor::appendSwgEntityParams(swgJson, EMOJI_SUN_CLOUD);
+
+		EntityDescriptor::appendSwgFieldFloat(swgJson, DHT22_HUMIDITY, EDC_DESCR_HUMIDITY, EMOJI_DROPLET);
+		EntityDescriptor::appendSwgFieldFloat(swgJson, DHT22_TEMPERATURE, EDC_DESCR_TEMPERATURE, EMOJI_THERMOMETER);
 	}
 
 protected:

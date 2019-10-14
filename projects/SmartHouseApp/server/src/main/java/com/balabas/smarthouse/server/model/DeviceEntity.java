@@ -17,7 +17,8 @@ public class DeviceEntity extends ValueContainer {
 	@Getter
 	private String groupName;
 
-	private Set<SensorItem> sensorItems;
+	private Set<String> sensorItemFields;
+	private Set<String> sensorItemIds;
 	
 	@Getter
 	private boolean topicSend = false;
@@ -29,14 +30,7 @@ public class DeviceEntity extends ValueContainer {
 	}
 
 	public boolean hasSensorItems() {
-		return sensorItems != null && !sensorItems.isEmpty();
-	}
-
-	public SensorItem getSensorItem(String sensorItemKey) {
-		if (!hasSensorItems()) {
-			return null;
-		}
-		return sensorItems.stream().filter(si -> si.name.equals(sensorItemKey)).findFirst().orElse(null);
+		return sensorItemIds != null && !sensorItemIds.isEmpty();
 	}
 
 }

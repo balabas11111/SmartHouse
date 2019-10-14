@@ -19,6 +19,7 @@ import com.balabas.smarthouse.server.events.ChangedEvent.EventType;
 import com.balabas.smarthouse.server.events.DeviceEvent;
 import com.balabas.smarthouse.server.events.GroupEvent;
 import com.balabas.smarthouse.server.events.service.EventProcessorsService;
+import com.balabas.smarthouse.server.exception.BadDataException;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.Device.DeviceState;
@@ -221,8 +222,30 @@ public class DeviceServiceImpl implements DeviceService {
         }
     }
     
-    @Override
+
+	@Override
+	public void processDataReceivedFromDevice(String deviceId, JSONObject data) {
+		Device device = getDeviceByDeviceId(deviceId).orElse(null);
+		try {
+			log.debug("process deviceData json : " + data);
+			processDataReceivedFromDevice(device, data, true);
+		} catch (ResourceNotFoundException e) {
+			log.error(e);
+		}
+	}
+	
+	@Override
     public void processDataReceivedFromDevice(Device device, String deviceData, boolean dataExpected) throws ResourceNotFoundException{
+		try {
+			JSONObject data = validateDeviceData(deviceData);
+			processDataReceivedFromDevice(device, data, dataExpected);
+		} catch (BadDataException e) {
+			log.error(e);
+		}
+	}
+    
+    @Override
+    public void processDataReceivedFromDevice(Device device, JSONObject deviceData, boolean dataExpected) throws ResourceNotFoundException{
         
         if(device == null){
             log.error("Device is not registered");
@@ -295,18 +318,21 @@ public class DeviceServiceImpl implements DeviceService {
 		return waits || dataTooOld;
     }
     
-    private boolean validateDeviceData(String data){
-        boolean result = data!=null && !data.isEmpty();
-        
-        try{
-            new JSONObject(data);
-        }catch(JSONException | NullPointerException ex){
-        	log.error(ex);
-           result = false; 
+    private boolean validateDeviceData(JSONObject data){
+        return data!=null && !data.isEmpty();
+    }
+    
+    private JSONObject validateDeviceData(String data) throws BadDataException{
+        if(data==null || data.isEmpty()) {
+        	throw new BadDataException(data);
         }
         
-        return result;
-        
+        try{
+            return new JSONObject(data);
+        }catch(JSONException | NullPointerException ex){
+        	log.error(ex);
+           throw new BadDataException(data);
+        }
     }
 
     @Override

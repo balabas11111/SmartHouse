@@ -36,12 +36,17 @@ public interface DeviceService {
 	
 	void processDeviceDataUpdateDispatched(DeviceRequest request, boolean dataExpected) throws ResourceNotFoundException;
 	
-	void processDataReceivedFromDevice(Device device, String deviceData, boolean dataExpected) throws ResourceNotFoundException;
+	void processDataReceivedFromDevice(Device device, JSONObject deviceData, boolean dataExpected) throws ResourceNotFoundException;
+	
+	void processDataReceivedFromDevice(String deviceId, JSONObject data);
 	
 	void requestDevicesValues(Device device, Group group);
 	
     void requestAllDevicesDataWithUpdateRequired();
 
 	void processDeviceAction(Action action) throws Throwable;
+
+	void processDataReceivedFromDevice(Device device, String deviceData, boolean dataExpected)
+			throws ResourceNotFoundException;
 
 }

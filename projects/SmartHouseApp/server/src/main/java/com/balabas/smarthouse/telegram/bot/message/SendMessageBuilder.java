@@ -3,6 +3,7 @@ package com.balabas.smarthouse.telegram.bot.message;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,6 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRem
 
 import com.balabas.smarthouse.server.alarm.Alarm;
 import com.balabas.smarthouse.server.alarm.AlarmProcessService;
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.DeviceEntity;
 import com.balabas.smarthouse.server.model.EntityClass;
@@ -57,7 +59,7 @@ public class SendMessageBuilder {
 
 	public List<SendMessage> createServerStartedMessages(Long chatId, String serverName) {
 		List<SendMessage> msgs = Lists.newArrayList();
-		String text = String.format(BotMessageConstants.BOT_REGISTERED_MSG, Emoji.HAPPY_PERSON_RAISING_ONE_HAND,
+		String text = String.format(BotMessageConstants.BOT_REGISTERED_MSG, Emoji.PERSON_RAISING_ONE_HAND,
 				serverName, new Date());
 		// msgs.add(createHideReplyKeyboardMessage(chatId, null, text));
 		msgs.add(createRefreshDevicesListReplyKeyboard(chatId, text));
@@ -211,13 +213,23 @@ public class SendMessageBuilder {
 
 	private void entityToTemplate(DeviceEntity entity, StringBuilder builder) {
 		entityValueMapToTemplate(entity.getName(), entity.getValues(), builder, true);
-
+		
 		if (entity.hasSensorItems()) {
 			//builder.append("\n Значения \n\n");
-			entity.getSensorItems().stream()
-				.sorted((e1, e2) -> e1.getName().compareToIgnoreCase(e2.getName()))	
-				.forEach(si -> entityValueMapToTemplate(entity.getName() + ENTITY_FIELD_SENSOR_ITEMS,
-							si.getValues(), builder, true));
+			Map<String, String> siVals = new HashMap<String, String>();
+			String entName = entity.getName() + ENTITY_FIELD_SENSOR_ITEMS;
+			
+			entity.getSensorItemIds().forEach(id ->{
+				siVals.clear();
+				
+				entity.getSensorItemFields().forEach( field ->{
+					String value = entity.getValue(id + ":" + field);
+					siVals.put(field, value);
+				});
+				
+				entityValueMapToTemplate(entName, siVals, builder, true);
+			});
+			
 		}
 
 		builder.append("\n");

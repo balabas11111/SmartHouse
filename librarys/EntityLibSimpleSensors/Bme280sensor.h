@@ -16,6 +16,7 @@
 #include <Adafruit_BME280.h>
 
 #include <Bme280Mock.h>
+#include "Emoji.h"
 
 //-----------------------------------------------------
 #define BME280 "bme280"
@@ -66,10 +67,12 @@ public:
 		response[BME280_PRESSURE] = this->press;
 	}
 
-	virtual void doAppendFieldsSwg(JsonObject& fieldsJson) override{
-		EntityDescriptor::appendSwgFieldFloat(fieldsJson, BME280_HUMIDITY);
-		EntityDescriptor::appendSwgFieldFloat(fieldsJson, BME280_TEMPERATURE);
-		EntityDescriptor::appendSwgFieldFloat(fieldsJson, BME280_PRESSURE);
+	virtual void doAppendFieldsSwg(JsonObject& swgJson) override{
+		EntityDescriptor::appendSwgEntityParams(swgJson, EMOJI_SUN_CLOUD_RAIN);
+
+		EntityDescriptor::appendSwgFieldFloat(swgJson, BME280_HUMIDITY, EDC_DESCR_HUMIDITY, EMOJI_DROPLET);
+		EntityDescriptor::appendSwgFieldFloat(swgJson, BME280_TEMPERATURE, EDC_DESCR_TEMPERATURE, EMOJI_THERMOMETER);
+		EntityDescriptor::appendSwgFieldFloat(swgJson, BME280_PRESSURE, EDC_DESCR_ATMPRESSURE, EMOJI_ARROW_DOWN);
 	}
 
 protected:

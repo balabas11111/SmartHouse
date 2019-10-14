@@ -142,7 +142,6 @@ void Entity::markEntityAsSaveRequiredIfTrue(bool value){
 
 void Entity::executeGet(JsonObject& params, JsonObject& response) {
 	if(params.containsKey(ENTITY_FIELD_SWG)){
-		Serial.println(FPSTR("swg"));
 		appendSwg(JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response, ENTITY_FIELD_SWG));
 	}
 	setJsonField(response, ENTITY_FIELD_ID, this->id);
@@ -152,11 +151,11 @@ void Entity::executeGet(JsonObject& params, JsonObject& response) {
 
 void Entity::appendSwg(JsonObject& swgJson){
 	swgJson[EDC_FIELD_ID] = this->id;
+	swgJson[EDC_FIELD_DESCR_FIELD] = ENTITY_FIELD_DESCRIPTION;
 
-	JsonObject& fieldsJson = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(swgJson, EDC_ENTITY_FIELDS);
-	EntityDescriptor::appendSwgFieldString(fieldsJson, ENTITY_FIELD_DESCRIPTION);
+	EntityDescriptor::appendSwgFieldString(swgJson, ENTITY_FIELD_DESCRIPTION, EDC_DESCR_SENSOR);
 
-	doAppendFieldsSwg(fieldsJson);
+	doAppendFieldsSwg(swgJson);
 }
 
 void Entity::executePost(JsonObject& params, JsonObject& response) {

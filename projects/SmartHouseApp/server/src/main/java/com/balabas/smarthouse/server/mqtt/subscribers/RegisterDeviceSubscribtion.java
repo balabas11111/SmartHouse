@@ -18,8 +18,8 @@ public class RegisterDeviceSubscribtion extends MqttMessageSubscribtion {
 	}
 	
 	@Override
-	public boolean onMessageReceived(String topic, String message) {
-		return service.onRegistrationTopicMessageReceived(message);
+	public void onMessageReceived(String topic, String message) {
+		service.onRegistrationTopicMessageReceived(message);
 	}
 
 }
