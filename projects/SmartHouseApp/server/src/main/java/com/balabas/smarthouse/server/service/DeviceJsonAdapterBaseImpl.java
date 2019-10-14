@@ -57,11 +57,10 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 		if (device.getGroups() == null) {
 			device.setGroups(new HashSet<Group>());
 		}
-		device.setData(deviceJson);
 
 		if (!deviceJson.isEmpty()) {
 
-			processDeviceInfo(device);
+			processDeviceInfo(device, deviceJson);
 
 			for (String groupName : JSONObject.getNames(deviceJson)) {
 				if (ENTITY_FIELD_DESCRIPTION.equals(groupName)) {
@@ -71,18 +70,22 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 				Group group = getGroupOrCreateNew(device, groupName, events);
 
 				if (group != null) {
+					
+					JSONObject groupJson = deviceJson.optJSONObject(groupName);
 
-					if (!group.getData().isEmpty()) {
+					if (groupJson == null) {continue;}
+
+					if (!groupJson.isEmpty()) {
 						List<EntityEvent> entityEvents = new ArrayList<>();
 
-						for (String entityName : JSONObject.getNames(group.getData())) {
+						for (String entityName : JSONObject.getNames(groupJson)) {
 
 							if (ENTITY_FIELD_DESCRIPTION.equals(entityName)) {
-								group.setDescription(group.getData().getString(ENTITY_FIELD_DESCRIPTION));
+								group.setDescription(groupJson.getString(ENTITY_FIELD_DESCRIPTION));
 								continue;
 							}
 
-							processEntityJson(!device.isInitialDataReceived(), device, group, entityName, entityEvents);
+							processEntityJson(!device.isInitialDataReceived(), groupJson, device, group, entityName, entityEvents);
 						}
 
 						if (!entityEvents.isEmpty()) {
@@ -108,9 +111,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 		return events;
 	}
 
-	private void processDeviceInfo(Device device) {
-		JSONObject deviceJson = device.getData();
-
+	private void processDeviceInfo(Device device, JSONObject deviceJson) {
 		if (deviceJson.has(DEVICE_FIELD_DEVICE)) {
 			JSONObject deviceDeviceJson = deviceJson.getJSONObject(DEVICE_FIELD_DEVICE);
 
@@ -132,7 +133,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 	}
 
 	private Group getGroupOrCreateNew(Device device, String groupName, List<ChangedEvent> events) {
-		JSONObject deviceJson = device.getData();
+		/*JSONObject deviceJson = device.getData();
 		JSONObject groupJson = null;
 
 		try {
@@ -140,32 +141,26 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 		} catch (Exception e) {
 			return null;
 		}
-
+*/
 		Group group = device.getGroup(groupName);
 
 		if (group == null) {
-			group = new Group(device.getDeviceId(), groupName, groupJson);
+			group = new Group(device.getDeviceId(), groupName);
 			device.getGroups().add(group);
 
 			if (device.isInitialDataReceived()) {
 				events.add(new GroupEvent(group, INITIAL_DATA_RECEIVED));
 			}
-		} else {
-			group.setData(groupJson);
 		}
 
 		return group;
 	}
 
-	private void processEntityJson(boolean noEventProduceApplyOnly, Device device, Group group, String entityName,
+	private void processEntityJson(boolean noEventProduceApplyOnly, JSONObject groupJson, Device device, Group group, String entityName,
 			List<EntityEvent> events) {
-		JSONObject entityJson = null;
+		JSONObject entityJson = groupJson.optJSONObject(entityName);
 
-		try {
-			entityJson = group.getData().getJSONObject(entityName);
-		} catch (Exception e) {
-			return;
-		}
+		if(entityJson == null) {return;}
 
 		DeviceEntity entity = getEntityOrCreateNew(noEventProduceApplyOnly, device, group, entityName, events);
 
@@ -199,7 +194,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 			JSONObject entityJson) {
 		List<ValueChangeOperation> changeOperations = new ArrayList<>();
 
-		entity.setData(entityJson);
+		//entity.setData(entityJson);
 
 		Map<String, Object> jsonMap = entityJson.toMap();
 

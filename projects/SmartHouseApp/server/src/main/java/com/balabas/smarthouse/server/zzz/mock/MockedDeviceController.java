@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -68,7 +67,7 @@ public class MockedDeviceController {
 
 		return ResponseEntity.ok().body(device);
 	}
-	
+	/*
 	@GetMapping("/getData_{deviceId}")
 	public ResponseEntity<String> executeGetData(
 			@PathVariable(value = "deviceId") String deviceId,
@@ -83,7 +82,7 @@ public class MockedDeviceController {
 
 		return ResponseEntity.ok().body(deviceService.executeGetData(deviceId, group).toString());
 	}
-	
+	*/
 	@GetMapping("/mock_{deviceId}")
 	public ResponseEntity<String> executeMockGetDataOnDevice(
 			@PathVariable(value = "deviceId") String deviceId,

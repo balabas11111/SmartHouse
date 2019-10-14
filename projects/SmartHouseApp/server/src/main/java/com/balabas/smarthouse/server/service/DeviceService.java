@@ -30,8 +30,6 @@ public interface DeviceService {
 	String sendDataToDevice(String deviceId, String groupId, String entityId,
 			Map<String,Object> values) throws ResourceNotFoundException;
 	
-	JSONObject executeGetData(String deviceId, String deviceEntityGroup) throws ResourceNotFoundException;
-	
 	void markDeviceAsWaitsForDataUpdate(DeviceRequest request) throws ResourceNotFoundException;
 	
 	void processDeviceDataUpdateDispatched(DeviceRequest request, boolean dataExpected) throws ResourceNotFoundException;

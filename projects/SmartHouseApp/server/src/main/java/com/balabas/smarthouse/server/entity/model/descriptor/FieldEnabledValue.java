@@ -1,7 +1,5 @@
 package com.balabas.smarthouse.server.entity.model.descriptor;
 
-import org.json.JSONObject;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -30,6 +28,7 @@ public class FieldEnabledValue implements IFieldEnabledValue {
 	@Getter
 	private Emoji emoji;
 	
+	@SuppressWarnings("unchecked")
 	public static IFieldEnabledValue fromJson(String key, Object source) {
 		if(source == null) {
 			return null;

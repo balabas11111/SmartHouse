@@ -2,8 +2,6 @@ package com.balabas.smarthouse.server.model;
 
 import java.util.Set;
 
-import org.json.JSONObject;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -13,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Device implements SmartHouseItem, JsonDataContainer {
+public class Device implements SmartHouseItem/*, JsonDataContainer*/ {
 
 	public enum DeviceState {
 		UNKNOWN, CONSTRUCTED, REGISTERED, CONNECTED, FAILED, TIMED_OUT, DISCONNECTED
@@ -31,10 +29,10 @@ public class Device implements SmartHouseItem, JsonDataContainer {
 	private String deviceKey;
 
 	private DeviceState state = DeviceState.UNKNOWN;
-
+/*
 	@JsonIgnore
 	private JSONObject data;
-
+*/
 	private Set<Group> groups;
 
 	@JsonIgnore

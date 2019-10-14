@@ -177,20 +177,6 @@ public class DeviceServiceImpl implements DeviceService {
 		return result;
 	}
 	
-	@Override
-    public JSONObject executeGetData(String deviceId,
-            String deviceEntityGroup) throws ResourceNotFoundException {
-        Device device = getDevice(deviceId);
-        
-        JSONObject result = new JSONObject();
-        
-        if(deviceEntityGroup==null){
-           result = device.getData(); 
-        }
-        
-        return result;
-    }
-
 	private boolean isDeviceRegistrationAllowed(Device device) {
 		return device != null;
 	}

@@ -7,14 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import org.json.JSONObject;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Group implements SmartHouseItem, JsonDataContainer {
+public class Group implements SmartHouseItem {
 
     public enum GroupType{
         DEVICE(1000*120),
@@ -51,20 +49,17 @@ public class Group implements SmartHouseItem, JsonDataContainer {
     private String description;
     
     private Set<DeviceEntity> entities;
-    
-    @JsonIgnore
-    private JSONObject data;
-    
+  
     private GroupType groupType;
     
     @JsonIgnore
     private UpdateTimer timer;
     
-    public Group(String deviceId, String name,JSONObject data){
+    public Group(String deviceId, String name/*,JSONObject data*/){
     	this.deviceId = deviceId;
         this.name = name;
         this.entities = new HashSet<>();
-        this.data = data;
+        //this.data = data;
         
         this.groupType = GroupType.getGroupTypeByName(name);
         

@@ -7,12 +7,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import org.json.JSONObject;
-
 import com.balabas.smarthouse.server.entity.model.descriptor.IDeviceEntityDescriptor;
 
 @ToString
-public class ValueContainer implements JsonDataContainer, SmartHouseItem{
+public class ValueContainer implements SmartHouseItem{
 
 	@Getter 
 	protected EntityClass entityRenderer = EntityClass.DEFAULT;
@@ -34,10 +32,7 @@ public class ValueContainer implements JsonDataContainer, SmartHouseItem{
     
     @Getter @Setter
     protected IDeviceEntityDescriptor descriptor;
-    
-    @Getter @Setter
-    protected JSONObject data;
-    
+   
     public void setEntityRenderer(String entityRenderer){
     	this.entityRenderer = EntityClass.getByKey(entityRenderer);
     }
