@@ -43,6 +43,8 @@
 #define ENTITY_FIELD_TO_DEVICE_TOPIC "toDTopic"
 #define ENTITY_FIELD_TO_SERVER_TOPIC "toSTopic"
 
+#define ENTITY_FIELD_SWG "swg"
+
 #define ENTITY_ITEM_CLASS_TOOGLE_BUTTON "tb"
 
 #define EMPTY_LINE ""

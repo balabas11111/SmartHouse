@@ -66,6 +66,12 @@ public:
 		response[BME280_PRESSURE] = this->press;
 	}
 
+	virtual void doAppendFieldsSwg(JsonObject& fieldsJson) override{
+		EntityDescriptor::appendSwgFieldFloat(fieldsJson, BME280_HUMIDITY);
+		EntityDescriptor::appendSwgFieldFloat(fieldsJson, BME280_TEMPERATURE);
+		EntityDescriptor::appendSwgFieldFloat(fieldsJson, BME280_PRESSURE);
+	}
+
 protected:
 	//Adafruit_BME280* bme;
 	Bme280Mock* bme = nullptr;

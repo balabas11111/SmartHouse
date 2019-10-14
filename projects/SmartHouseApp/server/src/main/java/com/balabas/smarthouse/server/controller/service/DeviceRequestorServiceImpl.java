@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.balabas.smarthouse.server.DeviceConstants;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.DeviceEntity;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
@@ -50,8 +51,11 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 				
 				HttpHeaders headers = new HttpHeaders();
 				headers.set(HttpHeaders.AUTHORIZATION, serverKey);
+				
+				String url = (device.isInitialDataReceived())?
+								device.getDataUrl():device.getDataUrl()+"?"+DeviceConstants.ENTITY_FIELD_SWG;
 						
-				ResponseEntity<String> result = executor.executeGetRequest(device.getDataUrl(), headers, params);
+				ResponseEntity<String> result = executor.executeGetRequest(url, headers, params);
 
 				if (result.getStatusCode().equals(HttpStatus.OK)) {
 					return result.getBody();

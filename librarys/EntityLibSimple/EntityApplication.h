@@ -106,7 +106,7 @@ private:
 	DeviceManager deviceManager;
 
 #ifndef SETTINGS_SERVER_MQTT_DISABLED
-	MqttManager* mqttManager;
+	MqttManager* mqttManager = nullptr;
 #endif
 
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED

@@ -12,18 +12,18 @@ import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_URL_ROO
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_STATUS;
 
 import static com.balabas.smarthouse.server.DeviceConstants.HTTP_PREFFIX;
-import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_KEY;
 
-import org.eclipse.paho.client.mqttv3.MqttException;
+import static com.balabas.smarthouse.server.mqtt.MessageService.PING;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.balabas.smarthouse.server.model.request.DeviceRequest;
-import com.balabas.smarthouse.server.model.request.DeviceRequest.DeviceRequestType;
-import com.balabas.smarthouse.server.mqtt.MqttService;
-import com.balabas.smarthouse.server.mqtt.subscribers.DataDeviceSubscriber;
+import com.balabas.smarthouse.server.model.DeviceEntity;
+import com.balabas.smarthouse.server.mqtt.IMessageService;
+import com.balabas.smarthouse.server.mqtt.subscribers.DataDeviceSubscribtion;
+import com.balabas.smarthouse.server.mqtt.subscribers.DataEntitySubscribtion;
 import com.balabas.smarthouse.server.security.DeviceSecurityContext;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
 
@@ -37,16 +37,13 @@ public class DeviceMessageService implements IDeviceMessageService {
 	private String serverName;
 
 	@Autowired
-	private DeviceService deviceService;
-
-	@Autowired
 	private DeviceSecurityService securityService;
 
 	@Autowired
-	private MqttService mqttService;
+	private IMessageService messageService;
 
 	@Override
-	public boolean registerDevice(String message) {
+	public boolean onRegistrationTopicMessageReceived(String message) {
 		try {
 			log.info("processRegistrationRequest " + message);
 			JSONObject requestJson = new JSONObject(message);
@@ -55,10 +52,8 @@ public class DeviceMessageService implements IDeviceMessageService {
 				
 				String deviceId = requestJson.getString(ENTITY_FIELD_ID);
 				String ip = requestJson.getString(ENTITY_FIELD_IP);
-				String data = "";
-				String deviceKey = requestJson.optString(ENTITY_DEVICE_DEVICE_KEY, "0");
 
-					if(requestJson.has(ENTITY_FIELD_ROOT) && requestJson.has(ENTITY_FIELD_DATA)) {
+				if(requestJson.has(ENTITY_FIELD_ROOT) && requestJson.has(ENTITY_FIELD_DATA)) {
 						JSONObject dataJson = new JSONObject();
 						
 				    	if(requestJson.has(ENTITY_FIELD_ROOT)){
@@ -78,19 +73,9 @@ public class DeviceMessageService implements IDeviceMessageService {
 				    		}
 				    	}
 				    	
-				    	data = dataJson.toString();
 					}
-					/*				
-					DeviceRequest request = DeviceRequest.builder().deviceId(deviceId)
-							.deviceKey(deviceKey)
-							.ip(ip)
-							.data(data)
-							.requestType(DeviceRequestType.REGISTER).build();
 
-					String token = securityService.processDeviceRegistrationRequest(request);
-					deviceService.registerDevice(request).getResult().toString();
-*/
-					sendRegisteredToDevice(deviceId, "1");
+					initTopicsToFromDevice(deviceId);
 
 					return true;
 			}
@@ -100,38 +85,44 @@ public class DeviceMessageService implements IDeviceMessageService {
 		}
 		return false;
 	}
-
-	@Override
-	public boolean processData(String topicName, String message) {
-		log.info("Data from topic " + topicName + " message: " + message);
-		return true;
-	}
 	
 	@Override
-	public boolean sendRegisteredToDevice(String deviceId) throws MqttException {
-		return sendRegisteredToDevice(deviceId, "0");
-	}
-	
-	@Override
-	public boolean sendRegisteredToDevice(String deviceId, String token) throws MqttException {
-		String fromDeviceTopic = mqttService.getFromDeviceTopic(deviceId);
-		
-		String toDeviceTopic = mqttService.getToDeviceTopic(deviceId);
+	public void initTopicsToFromDevice(String deviceId) {
 		String response = constructRegisterResponse(deviceId).toString();
-
-		log.info("Device registered token = " + token  +
-				" toDeviceTopic = " + toDeviceTopic+ " fromDeviceTopic = "
-				+ fromDeviceTopic);
 		
-		subscribeToDevice(deviceId, fromDeviceTopic);
-		
-		mqttService.publish(toDeviceTopic, response);
-		
-		return true;
+		subscribeFromDeviceTopic(deviceId);
+		publishToDeviceTopic(deviceId, response);
 	}
-
-	protected void subscribeToDevice(String deviceId, String toDeviceTopic) {
-		mqttService.registerSubscriber(new DataDeviceSubscriber(toDeviceTopic, this));
+	
+	@Override
+	public void subscribeFromDeviceTopic(String deviceId) {
+		String topicName = messageService.getFromDeviceTopicId(deviceId);
+		
+		messageService.registerSubscriberOrResubscribeExisting(new DataDeviceSubscribtion(topicName, this));
+	}
+	
+	@Override
+	public boolean publishToDeviceTopic(String deviceId, String message) {
+		String topicName = messageService.getToDeviceTopicId(deviceId);
+		return messageService.publishToTopic(topicName, message);
+	}
+	
+	@Override
+	public void initTopicsToFromDeviceEntity(DeviceEntity entity) {
+		subscribeFromDeviceEntityTopic(entity);
+		publishToDeviceEntityTopic(entity, PING);
+	}
+	
+	@Override
+	public void subscribeFromDeviceEntityTopic(DeviceEntity entity) {
+		String topicName = messageService.getFromDeviceEntityTopicId(entity.getDeviceId(), entity.getName());
+		messageService.registerSubscriberOrResubscribeExisting(new DataEntitySubscribtion(topicName, entity));
+	}
+	
+	@Override
+	public boolean publishToDeviceEntityTopic(DeviceEntity entity, String message) {
+		String topicName = messageService.getToDeviceEntityTopicId(entity.getDeviceId(), entity.getName());
+		return messageService.publishToTopic(topicName, message);
 	}
 
 	protected JSONObject constructRegisterResponse(String deviceId) {

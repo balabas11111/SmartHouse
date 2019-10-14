@@ -14,6 +14,7 @@
 #include <DeviceUtils.h>
 #include "Entity.h"
 #include <EntityUpdate.h>
+#include "EntityDescriptor.h"
 
 #define DEVICE_MANAGER "DeviceManager"
 #define DEVICE_MANAGER_DESCRIPTION "ESP8266 DeviceManager"
@@ -44,6 +45,8 @@ public:
 	virtual void loop() override;
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override;
+
+	virtual void doAppendFieldsSwg(JsonObject& fieldsJson) override;
 
 	virtual void doPost(JsonObject& params, JsonObject& response) override;
 

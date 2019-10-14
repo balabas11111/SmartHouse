@@ -1,15 +1,20 @@
 package com.balabas.smarthouse.server.service;
 
-import org.eclipse.paho.client.mqttv3.MqttException;
+import com.balabas.smarthouse.server.model.DeviceEntity;
 
 public interface IDeviceMessageService {
 
-	boolean registerDevice(String message);
+	boolean onRegistrationTopicMessageReceived(String message);
 
-	boolean processData(String topicName, String message);
-
-	boolean sendRegisteredToDevice(String deviceId) throws MqttException;
-
-	boolean sendRegisteredToDevice(String deviceId, String token) throws MqttException;
+	void initTopicsToFromDevice(String deviceId);
 	
+	void subscribeFromDeviceTopic(String deviceId);
+	
+	boolean publishToDeviceTopic(String deviceId, String message);
+
+	void initTopicsToFromDeviceEntity(DeviceEntity entity);
+	
+	void subscribeFromDeviceEntityTopic(DeviceEntity entity);
+	
+	boolean publishToDeviceEntityTopic(DeviceEntity entity, String message);
 }

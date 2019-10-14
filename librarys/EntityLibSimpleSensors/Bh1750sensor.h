@@ -12,6 +12,7 @@
 #include <ArduinoJson.h>
 #include "Entity.h"
 #include <EntityUpdate.h>
+#include <EntityDescriptor.h>
 
 #include <Wire.h>
 #include <BH1750.h>
@@ -51,6 +52,10 @@ public:
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
 		UNUSED(params);
 		response[BH1750_LUX] = this->lux;
+	}
+
+	virtual void doAppendFieldsSwg(JsonObject& fieldsJson) override{
+		EntityDescriptor::appendSwgFieldFloat(fieldsJson, BH1750_LUX);
 	}
 
 protected:

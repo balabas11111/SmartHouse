@@ -35,12 +35,12 @@ void Entity::preInitialize(int id, std::function<void(void)> eventProcessFunctio
 		std::function<void(const char*, const char*, const char*, JsonVariant)> putToBuffer) {
 	this->id = id;
 	this->eventProcessFunction = eventProcessFunction;
-	this->putToChangedBuffer = putToBuffer;
+	this->funcPutToChangedBuffer = putToBuffer;
 }
 
 void Entity::putToBuffer(const char* key, JsonVariant value) {
-	if(putToChangedBuffer!=nullptr){
-		putToChangedBuffer(this->getGroup(), this->getName(), key, value);
+	if(funcPutToChangedBuffer!=nullptr){
+		funcPutToChangedBuffer(this->getGroup(), this->getName(), key, value);
 	}
 }
 
@@ -141,9 +141,22 @@ void Entity::markEntityAsSaveRequiredIfTrue(bool value){
 }
 
 void Entity::executeGet(JsonObject& params, JsonObject& response) {
+	if(params.containsKey(ENTITY_FIELD_SWG)){
+		Serial.println(FPSTR("swg"));
+		appendSwg(JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response, ENTITY_FIELD_SWG));
+	}
 	setJsonField(response, ENTITY_FIELD_ID, this->id);
 	setJsonField(response, ENTITY_FIELD_DESCRIPTION, this->descr);
 	doGet(params, response);
+}
+
+void Entity::appendSwg(JsonObject& swgJson){
+	swgJson[EDC_FIELD_ID] = this->id;
+
+	JsonObject& fieldsJson = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(swgJson, EDC_ENTITY_FIELDS);
+	EntityDescriptor::appendSwgFieldString(fieldsJson, ENTITY_FIELD_DESCRIPTION);
+
+	doAppendFieldsSwg(fieldsJson);
 }
 
 void Entity::executePost(JsonObject& params, JsonObject& response) {

@@ -57,6 +57,11 @@ public:
 		response[DHT22_TEMPERATURE] = this->temp;
 	}
 
+	virtual void doAppendFieldsSwg(JsonObject& fieldsJson) override{
+		EntityDescriptor::appendSwgFieldFloat(fieldsJson, DHT22_HUMIDITY);
+		EntityDescriptor::appendSwgFieldFloat(fieldsJson, DHT22_TEMPERATURE);
+	}
+
 protected:
 	//DHT* dht;
 	DHT22Mock* dht;

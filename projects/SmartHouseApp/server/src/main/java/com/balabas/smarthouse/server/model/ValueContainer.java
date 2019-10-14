@@ -9,6 +9,9 @@ import lombok.ToString;
 
 import org.json.JSONObject;
 
+import com.balabas.smarthouse.server.entity.model.descriptor.IEntityDescriptor;
+import com.balabas.smarthouse.server.entity.model.descriptor.IEntityDescriptorMap;
+
 @ToString
 public class ValueContainer implements JsonDataContainer, SmartHouseItem{
 
@@ -27,8 +30,11 @@ public class ValueContainer implements JsonDataContainer, SmartHouseItem{
     @Getter
     protected String parentName = null;
     
-    @Getter
+    @Getter @Setter
     protected Map<String, String> values = new HashMap<>();
+    
+    @Getter @Setter
+    protected IEntityDescriptorMap descriptor;
     
     @Getter @Setter
     protected JSONObject data;

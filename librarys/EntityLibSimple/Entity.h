@@ -12,6 +12,7 @@
 #include <ArduinoJson.h>
 #include <DeviceUtils.h>
 #include <DeviceConstants.h>
+#include <EntityDescriptor.h>
 #include <JsonObjectUtil.h>
 #include <functional>
 
@@ -61,6 +62,8 @@ public:
 	void executeGet(JsonObject& params, JsonObject& response);
 	void executePost(JsonObject& params, JsonObject& response);
 
+	void appendSwg(JsonObject& swgJson);
+
 	void setJsonToEntity(JsonObject& jsonFromFile);
 	void getJsonToSave(JsonObject& jsonToFile);
 
@@ -68,6 +71,9 @@ public:
 		UNUSED(params);
 		UNUSED(response);
 	};
+	virtual void doAppendFieldsSwg(JsonObject& fieldsJson){
+		UNUSED(fieldsJson);
+	}
 	virtual void doPost(JsonObject& params, JsonObject& response) {
 		UNUSED(params);
 		UNUSED(response);
@@ -88,13 +94,18 @@ public:
 	void markEntityAsUnChanged();
 
 	void markEntityAsSaveRequiredIfTrue(bool value);
+
+	bool hasTopic(){
+		return this->hasTopicConnection;
+	}
+
 protected:
 	bool forceChanged;
 	bool changed;
 	bool saveRequired;
 
 	bool hasGet;bool hasPost;bool applicationDispatcher;
-
+	bool hasTopicConnection = true;
 	bool canLoad;bool canSave;
 
 	int id;
@@ -102,12 +113,13 @@ protected:
 	const char* name;
 	char* descr;
 
-	//const char* descrField;
-
 	std::function<void(void)> eventProcessFunction;
 	std::function<void(void)> onSetChangedEventFunction;
 
-	std::function<void(const char*, const char*, const char*, JsonVariant)> putToChangedBuffer;
+	std::function<void(const char*, const char*, const char*, JsonVariant)> funcPutToChangedBuffer;
+
+
+	void appendEnabledValue(JsonObject& fieldJson, const char* value);
 
 	template<typename T>
 	T getJsonField(JsonObject& json, const char* key) {

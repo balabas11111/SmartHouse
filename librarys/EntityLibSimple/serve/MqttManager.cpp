@@ -15,8 +15,8 @@ MqttManager::MqttManager(SettingsStorage* conf) {
 	this->toDeviceTopic = strdup((String(MQTT_TO_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
 */
 	this->toServerTopic = String(conf->deviceId()) + MQTT_SLASH_SUFFIX;
-	this->toDeviceTopic = strdup((String(MQTT_TO_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
-	this->fromDeviceTopic = strdup((String(MQTT_FROM_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
+	this->toDeviceTopic = strdup((String(MQTT_TO_DEVICE_TOPIC) + conf->deviceId()).c_str());
+	this->fromDeviceTopic = strdup((String(MQTT_FROM_DEVICE_TOPIC) + conf->deviceId()).c_str());
 }
 
 void MqttManager::init(EntityJsonRequestResponse* buf, bool registered) {
@@ -41,7 +41,7 @@ void MqttManager::init(EntityJsonRequestResponse* buf, bool registered) {
 		this->initDone = true;
 		this->registered = registered;
 
-		serverSubscribed = subscribe(toDeviceTopic, true);
+		toDeviceTopicSubscribed = subscribe(toDeviceTopic, true);
 
 		Serial.print(FPSTR("host ="));
 		Serial.print(adress.toString());
@@ -54,7 +54,7 @@ void MqttManager::init(EntityJsonRequestResponse* buf, bool registered) {
 		Serial.print(FPSTR("  fromDeviceTopic ="));
 		Serial.print(fromDeviceTopic);
 		Serial.print(FPSTR("  serverSubscribed ="));
-		Serial.println(serverSubscribed);
+		Serial.println(toDeviceTopicSubscribed);
 
 		Serial.println(FPSTR("MqttManager initialized"));
 }
@@ -68,21 +68,12 @@ EntityJsonRequestResponse* MqttManager::getBuffer() {
 }
 
 bool MqttManager::publishBuffer() {
-	if(!this->initDone){
-		return false;
-	}
-	if(!this->registered){
-		#ifndef MQTT_REGISTRATION_DISABLED
-			return sendRegistrationRequest();
-		#else
-			return false;
-		#endif
-	} else {
-		if(!serverSubscribed){
-			serverSubscribed = subscribe(toDeviceTopic, true);
-			if(serverSubscribed){
-				Serial.println(FPSTR("Server subscribed"));
-			}
+	if(!this->initDone){return false;}
+
+	if(this->registered){
+
+		if(!toDeviceTopicSubscribed){
+			subscribeToDeviceTopic();
 		} else {
 			if(!this->serverResponseReceived){
 				sendRegistrationRequest();
@@ -94,7 +85,38 @@ bool MqttManager::publishBuffer() {
 		}else{
 			return false;
 		}
+	} else {
+		#ifdef MQTT_REGISTRATION_DISABLED
+			return false;
+		#else
+			return sendRegistrationRequest();
+		#endif
 	}
+}
+
+bool MqttManager::subscribeToDeviceTopic(){
+	this->toDeviceTopicSubscribed = subscribe(toDeviceTopic, true);
+	if(this->toDeviceTopicSubscribed){
+		Serial.println(FPSTR("Server subscribed"));
+	}
+	return this->toDeviceTopicSubscribed;
+}
+
+bool MqttManager::buildRegistrationRequest() {
+	if(!registrationRequestBuilt){
+
+		JsonObject& req = getBuffer()->getRequest();
+
+		req[ENTITY_FIELD_ID] = this->conf->deviceId();
+		req[ENTITY_FIELD_IP] = conf->getCurrentIp();
+		req[ENTITY_FIELD_ROOT] = URL_ROOT;
+		req[ENTITY_FIELD_DATA] = URL_DATA;
+
+		registrationRequestBuilt = true;
+
+		JsonObjectUtil::printWithPreffix("registr req=", req);
+	}
+	return true;
 }
 
 bool MqttManager::sendRegistrationRequest() {
@@ -113,23 +135,6 @@ bool MqttManager::sendRegistrationRequest() {
 		return published;
 	}
 	return false;
-}
-
-bool MqttManager::buildRegistrationRequest() {
-	if(!registrationRequestBuilt){
-
-		JsonObject& req = getBuffer()->getRequest();
-
-		req[ENTITY_FIELD_ID] = this->conf->deviceId();
-		req[ENTITY_FIELD_IP] = conf->getCurrentIp();
-		req[ENTITY_FIELD_ROOT] = URL_ROOT;
-		req[ENTITY_FIELD_DATA] = URL_DATA;
-
-		registrationRequestBuilt = true;
-
-		JsonObjectUtil::printWithPreffix("registr req=", req);
-	}
-	return true;
 }
 
 bool MqttManager::processRegistrationResponse() {

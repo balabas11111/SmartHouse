@@ -21,8 +21,8 @@
 #include "DeviceUtils.h"
 
 #define MQTT_REGISTRATION_TOPIC     "fromDevice/register"
-#define MQTT_TO_DEVICE_TOPIC_TMPL   "toDevice/"
-#define MQTT_FROM_DEVICE_TOPIC_TMPL "fromDevice/"
+#define MQTT_TO_DEVICE_TOPIC   "to/"
+#define MQTT_FROM_DEVICE_TOPIC "from/"
 #define MQTT_GOOD_STATUS "\"status\":200"
 #define MQTT_GOOD_STATUS_STR "\"status\":\"200\""
 #define MQTT_SLASH_SUFFIX "/"
@@ -43,7 +43,6 @@ private:
 	SettingsStorage* conf;
 	EntityJsonRequestResponse* buffer;
 
-	//IPAddress adress;
 	WiFiClient* wclient;
 	PubSubClient* client;
 
@@ -60,13 +59,15 @@ private:
 	unsigned long lastRegisterAttempt;
 
 	bool registered = false;
-	bool serverSubscribed = false;
+	bool toDeviceTopicSubscribed = false;
 	bool serverResponseReceived = false;
 	bool registrationRequestBuilt = false;
 
 	void callback(char* topic, uint8_t* payload, unsigned int length);
 
 	bool connectMqtt();
+
+	bool subscribeToDeviceTopic();
 
 	bool buildRegistrationRequest();
 	bool sendRegistrationRequest();
@@ -77,6 +78,8 @@ private:
 	bool publish(char* topic, JsonObject& data, bool showLog = false);
 
 	bool isDataSendEnabled();
+
+	DynamicJsonBuffer entityFieldsBuffer;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_SERVE_MQTTMANAGER_H_ */

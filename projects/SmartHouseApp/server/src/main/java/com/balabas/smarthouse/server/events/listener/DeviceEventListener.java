@@ -2,19 +2,22 @@ package com.balabas.smarthouse.server.events.listener;
 
 import com.balabas.smarthouse.server.events.DeviceEvent;
 
-import java.util.Collections;
-
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.balabas.smarthouse.server.events.service.EventListenerNotificationDispatcherAbstract;
 import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.notification.AbstractNotification;
+import com.balabas.smarthouse.server.notification.DeviceNotification;
 import com.balabas.smarthouse.server.notification.Message;
-import com.balabas.smarthouse.server.notification.Message.MessageParent;
 import com.balabas.smarthouse.server.notification.Message.MessageSeverity;
 import com.balabas.smarthouse.server.service.IDeviceMessageService;
+
+import static com.balabas.smarthouse.server.notification.NotificationUtility.splitNotificationParts;
+import static com.balabas.smarthouse.server.notification.NotificationUtility.MSG_DEVICE_REREGISTERED;
+import static com.balabas.smarthouse.server.notification.NotificationUtility.MSG_DEVICE_REGISTERED;
+
+import static com.balabas.smarthouse.server.notification.Message.MessageSeverity.WARNING;
+import static com.balabas.smarthouse.server.notification.Message.MessageSeverity.INFO;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -28,49 +31,36 @@ public class DeviceEventListener extends EventListenerNotificationDispatcherAbst
 
 	@Autowired
 	private IDeviceMessageService messageService;
-	
+
 	@Override
 	public void processEvent(DeviceEvent event) {
-		if(REREGISTERED.equals(event.getEventType())) {
+		log.debug(event.toString());
+		
+		if (REREGISTERED.equals(event.getEventType())) {
+
+			initDeviceTopics(event.getTarget());
+			dispatch(createNotification(event, WARNING, MSG_DEVICE_REREGISTERED));
 			
-			String message = "Переподключено : "+event.getTarget().getDeviceDescr();
+		} else if (INITIAL_DATA_RECEIVED.equals(event.getEventType())) {
+
+			initDeviceTopics(event.getTarget());
+			dispatch(createNotification(event, INFO, MSG_DEVICE_REGISTERED));
 			
-			Message header = Message.builder()
-					.severity(MessageSeverity.WARNING)
-					.parent(MessageParent.DEVICE)
-					.message(message)
-					.build();
-			
-			dispatch(new AbstractNotification<Device>(event.getTarget(),
-					header, Collections.emptyList()));
+		} else if (UPDATED.equals(event.getEventType())) {
+
+			initDeviceTopics(event.getTarget());
 		}
-		if(INITIAL_DATA_RECEIVED.equals(event.getEventType())) {
-			
-			try {
-				messageService.sendRegisteredToDevice(event.getTarget().getDeviceId());
-			} catch (MqttException e) {
-				log.error(e);
-			}
-			
-			String message = "Устройство зарегистрировано : "+event.getTarget().getDeviceDescr();
-			
-			Message header = Message.builder()
-					.severity(MessageSeverity.INFO)
-					.parent(MessageParent.DEVICE)
-					.message(message)
-					.build();
-			
-			dispatch(new AbstractNotification<Device>(event.getTarget(),
-					header, Collections.emptyList()));
-		}
-		if(UPDATED.equals(event.getEventType())) {
-			
-			try {
-				messageService.sendRegisteredToDevice(event.getTarget().getDeviceId());
-			} catch (MqttException e) {
-				log.error(e);
-			}
-		}
+	}
+	
+	private DeviceNotification createNotification(DeviceEvent event, MessageSeverity severity, String preffix) {
+		Message header = new Message(severity, 
+				splitNotificationParts(preffix, event.getTarget().getDeviceDescr()));
+
+		return new DeviceNotification(event.getTarget(), header);
+	}
+
+	private void initDeviceTopics(Device device) {
+		messageService.initTopicsToFromDevice(device.getDeviceId());
 	}
 
 }

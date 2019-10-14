@@ -429,6 +429,14 @@ void EntityManager::post(EntityJsonRequestResponse* reqResp) {
 	executeMethod(reqResp->getRequest(),reqResp->getResponse(), REQUEST_POST);
 }
 
+EntityJsonRequestResponse* EntityManager::getBuffer() {
+	return this->buffer;
+}
+
+void EntityManager::setBuffer(EntityJsonRequestResponse* buffer) {
+	this->buffer = buffer;
+}
+
 void EntityManager::putToBuffer(const char* group, const char* name,
 		const char* key, JsonVariant value) {
 	if(this->buffer!=nullptr){

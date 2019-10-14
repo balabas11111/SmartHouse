@@ -4,7 +4,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import lombok.Getter;
 
-public abstract class MqttMessageSubscriber implements IMqttMessageSubscriber {
+public abstract class MqttMessageSubscribtion implements IMqttMessageSubscribtion {
 
 	@Getter
 	protected String topicName;

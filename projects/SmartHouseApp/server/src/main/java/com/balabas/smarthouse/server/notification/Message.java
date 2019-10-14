@@ -36,5 +36,12 @@ public class Message {
 		this.message = message;
 	}
 	
+	public Message(MessageSeverity severity, String message) {
+		super();
+		this.severity = severity;
+		this.parent = MessageParent.DEVICE;
+		this.message = message;
+	}
+	
 	
 }

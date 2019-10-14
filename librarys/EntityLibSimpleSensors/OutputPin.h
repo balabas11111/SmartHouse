@@ -22,7 +22,7 @@
 
 class OutputPin:public Pin, public Entity, public EntityUpdate {
 public:
-	OutputPin(uint8_t pin, char* descr = OUTPUT_PIN_DESCRIPTION, const char* name = OUTPUT_PIN_NAME,
+	OutputPin(uint8_t pin, char* descr = (char*)OUTPUT_PIN_DESCRIPTION, const char* name = OUTPUT_PIN_NAME,
 			uint8_t onLevel = HIGH,
 			std::function<void(void)> selfEventProcessFunction = nullptr, bool applicationDispatcher = false) :
 			Pin(pin, OUTPUT, onLevel),
@@ -49,6 +49,10 @@ public:
 		UNUSED(params);
 		setJsonField(response, ON_FIELD, this->isOn());
 		setJsonField(response, ENTITY_FIELD_ITEM_CLASS,ENTITY_ITEM_CLASS_TOOGLE_BUTTON);
+	}
+
+	virtual void doAppendFieldsSwg(JsonObject& fieldsJson) override{
+		EntityDescriptor::appendSwgFieldBooleanOnOff(fieldsJson, ON_FIELD);
 	}
 
 	virtual void doPost(JsonObject& params, JsonObject& response) override {

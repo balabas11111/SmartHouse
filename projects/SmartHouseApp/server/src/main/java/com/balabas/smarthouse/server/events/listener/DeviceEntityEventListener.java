@@ -7,10 +7,6 @@ import com.balabas.smarthouse.server.alarm.AlarmProcessService;
 import com.balabas.smarthouse.server.events.EntityEvent;
 import com.balabas.smarthouse.server.events.service.EventListenerNotificationDispatcherAbstract;
 import com.balabas.smarthouse.server.model.DeviceEntity;
-import com.balabas.smarthouse.server.mqtt.IMqttMessageSubscriber;
-import com.balabas.smarthouse.server.mqtt.MqttService;
-import com.balabas.smarthouse.server.mqtt.subscribers.DataDeviceSubscriber;
-import com.balabas.smarthouse.server.mqtt.subscribers.DataEntitySubscriber;
 import com.balabas.smarthouse.server.service.IDeviceMessageService;
 
 import lombok.extern.log4j.Log4j2;
@@ -21,14 +17,14 @@ import static com.balabas.smarthouse.server.events.ChangedEvent.EventType.ADDED;
 
 @Component
 @Log4j2
-public class EntityEventListenerAlarm
+public class DeviceEntityEventListener
 		extends EventListenerNotificationDispatcherAbstract<DeviceEntity, EntityEvent> {
 
 	@Autowired
 	private AlarmProcessService<DeviceEntity> entityAlarmService;
 	
 	@Autowired
-	private MqttService mqttService;
+	private IDeviceMessageService messageService;
 	
 	@Override
 	public void processEvent(EntityEvent event) {
@@ -42,8 +38,8 @@ public class EntityEventListenerAlarm
 				dispatch(alarm.checkItemForAlarmAndReschedule());
 			});
 		} else if(ADDED.equals(event.getEventType())) {
-			String topicName = event.getDevice().getDeviceId() + "/" + event.getTarget().getName(); 
-			mqttService.registerSubscriber(new DataEntitySubscriber(topicName, event.getTarget()));
+			
+			messageService.initTopicsToFromDeviceEntity(event.getTarget());
 		}
 	}
 

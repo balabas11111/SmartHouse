@@ -18,7 +18,10 @@ public class DeviceEntity extends ValueContainer {
 	private String groupName;
 
 	private Set<SensorItem> sensorItems;
-
+	
+	@Getter
+	private boolean topicSend = false;
+	
 	public DeviceEntity(String deviceId, String groupName, String entityName) {
 		this.deviceId = deviceId;
 		this.groupName = groupName;

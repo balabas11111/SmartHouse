@@ -10,7 +10,13 @@
 void DeviceManager::doGet(JsonObject& params, JsonObject& response) {
 	UNUSED(params);
 	response[DEVICE_MANAGER_FIELD_RESTART] = this->triggeredRestart;
-	response[DEVICE_MANAGER_FIELD_FREE_HEAP] = ESP.getFreeHeap();
+	//response[DEVICE_MANAGER_FIELD_FREE_HEAP] = ESP.getFreeHeap();
+}
+
+void DeviceManager::doAppendFieldsSwg(JsonObject& fieldsJson){
+	EntityDescriptor::appendSwgFieldBooleanCommand(fieldsJson,
+			DEVICE_MANAGER_FIELD_RESTART,
+			false, EDC_FIELD_BOOLEAN_VALUE_ON, EDC_FIELD_BOOLEAN_VALUE_RESTART_DESCR);
 }
 
 void DeviceManager::doPost(JsonObject& params, JsonObject& response) {

@@ -11,22 +11,22 @@ import lombok.ToString;
 public class AbstractNotification<T extends SmartHouseItem> implements Notification<T> {
 
 	@Getter
-	private T item;
+	protected T item;
 	
 	@Getter
-	private Message header;
+	protected Message header;
 
 	@Getter
-	private List<Message> messages;
+	protected List<Message> messages;
 
+	public AbstractNotification() {
+	}
+	
 	public AbstractNotification(T item, Message header, List<Message> messages) {
 		super();
 		this.item = item;
 		this.header = header;
 		this.messages = messages;
-	}
-	
-	public AbstractNotification() {
 	}
 
 	@Override

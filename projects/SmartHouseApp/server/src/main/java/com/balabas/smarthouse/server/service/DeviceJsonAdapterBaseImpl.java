@@ -12,6 +12,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import com.balabas.smarthouse.server.entity.model.descriptor.EntityDescriptor;
+import com.balabas.smarthouse.server.entity.model.descriptor.EntityDescriptorMap;
+import com.balabas.smarthouse.server.entity.model.descriptor.IEntityDescriptor;
 import com.balabas.smarthouse.server.events.ChangedEvent;
 import com.balabas.smarthouse.server.events.EntityEvent;
 import com.balabas.smarthouse.server.events.GroupEvent;
@@ -35,6 +38,7 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_DESCRIPTION;
 
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_ITEMS;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SWG;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_DESCRIPTION;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ITEM_CLASS;
 
@@ -164,7 +168,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
         }catch(Exception e){
            return;
         }
-    	
+        
         DeviceEntity entity = getEntityOrCreateNew(noEventProduceApplyOnly, device, group, entityName, events);
         
         List<ValuesChangeEvent> valueEvents = new ArrayList<>();
@@ -205,12 +209,20 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
         for(Entry<String,Object> entry: jsonMap.entrySet()){
         	String key = entry.getKey();
         	
+        	if((entity instanceof DeviceEntity) && ENTITY_FIELD_SWG.equals(key)) {
+        		JSONObject descriptorJson = entityJson.optJSONObject(ENTITY_FIELD_SWG);
+        		
+        		log.info("Entity descriptor : " +descriptorJson);
+        		
+        		Optional.ofNullable(EntityDescriptorMap.fromJson(descriptorJson, entity.getName()))
+        		.ifPresent(entity::setDescriptor);
+        	} else
         	if(ENTITY_FIELD_ITEM_CLASS.equals(key)) {
         		entity.setEntityRenderer(entry.getValue().toString());
-        	}
+        	} else
         	if(ENTITY_FIELD_DESCRIPTION.equals(key)) {
         		entity.setDescription(entry.getValue().toString());
-        	}
+        	} else
             if(!key.equals(ENTITY_FIELD_SENSOR_ITEMS)
                     && !(entry.getValue() instanceof JSONObject)
                     && !(entry.getValue() instanceof JSONArray)){

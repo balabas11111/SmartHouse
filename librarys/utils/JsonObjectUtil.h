@@ -271,6 +271,10 @@ public:
 		return (obj.containsKey(key))?obj.get<JsonArray>(key):obj.createNestedArray(strdup(key));
 	}
 
+	static JsonArray& getObjectChildArrayOrCreateNewNoKeyDup(JsonObject& obj,const char* key){
+		return (obj.containsKey(key))?obj.get<JsonArray>(key):obj.createNestedArray(key);
+	}
+
 	static bool getObjectFieldExistsAndNotEquals(JsonObject& obj,const char* key,JsonVariant val){
 		if(!obj.containsKey(key)){
 			return false;

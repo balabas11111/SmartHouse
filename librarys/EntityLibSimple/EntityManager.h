@@ -75,13 +75,9 @@ public:
 
 	char* getSensorsGroup();
 
-	EntityJsonRequestResponse* getBuffer() {
-		return buffer;
-	}
+	EntityJsonRequestResponse* getBuffer();
 
-	void setBuffer(EntityJsonRequestResponse* buffer) {
-		this->buffer = buffer;
-	}
+	void setBuffer(EntityJsonRequestResponse* buffer);
 
 	void putToBuffer(const char* group, const char* name, const char* key, JsonVariant value);
 

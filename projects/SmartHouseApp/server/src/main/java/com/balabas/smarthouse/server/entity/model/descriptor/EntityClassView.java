@@ -4,15 +4,22 @@ import java.util.stream.Stream;
 
 public enum EntityClassView {
 
-	DEFAULT("default"),
-	NONE("none"),
-	LIST("list"),
-	TABLE("table"),
-	MAP("map"),
-	LABEL("text"),
-	INPUT("input"),
-	SELECT("select"),
-	BUTTON("button");
+	EDC_CLASS_VIEW_DEFAULT("def"),
+	EDC_CLASS_VIEW_NONE("non"),
+	EDC_CLASS_VIEW_LIST("lst"),
+	EDC_CLASS_VIEW_TABLE("tbl"),
+	EDC_CLASS_VIEW_MAP("map"),
+	EDC_CLASS_VIEW_LABEL("txt"),
+	EDC_CLASS_VIEW_INPUT("inp"),
+	EDC_CLASS_VIEW_PASSWORD_INPUT("pwd"),
+	EDC_CLASS_VIEW_IP_INPUT("ipi"),
+	EDC_CLASS_VIEW_COMBOBOX("cmb"),
+	EDC_CLASS_VIEW_DATE_TIME("dtm"),
+	EDC_CLASS_VIEW_OPTIONS("opt"),
+	EDC_CLASS_VIEW_BUTTON("btn"),
+	EDC_CLASS_VIEW_BUTTON_COMMAND("btc"),
+	EDC_CLASS_VIEW_BUTTON_BOOLEAN("btb"),
+	EDC_CLASS_VIEW_BUTTON_OPTIONS("bto");
 	
 	private String key;
 	
@@ -25,6 +32,6 @@ public enum EntityClassView {
 	}
 	
 	public static EntityClassView from(String key){
-		return Stream.of(EntityClassView.values()).filter( i -> i.getKey().equalsIgnoreCase(key)).findFirst().orElse(DEFAULT);
+		return Stream.of(EntityClassView.values()).filter( i -> i.getKey().equalsIgnoreCase(key)).findFirst().orElse(EDC_CLASS_VIEW_DEFAULT);
 	}
 }

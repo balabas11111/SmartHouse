@@ -1,0 +1,205 @@
+{
+	"device": {
+		"info": {
+			"deviceId": "ESP_962570",
+			"deviceFirmware": "EntityLib dev device",
+			"deviceDescr": "Тестовое устройство"
+		}
+	},
+	"sensors": {
+		"bme280": {
+			"swg": {
+				"i": 0,
+				"f": {
+					"d": {
+						"c": "char*",
+						"cv": "inp"
+					},
+					"h": {
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1
+					},
+					"t": {
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1
+					},
+					"p": {
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1
+					}
+				}
+			},
+			"id": 0,
+			"d": "Микроклимат воздуха",
+			"h": 59,
+			"t": 23,
+			"p": 100553
+		},
+		"bh1750": {
+			"swg": {
+				"i": 1,
+				"f": {
+					"d": {
+						"c": "char*",
+						"cv": "inp"
+					},
+					"l": {
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1
+					}
+				}
+			},
+			"id": 1,
+			"d": "Уровень освещения",
+			"l": 1253
+		},
+		"built In LED": {
+			"swg": {
+				"i": 2,
+				"f": {
+					"d": {
+						"c": "char*",
+						"cv": "inp"
+					},
+					"on": {
+						"c": "bool",
+						"cv": "btb"
+					},
+					"val": {
+						"on": {
+							"true": "Включить",
+							"false": "Отключить"
+						}
+					}
+				}
+			},
+			"id": 2,
+			"d": "Диод на плате",
+			"on": true,
+			"ic": "tb"
+		},
+		"dht22": {
+			"swg": {
+				"i": 3,
+				"f": {
+					"d": {
+						"c": "char*",
+						"cv": "inp"
+					},
+					"h": {
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1
+					},
+					"t": {
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1
+					}
+				}
+			},
+			"id": 3,
+			"d": "Микроклимат воздуха DHT",
+			"h": 67,
+			"t": 28
+		},
+		"ds18d20": {
+			"swg": {
+				"i": 4,
+				"f": {
+					"d": {
+						"c": "char*",
+						"cv": "inp"
+					}
+				}
+			},
+			"id": 4,
+			"d": "Температура пола",
+			"c": 3,
+			"si": {
+				"00000000": {
+					"d": "00000000"
+				},
+				"00000001": {
+					"d": "00000001"
+				},
+				"00000002": {
+					"d": "00000002"
+				}
+			},
+			"00000000:t": 36,
+			"00000001:t": 32,
+			"00000002:t": 31
+		}
+	},
+	"settings": {
+		"DeviceSettings": {
+			"swg": {
+				"i": 5,
+				"f": {
+					"d": {
+						"c": "char*",
+						"cv": "inp"
+					}
+				}
+			},
+			"id": 5,
+			"d": "Wifi Server Device settings",
+			"deviceId": "ESP_962570",
+			"deviceFirmware": "EntityLib dev device",
+			"deviceDescr": "Тестовое устройство",
+			"ssid": "balabasKiev5",
+			"pass": "******",
+			"ssidAP": "ESP_962570",
+			"passAP": "******",
+			"isAp": false,
+			"isStatIp": false,
+			"disStIfCon": false,
+			"ip": "192,168,0,120",
+			"ipAP": "192,168,0,4",
+			"gateway": "192,168,0,1",
+			"subnet": "255,255,255,0",
+			"dns": "192,168,0,1",
+			"dns2": "192,168,0,1",
+			"smrtServAddr": "192.168.0.103",
+			"smrtServKey": "******",
+			"userLogin": "",
+			"userPass": "******",
+			"adminLogin": "admin",
+			"adminPass": "******",
+			"interval": 20,
+			"apCH": 1,
+			"apH": 0,
+			"apMC": 4
+		}
+	},
+	"services": {
+		"DeviceManager": {
+			"swg": {
+				"i": 6,
+				"f": {
+					"d": {
+						"c": "char*",
+						"cv": "inp"
+					},
+					"restart": {
+						"c": "bool",
+						"cv": "btc"
+					},
+					"val": {
+						"restart": {
+							"true": "Перезапустить"
+						}
+					}
+				}
+			},
+			"id": 6,
+			"d": "ESP8266 DeviceManager",
+			"restart": false
+		}
+	}
+}

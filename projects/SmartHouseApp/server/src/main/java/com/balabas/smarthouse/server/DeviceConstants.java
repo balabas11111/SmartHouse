@@ -3,6 +3,7 @@ package com.balabas.smarthouse.server;
 public class DeviceConstants {
 
 	public static final String FIELD_SPLITTER = ":";
+	public static final String TOPIC_SPLITTER  = "/";
 	
 	public static final String HTTP_PREFFIX  = "http://";
 	public static final String DEVICE_URL_ROOT = "/";
@@ -38,6 +39,7 @@ public class DeviceConstants {
 	public static final String ENTITY_FIELD_IP = "ip";
 	public static final String ENTITY_FIELD_ROOT = "root";
 	public static final String ENTITY_FIELD_DATA = "data";
+	public static final String ENTITY_FIELD_SWG = "swg";
 	//Entity standard key names
 	public static final String ENTITY_FIELD_ON = "on";
 	
