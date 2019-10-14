@@ -40,6 +40,8 @@ public class DeviceConstants {
 	public static final String ENTITY_FIELD_ROOT = "root";
 	public static final String ENTITY_FIELD_DATA = "data";
 	public static final String ENTITY_FIELD_SWG = "swg";
+	
+	public static final String ENTITY_FIELD_SWG_EQ_1 = "?swg=1";
 	//Entity standard key names
 	public static final String ENTITY_FIELD_ON = "on";
 	

@@ -25,7 +25,6 @@ public class MessageService implements InitializingBean, IMessageService {
 	public static final String MQTT_TO_DEVICE_TOPIC = "to/%s";
 	public static final String MQTT_FROM_DEVICE_TOPIC = "from/%s";
 	
-	public static final String MQTT_TO_DEVICE_ENTITY_TOPIC = "to/%s/%s";
 	public static final String MQTT_FROM_DEVICE_ENTITY_TOPIC = "%s/%s";
 	
 	public static final String PING = "ping";
@@ -171,11 +170,6 @@ public class MessageService implements InitializingBean, IMessageService {
 	@Override
 	public String getFromDeviceEntityTopicId(String deviceId, String entityName) {
 		return String.format(MQTT_FROM_DEVICE_ENTITY_TOPIC, deviceId, entityName);
-	}
-
-	@Override
-	public String getToDeviceEntityTopicId(String deviceId, String entityName) {
-		return String.format(MQTT_TO_DEVICE_ENTITY_TOPIC, deviceId, entityName);
 	}
 
 }

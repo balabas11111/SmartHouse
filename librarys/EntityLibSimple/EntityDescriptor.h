@@ -117,9 +117,9 @@ public:
 				(readOnly?EDC_CLASS_VIEW_LABEL:EDC_CLASS_VIEW_INPUT), readOnly);
 	}
 
-	static void appendEnabledValue(JsonObject& fieldJson, const char* name, const char* key, const char* value) {
+	static void appendEnabledValue(JsonObject& fieldsJson, const char* name, const char* key, const char* value) {
 		JsonObject& enabledValuesJson =
-				JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(fieldJson, EDC_FIELD_ENABLED_VALUES, name);
+				JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(fieldsJson, name, EDC_FIELD_ENABLED_VALUES);
 
 		enabledValuesJson[key] = value;
 	}

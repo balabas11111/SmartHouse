@@ -26,5 +26,4 @@ public interface IMessageService {
 	
 	String getFromDeviceEntityTopicId(String deviceId, String entityName);
 	
-	String getToDeviceEntityTopicId(String deviceId, String entityName);
 }

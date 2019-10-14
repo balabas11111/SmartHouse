@@ -12,9 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
-import com.balabas.smarthouse.server.entity.model.descriptor.EntityDescriptor;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityDescriptorMap;
-import com.balabas.smarthouse.server.entity.model.descriptor.IEntityDescriptor;
 import com.balabas.smarthouse.server.events.ChangedEvent;
 import com.balabas.smarthouse.server.events.EntityEvent;
 import com.balabas.smarthouse.server.events.GroupEvent;

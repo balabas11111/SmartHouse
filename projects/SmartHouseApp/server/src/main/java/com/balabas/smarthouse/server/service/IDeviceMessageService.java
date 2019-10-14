@@ -16,5 +16,4 @@ public interface IDeviceMessageService {
 	
 	void subscribeFromDeviceEntityTopic(DeviceEntity entity);
 	
-	boolean publishToDeviceEntityTopic(DeviceEntity entity, String message);
 }

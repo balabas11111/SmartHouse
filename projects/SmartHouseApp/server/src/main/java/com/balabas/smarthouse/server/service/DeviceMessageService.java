@@ -13,7 +13,7 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_STATUS;
 
 import static com.balabas.smarthouse.server.DeviceConstants.HTTP_PREFFIX;
 
-import static com.balabas.smarthouse.server.mqtt.MessageService.PING;
+import java.util.Optional;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,19 +110,19 @@ public class DeviceMessageService implements IDeviceMessageService {
 	@Override
 	public void initTopicsToFromDeviceEntity(DeviceEntity entity) {
 		subscribeFromDeviceEntityTopic(entity);
-		publishToDeviceEntityTopic(entity, PING);
+		
+		Optional.ofNullable(entity.getDescriptor()).ifPresent( descriptor -> {
+			publishToDeviceTopic(entity.getDeviceId(), 
+					new JSONObject()
+					.put(ENTITY_FIELD_ID, descriptor.getRemoteId())
+					.put(ENTITY_FIELD_STATUS, 200).toString());
+		});
 	}
 	
 	@Override
 	public void subscribeFromDeviceEntityTopic(DeviceEntity entity) {
 		String topicName = messageService.getFromDeviceEntityTopicId(entity.getDeviceId(), entity.getName());
 		messageService.registerSubscriberOrResubscribeExisting(new DataEntitySubscribtion(topicName, entity));
-	}
-	
-	@Override
-	public boolean publishToDeviceEntityTopic(DeviceEntity entity, String message) {
-		String topicName = messageService.getToDeviceEntityTopicId(entity.getDeviceId(), entity.getName());
-		return messageService.publishToTopic(topicName, message);
 	}
 
 	protected JSONObject constructRegisterResponse(String deviceId) {

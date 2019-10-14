@@ -11,6 +11,8 @@ import java.util.Optional;
 
 import org.json.JSONObject;
 
+import com.google.common.base.Joiner;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -42,4 +44,12 @@ public class EntityDescriptorMap implements IEntityDescriptorMap {
 		
 		return new EntityDescriptorMap(id, name, descrs);
 	}
+
+	@Override
+	public String toString() {
+		return "EntityDescriptorMap [remoteId=" + remoteId + ", name=" + name + ", descriptors= [" +
+				Joiner.on(",").withKeyValueSeparator("=").join(descriptors)+ "] ]";
+	}
+	
+	
 }

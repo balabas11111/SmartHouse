@@ -7,7 +7,6 @@ import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassC
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,12 +21,12 @@ import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassC
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_FIELD_ENABLED_VALUES;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_FIELD_ID;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.util.StringUtils;
 
 import com.balabas.smarthouse.server.entity.model.EntityAbstract;
 import com.balabas.smarthouse.server.exception.BadDataException;
+import com.google.common.base.Joiner;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -74,11 +73,13 @@ public class EntityDescriptor extends EntityAbstract implements IEntityDescripto
 		Map<String, IEntityDescriptor> result = new HashMap<>();
 		
 		
-		Arrays.asList(JSONObject.getNames(fieldsJson)).stream().forEach( fieldId ->	
-			Optional.ofNullable(fieldsJson.optJSONObject(fieldId))
-				.ifPresent( fieldJson -> Optional.ofNullable(fromJson(fieldJson, fieldId))
-							.ifPresent(d -> {result.put(fieldId, d);}))
-			);
+		Arrays.asList(JSONObject.getNames(fieldsJson)).stream()
+			.filter(fieldId -> !EDC_FIELD_ENABLED_VALUES.equals(fieldId))
+			.forEach( fieldId ->	
+				Optional.ofNullable(fieldsJson.optJSONObject(fieldId))
+					.ifPresent( fieldJson -> Optional.ofNullable(fromJson(fieldJson, fieldId))
+								.ifPresent(d -> {result.put(fieldId, d);}))
+					);
 
 		return result;
 	}
@@ -144,5 +145,15 @@ public class EntityDescriptor extends EntityAbstract implements IEntityDescripto
 		}
 		return false;
 	}
+
+	@Override
+	public String toString() {
+		return "EntityDescriptor [remoteId=" + remoteId + ", entityClassType=" + entityClassType + ", entityClassView="
+				+ entityClassView + ", timeToLive=" + timeToLive + ", readOnly=" + readOnly + ", enabledValues= ["
+				+ Joiner.on(",").withKeyValueSeparator("=").join(enabledValues) + "] ]";
+		
+	}
+	
+	
 	
 }

@@ -9,7 +9,7 @@ public enum EntityClassView {
 	EDC_CLASS_VIEW_LIST("lst"),
 	EDC_CLASS_VIEW_TABLE("tbl"),
 	EDC_CLASS_VIEW_MAP("map"),
-	EDC_CLASS_VIEW_LABEL("txt"),
+	EDC_CLASS_VIEW_LABEL("lbl"),
 	EDC_CLASS_VIEW_INPUT("inp"),
 	EDC_CLASS_VIEW_PASSWORD_INPUT("pwd"),
 	EDC_CLASS_VIEW_IP_INPUT("ipi"),

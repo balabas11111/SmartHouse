@@ -17,6 +17,17 @@ MqttManager::MqttManager(SettingsStorage* conf) {
 	this->toServerTopic = String(conf->deviceId()) + MQTT_SLASH_SUFFIX;
 	this->toDeviceTopic = strdup((String(MQTT_TO_DEVICE_TOPIC) + conf->deviceId()).c_str());
 	this->fromDeviceTopic = strdup((String(MQTT_FROM_DEVICE_TOPIC) + conf->deviceId()).c_str());
+
+	Serial.print(FPSTR("MqttManager toDeviceTopic ="));
+	Serial.print(toDeviceTopic);
+	Serial.print(FPSTR(" entityTopics ="));
+	Serial.print(toServerTopic);
+	Serial.print(FPSTR("<Entity.name()>"));
+	Serial.print(FPSTR("  fromDeviceTopic ="));
+	Serial.println(fromDeviceTopic);
+
+	this->lastReconnectAttempt = millis();
+	this->lastRegisterAttempt = millis();
 }
 
 void MqttManager::init(EntityJsonRequestResponse* buf, bool registered) {
@@ -41,18 +52,12 @@ void MqttManager::init(EntityJsonRequestResponse* buf, bool registered) {
 		this->initDone = true;
 		this->registered = registered;
 
-		toDeviceTopicSubscribed = subscribe(toDeviceTopic, true);
+		subscribeToDeviceTopic();
 
 		Serial.print(FPSTR("host ="));
 		Serial.print(adress.toString());
 		Serial.print(FPSTR(":"));
 		Serial.print(MQTT_PORT);
-		Serial.print(FPSTR("  toServerTopic ="));
-		Serial.print(toServerTopic);
-		Serial.print(FPSTR("  toDeviceTopic ="));
-		Serial.print(toDeviceTopic);
-		Serial.print(FPSTR("  fromDeviceTopic ="));
-		Serial.print(fromDeviceTopic);
 		Serial.print(FPSTR("  serverSubscribed ="));
 		Serial.println(toDeviceTopicSubscribed);
 
@@ -97,7 +102,7 @@ bool MqttManager::publishBuffer() {
 bool MqttManager::subscribeToDeviceTopic(){
 	this->toDeviceTopicSubscribed = subscribe(toDeviceTopic, true);
 	if(this->toDeviceTopicSubscribed){
-		Serial.println(FPSTR("Server subscribed"));
+		Serial.println(FPSTR("toDeviceTopicSubscribed"));
 	}
 	return this->toDeviceTopicSubscribed;
 }

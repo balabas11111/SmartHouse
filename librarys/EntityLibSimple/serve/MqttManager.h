@@ -40,11 +40,11 @@ public:
 	bool publishBuffer();
 private:
 	bool bufferUnsent = false;
-	SettingsStorage* conf;
-	EntityJsonRequestResponse* buffer;
+	SettingsStorage* conf = nullptr;
+	EntityJsonRequestResponse* buffer = nullptr;
 
-	WiFiClient* wclient;
-	PubSubClient* client;
+	WiFiClient* wclient = nullptr;
+	PubSubClient* client = nullptr;
 
 	boolean initDone = false;
 

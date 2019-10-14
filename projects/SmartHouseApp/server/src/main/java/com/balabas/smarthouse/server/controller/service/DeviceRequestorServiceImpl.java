@@ -53,7 +53,7 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 				headers.set(HttpHeaders.AUTHORIZATION, serverKey);
 				
 				String url = (device.isInitialDataReceived())?
-								device.getDataUrl():device.getDataUrl()+"?"+DeviceConstants.ENTITY_FIELD_SWG;
+								device.getDataUrl():device.getDataUrl() + DeviceConstants.ENTITY_FIELD_SWG_EQ_1;
 						
 				ResponseEntity<String> result = executor.executeGetRequest(url, headers, params);
 
