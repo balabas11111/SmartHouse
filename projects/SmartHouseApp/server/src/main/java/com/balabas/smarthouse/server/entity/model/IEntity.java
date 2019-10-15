@@ -21,4 +21,13 @@ public interface IEntity extends IItemContainer<IEntityField> {
 	
 	public Set<String> getSensorItemFields();
 	public void setSensorItemFields(Set<String> sensorItemFields);
+	
+	EntityStatus getStatus();
+	void setStatus(EntityStatus status);
+	
+	String getGroupName();
+	void setGroupName(String groupName);
+	
+	String getDeviceName();
+	void setDeviceName(String deviceName);
 }

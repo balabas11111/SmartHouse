@@ -7,9 +7,10 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ItemContainer<T extends IItemAbstract> extends ItemAbstract implements IItemContainer<T> {
+public abstract class ItemContainer<T extends IItemAbstract> extends ItemAbstract implements IItemContainer<T> {
 
 	private Set<T> children;
+	protected String parentName;
 
 	T getChildByName(String childName) {
 		return this.children.stream().filter(c -> c.getName().equals(childName)).findFirst().orElse(null);

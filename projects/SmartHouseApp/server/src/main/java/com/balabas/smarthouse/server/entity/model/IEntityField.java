@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.server.entity.model;
 
+import java.util.Set;
+
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
 import com.balabas.smarthouse.server.exception.BadValueException;
 
@@ -12,6 +14,9 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 
 	boolean isReadOnly();
 	void setReadOnly(boolean readOnly);
+	
+	Set<IEntityField<T>> getEnabledValues();
+	void setEnabledValues(Set<IEntityField<T>> enabledValues);
 	
 	EntityFieldClassView getViewClass();
 	void setViewClass(EntityFieldClassView viewClass);

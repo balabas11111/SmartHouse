@@ -17,4 +17,27 @@ public class Entity extends ItemContainer<IEntityField> implements IEntity {
 	
 	private Set<String> sensorItemIds;
 	private Set<String> sensorItemFields;
+	
+	private EntityStatus status;
+	private String devName;
+
+	@Override
+	public String getGroupName() {
+		return this.parentName;
+	}
+
+	@Override
+	public void setGroupName(String groupName) {
+		this.parentName = groupName;
+	}
+
+	@Override
+	public String getDeviceName() {
+		return this.devName;
+	}
+
+	@Override
+	public void setDeviceName(String deviceName) {
+		this.devName = deviceName;
+	}
 }

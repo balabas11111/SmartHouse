@@ -27,7 +27,8 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	@Getter @Setter
 	protected EntityFieldClassView viewClass;
 
-	protected Set<EntityField<T>> enabledValues;
+	@Getter @Setter
+	protected Set<IEntityField<T>> enabledValues;
 
 	public EntityField() {
 		this.clazz = ResolvableType.forClass(EntityField.class).getClass();

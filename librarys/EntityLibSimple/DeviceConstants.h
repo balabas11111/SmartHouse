@@ -41,8 +41,13 @@
 #define ENTITY_FIELD_URL_DATA "urlData"
 #define ENTITY_FIELD_ROOT "root"
 #define ENTITY_FIELD_DATA "data"
-#define ENTITY_FIELD_TO_DEVICE_TOPIC "toDTopic"
-#define ENTITY_FIELD_TO_SERVER_TOPIC "toSTopic"
+#define ENTITY_FIELD_STATUS "status"
+
+#define ENTITY_STATUS_ERROR 0
+#define ENTITY_STATUS_OK 1
+
+#define ENTITY_STATUS_DESCR_OK "OK"
+#define ENTITY_STATUS_DESCR_INIT_FAILED "Init failed"
 
 #define ENTITY_FIELD_SWG "swg"
 

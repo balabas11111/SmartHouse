@@ -8,4 +8,14 @@ import lombok.EqualsAndHashCode;
 public class Device extends ItemContainer<IGroup> implements IDevice {
 
 	private String firmware;
+
+	@Override
+	public String getDeviceName() {
+		return getName();
+	}
+
+	@Override
+	public void setDeviceName(String deviceName) {
+		setName(deviceName);
+	}
 }

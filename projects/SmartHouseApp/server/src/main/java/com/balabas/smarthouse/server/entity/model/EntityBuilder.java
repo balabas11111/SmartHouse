@@ -1,6 +1,11 @@
 package com.balabas.smarthouse.server.entity.model;
 
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_STATUS;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SWG;
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_DEVICE;
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_DEVICE_INFO;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_DESCRIPTION;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_FIRMWARE;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_COUNT;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_DESCRIPTION;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_FIELDS_ARRAY;
@@ -44,7 +49,20 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class EntityBuilder {
 	
-	public static IEntity buildEntityFromJson(JSONObject groupJson, String entityName) throws BadValueException {
+	public static void processDeviceInfo(Device device, JSONObject deviceJson) {
+		if (deviceJson.has(DEVICE_FIELD_DEVICE)) {
+			JSONObject deviceDeviceJson = deviceJson.getJSONObject(DEVICE_FIELD_DEVICE);
+
+			if (deviceDeviceJson.has(DEVICE_FIELD_DEVICE_INFO)) {
+				JSONObject info = Optional.ofNullable(deviceDeviceJson.getJSONObject(DEVICE_FIELD_DEVICE_INFO)).orElse(new JSONObject());
+
+				device.setDescription(info.optString(ENTITY_DEVICE_DEVICE_DESCRIPTION, device.getDescription()));
+				device.setFirmware(info.optString(ENTITY_DEVICE_DEVICE_FIRMWARE, device.getFirmware()));
+			}
+		}
+	}
+	
+	public static IEntity buildEntityFromJson(JSONObject groupJson, String groupName, String entityName) throws BadValueException {
 		
 		JSONObject entityJson = groupJson.optJSONObject(entityName);
 		JSONObject descriptorJson = entityJson.optJSONObject(ENTITY_FIELD_SWG);
@@ -58,6 +76,7 @@ public class EntityBuilder {
 		IEntity result = new Entity();
 		
 		result.setName(entityName);
+		result.setGroupName(groupName);
 		result.setDescription(description);
 		result.setEmoji(emoji);
 		result.setDescriptionField(descriptionField);
@@ -67,6 +86,9 @@ public class EntityBuilder {
 		Set<IEntityField> children = new LinkedHashSet<>();
 		
 		for(String fieldName : JSONObject.getNames(entityJson)) {
+			if(ENTITY_FIELD_STATUS.equals(fieldName)){
+				processEntityStatus(result, entityJson);
+			}else
 			if (ENTITY_FIELD_SENSOR_ITEMS.equals(fieldName)) {
 				processSensorItemsValues(result, entityJson);
 			} else
@@ -79,6 +101,16 @@ public class EntityBuilder {
 		result.setChildren(children);
 		
 		return result;
+	}
+	
+	private void processEntityStatus(IEntity entity, JSONObject entityJson) {
+		JSONObject statusJson = entityJson.optJSONObject(ENTITY_FIELD_STATUS);
+		if (statusJson != null){
+			int stat = entityJson.optInt(EDC_FIELD_ID, 1);
+			String descr = entityJson.optString(EDC_FIELD_DESCRIPTION, "OK");
+			
+			entity.setStatus(new EntityStatus(stat, descr));
+		}
 	}
 	
 	private void processSensorItemsValues(IEntity entity, JSONObject entityJson) {
@@ -139,6 +171,11 @@ public class EntityBuilder {
 		result.setValueStr(value);
 		
 		return result;
+	}
+	
+	private static Set<IEntityField> getEnabledValues() {
+		
+		return null;
 	}
 	
 	private static IEntityField createEntityFieldByClass(Class<?> clazz){
