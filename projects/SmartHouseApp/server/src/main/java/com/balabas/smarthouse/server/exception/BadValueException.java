@@ -8,6 +8,10 @@ public class BadValueException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
+	public BadValueException() {
+		super();
+	}
+	
 	public BadValueException(String message, String data) {
         super(message+" value:"+data);
     }

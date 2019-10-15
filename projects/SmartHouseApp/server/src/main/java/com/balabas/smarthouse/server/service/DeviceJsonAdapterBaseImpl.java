@@ -133,15 +133,6 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 	}
 
 	private Group getGroupOrCreateNew(Device device, String groupName, List<ChangedEvent> events) {
-		/*JSONObject deviceJson = device.getData();
-		JSONObject groupJson = null;
-
-		try {
-			groupJson = deviceJson.getJSONObject(groupName);
-		} catch (Exception e) {
-			return null;
-		}
-*/
 		Group group = device.getGroup(groupName);
 
 		if (group == null) {
@@ -162,7 +153,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 
 		if(entityJson == null) {return;}
 
-		DeviceEntity entity = getEntityOrCreateNew(noEventProduceApplyOnly, device, group, entityName, events);
+		DeviceEntity entity = getEntityOrCreateNew( device, group, entityName, events);
 
 		List<ValuesChangeEvent> valueEvents = new ArrayList<>();
 
@@ -175,7 +166,7 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 		}
 	}
 
-	private DeviceEntity getEntityOrCreateNew(boolean noEventProduceApplyOnly, Device device, Group group,
+	private DeviceEntity getEntityOrCreateNew(Device device, Group group,
 			String entityName, List<EntityEvent> events) {
 		DeviceEntity entity = group.getEntity(entityName);
 
@@ -194,14 +185,12 @@ public class DeviceJsonAdapterBaseImpl implements DeviceJsonAdapter {
 			JSONObject entityJson) {
 		List<ValueChangeOperation> changeOperations = new ArrayList<>();
 
-		//entity.setData(entityJson);
-
 		Map<String, Object> jsonMap = entityJson.toMap();
 
 		for (Entry<String, Object> entry : jsonMap.entrySet()) {
 			String key = entry.getKey();
 
-			if ((entity instanceof DeviceEntity) && ENTITY_FIELD_SWG.equals(key)) {
+			if (ENTITY_FIELD_SWG.equals(key)) {
 				JSONObject descriptorJson = entityJson.optJSONObject(ENTITY_FIELD_SWG);
 
 				log.debug("Entity descriptor : " + descriptorJson);

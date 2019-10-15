@@ -2,7 +2,7 @@ package com.balabas.smarthouse.server.entity.model.descriptor;
 
 import java.util.stream.Stream;
 
-public enum EntityClassType {
+public enum EntityFieldClassType {
 
 	BOOLEAN(Boolean.class, "bool"),
 	INTEGER(Integer.class, "int"),
@@ -14,7 +14,7 @@ public enum EntityClassType {
 	private Class<?> clazz;
 	private String key;
 	
-	EntityClassType(Class<?> clazz, String key) {
+	EntityFieldClassType(Class<?> clazz, String key) {
 		this.clazz = clazz;
 		this.key = key;
 	}
@@ -27,7 +27,7 @@ public enum EntityClassType {
 		return this.key;
 	}
 	
-	public static EntityClassType from(String key){
-		return Stream.of(EntityClassType.values()).filter( i -> i.getKey().equalsIgnoreCase(key)).findFirst().orElse(OBJECT);
+	public static EntityFieldClassType from(String key){
+		return Stream.of(EntityFieldClassType.values()).filter( i -> i.getKey().equalsIgnoreCase(key)).findFirst().orElse(null);
 	}
 }

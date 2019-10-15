@@ -1,21 +1,24 @@
 package com.balabas.smarthouse.server.entity.model;
 
-import java.util.Optional;
 import java.util.Set;
 
+import com.balabas.smarthouse.server.model.EntityClass;
+
 @SuppressWarnings("rawtypes")
-public interface IEntity extends IEntityAbstract {
+public interface IEntity extends IItemContainer<IEntityField> {
+
+	int getRemoteId();
+	void setRemoteId(int remoteId);
 	
-	Set<IEntityField> getFields();
+	String getDescriptionField();
+	void setDescriptionField(String descriptionField);
 	
-	Set<IEntity> getEntities();
+	EntityClass getRenderer();
+	void setRenderer(EntityClass entityRenderer);
 	
-	default Optional<IEntity> getEntity(String entityName){
-		return getEntities().stream().filter(e -> e.getName().equals(entityName)).findFirst();
-	}
+	public Set<String> getSensorItemIds();
+	public void setSensorItemIds(Set<String> sensorItemIds);
 	
-	default Optional<IEntityField> getEntityField(String entityFieldName){
-		return getFields().stream().filter(e -> e.getName().equals(entityFieldName)).findFirst();
-	}
-	
+	public Set<String> getSensorItemFields();
+	public void setSensorItemFields(Set<String> sensorItemFields);
 }

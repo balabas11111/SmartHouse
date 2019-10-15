@@ -16,7 +16,7 @@ public enum EntityClass{
 			return itemClass;
 		}
 		
-		static EntityClass getByKey(String key) {
+		public static EntityClass getByKey(String key) {
 			if(key == null || key.isEmpty()) {
 				return DEFAULT;
 			}

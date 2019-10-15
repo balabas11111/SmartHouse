@@ -1,8 +1,7 @@
 package com.balabas.smarthouse.server.entity.alarm;
 
-import com.balabas.smarthouse.server.entity.model.IEntity;
-import com.balabas.smarthouse.server.entity.model.IEntityAbstract;
+import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 
-public interface IEntityAlarm extends IEntityAbstract, IAlarm<IEntity> {
+public interface IEntityAlarm extends IItemAbstract, IAlarm<IItemAbstract> {
 
 }

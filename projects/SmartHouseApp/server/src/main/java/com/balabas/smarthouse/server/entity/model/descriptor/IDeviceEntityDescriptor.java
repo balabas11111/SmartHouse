@@ -6,8 +6,8 @@ public interface IDeviceEntityDescriptor {
 
 	int getRemoteId();
 	String getName();
-	IEntityDescriptor getDescriptionDescriptor();
+	String getDescriptionField();
 	Emoji getEmoji();
 	
-	Map<String, IEntityDescriptor> getDescriptors();
+	Map<String, IEntityFieldDescriptor> getDescriptors();
 }

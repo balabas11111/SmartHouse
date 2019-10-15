@@ -25,7 +25,6 @@ import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassC
 import org.json.JSONObject;
 import org.springframework.util.StringUtils;
 
-import com.balabas.smarthouse.server.entity.model.EntityAbstract;
 import com.balabas.smarthouse.server.exception.BadDataException;
 import com.google.common.base.Joiner;
 
@@ -35,23 +34,18 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Builder
-public class EntityDescriptor extends EntityAbstract implements IEntityDescriptor {
+public class EntityFieldDescriptor implements IEntityFieldDescriptor {
 
-	/*@Getter
-	private EntityClassEditors entityClassEditor;
 	@Getter
-	private EntityClassSubstance entityClassSubstance;
+	private String name;
 	@Getter
-	private EntityClassLevel entityClassLevel;
-	@Getter
-	private EntityClassPersistor entityClassPersistor;
-	*/
+	private String description;
 	@Getter
 	private int remoteId;
 	@Getter
-	private EntityClassType entityClassType;
+	private EntityFieldClassType entityClassType;
 	@Getter
-	private EntityClassView entityClassView;
+	private EntityFieldClassView entityClassView;
 	@Getter
 	private Long timeToLive;
 	@Getter
@@ -61,19 +55,14 @@ public class EntityDescriptor extends EntityAbstract implements IEntityDescripto
 	@Getter
 	private Map<String, IFieldEnabledValue> enabledValues;
 	
-	protected boolean validate() {
-		
-		return true;
-	}
-	
-	public static Map<String, IEntityDescriptor> fromJson(JSONObject fieldsJson){
+	public static Map<String, IEntityFieldDescriptor> fromJson(JSONObject fieldsJson){
 		if(fieldsJson == null || fieldsJson.isEmpty()) {
 			return Collections.emptyMap();
 		}
 		
 		log.debug("Parse fieldsJson : " + fieldsJson.toString());
 		
-		Map<String, IEntityDescriptor> result = new HashMap<>();
+		Map<String, IEntityFieldDescriptor> result = new HashMap<>();
 		
 		
 		Arrays.asList(JSONObject.getNames(fieldsJson)).stream()
@@ -87,8 +76,8 @@ public class EntityDescriptor extends EntityAbstract implements IEntityDescripto
 		return result;
 	}
 	
-	public static IEntityDescriptor fromJson(JSONObject dJson, String nameOver) {
-		EntityDescriptor result = null;		
+	public static IEntityFieldDescriptor fromJson(JSONObject dJson, String nameOver) {
+		EntityFieldDescriptor result = null;		
 		try {
 		
 			if (dJson == null) {
@@ -105,24 +94,18 @@ public class EntityDescriptor extends EntityAbstract implements IEntityDescripto
 					.collect(Collectors.toMap(Map.Entry::getKey, e -> (IFieldEnabledValue) e.getValue()));
 					
 			
-			result = EntityDescriptor.builder()
-					/*.entityClassEditor(EntityClassEditors.from(dJson.optString(ENTITY_CLASS_EDITORS, null)))
-					.entityClassLevel(EntityClassLevel.from(dJson.optString(ENTITY_CLASS_LEVEL, null)))
-					.entityClassPersistor(EntityClassPersistor.from(dJson.optString(ENTITY_CLASS_PERSISTOR, null)))
-					.entityClassSubstance(EntityClassSubstance.from(dJson.optString(ENTITY_CLASS_SUBSTANCE, null)))
-					*/
+			result = EntityFieldDescriptor.builder()
 					.remoteId(dJson.optInt(EDC_FIELD_ID, -1))
-					.entityClassType(EntityClassType.from(dJson.optString(EDC_CLASS, null)))
-					.entityClassView(EntityClassView.from(dJson.optString(EDC_CLASS_VIEW, null)))
+					.name(dJson.optString(EDC_FIELD_NAME, (StringUtils.isEmpty(nameOver))?EMPTY_STR:nameOver))
+					.description(dJson.optString(EDC_FIELD_DESCRIPTION, EMPTY_STR))
+					.entityClassType(EntityFieldClassType.from(dJson.optString(EDC_CLASS, null)))
+					.entityClassView(EntityFieldClassView.from(dJson.optString(EDC_CLASS_VIEW, null)))
 					.readOnly( booleanFromString(dJson.optString(EDC_READ_ONLY, FALSE)))
 					.timeToLive( Long.valueOf(dJson.optLong(EDC_TIME_TO_LIVE, 60000)))
 					.emoji( Emoji.getByCode(dJson.optString(EDC_FIELD_EMOJI, null)))
 					.enabledValues(enabledVals)
 					.build();
 
-			result.setDescription(dJson.optString(EDC_FIELD_DESCRIPTION, EMPTY_STR));
-			result.setName(dJson.optString(EDC_FIELD_NAME, (StringUtils.isEmpty(nameOver))?EMPTY_STR:nameOver));
-			
 			return result;
 		
 		}catch(Throwable e) {

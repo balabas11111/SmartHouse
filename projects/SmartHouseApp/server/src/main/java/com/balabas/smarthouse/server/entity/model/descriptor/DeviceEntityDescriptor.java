@@ -30,18 +30,18 @@ public class DeviceEntityDescriptor implements IDeviceEntityDescriptor {
 	@Getter
 	private Emoji emoji;
 	@Getter
-	IEntityDescriptor descriptionDescriptor;
+	String descriptionField;
 	@Getter
-	private Map<String, IEntityDescriptor> descriptors;
+	private Map<String, IEntityFieldDescriptor> descriptors;
 	
 	public static IDeviceEntityDescriptor fromJson(JSONObject json, String nameOver) {
 		if(json == null || json.isEmpty()) {
 			return null;
 		}
-		Map<String, IEntityDescriptor> descrs = new LinkedHashMap<>();
+		Map<String, IEntityFieldDescriptor> descrs = new LinkedHashMap<>();
 		
 		Optional.ofNullable(json.optJSONObject(EDC_ENTITY_FIELDS))
-		.ifPresent( fieldsJson -> descrs.putAll(EntityDescriptor.fromJson(fieldsJson)));
+		.ifPresent( fieldsJson -> descrs.putAll(EntityFieldDescriptor.fromJson(fieldsJson)));
 		
 		int id = json.optInt(EDC_FIELD_ID, -1);
 		String name = json.optString(EDC_FIELD_NAME, nameOver);
@@ -53,9 +53,7 @@ public class DeviceEntityDescriptor implements IDeviceEntityDescriptor {
 		Emoji emoji = Emoji.getByCode(json.optString(EDC_FIELD_EMOJI, null));
 		String descrField = json.optString(EDC_FIELD_DESCR_FIELD, EDC_FIELD_DESCRIPTION);
 		
-		IEntityDescriptor descr = descrs.getOrDefault(descrField, null);
-		
-		IDeviceEntityDescriptor result = new DeviceEntityDescriptor(id, name, emoji, descr, descrs);
+		IDeviceEntityDescriptor result = new DeviceEntityDescriptor(id, name, emoji, descrField, descrs);
 		log.debug("DeviceEntity descr : " + result);
 		
 		return result;

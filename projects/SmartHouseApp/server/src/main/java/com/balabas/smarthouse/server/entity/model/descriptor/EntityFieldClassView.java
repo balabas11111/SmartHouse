@@ -2,7 +2,7 @@ package com.balabas.smarthouse.server.entity.model.descriptor;
 
 import java.util.stream.Stream;
 
-public enum EntityClassView {
+public enum EntityFieldClassView {
 
 	EDC_CLASS_VIEW_DEFAULT("def"),
 	EDC_CLASS_VIEW_NONE("non"),
@@ -23,7 +23,7 @@ public enum EntityClassView {
 	
 	private String key;
 	
-	EntityClassView(String key) {
+	EntityFieldClassView(String key) {
 		this.key = key;
 	}
 	
@@ -31,7 +31,7 @@ public enum EntityClassView {
 		return this.key;
 	}
 	
-	public static EntityClassView from(String key){
-		return Stream.of(EntityClassView.values()).filter( i -> i.getKey().equalsIgnoreCase(key)).findFirst().orElse(EDC_CLASS_VIEW_DEFAULT);
+	public static EntityFieldClassView from(String key){
+		return Stream.of(EntityFieldClassView.values()).filter( i -> i.getKey().equalsIgnoreCase(key)).findFirst().orElse(EDC_CLASS_VIEW_DEFAULT);
 	}
 }

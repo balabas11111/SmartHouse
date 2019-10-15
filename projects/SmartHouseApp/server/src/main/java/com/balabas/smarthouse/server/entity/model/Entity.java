@@ -2,23 +2,19 @@ package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Set;
 
-import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import lombok.Getter;
-import lombok.Setter;
+import com.balabas.smarthouse.server.model.EntityClass;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @SuppressWarnings("rawtypes")
-public class Entity extends EntityAbstractDescripted implements IEntity {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class Entity extends ItemContainer<IEntityField> implements IEntity {
+
+	private int remoteId;
+	private String descriptionField;
+	private EntityClass renderer;
 	
-	@Getter @Setter
-	private Set<IEntityField> fields;
-	
-	@Getter @Setter
-	private Set<IEntity> entities;
-	
-	@JsonIgnore
-	@Getter @Setter
-	private Set<IEntityAlarm> alarms;
-	
+	private Set<String> sensorItemIds;
+	private Set<String> sensorItemFields;
 }
