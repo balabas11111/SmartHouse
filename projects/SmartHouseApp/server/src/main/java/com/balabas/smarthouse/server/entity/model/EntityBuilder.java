@@ -173,7 +173,7 @@ public class EntityBuilder {
 		return result;
 	}
 	
-	private static Set<IEntityField> getEnabledValues() {
+	private static Set<IEntityField> getEnabledValues(JSONObject fieldDecriptor, String fieldName) {
 		
 		return null;
 	}
