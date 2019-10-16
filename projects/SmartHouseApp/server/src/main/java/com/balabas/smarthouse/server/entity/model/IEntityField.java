@@ -12,6 +12,9 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	
 	T getValue();
 
+	String getAction();
+	void setAction(String action);
+	
 	boolean isReadOnly();
 	void setReadOnly(boolean readOnly);
 	

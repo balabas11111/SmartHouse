@@ -17,6 +17,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.balabas.smarthouse.server.DeviceConstants;
+import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.DeviceEntity;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
@@ -70,6 +71,45 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 
 		return null;
 	}
+	
+	@Override
+	public String executeGetDataOnDevice(IDevice device, String groupName) {
+		if (device != null) {
+			if (device.getDataUrl() != null) {
+				Map<String, String> params = (groupName != null && !groupName.isEmpty())
+						? Collections.singletonMap(DEVICE_FIELD_GROUP, groupName)
+						: Collections.emptyMap();
+
+				String serverKey = securityService.getServerKey(device.getDeviceName());		
+				
+				if(serverKey == null) {
+					log.error("Empty Server key " + device.getDeviceName());
+					return null;
+				}
+				
+				HttpHeaders headers = new HttpHeaders();
+				headers.set(HttpHeaders.AUTHORIZATION, serverKey);
+				
+				String url = (device.isInitialized())?
+								device.getDataUrl():device.getDataUrl() + DeviceConstants.ENTITY_FIELD_SWG_EQ_1;
+						
+				ResponseEntity<String> result = executor.executeGetRequest(url, headers, params);
+
+				if (result.getStatusCode().equals(HttpStatus.OK)) {
+					return result.getBody();
+				}
+
+			} else {
+				log.error("Empty data url deviceId=" + device.getDeviceName());
+			}
+		}
+
+		log.error("Empty device");
+
+		return null;
+	}
+	
+	
 	
 	@Override
 	public String executePostDataOnDevice(Device device, JSONObject json){

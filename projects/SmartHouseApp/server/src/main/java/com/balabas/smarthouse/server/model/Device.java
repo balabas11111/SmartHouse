@@ -23,16 +23,12 @@ public class Device implements SmartHouseItem/*, JsonDataContainer*/ {
 
 	private String ip;
 	private String dataUrl;
-	private String rootUrl;
 
 	@JsonIgnore
 	private String deviceKey;
 
 	private DeviceState state = DeviceState.UNKNOWN;
-/*
-	@JsonIgnore
-	private JSONObject data;
-*/
+
 	private Set<Group> groups;
 
 	@JsonIgnore
@@ -40,7 +36,7 @@ public class Device implements SmartHouseItem/*, JsonDataContainer*/ {
 
 	public Device(String deviceId, long updateInterval) {
 		this.deviceId = deviceId;
-		timer = new UpdateTimer(this, updateInterval);
+		timer = new UpdateTimer(updateInterval);
 	}
 
 	public boolean isRegistered() {

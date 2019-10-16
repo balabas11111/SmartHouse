@@ -5,7 +5,7 @@ import java.util.Set;
 import com.balabas.smarthouse.server.model.EntityClass;
 
 @SuppressWarnings("rawtypes")
-public interface IEntity extends IItemContainer<IEntityField> {
+public interface IEntity extends IStateable, IItemContainer<IEntityField> {
 
 	int getRemoteId();
 	void setRemoteId(int remoteId);
@@ -16,11 +16,11 @@ public interface IEntity extends IItemContainer<IEntityField> {
 	EntityClass getRenderer();
 	void setRenderer(EntityClass entityRenderer);
 	
-	public Set<String> getSensorItemIds();
-	public void setSensorItemIds(Set<String> sensorItemIds);
+	Set<String> getGrouppedFieldsIds();
+	void setGrouppedFieldsIds(Set<String> grouppedFieldsIds);
 	
-	public Set<String> getSensorItemFields();
-	public void setSensorItemFields(Set<String> sensorItemFields);
+	Set<String> getGrouppedFieldsNames();
+	void setGrouppedFieldsNames(Set<String> grouppedFieldsNames);
 	
 	EntityStatus getStatus();
 	void setStatus(EntityStatus status);
@@ -30,4 +30,8 @@ public interface IEntity extends IItemContainer<IEntityField> {
 	
 	String getDeviceName();
 	void setDeviceName(String deviceName);
+	
+	default IEntityField getEntityField(String entityFieldName) {
+		return getChild(entityFieldName);
+	}
 }

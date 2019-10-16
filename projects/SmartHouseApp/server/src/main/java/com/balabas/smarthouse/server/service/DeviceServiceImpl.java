@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.controller.service.DeviceRequestorService;
+import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.SmartHouseEntityBuilder;
+import com.balabas.smarthouse.server.entity.model.State;
 import com.balabas.smarthouse.server.events.ChangedEvent;
 import com.balabas.smarthouse.server.events.ChangedEvent.EventType;
 import com.balabas.smarthouse.server.events.DeviceEvent;
@@ -71,6 +74,8 @@ public class DeviceServiceImpl implements DeviceService {
 	DeviceRequestorService deviceRequestor;
 	
 	private List<Device> devices;
+	
+	private List<IDevice> devicesListl = new ArrayList<>(); 
 
 	public DeviceServiceImpl() {
 		this.devices = new ArrayList<>();
@@ -110,7 +115,6 @@ public class DeviceServiceImpl implements DeviceService {
 	    
 	    String baseUrl = HTTP_PREFFIX + request.getIp();
 	    
-	    String deviceRootUrl = DEVICE_URL_ROOT;
 	    String deviceDataUrl = DEVICE_URL_DATA;
 	    
 	    if(request.hasData()){
@@ -118,23 +122,16 @@ public class DeviceServiceImpl implements DeviceService {
 	    	
 	    	JSONObject dataJson = new JSONObject(data);
 	    	
-	    	if(dataJson.has(DEVICE_FIELD_URL_ROOT)){
-	    		deviceRootUrl = dataJson.optString(DEVICE_FIELD_URL_ROOT, DEVICE_URL_ROOT);
-	    	}
 	    	if(dataJson.has(DEVICE_FIELD_URL_DATA)){
 	    		deviceDataUrl = dataJson.optString(DEVICE_FIELD_URL_DATA, DEVICE_URL_DATA);
 	    	}
 	    }
 	    
-	    if(!deviceRootUrl.startsWith(HTTP_PREFFIX)) {
-	    	deviceRootUrl = baseUrl + deviceRootUrl;
-	    }
 	    if(!deviceDataUrl.startsWith(HTTP_PREFFIX)) {
 	    	deviceDataUrl = baseUrl + deviceDataUrl;
 	    }
 	    
 	    device.setDataUrl(deviceDataUrl);
-	    device.setRootUrl(deviceRootUrl);
 	    device.setState(DeviceState.CONSTRUCTED);
 	    
 	    device.setDeviceKey(request.getDeviceKey());
@@ -175,6 +172,30 @@ public class DeviceServiceImpl implements DeviceService {
 				+ result.getResult().toString());
 
 		return result;
+	}
+	
+	public IDevice getDevice(IDevice device) {
+		return this.devicesListl.stream().filter(d -> d.getName().equals(device.getName())).findFirst().orElse(null);
+	}
+	
+	public void processRegistrationRequest(DeviceRequest request) {
+		IDevice deviceFromRequest = SmartHouseEntityBuilder.buildDeviceFromRequest(request);
+		
+		IDevice device = getDevice(deviceFromRequest);
+		
+		if (device == null){
+			//register device
+			device = deviceFromRequest;
+			device.setState(State.REGISTERED);
+			devicesListl.add(device);
+			log.info("Registered :" + device.getName());
+		} else {
+			//reregister device
+			 log.info("ReRegistered :" + device.getName());
+		}
+		
+		//requestDevicesValues(device, null);
+		device.getUpdateTimer().setWaitsForDataUpdate(true);
 	}
 	
 	private boolean isDeviceRegistrationAllowed(Device device) {
@@ -363,6 +384,29 @@ public class DeviceServiceImpl implements DeviceService {
         	
         	if(!isDisconnected) {
         		dispatchEvent(new DeviceEvent(device, EventType.DISCONNECTED));
+        		log.error("Error request device values",e);
+        	}
+        }
+    }
+    
+    @Override
+    public void requestDevicesValues(IDevice device, Group group) {
+    	boolean isDisconnected = State.DISCONNECTED.equals(device.getState()); 
+
+    	try {
+       		log.debug("Request data "+device.getDeviceName());
+
+       		String groupId = group!=null?group.getName():null;
+            
+            String result = deviceRequestor.executeGetDataOnDevice(device, groupId);
+            //processDataReceivedFromDevice(device, result, true);
+        } catch (Exception e) {
+        	device.setState(State.DISCONNECTED);
+        	device.getUpdateTimer().setWaitsForDataUpdate(false);
+        	device.getUpdateTimer().setNextTimeToUpdate(60000);
+        	
+        	if(!isDisconnected) {
+        		//dispatchEvent(new DeviceEvent(device, EventType.DISCONNECTED));
         		log.error("Error request device values",e);
         	}
         }

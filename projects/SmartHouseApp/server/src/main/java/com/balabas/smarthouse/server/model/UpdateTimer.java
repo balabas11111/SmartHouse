@@ -10,8 +10,6 @@ import lombok.extern.log4j.Log4j2;
 @NoArgsConstructor
 public class UpdateTimer {
 
-    private String parentName;
-    
     private long updateInterval;
     
     @Getter
@@ -24,12 +22,11 @@ public class UpdateTimer {
     
     private boolean waitsForDataUpdate;
     
-    public UpdateTimer(SmartHouseItem parent,  long updateInterval) {
-        this.parentName = parent.getName();
+    public UpdateTimer(long updateInterval) {
         this.updateInterval = updateInterval;
         this.registrationTime = new Date();
         
-        log.debug("new UpdateTimer("+parentName+") i="+updateInterval);
+        log.debug("new UpdateTimer i="+updateInterval);
     }
     
     public void setWaitsForDataUpdate(boolean value){
@@ -41,7 +38,6 @@ public class UpdateTimer {
         setNextTimeToUpdate();
 
         this.lastUpdateTime = (new Date()).getTime();
-        //log.info(this.parentClass+"("+this.parentName+") DataUpdate completed");
     }
     
     public void setDataUpdateFailed(){
@@ -59,7 +55,6 @@ public class UpdateTimer {
         }else{
             log.error("Wrong updateInterval");
         }
-
     }
     
     public boolean isWaitsForDataUpdate() {

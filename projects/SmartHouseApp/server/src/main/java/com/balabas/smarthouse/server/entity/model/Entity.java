@@ -3,6 +3,8 @@ package com.balabas.smarthouse.server.entity.model;
 import java.util.Set;
 
 import com.balabas.smarthouse.server.model.EntityClass;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,10 +17,13 @@ public class Entity extends ItemContainer<IEntityField> implements IEntity {
 	private String descriptionField;
 	private EntityClass renderer;
 	
-	private Set<String> sensorItemIds;
-	private Set<String> sensorItemFields;
+	private Set<String> grouppedFieldsIds;
+	private Set<String> grouppedFieldsNames;
 	
 	private EntityStatus status;
+	private State state;
+	
+	@JsonIgnore
 	private String devName;
 
 	@Override

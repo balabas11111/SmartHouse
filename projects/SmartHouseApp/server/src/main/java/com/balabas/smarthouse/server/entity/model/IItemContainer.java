@@ -9,4 +9,7 @@ public interface IItemContainer<T extends IItemAbstract> extends IItemAbstract {
 	
 	String getDeviceName();
 	void setDeviceName(String deviceName);
+	
+	boolean hasChild(String childName);
+	T getChild(String childName);
 }

@@ -1,8 +1,7 @@
 package com.balabas.smarthouse.server.entity.model;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.Set;
-
-import org.springframework.core.ResolvableType;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
 import com.balabas.smarthouse.server.exception.BadValueException;
@@ -22,6 +21,9 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	protected T value;
 	
 	@Getter @Setter
+	private String action;
+	
+	@Getter @Setter
 	protected boolean readOnly;
 	
 	@Getter @Setter
@@ -31,14 +33,18 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	protected Set<IEntityField<T>> enabledValues;
 
 	public EntityField() {
-		this.clazz = ResolvableType.forClass(EntityField.class).getClass();
+		ParameterizedType type = (ParameterizedType)this.getClass().getGenericSuperclass();
+		clazz = (Class)type.getActualTypeArguments()[0];
 	}
 
 	@Override
 	public void setValue(T value) throws BadValueException {
-		if (enabledValues != null && !enabledValues.isEmpty() && enabledValues.stream().noneMatch( e -> e.getValue().equals(value))) {
+	
+		if (value!=null && enabledValues != null && !enabledValues.isEmpty() && enabledValues.stream().noneMatch( e -> e.getValue().equals(value))) {
+			this.value = null;
 			throw new BadValueException();
 		}
+		
 		this.value = value;
 	}
 

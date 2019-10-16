@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
+import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.DeviceEntity;
 
@@ -14,5 +15,7 @@ public interface DeviceRequestorService {
 	String executePostDataOnDevice(Device device, JSONObject json);
 	
 	String executePostDataOnDeviceEntity(Device device, DeviceEntity entity, Map<String, Object> values);
+
+	String executeGetDataOnDevice(IDevice device, String groupName);
 
 }

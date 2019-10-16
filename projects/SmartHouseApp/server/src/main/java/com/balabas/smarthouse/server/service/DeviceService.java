@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.json.JSONObject;
 
+import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.Device;
 import com.balabas.smarthouse.server.model.Group;
@@ -46,5 +47,7 @@ public interface DeviceService {
 
 	void processDataReceivedFromDevice(Device device, String deviceData, boolean dataExpected)
 			throws ResourceNotFoundException;
+
+	void requestDevicesValues(IDevice device, Group group);
 
 }

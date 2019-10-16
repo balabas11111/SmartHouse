@@ -55,16 +55,15 @@ public class Group implements SmartHouseItem {
     @JsonIgnore
     private UpdateTimer timer;
     
-    public Group(String deviceId, String name/*,JSONObject data*/){
+    public Group(String deviceId, String name){
     	this.deviceId = deviceId;
         this.name = name;
         this.entities = new HashSet<>();
-        //this.data = data;
         
         this.groupType = GroupType.getGroupTypeByName(name);
         
         if(!this.groupType.equals(GroupType.CUSTOM)){
-            timer = new UpdateTimer(this, this.groupType.refreshInterval);
+            timer = new UpdateTimer(this.groupType.refreshInterval);
         }
     }
     
