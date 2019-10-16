@@ -9,9 +9,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.service.IDeviceService;
 import com.balabas.smarthouse.server.exception.DeviceRequestValidateException;
-import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.model.request.DeviceRequestResult;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
@@ -75,15 +75,14 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 		try {
 			if(request.hasData()) {
 				securityService.validateDeviceRequestDataUpdate(request);
-				deviceService.processDeviceDataUpdateDispatched(request.getDeviceId(), request.getData());
+				IDevice device = deviceService.getDevice(request.getDeviceId());
+				device.getUpdateTimer().setUpdateForced(true);
 			}
 			return DeviceRequestResult.from(HttpStatus.OK);
 			
 
 		} catch (DeviceRequestValidateException e) {
 			return DeviceRequestResult.from(e.getStatus());
-		} catch (ResourceNotFoundException e) {
-			return DeviceRequestResult.from(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

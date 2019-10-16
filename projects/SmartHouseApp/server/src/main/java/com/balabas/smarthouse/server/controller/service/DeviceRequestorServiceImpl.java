@@ -18,8 +18,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.balabas.smarthouse.server.DeviceConstants;
 import com.balabas.smarthouse.server.entity.model.IDevice;
-import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.model.DeviceEntity;
+import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
 import com.balabas.smarthouse.server.service.HttpRequestExecutor;
 
@@ -35,43 +34,6 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 	@Autowired
 	DeviceSecurityService securityService;
 
-	@Override
-	public String executeGetDataOnDevice(Device device, String deviceEntityGroup) {
-		if (device != null) {
-			if (device.getDataUrl() != null) {
-				Map<String, String> params = (deviceEntityGroup != null && !deviceEntityGroup.isEmpty())
-						? Collections.singletonMap(DEVICE_FIELD_GROUP, deviceEntityGroup)
-						: Collections.emptyMap();
-
-				String serverKey = securityService.getServerKey(device.getDeviceId());		
-				
-				if(serverKey == null) {
-					log.error("Empty Server key " + device.getDeviceId());
-					return null;
-				}
-				
-				HttpHeaders headers = new HttpHeaders();
-				headers.set(HttpHeaders.AUTHORIZATION, serverKey);
-				
-				String url = (device.isInitialDataReceived())?
-								device.getDataUrl():device.getDataUrl() + DeviceConstants.ENTITY_FIELD_SWG_EQ_1;
-						
-				ResponseEntity<String> result = executor.executeGetRequest(url, headers, params);
-
-				if (result.getStatusCode().equals(HttpStatus.OK)) {
-					return result.getBody();
-				}
-
-			} else {
-				log.error("Empty data url deviceId=" + device.getDeviceId());
-			}
-		}
-
-		log.error("Empty device");
-
-		return null;
-	}
-	
 	@Override
 	public String executeGetDataOnDevice(IDevice device, String groupName) {
 		if (device != null) {
@@ -112,19 +74,19 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 	
 	
 	@Override
-	public String executePostDataOnDevice(Device device, JSONObject json){
+	public String executePostDataOnDevice(IDevice device, JSONObject json){
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey(device.getDeviceId()));
+		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey(device.getName()));
 		
 		return executor.executePostRequest(device.getDataUrl(), headers, json.toString()).getBody();
 	}
 
 	@Override
-	public String executePostDataOnDeviceEntity(Device device, DeviceEntity entity, Map<String, Object> values) {
+	public String executePostDataOnDeviceEntity(IDevice device, IEntity entity, Map<String, Object> values) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey(device.getDeviceId()));
+		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey(device.getName()));
 		
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
 		map.add(DEVICE_FIELD_GROUP, entity.getGroupName());

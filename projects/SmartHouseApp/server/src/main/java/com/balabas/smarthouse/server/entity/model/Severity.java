@@ -2,7 +2,7 @@ package com.balabas.smarthouse.server.entity.model;
 
 public enum Severity {
 	INFO(Emoji.CHECK_MARK),
-	WARNING(Emoji.WARNING),
+	WARN(Emoji.WARNING),
 	ERROR(Emoji.ERROR);
 
 	private Emoji emoji;
