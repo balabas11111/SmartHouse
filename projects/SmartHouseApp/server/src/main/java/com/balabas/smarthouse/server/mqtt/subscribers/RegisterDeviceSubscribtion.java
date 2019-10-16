@@ -4,14 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.balabas.smarthouse.server.mqtt.MqttMessageSubscribtion;
+import com.balabas.smarthouse.server.entity.service.IDeviceMqService;
 import com.balabas.smarthouse.server.mqtt.MessageService;
-import com.balabas.smarthouse.server.service.IDeviceMessageService;
 
 @Component
 public class RegisterDeviceSubscribtion extends MqttMessageSubscribtion {
 
 	@Autowired
-	private IDeviceMessageService service;
+	private IDeviceMqService service;
 	
 	public RegisterDeviceSubscribtion(){
 		this.topicName = MessageService.MQTT_TOPIC_REGISTRATION;

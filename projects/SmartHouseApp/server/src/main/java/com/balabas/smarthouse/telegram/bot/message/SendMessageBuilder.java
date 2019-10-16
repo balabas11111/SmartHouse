@@ -3,10 +3,9 @@ package com.balabas.smarthouse.telegram.bot.message;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,18 +13,16 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 
-import com.balabas.smarthouse.server.alarm.Alarm;
-import com.balabas.smarthouse.server.alarm.AlarmProcessService;
-import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
-import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.model.DeviceEntity;
-import com.balabas.smarthouse.server.model.EntityClass;
-import com.balabas.smarthouse.server.model.Group;
-import com.balabas.smarthouse.server.notification.Message;
-import com.balabas.smarthouse.server.notification.Notification;
-import com.balabas.smarthouse.server.service.DeviceService;
+import com.balabas.smarthouse.server.entity.alarm.IAlarm;
+import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
+import com.balabas.smarthouse.server.entity.model.Emoji;
+import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.IEntity;
+import com.balabas.smarthouse.server.entity.model.IEntityField;
+import com.balabas.smarthouse.server.entity.model.IGroup;
+import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
+import com.balabas.smarthouse.server.entity.service.IDeviceService;
 import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 
@@ -36,13 +33,14 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_
 
 @Component
 @Log4j2
+@SuppressWarnings("rawtypes")
 public class SendMessageBuilder {
 
 	@Autowired
-	private DeviceService deviceService;
+	private IDeviceService deviceService;
 	
 	@Autowired
-	private AlarmProcessService<DeviceEntity> entityAlarmService;
+	private IEntityAlarmService entityAlarmService;
 
 	@Autowired
 	private InlineKeyboardBuilder inlineKeyboard;
@@ -64,45 +62,6 @@ public class SendMessageBuilder {
 		// msgs.add(createHideReplyKeyboardMessage(chatId, null, text));
 		msgs.add(createRefreshDevicesListReplyKeyboard(chatId, text));
 		return msgs;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public String createNotificationMessage(Notification notification) {
-
-		StringBuilder buf = new StringBuilder("");
-
-		buf.append("<b>");
-		buf.append(messageToString(notification.getHeader(), true));
-		buf.append("</b>");
-		buf.append("\n");
-
-		notification.getMessages().stream().forEach(msg -> {
-			buf.append("   ");
-			buf.append(messageToString((Message) msg, false));
-			buf.append("\n");
-		});
-
-		return buf.toString();
-	}
-
-	private String messageToString(Message msg, boolean addEmoji) {
-		String emoji = "";
-
-		if (addEmoji && msg.getSeverity() != null) {
-			switch (msg.getSeverity()) {
-			case ERROR:
-				emoji = Emoji.ERROR.toString();
-				break;
-			case WARNING:
-				emoji = Emoji.WARNING.toString();
-				break;
-			default:
-				emoji = Emoji.CHECK_MARK.toString();
-				break;
-			}
-		}
-
-		return String.format(BotMessageConstants.BUTTON, emoji, msg.getMessage());
 	}
 
 	public List<SendMessage> createDeviceRegisteredMessages(String deviceName, Long chatId) {
@@ -128,7 +87,7 @@ public class SendMessageBuilder {
 
 	public List<SendMessage> createDevicesListInlineKeyboard(String serverName, ReplyContext cont) {
 		List<SendMessage> msgs = Lists.newArrayList();
-		List<Device> devices = deviceService.getDevicesInitialized();
+		List<IDevice> devices = deviceService.getDevicesInitialized();
 
 		cont.setText((devices.isEmpty()) ? String.format(BotMessageConstants.NO_DEVICE_MSG, Emoji.WARNING)
 				: String.format(BotMessageConstants.SERVER_SELECT_DEVICE_MSG, Emoji.OUTBOX_TRAY, serverName));
@@ -139,18 +98,18 @@ public class SendMessageBuilder {
 		return msgs;
 	}
 
-	public SendMessage createGroupsOfDeviceInlineKeyboard(String deviceId, ReplyContext cont) {
-		Device device = deviceService.getDeviceByDeviceId(deviceId).orElse(null);
+	public SendMessage createGroupsOfDeviceInlineKeyboard(String deviceName, ReplyContext cont) {
+		IDevice device = deviceService.getDevice(deviceName);
 
-		cont.setText(String.format(BotMessageConstants.SELECT_GROUP_MSG, Emoji.OUTBOX_TRAY, device.getDeviceDescr(),
-				device.getDeviceFirmware()));
+		cont.setText(String.format(BotMessageConstants.SELECT_GROUP_MSG, Emoji.OUTBOX_TRAY, device.getDescription(),
+				device.getFirmware()));
 
 		return cont.createMsg(inlineKeyboard.getGroupsOfDeviceInlineKeyboard(device));
 	}
 
-	public SendMessage getEntitiesOfGroupInlineKeyboard(String deviceId, String groupName, ReplyContext cont) {
-		Device device = deviceService.getDeviceByDeviceId(deviceId).orElse(null);
-		Group group = device.getGroup(groupName);
+	public SendMessage getEntitiesOfGroupInlineKeyboard(String deviceName, String groupName, ReplyContext cont) {
+		IDevice device = deviceService.getDevice(deviceName);
+		IGroup group = device.getGroup(groupName);
 
 		Emoji groupEmoji = buttons.getEmojiByGroupName(groupName);
 		String trans = buttons.getGroupNameTranslation(groupName);
@@ -165,18 +124,18 @@ public class SendMessageBuilder {
 	public List<SendMessage> createGroupView(String deviceId, String groupId, ReplyContext context) {
 		List<SendMessage> result = Lists.newArrayList();
 
-		Device device = deviceService.getDeviceByDeviceId(deviceId).orElse(null);
+		IDevice device = deviceService.getDevice(deviceId);
 		if (device != null) {
-			Group group = device.getGroup(groupId);
+			IGroup group = device.getGroup(groupId);
 
 			StringBuilder builder = new StringBuilder();
 			builder.append(buttons.getGroupHeader(device.getDescription(), group.getName()));
 
-			group.getEntities().stream().filter(e -> EntityClass.DEFAULT.equals(e.getEntityRenderer()))
+			group.getEntities().stream().filter(e -> EntityClass.DEFAULT.equals(e.getRenderer()))
 				.sorted((e1, e2) -> e1.getDescription().compareToIgnoreCase(e2.getDescription()))
 				.forEach(ent -> entityToTemplate(ent, builder));
 
-			List<Alarm<DeviceEntity>> alarms = entityAlarmService.getActiveAlarms(device);
+			List<IAlarm> alarms = entityAlarmService.getActiveAlarms(device);
 			
 			if(!alarms.isEmpty()) {
 				
@@ -191,14 +150,14 @@ public class SendMessageBuilder {
 				builder.append("<code> Режимы тревоги </code>\n");
 				
 				group.getEntities().stream().forEach(entity ->{
-					alarms.stream().filter(alarm -> entity.getName().equals(alarm.getItemName()))
+					alarms.stream().filter(alarm -> entity.getName().equals(alarm.getEntity().getName()))
 						.forEach(alarm -> {
-							if(alarm.isAlarmDetected()) {
+							if(alarm.isAlarmed()) {
 								builder.append(" ");
 								builder.append(Emoji.ERROR.toString());
 								builder.append(" ");
 							}
-							builder.append(alarm.getMessageView());
+							builder.append(alarm.getAlarmAsString());
 							builder.append("\n");
 						});
 					});
@@ -211,20 +170,23 @@ public class SendMessageBuilder {
 		return result;
 	}
 
-	private void entityToTemplate(DeviceEntity entity, StringBuilder builder) {
-		entityValueMapToTemplate(entity.getName(), entity.getValues(), builder, true);
+	private void entityToTemplate(IEntity entity, StringBuilder builder) {
+		entityValueMapToTemplate(entity.getName(), entity.getChildren(), builder, true);
 		
-		if (entity.hasSensorItems()) {
+		if (entity.getGrouppedFieldsIds()!=null && !entity.getGrouppedFieldsIds().isEmpty()) {
 			//builder.append("\n Значения \n\n");
-			Map<String, String> siVals = new HashMap<String, String>();
+			Set<IEntityField> siVals = new LinkedHashSet<>();
 			String entName = entity.getName() + ENTITY_FIELD_SENSOR_ITEMS;
 			
-			entity.getSensorItemIds().forEach(id ->{
+			entity.getGrouppedFieldsIds().forEach(id ->{
 				siVals.clear();
 				
-				entity.getSensorItemFields().forEach( field ->{
-					String value = entity.getValue(id + ":" + field);
-					siVals.put(field, value);
+				entity.getGrouppedFieldsNames().forEach( field ->{
+					String fieldName = entity.getField(id + ":" + field).getValue().toString();
+					IEntityField entityField = entity.getEntityField(fieldName);
+					if(entityField!=null) {
+						siVals.add(entityField);
+					}
 				});
 				
 				entityValueMapToTemplate(entName, siVals, builder, true);
@@ -235,8 +197,8 @@ public class SendMessageBuilder {
 		builder.append("\n");
 	}
 
-	private void entityValueMapToTemplate(String entName, Map<String, String> values, StringBuilder builder, boolean addNextLine) {
-		if (entName == null || values == null) {
+	private void entityValueMapToTemplate(String entName, Set<IEntityField> entityFields, StringBuilder builder, boolean addNextLine) {
+		if (entName == null || entityFields == null || entityFields.isEmpty()) {
 			return;
 		}
 		String result = "";
@@ -248,16 +210,17 @@ public class SendMessageBuilder {
 				URL u = this.getClass().getClassLoader().getResource(tmplPath);
 				result = Resources.toString(u, Charsets.UTF_8);
 
-				for (Entry<String, String> entry : values.entrySet()) {
-					String tmplKey = "_" + entry.getKey() + "_";
+				for (IEntityField entityField : entityFields) {
+					String tmplKey = "_" + entityField.getName() + "_";
 	
 					if(result.contains(tmplKey)) {
-						result = result.replaceAll(tmplKey, entry.getValue());
+						result = result.replaceAll(tmplKey, entityField.getValueStr());
 					}
 				}
 			}catch(NullPointerException e) {
 				log.error("No template for "+entName);
-				result = Joiner.on(",").withKeyValueSeparator("=").join(values);
+				
+				result += fieldToStr(entityFields);
 			}
 
 			if(addNextLine) {
@@ -265,10 +228,23 @@ public class SendMessageBuilder {
 			}
 		} catch (IOException e) {
 			log.error(e);
-			result = entName + " " + Joiner.on(",").withKeyValueSeparator("=").join(values);
+			result = entName + " " + fieldToStr(entityFields);
 		}
 
 		builder.append(result);
+	}
+	
+	protected String fieldToStr(Set<IEntityField> entityFields) {
+		StringBuilder buf =new StringBuilder();
+		
+		entityFields.stream().forEach( ef -> {
+			buf.append(ef.getName());
+			buf.append("=");
+			buf.append(ef.getValueStr());
+			buf.append(";");
+		});
+		
+		return buf.toString();
 	}
 
 	public SendMessage createUnknown(ReplyContext context) {

@@ -13,4 +13,5 @@ public interface IAlarm<T extends IItemAbstract> extends IItemAbstract {
 	boolean isActive();
 	boolean isAlarmed();
 	
+	String getAlarmAsString();
 }

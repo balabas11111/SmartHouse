@@ -43,12 +43,11 @@ import java.util.stream.IntStream;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
+import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassType;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
+import com.balabas.smarthouse.server.entity.model.descriptor.UpdateTimer;
 import com.balabas.smarthouse.server.exception.BadValueException;
-import com.balabas.smarthouse.server.model.EntityClass;
-import com.balabas.smarthouse.server.model.UpdateTimer;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 
 import lombok.experimental.UtilityClass;
@@ -98,70 +97,52 @@ public class SmartHouseEntityBuilder {
 
 		if (updateInterval > 0) {
 			UpdateTimer updateTimer = new UpdateTimer(updateInterval);
-			updateTimer.setWaitsForDataUpdate(true);
+			updateTimer.setUpdateForced(true);
 			return updateTimer;
 		}
 
 		return null;
 	}
 
-	public static void buildDeviceFromJson(IDevice device, JSONObject deviceJson) {
-		processDeviceInfo(device, deviceJson);
+	public static boolean updateDeviceEntityValuesFromJson(IDevice device, JSONObject deviceJson) {
 
-		if (!device.isInitialized()) {
-			// build new device
-			Set<IGroup> groups = buildGroupsFromJson(device.getName(), deviceJson);
-			boolean initOk = !groups.isEmpty();
-
-			if (initOk) {
-				for (IGroup group : groups) {
-					Set<IEntity> entities = buildEntitiesForGroup(group, deviceJson);
-
-					group.setChildren(entities);
-					initOk = initOk && !entities.isEmpty();
-				}
-			}
-
-			device.setChildren(groups);
-
-			if (initOk) {
-				device.setState(State.CONNECTED);
-			}
-
-		} else {
-			// setDevice values
-			updateDeviceEntityValuesFromJson(device, deviceJson);
-		}
-	}
-
-	public static void updateDeviceEntityValuesFromJson(IDevice device, JSONObject deviceJson) {
-
+		boolean isOk = true;
+		
 		for (String groupName : JSONObject.getNames(deviceJson)) {
 
 			IGroup group = device.getGroup(groupName);
 			if (group != null) {
 				JSONObject groupJson = deviceJson.optJSONObject(groupName);
 
-				updateGroupEntityValuesFromJson(group, groupJson);
+				boolean groupOk = updateGroupEntityValuesFromJson(group, groupJson);
+				
+				isOk = isOk && groupOk;
 			}
 		}
+		
+		return isOk;
 	}
 	
-	private static void updateGroupEntityValuesFromJson(IGroup group, JSONObject groupJson) {
+	private static boolean updateGroupEntityValuesFromJson(IGroup group, JSONObject groupJson) {
+		boolean isOk = true;
 		for (String entityName : JSONObject.getNames(groupJson)) {
 
 			IEntity entity = group.getEntity(entityName);
 			JSONObject entityJson = groupJson.optJSONObject(entityName);
 
 			if (entity != null && entityJson != null && !entityJson.isEmpty()) {
+				boolean entityOk = updateEntityValuesFromJson(entity, entityJson);
 				
-				if (updateEntityValuesFromJson(entity, entityJson)) {
+				if (entityOk) {
 					entity.setState(State.OK);
 				} else {
 					entity.setState(State.BAD_DATA);
 				}
+				
+				isOk = isOk && entityOk;
 			}
 		}
+		return isOk;
 	}
 	
 	private static boolean updateEntityValuesFromJson(IEntity entity, JSONObject entityJson) {

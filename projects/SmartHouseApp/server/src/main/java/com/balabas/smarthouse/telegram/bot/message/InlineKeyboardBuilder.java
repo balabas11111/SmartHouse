@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
-import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.model.Device.DeviceState;
-import com.balabas.smarthouse.server.model.Group;
+import com.balabas.smarthouse.server.entity.model.Emoji;
+import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.IGroup;
+import com.balabas.smarthouse.server.entity.model.State;
 import com.balabas.smarthouse.server.view.Action;
 
 import lombok.Getter;
@@ -58,11 +58,11 @@ public class InlineKeyboardBuilder {
         return markup;
     }
 	
-	public InlineKeyboardMarkup getDevicesOfServerInlineKeyboard(List<Device> devices) {
+	public InlineKeyboardMarkup getDevicesOfServerInlineKeyboard(List<IDevice> devices) {
 		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		
-		for (Device device : devices) {
+		for (IDevice device : devices) {
     			
 	    	List<InlineKeyboardButton> row = new ArrayList<>();
 	    	
@@ -70,26 +70,26 @@ public class InlineKeyboardBuilder {
 	    	String description = device.getDescription();
 	    	String action = ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
 	    	
-	    	if (!device.isInitialDataReceived()) {
+	    	if (!device.isInitialized()) {
 	    		emoji = Emoji.HOURGLASS;
 	    		description += " (Не инициализировано)";
 	    		action = ACTION_TYPE_VIEW_DEVICE_LIST;
-	    	} else if(DeviceState.TIMED_OUT.equals(device.getState())){
+	    	} else if(State.TIMED_OUT.equals(device.getState())){
 	    		emoji = Emoji.GHOST;
 	    		description += " (Не подключено)";
 	    		action = ACTION_TYPE_VIEW_DEVICE_LIST;
-	    	} else if(DeviceState.FAILED.equals(device.getState())){
+	    	} else if(State.FAILED.equals(device.getState())){
 	    		emoji = Emoji.RED_CIRCLE;
 	    		description += " (Ошибка данных)";
 	    		action = ACTION_TYPE_VIEW_DEVICE_LIST;
-	    	} else if(DeviceState.DISCONNECTED.equals(device.getState())){
+	    	} else if(State.DISCONNECTED.equals(device.getState())){
 	    		emoji = Emoji.SKULL;
 	    		description += " (Ошибка подключения)";
 	    		action = ACTION_TYPE_VIEW_DEVICE_LIST;
 	    	}
 	    	
 	    	String text = buttons.getDeviceButton(emoji, description);
-	    	String callback = Action.callback(action,"", device.getDeviceId(), GROUP_SENSORS);
+	    	String callback = Action.callback(action,"", device.getName(), GROUP_SENSORS);
 	    	
 			row.add(createInlineKeyboardButton(text, callback));
 			
@@ -101,17 +101,17 @@ public class InlineKeyboardBuilder {
 		return markup;
 	}
 
-	public InlineKeyboardMarkup getGroupsOfDeviceInlineKeyboard(Device device) {
+	public InlineKeyboardMarkup getGroupsOfDeviceInlineKeyboard(IDevice device) {
 		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		
-		for (Group group : device.getGroups()) {
+		for (IGroup group : device.getGroups()) {
 		    if(!GROUP_DEVICE.equals(group.getName())){
     			
 		    	List<InlineKeyboardButton> row = new ArrayList<>();
     			row.add(createInlineKeyboardButton(
 							buttons.getGroupButton(group.getName()),
-							Action.callback(ACTION_TYPE_VIEW_ENTITIES_OF_GROUP,"", device.getDeviceId(), group.getName()))
+							Action.callback(ACTION_TYPE_VIEW_ENTITIES_OF_GROUP,"", device.getName(), group.getName()))
     					);
     			
     			rowsInline.add(row);
@@ -123,15 +123,15 @@ public class InlineKeyboardBuilder {
 		return markup;
 	}
 	
-	public InlineKeyboardMarkup getEntitiesOfGroupInlineKeyboard(Device device, Group group) {
+	public InlineKeyboardMarkup getEntitiesOfGroupInlineKeyboard(IDevice device, IGroup group) {
 		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		
-		String callback = Action.callback(ACTION_TYPE_VIEW_GROUPS_OF_DEVICE,"", device.getDeviceId(), group.getName()); 
+		String callback = Action.callback(ACTION_TYPE_VIEW_GROUPS_OF_DEVICE,"", device.getName(), group.getName()); 
 		
 		List<InlineKeyboardButton> row = new ArrayList<>();
 		row.add(createInlineKeyboardButton(
-					buttons.getDeviceButton(device.getDeviceDescr()),
+					buttons.getDeviceButton(device.getDescription()),
 					callback
 					)
 		        );

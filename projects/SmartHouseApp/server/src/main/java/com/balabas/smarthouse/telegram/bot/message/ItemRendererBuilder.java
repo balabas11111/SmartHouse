@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
-import com.balabas.smarthouse.server.model.DeviceEntity;
-import com.balabas.smarthouse.server.model.EntityClass;
+import com.balabas.smarthouse.server.entity.model.IEntity;
+import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 import com.balabas.smarthouse.telegram.bot.renderers.EntityRenderer;
 import com.google.common.collect.Lists;
 
@@ -26,11 +26,11 @@ public class ItemRendererBuilder {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List<SendMessage> build(Set<DeviceEntity> items, Long chatId){
+	public List<SendMessage> build(Set<IEntity> items, Long chatId){
 		List<SendMessage> result = Lists.newArrayList();
 		
 		items.stream().forEach(item ->{
-			EntityRenderer renderer = renderers.getOrDefault(item.getEntityRenderer(), null);
+			EntityRenderer renderer = renderers.getOrDefault(item.getRenderer(), null);
 			if(renderer!=null) {
 				result.add(renderer.render(item, chatId));
 			}

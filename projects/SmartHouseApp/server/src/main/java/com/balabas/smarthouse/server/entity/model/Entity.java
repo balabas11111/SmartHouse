@@ -2,7 +2,7 @@ package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Set;
 
-import com.balabas.smarthouse.server.model.EntityClass;
+import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
@@ -44,5 +44,10 @@ public class Entity extends ItemContainer<IEntityField> implements IEntity {
 	@Override
 	public void setDeviceName(String deviceName) {
 		this.devName = deviceName;
+	}
+
+	@Override
+	public IEntityField getField(String fieldName) {
+		return getChild(fieldName);
 	}
 }

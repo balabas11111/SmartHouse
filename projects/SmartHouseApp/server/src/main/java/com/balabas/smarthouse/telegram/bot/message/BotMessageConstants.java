@@ -1,6 +1,8 @@
 package com.balabas.smarthouse.telegram.bot.message;
 
 public class BotMessageConstants {
+	
+	public static final String BOT_MESSAGE_DEFAULT = "%s %s";
 
 	public static final String BOT_TEMPLATES_PATH = "telegram/templates/text/";
 	

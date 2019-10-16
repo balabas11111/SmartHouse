@@ -9,8 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import com.balabas.smarthouse.server.notification.Notification;
-import com.balabas.smarthouse.server.service.DeviceService;
+import com.balabas.smarthouse.server.entity.service.IDeviceService;
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.telegram.bot.AfterBotRegistration;
 import com.balabas.smarthouse.telegram.bot.message.ReplyContext;
@@ -28,7 +27,7 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIE
 public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 
 	@Autowired
-	DeviceService deviceService;
+	IDeviceService deviceService;
 
 	@Override
 	public void onUpdateReceived(Update update) {
@@ -151,13 +150,4 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 		});
 	}
 	
-	@SuppressWarnings("rawtypes")
-	public void sendNotificationToAllUsers(Notification notification) {
-		String text = messageBuilder.createNotificationMessage(notification);
-		
-		authService.getAllowedUserIds().stream().forEach(chatId -> 
-			sendMessage(messageBuilder.createHtmlMessage(chatId.longValue(), text))
-		);
-	}
-
 }

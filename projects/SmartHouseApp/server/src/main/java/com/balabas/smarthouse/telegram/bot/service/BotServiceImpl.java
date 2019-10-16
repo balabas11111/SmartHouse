@@ -13,20 +13,22 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.generics.BotSession;
 
-import com.balabas.smarthouse.server.notification.Notification;
+import com.balabas.smarthouse.server.entity.model.Severity;
+import com.balabas.smarthouse.server.entity.service.IMessageSender;
 import com.balabas.smarthouse.telegram.bot.AfterBotRegistration;
 import com.balabas.smarthouse.telegram.bot.handler.SmartHouseBotHandler;
+import com.balabas.smarthouse.telegram.bot.message.BotMessageConstants;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
-public class BotServiceImpl implements BotService, InitializingBean {
+public class BotServiceImpl implements BotService, IMessageSender, InitializingBean {
 
 	@Value("${telegram.bot.enabled}")
 	private boolean botEnabled;
-	
+
 	@Getter
 	private TelegramBotsApi api;
 
@@ -39,7 +41,7 @@ public class BotServiceImpl implements BotService, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(!botEnabled) {
+		if (!botEnabled) {
 			log.warn("Telegram bot is disabled");
 			return;
 		}
@@ -47,25 +49,6 @@ public class BotServiceImpl implements BotService, InitializingBean {
 
 		BotSession session = api.registerBot(bot);
 		handleAfterRegistrationHook(bot, session);
-	}
-
-	@Override
-	public void sendHtmlMessageToAllUsers(String text) {
-		if(!botEnabled) {
-			log.warn("Telegram DISABLED :"+text);
-			return;
-		}
-		bot.sendHtmlMessageToAllUsers(text);
-	}
-
-	@Override
-	public void sendTextMessageToAllUsers(String text) {
-		if(!botEnabled) {
-			log.warn("Telegram DISABLED :"+text);
-			return;
-		}
-		bot.sendTextMessageToAllUsers(text);
-
 	}
 
 	private void handleAfterRegistrationHook(Object bot, BotSession botSession) {
@@ -98,14 +81,37 @@ public class BotServiceImpl implements BotService, InitializingBean {
 		}
 	}
 	
-	@SuppressWarnings("rawtypes")
 	@Override
-	public void sendNotification(Notification notification) {
-		if(!botEnabled) {
-			log.warn("Telegram DISABLED :"+notification);
+	public void sendHtmlMessageToAllUsers(String text) {
+		if (!botEnabled) {
+			log.warn("Telegram DISABLED :" + text);
 			return;
 		}
-		bot.sendNotificationToAllUsers(notification);
+		bot.sendHtmlMessageToAllUsers(text);
 	}
-	
+
+	@Override
+	public void sendTextMessageToAllUsers(String text) {
+		if (!botEnabled) {
+			log.warn("Telegram DISABLED :" + text);
+			return;
+		}
+		bot.sendTextMessageToAllUsers(text);
+
+	}
+
+	@Override
+	public void sendMessageToAllUsers(Severity severity, String message) {
+		String formatted = String.format(BotMessageConstants.BOT_MESSAGE_DEFAULT, severity.getEmoji().toString(),
+				message);
+		
+		sendHtmlMessageToAllUsers(formatted);
+
+	}
+
+	@Override
+	public void sendDeviceRegisteredToAllUsers(String deviceName) {
+		bot.sendDeviceRegisteredToAllUsers(deviceName);
+	}
+
 }

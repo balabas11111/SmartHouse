@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.balabas.smarthouse.server.model.Device;
+import com.balabas.smarthouse.server.entity.model.Device;
 
 import lombok.extern.log4j.Log4j2;
 

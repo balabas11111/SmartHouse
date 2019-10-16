@@ -2,7 +2,7 @@ package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Set;
 
-import com.balabas.smarthouse.server.model.UpdateTimer;
+import com.balabas.smarthouse.server.entity.model.descriptor.UpdateTimer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;

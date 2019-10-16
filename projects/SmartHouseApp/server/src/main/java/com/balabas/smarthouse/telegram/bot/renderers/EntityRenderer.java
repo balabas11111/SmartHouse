@@ -2,10 +2,10 @@ package com.balabas.smarthouse.telegram.bot.renderers;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
-import com.balabas.smarthouse.server.model.EntityClass;
-import com.balabas.smarthouse.server.model.ValueContainer;
+import com.balabas.smarthouse.server.entity.model.IEntity;
+import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 
-public interface EntityRenderer<T extends ValueContainer> {
+public interface EntityRenderer<T extends IEntity> {
 
 	EntityClass getType();
 	

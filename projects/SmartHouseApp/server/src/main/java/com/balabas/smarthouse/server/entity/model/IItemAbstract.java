@@ -1,7 +1,5 @@
 package com.balabas.smarthouse.server.entity.model;
 
-import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
-
 public interface IItemAbstract {
 
 	Long getId();

@@ -9,12 +9,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.balabas.smarthouse.server.entity.service.IDeviceService;
 import com.balabas.smarthouse.server.exception.DeviceRequestValidateException;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.model.request.DeviceRequestResult;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
-import com.balabas.smarthouse.server.service.DeviceService;
 
 
 import lombok.extern.log4j.Log4j2;
@@ -27,7 +27,7 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 	public static final String IS_ONLINE_MESSAGE = "{\"status\":\"ONLINE\"}";
 
 	@Autowired
-	private DeviceService deviceService;
+	private IDeviceService deviceService;
 
 	@Autowired
 	private DeviceSecurityService securityService;
@@ -58,7 +58,7 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 			log.info("Register device " + request.toString());
 			String token = securityService.processDeviceRegistrationRequest(request);
 
-			deviceService.registerDevice(request);
+			deviceService.processRegistrationRequest(request);
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(HttpHeaders.AUTHORIZATION, token);
@@ -73,10 +73,12 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 	@Override
 	public DeviceRequestResult<String> processDataChangedOnDeviceRequest(DeviceRequest request, boolean withData) {
 		try {
-			securityService.validateDeviceRequestDataUpdate(request);
-			deviceService.processDeviceDataUpdateDispatched(request, withData);
-
+			if(request.hasData()) {
+				securityService.validateDeviceRequestDataUpdate(request);
+				deviceService.processDeviceDataUpdateDispatched(request.getDeviceId(), request.getData());
+			}
 			return DeviceRequestResult.from(HttpStatus.OK);
+			
 
 		} catch (DeviceRequestValidateException e) {
 			return DeviceRequestResult.from(e.getStatus());

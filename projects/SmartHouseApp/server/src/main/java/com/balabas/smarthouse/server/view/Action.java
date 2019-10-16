@@ -3,9 +3,9 @@ package com.balabas.smarthouse.server.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.model.DeviceEntity;
-import com.balabas.smarthouse.server.model.Group;
+import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.IEntity;
+import com.balabas.smarthouse.server.entity.model.IGroup;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -83,16 +83,16 @@ public class Action {
 		this.callbackData = buildCallBackData();
 	}
 	
-	public static Action fromDevice(String action, Device device, String data) {
-		return new Action(action, data, device.getDeviceId());
+	public static Action fromDevice(String action, IDevice device, String data) {
+		return new Action(action, data, device.getDeviceName());
 	}
 	
-	public static Action fromGroup(String action, Group group, String data) {
-		return new Action(action, data, group.getDeviceId(), group.getName());
+	public static Action fromGroup(String action, IGroup group, String data) {
+		return new Action(action, data, group.getDeviceName(), group.getName());
 	}
 	
-	public static Action fromEntity(String action, DeviceEntity entity, String data) {
-		return new Action(action, data, entity.getDeviceId(), entity.getGroupName(), entity.getName());
+	public static Action fromEntity(String action, IEntity entity, String data) {
+		return new Action(action, data, entity.getDeviceName(), entity.getGroupName(), entity.getName());
 	}
 	
 	public static Action fromColumnList(String...cols) {

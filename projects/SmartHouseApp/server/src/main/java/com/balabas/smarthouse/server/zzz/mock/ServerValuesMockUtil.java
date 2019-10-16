@@ -23,7 +23,7 @@ import java.util.Random;
 import org.json.JSONObject;
 
 import com.balabas.smarthouse.server.controller.ControllerConstants;
-import com.balabas.smarthouse.server.model.EntityClass;
+import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

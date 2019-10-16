@@ -2,7 +2,7 @@ package com.balabas.smarthouse.server.mqtt;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import com.balabas.smarthouse.server.service.IDeviceMessageService;
+import com.balabas.smarthouse.server.entity.service.IDeviceMqService;
 
 import lombok.Getter;
 
@@ -12,7 +12,7 @@ public abstract class MqttMessageSubscribtion implements IMqttMessageSubscribtio
 	protected String topicName;
 	
 	@SuppressWarnings("unused")
-	protected IDeviceMessageService service;
+	protected IDeviceMqService service;
 	
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {

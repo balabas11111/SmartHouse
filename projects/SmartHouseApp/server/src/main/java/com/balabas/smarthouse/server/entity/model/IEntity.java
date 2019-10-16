@@ -2,11 +2,13 @@ package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Set;
 
-import com.balabas.smarthouse.server.model.EntityClass;
+import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 
 @SuppressWarnings("rawtypes")
 public interface IEntity extends IStateable, IItemContainer<IEntityField> {
 
+	IEntityField getField(String fieldName);
+	
 	int getRemoteId();
 	void setRemoteId(int remoteId);
 	

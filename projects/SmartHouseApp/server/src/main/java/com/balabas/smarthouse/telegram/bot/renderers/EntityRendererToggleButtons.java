@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
-import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
-import com.balabas.smarthouse.server.model.DeviceEntity;
-import com.balabas.smarthouse.server.model.EntityClass;
+import com.balabas.smarthouse.server.entity.model.Emoji;
+import com.balabas.smarthouse.server.entity.model.Entity;
+import com.balabas.smarthouse.server.entity.model.EntityFieldBoolean;
+import com.balabas.smarthouse.server.entity.model.IEntity;
+import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.telegram.bot.message.InlineKeyboardBuilder;
 import com.balabas.smarthouse.telegram.bot.message.ReplyContext;
@@ -18,7 +20,7 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ON;
 
 @Component
-public class EntityRendererToggleButtons implements EntityRenderer<DeviceEntity> {
+public class EntityRendererToggleButtons implements EntityRenderer<Entity> {
 
 	public static final String TOOGLE_BUTTON_DATA_ON = "{\"on\":1}";
 	public static final String TOOGLE_BUTTON_DATA_OFF = "{\"on\":0}";
@@ -37,8 +39,8 @@ public class EntityRendererToggleButtons implements EntityRenderer<DeviceEntity>
 	private InlineKeyboardBuilder inlineKeyboardBuilder;
 
 	@Override
-	public SendMessage render(DeviceEntity item, Long chatId) {
-		Boolean on = getBooleanValue(item.getValue(ENTITY_FIELD_ON));
+	public SendMessage render(Entity item, Long chatId) {
+		Boolean on = ((EntityFieldBoolean)item.getChild(ENTITY_FIELD_ON)).getValue();
 		String text = String.format(TOOGLE_BUTTON_STR, 
 						Emoji.STAR, item.getDescription(),getTextByOnOffValue(on));
 		

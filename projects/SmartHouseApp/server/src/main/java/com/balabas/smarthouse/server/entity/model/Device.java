@@ -2,7 +2,7 @@ package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Set;
 
-import com.balabas.smarthouse.server.model.UpdateTimer;
+import com.balabas.smarthouse.server.entity.model.descriptor.UpdateTimer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
@@ -41,5 +41,10 @@ public class Device extends ItemContainer<IGroup> implements IDevice {
 	@Override
 	public boolean isInitialized() {
 		return state!=null && state.compareTo(State.REGISTERED) > 0;
+	}
+
+	@Override
+	public boolean isRegistered() {
+		return state!=null && state.compareTo(State.REGISTERED) >= 0;
 	}
 }

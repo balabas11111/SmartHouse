@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
+import com.balabas.smarthouse.server.entity.model.Emoji;
 
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SENSORS;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SETTINGS;

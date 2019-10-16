@@ -47,5 +47,10 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 		
 		this.value = value;
 	}
+	
+	@Override
+	public String getValueStr() {
+		return getValue().toString();
+	}
 
 }

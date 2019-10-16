@@ -8,7 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 
-import com.balabas.smarthouse.server.model.Device;
+import com.balabas.smarthouse.server.entity.model.Device;
 
 public interface HttpRequestExecutor {
 

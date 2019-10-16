@@ -8,6 +8,7 @@ public interface IDevice extends IStateable, IUpdateable, IItemContainer<IGroup>
 
 	void setFirmware(String firmware);
 
+	boolean isRegistered();
 	boolean isInitialized();
 
 	Set<IGroup> getGroups();
