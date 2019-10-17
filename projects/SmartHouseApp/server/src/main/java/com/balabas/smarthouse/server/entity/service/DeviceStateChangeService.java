@@ -77,7 +77,14 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 	private void onDeviceDataUpdated(IDevice device){
 		// device data was updated
 		alarmService.checkAlarms(device);
-		List<IEntityAlarm> alarms = alarmService.getAlarmsWithNotificationRequired(device);
+		sendAlarmNotifications(device);
+		sendAlarmFinishedNotifications(device);
+		
+		device.setState(State.CONNECTED);
+	}
+	
+	private void sendAlarmNotifications(IDevice device) {
+		List<IEntityAlarm> alarms = alarmService.getAlarmsWithAlarmNotificationRequired(device);
 
 		for (IEntityAlarm alarm : alarms) {
 			try {
@@ -88,7 +95,19 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 			}
 		}
 
-		device.setState(State.CONNECTED);
+	}
+	
+	private void sendAlarmFinishedNotifications(IDevice device) {
+		List<IEntityAlarm> alarms = alarmService.getAlarmsWithAlarmFinished(device);
+
+		for (IEntityAlarm alarm : alarms) {
+			try {
+				alarm.setNotified(sender.sendHtmlMessageToAllUsers(alarm.getAlarmText()));
+			} catch (Exception e) {
+				log.error(e);
+				alarm.setNotified(false);
+			}
+		}
 	}
 	
 	private void onDeviceDisconnected(IDevice device) {

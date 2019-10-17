@@ -125,8 +125,14 @@ public class EntityAlarmService implements IEntityAlarmService, InitializingBean
 	}
 
 	@Override
-	public List<IEntityAlarm> getAlarmsWithNotificationRequired(IDevice device) {
-		return getActiveEntityAlarms(device).stream().filter(IEntityAlarm::notificationRequired)
+	public List<IEntityAlarm> getAlarmsWithAlarmNotificationRequired(IDevice device) {
+		return getActiveEntityAlarms(device).stream().filter(IEntityAlarm::isAlarmStarted)
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<IEntityAlarm> getAlarmsWithAlarmFinished(IDevice device) {
+		return getActiveEntityAlarms(device).stream().filter(IEntityAlarm::isAlarmFinished)
 				.collect(Collectors.toList());
 	}
 

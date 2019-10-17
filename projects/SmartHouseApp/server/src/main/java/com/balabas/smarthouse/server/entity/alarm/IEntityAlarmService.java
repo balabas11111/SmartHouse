@@ -30,6 +30,8 @@ public interface IEntityAlarmService {
 
 	List<IEntityAlarm> getActiveEntityAlarms(IDevice device);
 
-	List<IEntityAlarm> getAlarmsWithNotificationRequired(IDevice device);
+	List<IEntityAlarm> getAlarmsWithAlarmNotificationRequired(IDevice device);
+
+	List<IEntityAlarm> getAlarmsWithAlarmFinished(IDevice device);
 
 }

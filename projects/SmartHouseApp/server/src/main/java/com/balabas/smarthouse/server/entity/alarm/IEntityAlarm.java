@@ -24,11 +24,13 @@ public interface IEntityAlarm extends IUpdateable {
 	
 	boolean check();
 	
-	boolean notificationRequired();
+	boolean isAlarmStarted();
+	boolean isAlarmFinished();
 	
 	String getAlarmText();
 	
 	boolean isActive();
 	
 	void setNotified(boolean notified);
+	
 }

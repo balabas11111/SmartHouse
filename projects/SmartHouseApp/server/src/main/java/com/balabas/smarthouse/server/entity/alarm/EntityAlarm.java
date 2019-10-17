@@ -64,16 +64,29 @@ public class EntityAlarm implements IEntityAlarm {
 
 		if( alarmed && !timer.isActionForced()){
 			timer.update(0, true);
-		} else if(!alarmed) {
-			timer.setActionSuccess();
+		} else if(!alarmed && timer.isActionForced()) {
+			timer.update(0, false);
 		}
 		
 		return alarmed;
 	}
 
 	@Override
-	public boolean notificationRequired() {
+	public boolean isAlarmStarted() {
 		return isAlarmed() && timer.isActionForced() && timer.isTimeToExecuteAction();
+	}
+	
+	@Override
+	public boolean isAlarmFinished() {
+		boolean result = !timer.isActionForced() && timer.isTimeToExecuteAction();
+		
+		if(result) {
+			timer.update(-1, false);
+		}
+		
+		return result;
+		
+		
 	}
 
 	@Override
@@ -104,8 +117,9 @@ public class EntityAlarm implements IEntityAlarm {
 			timer.setActionSuccess();
 		} else {
 			timer.setActionFailed();
-			timer.setActionForced(true);
 		}
+		
+		timer.setActionForced(true);
 	}
 
 }
