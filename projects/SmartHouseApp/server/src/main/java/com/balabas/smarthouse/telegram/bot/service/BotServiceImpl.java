@@ -24,7 +24,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
-public class BotServiceImpl implements BotService, IMessageSender, InitializingBean {
+public class BotServiceImpl implements IMessageSender, InitializingBean {
 
 	@Value("${telegram.bot.enabled}")
 	private boolean botEnabled;
@@ -82,14 +82,14 @@ public class BotServiceImpl implements BotService, IMessageSender, InitializingB
 	}
 	
 	@Override
-	public void sendHtmlMessageToAllUsers(String text) {
+	public boolean sendHtmlMessageToAllUsers(String text) {
 		if (!botEnabled) {
 			log.warn("Telegram DISABLED :" + text);
-			return;
+			return true;
 		}
-		bot.sendHtmlMessageToAllUsers(text);
+		return bot.sendHtmlMessageToAllUsers(text);
 	}
-
+/*
 	@Override
 	public void sendTextMessageToAllUsers(String text) {
 		if (!botEnabled) {
@@ -99,7 +99,7 @@ public class BotServiceImpl implements BotService, IMessageSender, InitializingB
 		bot.sendTextMessageToAllUsers(text);
 
 	}
-
+*/
 	@Override
 	public void sendMessageToAllUsers(Severity severity, String message) {
 		String formatted = String.format(BotMessageConstants.BOT_MESSAGE_DEFAULT, severity.getEmoji().toString(),

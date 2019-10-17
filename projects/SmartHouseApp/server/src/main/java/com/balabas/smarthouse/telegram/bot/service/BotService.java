@@ -1,9 +1,7 @@
 package com.balabas.smarthouse.telegram.bot.service;
 
-public interface BotService {
+import com.balabas.smarthouse.server.entity.service.IMessageSender;
 
-	void sendHtmlMessageToAllUsers(String text);
-
-	void sendTextMessageToAllUsers(String text);
+public interface BotService extends IMessageSender {
 
 }

@@ -12,8 +12,11 @@ public interface IDevice extends IStateable, IUpdateable, IItemContainer<IGroup>
 	boolean isInitialized();
 
 	Set<IGroup> getGroups();
+	Set<IEntity> getEntities();
 	
 	String getDataUrl();
+	
+	IEntity getEntity(String entityName);
 	
 	default IGroup getGroup(String groupName) {
 		return getChild(groupName);

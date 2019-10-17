@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 
-import com.balabas.smarthouse.server.entity.alarm.IAlarm;
+import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.Emoji;
 import com.balabas.smarthouse.server.entity.model.IDevice;
@@ -135,7 +135,7 @@ public class SendMessageBuilder {
 				.sorted((e1, e2) -> e1.getDescription().compareToIgnoreCase(e2.getDescription()))
 				.forEach(ent -> entityToTemplate(ent, builder));
 
-			List<IAlarm> alarms = entityAlarmService.getActiveAlarms(device);
+			List<IEntityAlarm> alarms = entityAlarmService.getEntityAlarmsWithAlarmDetected(device);
 			
 			if(!alarms.isEmpty()) {
 				
@@ -157,7 +157,7 @@ public class SendMessageBuilder {
 								builder.append(Emoji.ERROR.toString());
 								builder.append(" ");
 							}
-							builder.append(alarm.getAlarmAsString());
+							builder.append(alarm.getAlarmText());
 							builder.append("\n");
 						});
 					});

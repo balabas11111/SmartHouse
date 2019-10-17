@@ -30,12 +30,12 @@ public class DeviceBuildFromJsonTest {
 		JSONObject deviceJson = new JSONObject(text);
 		
 		IDevice device = new Device(); 
-		SmartHouseEntityBuilder.buildDeviceFromJson(device, deviceJson);
+		/*SmartHouseEntityBuilder.bui
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
 		String deviceStr = mapper.writeValueAsString(device);
-		
-		log.info(deviceStr);
+		*/
+		//log.info(deviceStr);
 	}
 }

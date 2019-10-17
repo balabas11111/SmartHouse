@@ -1,7 +1,34 @@
 package com.balabas.smarthouse.server.entity.alarm;
 
-import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import java.util.List;
 
-public interface IEntityAlarm extends IAlarm<IItemAbstract, Object> {
+import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.IEntity;
+import com.balabas.smarthouse.server.entity.model.IUpdateable;
 
+@SuppressWarnings("rawtypes")
+public interface IEntityAlarm extends IUpdateable {
+	
+	IDevice getDevice();
+	void setDevice(IDevice device);
+
+	IEntity getEntity();
+	void setEntity(IEntity entity);
+	
+	List<IAlarm> getAlarms();
+	void setAlarms(List<IAlarm> alarms);
+	
+	void putEntityFieldAlarm(IAlarm entityFieldAlarm);
+	
+	boolean isAlarmed();
+	
+	boolean check();
+	
+	boolean notificationRequired();
+	
+	String getAlarmText();
+	
+	boolean isActive();
+	
+	void setNotified(boolean notified);
 }

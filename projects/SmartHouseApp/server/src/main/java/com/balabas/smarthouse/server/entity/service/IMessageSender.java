@@ -4,6 +4,8 @@ import com.balabas.smarthouse.server.entity.model.Severity;
 
 public interface IMessageSender {
 
+	boolean sendHtmlMessageToAllUsers(String message);
+	
 	void sendMessageToAllUsers(Severity severity, String message);
 	
 	void sendDeviceRegisteredToAllUsers(String deviceName);

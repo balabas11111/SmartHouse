@@ -28,21 +28,23 @@ public abstract class BaseLogPollingBotHandler  extends TelegramLongPollingBot {
                 chatId -> sendMessage(messageBuilder.createTextMessage(chatId.longValue(), text)));
     }
 	
-	public void sendHtmlMessageToAllUsers(String text){
-        authService.getAllowedUserIds().stream().forEach(
-                chatId -> sendMessage(messageBuilder.createHtmlMessage(chatId.longValue(), text)));
+	public boolean sendHtmlMessageToAllUsers(String text){
+        return authService.getAllowedUserIds().stream().map(
+                chatId -> sendMessage(messageBuilder.createHtmlMessage(chatId.longValue(), text))).reduce(Boolean::logicalOr).orElse(false);
     }
 	
 	protected void sendMessages(List<SendMessage> msgs){
 		msgs.stream().forEach(this::sendMessage);
 	}
 	
-	protected void sendMessage(SendMessage msg){
+	protected boolean sendMessage(SendMessage msg){
 		try {
 			execute(msg);
+			return true;
 		} catch (TelegramApiException e) {
 			log.error(e);
 		}
+		return false;
 	}
 	
 	protected boolean checkAuthorization(Message msg){

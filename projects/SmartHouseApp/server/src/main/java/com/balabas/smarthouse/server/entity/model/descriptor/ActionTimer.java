@@ -3,12 +3,10 @@ package com.balabas.smarthouse.server.entity.model.descriptor;
 import java.util.Date;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@NoArgsConstructor
 public class ActionTimer {
 
     private long interval;

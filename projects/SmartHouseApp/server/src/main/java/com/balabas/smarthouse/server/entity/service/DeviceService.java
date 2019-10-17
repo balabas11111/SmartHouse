@@ -35,7 +35,7 @@ public class DeviceService implements IDeviceService {
 	
 	@Autowired
 	IDeviceStateChangeService stateChanger;
-
+	
 	@Getter
 	private List<IDevice> devices = new ArrayList<>();
 

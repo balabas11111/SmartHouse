@@ -1,18 +1,28 @@
 package com.balabas.smarthouse.server.entity.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
+import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.Severity;
 import com.balabas.smarthouse.server.entity.model.State;
 
+import lombok.extern.log4j.Log4j2;
+
 @Service
+@Log4j2
 public class DeviceStateChangeService implements IDeviceStateChangeService {
 
 	@Autowired
 	private IMessageSender sender;
-	
+
+	@Autowired
+	IEntityAlarmService alarmService;
+
 	@Override
 	public void stateChanged(IDevice device, State newState) {
 		State oldState = device.getState();
@@ -23,28 +33,23 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 			setNewState = true;
 
 			if (State.REREGISTERED.equals(newState)) {
-				sender.sendMessageToAllUsers(Severity.WARN, "Устройство передподключено : " + device.getDescription());
-			} else
-			if (State.INIT_DATA_RECEIVED.equals(newState)) {
-				//init data was received
-				//TODO: watch items here
 				
-				sender.sendMessageToAllUsers(Severity.INFO, "Устройство инициализировано : " + device.getDescription());
-				device.setState(State.CONNECTED);
+				onDeviceRegistered(device);
+				
+			} else if (State.INIT_DATA_RECEIVED.equals(newState)) {
+				
+				onDeviceInitialDataReceived(device);
 				
 			} else if (State.UPDATED.equals(newState)) {
-				//device data was updated
-				//TODO: watch items here
 				
-				device.setState(State.CONNECTED);
+				onDeviceDataUpdated(device);
 				
 			} else if (State.DISCONNECTED.equals(newState) && !State.TIMED_OUT.equals(oldState)) {
-				//device received bad data or request error
-				sender.sendMessageToAllUsers(Severity.ERROR, "Устройство отключено : " + device.getDescription());
 				
-				
+				onDeviceDisconnected(device);
+
 			} else if (State.TIMED_OUT.equals(newState) && !State.DISCONNECTED.equals(oldState)) {
-				//device data is too old
+				// device data is too old
 			}
 
 		}
@@ -53,6 +58,41 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 			device.setState(newState);
 		}
 
+	}
+
+	private void onDeviceRegistered(IDevice device) {
+		alarmService.activateAlarms(device);
+		sender.sendMessageToAllUsers(Severity.WARN, "Устройство передподключено : " + device.getDescription());
+	}
+
+	private void onDeviceInitialDataReceived(IDevice device) {
+		// init data was received
+		alarmService.activateAlarms(device);
+		alarmService.checkAlarms(device);
+
+		sender.sendMessageToAllUsers(Severity.INFO, "Устройство инициализировано : " + device.getDescription());
+		device.setState(State.CONNECTED);
+	}
+	
+	private void onDeviceDataUpdated(IDevice device){
+		// device data was updated
+		alarmService.checkAlarms(device);
+		List<IEntityAlarm> alarms = alarmService.getAlarmsWithNotificationRequired(device);
+
+		for (IEntityAlarm alarm : alarms) {
+			try {
+				alarm.setNotified(sender.sendHtmlMessageToAllUsers(alarm.getAlarmText()));
+			} catch (Exception e) {
+				log.error(e);
+				alarm.setNotified(false);
+			}
+		}
+
+		device.setState(State.CONNECTED);
+	}
+	
+	private void onDeviceDisconnected(IDevice device) {
+		sender.sendMessageToAllUsers(Severity.ERROR, "Устройство отключено : " + device.getDescription());
 	}
 
 }

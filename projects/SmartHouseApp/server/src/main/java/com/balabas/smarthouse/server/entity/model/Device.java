@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,6 +33,12 @@ public class Device extends ItemContainer<IGroup> implements IDevice {
 	public Set<IGroup> getGroups(){
 		return getChildren();
 	}
+	
+	@Override
+	public Set<IEntity> getEntities() {
+		return getGroups().stream().flatMap( group -> group.getEntities().stream())
+				.collect(Collectors.toSet());
+	}
 
 	@Override
 	public void setDeviceName(String deviceName) {
@@ -47,4 +54,10 @@ public class Device extends ItemContainer<IGroup> implements IDevice {
 	public boolean isRegistered() {
 		return state!=null && state.compareTo(State.REGISTERED) >= 0;
 	}
+
+	@Override
+	public IEntity getEntity(String entityName) {
+		return getGroups().stream().flatMap(group -> group.getEntities().stream()).filter( e -> e.getName().equals(entityName)).findFirst().orElse(null);
+	}
+
 }
