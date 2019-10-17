@@ -2,7 +2,7 @@ package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Set;
 
-import com.balabas.smarthouse.server.entity.model.descriptor.UpdateTimer;
+import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
@@ -15,7 +15,7 @@ public class Group extends ItemContainer<IEntity> implements IGroup {
 	private ItemType type;
 
 	@JsonIgnore
-	private UpdateTimer updateTimer;
+	private ActionTimer timer;
 	
 	@Override
 	public Set<IEntity> getEntities() {

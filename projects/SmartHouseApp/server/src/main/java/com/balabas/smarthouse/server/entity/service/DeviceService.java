@@ -19,9 +19,11 @@ import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.IUpdateable;
 import com.balabas.smarthouse.server.entity.model.SmartHouseEntityBuilder;
 import com.balabas.smarthouse.server.entity.model.State;
+import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.view.Action;
 
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -34,15 +36,12 @@ public class DeviceService implements IDeviceService {
 	@Autowired
 	IDeviceStateChangeService stateChanger;
 
+	@Getter
 	private List<IDevice> devices = new ArrayList<>();
-
-	public List<IDevice> getDevices() {
-		return this.devices;
-	}
 
 	@Override
 	public List<IDevice> getDevicesInitialized() {
-		return devices.stream().filter(d -> d.isInitialized()).collect(Collectors.toList());
+		return devices.stream().filter(IDevice::isInitialized).collect(Collectors.toList());
 	}
 	
 	@Override
@@ -75,8 +74,7 @@ public class DeviceService implements IDeviceService {
 			stateChanger.stateChanged(device, State.REGISTERED);
 		}
 
-		// requestDevicesValues(device, null);
-		device.getUpdateTimer().setUpdateForced(true);
+		device.getTimer().setActionForced(true);
 	}
 
 	@Override
@@ -92,7 +90,7 @@ public class DeviceService implements IDeviceService {
 			processDataReceivedFromDevice(device, result);
 
 		} catch (Exception e) {
-			device.getUpdateTimer().update(60000, false);
+			device.getTimer().update(60000, false);
 
 			if (!State.DISCONNECTED.equals(oldState)) {
 				log.error("Error request device values", e);
@@ -190,8 +188,8 @@ public class DeviceService implements IDeviceService {
     }
 	
 	protected boolean checkItemRequiresUpdate(IDevice target, IUpdateable source){
-    	boolean waits = source.getUpdateTimer().isUpdateForced();
-		boolean dataTooOld = source.getUpdateTimer().isNextUpdateTimeReached();
+    	boolean waits = source.getTimer().isActionForced();
+		boolean dataTooOld = source.getTimer().isTimeToExecuteAction();
 		
 		if(dataTooOld && !target.getState().equals(State.TIMED_OUT) 
 				&& !target.getState().equals(State.DISCONNECTED)){
@@ -203,8 +201,28 @@ public class DeviceService implements IDeviceService {
     }
 
 	@Override
-	public void processDeviceAction(Action action) {
-		// TODO Auto-generated method stub
+	public void processDeviceAction(Action action) throws ResourceNotFoundException {
+		log.debug("Action received :"+action.getCallbackData());
+    	Map<String,Object> params = (new JSONObject(action.getData())).toMap(); 
+    	
+		sendDataToDevice(action.getDeviceId(), action.getGroupId(), action.getEntityId(), params);
+	}
+	
+	@Override
+	public String sendDataToDevice(String deviceName, String groupName, String entityName, Map<String, Object> values) throws ResourceNotFoundException {
+		
+		IDevice device = getDevice(deviceName);
+		
+		if(device == null) {
+			throw new ResourceNotFoundException(deviceName);
+		}
+		
+		IEntity entity = device.getGroup(groupName).getEntity(entityName);
+		
+		String result = deviceRequestor.executePostDataOnDeviceEntity(device, entity, values);
+		processDataReceivedFromDevice(device, result);
+		
+		return result;
 		
 	}
 

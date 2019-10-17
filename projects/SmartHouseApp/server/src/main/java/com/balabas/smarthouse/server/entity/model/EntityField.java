@@ -52,5 +52,10 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	public String getValueStr() {
 		return getValue().toString();
 	}
+	
+	@Override
+	public Object getValueObj(){
+		return value;
+	}
 
 }

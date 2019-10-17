@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.balabas.smarthouse.server.controller.ControllerConstants;
+import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.service.IDeviceService;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
-import com.balabas.smarthouse.server.model.Device;
-import com.balabas.smarthouse.server.service.DeviceService;
 
 import lombok.extern.log4j.Log4j2;
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_GROUP;
@@ -34,7 +34,7 @@ import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_GROUP;
 public class MockedDeviceController {
 
 	@Autowired
-	private DeviceService deviceService;
+	private IDeviceService deviceService;
 	
 	@Autowired
 	private MockedDeviceService mockService;
@@ -42,7 +42,7 @@ public class MockedDeviceController {
 	boolean doAlert;
 
 	@GetMapping()
-	public List<Device> getAllDevices() {
+	public List<IDevice> getAllDevices() {
 		log.info("Get all devices=");
 		return deviceService.getDevices();
 	}
@@ -60,29 +60,13 @@ public class MockedDeviceController {
 	}
 
 	@GetMapping("{deviceId}")
-	public ResponseEntity<Device> getDeviceById(@PathVariable(value = "deviceId") String deviceId)
+	public ResponseEntity<IDevice> getDeviceById(@PathVariable(value = "deviceId") String deviceId)
 			throws ResourceNotFoundException {
-		Device device = deviceService.getDeviceByDeviceId(deviceId)
-				.orElseThrow(() -> new ResourceNotFoundException(deviceId));
+		IDevice device = deviceService.getDevice(deviceId);
 
 		return ResponseEntity.ok().body(device);
 	}
-	/*
-	@GetMapping("/getData_{deviceId}")
-	public ResponseEntity<String> executeGetData(
-			@PathVariable(value = "deviceId") String deviceId,
-			@RequestParam(value = DEVICE_FIELD_GROUP, required = false) String group) throws ResourceNotFoundException {
-		JSONObject result = deviceService.executeGetData(deviceId, group);
-		return ResponseEntity.ok().body(result.toString());
-	}
 
-	@GetMapping("/getDataOnDevice_{deviceId}")
-	public ResponseEntity<String> executeGetDataOnDevice(@PathVariable(value = "deviceId") String deviceId,
-			@RequestParam(value = DEVICE_FIELD_GROUP, required = false) String group) throws UnsupportedEncodingException, ResourceNotFoundException {
-
-		return ResponseEntity.ok().body(deviceService.executeGetData(deviceId, group).toString());
-	}
-	*/
 	@GetMapping("/mock_{deviceId}")
 	public ResponseEntity<String> executeMockGetDataOnDevice(
 			@PathVariable(value = "deviceId") String deviceId,

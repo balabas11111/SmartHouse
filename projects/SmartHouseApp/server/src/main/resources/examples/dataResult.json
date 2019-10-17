@@ -1,0 +1,933 @@
+{
+	"id": 0,
+	"name": null,
+	"description": "Тестовоеустройство",
+	"emoji": null,
+	"children": [
+		{
+			"id": 0,
+			"name": "sensors",
+			"description": "Датчики",
+			"emoji": null,
+			"children": [
+				{
+					"id": 0,
+					"name": "dht22",
+					"description": "МикроклиматвоздухаDHT",
+					"emoji": "SUN_CLOUD",
+					"children": [
+						{
+							"id": 0,
+							"name": "d",
+							"description": "Датчик",
+							"emoji": null,
+							"value": "МикроклиматвоздухаDHT",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "t",
+							"description": "Температура",
+							"emoji": "THERMOMETER",
+							"value": 28.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "h",
+							"description": "Влажность",
+							"emoji": "DROPLET",
+							"value": 67.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "id",
+							"description": "",
+							"emoji": null,
+							"value": "3",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_DEFAULT",
+							"enabledValues": [
+							]
+						}
+					],
+					"remoteId": 3,
+					"descriptionField": "d",
+					"renderer": "DEFAULT",
+					"grouppedFieldsIds": null,
+					"grouppedFieldsNames": null,
+					"status": null,
+					"deviceName": null,
+					"groupName": "sensors"
+				},
+				{
+					"id": 0,
+					"name": "ds18d20",
+					"description": "Температурапола",
+					"emoji": "THERMOMETER",
+					"children": [
+						{
+							"id": 0,
+							"name": "d",
+							"description": "Датчик",
+							"emoji": null,
+							"value": "Температурапола",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "0: d",
+							"description": "",
+							"emoji": null,
+							"value": "00000000",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "0: t",
+							"description": "",
+							"emoji": null,
+							"value": 36.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "id",
+							"description": "",
+							"emoji": null,
+							"value": "4",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_DEFAULT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "1: d",
+							"description": "",
+							"emoji": null,
+							"value": "00000001",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "1: t",
+							"description": "",
+							"emoji": null,
+							"value": 32.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "2: d",
+							"description": "",
+							"emoji": null,
+							"value": "00000002",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "2: t",
+							"description": "",
+							"emoji": null,
+							"value": 31.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						}
+					],
+					"remoteId": 4,
+					"descriptionField": "d",
+					"renderer": "DEFAULT",
+					"grouppedFieldsIds": [
+						"0",
+						"1",
+						"2"
+					],
+					"grouppedFieldsNames": [
+						"d",
+						"t"
+					],
+					"status": null,
+					"deviceName": null,
+					"groupName": "sensors"
+				},
+				{
+					"id": 0,
+					"name": "builtInLED",
+					"description": "Диоднаплате",
+					"emoji": "BULB",
+					"children": [
+						{
+							"id": 0,
+							"name": "d",
+							"description": "Датчик",
+							"emoji": null,
+							"value": "Диоднаплате",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "id",
+							"description": "",
+							"emoji": null,
+							"value": "2",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_DEFAULT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "on",
+							"description": "",
+							"emoji": null,
+							"value": true,
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_BUTTON_BOOLEAN",
+							"enabledValues": [
+								{
+									"id": 0,
+									"name": "on",
+									"description": "Включено",
+									"emoji": "DIM_BUTTON",
+									"value": true,
+									"action": "Отключить",
+									"readOnly": false,
+									"viewClass": null,
+									"enabledValues": null
+								},
+								{
+									"id": 1,
+									"name": "on",
+									"description": "Отключено",
+									"emoji": "RADIO_BUTTON",
+									"value": false,
+									"action": "Включить",
+									"readOnly": false,
+									"viewClass": null,
+									"enabledValues": null
+								}
+							]
+						}
+					],
+					"remoteId": 2,
+					"descriptionField": "d",
+					"renderer": "TOGGLE_BUTTON",
+					"grouppedFieldsIds": null,
+					"grouppedFieldsNames": null,
+					"status": null,
+					"deviceName": null,
+					"groupName": "sensors"
+				},
+				{
+					"id": 0,
+					"name": "bme280",
+					"description": "Микроклиматвоздуха",
+					"emoji": "SUN_CLOUD_RAIN",
+					"children": [
+						{
+							"id": 0,
+							"name": "p",
+							"description": "Атм.давление",
+							"emoji": "ARROW_DOWN",
+							"value": 100553.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "d",
+							"description": "Датчик",
+							"emoji": null,
+							"value": "Микроклиматвоздуха",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "t",
+							"description": "Температура",
+							"emoji": "THERMOMETER",
+							"value": 23.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "h",
+							"description": "Влажность",
+							"emoji": "DROPLET",
+							"value": 59.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "id",
+							"description": "",
+							"emoji": null,
+							"value": "0",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_DEFAULT",
+							"enabledValues": [
+							]
+						}
+					],
+					"remoteId": 0,
+					"descriptionField": "d",
+					"renderer": "DEFAULT",
+					"grouppedFieldsIds": null,
+					"grouppedFieldsNames": null,
+					"status": null,
+					"deviceName": null,
+					"groupName": "sensors"
+				},
+				{
+					"id": 0,
+					"name": "bh1750",
+					"description": "Уровеньосвещения",
+					"emoji": "SUN_WITH_FACE",
+					"children": [
+						{
+							"id": 0,
+							"name": "d",
+							"description": "Датчик",
+							"emoji": null,
+							"value": "Уровеньосвещения",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "id",
+							"description": "",
+							"emoji": null,
+							"value": "1",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_DEFAULT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "l",
+							"description": "Освещенность",
+							"emoji": "DIM_BUTTON",
+							"value": 1253.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						}
+					],
+					"remoteId": 1,
+					"descriptionField": "d",
+					"renderer": "DEFAULT",
+					"grouppedFieldsIds": null,
+					"grouppedFieldsNames": null,
+					"status": null,
+					"deviceName": null,
+					"groupName": "sensors"
+				}
+			],
+			"type": "SENSORS",
+			"deviceName": null,
+			"entities": [
+				{
+					"id": 0,
+					"name": "dht22",
+					"description": "МикроклиматвоздухаDHT",
+					"emoji": "SUN_CLOUD",
+					"children": [
+						{
+							"id": 0,
+							"name": "d",
+							"description": "Датчик",
+							"emoji": null,
+							"value": "МикроклиматвоздухаDHT",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "t",
+							"description": "Температура",
+							"emoji": "THERMOMETER",
+							"value": 28.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "h",
+							"description": "Влажность",
+							"emoji": "DROPLET",
+							"value": 67.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "id",
+							"description": "",
+							"emoji": null,
+							"value": "3",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_DEFAULT",
+							"enabledValues": [
+							]
+						}
+					],
+					"remoteId": 3,
+					"descriptionField": "d",
+					"renderer": "DEFAULT",
+					"grouppedFieldsIds": null,
+					"grouppedFieldsNames": null,
+					"status": null,
+					"deviceName": null,
+					"groupName": "sensors"
+				},
+				{
+					"id": 0,
+					"name": "ds18d20",
+					"description": "Температурапола",
+					"emoji": "THERMOMETER",
+					"children": [
+						{
+							"id": 0,
+							"name": "d",
+							"description": "Датчик",
+							"emoji": null,
+							"value": "Температурапола",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "0: d",
+							"description": "",
+							"emoji": null,
+							"value": "00000000",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "0: t",
+							"description": "",
+							"emoji": null,
+							"value": 36.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "id",
+							"description": "",
+							"emoji": null,
+							"value": "4",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_DEFAULT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "1: d",
+							"description": "",
+							"emoji": null,
+							"value": "00000001",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "1: t",
+							"description": "",
+							"emoji": null,
+							"value": 32.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "2: d",
+							"description": "",
+							"emoji": null,
+							"value": "00000002",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "2: t",
+							"description": "",
+							"emoji": null,
+							"value": 31.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						}
+					],
+					"remoteId": 4,
+					"descriptionField": "d",
+					"renderer": "DEFAULT",
+					"grouppedFieldsIds": [
+						"0",
+						"1",
+						"2"
+					],
+					"grouppedFieldsNames": [
+						"d",
+						"t"
+					],
+					"status": null,
+					"deviceName": null,
+					"groupName": "sensors"
+				},
+				{
+					"id": 0,
+					"name": "builtInLED",
+					"description": "Диоднаплате",
+					"emoji": "BULB",
+					"children": [
+						{
+							"id": 0,
+							"name": "d",
+							"description": "Датчик",
+							"emoji": null,
+							"value": "Диоднаплате",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "id",
+							"description": "",
+							"emoji": null,
+							"value": "2",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_DEFAULT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "on",
+							"description": "",
+							"emoji": null,
+							"value": true,
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_BUTTON_BOOLEAN",
+							"enabledValues": [
+								{
+									"id": 0,
+									"name": "on",
+									"description": "Включено",
+									"emoji": "DIM_BUTTON",
+									"value": true,
+									"action": "Отключить",
+									"readOnly": false,
+									"viewClass": null,
+									"enabledValues": null
+								},
+								{
+									"id": 1,
+									"name": "on",
+									"description": "Отключено",
+									"emoji": "RADIO_BUTTON",
+									"value": false,
+									"action": "Включить",
+									"readOnly": false,
+									"viewClass": null,
+									"enabledValues": null
+								}
+							]
+						}
+					],
+					"remoteId": 2,
+					"descriptionField": "d",
+					"renderer": "TOGGLE_BUTTON",
+					"grouppedFieldsIds": null,
+					"grouppedFieldsNames": null,
+					"status": null,
+					"deviceName": null,
+					"groupName": "sensors"
+				},
+				{
+					"id": 0,
+					"name": "bme280",
+					"description": "Микроклиматвоздуха",
+					"emoji": "SUN_CLOUD_RAIN",
+					"children": [
+						{
+							"id": 0,
+							"name": "p",
+							"description": "Атм.давление",
+							"emoji": "ARROW_DOWN",
+							"value": 100553.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "d",
+							"description": "Датчик",
+							"emoji": null,
+							"value": "Микроклиматвоздуха",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "t",
+							"description": "Температура",
+							"emoji": "THERMOMETER",
+							"value": 23.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "h",
+							"description": "Влажность",
+							"emoji": "DROPLET",
+							"value": 59.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "id",
+							"description": "",
+							"emoji": null,
+							"value": "0",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_DEFAULT",
+							"enabledValues": [
+							]
+						}
+					],
+					"remoteId": 0,
+					"descriptionField": "d",
+					"renderer": "DEFAULT",
+					"grouppedFieldsIds": null,
+					"grouppedFieldsNames": null,
+					"status": null,
+					"deviceName": null,
+					"groupName": "sensors"
+				},
+				{
+					"id": 0,
+					"name": "bh1750",
+					"description": "Уровеньосвещения",
+					"emoji": "SUN_WITH_FACE",
+					"children": [
+						{
+							"id": 0,
+							"name": "d",
+							"description": "Датчик",
+							"emoji": null,
+							"value": "Уровеньосвещения",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "id",
+							"description": "",
+							"emoji": null,
+							"value": "1",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_DEFAULT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "l",
+							"description": "Освещенность",
+							"emoji": "DIM_BUTTON",
+							"value": 1253.0,
+							"action": null,
+							"readOnly": true,
+							"viewClass": "EDC_CLASS_VIEW_LABEL",
+							"enabledValues": [
+							]
+						}
+					],
+					"remoteId": 1,
+					"descriptionField": "d",
+					"renderer": "DEFAULT",
+					"grouppedFieldsIds": null,
+					"grouppedFieldsNames": null,
+					"status": null,
+					"deviceName": null,
+					"groupName": "sensors"
+				}
+			]
+		},
+		{
+			"id": 0,
+			"name": "services",
+			"description": "Сервисы",
+			"emoji": null,
+			"children": [
+				{
+					"id": 0,
+					"name": "DeviceManager",
+					"description": "ESP8266DeviceManager",
+					"emoji": null,
+					"children": [
+						{
+							"id": 0,
+							"name": "d",
+							"description": "Сервис",
+							"emoji": null,
+							"value": "ESP8266DeviceManager",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "restart",
+							"description": "",
+							"emoji": null,
+							"value": false,
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_BUTTON_COMMAND",
+							"enabledValues": [
+								{
+									"id": 0,
+									"name": "restart",
+									"description": "Перезапускаем",
+									"emoji": "DIM_BUTTON",
+									"value": true,
+									"action": "Перезапустить",
+									"readOnly": false,
+									"viewClass": null,
+									"enabledValues": null
+								}
+							]
+						},
+						{
+							"id": 0,
+							"name": "id",
+							"description": "",
+							"emoji": null,
+							"value": "6",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_DEFAULT",
+							"enabledValues": [
+							]
+						}
+					],
+					"remoteId": 6,
+					"descriptionField": "d",
+					"renderer": "DEFAULT",
+					"grouppedFieldsIds": null,
+					"grouppedFieldsNames": null,
+					"status": null,
+					"deviceName": null,
+					"groupName": "services"
+				}
+			],
+			"type": "SERVICES",
+			"deviceName": null,
+			"entities": [
+				{
+					"id": 0,
+					"name": "DeviceManager",
+					"description": "ESP8266DeviceManager",
+					"emoji": null,
+					"children": [
+						{
+							"id": 0,
+							"name": "d",
+							"description": "Сервис",
+							"emoji": null,
+							"value": "ESP8266DeviceManager",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_INPUT",
+							"enabledValues": [
+							]
+						},
+						{
+							"id": 0,
+							"name": "restart",
+							"description": "",
+							"emoji": null,
+							"value": false,
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_BUTTON_COMMAND",
+							"enabledValues": [
+								{
+									"id": 0,
+									"name": "restart",
+									"description": "Перезапускаем",
+									"emoji": "DIM_BUTTON",
+									"value": true,
+									"action": "Перезапустить",
+									"readOnly": false,
+									"viewClass": null,
+									"enabledValues": null
+								}
+							]
+						},
+						{
+							"id": 0,
+							"name": "id",
+							"description": "",
+							"emoji": null,
+							"value": "6",
+							"action": null,
+							"readOnly": false,
+							"viewClass": "EDC_CLASS_VIEW_DEFAULT",
+							"enabledValues": [
+							]
+						}
+					],
+					"remoteId": 6,
+					"descriptionField": "d",
+					"renderer": "DEFAULT",
+					"grouppedFieldsIds": null,
+					"grouppedFieldsNames": null,
+					"status": null,
+					"deviceName": null,
+					"groupName": "services"
+				}
+			]
+		}
+	],
+	"firmware": "EntityLibdevdevice",
+	"ip": null,
+	"dataUrl": null,
+	"state": "CONNECTED",
+	"initialized": true
+}

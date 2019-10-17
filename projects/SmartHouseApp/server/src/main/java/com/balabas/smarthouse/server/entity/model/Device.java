@@ -2,7 +2,7 @@ package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Set;
 
-import com.balabas.smarthouse.server.entity.model.descriptor.UpdateTimer;
+import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
@@ -18,7 +18,7 @@ public class Device extends ItemContainer<IGroup> implements IDevice {
 	private String dataUrl;
 	
 	@JsonIgnore
-	private UpdateTimer updateTimer;
+	private ActionTimer timer;
 	
 	private State state;
 	

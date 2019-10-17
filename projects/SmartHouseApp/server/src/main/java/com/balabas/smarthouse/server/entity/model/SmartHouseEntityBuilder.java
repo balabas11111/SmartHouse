@@ -46,7 +46,7 @@ import org.json.JSONObject;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassType;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
-import com.balabas.smarthouse.server.entity.model.descriptor.UpdateTimer;
+import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
 import com.balabas.smarthouse.server.exception.BadValueException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 
@@ -87,17 +87,17 @@ public class SmartHouseEntityBuilder {
 		device.setDataUrl(deviceDataUrl);
 		device.setState(State.CONSTRUCTED);
 
-		device.setUpdateTimer(buildUpdateTimer(ItemType.DEVICE));
+		device.setTimer(buildTimer(ItemType.DEVICE));
 
 		return device;
 	}
 
-	private static UpdateTimer buildUpdateTimer(ItemType itemType) {
+	private static ActionTimer buildTimer(ItemType itemType) {
 		Long updateInterval = itemType.refreshInterval;
 
 		if (updateInterval > 0) {
-			UpdateTimer updateTimer = new UpdateTimer(updateInterval);
-			updateTimer.setUpdateForced(true);
+			ActionTimer updateTimer = new ActionTimer(updateInterval);
+			updateTimer.setActionForced(true);
 			return updateTimer;
 		}
 
@@ -198,7 +198,7 @@ public class SmartHouseEntityBuilder {
 					group.setDescription(description);
 					group.setName(groupName);
 					group.setType(type);
-					group.setUpdateTimer(buildUpdateTimer(type));
+					group.setTimer(buildTimer(type));
 
 					groups.add(group);
 				}

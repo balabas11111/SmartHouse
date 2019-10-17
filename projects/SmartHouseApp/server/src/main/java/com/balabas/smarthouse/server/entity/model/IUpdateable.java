@@ -1,10 +1,10 @@
 package com.balabas.smarthouse.server.entity.model;
 
-import com.balabas.smarthouse.server.entity.model.descriptor.UpdateTimer;
+import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
 
 public interface IUpdateable {
 
-	UpdateTimer getUpdateTimer();
+	ActionTimer getTimer();
 
-	void setUpdateTimer(UpdateTimer updateTimer);
+	void setTimer(ActionTimer updateTimer);
 }

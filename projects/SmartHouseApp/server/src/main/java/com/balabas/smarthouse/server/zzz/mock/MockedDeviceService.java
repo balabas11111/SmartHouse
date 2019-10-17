@@ -22,10 +22,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.balabas.smarthouse.server.alarm.AlarmRepositoryBaseValueContainer;
 import com.balabas.smarthouse.server.alarm.EntityMinMaxValueAlarm;
-import com.balabas.smarthouse.server.model.DeviceEntity;
+import com.balabas.smarthouse.server.entity.service.IDeviceService;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
-import com.balabas.smarthouse.server.service.DeviceService;
 import com.google.common.hash.Hashing;
 
 import lombok.extern.log4j.Log4j2;
@@ -59,7 +58,7 @@ public class MockedDeviceService implements InitializingBean {
 	private AlarmRepositoryBaseValueContainer<DeviceEntity, EntityMinMaxValueAlarm> minMaxAlarmRepository;
 	
 	@Autowired
-	private DeviceService deviceService;
+	private IDeviceService deviceService;
 	
 	@Autowired
 	private DeviceSecurityService secService;
