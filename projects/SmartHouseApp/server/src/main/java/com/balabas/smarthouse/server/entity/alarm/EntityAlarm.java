@@ -6,7 +6,6 @@ import java.util.List;
 import com.balabas.smarthouse.server.entity.model.Emoji;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
-import com.balabas.smarthouse.server.entity.model.IUpdateable;
 import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -65,6 +64,8 @@ public class EntityAlarm implements IEntityAlarm {
 
 		if( alarmed && !timer.isActionForced()){
 			timer.update(0, true);
+		} else if(!alarmed) {
+			timer.setActionSuccess();
 		}
 		
 		return alarmed;
@@ -101,8 +102,10 @@ public class EntityAlarm implements IEntityAlarm {
 	public void setNotified(boolean notified) {
 		if(notified) {
 			timer.setActionSuccess();
+		} else {
+			timer.setActionFailed();
+			timer.setActionForced(true);
 		}
-		timer.setActionForced(!notified);
 	}
 
 }

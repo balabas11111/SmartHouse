@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class ActionTimer {
 
+	@Getter
     private long interval;
     
     @Getter
@@ -43,7 +44,7 @@ public class ActionTimer {
         if(incrementMs>-1){
         	 this.nextActionTime =(new Date()).getTime() + incrementMs;
         }else{
-            log.error("Wrong updateInterval");
+            this.nextActionTime = -1;
         }
     }
     
