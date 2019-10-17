@@ -72,7 +72,7 @@ public class EntityAlarm implements IEntityAlarm {
 
 	@Override
 	public boolean notificationRequired() {
-		return isAlarmed() && !timer.isActionForced() && timer.isTimeToExecuteAction();
+		return isAlarmed() && timer.isActionForced() && timer.isTimeToExecuteAction();
 	}
 
 	@Override
@@ -99,7 +99,10 @@ public class EntityAlarm implements IEntityAlarm {
 
 	@Override
 	public void setNotified(boolean notified) {
-		timer.update(0, true);
+		if(notified) {
+			timer.setActionSuccess();
+		}
+		timer.setActionForced(!notified);
 	}
 
 }
