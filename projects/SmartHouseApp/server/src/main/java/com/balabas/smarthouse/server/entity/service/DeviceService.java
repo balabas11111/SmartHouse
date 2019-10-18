@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.json.JSONObject;
@@ -78,30 +77,6 @@ public class DeviceService implements IDeviceService {
 	}
 
 	@Override
-	public void requestDevicesValues(IDevice device, IGroup group) {
-		State oldState = device.getState();
-
-		try {
-			log.debug("Request data " + device.getDeviceName());
-
-			String groupId = group != null ? group.getName() : null;
-			String result = deviceRequestor.executeGetDataOnDevice(device, groupId);
-
-			processDataReceivedFromDevice(device, result);
-
-		} catch (Exception e) {
-			device.getTimer().update(60000, false);
-
-			if (!State.DISCONNECTED.equals(oldState)) {
-				log.error("Error request device values", e);
-			}
-			
-			stateChanger.stateChanged(device, State.DISCONNECTED);
-		}
-	}
-	
-
-	@Override
 	public void processDataReceivedFromDevice(IEntity entity, JSONObject data) {
 		IDevice device = getDevice(entity.getDeviceName());
 		
@@ -127,22 +102,12 @@ public class DeviceService implements IDeviceService {
 
 			if (!device.isInitialized()) {
 				// build new device
-				Set<IGroup> groups = SmartHouseEntityBuilder.buildGroupsFromJson(device.getName(), deviceJson);
-				boolean initOk = !groups.isEmpty();
-
-				if (initOk) {
-					for (IGroup group : groups) {
-						Set<IEntity> entities = SmartHouseEntityBuilder.buildEntitiesForGroup(group, deviceJson);
-
-						group.setChildren(entities);
-						initOk = initOk && !entities.isEmpty();
-					}
-				}
-
-				device.setChildren(groups);
+				boolean initOk = SmartHouseEntityBuilder.buildDeviceFromJson(device, deviceJson);
 
 				if (initOk) {
 					stateChanger.stateChanged(device, State.INIT_DATA_RECEIVED);
+				} else {
+					log.error("Device initialize failed JSON ="+deviceJson.toString());
 				}
 
 			} else {
@@ -186,6 +151,29 @@ public class DeviceService implements IDeviceService {
             );
         }
     }
+
+	@Override
+	public void requestDevicesValues(IDevice device, IGroup group) {
+		State oldState = device.getState();
+
+		try {
+			log.debug("Request data " + device.getDeviceName());
+
+			String groupId = group != null ? group.getName() : null;
+			String result = deviceRequestor.executeGetDataOnDevice(device, groupId);
+
+			processDataReceivedFromDevice(device, result);
+
+		} catch (Exception e) {
+			device.getTimer().update(60000, false);
+
+			if (!State.DISCONNECTED.equals(oldState)) {
+				log.error("Error request device values", e);
+			}
+			
+			stateChanger.stateChanged(device, State.DISCONNECTED);
+		}
+	}
 	
 	protected boolean checkItemRequiresUpdate(IDevice target, IUpdateable source){
     	boolean waits = source.getTimer().isActionForced();

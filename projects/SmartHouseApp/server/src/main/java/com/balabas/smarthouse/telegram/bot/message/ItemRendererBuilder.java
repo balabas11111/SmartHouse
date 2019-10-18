@@ -1,43 +1,21 @@
 package com.balabas.smarthouse.telegram.bot.message;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import com.balabas.smarthouse.server.entity.model.IEntity;
-import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
-import com.balabas.smarthouse.telegram.bot.renderers.EntityRenderer;
-import com.google.common.collect.Lists;
+import com.balabas.smarthouse.server.entity.model.IGroup;
 
 @Component
 public class ItemRendererBuilder {
 
-	private Map<EntityClass, EntityRenderer<?>> renderers;
-	
-	@Autowired
-	public ItemRendererBuilder(Set<EntityRenderer<?>> renderers) {
-		this.renderers = renderers.stream().collect(Collectors.toMap(EntityRenderer::getType, Function.identity()));
+	public void renderEntityByFieldDescriptors(IEntity entity, StringBuilder builder) {
+		// TODO Auto-generated method stub
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List<SendMessage> build(Set<IEntity> items, Long chatId){
-		List<SendMessage> result = Lists.newArrayList();
+	public SendMessage buildGroupCommandInterface(IGroup entity, Long chatId) {
+		// TODO Auto-generated method stub
 		
-		items.stream().forEach(item ->{
-			EntityRenderer renderer = renderers.getOrDefault(item.getRenderer(), null);
-			if(renderer!=null) {
-				result.add(renderer.render(item, chatId));
-			}
-			
-		});
-		 
-		
-		return result;
+		return null;
 	}
 }

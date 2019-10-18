@@ -4,21 +4,18 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.SmartHouseEntityBuilder;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
 import org.junit.platform.runner.JUnitPlatform;
 
-import lombok.extern.log4j.Log4j2;
-
-@Log4j2
 @RunWith(JUnitPlatform.class)
 public class DeviceBuildFromJsonTest {
 	
@@ -30,12 +27,8 @@ public class DeviceBuildFromJsonTest {
 		JSONObject deviceJson = new JSONObject(text);
 		
 		IDevice device = new Device(); 
-		/*SmartHouseEntityBuilder.bui
+		boolean initOk = SmartHouseEntityBuilder.buildDeviceFromJson(device, deviceJson);
 		
-		ObjectMapper mapper = new ObjectMapper();
-		
-		String deviceStr = mapper.writeValueAsString(device);
-		*/
-		//log.info(deviceStr);
+		Assert.assertTrue("Initialization failed", initOk);
 	}
 }

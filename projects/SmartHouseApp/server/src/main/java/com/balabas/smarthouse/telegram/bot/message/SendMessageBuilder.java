@@ -2,9 +2,14 @@ package com.balabas.smarthouse.telegram.bot.message;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.logging.log4j.util.Strings;
@@ -38,7 +43,7 @@ public class SendMessageBuilder {
 
 	@Autowired
 	private IDeviceService deviceService;
-	
+
 	@Autowired
 	private IEntityAlarmService entityAlarmService;
 
@@ -57,8 +62,8 @@ public class SendMessageBuilder {
 
 	public List<SendMessage> createServerStartedMessages(Long chatId, String serverName) {
 		List<SendMessage> msgs = Lists.newArrayList();
-		String text = String.format(BotMessageConstants.BOT_REGISTERED_MSG, Emoji.PERSON_RAISING_ONE_HAND,
-				serverName, new Date());
+		String text = String.format(BotMessageConstants.BOT_REGISTERED_MSG, Emoji.PERSON_RAISING_ONE_HAND, serverName,
+				new Date());
 		// msgs.add(createHideReplyKeyboardMessage(chatId, null, text));
 		msgs.add(createRefreshDevicesListReplyKeyboard(chatId, text));
 		return msgs;
@@ -93,8 +98,8 @@ public class SendMessageBuilder {
 				: String.format(BotMessageConstants.SERVER_SELECT_DEVICE_MSG, Emoji.OUTBOX_TRAY, serverName));
 
 		msgs.add(cont.createMsg(inlineKeyboard.getDevicesOfServerInlineKeyboard(devices)));
-		//msgs.add(createRefreshDevicesListReplyKeyboard(cont.getChatId(),""));
-		
+		// msgs.add(createRefreshDevicesListReplyKeyboard(cont.getChatId(),""));
+
 		return msgs;
 	}
 
@@ -129,77 +134,86 @@ public class SendMessageBuilder {
 			IGroup group = device.getGroup(groupId);
 
 			StringBuilder builder = new StringBuilder();
-			builder.append(buttons.getGroupHeader(device.getDescription(), group.getName()));
+			builder.append(buttons.getGroupHeader(device.getEmoji().toString(), device.getDescription(), 
+							group.getEmoji().toString(), group.getDescription()));
 
 			group.getEntities().stream().filter(e -> EntityClass.DEFAULT.equals(e.getRenderer()))
-				.sorted((e1, e2) -> e1.getDescription().compareToIgnoreCase(e2.getDescription()))
-				.forEach(ent -> entityToTemplate(ent, builder));
+					.sorted((e1, e2) -> e1.getDescription().compareToIgnoreCase(e2.getDescription()))
+					.forEach(ent -> entityToTemplate(ent, builder));
 
 			List<IEntityAlarm> alarms = entityAlarmService.getEntityAlarmsWithAlarmDetected(device);
-			
-			if(!alarms.isEmpty()) {
-				
-				/*builder.append("<b>bold</b>\n");
-				builder.append("<strong>strong</strong>\n");
-				builder.append("<i>italic</i>\n");
-				builder.append("<em>italic_em</em>\n");
-				builder.append("<a href=\"URL\">inline URL</a>\n");
-				builder.append("<code>inline fixed-width code</code>\n");
-				*/
+
+			if (!alarms.isEmpty()) {
+
+				/*
+				 * builder.append("<b>bold</b>\n"); builder.append("<strong>strong</strong>\n");
+				 * builder.append("<i>italic</i>\n"); builder.append("<em>italic_em</em>\n");
+				 * builder.append("<a href=\"URL\">inline URL</a>\n");
+				 * builder.append("<code>inline fixed-width code</code>\n");
+				 */
 				builder.append(Emoji.ERROR.toString());
 				builder.append("<code> Режимы тревоги </code>\n");
-				
-				group.getEntities().stream().forEach(entity ->{
+
+				group.getEntities().stream().forEach(entity -> {
 					alarms.stream().filter(alarm -> entity.getName().equals(alarm.getEntity().getName()))
-						.forEach(alarm -> {
-							if(alarm.isAlarmed()) {
-								builder.append(" ");
-								builder.append(Emoji.ERROR.toString());
-								builder.append(" ");
-							}
-							builder.append(alarm.getAlarmStartedText());
-							builder.append("\n");
-						});
-					});
+							.forEach(alarm -> {
+								if (alarm.isAlarmed()) {
+									builder.append(" ");
+									builder.append(Emoji.ERROR.toString());
+									builder.append(" ");
+								}
+								builder.append(alarm.getAlarmStartedText());
+								builder.append("\n");
+							});
+				});
 			}
-			
+
 			result.add(createHtmlMessage(context.getChatId(), builder.toString()));
 
-			itemRendererBuilder.build(group.getEntities(), context.getChatId()).forEach(result::add);
+			//itemRendererBuilder.build(group.getEntities(), context.getChatId()).forEach(result::add);
+			Optional.ofNullable(itemRendererBuilder.buildGroupCommandInterface(group, context.getChatId()))
+				.ifPresent(sm -> result.add(sm));
 		}
 		return result;
 	}
 
 	private void entityToTemplate(IEntity entity, StringBuilder builder) {
-		entityValueMapToTemplate(entity.getName(), entity.getChildren(), builder, true);
+		String entityHeader = buttons.getEntityHeader(entity.getEmoji().toString(), entity.getDescription());
+		builder.append(entityHeader);
 		
-		if (entity.getGrouppedFieldsIds()!=null && !entity.getGrouppedFieldsIds().isEmpty()) {
-			//builder.append("\n Значения \n\n");
+		if(!entityValueMapToTemplate(entity.getName(), entity.getEntityFields(), entity.getGeneratedFields(), builder,
+				true, false)){
+			itemRendererBuilder.renderEntityByFieldDescriptors(entity, builder);
+		}
+
+		if (entity.getGrouppedFieldsIds() != null && !entity.getGrouppedFieldsIds().isEmpty()) {
+			// builder.append("\n Значения \n\n");
 			Set<IEntityField> siVals = new LinkedHashSet<>();
 			String entName = entity.getName() + ENTITY_FIELD_SENSOR_ITEMS;
-			
-			entity.getGrouppedFieldsIds().forEach(id ->{
+
+			entity.getGrouppedFieldsIds().forEach(id -> {
 				siVals.clear();
-				
-				entity.getGrouppedFieldsNames().forEach( field ->{
-					String fieldName = entity.getField(id + ":" + field).getValue().toString();
+
+				entity.getGrouppedFieldsNames().forEach(field -> {
+					String fieldName = id + ":" + field;
 					IEntityField entityField = entity.getEntityField(fieldName);
-					if(entityField!=null) {
+					if (entityField != null) {
 						siVals.add(entityField);
 					}
 				});
-				
-				entityValueMapToTemplate(entName, siVals, builder, true);
+
+				entityValueMapToTemplate(entName, siVals, entity.getGeneratedFields(), builder, true, true);
 			});
-			
+
 		}
 
-		builder.append("\n");
+		//builder.append("\n");
 	}
 
-	private void entityValueMapToTemplate(String entName, Set<IEntityField> entityFields, StringBuilder builder, boolean addNextLine) {
+	private boolean entityValueMapToTemplate(String entName, Set<IEntityField> entityFields, Set<IEntityField> extraFields,
+			StringBuilder builder, boolean addNextLine, boolean renderAsTextIfFail) {
 		if (entName == null || entityFields == null || entityFields.isEmpty()) {
-			return;
+			return false;
 		}
 		String result = "";
 
@@ -208,22 +222,26 @@ public class SendMessageBuilder {
 
 			try {
 				URL u = this.getClass().getClassLoader().getResource(tmplPath);
+				
 				result = Resources.toString(u, Charsets.UTF_8);
 
-				for (IEntityField entityField : entityFields) {
-					String tmplKey = "_" + entityField.getName() + "_";
-	
-					if(result.contains(tmplKey)) {
-						result = result.replaceAll(tmplKey, entityField.getValueStr());
-					}
-				}
-			}catch(NullPointerException e) {
-				log.error("No template for "+entName);
+				result = fieldsToToTemplate(entityFields, result);
+
+				result = fieldsToToTemplate(extraFields, result);
+
+			} catch (NullPointerException e) {
+				//use standard renderer for item
+				log.debug("No template for " + entName);
 				
-				result += fieldToStr(entityFields);
+				if(renderAsTextIfFail) {
+					result += fieldToStr(entityFields);
+					result += fieldToStr(extraFields);
+				} else {
+					return false;
+				}
 			}
 
-			if(addNextLine) {
+			if (addNextLine) {
 				result += "\n";
 			}
 		} catch (IOException e) {
@@ -232,19 +250,44 @@ public class SendMessageBuilder {
 		}
 
 		builder.append(result);
+		return true;
 	}
-	
+
+	private String fieldsToToTemplate(Collection<IEntityField> fields, String templateText) {
+		if (fields != null && !fields.isEmpty()) {
+			Map<String, String> keyReplacement = new HashMap<>();
+			
+			for (IEntityField entityField : fields) {
+				keyReplacement.put("_" + entityField.getTemplateName() + "_"
+						, entityField.getValueStr());
+				keyReplacement.put("_" + entityField.getTemplateName() + ".emoji_"
+						, (Optional.ofNullable(entityField.getEmoji())
+						  .orElse(Emoji.EMPTY_EMOJI)).toString() );
+			}
+			
+			for(Entry<String, String> entry : keyReplacement.entrySet()) {
+				templateText = templateText.replaceAll(entry.getKey(), entry.getValue());
+			}
+		}
+
+		return templateText;
+	}
+
 	protected String fieldToStr(Set<IEntityField> entityFields) {
-		StringBuilder buf =new StringBuilder();
-		
-		entityFields.stream().forEach( ef -> {
-			buf.append(ef.getName());
-			buf.append("=");
-			buf.append(ef.getValueStr());
-			buf.append(";");
-		});
-		
-		return buf.toString();
+		if (entityFields != null && !entityFields.isEmpty()) {
+			StringBuilder buf = new StringBuilder();
+
+			entityFields.stream().forEach(ef -> {
+				buf.append(ef.getName());
+				buf.append("=");
+				buf.append(ef.getValueStr());
+				buf.append(";");
+			});
+
+			return buf.toString();
+		}
+
+		return "";
 	}
 
 	public SendMessage createUnknown(ReplyContext context) {

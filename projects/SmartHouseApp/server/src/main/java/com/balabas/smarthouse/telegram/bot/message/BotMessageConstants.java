@@ -27,6 +27,8 @@ public class BotMessageConstants {
 	public static final String UNAUTHORIZED_MSG = "%s No Access = No success. Suck, man";
 	
 	public static final String GROUP_DISPLAY_HEADER_MSG = "%s <b>%s</b> \n %s <code>%s</code> \n\n";
+	public static final String ENTITY_DISPLAY_HEADER_MSG = "----------\n %s <b>%s</b> \n\n";
+	
 	public static final String SELECT_DEVICE_MSG = "%s Выберите устройство";
 	public static final String SERVER_SELECT_DEVICE_MSG = "%s Сервер %s";
 	public static final String NO_DEVICE_MSG = "%s На сервере не зарегистрировано ни одно устройство";

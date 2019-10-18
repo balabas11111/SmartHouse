@@ -10,6 +10,7 @@ import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_URL_DATA;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_DESCRIPTION;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_FIRMWARE;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_COUNT;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_C;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_DESCRIPTION;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_FIELDS_ARRAY;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ITEM_CLASS;
@@ -60,8 +61,10 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SmartHouseEntityBuilder {
 
-	private static List<String> notParsedFields = Arrays.asList(ENTITY_FIELD_STATUS, ENTITY_FIELD_SENSOR_ITEMS,
+	private static List<String> notUpdateableEntityFields = Arrays.asList(ENTITY_FIELD_STATUS, ENTITY_FIELD_SENSOR_ITEMS,
 			ENTITY_FIELD_SWG, ENTITY_FIELD_ITEM_CLASS);
+	
+	private static List<String> notParsedAsEntityNames = Arrays.asList(ENTITY_FIELD_DESCRIPTION, EDC_FIELD_EMOJI);
 
 	public static IDevice buildDeviceFromRequest(DeviceRequest request) {
 		Device device = new Device();
@@ -156,29 +159,32 @@ public class SmartHouseEntityBuilder {
 
 		for (String entityFieldName : JSONObject.getNames(entityJson)) {
 
-			if (!notParsedFields.contains(entityFieldName)) {
-				
-				IEntityField entityField = entity.getEntityField(entityFieldName);
-				Object valueObj = entityJson.get(entityFieldName);
-
-				if (entityField != null) {
-					try {
-						entityField.setValueWithNoCheck(valueObj);
-					} catch (BadValueException e) {
-						log.error(e);
-						setOk = false;
+			if (!notUpdateableEntityFields.contains(entityFieldName)) {
+				try {
+					IEntityField entityField = entity.getEntityField(entityFieldName);
+					Object valueObj = entityJson.get(entityFieldName);
+	
+					if (entityField != null) {
+						try {
+							entityField.setValueWithNoCheck(valueObj);
+						} catch (BadValueException e) {
+							log.error(e);
+							setOk = false;
+						}
+	
+					} else {
+						log.warn("New field " + entityFieldName + " entity = " + entity.getName() + " device = "
+								+ entity.getDeviceName());
+						try {
+							IEntityField field = buildEntityFieldFromJson(entityJson, entityFieldName);
+							entity.getEntityFields().add(field);
+						} catch (BadValueException e) {
+							log.error(e);
+						}
+						
 					}
-
-				} else {
-					log.warn("New field " + entityFieldName + " entity = " + entity.getName() + " device = "
-							+ entity.getDeviceName());
-					try {
-						IEntityField field = buildFieldFromJson(entityJson, entityFieldName);
-						entity.getEntityFields().add(field);
-					} catch (BadValueException e) {
-						log.error(e);
-					}
-					
+				}catch(Exception e) {
+					log.error("field " + entityFieldName + " : ", e);
 				}
 			}
 		}
@@ -196,8 +202,34 @@ public class SmartHouseEntityBuilder {
 
 				device.setDescription(info.optString(ENTITY_DEVICE_DEVICE_DESCRIPTION, device.getDescription()));
 				device.setFirmware(info.optString(ENTITY_DEVICE_DEVICE_FIRMWARE, device.getFirmware()));
+				
+				if(!info.has(EDC_FIELD_EMOJI)) {
+					device.setEmoji(ItemType.DEVICE.getEmoji());
+				} else {
+					String emojiStr = info.optString(EDC_FIELD_EMOJI, ItemType.DEVICE.getEmoji().code);
+					
+					device.setEmoji(Emoji.getByCode(emojiStr));
+				}
 			}
 		}
+	}
+	
+	public static boolean buildDeviceFromJson(IDevice device, JSONObject deviceJson) {
+		Set<IGroup> groups = SmartHouseEntityBuilder.buildGroupsFromJson(device.getName(), deviceJson);
+		boolean initOk = !groups.isEmpty();
+
+		if (initOk) {
+			for (IGroup group : groups) {
+				Set<IEntity> entities = SmartHouseEntityBuilder.buildEntitiesForGroup(group, deviceJson);
+
+				group.setChildren(entities);
+				initOk = initOk && !entities.isEmpty();
+			}
+		}
+
+		device.setChildren(groups);
+		
+		return initOk;
 	}
 
 	public static Set<IGroup> buildGroupsFromJson(String deviceName, JSONObject deviceJson) {
@@ -210,9 +242,12 @@ public class SmartHouseEntityBuilder {
 				if (!ItemType.CUSTOM.equals(type)) {
 					String description = deviceJson.getJSONObject(groupName).optString(ENTITY_FIELD_DESCRIPTION,
 							type.description);
-
+					String emojiDescr = deviceJson.getJSONObject(groupName).optString(EDC_FIELD_EMOJI, null);
+					Emoji groupEmoji = (emojiDescr != null)?Emoji.getByCode(emojiDescr):type.getEmoji();
+					
 					IGroup group = new Group();
 
+					group.setEmoji(groupEmoji);
 					group.setDeviceName(deviceName);
 					group.setDescription(description);
 					group.setName(groupName);
@@ -243,7 +278,7 @@ public class SmartHouseEntityBuilder {
 		JSONObject groupJson = deviceJson.optJSONObject(groupName);
 
 		for (String entityName : JSONObject.getNames(groupJson)) {
-			if (!ENTITY_FIELD_DESCRIPTION.equals(entityName)) {
+			if (!notParsedAsEntityNames.contains(entityName)) {
 				IEntity entity = buildEntityFromJson(groupJson, deviceName, groupName, entityName);
 				entities.add(entity);
 			}
@@ -266,33 +301,33 @@ public class SmartHouseEntityBuilder {
 		EntityClass renderer = EntityClass.getByKey(
 				entityJson.optString(ENTITY_FIELD_ITEM_CLASS, descriptorJson.optString(ENTITY_FIELD_ITEM_CLASS, "")));
 
-		IEntity result = new Entity();
+		IEntity entity = new Entity();
 
-		result.setName(entityName);
-		result.setDeviceName(deviceName);
-		result.setGroupName(groupName);
-		result.setDescription(description);
-		result.setEmoji(emoji);
-		result.setDescriptionField(descriptionField);
-		result.setRemoteId(remoteId);
-		result.setRenderer(renderer);
+		entity.setName(entityName);
+		entity.setDeviceName(deviceName);
+		entity.setGroupName(groupName);
+		entity.setDescription(description);
+		entity.setEmoji(emoji);
+		entity.setDescriptionField(descriptionField);
+		entity.setRemoteId(remoteId);
+		entity.setRenderer(renderer);
 
 		Set<IEntityField> children = new LinkedHashSet<>();
 
 		for (String fieldName : JSONObject.getNames(entityJson)) {
 			if (ENTITY_FIELD_STATUS.equals(fieldName)) {
-				processEntityStatus(result, entityJson);
+				processEntityStatus(entity, entityJson);
 			} else if (ENTITY_FIELD_SENSOR_ITEMS.equals(fieldName)) {
-				processGrouppedValues(result, entityJson);
+				processGrouppedValues(entity, entityJson);
 			} else if (!ENTITY_FIELD_SWG.equals(fieldName) && !ENTITY_FIELD_ITEM_CLASS.equals(fieldName)) {
-				IEntityField field = buildFieldFromJson(entityJson, fieldName);
+				IEntityField field = buildEntityFieldFromJson(entityJson, fieldName);
 				children.add(field);
 			}
 		}
 
-		result.setChildren(children);
+		entity.setChildren(children);
 
-		return result;
+		return entity;
 	}
 
 	private static void processEntityStatus(IEntity entity, JSONObject entityJson) {
@@ -305,12 +340,14 @@ public class SmartHouseEntityBuilder {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private static void processGrouppedValues(IEntity entity, JSONObject entityJson) {
 		JSONObject sensorItemsJson = entityJson.getJSONObject(ENTITY_FIELD_SENSOR_ITEMS);
 
 		log.debug("sensorItemsJson : " + sensorItemsJson);
 
-		int count = sensorItemsJson.optInt(ENTITY_FIELD_COUNT, 0);
+		int count = sensorItemsJson.optInt(ENTITY_FIELD_COUNT, 
+				sensorItemsJson.optInt(ENTITY_FIELD_C, 0));
 
 		Set<String> grouppedFieldsNames = Optional.ofNullable(sensorItemsJson.optJSONArray(ENTITY_FIELD_FIELDS_ARRAY))
 				.orElse(new JSONArray()).toList().stream().map(Object::toString).collect(Collectors.toSet());
@@ -332,6 +369,17 @@ public class SmartHouseEntityBuilder {
 		} else {
 			entity.setGrouppedFieldsIds(grouppedFieldsIds);
 			entity.setGrouppedFieldsNames(grouppedFieldsNames);
+			
+			try {
+				IEntityField countField = new EntityFieldInteger();
+				countField.setName(ENTITY_FIELD_COUNT);
+				countField.setReadOnly(true);
+				countField.setValueWithNoCheck(Integer.valueOf(count));
+				
+				entity.addGeneratedField(countField);
+			} catch(BadValueException e) {
+				log.error(e);
+			}
 
 			log.debug("Sensor items added");
 		}
@@ -339,7 +387,7 @@ public class SmartHouseEntityBuilder {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static IEntityField buildFieldFromJson(JSONObject entityJson, String fieldName) throws BadValueException {
+	public static IEntityField buildEntityFieldFromJson(JSONObject entityJson, String fieldName) throws BadValueException {
 		JSONObject descriptorJson = entityJson.optJSONObject(ENTITY_FIELD_SWG);
 		JSONObject allFieldsDecriptor = descriptorJson.optJSONObject(EDC_ENTITY_FIELDS);
 

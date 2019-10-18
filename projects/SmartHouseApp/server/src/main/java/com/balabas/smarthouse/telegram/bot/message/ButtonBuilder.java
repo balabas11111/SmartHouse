@@ -15,6 +15,7 @@ import static com.balabas.smarthouse.telegram.bot.BotConstants.GROUP_SENSORS_NAM
 import static com.balabas.smarthouse.telegram.bot.BotConstants.GROUP_SERVICES_NAME;
 import static com.balabas.smarthouse.telegram.bot.BotConstants.GROUP_SETTINGS_NAME;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.GROUP_DISPLAY_HEADER_MSG;
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_DISPLAY_HEADER_MSG;
 
 @Component
 public class ButtonBuilder {
@@ -62,9 +63,20 @@ public class ButtonBuilder {
 	}
 	
 	public String getGroupHeader(String deviceDescription, String groupName){
+		return getGroupHeader(
+				Emoji.OUTBOX_TRAY.toString(), deviceDescription,
+				getEmojiByGroupName(groupName).toString(), getGroupNameTranslation(groupName));
+	}
+	
+	public String getGroupHeader(String deviceEmoji, String deviceDescription, String groupEmoji, String groupDescription){
 		return String.format(GROUP_DISPLAY_HEADER_MSG,
-				Emoji.OUTBOX_TRAY, deviceDescription,
-				getEmojiByGroupName(groupName), getGroupNameTranslation(groupName));
+				deviceEmoji, deviceDescription,
+				groupEmoji, groupDescription);
+	}
+	
+	public String getEntityHeader(String entityEmoji, String entityDescription){
+		return String.format(ENTITY_DISPLAY_HEADER_MSG,
+				entityEmoji, entityDescription);
 	}
 	
 	public String getButton(Emoji emoji, String text) {

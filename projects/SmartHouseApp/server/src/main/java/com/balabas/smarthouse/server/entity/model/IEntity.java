@@ -10,6 +10,8 @@ public interface IEntity extends IStateable, IItemContainer<IEntityField> {
 	IEntityField getField(String fieldName);
 	Set<IEntityField> getEntityFields();
 	
+	Set<IEntityField> getGeneratedFields();
+	
 	int getRemoteId();
 	void setRemoteId(int remoteId);
 	
@@ -34,7 +36,11 @@ public interface IEntity extends IStateable, IItemContainer<IEntityField> {
 	String getDeviceName();
 	void setDeviceName(String deviceName);
 	
+	void setEntityFields(Set<IEntityField> fields);
+	
 	default IEntityField getEntityField(String entityFieldName) {
 		return getChild(entityFieldName);
 	}
+	void addEntityField(IEntityField entityField);
+	void addGeneratedField(IEntityField entityField);
 }

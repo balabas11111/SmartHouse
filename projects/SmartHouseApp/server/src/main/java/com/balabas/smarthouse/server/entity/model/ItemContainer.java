@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 public abstract class ItemContainer<T extends IItemAbstract> extends ItemAbstract implements IItemContainer<T> {
 
 	@JsonIgnore
-	private Set<T> children;
+	protected Set<T> children;
 	@JsonIgnore
 	protected String parentName;
 

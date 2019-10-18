@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.model;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
@@ -19,6 +20,7 @@ public class Entity extends ItemContainer<IEntityField> implements IEntity {
 	
 	private Set<String> grouppedFieldsIds;
 	private Set<String> grouppedFieldsNames;
+	private Set<IEntityField> generatedFields;
 	
 	private EntityStatus status;
 	private State state;
@@ -54,5 +56,34 @@ public class Entity extends ItemContainer<IEntityField> implements IEntity {
 	@Override
 	public Set<IEntityField> getEntityFields() {
 		return getChildren();
+	}
+
+	@Override
+	public void setEntityFields(Set<IEntityField> fields) {
+		setChildren(fields);
+	}
+	
+	@Override
+	public void addEntityField(IEntityField entityField) {
+		this.children = addEntityFieldWithCheck(this.children, entityField);
+	}
+	
+	@Override
+	public void addGeneratedField(IEntityField entityField) {
+		this.generatedFields = addEntityFieldWithCheck(this.generatedFields, entityField);
+	}
+	
+	private Set<IEntityField> addEntityFieldWithCheck(Set<IEntityField> fields, IEntityField entityField) {
+		if(fields == null) {
+			fields = new LinkedHashSet<>();
+			fields.add(entityField);
+		} else {
+			if(!fields.contains(entityField)
+					&& fields.stream().noneMatch( ef -> ef.getName().equals(entityField.getName()))) {
+				
+				fields.add(entityField);
+			}
+		}
+		return fields;
 	}
 }

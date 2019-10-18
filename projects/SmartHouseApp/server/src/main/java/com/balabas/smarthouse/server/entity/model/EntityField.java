@@ -33,10 +33,25 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 
 	@Getter @Setter
 	protected Set<IEntityField<T>> enabledValues;
+	
+	@Getter @Setter
+	protected String templateName;
 
 	public EntityField() {
 		ParameterizedType type = (ParameterizedType)this.getClass().getGenericSuperclass();
 		clazz = (Class)type.getActualTypeArguments()[0];
+	}
+	
+	@Override
+	public void setName(String name) {
+		super.setName(name);
+		
+		if(name!=null && !name.isEmpty() && name.contains(":")) {
+			String tmplName = name.substring(name.indexOf(":")+":".length());
+			setTemplateName(tmplName);
+		} else {
+			setTemplateName(name);
+		}
 	}
 
 	@Override

@@ -57,7 +57,8 @@ public enum Emoji {
 	
 	
 	WARNING('\u26A0', null, "26A0"),
-	WAVING_HAND_SIGN('\uD83D','\uDC4B', "1F44B");
+	WAVING_HAND_SIGN('\uD83D','\uDC4B', "1F44B"),
+	EMPTY_EMOJI(null,null, " ");
 	
 	
     Character chr1;
@@ -96,7 +97,7 @@ public enum Emoji {
     
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("");
 
         if (this.chr1 != null) {
             sb.append(this.chr1);

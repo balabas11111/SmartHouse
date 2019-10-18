@@ -16,6 +16,9 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	String getAction();
 	void setAction(String action);
 	
+	String getTemplateName();
+	void setTemplateName(String templateName);
+	
 	boolean isReadOnly();
 	void setReadOnly(boolean readOnly);
 	
