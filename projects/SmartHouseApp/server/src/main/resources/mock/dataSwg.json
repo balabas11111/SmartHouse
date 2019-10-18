@@ -1,0 +1,269 @@
+{
+	"device": {
+		"info": {
+			"deviceId": "MockedDeviceId%INDEX%",
+			"deviceFirmware": "deviceFirmware%INDEX%",
+			"deviceDescr": "Mocked device Description%INDEX%"
+		}
+	},
+	"sensors": {
+		"bme280": {
+			"swg": {
+				"i": 0,
+				"df": "d",
+				"f": {
+					"d": {
+						"d": "Датчик",
+						"c": "char*",
+						"cv": "inp"
+					},
+					"h": {
+						"d": "Влажность",
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1,
+						"img": "1F4A7"
+					},
+					"t": {
+						"d": "Температура",
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1,
+						"img": "1F321"
+					},
+					"p": {
+						"d": "Атм. давление",
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1,
+						"img": "2B07"
+					}
+				},
+				"img": "1F326"
+			},
+			"id": 0,
+			"d": "Микроклимат воздуха",
+			"h": 59,
+			"t": 23,
+			"p": 100553
+		},
+		"bh1750": {
+			"swg": {
+				"i": 1,
+				"df": "d",
+				"f": {
+					"d": {
+						"d": "Датчик",
+						"c": "char*",
+						"cv": "inp"
+					},
+					"l": {
+						"d": "Освещенность",
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1,
+						"img": "1F505"
+					}
+				},
+				"img": "1F31E"
+			},
+			"id": 1,
+			"d": "Уровень освещения",
+			"l": 1253
+		},
+		"built In LED": {
+			"swg": {
+				"i": 2,
+				"df": "d",
+				"f": {
+					"d": {
+						"d": "Датчик",
+						"c": "char*",
+						"cv": "inp"
+					},
+					"on": {
+						"c": "bool",
+						"cv": "btb",
+						"val": {
+							"true": {
+								"d": "Включено",
+								"ad": "Отключить",
+								"img": "1F505"
+							},
+							"false": {
+								"d": "Отключено",
+								"ad": "Включить",
+								"img": "1F518"
+							}
+						}
+					}
+				},
+				"img": "1F4A1"
+			},
+			"id": 2,
+			"d": "Диод на плате",
+			"on": true,
+			"ic": "tb"
+		},
+		"dht22": {
+			"swg": {
+				"i": 3,
+				"df": "d",
+				"f": {
+					"d": {
+						"d": "Датчик",
+						"c": "char*",
+						"cv": "inp"
+					},
+					"h": {
+						"d": "Влажность",
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1,
+						"img": "1F4A7"
+					},
+					"t": {
+						"d": "Температура",
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1,
+						"img": "1F321"
+					}
+				},
+				"img": "26C5"
+			},
+			"id": 3,
+			"d": "Микроклимат воздуха DHT",
+			"h": 67,
+			"t": 28
+		},
+		"ds18d20": {
+			"swg": {
+				"i": 4,
+				"df": "d",
+				"f": {
+					"d": {
+						"d": "Датчик",
+						"c": "char*",
+						"cv": "inp"
+					},
+					"0:d": {
+						"c": "char*",
+						"cv": "inp"
+					},
+					"0:t": {
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1
+					},
+					"1:d": {
+						"c": "char*",
+						"cv": "inp"
+					},
+					"1:t": {
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1
+					},
+					"2:d": {
+						"c": "char*",
+						"cv": "inp"
+					},
+					"2:t": {
+						"c": "float",
+						"cv": "lbl",
+						"ro": 1
+					}
+				},
+				"img": "1F321"
+			},
+			"id": 4,
+			"d": "Температура пола",
+			"si": {
+				"c": 3,
+				"fa": [
+					"d",
+					"t"
+				]
+			},
+			"0:d": "00000000",
+			"0:t": 36,
+			"1:d": "00000001",
+			"1:t": 32,
+			"2:d": "00000002",
+			"2:t": 31
+		}
+	},
+	"settings": {
+		"DeviceSettings": {
+			"swg": {
+				"i": 5,
+				"df": "d",
+				"f": {
+					"d": {
+						"d": "Настройки",
+						"c": "char*",
+						"cv": "inp"
+					}
+				}
+			},
+			"id": 5,
+			"d": "Wifi Server Device settings",
+			"deviceId": "ESP_962570",
+			"deviceFirmware": "EntityLib dev device",
+			"deviceDescr": "Тестовое устройство",
+			"ssid": "balabasKiev5",
+			"pass": "******",
+			"ssidAP": "ESP_962570",
+			"passAP": "******",
+			"isAp": false,
+			"isStatIp": false,
+			"disStIfCon": false,
+			"ip": "192,168,0,120",
+			"ipAP": "192,168,0,4",
+			"gateway": "192,168,0,1",
+			"subnet": "255,255,255,0",
+			"dns": "192,168,0,1",
+			"dns2": "192,168,0,1",
+			"smrtServAddr": "192.168.0.103",
+			"smrtServKey": "******",
+			"userLogin": "",
+			"userPass": "******",
+			"adminLogin": "admin",
+			"adminPass": "******",
+			"interval": 20,
+			"apCH": 1,
+			"apH": 0,
+			"apMC": 4
+		}
+	},
+	"services": {
+		"DeviceManager": {
+			"swg": {
+				"i": 6,
+				"df": "d",
+				"f": {
+					"d": {
+						"d": "Сервис",
+						"c": "char*",
+						"cv": "inp"
+					},
+					"restart": {
+						"c": "bool",
+						"cv": "btc",
+						"val": {
+							"true": {
+								"d": "Перезапускаем",
+								"ad": "Перезапустить",
+								"img": "1F505"
+							}
+						}
+					}
+				}
+			},
+			"id": 6,
+			"d": "ESP8266 DeviceManager",
+			"restart": false
+		}
+	}
+}

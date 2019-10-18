@@ -10,6 +10,7 @@ public interface IDevice extends IStateable, IUpdateable, IItemContainer<IGroup>
 
 	boolean isRegistered();
 	boolean isInitialized();
+	void setInitialized(boolean initialized);
 
 	Set<IGroup> getGroups();
 	Set<IEntity> getEntities();

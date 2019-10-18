@@ -25,8 +25,6 @@ import org.json.JSONObject;
 import com.balabas.smarthouse.server.controller.ControllerConstants;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.experimental.UtilityClass;
 
@@ -115,8 +113,12 @@ public class ServerValuesMockUtil {
 		return new JSONObject().put("WiFiSetting",
 				new JSONObject().put("set1", "set1").put("set2", "123").put("set3", "set33"));
 	}
+	
+	public static String getRandomStr(int min, int max) {
+		return Integer.toString(getRandom(min, max));
+	}
 
-	private static int getRandom(int min, int max) {
+	public static int getRandom(int min, int max) {
 		if (min > max) {
 			int t = max;
 			max = min;

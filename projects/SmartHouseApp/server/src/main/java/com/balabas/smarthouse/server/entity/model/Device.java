@@ -23,6 +23,8 @@ public class Device extends ItemContainer<IGroup> implements IDevice {
 	
 	private State state;
 	
+	private boolean initialized;
+	
 	@JsonIgnore
 	@Override
 	public String getDeviceName() {
@@ -45,11 +47,11 @@ public class Device extends ItemContainer<IGroup> implements IDevice {
 		setName(deviceName);
 	}
 
-	@Override
+	/*@Override
 	public boolean isInitialized() {
-		return state!=null && state.compareTo(State.REGISTERED) > 0;
+		return state!=null && state.compareTo(State.REGISTERED) > 0 && getGroups() != null && getGroups().isEmpty();
 	}
-
+*/
 	@Override
 	public boolean isRegistered() {
 		return state!=null && state.compareTo(State.REGISTERED) >= 0;

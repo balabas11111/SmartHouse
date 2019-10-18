@@ -26,8 +26,6 @@ import com.balabas.smarthouse.server.entity.alarm.IAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.IDevice;
-import com.balabas.smarthouse.server.entity.model.IEntity;
-import com.balabas.smarthouse.server.entity.model.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IDeviceService;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
@@ -38,6 +36,7 @@ import lombok.extern.log4j.Log4j2;
 @Component
 // @Profile(value = "mock")
 @Log4j2
+@SuppressWarnings("rawtypes")
 public class MockedDeviceService implements InitializingBean {
 
 	private static final String ROOT = "http://localhost/api/v1";
@@ -74,7 +73,7 @@ public class MockedDeviceService implements InitializingBean {
 	private Map<String, String> serverKeys = new HashMap<>();
 	private Map<String, String> deviceKeys = new HashMap<>();
 
-	private boolean doAlert = false;
+	private boolean alarmRegistered = false;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -82,37 +81,41 @@ public class MockedDeviceService implements InitializingBean {
 		log.info("Mock Key hashed =" + this.serverKeyHash);
 	}
 
-	public void doAlertBme(boolean alert) {
-		this.doAlert = alert;
-	}
-
 	public void initMocks() throws IOException {
 		log.info("-----Server context was started MockedDevice-----");
 		reqs = ServerValuesMockUtil.getDevicesMock(3);
-
-		if (alarmService.getActiveEntityAlarms().isEmpty()) {
-			IEntityAlarm alarm = new EntityAlarm();
-
-			DeviceRequest req = reqs.get(0);
-			IDevice device = deviceService.getDevice(req.getDeviceId());
-			IEntity entity = device.getEntity("bme280");
-			IEntityField entityField = entity.getEntityField("t");
-
-			IAlarm entityFieldAlarm = new EntityFieldMaxValueAlarm(entityField);
-
-			alarm.setDevice(device);
-			alarm.setEntity(entity);
-			alarm.putEntityFieldAlarm(entityFieldAlarm);
-
-			alarmService.registerAlarm(alarm);
-			alarmService.saveAlarms();
-		}
 
 		reqs.stream().forEach(request -> {
 			sendIsOnlineRequest(request);
 			sendRegistrationRequest(request);
 		});
 
+	}
+
+	public void initAlarms() throws IOException {
+		List<IEntityAlarm> alarms = alarmService.getActiveEntityAlarms();
+
+		if (alarms != null && alarms.isEmpty()) {
+			DeviceRequest req = reqs.get(0);
+			IDevice device = deviceService.getDevice(req.getDeviceId());
+
+			String deviceName = device.getDeviceName();
+			String entityName = "bme280";
+			String entityFieldName = "t";
+
+			if (device != null) {
+
+				IAlarm entityFieldAlarm = new EntityFieldMaxValueAlarm(entityFieldName, 31);
+
+				IEntityAlarm alarm = new EntityAlarm();
+				alarm.setDeviceName(deviceName);
+				alarm.setEntityName(entityName);
+				alarm.putAlarm(entityFieldAlarm);
+
+				alarmService.registerAlarm(alarm);
+				//alarmService.saveAlarms();
+			}
+		}
 	}
 
 	@Scheduled(fixedRate = 10000)
@@ -125,6 +128,9 @@ public class MockedDeviceService implements InitializingBean {
 		} else {
 			if (!initDone) {
 				initMocks();
+				if (!alarmRegistered) {
+					initAlarms();
+				}
 				initDone = true;
 			}
 		}
@@ -151,6 +157,7 @@ public class MockedDeviceService implements InitializingBean {
 		return result.getStatusCode().equals(HttpStatus.OK);
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean sendRegistrationRequest(DeviceRequest request) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = ROOT + DEVICES_REGISTER_ROOT;
@@ -199,10 +206,6 @@ public class MockedDeviceService implements InitializingBean {
 			String receivedKey = headers.get(HttpHeaders.AUTHORIZATION).get(0);
 
 			String expected = serverKeys.get(deviceId);
-			/*
-			 * log.info("receivedKey = "+ receivedKey);
-			 * log.info("expected    = "+ expected);
-			 */
 			if (!expected.equals(receivedKey)) {
 				log.error("bad key");
 			}
@@ -219,9 +222,8 @@ public class MockedDeviceService implements InitializingBean {
 		return true;
 	}
 
+	@SuppressWarnings({ "unchecked" })
 	private boolean sendDataUpdatedRequest(DeviceRequest req) {
-
-		DeviceRequest request = DeviceRequest.builder().deviceId(req.getDeviceId()).build();
 
 		RestTemplate restTemplate = new RestTemplate();
 		String url = ROOT + DEVICES_DATA_UPDATE_ROOT + req.getDeviceId();

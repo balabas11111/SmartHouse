@@ -27,11 +27,15 @@ public interface IEntityAlarmService {
 	void activateAlarms(IDevice device);
 
 	void checkAlarms(IDevice device);
+	
+	void checkAlarmsSendNotifications(IDevice device);
 
 	List<IEntityAlarm> getActiveEntityAlarms(IDevice device);
 
 	List<IEntityAlarm> getAlarmsWithAlarmNotificationRequired(IDevice device);
 
 	List<IEntityAlarm> getAlarmsWithAlarmFinished(IDevice device);
+
+	IEntityAlarm getAlarm(String deviceName, String entityName);
 
 }

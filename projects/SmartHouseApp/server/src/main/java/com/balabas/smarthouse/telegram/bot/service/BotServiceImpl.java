@@ -89,23 +89,13 @@ public class BotServiceImpl implements IMessageSender, InitializingBean {
 		}
 		return bot.sendHtmlMessageToAllUsers(text);
 	}
-/*
-	@Override
-	public void sendTextMessageToAllUsers(String text) {
-		if (!botEnabled) {
-			log.warn("Telegram DISABLED :" + text);
-			return;
-		}
-		bot.sendTextMessageToAllUsers(text);
 
-	}
-*/
 	@Override
-	public void sendMessageToAllUsers(Severity severity, String message) {
+	public boolean sendMessageToAllUsers(Severity severity, String message) {
 		String formatted = String.format(BotMessageConstants.BOT_MESSAGE_DEFAULT, severity.getEmoji().toString(),
 				message);
 		
-		sendHtmlMessageToAllUsers(formatted);
+		return sendHtmlMessageToAllUsers(formatted);
 
 	}
 

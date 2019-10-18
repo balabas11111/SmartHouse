@@ -52,7 +52,11 @@ public class MessageService implements InitializingBean, IMessageService {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		subscribers.stream().forEach(this::subscribe);
+		if(enabled){
+			subscribers.stream().forEach(this::subscribe);
+		} else{
+			log.error("MQ connection disabled!");
+		}
 	}
 
 	@Override

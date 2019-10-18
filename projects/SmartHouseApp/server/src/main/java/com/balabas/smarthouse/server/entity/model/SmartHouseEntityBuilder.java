@@ -31,8 +31,10 @@ import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassC
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.HIGH;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.TRUE;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -57,6 +59,9 @@ import lombok.extern.log4j.Log4j2;
 @UtilityClass
 @Log4j2
 public class SmartHouseEntityBuilder {
+
+	private static List<String> notParsedFields = Arrays.asList(ENTITY_FIELD_STATUS, ENTITY_FIELD_SENSOR_ITEMS,
+			ENTITY_FIELD_SWG, ENTITY_FIELD_ITEM_CLASS);
 
 	public static IDevice buildDeviceFromRequest(DeviceRequest request) {
 		Device device = new Device();
@@ -107,7 +112,7 @@ public class SmartHouseEntityBuilder {
 	public static boolean updateDeviceEntityValuesFromJson(IDevice device, JSONObject deviceJson) {
 
 		boolean isOk = true;
-		
+
 		for (String groupName : JSONObject.getNames(deviceJson)) {
 
 			IGroup group = device.getGroup(groupName);
@@ -115,14 +120,14 @@ public class SmartHouseEntityBuilder {
 				JSONObject groupJson = deviceJson.optJSONObject(groupName);
 
 				boolean groupOk = updateGroupEntityValuesFromJson(group, groupJson);
-				
+
 				isOk = isOk && groupOk;
 			}
 		}
-		
+
 		return isOk;
 	}
-	
+
 	private static boolean updateGroupEntityValuesFromJson(IGroup group, JSONObject groupJson) {
 		boolean isOk = true;
 		for (String entityName : JSONObject.getNames(groupJson)) {
@@ -132,38 +137,52 @@ public class SmartHouseEntityBuilder {
 
 			if (entity != null && entityJson != null && !entityJson.isEmpty()) {
 				boolean entityOk = updateEntityValuesFromJson(entity, entityJson);
-				
+
 				if (entityOk) {
 					entity.setState(State.OK);
 				} else {
 					entity.setState(State.BAD_DATA);
 				}
-				
+
 				isOk = isOk && entityOk;
 			}
 		}
 		return isOk;
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	private static boolean updateEntityValuesFromJson(IEntity entity, JSONObject entityJson) {
 		boolean setOk = true;
 
 		for (String entityFieldName : JSONObject.getNames(entityJson)) {
 
-			IEntityField entityField = entity.getEntityField(entityFieldName);
-			String value = entityJson.getString(entityFieldName);
+			if (!notParsedFields.contains(entityFieldName)) {
+				
+				IEntityField entityField = entity.getEntityField(entityFieldName);
+				Object valueObj = entityJson.get(entityFieldName);
 
-			if (entityField != null) {
-				try {
-					entityField.setValueStr(value);
-				} catch (BadValueException e) {
-					log.error(e);
-					setOk = false;
+				if (entityField != null) {
+					try {
+						entityField.setValueWithNoCheck(valueObj);
+					} catch (BadValueException e) {
+						log.error(e);
+						setOk = false;
+					}
+
+				} else {
+					log.warn("New field " + entityFieldName + " entity = " + entity.getName() + " device = "
+							+ entity.getDeviceName());
+					try {
+						IEntityField field = buildFieldFromJson(entityJson, entityFieldName);
+						entity.getEntityFields().add(field);
+					} catch (BadValueException e) {
+						log.error(e);
+					}
+					
 				}
-
 			}
 		}
-		
+
 		return setOk;
 	}
 
@@ -237,7 +256,8 @@ public class SmartHouseEntityBuilder {
 			String entityName) throws BadValueException {
 
 		JSONObject entityJson = groupJson.optJSONObject(entityName);
-		JSONObject descriptorJson = entityJson.optJSONObject(ENTITY_FIELD_SWG);
+		JSONObject descriptorJson = Optional.ofNullable(entityJson.optJSONObject(ENTITY_FIELD_SWG))
+				.orElse(new JSONObject());
 
 		String description = entityJson.optString(ENTITY_FIELD_DESCRIPTION, null);
 		Emoji emoji = Emoji.getByCode(descriptorJson.optString(EDC_FIELD_EMOJI, null));

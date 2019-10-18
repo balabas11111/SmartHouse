@@ -9,8 +9,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @SuppressWarnings("rawtypes")
+@ToString(callSuper = true)
 public abstract class EntityField<T> extends ItemAbstract implements IEntityField<T> {
 
 	@Getter
@@ -45,6 +47,11 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 			throw new BadValueException();
 		}
 		
+		this.value = value;
+	}
+	
+	@Override
+	public void setValueWithNoCheck(T value) throws BadValueException {
 		this.value = value;
 	}
 	

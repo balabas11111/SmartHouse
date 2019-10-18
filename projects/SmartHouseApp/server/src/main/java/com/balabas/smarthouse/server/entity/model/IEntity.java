@@ -8,6 +8,7 @@ import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 public interface IEntity extends IStateable, IItemContainer<IEntityField> {
 
 	IEntityField getField(String fieldName);
+	Set<IEntityField> getEntityFields();
 	
 	int getRemoteId();
 	void setRemoteId(int remoteId);

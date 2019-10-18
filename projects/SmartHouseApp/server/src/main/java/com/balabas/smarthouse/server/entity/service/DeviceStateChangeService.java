@@ -1,15 +1,17 @@
 package com.balabas.smarthouse.server.entity.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.Severity;
 import com.balabas.smarthouse.server.entity.model.State;
+
+import static com.balabas.smarthouse.server.DeviceMessageConstants.buildMessage;
+import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_REGISTERED;
+import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_INITIALIZED;
+import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_DISCONNECTED;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -34,7 +36,7 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 
 			if (State.REREGISTERED.equals(newState)) {
 				
-				onDeviceRegistered(device);
+				onDeviceReRegistered(device);
 				
 			} else if (State.INIT_DATA_RECEIVED.equals(newState)) {
 				
@@ -60,58 +62,37 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 
 	}
 
-	private void onDeviceRegistered(IDevice device) {
+	private void onDeviceReRegistered(IDevice device) {
+		String message = buildMessage(MSG_DEVICE_REGISTERED, device.getDescription());
+		log.warn(message);
 		alarmService.activateAlarms(device);
-		sender.sendMessageToAllUsers(Severity.WARN, "Устройство передподключено : " + device.getDescription());
+		sender.sendMessageToAllUsers(Severity.WARN, message);
 	}
 
 	private void onDeviceInitialDataReceived(IDevice device) {
 		// init data was received
 		alarmService.activateAlarms(device);
-		alarmService.checkAlarms(device);
+		alarmService.checkAlarmsSendNotifications(device);
 
-		sender.sendMessageToAllUsers(Severity.INFO, "Устройство инициализировано : " + device.getDescription());
+		String message = buildMessage(MSG_DEVICE_INITIALIZED, device.getDescription());
+		log.info(message);
+		
+		sender.sendMessageToAllUsers(Severity.INFO,  message);
 		device.setState(State.CONNECTED);
+		device.setInitialized(true);
 	}
 	
 	private void onDeviceDataUpdated(IDevice device){
 		// device data was updated
-		alarmService.checkAlarms(device);
-		sendAlarmNotifications(device);
-		sendAlarmFinishedNotifications(device);
+		alarmService.checkAlarmsSendNotifications(device);
 		
 		device.setState(State.CONNECTED);
 	}
 	
-	private void sendAlarmNotifications(IDevice device) {
-		List<IEntityAlarm> alarms = alarmService.getAlarmsWithAlarmNotificationRequired(device);
-
-		for (IEntityAlarm alarm : alarms) {
-			try {
-				alarm.setNotified(sender.sendHtmlMessageToAllUsers(alarm.getAlarmText()));
-			} catch (Exception e) {
-				log.error(e);
-				alarm.setNotified(false);
-			}
-		}
-
-	}
-	
-	private void sendAlarmFinishedNotifications(IDevice device) {
-		List<IEntityAlarm> alarms = alarmService.getAlarmsWithAlarmFinished(device);
-
-		for (IEntityAlarm alarm : alarms) {
-			try {
-				alarm.setNotified(sender.sendHtmlMessageToAllUsers(alarm.getAlarmText()));
-			} catch (Exception e) {
-				log.error(e);
-				alarm.setNotified(false);
-			}
-		}
-	}
-	
 	private void onDeviceDisconnected(IDevice device) {
-		sender.sendMessageToAllUsers(Severity.ERROR, "Устройство отключено : " + device.getDescription());
+		String message = buildMessage(MSG_DEVICE_DISCONNECTED, device.getDescription());
+		log.error(message);
+		sender.sendMessageToAllUsers(Severity.ERROR, message);
 	}
 
 }

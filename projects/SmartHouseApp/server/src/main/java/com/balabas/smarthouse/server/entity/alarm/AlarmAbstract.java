@@ -6,18 +6,14 @@ import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import lombok.Getter;
 import lombok.Setter;
 
-public abstract class AlarmAbstract<T extends IItemAbstract, O extends Object> extends ItemAbstract implements IAlarm<T, O> {
+public abstract class AlarmAbstract<T extends IItemAbstract, O extends Object> extends ItemAbstract
+		implements IAlarm<T, O> {
 
-	@Getter
-	@Setter
+	@Getter	@Setter
 	protected O value;
 
-	@Getter
+	@Getter	@Setter
 	protected T watchedItem;
-
-	@Getter
-	@Setter
-	private boolean active;
 
 	@Setter
 	private boolean alarmed;
@@ -26,12 +22,28 @@ public abstract class AlarmAbstract<T extends IItemAbstract, O extends Object> e
 
 	protected abstract String getItemAlarmText();
 
-	public boolean isAlarmed(){
-		return active && alarmed;
+	public AlarmAbstract() {
 	}
-	
+
+	public AlarmAbstract(String entityFieldName, O value) {
+		this();
+		this.setName(entityFieldName);
+		this.setValue(value);
+	}
+
+	@Override
+	public boolean isActive() {
+		return this.value != null && this.watchedItem != null;
+	}
+
+	@Override
+	public boolean isAlarmed() {
+		return isActive() && alarmed;
+	}
+
+	@Override
 	public boolean check() {
-		if (!active || value == null || watchedItem == null) {
+		if (!isActive() || value == null || watchedItem == null) {
 			return false;
 		}
 		alarmed = checkItemHasAlarm();
@@ -39,11 +51,12 @@ public abstract class AlarmAbstract<T extends IItemAbstract, O extends Object> e
 		return alarmed;
 	}
 
+	@Override
 	public String getAlarmText() {
-		if(!alarmed){
+		if (!alarmed) {
 			return null;
 		}
-		
+
 		return getItemAlarmText();
 	}
 

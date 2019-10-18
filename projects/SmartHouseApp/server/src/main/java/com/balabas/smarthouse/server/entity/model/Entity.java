@@ -50,4 +50,9 @@ public class Entity extends ItemContainer<IEntityField> implements IEntity {
 	public IEntityField getField(String fieldName) {
 		return getChild(fieldName);
 	}
+
+	@Override
+	public Set<IEntityField> getEntityFields() {
+		return getChildren();
+	}
 }

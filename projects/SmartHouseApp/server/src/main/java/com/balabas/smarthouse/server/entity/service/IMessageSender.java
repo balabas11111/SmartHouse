@@ -6,7 +6,7 @@ public interface IMessageSender {
 
 	boolean sendHtmlMessageToAllUsers(String message);
 	
-	void sendMessageToAllUsers(Severity severity, String message);
+	boolean sendMessageToAllUsers(Severity severity, String message);
 	
 	void sendDeviceRegisteredToAllUsers(String deviceName);
 }

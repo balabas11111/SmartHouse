@@ -29,8 +29,15 @@ public abstract class BaseLogPollingBotHandler  extends TelegramLongPollingBot {
     }
 	
 	public boolean sendHtmlMessageToAllUsers(String text){
-        return authService.getAllowedUserIds().stream().map(
-                chatId -> sendMessage(messageBuilder.createHtmlMessage(chatId.longValue(), text))).reduce(Boolean::logicalOr).orElse(false);
+		boolean sent = true;
+		
+		for(Integer chatId : authService.getAllowedUserIds()) {
+			boolean s = sendMessage(messageBuilder.createHtmlMessage(chatId.longValue(), text));
+			
+			sent = s && sent;
+		}
+		
+		return sent;
     }
 	
 	protected void sendMessages(List<SendMessage> msgs){

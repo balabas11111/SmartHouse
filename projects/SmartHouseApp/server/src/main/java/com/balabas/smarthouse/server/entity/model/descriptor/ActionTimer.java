@@ -48,6 +48,14 @@ public class ActionTimer {
         }
     }
     
+    public boolean isActive(){
+    	return this.nextActionTime > -1;
+    }
+    
+    public void setInactive(){
+    	this.nextActionTime = -1;
+    }
+    
     public boolean isTimeToExecuteAction() {
     	if(this.nextActionTime > -1){
             return this.nextActionTime < (new Date()).getTime();
@@ -55,7 +63,11 @@ public class ActionTimer {
     	return false;
     }
     
-    public boolean isforcedOrTimeToExecute(){
+    public boolean isForcedAndTimeToExecute(){
+    	return isActionForced() && isTimeToExecuteAction();
+    }
+    
+    public boolean isForcedOrTimeToExecute(){
     	return isActionForced() || isTimeToExecuteAction();
     }
 

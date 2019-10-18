@@ -29,6 +29,8 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	void setValueStr(String value) throws BadValueException;
 
 	Object getValueObj();
+
+	void setValueWithNoCheck(T value) throws BadValueException;
 	
 	
 

@@ -5,7 +5,14 @@ import com.balabas.smarthouse.server.entity.model.IEntityField;
 @SuppressWarnings("rawtypes")
 public class EntityFieldMaxValueAlarm extends AlarmAbstractEntityFieldNumber {
 
-	public EntityFieldMaxValueAlarm(IEntityField field){
+	public EntityFieldMaxValueAlarm(String entityFieldName, Number maxValue){
+		this.setName(entityFieldName);
+		this.setValue(maxValue);
+	}
+	
+	public EntityFieldMaxValueAlarm(IEntityField field, Number maxValue){
+		this.setName(field.getName());
+		this.setValue(maxValue);
 		this.watchedItem = field;
 	}
 	

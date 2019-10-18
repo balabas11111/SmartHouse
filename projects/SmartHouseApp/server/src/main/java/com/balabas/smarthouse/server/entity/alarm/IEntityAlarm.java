@@ -9,6 +9,12 @@ import com.balabas.smarthouse.server.entity.model.IUpdateable;
 @SuppressWarnings("rawtypes")
 public interface IEntityAlarm extends IUpdateable {
 	
+	void setDeviceName(String deviceName);
+	String getDeviceName();
+	
+	void setEntityName(String entityName);
+	String getEntityName();
+	
 	IDevice getDevice();
 	void setDevice(IDevice device);
 
@@ -18,7 +24,7 @@ public interface IEntityAlarm extends IUpdateable {
 	List<IAlarm> getAlarms();
 	void setAlarms(List<IAlarm> alarms);
 	
-	void putEntityFieldAlarm(IAlarm entityFieldAlarm);
+	void putAlarm(IAlarm entityFieldAlarm);
 	
 	boolean isAlarmed();
 	
@@ -27,10 +33,17 @@ public interface IEntityAlarm extends IUpdateable {
 	boolean isAlarmStarted();
 	boolean isAlarmFinished();
 	
-	String getAlarmText();
-	
 	boolean isActive();
 	
-	void setNotified(boolean notified);
+	void setAlarmStartedSent(boolean notified);
+	void setAlarmFinishedSent(boolean notified);
+	
+	String getAlarmStartedText();
+	String getAlarmFinishedText();
+	
+	void setSingleAlarmMessage(boolean singleAlarmMessage);
+	 
+	
+	
 	
 }

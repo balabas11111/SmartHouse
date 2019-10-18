@@ -35,11 +35,17 @@ public class EntityAlarm implements IEntityAlarm {
 	@Getter	@Setter
 	private List<IAlarm> alarms = new LinkedList<>();
 	
-	@Getter	
-	boolean notified = false;
+	@Getter
+	boolean alarmed;
+	
+	@Getter @Setter
+	boolean singleAlarmMessage;
+	
+	//true = alarmMessage, false = finishedMessage, null - nothing
+	Boolean sendMessage;
 
 	@Override
-	public void putEntityFieldAlarm(IAlarm entityFieldAlarm) {
+	public void putAlarm(IAlarm entityFieldAlarm) {
 		IAlarm existing = alarms.stream()
 				.filter(a -> a.getClass().equals(entityFieldAlarm.getClass())
 						&& a.getWatchedItem().getName().equals(entityFieldAlarm.getWatchedItem().getName()))
@@ -54,43 +60,56 @@ public class EntityAlarm implements IEntityAlarm {
 	}
 
 	@Override
-	public boolean isAlarmed() {
-		return alarms.stream().anyMatch(IAlarm::isAlarmed);
-	}
-
-	@Override
 	public boolean check() {
-		boolean alarmed = alarms.stream().map(IAlarm::check).reduce(Boolean::logicalOr).orElse(false);
+		alarmed = alarms.stream().map(IAlarm::check).reduce(Boolean::logicalOr).orElse(false);
 
 		if( alarmed && !timer.isActionForced()){
+			sendMessage = true;
 			timer.update(0, true);
 		} else if(!alarmed && timer.isActionForced()) {
-			timer.update(0, false);
+			sendMessage = false;
+			timer.update(0, true);
 		}
 		
 		return alarmed;
 	}
 
+	@JsonIgnore
 	@Override
 	public boolean isAlarmStarted() {
-		return isAlarmed() && timer.isActionForced() && timer.isTimeToExecuteAction();
+		//need to send alarm started message
+		return timer.isForcedAndTimeToExecute() && Boolean.TRUE.equals(sendMessage);
+	}
+	
+	@JsonIgnore
+	@Override
+	public boolean isAlarmFinished() {
+		//need to send alarm finished message
+		return timer.isForcedAndTimeToExecute() && Boolean.FALSE.equals(sendMessage);
 	}
 	
 	@Override
-	public boolean isAlarmFinished() {
-		boolean result = !timer.isActionForced() && timer.isTimeToExecuteAction();
-		
-		if(result) {
-			timer.update(-1, false);
+	public void setAlarmStartedSent(boolean notified) {
+		if(notified) {
+			if(singleAlarmMessage) {
+				sendMessage = null;
+			} else {
+				timer.update(timer.getInterval(), true);
+			}
 		}
-		
-		return result;
-		
-		
+	}
+	
+	@Override
+	public void setAlarmFinishedSent(boolean notified) {
+		if(notified) {
+			sendMessage = null;
+			timer.setActionForced(false);
+		}
 	}
 
 	@Override
-	public String getAlarmText() {
+	@JsonIgnore
+	public String getAlarmStartedText() {
 		if (!isAlarmed()) {
 			return null;
 		}
@@ -104,22 +123,22 @@ public class EntityAlarm implements IEntityAlarm {
 
 		return buf.toString();
 	}
+	
+	@Override
+	@JsonIgnore
+	public String getAlarmFinishedText() {
+		if (isAlarmed()) {
+			return null;
+		}
+
+		return " <b>" + entity.getDescription() + "</b> - показатели в норме\n";
+	}
+
 
 	@Override
 	public boolean isActive() {
 		return device!=null && entity!=null;
 		
-	}
-
-	@Override
-	public void setNotified(boolean notified) {
-		if(notified) {
-			timer.setActionSuccess();
-		} else {
-			timer.setActionFailed();
-		}
-		
-		timer.setActionForced(true);
 	}
 
 }

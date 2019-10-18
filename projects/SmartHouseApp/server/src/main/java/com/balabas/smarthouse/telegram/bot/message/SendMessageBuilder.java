@@ -157,7 +157,7 @@ public class SendMessageBuilder {
 								builder.append(Emoji.ERROR.toString());
 								builder.append(" ");
 							}
-							builder.append(alarm.getAlarmText());
+							builder.append(alarm.getAlarmStartedText());
 							builder.append("\n");
 						});
 					});

@@ -13,6 +13,7 @@ public interface IAlarm<T extends IItemAbstract, O> extends IItemAbstract{
 	O getValue();
 	
 	T getWatchedItem();
+	void setWatchedItem(T watchedItem);
 	
 	boolean isActive();
 	boolean isAlarmed();

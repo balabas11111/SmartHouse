@@ -1,8 +1,9 @@
 package com.balabas.smarthouse.server.zzz.mock;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -21,10 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.balabas.smarthouse.server.controller.ControllerConstants;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.service.IDeviceService;
-import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 
 import lombok.extern.log4j.Log4j2;
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_GROUP;
+
+import static com.balabas.smarthouse.server.zzz.mock.ServerValuesMockUtil.getRandomStr;
 
 @CrossOrigin(origins = {ControllerConstants.CROSS_ORIGIN_4200, ControllerConstants.CROSS_ORIGIN_80 })
 @RestController
@@ -39,7 +43,7 @@ public class MockedDeviceController {
 	@Autowired
 	private MockedDeviceService mockService;
 	
-	boolean doAlert;
+	boolean doAlert = false;
 
 	@GetMapping()
 	public List<IDevice> getAllDevices() {
@@ -53,29 +57,48 @@ public class MockedDeviceController {
 		mockService.initMocks();
 	}
 	
-	@GetMapping("/alertBme")
+	@GetMapping("/doAlert")
 	public void noAlertBme(@RequestParam(value = "doAlert") boolean alert) throws IOException {
 		log.info("Mocking doAlert = " + alert);
 		doAlert=alert;
 	}
 
 	@GetMapping("{deviceId}")
-	public ResponseEntity<IDevice> getDeviceById(@PathVariable(value = "deviceId") String deviceId)
-			throws ResourceNotFoundException {
-		IDevice device = deviceService.getDevice(deviceId);
+	public ResponseEntity<IDevice> getDeviceById(@PathVariable(value = "deviceId") String deviceId) {
+		Optional<IDevice> device = Optional.ofNullable(deviceService.getDevice(deviceId));
 
-		return ResponseEntity.ok().body(device);
+		return device.isPresent()?ResponseEntity.ok().body(device.get()):ResponseEntity.notFound().build();
 	}
 
 	@GetMapping("/mock_{deviceId}")
 	public ResponseEntity<String> executeMockGetDataOnDevice(
 			@PathVariable(value = "deviceId") String deviceId,
 			@RequestHeader HttpHeaders headers,
-			@RequestParam(value = DEVICE_FIELD_GROUP, required = false) String devEntGroup) throws UnsupportedEncodingException {
+			@RequestParam(value = DEVICE_FIELD_GROUP, required = false) String devEntGroup) throws IOException {
 
-		String result = ((devEntGroup == null || devEntGroup.isEmpty())
-				? ServerValuesMockUtil.getSettingsSensors(deviceId,doAlert) : ServerValuesMockUtil.getSensors(deviceId,doAlert))
-						.toString();
+		String pref = "MockedDeviceId";
+		String index = deviceId.substring(deviceId.indexOf(pref) + pref.length());
+		
+		URL url = Resources.getResource("mock/dataSwg.json");
+		String result = Resources.toString(url, Charsets.UTF_8).replaceAll("%INDEX%", index);
+		
+		if(doAlert){
+			result = result.replaceAll("\"t\": 23", "\"t\": 40");
+		} else {
+			result = result.replaceAll("\"t\": 23", "\"t\": " + getRandomStr(10, 30));
+		}
+		
+		result = result.replaceAll("\"h\": 59", "\"h\": " + getRandomStr(20, 100));
+		result = result.replaceAll("\"p\": 100553", "\"p\": " + getRandomStr(10020, 100500));
+		
+		result = result.replaceAll("\"l\": 1253", "\"l\": " + getRandomStr(50, 60));
+		
+		result = result.replaceAll("\"h\": 67", "\"h\": " + getRandomStr(20, 100));
+		result = result.replaceAll("\"t\": 28", "\"t\": " + getRandomStr(10, 30));
+		
+		result = result.replaceAll("\"0:t\": 36", "\"0:t\": " + getRandomStr(5, 10));
+		result = result.replaceAll("\"1:t\": 32", "\"1:t\": " + getRandomStr(5, 10));
+		result = result.replaceAll("\"2:t\": 31", "\"2:t\": " + getRandomStr(5, 10));
 
 		boolean isServerRequestValid = mockService.OnDeviceValidateServerKey(headers, deviceId);
 		
@@ -93,7 +116,7 @@ public class MockedDeviceController {
 			@PathVariable(value = "deviceId") String deviceId,
 			@RequestHeader HttpHeaders headers,
 			@RequestBody String body,
-			@RequestParam(value = DEVICE_FIELD_GROUP, required = false) String devEntGroup) throws UnsupportedEncodingException {
+			@RequestParam(value = DEVICE_FIELD_GROUP, required = false) String devEntGroup) throws IOException {
 
 
 		log.info("POST Mock");
