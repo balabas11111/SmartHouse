@@ -27,6 +27,7 @@ import com.google.common.io.Resources;
 
 import lombok.extern.log4j.Log4j2;
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_GROUP;
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_ENTITY_NAME;
 
 import static com.balabas.smarthouse.server.zzz.mock.ServerValuesMockUtil.getRandomStr;
 
@@ -116,7 +117,8 @@ public class MockedDeviceController {
 			@PathVariable(value = "deviceId") String deviceId,
 			@RequestHeader HttpHeaders headers,
 			@RequestBody String body,
-			@RequestParam(value = DEVICE_FIELD_GROUP, required = false) String devEntGroup) throws IOException {
+			@RequestParam(value = DEVICE_FIELD_GROUP, required = false) String devEntGroup,
+			@RequestParam(value = DEVICE_FIELD_ENTITY_NAME, required = false) String devEntName) throws IOException {
 
 
 		log.info("POST Mock");

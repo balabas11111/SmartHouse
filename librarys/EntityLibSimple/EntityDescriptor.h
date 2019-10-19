@@ -144,8 +144,8 @@ public:
 				const char* offKey = EDC_FIELD_BOOLEAN_VALUE_OFF,
 				const char* onDescription = EDC_DESCR_ON,
 				const char* offDescription = EDC_DESCR_OFF,
-				const char* onActionDescription = EDC_DESCR_ACTION_OFF,
-				const char* offActionDescription = EDC_DESCR_ACTION_ON,
+				const char* onActionDescription = EDC_DESCR_ACTION_ON,
+				const char* offActionDescription = EDC_DESCR_ACTION_OFF,
 				const char* onEmoji = EMOJI_DIM_BUTTON,
 				const char* offEmoji = EMOJI_RADIO_BUTTON) {
 

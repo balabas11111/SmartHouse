@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.server.entity.model.descriptor;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 public enum EntityFieldClassView {
@@ -16,10 +18,14 @@ public enum EntityFieldClassView {
 	EDC_CLASS_VIEW_COMBOBOX("cmb"),
 	EDC_CLASS_VIEW_DATE_TIME("dtm"),
 	EDC_CLASS_VIEW_OPTIONS("opt"),
+	
 	EDC_CLASS_VIEW_BUTTON("btn"),
 	EDC_CLASS_VIEW_BUTTON_COMMAND("btc"),
 	EDC_CLASS_VIEW_BUTTON_BOOLEAN("btb"),
 	EDC_CLASS_VIEW_BUTTON_OPTIONS("bto");
+	
+	private static List<String> buttons = Arrays.asList(EDC_CLASS_VIEW_BUTTON.name(), EDC_CLASS_VIEW_BUTTON_COMMAND.name(),
+											EDC_CLASS_VIEW_BUTTON_BOOLEAN.name(), EDC_CLASS_VIEW_BUTTON_OPTIONS.name());
 	
 	private String key;
 	
@@ -29,6 +35,10 @@ public enum EntityFieldClassView {
 	
 	public String getKey() {
 		return this.key;
+	}
+	
+	public boolean isButton() {
+		return buttons.contains(this.name());
 	}
 	
 	public static EntityFieldClassView from(String key){

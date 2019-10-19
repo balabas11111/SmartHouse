@@ -20,7 +20,7 @@ import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.CO
 public class ReplyKeyboardBuilder {
 	
 	@Autowired
-	private ButtonBuilder button;
+	private ItemTextHelper button;
 	
 	public Action getActionByReplyButton(String data){
 		if(data!=null && !data.isEmpty()) {

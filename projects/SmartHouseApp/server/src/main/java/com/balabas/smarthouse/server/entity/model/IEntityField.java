@@ -13,8 +13,8 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	T getValue();
 	void setValue(T value) throws BadValueException;
 
-	String getAction();
-	void setAction(String action);
+	String getActionDescription();
+	void setActionDescription(String actionDescription);
 	
 	String getTemplateName();
 	void setTemplateName(String templateName);
@@ -35,6 +35,8 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 
 	void setValueWithNoCheck(T value) throws BadValueException;
 	
+	IEntityField getEnabledValueByCurrentValue();
 	
+	String buildDataForCallBack();
 
 }

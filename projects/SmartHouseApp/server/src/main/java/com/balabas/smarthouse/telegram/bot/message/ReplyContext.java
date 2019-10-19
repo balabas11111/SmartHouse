@@ -40,6 +40,10 @@ public class ReplyContext {
 						enableHtml);
 	}
 	
+	public static SendMessage createMsg(ReplyKeyboard markup, Long chatId, String text) {
+		return createMsg(markup, null, chatId, text, true);
+	}
+	
 	public static SendMessage createMsg(ReplyKeyboard markup, Integer replyToMessageId, Long chatId, String text, boolean enableHtml) {
 		SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);

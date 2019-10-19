@@ -48,13 +48,13 @@ public:
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
 		UNUSED(params);
 		setJsonField(response, ON_FIELD, this->isOn());
-		setJsonField(response, ENTITY_FIELD_ITEM_CLASS,ENTITY_ITEM_CLASS_TOOGLE_BUTTON);
+		//setJsonField(response, ENTITY_FIELD_ITEM_CLASS,ENTITY_ITEM_CLASS_TOOGLE_BUTTON);
 	}
 
 	virtual void doAppendFieldsSwg(JsonObject& swgJson) override{
 		EntityDescriptor::appendSwgEntityParams(swgJson, EMOJI_BULB);
 
-		EntityDescriptor::appendSwgFieldBooleanOnOff(swgJson, ON_FIELD);
+		EntityDescriptor::appendSwgFieldBooleanOnOff(swgJson, ON_FIELD, EDC_DESCR_STATE);
 	}
 
 	virtual void doPost(JsonObject& params, JsonObject& response) override {

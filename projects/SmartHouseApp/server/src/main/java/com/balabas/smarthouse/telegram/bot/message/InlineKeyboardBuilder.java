@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.telegram.bot.message;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import com.balabas.smarthouse.server.entity.model.Emoji;
 import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.IEntityFieldCommandButton;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.State;
 import com.balabas.smarthouse.server.view.Action;
@@ -28,7 +30,7 @@ public class InlineKeyboardBuilder {
 
 	@Autowired
 	@Getter
-	private ButtonBuilder buttons;
+	private ItemTextHelper buttons;
 	
 	public static InlineKeyboardButton createInlineKeyboardButton(String text,String callbackData){
 		return new InlineKeyboardButton().setText(text).setCallbackData(callbackData);
@@ -140,6 +142,24 @@ public class InlineKeyboardBuilder {
 		
 		markup.setKeyboard(rowsInline);
 
+		return markup;
+	}
+	
+	public InlineKeyboardMarkup getCommandButtonsByEnabledFieldCommandButtonList(List<IEntityFieldCommandButton> commands) {
+		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		
+		for(IEntityFieldCommandButton command : commands) {
+			rowsInline.add(
+				Collections.singletonList(
+					createInlineKeyboardButton(
+						command.getButtonText(),
+						command.getActionCallback())
+			    ));
+		}
+		
+		markup.setKeyboard(rowsInline);
+			
 		return markup;
 	}
 	

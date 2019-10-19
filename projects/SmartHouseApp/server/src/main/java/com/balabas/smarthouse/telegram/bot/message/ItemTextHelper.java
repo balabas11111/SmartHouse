@@ -14,18 +14,19 @@ import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SERVICES;
 import static com.balabas.smarthouse.telegram.bot.BotConstants.GROUP_SENSORS_NAME;
 import static com.balabas.smarthouse.telegram.bot.BotConstants.GROUP_SERVICES_NAME;
 import static com.balabas.smarthouse.telegram.bot.BotConstants.GROUP_SETTINGS_NAME;
-import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.GROUP_DISPLAY_HEADER_MSG;
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.GROUP_VIEW_HEADER_MSG;
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.GROUP_COMMAND_HEADER_MSG;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_DISPLAY_HEADER_MSG;
 
 @Component
-public class ButtonBuilder {
+public class ItemTextHelper {
 
 	Map<String,String> groupNameMap = new HashMap<>();
     Map<String,Emoji> groupImageMap = new HashMap<>();
     
     Emoji emojiDefault = Emoji.STAR;
     
-    public ButtonBuilder(){
+    public ItemTextHelper(){
         groupNameMap.put(GROUP_SENSORS, GROUP_SENSORS_NAME);
         groupNameMap.put(GROUP_SERVICES, GROUP_SERVICES_NAME);
         groupNameMap.put(GROUP_SETTINGS, GROUP_SETTINGS_NAME);
@@ -69,7 +70,13 @@ public class ButtonBuilder {
 	}
 	
 	public String getGroupHeader(String deviceEmoji, String deviceDescription, String groupEmoji, String groupDescription){
-		return String.format(GROUP_DISPLAY_HEADER_MSG,
+		return String.format(GROUP_VIEW_HEADER_MSG,
+				deviceEmoji, deviceDescription,
+				groupEmoji, groupDescription);
+	}
+	
+	public String getGroupCommandHeader(String deviceEmoji, String deviceDescription, String groupEmoji, String groupDescription){
+		return String.format(GROUP_COMMAND_HEADER_MSG,
 				deviceEmoji, deviceDescription,
 				groupEmoji, groupDescription);
 	}

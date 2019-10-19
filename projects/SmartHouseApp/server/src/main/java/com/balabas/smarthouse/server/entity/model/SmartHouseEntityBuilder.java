@@ -404,7 +404,7 @@ public class SmartHouseEntityBuilder {
 		boolean readOnly = booleanFromString(fieldDecriptor.optString(EDC_READ_ONLY, FALSE));
 		Emoji emoji = Emoji.getByCode(fieldDecriptor.optString(EDC_FIELD_EMOJI, null));
 
-		Set<IEntityField> enabledValues = getEnabledFieldValues(fieldDecriptor, name, clazz);
+		Set<IEntityField> enabledValues = getEnabledFieldValues(fieldDecriptor, name, clazz, viewClass);
 
 		IEntityField entityField = createEntityFieldByClass(clazz);
 
@@ -420,7 +420,7 @@ public class SmartHouseEntityBuilder {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Set<IEntityField> getEnabledFieldValues(JSONObject fieldDecriptor, String fieldName, Class<?> clazz)
+	private static Set<IEntityField> getEnabledFieldValues(JSONObject fieldDecriptor, String fieldName, Class<?> clazz, EntityFieldClassView parentViewClass)
 			throws BadValueException {
 		if (fieldDecriptor.has(EDC_FIELD_ENABLED_VALUES)) {
 			JSONObject enabledFieldJson = fieldDecriptor.getJSONObject(EDC_FIELD_ENABLED_VALUES);
@@ -436,12 +436,14 @@ public class SmartHouseEntityBuilder {
 				String description = enabledValueBody.getOrDefault(EDC_FIELD_DESCRIPTION, null);
 				String actionDescription = enabledValueBody.getOrDefault(EDC_FIELD_ACTION_DESCR, null);
 				Emoji emoji = Emoji.getByCode(enabledValueBody.getOrDefault(EDC_FIELD_EMOJI, null));
+				EntityFieldClassView viewClass = EntityFieldClassView.from(enabledValueBody.getOrDefault(EDC_CLASS_VIEW, parentViewClass.getKey()));
 
 				IEntityField enabledValue = createEntityFieldByClass(clazz);
 				enabledValue.setId(id);
 				enabledValue.setName(fieldName);
 				enabledValue.setDescription(description);
-				enabledValue.setAction(actionDescription);
+				enabledValue.setViewClass(viewClass);
+				enabledValue.setActionDescription(actionDescription);
 				enabledValue.setEmoji(emoji);
 				enabledValue.setValueStr(enabledValueStr);
 
