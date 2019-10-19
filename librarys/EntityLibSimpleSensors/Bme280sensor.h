@@ -17,6 +17,7 @@
 
 #include <Bme280Mock.h>
 #include "Emoji.h"
+#include <DeviceConfig.h>
 
 //-----------------------------------------------------
 #define BME280 "bme280"
@@ -34,8 +35,11 @@ public:
 	virtual ~Bme280sensor(){};
 
 	virtual void init() override{
-		//bme = new Adafruit_BME280();
+#ifndef SENSORS_MOCKED
+		bme = new Adafruit_BME280();
+#else
 		bme= new Bme280Mock();
+#endif
 		bme->begin();
 	}
 
@@ -76,8 +80,11 @@ public:
 	}
 
 protected:
-	//Adafruit_BME280* bme;
+#ifndef SENSORS_MOCKED
+	Adafruit_BME280* bme;
+#else
 	Bme280Mock* bme = nullptr;
+#endif
 
 	float hum = -100;
 	float temp = -100;

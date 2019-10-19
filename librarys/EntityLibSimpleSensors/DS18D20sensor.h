@@ -17,6 +17,7 @@
 #include "DallasTemperature.h"
 #include <OneWireMock.h>
 #include "DallasTemperatureMock.h"
+#include <DeviceConfig.h>
 
 //--------------------------------
 #define DS18D20_NAME "ds18d20"
@@ -160,14 +161,26 @@ public:
 
 protected:
 	int itemCount = 0;
+
+#ifndef SENSORS_MOCKED
+	OneWire* oneWire;
+	DallasTemperature dallasTemperature;
+#else
 	OneWireMock* oneWire;
 	DallasTemperatureMock* dallasTemperature;
+#endif
 
 	DS18D20item* items;
 
 	void construct(int pin) {
+#ifndef SENSORS_MOCKED
+		this->oneWire = new OneWire(pin);
+		this->dallasTemperature = new DallasTemperature(oneWire);
+#else
 		this->oneWire = new OneWireMock(pin);
 		this->dallasTemperature = new DallasTemperatureMock(oneWire);
+#endif
+
 	}
 
 	virtual void readTemperatures(bool dispatchChange) {

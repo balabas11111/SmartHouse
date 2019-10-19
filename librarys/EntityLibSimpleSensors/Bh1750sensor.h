@@ -18,6 +18,7 @@
 #include <BH1750.h>
 #include <Bh1750Mock.h>
 #include "Emoji.h"
+#include <DeviceConfig.h>
 
 
 //---------------------------------------
@@ -33,8 +34,11 @@ public:
 	}
 
 	virtual void init() override {
-		//lightMeter = new BH1750();
+	#ifndef SENSORS_MOCKED
+		lightMeter = new BH1750();
+	#else
 		lightMeter = new Bh1750Mock();
+	#endif
 		lightMeter->begin();
 	}
 
@@ -62,8 +66,11 @@ public:
 	}
 
 protected:
-	//BH1750* lightMeter;
+#ifndef SENSORS_MOCKED
+	BH1750* lightMeter;
+#else
 	Bh1750Mock* lightMeter = nullptr;
+#endif
 
 private:
 	uint16_t lux = 0;

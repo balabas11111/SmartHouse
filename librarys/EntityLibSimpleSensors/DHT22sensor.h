@@ -13,6 +13,7 @@
 #include <DHT.h>
 #include <DHT22Mock.h>
 #include "Emoji.h"
+#include <DeviceConfig.h>
 
 //--------------------------------
 #define DHT22_NAME "dht22"
@@ -66,8 +67,11 @@ public:
 	}
 
 protected:
-	//DHT* dht;
+#ifndef SENSORS_MOCKED
+	DHT* dht;
+#else
 	DHT22Mock* dht;
+#endif
 
 	float hum = -100;
 	float temp = -100;
