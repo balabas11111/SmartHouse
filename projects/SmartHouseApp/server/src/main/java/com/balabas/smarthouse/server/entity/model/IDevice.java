@@ -18,6 +18,7 @@ public interface IDevice extends IStateable, IUpdateable, IItemContainer<IGroup>
 	String getDataUrl();
 	
 	IEntity getEntity(String entityName);
+	IEntity getEntity(int remoteId);
 	
 	default IGroup getGroup(String groupName) {
 		return getChild(groupName);

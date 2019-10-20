@@ -3,6 +3,8 @@ package com.balabas.smarthouse.server.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
@@ -19,14 +21,24 @@ public class Action {
 	
 	public static final String ACTION_TYPE_UNKNOWN                   = "NUL";
 	public static final String ACTION_TYPE_VIEW_DEVICE_LIST          = "vdl";
+	public static final String ACTION_TYPE_VIEW_HELP                 = "vhp";
+	public static final String ACTION_TYPE_EDIT_DEVICE_SELECT_LIST   = "eds";
 	public static final String ACTION_TYPE_VIEW_GROUPS_OF_DEVICE     = "vgd";
 	public static final String ACTION_TYPE_VIEW_ENTITIES_OF_GROUP    = "veg";
+	public static final String ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE   = "eeg";
+	public static final String ACTION_TYPE_EDIT_ENTITITY             = "een";
+	public static final String ACTION_TYPE_EDIT_ENTITITY_FIELD       = "eef";
 	public static final String ACTION_TYPE_VIEW_ENTITITY             = "ven";
 	public static final String ACTION_TYPE_SEND_DATA_TO_DEVICE       = "sdd";
-	public static final String ACTION_TYPE_GET_DATA_FROM_DEVICE       = "sdd";
+	public static final String ACTION_TYPE_GET_DATA_FROM_DEVICE      = "gdd";
+	
+	public static final String ACTION_DATA_FIELD_NAME                = "adfn";
+	public static final String ACTION_DATA_FIELD_DESCRIPTION         = "adfd";
+	public static final String ACTION_DATA_FIELD_VALUE               = "adfv";
 	
 	public static final String validActions[] = {
 													ACTION_TYPE_VIEW_DEVICE_LIST,
+													ACTION_TYPE_EDIT_DEVICE_SELECT_LIST,
 													ACTION_TYPE_VIEW_GROUPS_OF_DEVICE,
 													ACTION_TYPE_VIEW_ENTITIES_OF_GROUP,
 													ACTION_TYPE_VIEW_ENTITITY
@@ -83,6 +95,31 @@ public class Action {
 		this.callbackData = buildCallBackData();
 	}
 	
+	public void setDeviceId(String deviceId) {
+		this.deviceId = clear(deviceId);
+		this.callbackData = buildCallBackData();
+	}
+	
+	public void setGroupId(String groupId) {
+		this.groupId = clear(groupId);
+		this.callbackData = buildCallBackData();
+	}
+	
+	public void setEntityId(String entityId) {
+		this.entityId = clear(entityId);
+		this.callbackData = buildCallBackData();
+	}
+	
+	public void setValueByKeyRemoveKey(String keyToSelectAndRemove, String fieldValue) {
+		JSONObject dataJson = new JSONObject(getData());
+		String fieldName = dataJson.getString(keyToSelectAndRemove);
+		dataJson.remove(keyToSelectAndRemove);
+		
+		dataJson.put(fieldName, fieldValue);
+		
+		this.setData(dataJson.toString());
+	}
+	
 	public static Action fromDevice(String action, IDevice device, String data) {
 		return new Action(action, data, device.getDeviceName());
 	}
@@ -109,6 +146,10 @@ public class Action {
 		
 		String[] strArr = list.toArray(new String[list.size()]);
 		return new Action(strArr);
+	}
+	
+	public static String callback(String actionName, String data, IEntity entity) {
+		return (Action.fromColumnList(actionName, data, entity.getDeviceName(), entity.getGroupName(), entity.getName())).getCallbackData();
 	}
 	
 	public static String callback(String...cols) {
@@ -142,35 +183,35 @@ public class Action {
 	}
 			
 		
-		private boolean isActionValid() {
-			for(String va:validActions) {
-				return va.equals(action);
-			}
-			return false;
+	private boolean isActionValid() {
+		for(String va:validActions) {
+			return va.equals(action);
+		}
+		return false;
+	}
+	
+	private String buildCallBackData() {
+		return buildCallbackData(CALLBACK_TYPE_ACTION, action, data, deviceId, groupId, entityId);
+	}
+	
+	private static String buildCallbackData(String... arg){
+		StringBuilder result = new StringBuilder("");
+		
+		for(int i=0; i<arg.length; i++){
+			result.append(arg[i]!=null?arg[i]:"");
+			result.append(CALLBACK_SPLITTER);
 		}
 		
-		private String buildCallBackData() {
-			return buildCallbackData(CALLBACK_TYPE_ACTION, action, data, deviceId, groupId, entityId);
-		}
-		
-		private static String buildCallbackData(String... arg){
-			StringBuilder result = new StringBuilder("");
-			
-			for(int i=0; i<arg.length; i++){
-				result.append(arg[i]!=null?arg[i]:"");
-				result.append(CALLBACK_SPLITTER);
-			}
-			
-			return result.toString();
-		}
-		
-		private static String clear(String str) {
-			return (str==null)?"":str;
-		}
+		return result.toString();
+	}
+	
+	private static String clear(String str) {
+		return (str==null)?"":str;
+	}
 
-		public void setActionRebuildData(String action) {
-			this.action = action;
-			this.callbackData = buildCallBackData();
-		}
+	public void setActionRebuildData(String action) {
+		this.action = action;
+		this.callbackData = buildCallBackData();
+	}
 
 }

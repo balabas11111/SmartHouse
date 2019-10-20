@@ -54,6 +54,9 @@ bool Entity::isSaveRequired(){
 }
 
 void Entity::setSaveRequired(bool saveRequired){
+	/*Serial.print(FPSTR("saveRequired"));
+	Serial.println(saveRequired);
+	*/
 	this->saveRequired = saveRequired;
 }
 
@@ -136,7 +139,8 @@ bool Entity::isMarkedAsChanged(){
 
 void Entity::markEntityAsSaveRequiredIfTrue(bool value){
 	if(value){
-		this->saveRequired = saveRequired;
+		//Serial.println(FPSTR("Marked as save required"));
+		this->saveRequired = value;
 	}
 }
 
@@ -153,7 +157,7 @@ void Entity::appendSwg(JsonObject& swgJson){
 	swgJson[EDC_FIELD_ID] = this->id;
 	swgJson[EDC_FIELD_DESCR_FIELD] = ENTITY_FIELD_DESCRIPTION;
 
-	EntityDescriptor::appendSwgFieldString(swgJson, ENTITY_FIELD_DESCRIPTION, EDC_DESCR_SENSOR);
+	EntityDescriptor::appendSwgFieldString(swgJson, ENTITY_FIELD_DESCRIPTION, EDC_DESCR_NAMING);
 
 	doAppendFieldsSwg(swgJson);
 }

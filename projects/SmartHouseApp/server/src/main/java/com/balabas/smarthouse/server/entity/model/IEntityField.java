@@ -12,7 +12,7 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	
 	T getValue();
 	void setValue(T value) throws BadValueException;
-
+	
 	String getActionDescription();
 	void setActionDescription(String actionDescription);
 	
@@ -38,5 +38,7 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	IEntityField getEnabledValueByCurrentValue();
 	
 	String buildDataForCallBack();
+
+	void validateValue(T value) throws BadValueException;
 
 }

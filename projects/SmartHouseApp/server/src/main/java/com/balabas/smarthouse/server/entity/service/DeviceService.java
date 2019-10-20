@@ -116,6 +116,8 @@ public class DeviceService implements IDeviceService {
 
 				State newState = (ok) ? State.UPDATED : State.BAD_DATA;
 				stateChanger.stateChanged(device, newState);
+				
+				
 			}
 		} catch (Exception e) {
 			log.error(e);
@@ -193,7 +195,28 @@ public class DeviceService implements IDeviceService {
 		log.debug("Action received :"+action.getCallbackData());
     	Map<String,Object> params = (new JSONObject(action.getData())).toMap(); 
     	
-		sendDataToDevice(action.getDeviceId(), action.getGroupId(), action.getEntityId(), params);
+    	String deviceName = action.getDeviceId();
+    	String groupName = action.getGroupId();
+    	String entityName = action.getEntityId();
+    	
+    	if(groupName == null || groupName.isEmpty()) {
+    		IDevice device = getDevice(action.getDeviceId());
+    		
+    		try {
+    			Integer entityRemoteId = Integer.valueOf(entityName);
+    			IEntity entity = device.getEntity(entityRemoteId);
+    			
+    			groupName = entity.getGroupName();
+    			entityName = entity.getName();
+    			
+    			action.setGroupId(groupName);
+    			action.setEntityId(entityName);
+    		}catch(Exception e) {
+    			groupName = device.getEntity(action.getEntityId()).getGroupName();
+    		}
+    	}
+    	
+		sendDataToDevice(deviceName, groupName, entityName, params);
 	}
 	
 	@Override

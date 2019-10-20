@@ -3,6 +3,7 @@ package com.balabas.smarthouse.server.zzz.mock;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import com.balabas.smarthouse.server.controller.ControllerConstants;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.service.IDeviceService;
 import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
 import com.google.common.io.Resources;
 
 import lombok.extern.log4j.Log4j2;
@@ -116,12 +118,14 @@ public class MockedDeviceController {
 	public ResponseEntity<String> executeMockPostDataOnDevice(
 			@PathVariable(value = "deviceId") String deviceId,
 			@RequestHeader HttpHeaders headers,
+			@RequestParam Map<String,String> allRequestParams,
 			@RequestBody String body,
 			@RequestParam(value = DEVICE_FIELD_GROUP, required = false) String devEntGroup,
 			@RequestParam(value = DEVICE_FIELD_ENTITY_NAME, required = false) String devEntName) throws IOException {
 
 
 		log.info("POST Mock");
+		log.info("Params = " + Joiner.on(",").withKeyValueSeparator("=").join(allRequestParams));
 
 		return executeMockGetDataOnDevice(deviceId, headers, devEntGroup);
 	}

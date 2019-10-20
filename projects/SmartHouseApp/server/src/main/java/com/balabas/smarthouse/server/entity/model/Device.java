@@ -47,11 +47,6 @@ public class Device extends ItemContainer<IGroup> implements IDevice {
 		setName(deviceName);
 	}
 
-	/*@Override
-	public boolean isInitialized() {
-		return state!=null && state.compareTo(State.REGISTERED) > 0 && getGroups() != null && getGroups().isEmpty();
-	}
-*/
 	@Override
 	public boolean isRegistered() {
 		return state!=null && state.compareTo(State.REGISTERED) >= 0;
@@ -60,6 +55,11 @@ public class Device extends ItemContainer<IGroup> implements IDevice {
 	@Override
 	public IEntity getEntity(String entityName) {
 		return getGroups().stream().flatMap(group -> group.getEntities().stream()).filter( e -> e.getName().equals(entityName)).findFirst().orElse(null);
+	}
+
+	@Override
+	public IEntity getEntity(int remoteId) {
+		return getGroups().stream().flatMap(group -> group.getEntities().stream()).filter( e -> e.getRemoteId() == remoteId).findFirst().orElse(null);
 	}
 
 }

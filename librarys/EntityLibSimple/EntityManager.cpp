@@ -310,6 +310,10 @@ bool EntityManager::processChangedEntities(EntityJsonRequestResponse* data){
 	bool toSave = false;
 
 	for(Entity* entity: entities){
+		if(entity->isSaveRequired()){
+			entity->setSaveRequired(false);
+			toSave = true;
+		}
 		if(entity->isMarkedAsChanged()){
 			Serial.print(entity->getName());
 			Serial.print(FPSTR("; "));
@@ -319,10 +323,6 @@ bool EntityManager::processChangedEntities(EntityJsonRequestResponse* data){
 			if (data != nullptr){
 				executeGetMethodOnEntity(data, entity);
 			}
-		}
-		if(entity->isSaveRequired()){
-			entity->setSaveRequired(false);
-			toSave = true;
 		}
 	}
 
@@ -394,9 +394,9 @@ void EntityManager::persist(
 		std::function<void(JsonObject& json)> postPersistFunction) {
 
 	Serial.println(FPSTR("-------------"));
-	JsonObject& jsonEmpty = buf.parse("{}").as<JsonObject>();
+	EntityJsonRequestResponse* req = new EntityJsonRequestResponse();
 
-	JsonObject& jsonTemp = FileUtils::loadJsonFromFile(FILE_PATH, &buf, jsonEmpty);
+	JsonObject& jsonTemp = FileUtils::loadJsonFromFile(FILE_PATH, req->getBuffer(), req->getRequest());
 
 
 	Serial.println(FPSTR("Loaded entities"));
@@ -406,8 +406,9 @@ void EntityManager::persist(
 	for (Entity* entity : entities) {
 		JsonObject& json = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(
 				jsonTemp, entity->getGroup(), entity->getName());
-		entity->print();
+		/*entity->print();
 		JsonObjectUtil::print(json);
+		*/
 		onEntityFunction(json, entity);
 	}
 
@@ -416,7 +417,7 @@ void EntityManager::persist(
 		Serial.println(FPSTR("Execute post persist function"));
 	}
 
-	//buf->clear();
+	delete req;
 
 	Serial.println(FPSTR("------persisted-------"));
 }

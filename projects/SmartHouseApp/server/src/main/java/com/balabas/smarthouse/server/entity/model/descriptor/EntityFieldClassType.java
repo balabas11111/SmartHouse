@@ -9,6 +9,8 @@ public enum EntityFieldClassType {
 	LONG(Long.class, "long"),
 	FLOAT(Float.class, "float"),
 	STRING(String.class, "char*"),
+	IP(String.class, "ip"),
+	PASSWORD(String.class, "password"),
 	OBJECT(Object.class, "obj");
 		
 	private Class<?> clazz;

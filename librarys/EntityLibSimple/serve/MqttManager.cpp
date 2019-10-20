@@ -273,8 +273,7 @@ bool MqttManager::subscribe(char* topic, bool showLog) {
 
 bool MqttManager::publish(char* topic, JsonObject& data, bool showLog) {
 	if(connectMqtt()){
-		unsigned long start = millis();
-
+		//unsigned long start = millis();
 		String msg;
 		data.printTo(msg);
 

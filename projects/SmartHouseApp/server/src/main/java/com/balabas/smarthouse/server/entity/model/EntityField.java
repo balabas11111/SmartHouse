@@ -63,16 +63,20 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 
 	@Override
 	public void setValue(T value) throws BadValueException {
+		validateValue(value);
 
+		this.value = value;
+	}
+	
+	@Override
+	public void validateValue(T value) throws BadValueException{
 		if (value != null && enabledValues != null && !enabledValues.isEmpty()
 				&& enabledValues.stream().noneMatch(e -> e.getValue().equals(value))) {
 			this.value = null;
 			throw new BadValueException();
 		}
-
-		this.value = value;
 	}
-
+	
 	@Override
 	public void setValueWithNoCheck(T value) throws BadValueException {
 		this.value = value;

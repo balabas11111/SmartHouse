@@ -61,7 +61,7 @@ public:
 		UNUSED(response);
 		uint8_t on = isOn();
 		uint8_t onPosted = 0;
-		if(params.is<char*>(ON_FIELD) && strcmp("1",params[ON_FIELD])==0){
+		if(params.is<char*>(ON_FIELD) && (strcmp("1",params[ON_FIELD])==0 || strcmp("true",params[ON_FIELD])==0)){
 			onPosted = 1;
 		}
 		if (on !=onPosted) {

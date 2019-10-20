@@ -44,8 +44,12 @@ public class ItemTextHelper {
     	return (groupName==null || !groupNameMap.containsKey(groupName))?groupName:groupNameMap.get(groupName);
     }
     
-    public String getRefreshDeviceListButton(){
-    	return String.format(BotMessageConstants.REFRESH_BUTTON,Emoji.REFRESH);
+    public static String getRefreshDeviceListButton(){
+    	return String.format(BotMessageConstants.VIEW_DEVICES_BUTTON, Emoji.BOOKMARK_TABS);
+    }
+    
+    public static String getEditDeviceListButton(){
+    	return String.format(BotMessageConstants.EDIT_DEVICES_BUTTON, Emoji.HAMMER_AND_WRENCH);
     }
 	
     public String getDeviceButton(Emoji emoji, String deviceDescr) {
@@ -77,8 +81,7 @@ public class ItemTextHelper {
 	
 	public String getGroupCommandHeader(String deviceEmoji, String deviceDescription, String groupEmoji, String groupDescription){
 		return String.format(GROUP_COMMAND_HEADER_MSG,
-				deviceEmoji, deviceDescription,
-				groupEmoji, groupDescription);
+				deviceEmoji, deviceDescription);
 	}
 	
 	public String getEntityHeader(String entityEmoji, String entityDescription){
@@ -96,6 +99,10 @@ public class ItemTextHelper {
 	
 	public String getButton(String format, Emoji emoji) {
 		return String.format(format,emoji==null?"":emoji.toString());
+	}
+	
+	public String getButton(String format, Object...strings) {
+		return String.format(format, strings);
 	}
 	
 }

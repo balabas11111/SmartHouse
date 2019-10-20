@@ -67,6 +67,8 @@
 #define EDC_DESCR_ACTION_RESTART  "Перезапустить"
 
 //entities descriptions
+#define EDC_DESCR_NAMING        "Название"
+#define EDC_DESCR_DESCRIPTION   "Описание"
 #define EDC_DESCR_SETTINGS      "Настройки"
 #define EDC_DESCR_SENSOR        "Датчик"
 #define EDC_DESCR_SERVICE       "Сервис"

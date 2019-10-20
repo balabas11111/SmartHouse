@@ -61,9 +61,9 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SmartHouseEntityBuilder {
 
-	private static List<String> notUpdateableEntityFields = Arrays.asList(ENTITY_FIELD_STATUS, ENTITY_FIELD_SENSOR_ITEMS,
-			ENTITY_FIELD_SWG, ENTITY_FIELD_ITEM_CLASS);
-	
+	private static List<String> notUpdateableEntityFields = Arrays.asList(ENTITY_FIELD_STATUS,
+			ENTITY_FIELD_SENSOR_ITEMS, ENTITY_FIELD_SWG, ENTITY_FIELD_ITEM_CLASS);
+
 	private static List<String> notParsedAsEntityNames = Arrays.asList(ENTITY_FIELD_DESCRIPTION, EDC_FIELD_EMOJI);
 
 	public static IDevice buildDeviceFromRequest(DeviceRequest request) {
@@ -127,7 +127,9 @@ public class SmartHouseEntityBuilder {
 				isOk = isOk && groupOk;
 			}
 		}
-
+		if(isOk) {
+			device.getTimer().setActionSuccess();
+		}
 		return isOk;
 	}
 
@@ -150,6 +152,9 @@ public class SmartHouseEntityBuilder {
 				isOk = isOk && entityOk;
 			}
 		}
+		if(isOk) {
+			group.getTimer().setActionSuccess();
+		}
 		return isOk;
 	}
 
@@ -163,7 +168,11 @@ public class SmartHouseEntityBuilder {
 				try {
 					IEntityField entityField = entity.getEntityField(entityFieldName);
 					Object valueObj = entityJson.get(entityFieldName);
-	
+
+					if(entity.getDescriptionField().equals(entityFieldName)) {
+						entity.setDescription(valueObj.toString());
+					}
+					
 					if (entityField != null) {
 						try {
 							entityField.setValueWithNoCheck(valueObj);
@@ -171,7 +180,7 @@ public class SmartHouseEntityBuilder {
 							log.error(e);
 							setOk = false;
 						}
-	
+
 					} else {
 						log.warn("New field " + entityFieldName + " entity = " + entity.getName() + " device = "
 								+ entity.getDeviceName());
@@ -181,9 +190,9 @@ public class SmartHouseEntityBuilder {
 						} catch (BadValueException e) {
 							log.error(e);
 						}
-						
+
 					}
-				}catch(Exception e) {
+				} catch (Exception e) {
 					log.error("field " + entityFieldName + " : ", e);
 				}
 			}
@@ -202,18 +211,18 @@ public class SmartHouseEntityBuilder {
 
 				device.setDescription(info.optString(ENTITY_DEVICE_DEVICE_DESCRIPTION, device.getDescription()));
 				device.setFirmware(info.optString(ENTITY_DEVICE_DEVICE_FIRMWARE, device.getFirmware()));
-				
-				if(!info.has(EDC_FIELD_EMOJI)) {
+
+				if (!info.has(EDC_FIELD_EMOJI)) {
 					device.setEmoji(ItemType.DEVICE.getEmoji());
 				} else {
 					String emojiStr = info.optString(EDC_FIELD_EMOJI, ItemType.DEVICE.getEmoji().code);
-					
+
 					device.setEmoji(Emoji.getByCode(emojiStr));
 				}
 			}
 		}
 	}
-	
+
 	public static boolean buildDeviceFromJson(IDevice device, JSONObject deviceJson) {
 		Set<IGroup> groups = SmartHouseEntityBuilder.buildGroupsFromJson(device.getName(), deviceJson);
 		boolean initOk = !groups.isEmpty();
@@ -228,7 +237,7 @@ public class SmartHouseEntityBuilder {
 		}
 
 		device.setChildren(groups);
-		
+
 		return initOk;
 	}
 
@@ -243,8 +252,8 @@ public class SmartHouseEntityBuilder {
 					String description = deviceJson.getJSONObject(groupName).optString(ENTITY_FIELD_DESCRIPTION,
 							type.description);
 					String emojiDescr = deviceJson.getJSONObject(groupName).optString(EDC_FIELD_EMOJI, null);
-					Emoji groupEmoji = (emojiDescr != null)?Emoji.getByCode(emojiDescr):type.getEmoji();
-					
+					Emoji groupEmoji = (emojiDescr != null) ? Emoji.getByCode(emojiDescr) : type.getEmoji();
+
 					IGroup group = new Group();
 
 					group.setEmoji(groupEmoji);
@@ -346,8 +355,7 @@ public class SmartHouseEntityBuilder {
 
 		log.debug("sensorItemsJson : " + sensorItemsJson);
 
-		int count = sensorItemsJson.optInt(ENTITY_FIELD_COUNT, 
-				sensorItemsJson.optInt(ENTITY_FIELD_C, 0));
+		int count = sensorItemsJson.optInt(ENTITY_FIELD_COUNT, sensorItemsJson.optInt(ENTITY_FIELD_C, 0));
 
 		Set<String> grouppedFieldsNames = Optional.ofNullable(sensorItemsJson.optJSONArray(ENTITY_FIELD_FIELDS_ARRAY))
 				.orElse(new JSONArray()).toList().stream().map(Object::toString).collect(Collectors.toSet());
@@ -369,15 +377,15 @@ public class SmartHouseEntityBuilder {
 		} else {
 			entity.setGrouppedFieldsIds(grouppedFieldsIds);
 			entity.setGrouppedFieldsNames(grouppedFieldsNames);
-			
+
 			try {
 				IEntityField countField = new EntityFieldInteger();
 				countField.setName(ENTITY_FIELD_COUNT);
 				countField.setReadOnly(true);
 				countField.setValueWithNoCheck(Integer.valueOf(count));
-				
+
 				entity.addGeneratedField(countField);
-			} catch(BadValueException e) {
+			} catch (BadValueException e) {
 				log.error(e);
 			}
 
@@ -396,17 +404,18 @@ public class SmartHouseEntityBuilder {
 
 		String value = entityJson.optString(fieldName);
 
-		Class<?> clazz = Optional.ofNullable(EntityFieldClassType.from(fieldDecriptor.optString(EDC_CLASS, null)))
-				.orElse(EntityFieldClassType.STRING).getClazz();
+		EntityFieldClassType fieldClassType = Optional.ofNullable(
+				EntityFieldClassType.from(fieldDecriptor.optString(EDC_CLASS, null))).orElse(EntityFieldClassType.STRING); 
+		
 		String name = fieldDecriptor.optString(EDC_FIELD_NAME, fieldName);
 		String description = fieldDecriptor.optString(EDC_FIELD_DESCRIPTION, EMPTY_STR);
 		EntityFieldClassView viewClass = EntityFieldClassView.from(fieldDecriptor.optString(EDC_CLASS_VIEW, null));
 		boolean readOnly = booleanFromString(fieldDecriptor.optString(EDC_READ_ONLY, FALSE));
 		Emoji emoji = Emoji.getByCode(fieldDecriptor.optString(EDC_FIELD_EMOJI, null));
 
-		Set<IEntityField> enabledValues = getEnabledFieldValues(fieldDecriptor, name, clazz, viewClass);
+		Set<IEntityField> enabledValues = getEnabledFieldValues(fieldDecriptor, name, fieldClassType, viewClass);
 
-		IEntityField entityField = createEntityFieldByClass(clazz);
+		IEntityField entityField = createEntityFieldByClass(fieldClassType);
 
 		entityField.setName(name);
 		entityField.setDescription(description);
@@ -420,8 +429,8 @@ public class SmartHouseEntityBuilder {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Set<IEntityField> getEnabledFieldValues(JSONObject fieldDecriptor, String fieldName, Class<?> clazz, EntityFieldClassView parentViewClass)
-			throws BadValueException {
+	private static Set<IEntityField> getEnabledFieldValues(JSONObject fieldDecriptor, String fieldName, EntityFieldClassType fieldClassType,
+			EntityFieldClassView parentViewClass) throws BadValueException {
 		if (fieldDecriptor.has(EDC_FIELD_ENABLED_VALUES)) {
 			JSONObject enabledFieldJson = fieldDecriptor.getJSONObject(EDC_FIELD_ENABLED_VALUES);
 
@@ -436,9 +445,10 @@ public class SmartHouseEntityBuilder {
 				String description = enabledValueBody.getOrDefault(EDC_FIELD_DESCRIPTION, null);
 				String actionDescription = enabledValueBody.getOrDefault(EDC_FIELD_ACTION_DESCR, null);
 				Emoji emoji = Emoji.getByCode(enabledValueBody.getOrDefault(EDC_FIELD_EMOJI, null));
-				EntityFieldClassView viewClass = EntityFieldClassView.from(enabledValueBody.getOrDefault(EDC_CLASS_VIEW, parentViewClass.getKey()));
+				EntityFieldClassView viewClass = EntityFieldClassView
+						.from(enabledValueBody.getOrDefault(EDC_CLASS_VIEW, parentViewClass.getKey()));
 
-				IEntityField enabledValue = createEntityFieldByClass(clazz);
+				IEntityField enabledValue = createEntityFieldByClass(fieldClassType);
 				enabledValue.setId(id);
 				enabledValue.setName(fieldName);
 				enabledValue.setDescription(description);
@@ -459,15 +469,19 @@ public class SmartHouseEntityBuilder {
 
 	}
 
-	private static IEntityField createEntityFieldByClass(Class<?> clazz) {
-		if (clazz.equals(Boolean.class)) {
+	private static IEntityField createEntityFieldByClass(EntityFieldClassType fieldClassType) {
+		if (EntityFieldClassType.BOOLEAN.equals(fieldClassType)) {
 			return new EntityFieldBoolean();
-		} else if (clazz.equals(Integer.class)) {
+		} else if (EntityFieldClassType.INTEGER.equals(fieldClassType)) {
 			return new EntityFieldInteger();
-		} else if (clazz.equals(Float.class)) {
+		} else if (EntityFieldClassType.FLOAT.equals(fieldClassType)) {
 			return new EntityFieldFloat();
-		} else if (clazz.equals(Long.class)) {
+		} else if (EntityFieldClassType.LONG.equals(fieldClassType)) {
 			return new EntityFieldLong();
+		} else if (EntityFieldClassType.IP.equals(fieldClassType)) {
+			return new EntityFieldIp();
+		} else if (EntityFieldClassType.PASSWORD.equals(fieldClassType)) {
+			return new EntityFieldPassword();
 		} else {
 			return new EntityFieldString();
 		}

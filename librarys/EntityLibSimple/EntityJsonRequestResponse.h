@@ -36,6 +36,10 @@ public:
 
 	virtual ~EntityJsonRequestResponse(){};
 
+	DynamicJsonBuffer* getBuffer(){
+		return &this->buf;
+	}
+
 	static EntityJsonRequestResponse* build(){
 		return new EntityJsonRequestResponse();
 	}

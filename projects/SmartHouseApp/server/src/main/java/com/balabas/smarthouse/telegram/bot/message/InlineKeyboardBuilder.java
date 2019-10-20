@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import com.balabas.smarthouse.server.entity.model.Emoji;
+import com.balabas.smarthouse.server.DeviceConstants;
 import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IEntityFieldCommandButton;
 import com.balabas.smarthouse.server.entity.model.IGroup;
-import com.balabas.smarthouse.server.entity.model.State;
 import com.balabas.smarthouse.server.view.Action;
 
 import lombok.Getter;
@@ -21,6 +22,12 @@ import lombok.Getter;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_DEVICE_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_GROUPS_OF_DEVICE;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY_FIELD;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE;
+
+import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_NAME;
 
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_DEVICE;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SENSORS;
@@ -39,7 +46,7 @@ public class InlineKeyboardBuilder {
 	public void addRefreshButtonToKeyboard(List<List<InlineKeyboardButton>> rowsInline){
         List<InlineKeyboardButton> row = new ArrayList<>();
         row.add(createInlineKeyboardButton(
-        					buttons.getRefreshDeviceListButton(),
+        		ItemTextHelper.getRefreshDeviceListButton(),
         					Action.callback(ACTION_TYPE_VIEW_DEVICE_LIST))
         				);
         rowsInline.add(row);
@@ -51,7 +58,7 @@ public class InlineKeyboardBuilder {
         
         List<InlineKeyboardButton> row = new ArrayList<>();
         row.add(createInlineKeyboardButton(
-				buttons.getRefreshDeviceListButton(),
+        		ItemTextHelper.getRefreshDeviceListButton(),
 				Action.callback(ACTION_TYPE_VIEW_DEVICE_LIST))
 			);
         rowsInline.add(row);
@@ -60,7 +67,7 @@ public class InlineKeyboardBuilder {
         return markup;
     }
 	
-	public InlineKeyboardMarkup getDevicesOfServerInlineKeyboard(List<IDevice> devices) {
+	public InlineKeyboardMarkup getDevicesOfServerInlineKeyboardView(List<IDevice> devices) {
 		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		
@@ -68,30 +75,33 @@ public class InlineKeyboardBuilder {
     			
 	    	List<InlineKeyboardButton> row = new ArrayList<>();
 	    	
-	    	Emoji emoji = Emoji.PAGER;
-	    	String description = device.getDescription();
-	    	String action = ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
+	    	ActionContext ac = new ActionContext(device);
 	    	
-	    	if (!device.isInitialized()) {
-	    		emoji = Emoji.HOURGLASS;
-	    		description += " (Не инициализировано)";
-	    		action = ACTION_TYPE_VIEW_DEVICE_LIST;
-	    	} else if(State.TIMED_OUT.equals(device.getState())){
-	    		emoji = Emoji.GHOST;
-	    		description += " (Не подключено)";
-	    		action = ACTION_TYPE_VIEW_DEVICE_LIST;
-	    	} else if(State.FAILED.equals(device.getState())){
-	    		emoji = Emoji.RED_CIRCLE;
-	    		description += " (Ошибка данных)";
-	    		action = ACTION_TYPE_VIEW_DEVICE_LIST;
-	    	} else if(State.DISCONNECTED.equals(device.getState())){
-	    		emoji = Emoji.SKULL;
-	    		description += " (Ошибка подключения)";
-	    		action = ACTION_TYPE_VIEW_DEVICE_LIST;
-	    	}
+	    	String text = buttons.getDeviceButton(ac.getEmoji(), ac.getDescription());
+	    	String callback = Action.callback(ACTION_TYPE_VIEW_ENTITIES_OF_GROUP, "", device.getName(), GROUP_SENSORS);
 	    	
-	    	String text = buttons.getDeviceButton(emoji, description);
-	    	String callback = Action.callback(action,"", device.getName(), GROUP_SENSORS);
+			row.add(createInlineKeyboardButton(text, callback));
+			
+			rowsInline.add(row);
+		}
+		
+		markup.setKeyboard(rowsInline);
+
+		return markup;
+	}
+	
+	public InlineKeyboardMarkup getDevicesOfServerInlineKeyboardEdit(List<IDevice> devices) {
+		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		
+		for (IDevice device : devices) {
+    			
+	    	List<InlineKeyboardButton> row = new ArrayList<>();
+	    	
+	    	ActionContext ac = new ActionContext(device);
+	    	
+	    	String text = buttons.getDeviceButton(ac.getEmoji(), ac.getDescription());
+	    	String callback = Action.callback(ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE, "", device.getName());
 	    	
 			row.add(createInlineKeyboardButton(text, callback));
 			
@@ -119,6 +129,74 @@ public class InlineKeyboardBuilder {
     			rowsInline.add(row);
 		    }
 		}
+		
+		markup.setKeyboard(rowsInline);
+
+		return markup;
+	}
+	
+	public InlineKeyboardMarkup getEntitiesOfDeviceInlineKeyboard(IDevice device) {
+		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		
+		device.getEntities().stream()
+			.sorted((e1, e2) -> e1.getName().compareToIgnoreCase(e2.getName()))
+			.forEach( entity ->{
+    			
+		    	List<InlineKeyboardButton> row = new ArrayList<>();
+		    	
+		    	String text = buttons.getButton(entity.getEmoji(), entity.getDescription());
+		    	String callback = Action.callback(ACTION_TYPE_EDIT_ENTITITY, "", entity);
+		    	
+				row.add(createInlineKeyboardButton(text, callback));
+				
+				rowsInline.add(row);
+			});
+		
+		markup.setKeyboard(rowsInline);
+
+		return markup;
+	}
+	
+	public InlineKeyboardMarkup getFieldsOfEntityInlineKeyboard(IEntity entity) {
+		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		
+		entity.getEntityFields().stream().sorted((ef1, ef2)->ef1.getName().compareToIgnoreCase(ef2.getName()))
+		.forEach( entityField ->
+		{
+    		
+			List<IEntityFieldCommandButton> commands = EntityViewBuilder.getCommandButtonsForEntity(
+					ACTION_TYPE_SEND_DATA_TO_DEVICE, entity, entityField);
+			
+			if(commands!=null && !commands.isEmpty()) {
+				
+				for (IEntityFieldCommandButton comBtn : commands) {
+					String text = comBtn.getButtonText();
+					String callback = comBtn.getActionCallback();
+					
+					List<InlineKeyboardButton> row = new ArrayList<>();
+					row.add(createInlineKeyboardButton(text, callback));
+					rowsInline.add(row);
+				}
+				 
+			} else			
+			if(!entityField.isReadOnly() && !DeviceConstants.ENTITY_FIELD_ID.equals(entityField.getName())) {
+		    	List<InlineKeyboardButton> row = new ArrayList<>();
+		    	
+		    	String text = buttons.getButton(BotMessageConstants.EDIT_DEVICE_SELECT_ENTITY_FIELD_BUTTON, 
+		    			entityField.getName(), entityField.getDescription());
+		    	
+		    	String data = new JSONObject()
+		    					.put(ACTION_DATA_FIELD_NAME, entityField.getName()).toString();
+		    	
+		    	String callback = Action.callback(ACTION_TYPE_EDIT_ENTITITY_FIELD, data, entity);
+		    	
+				row.add(createInlineKeyboardButton(text, callback));
+				
+				rowsInline.add(row);
+			}
+		});
 		
 		markup.setKeyboard(rowsInline);
 

@@ -35,7 +35,7 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 @SuppressWarnings("rawtypes")
-public class ItemRendererBuilder {
+public class EntityViewBuilder {
 
 	@Autowired
 	private ItemTextHelper itemTextHelper;
@@ -134,7 +134,7 @@ public class ItemRendererBuilder {
 				group.getEmoji().toString(), group.getDescription());
 	}
 	
-	public List<IEntityFieldCommandButton> getCommandButtonsForGroup(String actionName, IGroup group) {
+	public static List<IEntityFieldCommandButton> getCommandButtonsForGroup(String actionName, IGroup group) {
 		if(group == null || group.getEntities().isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -144,7 +144,7 @@ public class ItemRendererBuilder {
 				.collect(Collectors.toList());
 	}
 	
-	public List<IEntityFieldCommandButton> getCommandButtonsForEntity(String actionName, IEntity entity) {
+	public static List<IEntityFieldCommandButton> getCommandButtonsForEntity(String actionName, IEntity entity) {
 		return getEnabledEntityFieldWithCommandsForEntity(entity)
 				.stream().map( ef -> new EntityFieldCommandButton(actionName, entity, ef))
 				.collect(Collectors.toList());
@@ -160,7 +160,7 @@ public class ItemRendererBuilder {
 				.collect(Collectors.toList());
 	}
 
-	public List<IEntityField> getEnabledEntityFieldWithCommandsForEntity(IEntity entity) {
+	public static List<IEntityField> getEnabledEntityFieldWithCommandsForEntity(IEntity entity) {
 		Set<IEntityField> entFields = entity.getEntityFields();
 
 		if (entFields == null || entFields.isEmpty()) {
@@ -171,8 +171,14 @@ public class ItemRendererBuilder {
 				.collect(Collectors.toList());
 	}
 
+	public static List<IEntityFieldCommandButton> getCommandButtonsForEntity(String actionName, IEntity entity, IEntityField entityField) {
+		return getCommandsForEntityField(entityField)
+				.stream().map( ef -> new EntityFieldCommandButton(actionName, entity, ef))
+				.collect(Collectors.toList());
+	}
+	
 	@SuppressWarnings("unchecked")
-	private List<IEntityField> getCommandsForEntityField(IEntityField entityField) {
+	public static List<IEntityField> getCommandsForEntityField(IEntityField entityField) {
 		
 		if (!Boolean.class.equals(entityField.getClazz()) || entityField.getEnabledValues() == null || entityField.getEnabledValues().isEmpty()) {
 			return Collections.emptyList();
@@ -180,17 +186,14 @@ public class ItemRendererBuilder {
 
 		IEntityField currentValue = entityField.getEnabledValueByCurrentValue();
 		
-		if(currentValue == null) {
-			return Collections.emptyList();
-		}
-		
 		Set<IEntityField<?>> evals = entityField.getEnabledValues();
 		
 		List<IEntityField> result = evals.stream()
 				.filter( ev -> 
 					ev.getViewClass() !=null 
 					&& ev.getViewClass().isButton() 
-					&& !ev.equals(currentValue))
+					&& (currentValue == null 
+						|| (currentValue !=null && !ev.equals(currentValue))))
 				.collect(Collectors.toList());
 		
 		return result;

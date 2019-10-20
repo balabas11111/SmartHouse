@@ -24,7 +24,12 @@ public class EntityFieldCommandButton implements IEntityFieldCommandButton {
 		this.entity = entity;
 		this.entityField = entityField;
 		
-		this.actionCallback = new Action(actionName, entityField.buildDataForCallBack(), entity.getDeviceName(), entity.getGroupName(), entity.getName()).getCallbackData();
+		String deviceName = entity.getDeviceName();
+		String groupName = "";//entity.getGroupName();
+		String entityId = Integer.toString(entity.getRemoteId());//entity.getName();
+		
+		this.actionCallback = new Action(actionName, entityField.buildDataForCallBack(),
+				deviceName, groupName, entityId).getCallbackData();
 		this.buttonText = Optional.ofNullable(getEntityField().getEmoji()).orElse(Emoji.EMPTY_EMOJI).toString()
 				+ entity.getDescription() + " : " + getEntityField().getActionDescription();
 		

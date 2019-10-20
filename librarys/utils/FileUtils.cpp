@@ -331,13 +331,13 @@ JsonObject& FileUtils::loadJsonFromFile(const char* fileName, DynamicJsonBuffer*
 bool FileUtils::saveJsonToFileIfDiff(const char* fileName, JsonObject& json) {
 	if(!FileUtils::existsAndHasSizeChar(fileName) || !FileUtils::compareCrs(fileName, json)){
 
-			bool res=FileUtils::saveJsonToFile(fileName, json);
-			if(res){Serial.println(FPSTR(" saved OK."));}else{Serial.println(FPSTR(" saved ERROR"));}
-			return res;
-		}else{
-			Serial.println(FPSTR("Json == file. Not changed"));
-		}
-		return true;
+		bool res=FileUtils::saveJsonToFile(fileName, json);
+		if(res){Serial.println(FPSTR(" json and file are not equal. saved OK."));}else{Serial.println(FPSTR(" saved ERROR"));}
+		return res;
+	}else{
+		Serial.println(FPSTR("Json == file. Not changed"));
+	}
+	return true;
 }
 
 #ifdef ESP32

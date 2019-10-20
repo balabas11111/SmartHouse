@@ -124,7 +124,6 @@ protected:
 
 	void markEntitiesAsChanged();
 
-	DynamicJsonBuffer buf;
 	JsonObject* obj;
 
 	bool entitiesChanged = false;
