@@ -1,1 +1,0 @@
-java -jar server-2.2.0.M6.jar

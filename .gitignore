@@ -18,3 +18,6 @@
 /projects/SmartHouseApp/server/bin/logs
 /projects/SmartHouseApp/server/bin/server-2.2.0.M6.jar
 /projects/SmartHouseApp/server/repository
+/projects/EntityLib_ESP8266_DHT22_DS18D20/Release
+/projects/EntityLib_ESP8266_DHT22_DS18D20/.settings
+/projects/EntityLib_ESP8266_DHT22_DS18D20/sloeber.ino.cpp

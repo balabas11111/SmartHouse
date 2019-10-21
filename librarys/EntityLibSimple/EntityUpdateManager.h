@@ -8,12 +8,13 @@
 #ifndef LIBRARIES_ENTITYLIBSIMPLE_ENTITYUPDATEMANAGER_H_
 #define LIBRARIES_ENTITYLIBSIMPLE_ENTITYUPDATEMANAGER_H_
 
+#include <Arduino.h>
 #include <list>
 #include <iterator>
-#include <Arduino.h>
 #include <Ticker.h>
-
 #include <EntityUpdate.h>
+
+
 
 class EntityUpdateManager {
 public:

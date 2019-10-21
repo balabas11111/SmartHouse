@@ -53,8 +53,9 @@ public:
 
 	virtual void doAppendFieldsSwg(JsonObject& swgJson) override{
 		EntityDescriptor::appendSwgEntityParams(swgJson, EMOJI_BULB);
-
-		EntityDescriptor::appendSwgFieldBooleanOnOff(swgJson, ON_FIELD, EDC_DESCR_STATE);
+		if(!readOnly) {
+			EntityDescriptor::appendSwgFieldBooleanOnOff(swgJson, ON_FIELD, EDC_DESCR_STATE);
+		}
 	}
 
 	virtual void doPost(JsonObject& params, JsonObject& response) override {
@@ -80,6 +81,7 @@ public:
 		UNUSED(jsonToFile);
 	}
 protected:
+	bool readOnly = true;
 
 	bool validateMode() override{
 		if(pinMod == OUTPUT){

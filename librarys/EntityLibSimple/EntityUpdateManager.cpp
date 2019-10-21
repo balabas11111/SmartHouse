@@ -60,8 +60,9 @@ int EntityUpdateManager::init(int interval) {
 			if(!found){
 				intervals[intervalCounts] = curIntervalMs;
 				intervalCounts++;
-				Serial.print(FPSTR("Interval added "));
+				/*Serial.print(FPSTR("Interval added "));
 				Serial.println(curIntervalMs);
+				*/
 			}
 		}
 	}
