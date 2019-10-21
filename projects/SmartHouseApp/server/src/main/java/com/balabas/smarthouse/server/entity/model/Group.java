@@ -15,7 +15,7 @@ public class Group extends ItemAbstract implements IGroup {
 
 	private ItemType type;
 	
-	private String DeviceName;
+	private String deviceName;
 
 	@JsonIgnore
 	private ActionTimer timer;
