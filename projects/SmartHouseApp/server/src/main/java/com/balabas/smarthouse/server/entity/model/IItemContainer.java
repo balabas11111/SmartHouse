@@ -10,6 +10,11 @@ public interface IItemContainer<T extends IItemAbstract> extends IItemAbstract {
 	String getDeviceName();
 	void setDeviceName(String deviceName);
 	
-	boolean hasChild(String childName);
-	T getChild(String childName);
+	default  T getChild(String childName) {
+		return getChildren().stream().filter(c -> c.getName().equals(childName)).findFirst().orElse(null);
+	}
+
+	default boolean hasChild(String childName) {
+		return getChild(childName) != null;
+	}
 }

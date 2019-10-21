@@ -2,6 +2,7 @@ package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Optional;
 
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.view.Action;
 
 import lombok.Getter;

@@ -12,12 +12,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.controller.service.DeviceRequestorService;
+import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.IUpdateable;
-import com.balabas.smarthouse.server.entity.model.SmartHouseEntityBuilder;
-import com.balabas.smarthouse.server.entity.model.State;
+import com.balabas.smarthouse.server.entity.model.descriptor.State;
+import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.view.Action;
@@ -35,33 +36,38 @@ public class DeviceService implements IDeviceService {
 	@Autowired
 	IDeviceStateChangeService stateChanger;
 	
+	@Autowired
+	SmartHouseItemBuildService itemBuildService;
+	
+	@Autowired
+	IDeviceRepository deviceRepository;
+	
 	@Getter
 	private List<IDevice> devices = new ArrayList<>();
-
+	
 	@Override
 	public List<IDevice> getDevicesInitialized() {
 		return devices.stream().filter(IDevice::isInitialized).collect(Collectors.toList());
 	}
 	
 	@Override
-	public IDevice getDevice(String deviceName) {
-		return this.devices.stream().filter(d -> d.getName().equals(deviceName)).findFirst().orElse(null);
-	}
-
-	@Override
-	public IDevice getDevice(IDevice device) {
-		return this.devices.stream().filter(d -> d.getName().equals(device.getName())).findFirst().orElse(null);
+	public IDevice getManagedDeviceByName(String deviceName) {
+		return this.devices.stream().filter(d -> d.getName().equals(deviceName)).map( d -> (Device) d).findFirst().orElse(null);
 	}
 
 	@Override
 	public void processRegistrationRequest(DeviceRequest request) {
-		IDevice deviceFromRequest = SmartHouseEntityBuilder.buildDeviceFromRequest(request);
+		IDevice deviceFromRequest = itemBuildService.buildDeviceFromRequest(request);
 
-		IDevice device = getDevice(deviceFromRequest);
+		IDevice device = getManagedDeviceByName(deviceFromRequest.getName());
 
 		if (device == null) {
 			// register device
-			device = deviceFromRequest;
+			IDevice deviceFromRepo = deviceRepository.findByName(deviceFromRequest.getName());
+			
+			device = (deviceFromRepo == null)?
+						deviceFromRequest:deviceFromRepo.update(deviceFromRequest);
+			
 			devices.add(device);
 			
 			stateChanger.stateChanged(device, State.REGISTERED);
@@ -69,16 +75,19 @@ public class DeviceService implements IDeviceService {
 			log.info("Registered :" + device.getName());
 		} else {
 			// reregister device
+			device.update(deviceFromRequest);
 			log.info("ReRegistered :" + device.getName());
-			stateChanger.stateChanged(device, State.REGISTERED);
+			stateChanger.stateChanged(device, State.REREGISTERED);
 		}
+		
+		deviceRepository.save((Device) device);
 
 		device.getTimer().setActionForced(true);
 	}
 
 	@Override
 	public void processDataReceivedFromDevice(IEntity entity, JSONObject data) {
-		IDevice device = getDevice(entity.getDeviceName());
+		IDevice device = getManagedDeviceByName(entity.getDeviceName());
 		
 		processDataReceivedFromDevice(device, data);
 	}
@@ -98,11 +107,11 @@ public class DeviceService implements IDeviceService {
 	@Override
 	public void processDataReceivedFromDevice(IDevice device, JSONObject deviceJson) {
 		try {
-			SmartHouseEntityBuilder.processDeviceInfo(device, deviceJson);
+			itemBuildService.processDeviceInfo(device, deviceJson);
 
 			if (!device.isInitialized()) {
 				// build new device
-				boolean initOk = SmartHouseEntityBuilder.buildDeviceFromJson(device, deviceJson);
+				boolean initOk = itemBuildService.buildDeviceFromJson(device, deviceJson);
 
 				if (initOk) {
 					stateChanger.stateChanged(device, State.INIT_DATA_RECEIVED);
@@ -112,7 +121,7 @@ public class DeviceService implements IDeviceService {
 
 			} else {
 				// setDevice values
-				boolean ok = SmartHouseEntityBuilder.updateDeviceEntityValuesFromJson(device, deviceJson);
+				boolean ok = itemBuildService.updateDeviceEntityValuesFromJson(device, deviceJson);
 
 				State newState = (ok) ? State.UPDATED : State.BAD_DATA;
 				stateChanger.stateChanged(device, newState);
@@ -200,7 +209,7 @@ public class DeviceService implements IDeviceService {
     	String entityName = action.getEntityId();
     	
     	if(groupName == null || groupName.isEmpty()) {
-    		IDevice device = getDevice(action.getDeviceId());
+    		IDevice device = getManagedDeviceByName(action.getDeviceId());
     		
     		try {
     			Integer entityRemoteId = Integer.valueOf(entityName);
@@ -222,7 +231,7 @@ public class DeviceService implements IDeviceService {
 	@Override
 	public String sendDataToDevice(String deviceName, String groupName, String entityName, Map<String, Object> values) throws ResourceNotFoundException {
 		
-		IDevice device = getDevice(deviceName);
+		IDevice device = getManagedDeviceByName(deviceName);
 		
 		if(device == null) {
 			throw new ResourceNotFoundException(deviceName);

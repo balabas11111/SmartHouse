@@ -13,12 +13,12 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRem
 
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
-import com.balabas.smarthouse.server.entity.model.Emoji;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IEntityField;
 import com.balabas.smarthouse.server.entity.model.IEntityFieldCommandButton;
 import com.balabas.smarthouse.server.entity.model.IGroup;
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.service.IDeviceService;
 import com.balabas.smarthouse.server.view.Action;
 import com.google.common.collect.Lists;
@@ -53,7 +53,6 @@ public class SendMessageBuilder {
 		List<SendMessage> msgs = Lists.newArrayList();
 		String text = String.format(BotMessageConstants.BOT_REGISTERED_MSG, Emoji.PERSON_RAISING_ONE_HAND, serverName,
 				new Date());
-		// msgs.add(createHideReplyKeyboardMessage(chatId, null, text));
 		msgs.add(createRefreshDevicesListReplyKeyboard(chatId, text));
 		return msgs;
 	}
@@ -87,7 +86,6 @@ public class SendMessageBuilder {
 				: String.format(BotMessageConstants.SERVER_SELECT_DEVICE_VIEW_MSG, Emoji.OUTBOX_TRAY, serverName));
 
 		msgs.add(cont.createMsg(inlineKeyboard.getDevicesOfServerInlineKeyboardView(devices)));
-		// msgs.add(createRefreshDevicesListReplyKeyboard(cont.getChatId(),""));
 
 		return msgs;
 	}
@@ -106,7 +104,7 @@ public class SendMessageBuilder {
 	}
 
 	public SendMessage createGroupsOfDeviceInlineKeyboard(Action action, ReplyContext cont) {
-		IDevice device = deviceService.getDevice(action.getDeviceId());
+		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceId());
 
 		cont.setText(String.format(BotMessageConstants.SELECT_GROUP_MSG, Emoji.OUTBOX_TRAY, device.getDescription(),
 				device.getFirmware()));
@@ -115,7 +113,7 @@ public class SendMessageBuilder {
 	}
 
 	public SendMessage getEntitiesOfGroupInlineKeyboard(String deviceName, String groupName, ReplyContext cont) {
-		IDevice device = deviceService.getDevice(deviceName);
+		IDevice device = deviceService.getManagedDeviceByName(deviceName);
 		IGroup group = device.getGroup(groupName);
 
 		Emoji groupEmoji = itemTextHelper.getEmojiByGroupName(groupName);
@@ -129,7 +127,7 @@ public class SendMessageBuilder {
 	}
 	
 	public SendMessage getEntitiesOfDeviceToEdit(Action action, ReplyContext cont) {
-		IDevice device = deviceService.getDevice(action.getDeviceId());
+		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceId());
 
 		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECT_ENTITY,
 				Emoji.GEAR, device.getDescription());
@@ -140,7 +138,7 @@ public class SendMessageBuilder {
 	}
 	
 	public SendMessage getFieldsOfDeviceToEdit(Action action, ReplyContext cont) {
-		IDevice device = deviceService.getDevice(action.getDeviceId());
+		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceId());
 		IEntity entity = device.getEntity(action.getEntityId());
 
 		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECT_FIELD,
@@ -152,7 +150,7 @@ public class SendMessageBuilder {
 	}
 	
 	public SendMessage getFieldToEdit(Action action, ReplyContext context) {
-		IDevice device = deviceService.getDevice(action.getDeviceId());
+		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceId());
 		IEntity entity = device.getEntity(action.getEntityId());
 
 		String fieldName = new JSONObject(action.getData()).getString(ACTION_DATA_FIELD_NAME);
@@ -169,7 +167,7 @@ public class SendMessageBuilder {
 	public List<SendMessage> createGroupView(Action action, ReplyContext context) {
 		List<SendMessage> result = Lists.newArrayList();
 
-		IDevice device = deviceService.getDevice(action.getDeviceId());
+		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceId());
 		if (device != null) {
 			IGroup group = device.getGroup(action.getGroupId());
 
@@ -188,16 +186,16 @@ public class SendMessageBuilder {
 				builder.append(Emoji.ERROR.toString());
 				builder.append("<code> Режимы тревоги </code>\n");
 
-				group.getEntities().stream().forEach(entity -> {
-					alarms.stream().filter(alarm -> entity.getName().equals(alarm.getEntityName())).forEach(alarm -> {
-						Optional.ofNullable(alarm.getAlarmStartedText()).ifPresent(alStr -> builder.append(alStr));
-					});
-				});
+				group.getEntities().stream().forEach(entity -> 
+					alarms.stream().filter(alarm -> entity.getName().equals(alarm.getEntityName())).forEach(alarm -> 
+						Optional.ofNullable(alarm.getAlarmStartedText()).ifPresent(builder::append)
+					)
+				);
 			}
 
 			result.add(createHtmlMessage(context.getChatId(), builder.toString()));
 
-			Optional.ofNullable(buildGroupCommandInterface(device, group, context.getChatId())).ifPresent(sm -> result.add(sm));
+			Optional.ofNullable(buildGroupCommandInterface(device, group, context.getChatId())).ifPresent(result::add);
 		}
 		return result;
 	}

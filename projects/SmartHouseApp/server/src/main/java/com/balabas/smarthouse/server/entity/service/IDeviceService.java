@@ -14,9 +14,7 @@ import com.balabas.smarthouse.server.view.Action;
 
 public interface IDeviceService {
 	
-	IDevice getDevice(String deviceName);
-	
-	IDevice getDevice(IDevice device);
+	IDevice getManagedDeviceByName(String deviceName);
 	
 	List<IDevice> getDevices();
 	
@@ -38,6 +36,8 @@ public interface IDeviceService {
 
 	String sendDataToDevice(String deviceName, String groupName, String entityName, Map<String, Object> values)
 			throws ResourceNotFoundException;
+
+	
 
 	
 

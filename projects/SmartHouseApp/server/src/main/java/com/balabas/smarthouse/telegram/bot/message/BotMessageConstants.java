@@ -1,6 +1,6 @@
 package com.balabas.smarthouse.telegram.bot.message;
 
-import com.balabas.smarthouse.server.entity.model.Emoji;
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 
 import lombok.experimental.UtilityClass;
 

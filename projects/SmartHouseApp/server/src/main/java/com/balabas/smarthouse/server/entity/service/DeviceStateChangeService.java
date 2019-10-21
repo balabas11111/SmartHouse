@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.IDevice;
-import com.balabas.smarthouse.server.entity.model.Severity;
-import com.balabas.smarthouse.server.entity.model.State;
+import com.balabas.smarthouse.server.entity.model.descriptor.Severity;
+import com.balabas.smarthouse.server.entity.model.descriptor.State;
 
 import static com.balabas.smarthouse.server.DeviceMessageConstants.buildMessage;
 import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_REGISTERED;

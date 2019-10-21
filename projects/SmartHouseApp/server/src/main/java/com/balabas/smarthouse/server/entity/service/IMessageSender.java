@@ -1,6 +1,6 @@
 package com.balabas.smarthouse.server.entity.service;
 
-import com.balabas.smarthouse.server.entity.model.Severity;
+import com.balabas.smarthouse.server.entity.model.descriptor.Severity;
 
 public interface IMessageSender {
 

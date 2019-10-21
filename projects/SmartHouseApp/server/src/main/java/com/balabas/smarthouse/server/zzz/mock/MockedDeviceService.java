@@ -83,7 +83,7 @@ public class MockedDeviceService implements InitializingBean {
 
 	public void initMocks() throws IOException {
 		log.info("-----Server context was started MockedDevice-----");
-		reqs = ServerValuesMockUtil.getDevicesMock(3);
+		reqs = ServerValuesMockUtil.getDevicesMock(5);
 
 		reqs.stream().forEach(request -> {
 			sendIsOnlineRequest(request);
@@ -97,7 +97,7 @@ public class MockedDeviceService implements InitializingBean {
 
 		if (alarms != null && alarms.isEmpty()) {
 			DeviceRequest req = reqs.get(0);
-			IDevice device = deviceService.getDevice(req.getDeviceId());
+			IDevice device = deviceService.getManagedDeviceByName(req.getDeviceId());
 
 			String deviceName = device.getDeviceName();
 			String entityName = "bme280";

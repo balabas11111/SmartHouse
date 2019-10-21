@@ -101,7 +101,7 @@ public class DeviceMqService implements IDeviceMqService {
 		
 		messageService.registerSubscriberOrResubscribeExisting(new DataDeviceSubscribtion(topicName, this));
 		
-		deviceService.getDevice(deviceId).getEntities().stream()
+		deviceService.getManagedDeviceByName(deviceId).getEntities().stream()
 			.forEach(entity -> subscribeFromDeviceEntityTopic(entity));
 	}
 	

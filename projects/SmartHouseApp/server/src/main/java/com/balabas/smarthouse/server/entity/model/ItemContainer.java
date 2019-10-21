@@ -16,13 +16,4 @@ public abstract class ItemContainer<T extends IItemAbstract> extends ItemAbstrac
 	@JsonIgnore
 	protected String parentName;
 
-	@Override
-	public T getChild(String childName) {
-		return this.children.stream().filter(c -> c.getName().equals(childName)).findFirst().orElse(null);
-	}
-
-	@Override
-	public boolean hasChild(String childName) {
-		return getChild(childName) != null;
-	}
 }

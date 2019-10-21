@@ -75,7 +75,7 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 		try {
 			if(request.hasData()) {
 				securityService.validateDeviceRequestDataUpdate(request);
-				IDevice device = deviceService.getDevice(request.getDeviceId());
+				IDevice device = deviceService.getManagedDeviceByName(request.getDeviceId());
 				device.getTimer().setActionForced(true);
 			}
 			return DeviceRequestResult.from(HttpStatus.OK);

@@ -2,9 +2,9 @@ package com.balabas.smarthouse.telegram.bot.message;
 
 import java.util.Optional;
 
-import com.balabas.smarthouse.server.entity.model.Emoji;
 import com.balabas.smarthouse.server.entity.model.IDevice;
-import com.balabas.smarthouse.server.entity.model.State;
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
+import com.balabas.smarthouse.server.entity.model.descriptor.State;
 
 import lombok.Getter;
 
