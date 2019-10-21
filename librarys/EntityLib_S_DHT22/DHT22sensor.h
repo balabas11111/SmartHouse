@@ -45,6 +45,18 @@ public:
 		bool result = dht->read(true);
 		Serial.print(FPSTR("DHT22 read(force)="));
 		Serial.println(result);
+
+		for(int i=0; i<10; i++) {
+			float h = dht->readHumidity();
+			float t = dht->readTemperature();
+
+			if(!(isnan(h) || isnan(t))){
+				this->hum = h;
+				this->temp = t;
+
+				break;
+			}
+		}
 #endif
 	}
 
@@ -52,16 +64,18 @@ public:
 		float h = dht->readHumidity();
 		float t = dht->readTemperature();
 
-		bool hchg = h!=this->hum;
-		bool tchg = t!=this->temp;
+		if(!(isnan(h) || isnan(t))){
+			bool hchg = h!=this->hum;
+			bool tchg = t!=this->temp;
 
-		markEntityAsChangedIfTrue(hchg || tchg);
+			markEntityAsChangedIfTrue(hchg || tchg);
 
-		this->hum = h;
-		this->temp = t;
+			this->hum = h;
+			this->temp = t;
 
-		if(hchg){putToBuffer(DHT22_HUMIDITY, this->hum);}
-		if(tchg){putToBuffer(DHT22_TEMPERATURE, this->temp);}
+			if(hchg){putToBuffer(DHT22_HUMIDITY, this->hum);}
+			if(tchg){putToBuffer(DHT22_TEMPERATURE, this->temp);}
+		}
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
