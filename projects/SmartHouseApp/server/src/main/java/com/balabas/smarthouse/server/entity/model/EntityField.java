@@ -12,8 +12,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-import org.json.JSONObject;
-
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
 import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.IEntityFieldEnabledValue;
@@ -115,10 +113,4 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 				.findFirst().orElse(null);
 	}
 	
-	@Override
-	public String buildDataForCallBack() {
-		return new JSONObject()
-				.put(getName(), getValueStr()).toString();
-	}
-
 }

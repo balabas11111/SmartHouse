@@ -13,4 +13,10 @@ public class EntityFieldEnabledValueFloat extends EntityFieldEnabledValue<Float>
 	public void setValueStr(String value) {
 		this.value = Float.valueOf(value);
 	}
+
+	@Override
+	public String getValueStr() {
+		return this.value.toString();
+		
+	}
 }

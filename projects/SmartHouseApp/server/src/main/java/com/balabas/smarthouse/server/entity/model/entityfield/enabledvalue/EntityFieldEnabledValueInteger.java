@@ -13,4 +13,9 @@ public class EntityFieldEnabledValueInteger extends EntityFieldEnabledValue<Inte
 	public void setValueStr(String value) {
 		this.value = Integer.valueOf(value);
 	}
+
+	@Override
+	public String getValueStr() {
+		return this.value.toString();
+	}
 }

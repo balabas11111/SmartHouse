@@ -26,4 +26,9 @@ public class EntityFieldEnabledValueBoolean extends EntityFieldEnabledValue<Bool
 		
 		setValue(val);
 	}
+
+	@Override
+	public String getValueStr() {
+		return Boolean.toString(this.value);
+	}
 }

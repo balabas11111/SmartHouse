@@ -13,4 +13,9 @@ public class EntityFieldEnabledValueLong extends EntityFieldEnabledValue<Long> i
 	public void setValueStr(String value) {
 		this.value = Long.valueOf(value);		
 	}
+	
+	@Override
+	public String getValueStr() {
+		return this.value.toString();
+	}
 }

@@ -38,8 +38,6 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	
 	IEntityFieldEnabledValue getEnabledValueByCurrentValue();
 	
-	String buildDataForCallBack();
-
 	void validateValue(T value) throws BadValueException;
 
 }

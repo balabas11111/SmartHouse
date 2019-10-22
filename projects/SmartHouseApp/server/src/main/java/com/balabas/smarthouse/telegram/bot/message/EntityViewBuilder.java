@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.balabas.smarthouse.server.entity.model.EntityFieldCommandButton;
+import com.balabas.smarthouse.server.entity.model.EntityFieldComButton;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IEntityField;
-import com.balabas.smarthouse.server.entity.model.IEntityFieldCommandButton;
+import com.balabas.smarthouse.server.entity.model.IEntityFieldComButton;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.IEntityFieldEnabledValue;
@@ -135,7 +135,7 @@ public class EntityViewBuilder {
 				group.getEmoji().toString(), group.getDescription());
 	}
 	
-	public static List<IEntityFieldCommandButton> getCommandButtonsForGroup(String actionName, IGroup group) {
+	public static List<IEntityFieldComButton> getCommandButtonsForGroup(String actionName, IGroup group) {
 		if(group == null || group.getEntities().isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -145,13 +145,13 @@ public class EntityViewBuilder {
 				.collect(Collectors.toList());
 	}
 	
-	public static List<IEntityFieldCommandButton> getCommandButtonsForEntity(String actionName, IEntity entity) {
+	public static List<IEntityFieldComButton> getCommandButtonsForEntity(String actionName, IEntity entity) {
 		return getEnabledEntityFieldWithCommandsForEntity(entity)
-				.stream().map( ef -> new EntityFieldCommandButton(actionName, entity, ef))
+				.stream().map( ef -> new EntityFieldComButton(actionName, ef))
 				.collect(Collectors.toList());
 	}
 
-	public List<IEntityField> getEnabledEntityFieldWithCommandsForGroup(IGroup group) {
+	public List<IEntityFieldEnabledValue> getEnabledEntityFieldWithCommandsForGroup(IGroup group) {
 		if(group == null || group.getEntities().isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -161,7 +161,7 @@ public class EntityViewBuilder {
 				.collect(Collectors.toList());
 	}
 
-	public static List<IEntityField> getEnabledEntityFieldWithCommandsForEntity(IEntity entity) {
+	public static List<IEntityFieldEnabledValue> getEnabledEntityFieldWithCommandsForEntity(IEntity entity) {
 		Set<IEntityField> entFields = entity.getEntityFields();
 
 		if (entFields == null || entFields.isEmpty()) {
@@ -172,14 +172,14 @@ public class EntityViewBuilder {
 				.collect(Collectors.toList());
 	}
 
-	public static List<IEntityFieldCommandButton> getCommandButtonsForEntity(String actionName, IEntity entity, IEntityField entityField) {
+	public static List<IEntityFieldComButton> getCommandButtonsForEntity(String actionName, IEntity entity, IEntityField entityField) {
 		return getCommandsForEntityField(entityField)
-				.stream().map( ef -> new EntityFieldCommandButton(actionName, entity, ef))
+				.stream().map( ef -> new EntityFieldComButton(actionName, ef))
 				.collect(Collectors.toList());
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static List<IEntityField> getCommandsForEntityField(IEntityField entityField) {
+	public static List<IEntityFieldEnabledValue> getCommandsForEntityField(IEntityField entityField) {
 		
 		if (!Boolean.class.equals(entityField.getClazz()) || entityField.getEnabledValues() == null || entityField.getEnabledValues().isEmpty()) {
 			return Collections.emptyList();
@@ -187,9 +187,9 @@ public class EntityViewBuilder {
 
 		IEntityFieldEnabledValue currentValue = entityField.getEnabledValueByCurrentValue();
 		
-		Set<IEntityField<?>> evals = entityField.getEnabledValues();
+		Set<IEntityFieldEnabledValue> evals = entityField.getEnabledValues();
 		
-		List<IEntityField> result = evals.stream()
+		List<IEntityFieldEnabledValue> result = evals.stream()
 				.filter( ev -> 
 					ev.getViewClass() !=null 
 					&& ev.getViewClass().isButton() 

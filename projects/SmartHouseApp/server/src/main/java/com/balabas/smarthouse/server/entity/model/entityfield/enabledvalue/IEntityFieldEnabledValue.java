@@ -13,6 +13,8 @@ public interface IEntityFieldEnabledValue<T> {
 	T getValue();
 	void setValue(T value);
 	
+	String getValueStr();
+	
 	Emoji getEmoji();
 	void setEmoji(Emoji emoji);
 	
@@ -26,4 +28,5 @@ public interface IEntityFieldEnabledValue<T> {
 	
 	EntityFieldClassView getViewClass();
 	void setViewClass(EntityFieldClassView viewClass);
+	String buildDataForCallBack();
 }

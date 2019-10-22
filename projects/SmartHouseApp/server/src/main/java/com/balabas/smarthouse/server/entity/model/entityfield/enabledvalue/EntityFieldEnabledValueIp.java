@@ -32,4 +32,9 @@ public class EntityFieldEnabledValueIp extends EntityFieldEnabledValue<InetAddre
 	public void validateValue(InetAddress value) throws BadValueException {
 		
 	}
+	
+	@Override
+	public String getValueStr() {
+		return this.value.toString();
+	}
 }

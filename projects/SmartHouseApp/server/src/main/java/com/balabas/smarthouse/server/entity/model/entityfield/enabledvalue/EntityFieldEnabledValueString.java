@@ -13,4 +13,9 @@ public class EntityFieldEnabledValueString extends EntityFieldEnabledValue<Strin
 	public void setValueStr(String value) {
 		this.value = value;
 	}
+	
+	@Override
+	public String getValueStr() {
+		return this.value;
+	}
 }

@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,6 +10,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import org.json.JSONObject;
 
 import com.balabas.smarthouse.server.entity.model.EntityField;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
@@ -37,9 +41,16 @@ public abstract class EntityFieldEnabledValue<T> implements IEntityFieldEnabledV
 	private String actionDescription;
 	
 	@Getter @Setter
+	@Enumerated(EnumType.STRING)
 	private Emoji emoji;
 	
 	@Getter @Setter
 	private EntityFieldClassView viewClass;
+	
+	@Override
+	public String buildDataForCallBack() {
+		return new JSONObject()
+				.put(entityField.getName(), getValueStr()).toString();
+	}
 	
 }
