@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue;
+package com.balabas.smarthouse.server.entity.model.enabledvalue;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

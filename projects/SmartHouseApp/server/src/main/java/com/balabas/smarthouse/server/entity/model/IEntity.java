@@ -3,6 +3,7 @@ package com.balabas.smarthouse.server.entity.model;
 import java.util.Set;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 @SuppressWarnings("rawtypes")
 public interface IEntity extends IStateable, IItemAbstract {

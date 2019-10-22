@@ -14,9 +14,9 @@ import com.balabas.smarthouse.server.DeviceConstants;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
-import com.balabas.smarthouse.server.entity.model.IEntityFieldComButton;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.view.Action;
+import com.balabas.smarthouse.server.view.IEntityFieldComButton;
 
 import lombok.Getter;
 

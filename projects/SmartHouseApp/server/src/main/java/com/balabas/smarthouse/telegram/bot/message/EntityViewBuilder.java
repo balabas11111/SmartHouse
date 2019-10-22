@@ -20,14 +20,14 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.balabas.smarthouse.server.entity.model.EntityFieldComButton;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
-import com.balabas.smarthouse.server.entity.model.IEntityField;
-import com.balabas.smarthouse.server.entity.model.IEntityFieldComButton;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
-import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.IEntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.view.EntityFieldComButton;
+import com.balabas.smarthouse.server.view.IEntityFieldComButton;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 

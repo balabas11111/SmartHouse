@@ -1,8 +1,8 @@
-package com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue;
+package com.balabas.smarthouse.server.entity.model.enabledvalue;
 
-import com.balabas.smarthouse.server.entity.model.EntityField;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 
 @SuppressWarnings("rawtypes")
 public interface IEntityFieldEnabledValue<T> {

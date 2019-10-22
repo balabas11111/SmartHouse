@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue;
+package com.balabas.smarthouse.server.entity.model.enabledvalue;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -13,9 +13,9 @@ import javax.persistence.ManyToOne;
 
 import org.json.JSONObject;
 
-import com.balabas.smarthouse.server.entity.model.EntityField;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 
 import lombok.Getter;
 import lombok.Setter;

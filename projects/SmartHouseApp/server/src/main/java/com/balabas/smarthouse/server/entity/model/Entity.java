@@ -15,6 +15,8 @@ import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;

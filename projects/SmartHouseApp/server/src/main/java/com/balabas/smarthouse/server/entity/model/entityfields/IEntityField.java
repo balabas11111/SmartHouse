@@ -1,9 +1,11 @@
-package com.balabas.smarthouse.server.entity.model;
+package com.balabas.smarthouse.server.entity.model.entityfields;
 
 import java.util.Set;
 
+import com.balabas.smarthouse.server.entity.model.Entity;
+import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
-import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.IEntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.exception.BadValueException;
 
 @SuppressWarnings("rawtypes")

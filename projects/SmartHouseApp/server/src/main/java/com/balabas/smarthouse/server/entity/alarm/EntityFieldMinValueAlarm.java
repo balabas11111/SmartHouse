@@ -1,6 +1,6 @@
 package com.balabas.smarthouse.server.entity.alarm;
 
-import com.balabas.smarthouse.server.entity.model.IEntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 @SuppressWarnings("rawtypes")
 public class EntityFieldMinValueAlarm extends AlarmAbstractEntityFieldNumber {

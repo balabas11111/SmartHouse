@@ -16,4 +16,6 @@ public interface IItemAbstract {
 	Emoji getEmoji();
 	void setEmoji(Emoji emoji);
 	
+	void setDescriptionIfEmpty(String description);
+	
 }

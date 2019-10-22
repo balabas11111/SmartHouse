@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue;
+package com.balabas.smarthouse.server.entity.model.enabledvalue;
 
 import lombok.Getter;
 import lombok.Setter;

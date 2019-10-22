@@ -1,10 +1,11 @@
-package com.balabas.smarthouse.server.entity.model;
+package com.balabas.smarthouse.server.view;
 
 import java.util.Optional;
 
+import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
-import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.IEntityFieldEnabledValue;
-import com.balabas.smarthouse.server.view.Action;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 import lombok.Getter;
 

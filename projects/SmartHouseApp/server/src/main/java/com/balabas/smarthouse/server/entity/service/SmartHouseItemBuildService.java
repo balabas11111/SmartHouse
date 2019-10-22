@@ -48,37 +48,39 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassType;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
-import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValue;
-import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValueBoolean;
-import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValueFloat;
-import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValueInteger;
-import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValueIp;
-import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValueLong;
-import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValuePassword;
-import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValueString;
-import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.IEntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValueBoolean;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValueFloat;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValueInteger;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValueIp;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValueLong;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValuePassword;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValueString;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldBoolean;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldFloat;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldInteger;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldIp;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldLong;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldPassword;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldString;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
-import com.balabas.smarthouse.server.entity.model.EntityField;
-import com.balabas.smarthouse.server.entity.model.EntityFieldBoolean;
-import com.balabas.smarthouse.server.entity.model.EntityFieldFloat;
-import com.balabas.smarthouse.server.entity.model.EntityFieldInteger;
-import com.balabas.smarthouse.server.entity.model.EntityFieldIp;
-import com.balabas.smarthouse.server.entity.model.EntityFieldLong;
-import com.balabas.smarthouse.server.entity.model.EntityFieldPassword;
-import com.balabas.smarthouse.server.entity.model.EntityFieldString;
 import com.balabas.smarthouse.server.entity.model.EntityStatus;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IDevice;
-import com.balabas.smarthouse.server.entity.model.IEntityField;
 import com.balabas.smarthouse.server.entity.model.IGroup;
+import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.exception.BadValueException;
@@ -86,7 +88,7 @@ import com.balabas.smarthouse.server.model.request.DeviceRequest;
 
 import lombok.extern.log4j.Log4j2;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @Log4j2
 @Service
 public class SmartHouseItemBuildService {
@@ -98,18 +100,19 @@ public class SmartHouseItemBuildService {
 
 	@Autowired
 	IDeviceRepository deviceRepository;
-	
+
 	public Device buildDeviceFromRequest(DeviceRequest request) {
-		
+
 		String deviceDataUrl = getDeviceDataUrl(request);
-		
+
 		Device device = Optional.ofNullable(deviceRepository.findByName(request.getDeviceId())).orElse(new Device());
-		
+
 		Date registrationDate = Optional.ofNullable(device.getRegistrationDate()).orElse(new Date());
 
 		device.setName(request.getDeviceId());
 		device.setFirmware(request.getDeviceFirmware());
-		device.setDescription(request.getDeviceDescr());
+		
+		device.setDescriptionIfEmpty(request.getDeviceDescr());
 
 		device.setIp(request.getIp());
 		device.setDataUrl(deviceDataUrl);
@@ -120,7 +123,7 @@ public class SmartHouseItemBuildService {
 
 		return device;
 	}
-	
+
 	private static String getDeviceDataUrl(DeviceRequest request) {
 		String baseUrl = HTTP_PREFFIX + request.getIp();
 
@@ -139,7 +142,7 @@ public class SmartHouseItemBuildService {
 		if (!deviceDataUrl.startsWith(HTTP_PREFFIX)) {
 			deviceDataUrl = baseUrl + deviceDataUrl;
 		}
-		
+
 		return deviceDataUrl;
 	}
 
@@ -170,7 +173,7 @@ public class SmartHouseItemBuildService {
 				isOk = isOk && groupOk;
 			}
 		}
-		if(isOk) {
+		if (isOk) {
 			device.getTimer().setActionSuccess();
 		}
 		return isOk;
@@ -195,7 +198,7 @@ public class SmartHouseItemBuildService {
 				isOk = isOk && entityOk;
 			}
 		}
-		if(isOk) {
+		if (isOk) {
 			group.getTimer().setActionSuccess();
 		}
 		return isOk;
@@ -211,10 +214,10 @@ public class SmartHouseItemBuildService {
 					IEntityField entityField = entity.getEntityField(entityFieldName);
 					Object valueObj = entityJson.get(entityFieldName);
 
-					if(entity.getDescriptionField().equals(entityFieldName)) {
-						entity.setDescription(valueObj.toString());
+					if (entity.getDescriptionField().equals(entityFieldName)) {
+						entity.setDescriptionIfEmpty(valueObj.toString());
 					}
-					
+
 					if (entityField != null) {
 						setOk = setEntityFieldValueWithNoCheck(entityField, valueObj, setOk);
 					} else {
@@ -229,7 +232,7 @@ public class SmartHouseItemBuildService {
 
 		return setOk;
 	}
-	
+
 	private static boolean setEntityFieldValueWithNoCheck(IEntityField entityField, Object value, boolean setOk) {
 		try {
 			entityField.setValueWithNoCheck(value);
@@ -239,7 +242,7 @@ public class SmartHouseItemBuildService {
 			return false;
 		}
 	}
-	
+
 	private static void createEntityFieldValue(Entity entity, JSONObject entityJson, String entityFieldName) {
 		log.warn("New field " + entityFieldName + " entity = " + entity.getName() + " device = "
 				+ entity.getGroup().getDevice().getName());
@@ -250,7 +253,7 @@ public class SmartHouseItemBuildService {
 			log.error(e);
 		}
 	}
-	
+
 	public boolean processDeviceInfo(IDevice device, JSONObject deviceJson) {
 		if (deviceJson.has(DEVICE_FIELD_DEVICE)) {
 			JSONObject deviceDeviceJson = deviceJson.getJSONObject(DEVICE_FIELD_DEVICE);
@@ -261,19 +264,20 @@ public class SmartHouseItemBuildService {
 
 				String description = info.optString(ENTITY_DEVICE_DEVICE_DESCRIPTION, device.getDescription());
 				String firmware = info.optString(ENTITY_DEVICE_DEVICE_FIRMWARE, device.getFirmware());
-				Emoji emoji = Optional.ofNullable(Emoji.getByCode(info.optString(EDC_FIELD_EMOJI, null))).orElse(ItemType.DEVICE.getEmoji());
-				
-				boolean changed = !description.equals(device.getDescription())
-							|| !firmware.equals(device.getFirmware()) || ! emoji.equals(device.getEmoji());
-				
-				device.setDescription(description);
+				Emoji emoji = Optional.ofNullable(Emoji.getByCode(info.optString(EDC_FIELD_EMOJI, null)))
+						.orElse(ItemType.DEVICE.getEmoji());
+
+				boolean changed = !description.equals(device.getDescription()) || !firmware.equals(device.getFirmware())
+						|| !emoji.equals(device.getEmoji());
+
+				device.setDescriptionIfEmpty(description);
 				device.setFirmware(firmware);
 				device.setEmoji(emoji);
-				
+
 				return changed;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -312,7 +316,7 @@ public class SmartHouseItemBuildService {
 
 					group.setEmoji(groupEmoji);
 					group.setDevice(device);
-					group.setDescription(description);
+					group.setDescriptionIfEmpty(description);
 					group.setName(groupName);
 					group.setType(type);
 					group.setTimer(buildTimer(type));
@@ -334,8 +338,7 @@ public class SmartHouseItemBuildService {
 		}
 	}
 
-	public Set<Entity> buildEntitiesForGroup(Group group, JSONObject deviceJson)
-			throws BadValueException {
+	public Set<Entity> buildEntitiesForGroup(Group group, JSONObject deviceJson) throws BadValueException {
 		Set<Entity> entities = new LinkedHashSet<>();
 
 		JSONObject groupJson = deviceJson.optJSONObject(group.getName());
@@ -367,7 +370,7 @@ public class SmartHouseItemBuildService {
 
 		entity.setName(entityName);
 		entity.setGroup(group);
-		entity.setDescription(description);
+		entity.setDescriptionIfEmpty(description);
 		entity.setEmoji(emoji);
 		entity.setDescriptionField(descriptionField);
 		entity.setRemoteId(remoteId);
@@ -445,8 +448,8 @@ public class SmartHouseItemBuildService {
 
 	}
 
-	
-	private static EntityField buildEntityFieldFromJson(Entity entity, JSONObject entityJson, String fieldName) throws BadValueException {
+	private static EntityField buildEntityFieldFromJson(Entity entity, JSONObject entityJson, String fieldName)
+			throws BadValueException {
 		JSONObject descriptorJson = entityJson.optJSONObject(ENTITY_FIELD_SWG);
 		JSONObject allFieldsDecriptor = descriptorJson.optJSONObject(EDC_ENTITY_FIELDS);
 
@@ -455,9 +458,10 @@ public class SmartHouseItemBuildService {
 
 		String value = entityJson.optString(fieldName);
 
-		EntityFieldClassType fieldClassType = Optional.ofNullable(
-				EntityFieldClassType.from(fieldDecriptor.optString(EDC_CLASS, null))).orElse(EntityFieldClassType.STRING); 
-		
+		EntityFieldClassType fieldClassType = Optional
+				.ofNullable(EntityFieldClassType.from(fieldDecriptor.optString(EDC_CLASS, null)))
+				.orElse(EntityFieldClassType.STRING);
+
 		String name = fieldDecriptor.optString(EDC_FIELD_NAME, fieldName);
 		String description = fieldDecriptor.optString(EDC_FIELD_DESCRIPTION, EMPTY_STR);
 		EntityFieldClassView viewClass = EntityFieldClassView.from(fieldDecriptor.optString(EDC_CLASS_VIEW, null));
@@ -465,23 +469,24 @@ public class SmartHouseItemBuildService {
 		Emoji emoji = Emoji.getByCode(fieldDecriptor.optString(EDC_FIELD_EMOJI, null));
 
 		EntityField entityField = createEntityFieldByClass(fieldClassType);
-		
+
 		entityField.setEntity(entity);
 		entityField.setName(name);
-		entityField.setDescription(description);
+		entityField.setDescriptionIfEmpty(description);
 		entityField.setViewClass(viewClass);
 		entityField.setReadOnly(readOnly);
 		entityField.setEmoji(emoji);
 		entityField.setValueStr(value);
-		
-		Set<IEntityFieldEnabledValue> enabledValues = getEnabledFieldValues(fieldDecriptor, name, fieldClassType, entityField);
+
+		Set<IEntityFieldEnabledValue> enabledValues = getEnabledFieldValues(fieldDecriptor, name, fieldClassType,
+				entityField);
 		entityField.setEnabledValues(enabledValues);
 
 		return entityField;
 	}
 
-	private static Set<IEntityFieldEnabledValue> getEnabledFieldValues(JSONObject fieldDecriptor, String fieldName, EntityFieldClassType fieldClassType,
-			EntityField entityField) throws BadValueException {
+	private static Set<IEntityFieldEnabledValue> getEnabledFieldValues(JSONObject fieldDecriptor, String fieldName,
+			EntityFieldClassType fieldClassType, EntityField entityField) throws BadValueException {
 		if (fieldDecriptor.has(EDC_FIELD_ENABLED_VALUES)) {
 			JSONObject enabledFieldJson = fieldDecriptor.getJSONObject(EDC_FIELD_ENABLED_VALUES);
 
@@ -534,7 +539,7 @@ public class SmartHouseItemBuildService {
 			return new EntityFieldString();
 		}
 	}
-	
+
 	private static EntityFieldEnabledValue createEntityFieldEnabledValueByClass(EntityFieldClassType fieldClassType) {
 		if (EntityFieldClassType.BOOLEAN.equals(fieldClassType)) {
 			return new EntityFieldEnabledValueBoolean();
@@ -557,4 +562,5 @@ public class SmartHouseItemBuildService {
 		return (TRUE.equalsIgnoreCase(value) || HIGH.equalsIgnoreCase(value)
 				|| value != null && !value.isEmpty() && value.startsWith(HIGH));
 	}
+
 }

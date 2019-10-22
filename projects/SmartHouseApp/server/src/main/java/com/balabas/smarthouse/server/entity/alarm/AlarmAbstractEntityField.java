@@ -3,7 +3,7 @@ package com.balabas.smarthouse.server.entity.alarm;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import com.balabas.smarthouse.server.entity.model.IEntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 @SuppressWarnings("rawtypes")
 public abstract class AlarmAbstractEntityField<T> extends AlarmAbstract<IEntityField, T> implements IEntityFieldAlarm<T> {

@@ -1,15 +1,15 @@
-package com.balabas.smarthouse.server.entity.model;
+package com.balabas.smarthouse.server.entity.model.entityfields;
 
 import javax.persistence.Entity;
 
 import com.balabas.smarthouse.server.exception.BadValueException;
 
 @Entity
-public class EntityFieldPassword extends EntityField<String> implements IEntityField<String> {
+public class EntityFieldLong extends EntityField<Long> implements IEntityField<Long> {
 
 	@Override
 	public void setValueStr(String value) throws BadValueException {
-		this.value = value;
+		this.value = Long.valueOf(value);		
 	}
 
 }

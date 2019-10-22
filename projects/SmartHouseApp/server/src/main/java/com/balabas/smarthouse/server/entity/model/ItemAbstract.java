@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import org.springframework.util.StringUtils;
+
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 
 import lombok.Data;
@@ -21,4 +23,11 @@ public class ItemAbstract implements IItemAbstract {
 	protected String description;
 	@Enumerated(EnumType.STRING)
 	protected Emoji emoji;
+	
+	@Override
+	public void setDescriptionIfEmpty(String description) {
+		if (StringUtils.isEmpty(description)) {
+			setDescription(description);
+		}
+	}
 }
