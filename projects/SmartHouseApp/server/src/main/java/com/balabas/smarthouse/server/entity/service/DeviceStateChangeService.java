@@ -9,7 +9,7 @@ import com.balabas.smarthouse.server.entity.model.descriptor.Severity;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 
 import static com.balabas.smarthouse.server.DeviceMessageConstants.buildMessage;
-import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_REGISTERED;
+import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_RECONNECTED;
 import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_INITIALIZED;
 import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_DISCONNECTED;
 
@@ -63,10 +63,11 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 	}
 
 	private void onDeviceReRegistered(IDevice device) {
-		String message = buildMessage(MSG_DEVICE_REGISTERED, device.getDescription());
-		log.warn(message);
+		String message = buildMessage(MSG_DEVICE_RECONNECTED, device.getDescription());
 		alarmService.activateAlarms(device);
 		sender.sendMessageToAllUsers(Severity.WARN, message);
+		
+		log.warn(message);
 	}
 
 	private void onDeviceInitialDataReceived(IDevice device) {
@@ -75,11 +76,12 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 		alarmService.checkAlarmsSendNotifications(device);
 
 		String message = buildMessage(MSG_DEVICE_INITIALIZED, device.getDescription());
-		log.info(message);
 		
 		sender.sendMessageToAllUsers(Severity.INFO,  message);
 		device.setState(State.CONNECTED);
 		device.setInitialized(true);
+		
+		log.info(message);
 	}
 	
 	private void onDeviceDataUpdated(IDevice device){

@@ -3,9 +3,20 @@ package com.balabas.smarthouse.server.entity.model;
 import java.lang.reflect.ParameterizedType;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+
 import org.json.JSONObject;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
+import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.exception.BadValueException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -15,33 +26,38 @@ import lombok.ToString;
 
 @SuppressWarnings("rawtypes")
 @ToString(callSuper = true)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@javax.persistence.Entity
 public abstract class EntityField<T> extends ItemAbstract implements IEntityField<T> {
 
 	@Getter
 	@JsonIgnore
 	private Class clazz;
 
+	@Getter @Setter
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="entity_id", nullable=false)
+	private Entity entity;
+	
 	@Getter
+	@Transient
 	protected T value;
 
-	@Getter
-	@Setter
+	@Getter	@Setter
 	private String actionDescription;
 
-	@Getter
-	@Setter
+	@Getter	@Setter
 	protected boolean readOnly;
 
-	@Getter
-	@Setter
+	@Getter	@Setter
 	protected EntityFieldClassView viewClass;
 
-	@Getter
-	@Setter
-	protected Set<IEntityField<T>> enabledValues;
+	@Getter	@Setter
+	@JsonIgnore
+	@OneToMany(targetEntity = EntityFieldEnabledValue.class, mappedBy="entityField", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	protected Set<IEntityFieldEnabledValue<T>> enabledValues;
 
-	@Getter
-	@Setter
+	@Getter	@Setter
 	protected String templateName;
 
 	public EntityField() {
@@ -93,7 +109,7 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	}
 
 	@Override
-	public IEntityField getEnabledValueByCurrentValue() {
+	public IEntityFieldEnabledValue getEnabledValueByCurrentValue() {
 		if (enabledValues == null || enabledValues.isEmpty()) {
 			return null;
 		}

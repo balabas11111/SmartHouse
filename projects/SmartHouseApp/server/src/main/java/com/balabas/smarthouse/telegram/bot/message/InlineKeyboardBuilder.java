@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import com.balabas.smarthouse.server.DeviceConstants;
+import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IEntityFieldCommandButton;
@@ -67,7 +68,7 @@ public class InlineKeyboardBuilder {
         return markup;
     }
 	
-	public InlineKeyboardMarkup getDevicesOfServerInlineKeyboardView(List<IDevice> devices) {
+	public InlineKeyboardMarkup getDevicesOfServerInlineKeyboardView(List<Device> devices) {
 		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		
@@ -90,7 +91,7 @@ public class InlineKeyboardBuilder {
 		return markup;
 	}
 	
-	public InlineKeyboardMarkup getDevicesOfServerInlineKeyboardEdit(List<IDevice> devices) {
+	public InlineKeyboardMarkup getDevicesOfServerInlineKeyboardEdit(List<Device> devices) {
 		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		

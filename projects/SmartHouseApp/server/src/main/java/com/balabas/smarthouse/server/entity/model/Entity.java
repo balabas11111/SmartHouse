@@ -3,6 +3,16 @@ package com.balabas.smarthouse.server.entity.model;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -12,45 +22,43 @@ import lombok.EqualsAndHashCode;
 
 @SuppressWarnings("rawtypes")
 @Data
-@EqualsAndHashCode(callSuper = true)
-
+@EqualsAndHashCode(callSuper = true, exclude = "entityFields")
+@javax.persistence.Entity
 public class Entity extends ItemAbstract implements IEntity {
 
 	private int remoteId;
 	private String descriptionField;
 	private EntityClass renderer;
 
-	private String groupName;
-	private String deviceName;
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="group_id", nullable=false)
+	private Group group;
 	
+	@ElementCollection
 	private Set<String> grouppedFieldsIds;
+	@ElementCollection
 	private Set<String> grouppedFieldsNames;
+	@Transient
 	private Set<IEntityField> generatedFields;
 
 	@JsonIgnore
-	protected Set<IEntityField> children;
+	@OneToMany(targetEntity = EntityField.class, mappedBy = "entity", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	protected Set<IEntityField> entityFields;
 	
+	@Transient
 	private EntityStatus status;
+	
+	@Enumerated(EnumType.STRING)
 	private State state;
 
 	@Override
-	public IEntityField getField(String fieldName) {
-		return getChild(fieldName);
-	}
-
-	@Override
-	public Set<IEntityField> getEntityFields() {
-		return getChildren();
-	}
-
-	@Override
-	public void setEntityFields(Set<IEntityField> fields) {
-		setChildren(fields);
+	public IEntityField getEntityField(String entityFieldName) {
+		return getEntityFields().stream().filter( ef -> ef.getName().equalsIgnoreCase(entityFieldName)).findFirst().orElse(null);
 	}
 
 	@Override
 	public void addEntityField(IEntityField entityField) {
-		this.children = addEntityFieldWithCheck(this.children, entityField);
+		this.entityFields = addEntityFieldWithCheck(this.entityFields, entityField);
 	}
 
 	@Override

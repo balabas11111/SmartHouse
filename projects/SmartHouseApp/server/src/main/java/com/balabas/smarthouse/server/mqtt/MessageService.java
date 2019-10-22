@@ -89,11 +89,11 @@ public class MessageService implements InitializingBean, IMessageService {
 		if (!subscribers.contains(subscriber) && existing == null) {
 
 			subscribers.add(subscriber);
-			log.info("Subscriber registered " + message);
+			log.debug("Subscriber registered " + message);
 
 			existing = subscriber;
 		} else {
-			log.info("Subscriber updated " + message);
+			log.debug("Subscriber updated " + message);
 		}
 
 		subscribe(existing);

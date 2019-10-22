@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.balabas.smarthouse.server.entity.model.IEntity;
+import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.mqtt.IMessageService;
 import com.balabas.smarthouse.server.mqtt.subscribers.DataDeviceSubscribtion;
 import com.balabas.smarthouse.server.mqtt.subscribers.DataEntitySubscribtion;
@@ -41,7 +41,7 @@ public class DeviceMqService implements IDeviceMqService {
 	private IMessageService messageService;
 	
 	@Autowired
-	private IDeviceService deviceService;
+	private IDeviceManageService deviceService;
 
 	@Override
 	public boolean onRegistrationTopicMessageReceived(String message) {
@@ -111,17 +111,17 @@ public class DeviceMqService implements IDeviceMqService {
 		return messageService.publishToTopic(topicName, message);
 	}
 	
-	public void initTopicsToFromDeviceEntity(IEntity entity) {
+	public void initTopicsToFromDeviceEntity(Entity entity) {
 		subscribeFromDeviceEntityTopic(entity);
 		
-		publishToDeviceTopic(entity.getDeviceName(), 
+		publishToDeviceTopic(entity.getGroup().getDevice().getName(), 
 				new JSONObject()
 				.put(ENTITY_FIELD_ID, entity.getRemoteId())
 				.put(ENTITY_FIELD_STATUS, 200).toString());
 	}
 	
-	public void subscribeFromDeviceEntityTopic(IEntity entity) {
-		String topicName = messageService.getFromDeviceEntityTopicId(entity.getDeviceName(), entity.getName());
+	public void subscribeFromDeviceEntityTopic(Entity entity) {
+		String topicName = messageService.getFromDeviceEntityTopicId(entity.getGroup().getDevice().getName(), entity.getName());
 		messageService.registerSubscriberOrResubscribeExisting(new DataEntitySubscribtion(topicName, entity, this));
 	}
 
@@ -140,14 +140,14 @@ public class DeviceMqService implements IDeviceMqService {
 		return result;
 	}
 
-	public void onDeviceEntityDataReceived(IEntity entity, String message) {
+	public void onDeviceEntityDataReceived(Entity entity, String message) {
 		try {
 			JSONObject messageJson = new JSONObject(message);
 			
 			if(messageJson != null && !messageJson.isEmpty()) {
 				
 				JSONObject data = new JSONObject()
-						.put(entity.getGroupName(), 
+						.put(entity.getGroup().getName(), 
 								new JSONObject().put(entity.getName(), messageJson));
 				
 				log.debug("MQ Data received : " + data);

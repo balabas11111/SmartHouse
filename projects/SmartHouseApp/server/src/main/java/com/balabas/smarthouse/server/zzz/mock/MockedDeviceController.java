@@ -21,8 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.balabas.smarthouse.server.controller.ControllerConstants;
+import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
-import com.balabas.smarthouse.server.entity.service.IDeviceService;
+import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.io.Resources;
@@ -41,7 +42,7 @@ import static com.balabas.smarthouse.server.zzz.mock.ServerValuesMockUtil.getRan
 public class MockedDeviceController {
 
 	@Autowired
-	private IDeviceService deviceService;
+	private IDeviceManageService deviceService;
 	
 	@Autowired
 	private MockedDeviceService mockService;
@@ -49,7 +50,7 @@ public class MockedDeviceController {
 	boolean doAlert = false;
 
 	@GetMapping()
-	public List<IDevice> getAllDevices() {
+	public List<Device> getAllDevices() {
 		log.info("Get all devices=");
 		return deviceService.getDevices();
 	}

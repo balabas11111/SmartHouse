@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ import com.balabas.smarthouse.server.entity.alarm.IAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.IDevice;
-import com.balabas.smarthouse.server.entity.service.IDeviceService;
+import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
 import com.google.common.hash.Hashing;
@@ -63,7 +65,7 @@ public class MockedDeviceService implements InitializingBean {
 	private IEntityAlarmService alarmService;
 
 	@Autowired
-	private IDeviceService deviceService;
+	private IDeviceManageService deviceService;
 
 	@Autowired
 	private DeviceSecurityService secService;
@@ -85,11 +87,15 @@ public class MockedDeviceService implements InitializingBean {
 		log.info("-----Server context was started MockedDevice-----");
 		reqs = ServerValuesMockUtil.getDevicesMock(5);
 
+		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(reqs.size());
+		
 		reqs.stream().forEach(request -> {
-			sendIsOnlineRequest(request);
-			sendRegistrationRequest(request);
+			RegisterTask task = new RegisterTask(request, this);
+			executor.execute(task);
 		});
 
+		executor.shutdown();
+		initDone = true;
 	}
 
 	public void initAlarms() throws IOException {
@@ -99,11 +105,12 @@ public class MockedDeviceService implements InitializingBean {
 			DeviceRequest req = reqs.get(0);
 			IDevice device = deviceService.getManagedDeviceByName(req.getDeviceId());
 
-			String deviceName = device.getDeviceName();
+			if (device != null) {
+			String deviceName = device.getName();
 			String entityName = "bme280";
 			String entityFieldName = "t";
 
-			if (device != null) {
+			
 
 				IAlarm entityFieldAlarm = new EntityFieldMaxValueAlarm(entityFieldName, 31);
 
@@ -113,7 +120,9 @@ public class MockedDeviceService implements InitializingBean {
 				alarm.putAlarm(entityFieldAlarm);
 
 				alarmService.registerAlarm(alarm);
-				//alarmService.saveAlarms();
+				alarmService.activateAlarms(device);
+				
+				alarmRegistered = true;
 			}
 		}
 	}
@@ -128,10 +137,10 @@ public class MockedDeviceService implements InitializingBean {
 		} else {
 			if (!initDone) {
 				initMocks();
+			} else {
 				if (!alarmRegistered) {
 					initAlarms();
 				}
-				initDone = true;
 			}
 		}
 
@@ -143,7 +152,7 @@ public class MockedDeviceService implements InitializingBean {
 		}
 	}
 
-	private boolean sendIsOnlineRequest(DeviceRequest request) {
+	public boolean sendIsOnlineRequest(DeviceRequest request) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = ROOT + DEVICES_IS_SERVER_ONLINE_ROOT + "?deviceId=" + request.getDeviceId();
 
@@ -158,7 +167,7 @@ public class MockedDeviceService implements InitializingBean {
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean sendRegistrationRequest(DeviceRequest request) {
+	public boolean sendRegistrationRequest(DeviceRequest request) {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = ROOT + DEVICES_REGISTER_ROOT;
 

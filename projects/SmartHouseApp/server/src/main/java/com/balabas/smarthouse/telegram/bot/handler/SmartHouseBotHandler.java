@@ -13,7 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
-import com.balabas.smarthouse.server.entity.service.IDeviceService;
+import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.telegram.bot.AfterBotRegistration;
 import com.balabas.smarthouse.telegram.bot.message.ActionIdentity;
@@ -41,7 +41,7 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_NAME;
 public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 
 	@Autowired
-	IDeviceService deviceService;
+	IDeviceManageService deviceService;
 	
 	private Map<Long, Action> currentEditActions = new HashMap<>();
 

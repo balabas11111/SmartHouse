@@ -5,28 +5,30 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
-import com.balabas.smarthouse.server.entity.model.IDevice;
-import com.balabas.smarthouse.server.entity.model.IEntity;
-import com.balabas.smarthouse.server.entity.model.IGroup;
+import com.balabas.smarthouse.server.entity.model.Device;
+import com.balabas.smarthouse.server.entity.model.Entity;
+import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.view.Action;
 
-public interface IDeviceService {
+public interface IDeviceManageService {
 	
-	IDevice getManagedDeviceByName(String deviceName);
+	Device getManagedDevice(Device device);
 	
-	List<IDevice> getDevices();
+	Device getManagedDeviceByName(String deviceName);
 	
-	List<IDevice> getDevicesInitialized();
+	List<Device> getDevices();
 	
-	void processDataReceivedFromDevice(IDevice device, String deviceResponse);
+	List<Device> getDevicesInitialized();
 	
-	void processDataReceivedFromDevice(IDevice device, JSONObject data);
+	void processDataReceivedFromDevice(Device device, String deviceResponse);
 	
-	void processDataReceivedFromDevice(IEntity entity, JSONObject data);
+	void processDataReceivedFromDevice(Device device, JSONObject data);
+	
+	void processDataReceivedFromDevice(Entity entity, JSONObject data);
 
-	void requestDevicesValues(IDevice device, IGroup group);
+	void requestDevicesValues(Device device, Group group);
 
 	void processRegistrationRequest(DeviceRequest request);
 
@@ -36,9 +38,5 @@ public interface IDeviceService {
 
 	String sendDataToDevice(String deviceName, String groupName, String entityName, Map<String, Object> values)
 			throws ResourceNotFoundException;
-
-	
-
-	
 
 }

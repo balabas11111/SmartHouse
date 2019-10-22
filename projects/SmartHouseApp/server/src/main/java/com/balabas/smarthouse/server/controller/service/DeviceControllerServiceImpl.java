@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.entity.model.IDevice;
-import com.balabas.smarthouse.server.entity.service.IDeviceService;
+import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.exception.DeviceRequestValidateException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.model.request.DeviceRequestResult;
@@ -27,7 +27,7 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 	public static final String IS_ONLINE_MESSAGE = "{\"status\":\"ONLINE\"}";
 
 	@Autowired
-	private IDeviceService deviceService;
+	private IDeviceManageService deviceService;
 
 	@Autowired
 	private DeviceSecurityService securityService;

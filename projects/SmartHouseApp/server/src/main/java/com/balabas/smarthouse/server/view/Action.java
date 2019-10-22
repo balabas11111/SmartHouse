@@ -121,15 +121,15 @@ public class Action {
 	}
 	
 	public static Action fromDevice(String action, IDevice device, String data) {
-		return new Action(action, data, device.getDeviceName());
+		return new Action(action, data, device.getName());
 	}
 	
 	public static Action fromGroup(String action, IGroup group, String data) {
-		return new Action(action, data, group.getDeviceName(), group.getName());
+		return new Action(action, data, group.getDevice().getName(), group.getName());
 	}
 	
 	public static Action fromEntity(String action, IEntity entity, String data) {
-		return new Action(action, data, entity.getDeviceName(), entity.getGroupName(), entity.getName());
+		return new Action(action, data, entity.getGroup().getDevice().getName(), entity.getGroup().getName(), entity.getName());
 	}
 	
 	public static Action fromColumnList(String...cols) {
@@ -149,7 +149,7 @@ public class Action {
 	}
 	
 	public static String callback(String actionName, String data, IEntity entity) {
-		return (Action.fromColumnList(actionName, data, entity.getDeviceName(), entity.getGroupName(), entity.getName())).getCallbackData();
+		return (Action.fromColumnList(actionName, data, entity.getGroup().getDevice().getName(), entity.getGroup().getName(), entity.getName())).getCallbackData();
 	}
 	
 	public static String callback(String...cols) {

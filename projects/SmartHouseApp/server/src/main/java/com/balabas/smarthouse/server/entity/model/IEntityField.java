@@ -3,6 +3,7 @@ package com.balabas.smarthouse.server.entity.model;
 import java.util.Set;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
+import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.exception.BadValueException;
 
 @SuppressWarnings("rawtypes")
@@ -22,8 +23,11 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	boolean isReadOnly();
 	void setReadOnly(boolean readOnly);
 	
-	Set<IEntityField<T>> getEnabledValues();
-	void setEnabledValues(Set<IEntityField<T>> enabledValues);
+	Entity getEntity();
+	void setEntity(Entity entity);
+	
+	Set<IEntityFieldEnabledValue<T>> getEnabledValues();
+	void setEnabledValues(Set<IEntityFieldEnabledValue<T>> enabledValues);
 	
 	EntityFieldClassView getViewClass();
 	void setViewClass(EntityFieldClassView viewClass);
@@ -35,7 +39,7 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 
 	void setValueWithNoCheck(T value) throws BadValueException;
 	
-	IEntityField getEnabledValueByCurrentValue();
+	IEntityFieldEnabledValue getEnabledValueByCurrentValue();
 	
 	String buildDataForCallBack();
 

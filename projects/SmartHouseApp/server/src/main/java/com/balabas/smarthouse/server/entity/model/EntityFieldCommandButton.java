@@ -25,7 +25,7 @@ public class EntityFieldCommandButton implements IEntityFieldCommandButton {
 		this.entity = entity;
 		this.entityField = entityField;
 		
-		String deviceName = entity.getDeviceName();
+		String deviceName = entity.getGroup().getDevice().getName();
 		String groupName = "";//entity.getGroupName();
 		String entityId = Integer.toString(entity.getRemoteId());//entity.getName();
 		

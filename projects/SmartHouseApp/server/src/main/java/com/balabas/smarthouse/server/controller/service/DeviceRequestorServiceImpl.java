@@ -42,10 +42,10 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 						? Collections.singletonMap(DEVICE_FIELD_GROUP, groupName)
 						: Collections.emptyMap();
 
-				String serverKey = securityService.getServerKey(device.getDeviceName());		
+				String serverKey = securityService.getServerKey(device.getName());		
 				
 				if(serverKey == null) {
-					log.error("Empty Server key " + device.getDeviceName());
+					log.error("Empty Server key " + device.getName());
 					return null;
 				}
 				
@@ -62,7 +62,7 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 				}
 
 			} else {
-				log.error("Empty data url deviceId=" + device.getDeviceName());
+				log.error("Empty data url deviceId=" + device.getName());
 			}
 		}
 
@@ -89,7 +89,7 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey(device.getName()));
 		
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
-		map.add(DEVICE_FIELD_GROUP, entity.getGroupName());
+		map.add(DEVICE_FIELD_GROUP, entity.getGroup().getName());
 		map.add(DEVICE_FIELD_ENTITY_NAME, entity.getName());
 		
 		values.entrySet().stream().forEach(e->map.add(e.getKey(), e.getValue()));

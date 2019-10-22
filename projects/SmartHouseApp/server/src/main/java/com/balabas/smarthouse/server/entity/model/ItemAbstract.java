@@ -1,7 +1,9 @@
 package com.balabas.smarthouse.server.entity.model;
 
-import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
@@ -13,12 +15,10 @@ import lombok.Data;
 @MappedSuperclass
 public class ItemAbstract implements IItemAbstract {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	protected Long id = 0L;
-	@Column
 	protected String name;
-	@Column
 	protected String description;
-	@Column
+	@Enumerated(EnumType.STRING)
 	protected Emoji emoji;
 }

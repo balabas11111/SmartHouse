@@ -3,11 +3,14 @@ package com.balabas.smarthouse.server.entity.model;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import javax.persistence.Entity;
+
 import com.balabas.smarthouse.server.exception.BadValueException;
 
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
+@Entity
 public class EntityFieldIp extends EntityField<InetAddress> implements IEntityField<InetAddress> {
 
 	@Override

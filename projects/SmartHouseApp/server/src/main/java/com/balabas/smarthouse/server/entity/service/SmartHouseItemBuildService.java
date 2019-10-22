@@ -34,6 +34,7 @@ import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassC
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ import java.util.stream.IntStream;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
@@ -52,8 +54,19 @@ import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassTyp
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
+import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValueBoolean;
+import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValueFloat;
+import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValueInteger;
+import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValueIp;
+import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValueLong;
+import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValuePassword;
+import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.EntityFieldEnabledValueString;
+import com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue.IEntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
+import com.balabas.smarthouse.server.entity.model.EntityField;
 import com.balabas.smarthouse.server.entity.model.EntityFieldBoolean;
 import com.balabas.smarthouse.server.entity.model.EntityFieldFloat;
 import com.balabas.smarthouse.server.entity.model.EntityFieldInteger;
@@ -64,7 +77,6 @@ import com.balabas.smarthouse.server.entity.model.EntityFieldString;
 import com.balabas.smarthouse.server.entity.model.EntityStatus;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IDevice;
-import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IEntityField;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
@@ -84,15 +96,32 @@ public class SmartHouseItemBuildService {
 
 	private static List<String> notParsedAsEntityNames = Arrays.asList(ENTITY_FIELD_DESCRIPTION, EDC_FIELD_EMOJI);
 
-	public IDevice buildDeviceFromRequest(DeviceRequest request) {
-		Device device = new Device();
+	@Autowired
+	IDeviceRepository deviceRepository;
+	
+	public Device buildDeviceFromRequest(DeviceRequest request) {
+		
+		String deviceDataUrl = getDeviceDataUrl(request);
+		
+		Device device = Optional.ofNullable(deviceRepository.findByName(request.getDeviceId())).orElse(new Device());
+		
+		Date registrationDate = Optional.ofNullable(device.getRegistrationDate()).orElse(new Date());
 
 		device.setName(request.getDeviceId());
 		device.setFirmware(request.getDeviceFirmware());
 		device.setDescription(request.getDeviceDescr());
 
 		device.setIp(request.getIp());
+		device.setDataUrl(deviceDataUrl);
+		device.setRegistrationDate(registrationDate);
+		device.setState(State.CONSTRUCTED);
 
+		device.setTimer(buildTimer(ItemType.DEVICE));
+
+		return device;
+	}
+	
+	private static String getDeviceDataUrl(DeviceRequest request) {
 		String baseUrl = HTTP_PREFFIX + request.getIp();
 
 		String deviceDataUrl = DEVICE_URL_DATA;
@@ -110,13 +139,8 @@ public class SmartHouseItemBuildService {
 		if (!deviceDataUrl.startsWith(HTTP_PREFFIX)) {
 			deviceDataUrl = baseUrl + deviceDataUrl;
 		}
-
-		device.setDataUrl(deviceDataUrl);
-		device.setState(State.CONSTRUCTED);
-
-		device.setTimer(buildTimer(ItemType.DEVICE));
-
-		return device;
+		
+		return deviceDataUrl;
 	}
 
 	private static ActionTimer buildTimer(ItemType itemType) {
@@ -156,7 +180,7 @@ public class SmartHouseItemBuildService {
 		boolean isOk = true;
 		for (String entityName : JSONObject.getNames(groupJson)) {
 
-			IEntity entity = group.getEntity(entityName);
+			Entity entity = group.getEntity(entityName);
 			JSONObject entityJson = groupJson.optJSONObject(entityName);
 
 			if (entity != null && entityJson != null && !entityJson.isEmpty()) {
@@ -177,7 +201,7 @@ public class SmartHouseItemBuildService {
 		return isOk;
 	}
 
-	private boolean updateEntityValuesFromJson(IEntity entity, JSONObject entityJson) {
+	private boolean updateEntityValuesFromJson(Entity entity, JSONObject entityJson) {
 		boolean setOk = true;
 
 		for (String entityFieldName : JSONObject.getNames(entityJson)) {
@@ -216,18 +240,18 @@ public class SmartHouseItemBuildService {
 		}
 	}
 	
-	private static void createEntityFieldValue(IEntity entity, JSONObject entityJson, String entityFieldName) {
+	private static void createEntityFieldValue(Entity entity, JSONObject entityJson, String entityFieldName) {
 		log.warn("New field " + entityFieldName + " entity = " + entity.getName() + " device = "
-				+ entity.getDeviceName());
+				+ entity.getGroup().getDevice().getName());
 		try {
-			IEntityField field = buildEntityFieldFromJson(entityJson, entityFieldName);
+			EntityField field = buildEntityFieldFromJson(entity, entityJson, entityFieldName);
 			entity.getEntityFields().add(field);
 		} catch (BadValueException e) {
 			log.error(e);
 		}
 	}
 	
-	public void processDeviceInfo(IDevice device, JSONObject deviceJson) {
+	public boolean processDeviceInfo(IDevice device, JSONObject deviceJson) {
 		if (deviceJson.has(DEVICE_FIELD_DEVICE)) {
 			JSONObject deviceDeviceJson = deviceJson.getJSONObject(DEVICE_FIELD_DEVICE);
 
@@ -235,40 +259,44 @@ public class SmartHouseItemBuildService {
 				JSONObject info = Optional.ofNullable(deviceDeviceJson.getJSONObject(DEVICE_FIELD_DEVICE_INFO))
 						.orElse(new JSONObject());
 
-				device.setDescription(info.optString(ENTITY_DEVICE_DEVICE_DESCRIPTION, device.getDescription()));
-				device.setFirmware(info.optString(ENTITY_DEVICE_DEVICE_FIRMWARE, device.getFirmware()));
-
-				if (!info.has(EDC_FIELD_EMOJI)) {
-					device.setEmoji(ItemType.DEVICE.getEmoji());
-				} else {
-					String emojiStr = info.optString(EDC_FIELD_EMOJI, ItemType.DEVICE.getEmoji().getCode());
-
-					device.setEmoji(Emoji.getByCode(emojiStr));
-				}
+				String description = info.optString(ENTITY_DEVICE_DEVICE_DESCRIPTION, device.getDescription());
+				String firmware = info.optString(ENTITY_DEVICE_DEVICE_FIRMWARE, device.getFirmware());
+				Emoji emoji = Optional.ofNullable(Emoji.getByCode(info.optString(EDC_FIELD_EMOJI, null))).orElse(ItemType.DEVICE.getEmoji());
+				
+				boolean changed = !description.equals(device.getDescription())
+							|| !firmware.equals(device.getFirmware()) || ! emoji.equals(device.getEmoji());
+				
+				device.setDescription(description);
+				device.setFirmware(firmware);
+				device.setEmoji(emoji);
+				
+				return changed;
 			}
 		}
+		
+		return false;
 	}
 
-	public boolean buildDeviceFromJson(IDevice device, JSONObject deviceJson) {
-		Set<IGroup> groups = buildGroupsFromJson(device.getName(), deviceJson);
+	public boolean buildDeviceFromJson(Device device, JSONObject deviceJson) {
+		Set<Group> groups = buildGroupsFromJson(device, deviceJson);
 		boolean initOk = !groups.isEmpty();
 
 		if (initOk) {
-			for (IGroup group : groups) {
-				Set<IEntity> entities = buildEntitiesForGroup(group, deviceJson);
+			for (Group group : groups) {
+				Set<Entity> entities = buildEntitiesForGroupNoEx(group, deviceJson);
 
-				group.setChildren(entities);
+				group.setEntities(entities);
 				initOk = initOk && !entities.isEmpty();
 			}
 		}
 
-		device.setChildren(groups);
+		device.setGroups(groups);
 
 		return initOk;
 	}
 
-	public Set<IGroup> buildGroupsFromJson(String deviceName, JSONObject deviceJson) {
-		Set<IGroup> groups = new LinkedHashSet<>();
+	public Set<Group> buildGroupsFromJson(Device device, JSONObject deviceJson) {
+		Set<Group> groups = new LinkedHashSet<>();
 
 		for (String groupName : JSONObject.getNames(deviceJson)) {
 			if (!DEVICE_FIELD_DEVICE.equals(groupName)) {
@@ -280,10 +308,10 @@ public class SmartHouseItemBuildService {
 					String emojiDescr = deviceJson.getJSONObject(groupName).optString(EDC_FIELD_EMOJI, null);
 					Emoji groupEmoji = (emojiDescr != null) ? Emoji.getByCode(emojiDescr) : type.getEmoji();
 
-					IGroup group = new Group();
+					Group group = Optional.ofNullable(device.getGroup(groupName)).orElse(new Group());
 
 					group.setEmoji(groupEmoji);
-					group.setDeviceName(deviceName);
+					group.setDevice(device);
 					group.setDescription(description);
 					group.setName(groupName);
 					group.setType(type);
@@ -297,24 +325,24 @@ public class SmartHouseItemBuildService {
 		return groups;
 	}
 
-	public Set<IEntity> buildEntitiesForGroup(IGroup group, JSONObject deviceJson) {
+	public Set<Entity> buildEntitiesForGroupNoEx(Group group, JSONObject deviceJson) {
 		try {
-			return buildEntitiesForGroup(deviceJson, group.getDeviceName(), group.getName());
+			return buildEntitiesForGroup(group, deviceJson);
 		} catch (BadValueException e) {
 			log.error(e);
 			return Collections.emptySet();
 		}
 	}
 
-	public Set<IEntity> buildEntitiesForGroup(JSONObject deviceJson, String deviceName, String groupName)
+	public Set<Entity> buildEntitiesForGroup(Group group, JSONObject deviceJson)
 			throws BadValueException {
-		Set<IEntity> entities = new LinkedHashSet<>();
+		Set<Entity> entities = new LinkedHashSet<>();
 
-		JSONObject groupJson = deviceJson.optJSONObject(groupName);
+		JSONObject groupJson = deviceJson.optJSONObject(group.getName());
 
 		for (String entityName : JSONObject.getNames(groupJson)) {
 			if (!notParsedAsEntityNames.contains(entityName)) {
-				IEntity entity = buildEntityFromJson(groupJson, deviceName, groupName, entityName);
+				Entity entity = buildEntityFromJson(group, groupJson, entityName);
 				entities.add(entity);
 			}
 		}
@@ -322,8 +350,7 @@ public class SmartHouseItemBuildService {
 		return entities;
 	}
 
-	public IEntity buildEntityFromJson(JSONObject groupJson, String deviceName, String groupName,
-			String entityName) throws BadValueException {
+	public Entity buildEntityFromJson(Group group, JSONObject groupJson, String entityName) throws BadValueException {
 
 		JSONObject entityJson = groupJson.optJSONObject(entityName);
 		JSONObject descriptorJson = Optional.ofNullable(entityJson.optJSONObject(ENTITY_FIELD_SWG))
@@ -336,18 +363,17 @@ public class SmartHouseItemBuildService {
 		EntityClass renderer = EntityClass.getByKey(
 				entityJson.optString(ENTITY_FIELD_ITEM_CLASS, descriptorJson.optString(ENTITY_FIELD_ITEM_CLASS, "")));
 
-		IEntity entity = new Entity();
+		Entity entity = new Entity();
 
 		entity.setName(entityName);
-		entity.setDeviceName(deviceName);
-		entity.setGroupName(groupName);
+		entity.setGroup(group);
 		entity.setDescription(description);
 		entity.setEmoji(emoji);
 		entity.setDescriptionField(descriptionField);
 		entity.setRemoteId(remoteId);
 		entity.setRenderer(renderer);
 
-		Set<IEntityField> children = new LinkedHashSet<>();
+		Set<IEntityField> entityFields = new LinkedHashSet<>();
 
 		for (String fieldName : JSONObject.getNames(entityJson)) {
 			if (ENTITY_FIELD_STATUS.equals(fieldName)) {
@@ -355,17 +381,17 @@ public class SmartHouseItemBuildService {
 			} else if (ENTITY_FIELD_SENSOR_ITEMS.equals(fieldName)) {
 				processGrouppedValues(entity, entityJson);
 			} else if (!ENTITY_FIELD_SWG.equals(fieldName) && !ENTITY_FIELD_ITEM_CLASS.equals(fieldName)) {
-				IEntityField field = buildEntityFieldFromJson(entityJson, fieldName);
-				children.add(field);
+				EntityField field = buildEntityFieldFromJson(entity, entityJson, fieldName);
+				entityFields.add(field);
 			}
 		}
 
-		entity.setChildren(children);
+		entity.setEntityFields(entityFields);
 
 		return entity;
 	}
 
-	private static void processEntityStatus(IEntity entity, JSONObject entityJson) {
+	private static void processEntityStatus(Entity entity, JSONObject entityJson) {
 		JSONObject statusJson = entityJson.optJSONObject(ENTITY_FIELD_STATUS);
 		if (statusJson != null) {
 			int stat = entityJson.optInt(EDC_FIELD_ID, 1);
@@ -375,7 +401,7 @@ public class SmartHouseItemBuildService {
 		}
 	}
 
-	private static void processGrouppedValues(IEntity entity, JSONObject entityJson) {
+	private static void processGrouppedValues(Entity entity, JSONObject entityJson) {
 		JSONObject sensorItemsJson = entityJson.getJSONObject(ENTITY_FIELD_SENSOR_ITEMS);
 
 		log.debug("sensorItemsJson : " + sensorItemsJson);
@@ -420,7 +446,7 @@ public class SmartHouseItemBuildService {
 	}
 
 	
-	private static IEntityField buildEntityFieldFromJson(JSONObject entityJson, String fieldName) throws BadValueException {
+	private static EntityField buildEntityFieldFromJson(Entity entity, JSONObject entityJson, String fieldName) throws BadValueException {
 		JSONObject descriptorJson = entityJson.optJSONObject(ENTITY_FIELD_SWG);
 		JSONObject allFieldsDecriptor = descriptorJson.optJSONObject(EDC_ENTITY_FIELDS);
 
@@ -438,28 +464,28 @@ public class SmartHouseItemBuildService {
 		boolean readOnly = booleanFromString(fieldDecriptor.optString(EDC_READ_ONLY, FALSE));
 		Emoji emoji = Emoji.getByCode(fieldDecriptor.optString(EDC_FIELD_EMOJI, null));
 
-		Set<IEntityField> enabledValues = getEnabledFieldValues(fieldDecriptor, name, fieldClassType, viewClass);
-
-		IEntityField entityField = createEntityFieldByClass(fieldClassType);
-
+		EntityField entityField = createEntityFieldByClass(fieldClassType);
+		
+		entityField.setEntity(entity);
 		entityField.setName(name);
 		entityField.setDescription(description);
 		entityField.setViewClass(viewClass);
 		entityField.setReadOnly(readOnly);
 		entityField.setEmoji(emoji);
 		entityField.setValueStr(value);
+		
+		Set<IEntityFieldEnabledValue> enabledValues = getEnabledFieldValues(fieldDecriptor, name, fieldClassType, entityField);
 		entityField.setEnabledValues(enabledValues);
 
 		return entityField;
 	}
 
-	private static Set<IEntityField> getEnabledFieldValues(JSONObject fieldDecriptor, String fieldName, EntityFieldClassType fieldClassType,
-			EntityFieldClassView parentViewClass) throws BadValueException {
+	private static Set<IEntityFieldEnabledValue> getEnabledFieldValues(JSONObject fieldDecriptor, String fieldName, EntityFieldClassType fieldClassType,
+			EntityField entityField) throws BadValueException {
 		if (fieldDecriptor.has(EDC_FIELD_ENABLED_VALUES)) {
 			JSONObject enabledFieldJson = fieldDecriptor.getJSONObject(EDC_FIELD_ENABLED_VALUES);
 
-			Set<IEntityField> enabledValues = new LinkedHashSet<>();
-			long id = 0;
+			Set<IEntityFieldEnabledValue> enabledValues = new LinkedHashSet<>();
 
 			for (Entry<String, Object> entry : enabledFieldJson.toMap().entrySet()) {
 				String enabledValueStr = entry.getKey();
@@ -470,20 +496,18 @@ public class SmartHouseItemBuildService {
 				String actionDescription = enabledValueBody.getOrDefault(EDC_FIELD_ACTION_DESCR, null);
 				Emoji emoji = Emoji.getByCode(enabledValueBody.getOrDefault(EDC_FIELD_EMOJI, null));
 				EntityFieldClassView viewClass = EntityFieldClassView
-						.from(enabledValueBody.getOrDefault(EDC_CLASS_VIEW, parentViewClass.getKey()));
+						.from(enabledValueBody.getOrDefault(EDC_CLASS_VIEW, entityField.getViewClass().getKey()));
 
-				IEntityField enabledValue = createEntityFieldByClass(fieldClassType);
-				enabledValue.setId(id);
-				enabledValue.setName(fieldName);
+				IEntityFieldEnabledValue enabledValue = createEntityFieldEnabledValueByClass(fieldClassType);
+				enabledValue.setEntityField(entityField);
 				enabledValue.setDescription(description);
-				enabledValue.setViewClass(viewClass);
 				enabledValue.setActionDescription(actionDescription);
 				enabledValue.setEmoji(emoji);
 				enabledValue.setValueStr(enabledValueStr);
+				enabledValue.setViewClass(viewClass);
 
 				enabledValues.add(enabledValue);
 
-				id++;
 			}
 
 			return enabledValues;
@@ -493,7 +517,7 @@ public class SmartHouseItemBuildService {
 
 	}
 
-	private static IEntityField createEntityFieldByClass(EntityFieldClassType fieldClassType) {
+	private static EntityField createEntityFieldByClass(EntityFieldClassType fieldClassType) {
 		if (EntityFieldClassType.BOOLEAN.equals(fieldClassType)) {
 			return new EntityFieldBoolean();
 		} else if (EntityFieldClassType.INTEGER.equals(fieldClassType)) {
@@ -508,6 +532,24 @@ public class SmartHouseItemBuildService {
 			return new EntityFieldPassword();
 		} else {
 			return new EntityFieldString();
+		}
+	}
+	
+	private static EntityFieldEnabledValue createEntityFieldEnabledValueByClass(EntityFieldClassType fieldClassType) {
+		if (EntityFieldClassType.BOOLEAN.equals(fieldClassType)) {
+			return new EntityFieldEnabledValueBoolean();
+		} else if (EntityFieldClassType.INTEGER.equals(fieldClassType)) {
+			return new EntityFieldEnabledValueInteger();
+		} else if (EntityFieldClassType.FLOAT.equals(fieldClassType)) {
+			return new EntityFieldEnabledValueFloat();
+		} else if (EntityFieldClassType.LONG.equals(fieldClassType)) {
+			return new EntityFieldEnabledValueLong();
+		} else if (EntityFieldClassType.IP.equals(fieldClassType)) {
+			return new EntityFieldEnabledValueIp();
+		} else if (EntityFieldClassType.PASSWORD.equals(fieldClassType)) {
+			return new EntityFieldEnabledValuePassword();
+		} else {
+			return new EntityFieldEnabledValueString();
 		}
 	}
 

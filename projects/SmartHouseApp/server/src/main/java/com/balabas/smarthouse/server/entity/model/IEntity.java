@@ -5,10 +5,10 @@ import java.util.Set;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 
 @SuppressWarnings("rawtypes")
-public interface IEntity extends IStateable, IItemContainer<IEntityField> {
+public interface IEntity extends IStateable, IItemAbstract {
 
-	IEntityField getField(String fieldName);
 	Set<IEntityField> getEntityFields();
+	void setEntityFields(Set<IEntityField> fields);
 	
 	Set<IEntityField> getGeneratedFields();
 	
@@ -30,17 +30,11 @@ public interface IEntity extends IStateable, IItemContainer<IEntityField> {
 	EntityStatus getStatus();
 	void setStatus(EntityStatus status);
 	
-	String getGroupName();
-	void setGroupName(String groupName);
+	Group getGroup();
+	void setGroup(Group group);
 	
-	String getDeviceName();
-	void setDeviceName(String deviceName);
+	IEntityField getEntityField(String entityFieldName);
 	
-	void setEntityFields(Set<IEntityField> fields);
-	
-	default IEntityField getEntityField(String entityFieldName) {
-		return getChild(entityFieldName);
-	}
 	void addEntityField(IEntityField entityField);
 	void addGeneratedField(IEntityField entityField);
 }

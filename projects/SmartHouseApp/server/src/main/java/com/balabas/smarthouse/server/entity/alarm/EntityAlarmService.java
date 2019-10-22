@@ -105,7 +105,7 @@ public class EntityAlarmService implements IEntityAlarmService, InitializingBean
 
 	@Override
 	public List<IEntityAlarm> getActiveEntityAlarms(IDevice device) {
-		return alarms.stream().filter(a -> a.getDevice().equals(device) && device.getEntities().contains(a.getEntity()))
+		return alarms.stream().filter(a -> a.getDeviceName().equals(device.getName()) && device.getEntity(a.getEntityName()) != null)
 				.collect(Collectors.toList());
 	}
 
@@ -141,7 +141,7 @@ public class EntityAlarmService implements IEntityAlarmService, InitializingBean
 			al.setEntity(e);
 
 			al.getAlarms().forEach(a -> {
-				IEntityField field = e.getField(a.getName());
+				IEntityField field = e.getEntityField(a.getName());
 				if (a.acceptsAsWatched(field)) {
 					a.setWatchedItem(field);
 				}
@@ -156,7 +156,7 @@ public class EntityAlarmService implements IEntityAlarmService, InitializingBean
 
 	@Override
 	public void checkAlarms(IDevice device) {
-		log.debug("check Alarms " + device.getDeviceName());
+		log.debug("check Alarms " + device.getName());
 		getActiveEntityAlarms(device).stream().forEach(IEntityAlarm::check);
 	}
 
@@ -183,7 +183,7 @@ public class EntityAlarmService implements IEntityAlarmService, InitializingBean
 
 		if (!alarmsWithStarted.isEmpty()) {
 			
-			log.debug("AlarmsStarted "+device.getDeviceName() + " total =" + alarmsWithStarted.size());
+			log.debug("AlarmsStarted "+device.getName() + " total =" + alarmsWithStarted.size());
 
 			StringBuilder buf = new StringBuilder(buildMessage(MSG_DEVICE_ALARM_STARTED, device));
 			buf.append("\n\n");
@@ -211,7 +211,7 @@ public class EntityAlarmService implements IEntityAlarmService, InitializingBean
 		List<IEntityAlarm> alarmsWithFinished = getAlarmsWithAlarmFinished(device);
 
 		if (!alarmsWithFinished.isEmpty()) {
-			log.debug("AlarmsFinished "+device.getDeviceName() + " total =" + alarmsWithFinished.size());
+			log.debug("AlarmsFinished "+device.getName() + " total =" + alarmsWithFinished.size());
 
 			StringBuilder buf = new StringBuilder(buildMessage(MSG_DEVICE_ALARM_FINISHED, device));
 			buf.append("\n\n");

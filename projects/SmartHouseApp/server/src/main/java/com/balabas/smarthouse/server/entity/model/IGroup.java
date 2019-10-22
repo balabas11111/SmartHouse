@@ -2,13 +2,14 @@ package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Set;
 
-public interface IGroup extends IItemTypeable, IUpdateable, IItemContainer<IEntity> {
+public interface IGroup extends IItemTypeable, IUpdateable, IItemAbstract {
 
-	public Set<IEntity> getEntities();
-	void setEntities(Set<IEntity> entities);
+	Device getDevice();
+	void setDevice(Device device);
 	
-	default IEntity getEntity(String entityName) {
-		return getChild(entityName);
-	}
+	public Set<Entity> getEntities();
+	void setEntities(Set<Entity> entities);
+	
+	Entity getEntity(String entityName);
 	
 }

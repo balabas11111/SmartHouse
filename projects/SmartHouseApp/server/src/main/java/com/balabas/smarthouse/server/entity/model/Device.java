@@ -1,14 +1,19 @@
 package com.balabas.smarthouse.server.entity.model;
 
+import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import javax.persistence.CascadeType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -16,66 +21,66 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-@Entity
+@EqualsAndHashCode(callSuper = true, exclude = "groups")
 @Table(name="device")
-public class Device extends ItemContainer<IGroup> implements IDevice {
+@javax.persistence.Entity
+public class Device extends ItemAbstract implements IDevice {
 
-	@Column
 	private String firmware;
-	
-	@Column
 	private String ip;
-	@Column
 	private String dataUrl;
+	
+	@Enumerated(EnumType.STRING)
+	private State state;
+	
+	private Date registrationDate;
+	
+	@JsonIgnore
+	@OneToMany(mappedBy="device", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	protected Set<Group> groups;
+	
+	@Transient
+	private boolean initialized;
 	
 	@JsonIgnore
 	@Transient
 	private ActionTimer timer;
 	
-	private State state;
-	
-	private boolean initialized;
-	
-	@JsonIgnore
-	@Override
-	public String getDeviceName() {
-		return getName();
+	public Device() {
+		this.timer = new ActionTimer(ItemType.DEVICE.getRefreshInterval());
 	}
 	
 	@Override
-	public Set<IGroup> getGroups(){
-		return getChildren();
+	public Group getGroup(String groupName) {
+		if(getGroups() == null) {
+			return null;
+		}
+		return getGroups().stream().filter( g -> g.getName().equalsIgnoreCase(groupName)).findFirst().orElse(null);
 	}
 	
 	@Override
-	public Set<IEntity> getEntities() {
+	public Set<Entity> getEntities() {
 		return getGroups().stream().flatMap( group -> group.getEntities().stream())
 				.collect(Collectors.toSet());
 	}
 
 	@Override
-	public void setDeviceName(String deviceName) {
-		setName(deviceName);
+	public Entity getEntity(String entityName) {
+		return getGroups().stream().flatMap(group -> group.getEntities().stream()).filter( e -> e.getName().equals(entityName)).findFirst().orElse(null);
+	}
+
+	@Override
+	public Entity getEntity(int remoteId) {
+		return getGroups().stream().flatMap(group -> group.getEntities().stream()).filter( e -> e.getRemoteId() == remoteId).findFirst().orElse(null);
 	}
 
 	@Override
 	public boolean isRegistered() {
 		return state!=null && state.compareTo(State.REGISTERED) >= 0;
 	}
-
+	
 	@Override
-	public IEntity getEntity(String entityName) {
-		return getGroups().stream().flatMap(group -> group.getEntities().stream()).filter( e -> e.getName().equals(entityName)).findFirst().orElse(null);
-	}
-
-	@Override
-	public IEntity getEntity(int remoteId) {
-		return getGroups().stream().flatMap(group -> group.getEntities().stream()).filter( e -> e.getRemoteId() == remoteId).findFirst().orElse(null);
-	}
-
-	@Override
-	public IDevice update(IDevice device) {
+	public Device update(Device device) {
 		this.firmware = device.getFirmware();
 		this.description = device.getDescription();
 		this.ip = device.getIp();

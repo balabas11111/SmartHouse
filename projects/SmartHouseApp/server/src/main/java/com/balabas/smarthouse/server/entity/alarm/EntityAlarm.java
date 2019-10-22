@@ -3,6 +3,8 @@ package com.balabas.smarthouse.server.entity.alarm;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.Id;
+
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
@@ -15,6 +17,10 @@ import lombok.Setter;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class EntityAlarm implements IEntityAlarm {
 
+	@Id
+	@Getter	@Setter
+	private Long id;
+	
 	@JsonIgnore
 	@Getter	@Setter
 	private IDevice device;
@@ -42,7 +48,8 @@ public class EntityAlarm implements IEntityAlarm {
 	boolean singleAlarmMessage;
 	
 	//true = alarmMessage, false = finishedMessage, null - nothing
-	Boolean sendMessage;
+	boolean sendAlarmStartedMessage = false;
+	boolean sendAlarmFinishedMessage = false;
 
 	@Override
 	public void putAlarm(IAlarm entityFieldAlarm) {
@@ -64,10 +71,12 @@ public class EntityAlarm implements IEntityAlarm {
 		alarmed = alarms.stream().map(IAlarm::check).reduce(Boolean::logicalOr).orElse(false);
 
 		if( alarmed && !timer.isActionForced()){
-			sendMessage = true;
+			sendAlarmStartedMessage = true;
+			sendAlarmFinishedMessage = false;
 			timer.update(0, true);
 		} else if(!alarmed && timer.isActionForced()) {
-			sendMessage = false;
+			sendAlarmStartedMessage = false;
+			sendAlarmFinishedMessage = true;
 			timer.update(0, true);
 		}
 		
@@ -78,21 +87,21 @@ public class EntityAlarm implements IEntityAlarm {
 	@Override
 	public boolean isAlarmStarted() {
 		//need to send alarm started message
-		return timer.isForcedAndTimeToExecute() && Boolean.TRUE.equals(sendMessage);
+		return timer.isForcedAndTimeToExecute() && sendAlarmStartedMessage;
 	}
 	
 	@JsonIgnore
 	@Override
 	public boolean isAlarmFinished() {
 		//need to send alarm finished message
-		return timer.isForcedAndTimeToExecute() && Boolean.FALSE.equals(sendMessage);
+		return timer.isForcedAndTimeToExecute() && sendAlarmFinishedMessage;
 	}
 	
 	@Override
 	public void setAlarmStartedSent(boolean notified) {
 		if(notified) {
 			if(singleAlarmMessage) {
-				sendMessage = null;
+				sendAlarmStartedMessage = true;
 			} else {
 				timer.update(timer.getInterval(), true);
 			}
@@ -102,7 +111,7 @@ public class EntityAlarm implements IEntityAlarm {
 	@Override
 	public void setAlarmFinishedSent(boolean notified) {
 		if(notified) {
-			sendMessage = null;
+			sendAlarmFinishedMessage = true;
 			timer.setActionForced(false);
 		}
 	}

@@ -2,7 +2,7 @@ package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Set;
 
-public interface IDevice extends IStateable, IUpdateable, IItemContainer<IGroup> {
+public interface IDevice extends IStateable, IUpdateable, IItemAbstract {
 
 	String getFirmware();
 	void setFirmware(String firmware);
@@ -11,18 +11,18 @@ public interface IDevice extends IStateable, IUpdateable, IItemContainer<IGroup>
 	boolean isInitialized();
 	void setInitialized(boolean initialized);
 
-	Set<IGroup> getGroups();
-	Set<IEntity> getEntities();
+	Set<Group> getGroups();
+	void setGroups(Set<Group> groups);
+	Set<Entity> getEntities();
 	
 	String getIp();
 	String getDataUrl();
 	
-	IEntity getEntity(String entityName);
-	IEntity getEntity(int remoteId);
+	Group getGroup(String groupName);
 	
-	IDevice update(IDevice device);
+	Entity getEntity(String entityName);
+	Entity getEntity(int remoteId);
 	
-	default IGroup getGroup(String groupName) {
-		return getChild(groupName);
-	}
+	Device update(Device device);
+	
 }

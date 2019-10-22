@@ -13,13 +13,14 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRem
 
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
+import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IEntityField;
 import com.balabas.smarthouse.server.entity.model.IEntityFieldCommandButton;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
-import com.balabas.smarthouse.server.entity.service.IDeviceService;
+import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.view.Action;
 import com.google.common.collect.Lists;
 
@@ -31,7 +32,7 @@ import lombok.Getter;
 public class SendMessageBuilder {
 
 	@Autowired
-	private IDeviceService deviceService;
+	private IDeviceManageService deviceService;
 
 	@Autowired
 	private IEntityAlarmService entityAlarmService;
@@ -80,7 +81,7 @@ public class SendMessageBuilder {
 
 	public List<SendMessage> createDevicesListView(String serverName, ReplyContext cont) {
 		List<SendMessage> msgs = Lists.newArrayList();
-		List<IDevice> devices = deviceService.getDevicesInitialized();
+		List<Device> devices = deviceService.getDevicesInitialized();
 
 		cont.setText((devices.isEmpty()) ? String.format(BotMessageConstants.NO_DEVICE_MSG, Emoji.WARNING)
 				: String.format(BotMessageConstants.SERVER_SELECT_DEVICE_VIEW_MSG, Emoji.OUTBOX_TRAY, serverName));
@@ -91,7 +92,7 @@ public class SendMessageBuilder {
 	}
 	
 	public SendMessage createDevicesListEdit(String serverName, ReplyContext cont) {
-		List<IDevice> devices = deviceService.getDevicesInitialized();
+		List<Device> devices = deviceService.getDevicesInitialized();
 
 		cont.setText((devices.isEmpty()) ? String.format(BotMessageConstants.NO_DEVICE_MSG, Emoji.WARNING)
 				: String.format(BotMessageConstants.SERVER_SELECT_DEVICE_EDIT_MSG, Emoji.OUTBOX_TRAY, serverName));

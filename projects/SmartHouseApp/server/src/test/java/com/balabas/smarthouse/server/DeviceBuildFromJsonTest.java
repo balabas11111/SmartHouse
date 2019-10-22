@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
 import com.balabas.smarthouse.server.entity.model.Device;
-import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.service.SmartHouseItemBuildService;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -27,7 +26,7 @@ public class DeviceBuildFromJsonTest {
 		
 		JSONObject deviceJson = new JSONObject(text);
 		
-		IDevice device = new Device(); 
+		Device device = new Device(); 
 		boolean initOk = buildservice.buildDeviceFromJson(device, deviceJson);
 		
 		Assert.assertTrue("Initialization failed", initOk);
