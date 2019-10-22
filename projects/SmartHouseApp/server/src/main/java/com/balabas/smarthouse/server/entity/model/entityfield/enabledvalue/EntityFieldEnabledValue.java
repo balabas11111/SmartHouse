@@ -9,7 +9,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import com.balabas.smarthouse.server.entity.model.IEntityField;
+import com.balabas.smarthouse.server.entity.model.EntityField;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
 
@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @SuppressWarnings("rawtypes")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @javax.persistence.Entity
 public abstract class EntityFieldEnabledValue<T> implements IEntityFieldEnabledValue<T> {
 
@@ -27,11 +27,8 @@ public abstract class EntityFieldEnabledValue<T> implements IEntityFieldEnabledV
 	
 	@Getter @Setter
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name="group_id", nullable=false)
-	protected IEntityField entityField;
-	
-	@Getter @Setter
-	protected T value;
+	@JoinColumn(name="entity_field_id", nullable=false)
+	protected EntityField entityField;
 	
 	@Getter @Setter
 	private String description;

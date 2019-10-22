@@ -1,8 +1,14 @@
 package com.balabas.smarthouse.server.entity.model.entityfield.enabledvalue;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @javax.persistence.Entity
 public class EntityFieldEnabledValueBoolean extends EntityFieldEnabledValue<Boolean> implements IEntityFieldEnabledValue<Boolean> {
 
+	@Getter @Setter
+	protected Boolean value;
+	
 	@Override
 	public void setValueStr(String value) {
 		Boolean val = null;

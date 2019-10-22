@@ -5,12 +5,17 @@ import java.net.UnknownHostException;
 
 import com.balabas.smarthouse.server.exception.BadValueException;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @javax.persistence.Entity
 public class EntityFieldEnabledValueIp extends EntityFieldEnabledValue<InetAddress> implements IEntityFieldEnabledValue<InetAddress> {
 
+	@Getter @Setter
+	protected InetAddress value;
+	
 	@Override
 	public void setValueStr(String value) {
 		try {

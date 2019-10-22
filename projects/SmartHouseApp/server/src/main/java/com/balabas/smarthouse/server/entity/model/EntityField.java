@@ -44,9 +44,6 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	protected T value;
 
 	@Getter	@Setter
-	private String actionDescription;
-
-	@Getter	@Setter
 	protected boolean readOnly;
 
 	@Getter	@Setter
@@ -55,7 +52,7 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	@Getter	@Setter
 	@JsonIgnore
 	@OneToMany(targetEntity = EntityFieldEnabledValue.class, mappedBy="entityField", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	protected Set<IEntityFieldEnabledValue<T>> enabledValues;
+	protected Set<IEntityFieldEnabledValue> enabledValues;
 
 	@Getter	@Setter
 	protected String templateName;

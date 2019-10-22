@@ -14,9 +14,6 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	T getValue();
 	void setValue(T value) throws BadValueException;
 	
-	String getActionDescription();
-	void setActionDescription(String actionDescription);
-	
 	String getTemplateName();
 	void setTemplateName(String templateName);
 	
@@ -26,8 +23,8 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	Entity getEntity();
 	void setEntity(Entity entity);
 	
-	Set<IEntityFieldEnabledValue<T>> getEnabledValues();
-	void setEnabledValues(Set<IEntityFieldEnabledValue<T>> enabledValues);
+	Set<IEntityFieldEnabledValue> getEnabledValues();
+	void setEnabledValues(Set<IEntityFieldEnabledValue> enabledValues);
 	
 	EntityFieldClassView getViewClass();
 	void setViewClass(EntityFieldClassView viewClass);
