@@ -96,7 +96,7 @@ public:
 
 protected:
 #ifndef SENSORS_MOCKED
-	DHT* dht;
+	DHT* dht = nullptr;;
 #else
 	DHT22Mock* dht;
 #endif

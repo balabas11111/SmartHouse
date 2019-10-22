@@ -23,16 +23,14 @@
 #include "Emoji.h"
 #include <DeviceConfig.h>
 
-
-//---------------------------------------
-#define BH1750 "bh1750"
 #define BH1750_DESCRIPTION "Light level"
+#define BH1750_NAME "bh1750"
 
 #define BH1750_LUX "l"
 
 class Bh1750sensor: public Entity, public EntityUpdate {
 public:
-	Bh1750sensor(char* description = (char*)BH1750_DESCRIPTION, const char* name = BH1750) :
+	Bh1750sensor(char* description = (char*)BH1750_DESCRIPTION, const char* name = BH1750_NAME) :
 			Entity(GROUP_SENSORS, name, description) {
 	}
 
@@ -70,7 +68,7 @@ public:
 
 protected:
 #ifndef SENSORS_MOCKED
-	BH1750* lightMeter;
+	BH1750* lightMeter = nullptr;
 #else
 	Bh1750Mock* lightMeter = nullptr;
 #endif

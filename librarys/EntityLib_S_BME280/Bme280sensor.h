@@ -81,7 +81,7 @@ public:
 
 protected:
 #ifndef SENSORS_MOCKED
-	Adafruit_BME280* bme;
+	Adafruit_BME280* bme = nullptr;
 #else
 	Bme280Mock* bme = nullptr;
 #endif

@@ -196,6 +196,7 @@ const char* WiFiServerManager::getContentType(String& path) {
 }
 
 bool WiFiServerManager::authenticateRequest(const char* method){
+	UNUSED(method);
 #ifdef REQUEST_SECURITY_DISABLED
 	return true;
 #else
