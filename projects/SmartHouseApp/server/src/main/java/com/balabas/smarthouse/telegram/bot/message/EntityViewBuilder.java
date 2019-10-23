@@ -26,8 +26,7 @@ import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
-import com.balabas.smarthouse.server.view.EntityFieldComButton;
-import com.balabas.smarthouse.server.view.IEntityFieldComButton;
+import com.balabas.smarthouse.server.view.Action;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
@@ -135,7 +134,7 @@ public class EntityViewBuilder {
 				group.getEmoji().toString(), group.getDescription());
 	}
 	
-	public static List<IEntityFieldComButton> getCommandButtonsForGroup(String actionName, IGroup group) {
+	public static List<Action> getCommandButtonsForGroup(String actionName, IGroup group) {
 		if(group == null || group.getEntities().isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -145,9 +144,9 @@ public class EntityViewBuilder {
 				.collect(Collectors.toList());
 	}
 	
-	public static List<IEntityFieldComButton> getCommandButtonsForEntity(String actionName, IEntity entity) {
+	public static List<Action> getCommandButtonsForEntity(String actionName, IEntity entity) {
 		return getEnabledEntityFieldWithCommandsForEntity(entity)
-				.stream().map( ef -> new EntityFieldComButton(actionName, ef))
+				.stream().map( ef -> Action.fromEntityFieldEnabledValue(actionName, ef))
 				.collect(Collectors.toList());
 	}
 
@@ -172,9 +171,9 @@ public class EntityViewBuilder {
 				.collect(Collectors.toList());
 	}
 
-	public static List<IEntityFieldComButton> getCommandButtonsForEntity(String actionName, IEntity entity, IEntityField entityField) {
+	public static List<Action> getCommandButtonsForEntity(String actionName, IEntity entity, IEntityField entityField) {
 		return getCommandsForEntityField(entityField)
-				.stream().map( ef -> new EntityFieldComButton(actionName, ef))
+				.stream().map( ef -> Action.fromEntityFieldEnabledValue(actionName, ef))
 				.collect(Collectors.toList());
 	}
 	

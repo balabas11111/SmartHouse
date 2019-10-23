@@ -3,6 +3,8 @@ package com.balabas.smarthouse.server.entity.model.enabledvalue;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import javax.persistence.Column;
+
 import com.balabas.smarthouse.server.exception.BadValueException;
 
 import lombok.Getter;
@@ -14,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 public class EntityFieldEnabledValueIp extends EntityFieldEnabledValue<InetAddress> implements IEntityFieldEnabledValue<InetAddress> {
 
 	@Getter @Setter
+	@Column(name = "valueIp")
 	protected InetAddress value;
 	
 	@Override

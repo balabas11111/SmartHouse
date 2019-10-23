@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.server.entity.model.enabledvalue;
 
+import javax.persistence.Column;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +9,7 @@ import lombok.Setter;
 public class EntityFieldEnabledValueLong extends EntityFieldEnabledValue<Long> implements IEntityFieldEnabledValue<Long> {
 
 	@Getter @Setter
+	@Column(name = "valueLong")
 	protected Long value;
 	
 	@Override

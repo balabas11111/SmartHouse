@@ -17,7 +17,7 @@ import lombok.Data;
 @MappedSuperclass
 public class ItemAbstract implements IItemAbstract {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected Long id = 0L;
 	protected String name;
 	protected String description;
@@ -26,7 +26,7 @@ public class ItemAbstract implements IItemAbstract {
 	
 	@Override
 	public void setDescriptionIfEmpty(String description) {
-		if (StringUtils.isEmpty(description)) {
+		if (StringUtils.isEmpty(this.description)) {
 			setDescription(description);
 		}
 	}

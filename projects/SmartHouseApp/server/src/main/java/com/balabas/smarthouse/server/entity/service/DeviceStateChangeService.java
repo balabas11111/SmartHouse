@@ -9,9 +9,13 @@ import com.balabas.smarthouse.server.entity.model.descriptor.Severity;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 
 import static com.balabas.smarthouse.server.DeviceMessageConstants.buildMessage;
+
+import java.util.function.Consumer;
+
 import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_RECONNECTED;
 import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_INITIALIZED;
 import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_DISCONNECTED;
+import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_BACK_FROM_DISCONNECT;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -33,33 +37,44 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 		if (oldState != null && !oldState.equals(newState)) {
 
 			setNewState = true;
+			
+			Consumer<IDevice> function = this::emptyAction;
 
-			if (State.REREGISTERED.equals(newState)) {
+			if( State.DISCONNECTED.equals(oldState) && State.UPDATED.equals(newState)) {
 				
-				onDeviceReRegistered(device);
+				function = this::onDeviceBackFromDisconnect;
+				
+			} else if (State.REREGISTERED.equals(newState)) {
+				
+				function = this::onDeviceReRegistered;
 				
 			} else if (State.INIT_DATA_RECEIVED.equals(newState)) {
 				
-				onDeviceInitialDataReceived(device);
+				function = this::onDeviceInitialDataReceived;
 				
 			} else if (State.UPDATED.equals(newState)) {
 				
-				onDeviceDataUpdated(device);
+				function = this::onDeviceDataUpdated;
 				
 			} else if (State.DISCONNECTED.equals(newState) && !State.TIMED_OUT.equals(oldState)) {
 				
-				onDeviceDisconnected(device);
+				function = this::onDeviceDisconnected;
 
 			} else if (State.TIMED_OUT.equals(newState) && !State.DISCONNECTED.equals(oldState)) {
 				// device data is too old
-			}
-
+			} 
+			
+			function.accept(device);
 		}
 
 		if (setNewState) {
 			device.setState(newState);
 		}
 
+	}
+	
+	private void emptyAction(IDevice device) {
+		log.debug("Empty action on " + device.getName());
 	}
 
 	private void onDeviceReRegistered(IDevice device) {
@@ -80,6 +95,15 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 		sender.sendMessageToAllUsers(Severity.INFO,  message);
 		device.setState(State.CONNECTED);
 		device.setInitialized(true);
+		
+		log.info(message);
+	}
+	
+	private void onDeviceBackFromDisconnect(IDevice device) {
+		String message = buildMessage(MSG_DEVICE_BACK_FROM_DISCONNECT, device.getDescription());
+		sender.sendMessageToAllUsers(Severity.INFO,  message);
+		
+		onDeviceDataUpdated(device);
 		
 		log.info(message);
 	}

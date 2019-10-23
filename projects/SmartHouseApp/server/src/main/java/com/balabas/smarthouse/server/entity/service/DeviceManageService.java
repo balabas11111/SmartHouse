@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -20,18 +21,23 @@ import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IUpdateable;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
+import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
+import com.balabas.smarthouse.server.entity.repository.IEntityRepository;
 import com.balabas.smarthouse.server.entity.repository.IGroupRepository;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
-import com.balabas.smarthouse.server.view.Action;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
-public class DeviceManageService implements IDeviceManageService {
+@SuppressWarnings({ "rawtypes", "unchecked" })
+public class DeviceManageService implements IDeviceManageService, InitializingBean {
 
 	@Autowired
 	DeviceRequestorService deviceRequestor;
@@ -44,13 +50,33 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Autowired
 	IDeviceRepository deviceRepository;
-	
+
 	@Autowired
 	IGroupRepository groupRepository;
+	
+	@Autowired
+	IEntityRepository entityRepository;
+	
+	@Autowired
+	IEntityFieldRepository entityFieldRepository;
 
 	@Getter
 	private List<Device> devices = new ArrayList<>();
 
+	@Override
+	@Transactional
+	public void afterPropertiesSet() throws Exception {
+		/*
+		deviceRepository.findAll().forEach(d ->{
+			d.setState(State.CONSTRUCTED);
+			devices.add(d);
+			deviceRepository.save(d);
+		}); 
+		
+		log.info("---Loaded persisted devices---");
+		*/
+	}
+	
 	@Override
 	public List<Device> getDevicesInitialized() {
 		return devices.stream().filter(Device::isInitialized).collect(Collectors.toList());
@@ -63,9 +89,49 @@ public class DeviceManageService implements IDeviceManageService {
 	}
 
 	@Override
-	public Device getManagedDevice(Device device) {
-		return this.devices.stream().filter(d -> d.getName().equals(device.getName())).map(d -> (Device) d).findFirst()
-				.orElse(null);
+	public Device getManagedDevice(Device dev) {
+		for(Device device : devices) {
+			if (device.getName().equals(dev.getName())) {
+				return device;
+			}
+		}
+			
+		return null;
+	}
+
+	@Override
+	public Device getDeviceById(Long id) {
+		for(Device device : devices) {
+			if (id.equals(device.getId())) {
+				return device;
+			}
+		}
+			
+		return null;
+	}
+
+	@Override
+	public Group getGroupById(Long id) {
+		return this.devices.stream().flatMap(d -> d.getGroups().stream()).filter(g -> id.equals(g.getId())).findFirst().orElse(null);
+	}
+
+	@Override
+	public Entity getEntityById(Long id) {
+		return this.devices.stream().flatMap(d -> d.getGroups().stream()).flatMap(g -> g.getEntities().stream())
+				.filter(e -> id.equals(e.getId())).findFirst().orElse(null);
+	}
+
+	@Override
+	public IEntityField getEntityFieldById(Long id) {
+		return this.devices.stream().flatMap(d -> d.getGroups().stream()).flatMap(g -> g.getEntities().stream())
+				.flatMap(e -> e.getEntityFields().stream()).filter(e -> id.equals(e.getId())).findFirst().orElse(null);
+	}
+
+	@Override
+	public IEntityFieldEnabledValue getEntityFieldEnabledValueById(Long id) {
+		return (IEntityFieldEnabledValue) this.devices.stream().flatMap(d -> d.getGroups().stream()).flatMap(g -> g.getEntities().stream())
+				.flatMap(e -> e.getEntityFields().stream()).flatMap(ef -> ef.getEnabledValues().stream())
+				.filter(e -> id.equals(((IEntityFieldEnabledValue) e).getId())).findFirst().orElse(null);
 	}
 
 	@Override
@@ -75,7 +141,7 @@ public class DeviceManageService implements IDeviceManageService {
 
 		Device device = getManagedDevice(deviceFromRequest);
 
-		if (device == null) {
+		if (device == null || !device.isInitialized()) {
 			// register device
 			device = deviceFromRequest;
 			devices.add(device);
@@ -91,8 +157,8 @@ public class DeviceManageService implements IDeviceManageService {
 		}
 
 		//deviceRepository.updateDeviceState(device.getId(), device.getState());
-		deviceRepository.save(device);
-
+		save(device);
+				
 		device.getTimer().setActionForced(true);
 	}
 
@@ -119,6 +185,8 @@ public class DeviceManageService implements IDeviceManageService {
 	@Transactional
 	public void processDataReceivedFromDevice(Device device, JSONObject deviceJson) {
 		boolean doSave = false;
+		
+		//Device device = getDeviceById(dev.getId());
 
 		try {
 			doSave = itemBuildService.processDeviceInfo(device, deviceJson);
@@ -140,6 +208,8 @@ public class DeviceManageService implements IDeviceManageService {
 
 				State newState = (ok) ? State.UPDATED : State.BAD_DATA;
 				stateChanger.stateChanged(device, newState);
+				
+				doSave = false;
 			}
 		} catch (Exception e) {
 			log.error(e);
@@ -147,9 +217,7 @@ public class DeviceManageService implements IDeviceManageService {
 		}
 
 		if (doSave) {
-			deviceRepository.save(device);
-			
-			
+			save(device);
 		}
 	}
 
@@ -214,35 +282,6 @@ public class DeviceManageService implements IDeviceManageService {
 	}
 
 	@Override
-	public void processDeviceAction(Action action) throws ResourceNotFoundException {
-		log.debug("Action received :" + action.getCallbackData());
-		Map<String, Object> params = (new JSONObject(action.getData())).toMap();
-
-		String deviceName = action.getDeviceId();
-		String groupName = action.getGroupId();
-		String entityName = action.getEntityId();
-
-		if (groupName == null || groupName.isEmpty()) {
-			Device device = getManagedDeviceByName(action.getDeviceId());
-
-			try {
-				Integer entityRemoteId = Integer.valueOf(entityName);
-				IEntity entity = device.getEntity(entityRemoteId);
-
-				groupName = entity.getGroup().getName();
-				entityName = entity.getName();
-
-				action.setGroupId(groupName);
-				action.setEntityId(entityName);
-			} catch (Exception e) {
-				groupName = device.getEntity(action.getEntityId()).getGroup().getName();
-			}
-		}
-
-		sendDataToDevice(deviceName, groupName, entityName, params);
-	}
-
-	@Override
 	public String sendDataToDevice(String deviceName, String groupName, String entityName, Map<String, Object> values)
 			throws ResourceNotFoundException {
 
@@ -259,6 +298,34 @@ public class DeviceManageService implements IDeviceManageService {
 
 		return result;
 
+	}
+	
+	@Transactional
+	private void save(Device device) {
+		device.setId(deviceRepository.save(device).getId());
+		
+		if(device.getGroups()!=null && !device.getGroups().isEmpty()) {
+			for(Group group : device.getGroups()) {
+				
+				group.setId(groupRepository.save(group).getId());
+				
+				if(group.getEntities()!=null && !group.getEntities().isEmpty()) {
+					
+					for(Entity entity : group.getEntities()) {
+						entity.setId(entityRepository.save(entity).getId());
+						
+						if(entity.getEntityFields()!=null && !entity.getEntityFields().isEmpty()) {
+							
+							for(IEntityField entityField : entity.getEntityFields()) {
+								
+								entityField.setId(entityFieldRepository.save((EntityField) entityField).getId());
+							}
+						}
+					}
+				}
+				
+			}
+		}
 	}
 
 }

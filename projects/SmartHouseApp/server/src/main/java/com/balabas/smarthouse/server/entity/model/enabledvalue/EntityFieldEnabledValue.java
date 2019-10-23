@@ -26,7 +26,8 @@ import lombok.Setter;
 public abstract class EntityFieldEnabledValue<T> implements IEntityFieldEnabledValue<T> {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Getter
 	Long id;
 	
 	@Getter @Setter

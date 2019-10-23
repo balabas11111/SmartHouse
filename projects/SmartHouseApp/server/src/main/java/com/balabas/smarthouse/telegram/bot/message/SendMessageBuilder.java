@@ -1,8 +1,10 @@
 package com.balabas.smarthouse.telegram.bot.message;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.util.Strings;
 import org.json.JSONObject;
@@ -17,11 +19,12 @@ import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
+import com.balabas.smarthouse.server.entity.model.ItemAbstract;
+import com.balabas.smarthouse.server.entity.model.ItemAbstractByDescriptionComparator;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.view.Action;
-import com.balabas.smarthouse.server.view.IEntityFieldComButton;
 import com.google.common.collect.Lists;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_NAME;
@@ -49,6 +52,8 @@ public class SendMessageBuilder {
 
 	@Autowired
 	private ItemTextHelper itemTextHelper;
+	
+	Comparator<ItemAbstract> itemAbstractComparator = new ItemAbstractByDescriptionComparator();
 
 	public List<SendMessage> createServerStartedMessages(Long chatId, String serverName) {
 		List<SendMessage> msgs = Lists.newArrayList();
@@ -78,10 +83,15 @@ public class SendMessageBuilder {
 	public SendMessage createRefreshDevicesListReplyKeyboard(Long chatId, String text) {
 		return ReplyContext.createMsg(replyKeyboard.getMainMenuReplyKeyboard(), null, chatId, text, true);
 	}
+	
+	public List<Device> getDevices() {
+		return deviceService.getDevicesInitialized()
+		.stream().sorted(itemAbstractComparator).collect(Collectors.toList());
+	}
 
 	public List<SendMessage> createDevicesListView(String serverName, ReplyContext cont) {
 		List<SendMessage> msgs = Lists.newArrayList();
-		List<Device> devices = deviceService.getDevicesInitialized();
+		List<Device> devices = getDevices();
 
 		cont.setText((devices.isEmpty()) ? String.format(BotMessageConstants.NO_DEVICE_MSG, Emoji.WARNING)
 				: String.format(BotMessageConstants.SERVER_SELECT_DEVICE_VIEW_MSG, Emoji.OUTBOX_TRAY, serverName));
@@ -92,7 +102,7 @@ public class SendMessageBuilder {
 	}
 	
 	public SendMessage createDevicesListEdit(String serverName, ReplyContext cont) {
-		List<Device> devices = deviceService.getDevicesInitialized();
+		List<Device> devices = getDevices();
 
 		cont.setText((devices.isEmpty()) ? String.format(BotMessageConstants.NO_DEVICE_MSG, Emoji.WARNING)
 				: String.format(BotMessageConstants.SERVER_SELECT_DEVICE_EDIT_MSG, Emoji.OUTBOX_TRAY, serverName));
@@ -105,7 +115,7 @@ public class SendMessageBuilder {
 	}
 
 	public SendMessage createGroupsOfDeviceInlineKeyboard(Action action, ReplyContext cont) {
-		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceId());
+		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceName());
 
 		cont.setText(String.format(BotMessageConstants.SELECT_GROUP_MSG, Emoji.OUTBOX_TRAY, device.getDescription(),
 				device.getFirmware()));
@@ -128,7 +138,7 @@ public class SendMessageBuilder {
 	}
 	
 	public SendMessage getEntitiesOfDeviceToEdit(Action action, ReplyContext cont) {
-		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceId());
+		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceName());
 
 		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECT_ENTITY,
 				Emoji.GEAR, device.getDescription());
@@ -139,8 +149,8 @@ public class SendMessageBuilder {
 	}
 	
 	public SendMessage getFieldsOfDeviceToEdit(Action action, ReplyContext cont) {
-		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceId());
-		IEntity entity = device.getEntity(action.getEntityId());
+		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceName());
+		IEntity entity = device.getEntity(action.getEntityName());
 
 		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECT_FIELD,
 				Emoji.GEAR, device.getDescription());
@@ -151,8 +161,8 @@ public class SendMessageBuilder {
 	}
 	
 	public SendMessage getFieldToEdit(Action action, ReplyContext context) {
-		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceId());
-		IEntity entity = device.getEntity(action.getEntityId());
+		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceName());
+		IEntity entity = device.getEntity(action.getEntityName());
 
 		String fieldName = new JSONObject(action.getData()).getString(ACTION_DATA_FIELD_NAME);
 		
@@ -168,16 +178,16 @@ public class SendMessageBuilder {
 	public List<SendMessage> createGroupView(Action action, ReplyContext context) {
 		List<SendMessage> result = Lists.newArrayList();
 
-		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceId());
+		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceName());
 		if (device != null) {
-			IGroup group = device.getGroup(action.getGroupId());
+			IGroup group = device.getGroup(action.getGroupName());
 
 			StringBuilder builder = new StringBuilder();
 
 			itemRendererBuilder.buildDeviceGroupHeaderView(device, group, builder);
 
 			group.getEntities().stream()//.filter(e -> EntityClass.DEFAULT.equals(e.getRenderer()))
-					.sorted((e1, e2) -> e1.getDescription().compareToIgnoreCase(e2.getDescription()))
+					.sorted(itemAbstractComparator)
 					.forEach(ent -> itemRendererBuilder.buildEntityView(ent, builder));
 
 			List<IEntityAlarm> alarms = entityAlarmService.getEntityAlarmsWithAlarmDetected(device);
@@ -203,14 +213,14 @@ public class SendMessageBuilder {
 
 	private SendMessage buildGroupCommandInterface(IDevice device, IGroup group, Long chatId) {
 		
-		List<IEntityFieldComButton> commands = EntityViewBuilder.getCommandButtonsForGroup(Action.ACTION_TYPE_SEND_DATA_TO_DEVICE, group);
+		List<Action> actions = EntityViewBuilder.getCommandButtonsForGroup(Action.ACTION_TYPE_SEND_DATA_TO_DEVICE, group);
 		
-		if (commands.isEmpty()) {
+		if (actions.isEmpty()) {
 			return null;
 		}
 		
 		return ReplyContext.createMsg(
-					inlineKeyboard.getCommandButtonsByEnabledFieldCommandButtonList(commands), 
+					inlineKeyboard.getCommandButtonsByEnabledFieldCommandButtonList(actions), 
 					chatId, itemRendererBuilder.buildDeviceGroupHeaderCommandsView(device, group));
 	}
 
@@ -238,6 +248,14 @@ public class SendMessageBuilder {
 	}
 
 	public SendMessage createDeviceRefreshed(String msg, Long chatId) {
+		return createMessage(BotMessageConstants.MESSAGE_DEVICE_REFRESHED, Emoji.REFRESH.toString(), chatId, msg);
+	}
+	
+	public SendMessage createDataSentToDevice(String msg, Long chatId) {
+		return createMessage(BotMessageConstants.MESSAGE_DATA_WAS_SENT_TO_DEVICE, Emoji.PHONE_WITH_ARROW.toString(), chatId, msg);
+	}
+	
+	public SendMessage createDeviceDataSavedOnServer(String msg, Long chatId) {
 		return createMessage(BotMessageConstants.MESSAGE_DEVICE_REFRESHED, Emoji.CHECK_MARK.toString(), chatId, msg);
 	}
 

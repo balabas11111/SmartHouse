@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
+import com.balabas.smarthouse.server.entity.service.IActionService;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.telegram.bot.AfterBotRegistration;
@@ -42,6 +43,9 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 
 	@Autowired
 	IDeviceManageService deviceService;
+	
+	@Autowired
+	IActionService actionService;
 	
 	private Map<Long, Action> currentEditActions = new HashMap<>();
 
@@ -111,6 +115,8 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 		
 		currentEditActions.remove(context.getChatId());
 		
+		action = actionService.getDeviceGroupEntityNameActionByIdAction(action);
+		
 		try {
 			switch (action.getAction()) {
 			case ACTION_TYPE_VIEW_DEVICE_LIST:
@@ -157,12 +163,17 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 	
 	private void sendDataToDevice(Action action, ReplyContext context, List<SendMessage> msgs){
 		try{
-			deviceService.processDeviceAction(action);
+			boolean sendExecuted = actionService.executeDeviceAction(action);
 
-			action.setGroupId(ItemType.SENSORS.getCode());
+			action.setGroupName(ItemType.SENSORS.getCode());
 			
-			msgs.add(messageBuilder.createDeviceRefreshed(null, context.getChatId()));
+			if(sendExecuted) {
+				msgs.add(messageBuilder.createDataSentToDevice(null, context.getChatId()));
+			} else {
+				msgs.add(messageBuilder.createDeviceDataSavedOnServer(null, context.getChatId()));
+			}
 			msgs.addAll(messageBuilder.createGroupView(action, context));
+			
 		}catch(Throwable e){
 			msgs.add(messageBuilder.createDeviceError(null, context.getChatId()));
 		}

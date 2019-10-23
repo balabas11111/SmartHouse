@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.server.entity.model.enabledvalue;
 
+import javax.persistence.Column;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +9,7 @@ import lombok.Setter;
 public class EntityFieldEnabledValuePassword extends EntityFieldEnabledValue<String> implements IEntityFieldEnabledValue<String> {
 
 	@Getter @Setter
+	@Column(name = "valueStr")
 	protected String value;
 	
 	@Override

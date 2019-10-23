@@ -7,6 +7,8 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 @SuppressWarnings("rawtypes")
 public interface IEntityFieldEnabledValue<T> {
 
+	Long getId();
+	
 	EntityField getEntityField();
 	void setEntityField(EntityField entityField);
 	

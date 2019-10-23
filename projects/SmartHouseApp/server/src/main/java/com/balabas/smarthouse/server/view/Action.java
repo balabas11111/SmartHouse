@@ -2,18 +2,25 @@ package com.balabas.smarthouse.server.view;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.json.JSONObject;
+import org.thymeleaf.util.StringUtils;
 
+import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @AllArgsConstructor
+@Builder
 public class Action {
 	
 	public static final String CALLBACK_SPLITTER = ";";
@@ -36,6 +43,12 @@ public class Action {
 	public static final String ACTION_DATA_FIELD_DESCRIPTION         = "adfd";
 	public static final String ACTION_DATA_FIELD_VALUE               = "adfv";
 	
+	public static final String ID_TYPE_DEVICE         = "_dev"; 
+	public static final String ID_TYPE_GROUP          = "_grp";
+	public static final String ID_TYPE_ENTITY         = "_ent";
+	public static final String ID_TYPE_ENTITY_FIELD   = "_fld";
+	public static final String ID_TYPE_ENABLED_VALUE  = "_val";
+	
 	public static final String validActions[] = {
 													ACTION_TYPE_VIEW_DEVICE_LIST,
 													ACTION_TYPE_EDIT_DEVICE_SELECT_LIST,
@@ -45,21 +58,26 @@ public class Action {
 												};
 	@Getter
 	private String action;
-	@Getter
-	private String deviceId;
-	@Getter
-	private String groupId;
-	@Getter
-	private String entityId;
+	@Getter @Setter
+	private String description;
 	@Getter
 	private String data;
+	@Getter
+	private String deviceName;
+	@Getter
+	private String groupName;
+	@Getter
+	private String entityName;
+	@Getter
+	private String idType;
 	@Getter @Setter
-	private Object target;
+	private Long targetId;
+	
 	@Getter
 	private String callbackData;
 
 	@Getter
-	private boolean valid = true;
+	private boolean valid;
 	
 	public Action() {
 		this.valid = false;
@@ -68,22 +86,41 @@ public class Action {
 	public Action(String...cols) {
 		this.action = getColValueOrNull(1, cols );
 		this.data = getColValueOrNull(2, cols );
-		this.deviceId = getColValueOrNull(3, cols );
-		this.groupId = getColValueOrNull(4, cols );
-		this.entityId = getColValueOrNull(5, cols );
+		this.deviceName = getColValueOrNull(3, cols );
+		this.groupName = getColValueOrNull(4, cols );
+		this.entityName = getColValueOrNull(5, cols );
+		this.idType = getColValueOrNull(6, cols );
+		
+		String tId = getColValueOrNull(7, cols );
+		if( !StringUtils.isEmpty(tId)) {
+			this.targetId = Long.valueOf(tId); 
+		}
 			
 		this.callbackData = buildCallBackData();
 		this.valid = isActionValid();
 	}
 	
 		
-	public Action(String action, String data, String deviceId, String groupId, String entityId) {
+	public Action(String action, String data, String deviceName, String groupName, String entityName) {
 		
 		this.action = action;
-		this.deviceId = deviceId;
-		this.groupId = groupId;
-		this.entityId = entityId;
+		this.deviceName = deviceName;
+		this.groupName = groupName;
+		this.entityName = entityName;
 		this.data = data;
+		
+		this.callbackData = buildCallBackData();
+		
+		this.valid = isActionValid();
+	}
+	
+	public Action(String action, String data, String description, String idType, Long targetId) {
+		
+		this.action = action;
+		this.data = data;
+		this.description = description;
+		this.idType = idType;
+		this.targetId = targetId;
 		
 		this.callbackData = buildCallBackData();
 		
@@ -95,18 +132,18 @@ public class Action {
 		this.callbackData = buildCallBackData();
 	}
 	
-	public void setDeviceId(String deviceId) {
-		this.deviceId = clear(deviceId);
+	public void setDeviceName(String deviceId) {
+		this.deviceName = clear(deviceId);
 		this.callbackData = buildCallBackData();
 	}
 	
-	public void setGroupId(String groupId) {
-		this.groupId = clear(groupId);
+	public void setGroupName(String groupId) {
+		this.groupName = clear(groupId);
 		this.callbackData = buildCallBackData();
 	}
 	
-	public void setEntityId(String entityId) {
-		this.entityId = clear(entityId);
+	public void setEntityName(String entityId) {
+		this.entityName = clear(entityId);
 		this.callbackData = buildCallBackData();
 	}
 	
@@ -130,6 +167,17 @@ public class Action {
 	
 	public static Action fromEntity(String action, IEntity entity, String data) {
 		return new Action(action, data, entity.getGroup().getDevice().getName(), entity.getGroup().getName(), entity.getName());
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static Action fromEntityFieldEnabledValue(String actionName, IEntityFieldEnabledValue entityFieldEnabledValue) {
+		Entity entity = entityFieldEnabledValue.getEntityField().getEntity();
+		
+		String description = Optional.ofNullable(entityFieldEnabledValue.getEmoji()).orElse(Emoji.EMPTY_EMOJI).toString()
+				+ entity.getDescription() + " : " + entityFieldEnabledValue.getActionDescription();
+		
+		return new Action(actionName, entityFieldEnabledValue.buildDataForCallBack(), description,
+				ID_TYPE_ENTITY, entity.getId());
 	}
 	
 	public static Action fromColumnList(String...cols) {
@@ -191,7 +239,7 @@ public class Action {
 	}
 	
 	private String buildCallBackData() {
-		return buildCallbackData(CALLBACK_TYPE_ACTION, action, data, deviceId, groupId, entityId);
+		return buildCallbackData(CALLBACK_TYPE_ACTION, action, data, deviceName, groupName, entityName, idType, (targetId == null)?"":targetId.toString());
 	}
 	
 	private static String buildCallbackData(String... arg){
@@ -211,6 +259,10 @@ public class Action {
 
 	public void setActionRebuildData(String action) {
 		this.action = action;
+		this.callbackData = buildCallBackData();
+	}
+	
+	public void rebuildCallbackData() {
 		this.callbackData = buildCallBackData();
 	}
 

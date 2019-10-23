@@ -11,6 +11,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
@@ -25,6 +26,7 @@ import lombok.EqualsAndHashCode;
 @SuppressWarnings("rawtypes")
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = "entityFields")
+@Table(name="entities")
 @javax.persistence.Entity
 public class Entity extends ItemAbstract implements IEntity {
 
@@ -55,6 +57,9 @@ public class Entity extends ItemAbstract implements IEntity {
 
 	@Override
 	public IEntityField getEntityField(String entityFieldName) {
+		if(getEntityFields()==null) {
+			return null;
+		}
 		return getEntityFields().stream().filter( ef -> ef.getName().equalsIgnoreCase(entityFieldName)).findFirst().orElse(null);
 	}
 

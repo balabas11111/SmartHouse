@@ -9,6 +9,7 @@ public class DeviceMessageConstants {
 
 	public static final String MSG_DEVICE_REGISTERED = "Устройство регистрируется : %s";
 	public static final String MSG_DEVICE_RECONNECTED = "Устройство передподключено : %s";
+	public static final String MSG_DEVICE_BACK_FROM_DISCONNECT = "Устройство снова поставляет данные : %s";
 	public static final String MSG_DEVICE_INITIALIZED = "Устройство инициализировано : %s";
 	public static final String MSG_DEVICE_DISCONNECTED = "Устройство отключено : %s";
 	

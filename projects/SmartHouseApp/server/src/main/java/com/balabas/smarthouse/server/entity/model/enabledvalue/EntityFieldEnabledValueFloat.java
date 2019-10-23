@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.server.entity.model.enabledvalue;
 
+import javax.persistence.Column;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +9,7 @@ import lombok.Setter;
 public class EntityFieldEnabledValueFloat extends EntityFieldEnabledValue<Float> implements IEntityFieldEnabledValue<Float> {
 
 	@Getter @Setter
+	@Column(name = "valueFlt")
 	protected Float value;
 	
 	@Override

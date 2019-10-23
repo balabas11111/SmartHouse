@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.security;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class SecurityContextRepositoryImpl implements SecurityContextRepository {
 
-	private Map<String, DeviceSecurityContext> cont = new HashMap<>();
+	private Map<String, DeviceSecurityContext> cont = Collections.synchronizedMap(new HashMap<>());
 	
 	@Override
 	public DeviceSecurityContext put(String deviceId, String serverHash, String deviceHash, String serverToken) {

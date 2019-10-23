@@ -77,8 +77,6 @@ import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.EntityStatus;
 import com.balabas.smarthouse.server.entity.model.Group;
-import com.balabas.smarthouse.server.entity.model.IDevice;
-import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.exception.BadValueException;
@@ -156,13 +154,13 @@ public class SmartHouseItemBuildService {
 		return null;
 	}
 
-	public boolean updateDeviceEntityValuesFromJson(IDevice device, JSONObject deviceJson) {
+	public boolean updateDeviceEntityValuesFromJson(Device device, JSONObject deviceJson) {
 
 		boolean isOk = true;
 
 		for (String groupName : JSONObject.getNames(deviceJson)) {
 
-			IGroup group = device.getGroup(groupName);
+			Group group = device.getGroup(groupName);
 			if (group != null) {
 				JSONObject groupJson = deviceJson.optJSONObject(groupName);
 
@@ -177,7 +175,7 @@ public class SmartHouseItemBuildService {
 		return isOk;
 	}
 
-	private boolean updateGroupEntityValuesFromJson(IGroup group, JSONObject groupJson) {
+	private boolean updateGroupEntityValuesFromJson(Group group, JSONObject groupJson) {
 		boolean isOk = true;
 		for (String entityName : JSONObject.getNames(groupJson)) {
 
@@ -252,7 +250,7 @@ public class SmartHouseItemBuildService {
 		}
 	}
 
-	public boolean processDeviceInfo(IDevice device, JSONObject deviceJson) {
+	public boolean processDeviceInfo(Device device, JSONObject deviceJson) {
 		if (deviceJson.has(DEVICE_FIELD_DEVICE)) {
 			JSONObject deviceDeviceJson = deviceJson.getJSONObject(DEVICE_FIELD_DEVICE);
 
@@ -364,7 +362,7 @@ public class SmartHouseItemBuildService {
 		EntityClass renderer = EntityClass.getByKey(
 				entityJson.optString(ENTITY_FIELD_ITEM_CLASS, descriptorJson.optString(ENTITY_FIELD_ITEM_CLASS, "")));
 
-		Entity entity = new Entity();
+		Entity entity = Optional.ofNullable(group.getEntity(entityName)).orElse(new Entity());
 
 		entity.setName(entityName);
 		entity.setGroup(group);
@@ -427,8 +425,25 @@ public class SmartHouseItemBuildService {
 			log.error("Bad SensorItems count=" + count + " fields=" + grouppedFieldsNames + " grouppedFieldsIds = "
 					+ grouppedFieldsIds);
 		} else {
-			entity.setGrouppedFieldsIds(grouppedFieldsIds);
-			entity.setGrouppedFieldsNames(grouppedFieldsNames);
+			if(entity.getGrouppedFieldsIds()==null) {
+				entity.setGrouppedFieldsIds(grouppedFieldsIds);
+			} else {
+				grouppedFieldsIds.stream().forEach( id ->{
+					if(!entity.getGrouppedFieldsIds().contains(id)) {
+						entity.getGrouppedFieldsIds().add(id);
+					}
+				});
+			}
+			
+			if(entity.getGrouppedFieldsNames()==null) {
+				entity.setGrouppedFieldsNames(grouppedFieldsNames);
+			} else {
+				grouppedFieldsNames.stream().forEach( id ->{
+					if(!entity.getGrouppedFieldsNames().contains(id)) {
+						entity.getGrouppedFieldsNames().add(id);
+					}
+				});
+			}
 
 			try {
 				IEntityField countField = new EntityFieldInteger();
@@ -460,23 +475,23 @@ public class SmartHouseItemBuildService {
 				.ofNullable(EntityFieldClassType.from(fieldDecriptor.optString(EDC_CLASS, null)))
 				.orElse(EntityFieldClassType.STRING);
 
-		String name = fieldDecriptor.optString(EDC_FIELD_NAME, fieldName);
+		String entityFieldName = fieldDecriptor.optString(EDC_FIELD_NAME, fieldName);
 		String description = fieldDecriptor.optString(EDC_FIELD_DESCRIPTION, EMPTY_STR);
 		EntityFieldClassView viewClass = EntityFieldClassView.from(fieldDecriptor.optString(EDC_CLASS_VIEW, null));
 		boolean readOnly = booleanFromString(fieldDecriptor.optString(EDC_READ_ONLY, FALSE));
 		Emoji emoji = Emoji.getByCode(fieldDecriptor.optString(EDC_FIELD_EMOJI, null));
 
-		EntityField entityField = createEntityFieldByClass(fieldClassType);
+		EntityField entityField = Optional.ofNullable((EntityField)entity.getEntityField(entityFieldName)).orElse(createEntityFieldByClass(fieldClassType));
 
 		entityField.setEntity(entity);
-		entityField.setName(name);
+		entityField.setName(entityFieldName);
 		entityField.setDescriptionIfEmpty(description);
 		entityField.setViewClass(viewClass);
 		entityField.setReadOnly(readOnly);
 		entityField.setEmoji(emoji);
 		entityField.setValueStr(value);
 
-		Set<IEntityFieldEnabledValue> enabledValues = getEnabledFieldValues(fieldDecriptor, name, fieldClassType,
+		Set<IEntityFieldEnabledValue> enabledValues = getEnabledFieldValues(fieldDecriptor, entityFieldName, fieldClassType,
 				entityField);
 		entityField.setEnabledValues(enabledValues);
 

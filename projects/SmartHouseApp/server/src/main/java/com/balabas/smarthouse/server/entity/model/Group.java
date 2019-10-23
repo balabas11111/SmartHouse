@@ -22,7 +22,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = "entities")
 @javax.persistence.Entity
-@Table(name = "group_")
+@Table(name = "groups")
 public class Group extends ItemAbstract implements IGroup {
 
 	@Enumerated(EnumType.STRING)

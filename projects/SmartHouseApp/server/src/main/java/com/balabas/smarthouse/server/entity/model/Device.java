@@ -22,7 +22,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = "groups")
-@Table(name="device")
+@Table(name="devices")
 @javax.persistence.Entity
 public class Device extends ItemAbstract implements IDevice {
 

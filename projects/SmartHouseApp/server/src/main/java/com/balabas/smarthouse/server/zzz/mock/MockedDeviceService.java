@@ -119,8 +119,8 @@ public class MockedDeviceService implements InitializingBean {
 				alarm.setEntityName(entityName);
 				alarm.putAlarm(entityFieldAlarm);
 
-				alarmService.registerAlarm(alarm);
-				alarmService.activateAlarms(device);
+				//alarmService.registerAlarm(alarm);
+				//alarmService.activateAlarms(device);
 				
 				alarmRegistered = true;
 			}

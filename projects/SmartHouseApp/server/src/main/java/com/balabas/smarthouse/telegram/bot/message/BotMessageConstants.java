@@ -21,6 +21,7 @@ public class BotMessageConstants {
 	public static final String MESSAGE_DEVICE_ERROR = "%s Ошибка устройства.  %s";
 	
 	public static final String MESSAGE_DEVICE_REFRESHED = "%s Устройство обновлено.  %s";
+	public static final String MESSAGE_DEVICE_DATA_SAVED = "%s Данные сохранены.  %s";
 	public static final String MESSAGE_DATA_WAS_SENT_TO_DEVICE = "%s Данные отправлены на устройство.  %s";
 	
 	public static final String BUTTON = "%s %s";

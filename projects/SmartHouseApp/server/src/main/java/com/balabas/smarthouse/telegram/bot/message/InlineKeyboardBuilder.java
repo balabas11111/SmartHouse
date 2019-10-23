@@ -16,7 +16,6 @@ import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.view.Action;
-import com.balabas.smarthouse.server.view.IEntityFieldComButton;
 
 import lombok.Getter;
 
@@ -167,14 +166,14 @@ public class InlineKeyboardBuilder {
 		.forEach( entityField ->
 		{
     		
-			List<IEntityFieldComButton> commands = EntityViewBuilder.getCommandButtonsForEntity(
+			List<Action> actions = EntityViewBuilder.getCommandButtonsForEntity(
 					ACTION_TYPE_SEND_DATA_TO_DEVICE, entity, entityField);
 			
-			if(commands!=null && !commands.isEmpty()) {
+			if(actions!=null && !actions.isEmpty()) {
 				
-				for (IEntityFieldComButton comBtn : commands) {
-					String text = comBtn.getButtonText();
-					String callback = comBtn.getActionCallback();
+				for (Action action : actions) {
+					String text = action.getDescription();
+					String callback = action.getCallbackData();
 					
 					List<InlineKeyboardButton> row = new ArrayList<>();
 					row.add(createInlineKeyboardButton(text, callback));
@@ -224,16 +223,16 @@ public class InlineKeyboardBuilder {
 		return markup;
 	}
 	
-	public InlineKeyboardMarkup getCommandButtonsByEnabledFieldCommandButtonList(List<IEntityFieldComButton> commands) {
+	public InlineKeyboardMarkup getCommandButtonsByEnabledFieldCommandButtonList(List<Action> actions) {
 		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		
-		for(IEntityFieldComButton command : commands) {
+		for(Action action : actions) {
 			rowsInline.add(
 				Collections.singletonList(
 					createInlineKeyboardButton(
-						command.getButtonText(),
-						command.getActionCallback())
+						action.getDescription(),
+						action.getCallbackData())
 			    ));
 		}
 		

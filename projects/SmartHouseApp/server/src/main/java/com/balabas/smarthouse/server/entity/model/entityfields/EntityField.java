@@ -97,6 +97,9 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 
 	@Override
 	public String getValueStr() {
+		if (getValue() == null) {
+			return null; 
+		}
 		return getValue().toString();
 	}
 
