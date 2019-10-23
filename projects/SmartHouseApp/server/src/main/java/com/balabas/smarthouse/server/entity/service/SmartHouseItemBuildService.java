@@ -16,6 +16,7 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_FIELDS_
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ITEM_CLASS;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_KEYS_ARRAY;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_ITEMS;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ID;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_CLASS;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_CLASS_VIEW;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_ENTITY_FIELDS;
@@ -476,14 +477,14 @@ public class SmartHouseItemBuildService {
 		EntityFieldClassType fieldClassType = Optional
 				.ofNullable(EntityFieldClassType.from(fieldDecriptor.optString(EDC_CLASS, null)))
 				.orElse(
-						EDC_FIELD_ID.equals(entityFieldName)?
+						ENTITY_FIELD_ID.equals(entityFieldName)?
 								EntityFieldClassType.INTEGER:		
 						EntityFieldClassType.STRING
 					);
 		
 		String description = fieldDecriptor.optString(EDC_FIELD_DESCRIPTION, EMPTY_STR);
 		EntityFieldClassView viewClass = EntityFieldClassView.from(fieldDecriptor.optString(EDC_CLASS_VIEW, null));
-		boolean readOnly = booleanFromString(fieldDecriptor.optString(EDC_READ_ONLY, EDC_FIELD_ID.equals(entityFieldName)?TRUE:FALSE));
+		boolean readOnly = booleanFromString(fieldDecriptor.optString(EDC_READ_ONLY, ENTITY_FIELD_ID.equals(entityFieldName)?TRUE:FALSE));
 		Emoji emoji = Emoji.getByCode(fieldDecriptor.optString(EDC_FIELD_EMOJI, null));
 		
 		EntityField entityField = Optional.ofNullable((EntityField)entity.getEntityField(entityFieldName)).orElse(createEntityFieldByClass(fieldClassType));

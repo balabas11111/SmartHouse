@@ -2,7 +2,7 @@ SELECT g.* FROM devices d
 	JOIN groups g ON g.device_id = d.id
 WHERE d.id = 1;
 
-SELECT e.name, ef.* FROM entities e
+SELECT e.*, ef.* FROM entities e
 JOIN entity_field ef ON ef.entity_id = e.id
 WHERE e.group_id = 2;
 
