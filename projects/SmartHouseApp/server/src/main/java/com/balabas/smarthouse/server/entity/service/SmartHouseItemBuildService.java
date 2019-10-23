@@ -471,16 +471,21 @@ public class SmartHouseItemBuildService {
 
 		String value = entityJson.optString(fieldName);
 
+		String entityFieldName = fieldDecriptor.optString(EDC_FIELD_NAME, fieldName);
+		
 		EntityFieldClassType fieldClassType = Optional
 				.ofNullable(EntityFieldClassType.from(fieldDecriptor.optString(EDC_CLASS, null)))
-				.orElse(EntityFieldClassType.STRING);
-
-		String entityFieldName = fieldDecriptor.optString(EDC_FIELD_NAME, fieldName);
+				.orElse(
+						EDC_FIELD_ID.equals(entityFieldName)?
+								EntityFieldClassType.INTEGER:		
+						EntityFieldClassType.STRING
+					);
+		
 		String description = fieldDecriptor.optString(EDC_FIELD_DESCRIPTION, EMPTY_STR);
 		EntityFieldClassView viewClass = EntityFieldClassView.from(fieldDecriptor.optString(EDC_CLASS_VIEW, null));
-		boolean readOnly = booleanFromString(fieldDecriptor.optString(EDC_READ_ONLY, FALSE));
+		boolean readOnly = booleanFromString(fieldDecriptor.optString(EDC_READ_ONLY, EDC_FIELD_ID.equals(entityFieldName)?TRUE:FALSE));
 		Emoji emoji = Emoji.getByCode(fieldDecriptor.optString(EDC_FIELD_EMOJI, null));
-
+		
 		EntityField entityField = Optional.ofNullable((EntityField)entity.getEntityField(entityFieldName)).orElse(createEntityFieldByClass(fieldClassType));
 
 		entityField.setEntity(entity);
