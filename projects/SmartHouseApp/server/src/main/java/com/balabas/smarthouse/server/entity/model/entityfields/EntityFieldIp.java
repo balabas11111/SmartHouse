@@ -14,7 +14,7 @@ import lombok.extern.log4j.Log4j2;
 public class EntityFieldIp extends EntityField<InetAddress> implements IEntityField<InetAddress> {
 
 	@Override
-	public void validateValue(InetAddress value) throws BadValueException {
+	public void validateValue(InetAddress value) throws IllegalArgumentException {
 		super.validateValue(value);
 	}
 	
@@ -28,7 +28,7 @@ public class EntityFieldIp extends EntityField<InetAddress> implements IEntityFi
 	}
 	
 	@Override
-	public void setValueWithNoCheck(InetAddress value) throws BadValueException {
+	public void setValueWithNoCheck(InetAddress value) {
 		this.value = value;
 	}
 	
@@ -41,6 +41,19 @@ public class EntityFieldIp extends EntityField<InetAddress> implements IEntityFi
 		} catch (UnknownHostException e) {
 			log.error(e);
 			throw new BadValueException(e.getMessage());
+		}
+	}
+
+	@Override
+	protected InetAddress fromString(String value) {
+		try {
+			InetAddress addr = InetAddress.getByName(value);
+			validateValue(addr);
+			
+			return addr;
+		} catch (UnknownHostException e) {
+			log.error(e);
+			throw new IllegalArgumentException(e.getMessage());
 		}
 	}
 

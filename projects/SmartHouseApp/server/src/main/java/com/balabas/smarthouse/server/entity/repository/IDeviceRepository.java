@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
@@ -14,6 +15,7 @@ public interface IDeviceRepository extends CrudRepository<Device, Long> {
 
 	Device findByName(String name);
 	
+	@Transactional
 	@Modifying
 	@Query("update Device d set d.state = :state where d.id = :id")
 	void updateDeviceState(@Param("id")Long deviceId, @Param("state")State state); 

@@ -22,5 +22,7 @@ public interface DeviceSecurityService extends InitializingBean {
 	boolean validateDeviceRequestDataUpdate(DeviceRequest request) throws DeviceRequestValidateException;
 	
 	DeviceSecurityContext getDeviceSecurityContext(String deviceId);
+
+	boolean isSecurityDisabled();
 	
 }

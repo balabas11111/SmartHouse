@@ -9,6 +9,11 @@ public class EntityFieldBoolean extends EntityField<Boolean> implements IEntityF
 
 	@Override
 	public void setValueStr(String value) throws BadValueException {
+		setValue(fromString(value));
+	}
+
+	@Override
+	protected Boolean fromString(String value) {
 		Boolean val = null;
 		
 		if(value!=null){
@@ -22,7 +27,7 @@ public class EntityFieldBoolean extends EntityField<Boolean> implements IEntityF
 			}
 		}
 		
-		setValue(val);
+		return val;
 	}
 
 }

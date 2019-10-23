@@ -36,6 +36,11 @@ public class DeviceSecurityServiceImpl implements DeviceSecurityService {
 	private SecurityContextRepository secContext;
 
 	@Override
+	public boolean isSecurityDisabled() {
+		return this.securityDisabled;
+	}
+	
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.serverKeyHash = Hashing.sha1().hashString(serverKey, StandardCharsets.UTF_8).toString();
 		log.debug("Key hashed =" + this.serverKeyHash);

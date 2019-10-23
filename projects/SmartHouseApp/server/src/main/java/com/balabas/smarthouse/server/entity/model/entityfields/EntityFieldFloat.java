@@ -2,14 +2,12 @@ package com.balabas.smarthouse.server.entity.model.entityfields;
 
 import javax.persistence.Entity;
 
-import com.balabas.smarthouse.server.exception.BadValueException;
-
 @Entity
 public class EntityFieldFloat extends EntityField<Float> implements IEntityField<Float> {
 
 	@Override
-	public void setValueStr(String value) throws BadValueException {
-		this.value = Float.valueOf(value);
+	protected Float fromString(String value) {
+		return Float.valueOf(value);
 	}
 
 }

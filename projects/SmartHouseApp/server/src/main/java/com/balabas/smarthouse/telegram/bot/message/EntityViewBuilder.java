@@ -103,7 +103,7 @@ public class EntityViewBuilder {
 				builder.append((Optional.ofNullable(ef.getEmoji()).orElse(Emoji.EMPTY_EMOJI)).toString());
 				builder.append(ef.getDescription());
 	
-				IEntityFieldEnabledValue enVal = ef.getEnabledValueByCurrentValue();
+				IEntityFieldEnabledValue enVal = ef.getEntityFieldEnabledValueByCurrentValue();
 	
 				if (enVal != null && enVal.getViewClass() != null) {
 	
@@ -184,7 +184,7 @@ public class EntityViewBuilder {
 			return Collections.emptyList();
 		}
 
-		IEntityFieldEnabledValue currentValue = entityField.getEnabledValueByCurrentValue();
+		IEntityFieldEnabledValue currentValue = entityField.getEntityFieldEnabledValueByCurrentValue();
 		
 		Set<IEntityFieldEnabledValue> evals = entityField.getEnabledValues();
 		

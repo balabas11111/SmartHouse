@@ -233,7 +233,7 @@ public class SmartHouseItemBuildService {
 		try {
 			entityField.setValueWithNoCheck(value);
 			return setOk;
-		} catch (BadValueException e) {
+		} catch (IllegalArgumentException e) {
 			log.error(e);
 			return false;
 		}
@@ -452,7 +452,7 @@ public class SmartHouseItemBuildService {
 				countField.setValueWithNoCheck(Integer.valueOf(count));
 
 				entity.addGeneratedField(countField);
-			} catch (BadValueException e) {
+			} catch (IllegalArgumentException e) {
 				log.error(e);
 			}
 
@@ -489,7 +489,11 @@ public class SmartHouseItemBuildService {
 		entityField.setViewClass(viewClass);
 		entityField.setReadOnly(readOnly);
 		entityField.setEmoji(emoji);
-		entityField.setValueStr(value);
+		try {
+			entityField.setValueWithNoCheckStr(value);
+		}catch(IllegalArgumentException e) {
+			log.error(e);
+		}
 
 		Set<IEntityFieldEnabledValue> enabledValues = getEnabledFieldValues(fieldDecriptor, entityFieldName, fieldClassType,
 				entityField);
@@ -516,7 +520,8 @@ public class SmartHouseItemBuildService {
 				EntityFieldClassView viewClass = EntityFieldClassView
 						.from(enabledValueBody.getOrDefault(EDC_CLASS_VIEW, entityField.getViewClass().getKey()));
 
-				IEntityFieldEnabledValue enabledValue = createEntityFieldEnabledValueByClass(fieldClassType);
+				IEntityFieldEnabledValue enabledValue = Optional.ofNullable(entityField.getEntityFieldEnabledValueByValueStr(enabledValueStr)).orElse 
+						(createEntityFieldEnabledValueByClass(fieldClassType));
 				enabledValue.setEntityField(entityField);
 				enabledValue.setDescription(description);
 				enabledValue.setActionDescription(actionDescription);

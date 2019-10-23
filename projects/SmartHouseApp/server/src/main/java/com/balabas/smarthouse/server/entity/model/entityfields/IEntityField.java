@@ -36,10 +36,15 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 
 	Object getValueObj();
 
-	void setValueWithNoCheck(T value) throws BadValueException;
+	void setValueWithNoCheckStr(String value);
+	void setValueWithNoCheck(T value);
 	
-	IEntityFieldEnabledValue getEnabledValueByCurrentValue();
+	IEntityFieldEnabledValue getEntityFieldEnabledValueByCurrentValue();
 	
-	void validateValue(T value) throws BadValueException;
+	void validateValue(T value) throws IllegalArgumentException;
+
+	IEntityFieldEnabledValue getEntityFieldEnabledValue(T value);
+
+	IEntityFieldEnabledValue getEntityFieldEnabledValueByValueStr(String value);
 
 }

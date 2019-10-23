@@ -82,17 +82,27 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	}
 	
 	@Override
-	public void validateValue(T value) throws BadValueException{
+	public void validateValue(T value) throws IllegalArgumentException{
 		if (value != null && enabledValues != null && !enabledValues.isEmpty()
 				&& enabledValues.stream().noneMatch(e -> e.getValue().equals(value))) {
 			this.value = null;
-			throw new BadValueException();
+			throw new IllegalArgumentException();
 		}
 	}
 	
 	@Override
-	public void setValueWithNoCheck(T value) throws BadValueException {
+	public void setValueStr(String value) throws BadValueException {
+		setValue(fromString(value));
+	}
+	
+	@Override
+	public void setValueWithNoCheck(T value) {
 		this.value = value;
+	}
+	
+	@Override
+	public void setValueWithNoCheckStr(String value) {
+		setValueWithNoCheck(fromString(value));
 	}
 
 	@Override
@@ -107,9 +117,30 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	public Object getValueObj() {
 		return value;
 	}
+	
+	@Override
+	public IEntityFieldEnabledValue getEntityFieldEnabledValue(T value) {
+		if (enabledValues == null || enabledValues.isEmpty()) {
+			return null;
+		}
+
+		return enabledValues.stream().filter(ev -> ev.getValue() != null && ev.getValue().equals(value))
+				.findFirst().orElse(null);
+	}
+	
+	@Override
+	public IEntityFieldEnabledValue getEntityFieldEnabledValueByValueStr(String value) {
+		if (enabledValues == null || enabledValues.isEmpty()) {
+			return null;
+		}
+
+		return enabledValues.stream().filter(ev -> ev.getValueStr() != null && ev.getValueStr().equals(value))
+				.findFirst().orElse(null);
+	}
+
 
 	@Override
-	public IEntityFieldEnabledValue getEnabledValueByCurrentValue() {
+	public IEntityFieldEnabledValue getEntityFieldEnabledValueByCurrentValue() {
 		if (enabledValues == null || enabledValues.isEmpty()) {
 			return null;
 		}
@@ -117,5 +148,7 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 		return enabledValues.stream().filter(ev -> ev.getValue() != null && ev.getValue().equals(getValue()))
 				.findFirst().orElse(null);
 	}
+	
+	protected abstract T fromString(String value);
 	
 }

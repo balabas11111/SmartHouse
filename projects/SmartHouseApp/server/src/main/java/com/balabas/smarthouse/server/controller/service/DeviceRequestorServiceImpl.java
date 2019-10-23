@@ -30,7 +30,7 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 
 	@Autowired
 	HttpRequestExecutor executor;
-	
+
 	@Autowired
 	DeviceSecurityService securityService;
 
@@ -42,19 +42,27 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 						? Collections.singletonMap(DEVICE_FIELD_GROUP, groupName)
 						: Collections.emptyMap();
 
-				String serverKey = securityService.getServerKey(device.getName());		
-				
-				if(serverKey == null) {
-					log.error("Empty Server key " + device.getName());
-					return null;
-				}
-				
+				String serverKey = securityService.getServerKey(device.getName());
+
 				HttpHeaders headers = new HttpHeaders();
-				headers.set(HttpHeaders.AUTHORIZATION, serverKey);
 				
-				String url = (device.isInitialized())?
-								device.getDataUrl():device.getDataUrl() + DeviceConstants.ENTITY_FIELD_SWG_EQ_1;
-						
+				if (!securityService.isSecurityDisabled()) {
+					if (serverKey == null) {
+						log.error("Empty Server key " + device.getName());
+						return null;
+					}
+					
+					headers.set(HttpHeaders.AUTHORIZATION, serverKey);
+				} else {
+					serverKey = "";
+				}
+
+				
+				
+
+				String url = (device.isInitialized()) ? device.getDataUrl()
+						: device.getDataUrl() + DeviceConstants.ENTITY_FIELD_SWG_EQ_1;
+
 				ResponseEntity<String> result = executor.executeGetRequest(url, headers, params);
 
 				if (result.getStatusCode().equals(HttpStatus.OK)) {
@@ -70,15 +78,13 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 
 		return null;
 	}
-	
-	
-	
+
 	@Override
-	public String executePostDataOnDevice(IDevice device, JSONObject json){
+	public String executePostDataOnDevice(IDevice device, JSONObject json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey(device.getName()));
-		
+
 		return executor.executePostRequest(device.getDataUrl(), headers, json.toString()).getBody();
 	}
 
@@ -87,13 +93,13 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey(device.getName()));
-		
+
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
 		map.add(DEVICE_FIELD_GROUP, entity.getGroup().getName());
 		map.add(DEVICE_FIELD_ENTITY_NAME, entity.getName());
-		
-		values.entrySet().stream().forEach(e->map.add(e.getKey(), e.getValue()));
-		
+
+		values.entrySet().stream().forEach(e -> map.add(e.getKey(), e.getValue()));
+
 		return executor.executePostRequest(device.getDataUrl(), headers, map).getBody();
 	}
 }

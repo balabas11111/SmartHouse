@@ -6,13 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.balabas.smarthouse.server.controller.service.DeviceRequestorService;
 import com.balabas.smarthouse.server.entity.model.Device;
@@ -20,9 +19,9 @@ import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IUpdateable;
+import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
-import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
@@ -133,6 +132,18 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 				.flatMap(e -> e.getEntityFields().stream()).flatMap(ef -> ef.getEnabledValues().stream())
 				.filter(e -> id.equals(((IEntityFieldEnabledValue) e).getId())).findFirst().orElse(null);
 	}
+	
+	private int getDeviceIndex(Long id) {
+		if(id!=null) {
+			for(int i = 0; i<devices.size(); i++) {
+				if(id.equals(devices.get(i).getId())) {
+					return i;
+				}
+			}
+		}
+		
+		return -1;
+	}
 
 	@Override
 	@Transactional
@@ -140,26 +151,25 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 		Device deviceFromRequest = itemBuildService.buildDeviceFromRequest(request);
 
 		Device device = getManagedDevice(deviceFromRequest);
+		
 
 		if (device == null || !device.isInitialized()) {
 			// register device
 			device = deviceFromRequest;
-			devices.add(device);
 			stateChanger.stateChanged(device, State.REGISTERED);
 
 			log.info("Registered :" + device.getName());
+			
 		} else {
 			// reregister device
 			device.update(deviceFromRequest);
 			stateChanger.stateChanged(device, State.REREGISTERED);
-
+			
 			log.info("ReRegistered :" + device.getName());
 		}
 
-		//deviceRepository.updateDeviceState(device.getId(), device.getState());
-		save(device);
-				
-		device.getTimer().setActionForced(true);
+		save(device).getTimer().setActionForced(true);
+		log.debug("register process complete");
 	}
 
 	@Override
@@ -186,8 +196,6 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	public void processDataReceivedFromDevice(Device device, JSONObject deviceJson) {
 		boolean doSave = false;
 		
-		//Device device = getDeviceById(dev.getId());
-
 		try {
 			doSave = itemBuildService.processDeviceInfo(device, deviceJson);
 
@@ -209,6 +217,8 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 				State newState = (ok) ? State.UPDATED : State.BAD_DATA;
 				stateChanger.stateChanged(device, newState);
 				
+				deviceRepository.updateDeviceState(device.getId(), device.getState());
+				
 				doSave = false;
 			}
 		} catch (Exception e) {
@@ -218,6 +228,7 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 
 		if (doSave) {
 			save(device);
+			log.debug("device saved");
 		}
 	}
 
@@ -301,7 +312,41 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	}
 	
 	@Transactional
-	private void save(Device device) {
+	private Device save(Device device) {
+
+		boolean initialized = device.isInitialized();
+		ActionTimer timer = device.getTimer();
+		Map<String, ActionTimer> groupTimers = new HashMap<>();
+		
+		if(device.getGroups()!=null) {
+			
+			for(Group group : device.getGroups()) {
+				groupTimers.put(group.getName(), group.getTimer());
+			}
+		}
+		
+		Long id  = deviceRepository.save(device).getId();
+		device = deviceRepository.findById(id).orElse(null);
+		
+		int index = getDeviceIndex(id);
+		
+		if(index>-1) {
+			devices.set(index, device);
+		} else {
+			devices.add(device);
+		}
+		
+		device.setInitialized(initialized);
+		device.setTimer(timer);
+		
+		if(device.getGroups()!=null) {
+			for(Group group : device.getGroups()) {
+				group.setTimer(groupTimers.get(group.getName()));
+			}
+		}
+		
+		return device;
+		/*
 		device.setId(deviceRepository.save(device).getId());
 		
 		if(device.getGroups()!=null && !device.getGroups().isEmpty()) {
@@ -326,6 +371,7 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 				
 			}
 		}
+		*/
 	}
 
 }

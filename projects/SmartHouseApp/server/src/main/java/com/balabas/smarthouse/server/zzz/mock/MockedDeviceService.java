@@ -85,7 +85,7 @@ public class MockedDeviceService implements InitializingBean {
 
 	public void initMocks() throws IOException {
 		log.info("-----Server context was started MockedDevice-----");
-		reqs = ServerValuesMockUtil.getDevicesMock(5);
+		reqs = ServerValuesMockUtil.getDevicesMock(1);
 
 		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(reqs.size());
 		
@@ -216,7 +216,7 @@ public class MockedDeviceService implements InitializingBean {
 
 			String expected = serverKeys.get(deviceId);
 			if (!expected.equals(receivedKey)) {
-				log.error("bad key");
+				log.debug("bad key");
 			}
 		}
 

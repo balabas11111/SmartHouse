@@ -16,6 +16,10 @@ import lombok.Data;
 @Data
 @MappedSuperclass
 public class ItemAbstract implements IItemAbstract {
+
+	public static final String PROP_ID = "id";
+	public static final String PROP_NAME = "name";
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected Long id = 0L;
@@ -23,7 +27,7 @@ public class ItemAbstract implements IItemAbstract {
 	protected String description;
 	@Enumerated(EnumType.STRING)
 	protected Emoji emoji;
-	
+
 	@Override
 	public void setDescriptionIfEmpty(String description) {
 		if (StringUtils.isEmpty(this.description)) {
