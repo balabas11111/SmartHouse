@@ -312,7 +312,8 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	}
 	
 	@Transactional
-	private Device save(Device device) {
+	@Override
+	public Device save(Device device) {
 
 		boolean initialized = device.isInitialized();
 		ActionTimer timer = device.getTimer();

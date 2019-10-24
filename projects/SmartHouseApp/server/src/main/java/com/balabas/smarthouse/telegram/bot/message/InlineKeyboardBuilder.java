@@ -143,7 +143,12 @@ public class InlineKeyboardBuilder {
 		List<InlineKeyboardButton> rowD = new ArrayList<>();
     	
     	String textD = buttons.getButton(device.getEmoji(), device.getDescription() + " : " + "редактировать описание");
-    	String callbackD = Action.callback(ACTION_TYPE_EDIT_DEVICE_DESCRIPTION, "", device.getName());
+    	
+    	String data = new JSONObject()
+				.put(ACTION_DATA_FIELD_NAME, DeviceConstants.ENTITY_DEVICE_DEVICE_DESCRIPTION).toString();
+
+    	
+    	String callbackD = Action.callback(ACTION_TYPE_EDIT_DEVICE_DESCRIPTION, data, device.getName());
     	
 		rowD.add(createInlineKeyboardButton(textD, callbackD));
 		

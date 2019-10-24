@@ -49,4 +49,6 @@ public interface IDeviceManageService {
 
 	IEntityFieldEnabledValue getEntityFieldEnabledValueById(Long id);
 
+	Device save(Device device);
+
 }

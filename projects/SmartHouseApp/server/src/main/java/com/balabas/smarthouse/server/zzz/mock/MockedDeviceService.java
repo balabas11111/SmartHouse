@@ -85,7 +85,7 @@ public class MockedDeviceService implements InitializingBean {
 
 	public void initMocks() throws IOException {
 		log.info("-----Server context was started MockedDevice-----");
-		reqs = ServerValuesMockUtil.getDevicesMockedRegisterRequest(5);
+		reqs = ServerValuesMockUtil.getDevicesMockedRegisterRequest(1);
 
 		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(reqs.size());
 		

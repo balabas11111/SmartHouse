@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.balabas.smarthouse.server.DeviceConstants;
+import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
@@ -20,6 +22,8 @@ import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENABLED_VALUE;
 import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENTITY;
 import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENTITY_FIELD;
 import static com.balabas.smarthouse.server.view.Action.ID_TYPE_GROUP;
+
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_DESCRIPTION;
 
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView.EDC_CLASS_VIEW_INPUT;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView.EDC_CLASS_VIEW_LABEL;
@@ -115,35 +119,49 @@ public class ActionService implements IActionService {
 
 		Map<String, Object> params = (new JSONObject(action.getData())).toMap();
 
-		Entity entity = deviceService.getEntityById(action.getTargetId());
-
-		entity.getEntityFields().stream().forEach(ef -> {
-			if (params.containsKey(ef.getName()) && !ef.isReadOnly() && ef.getClazz().equals(String.class)
-					&& (EDC_CLASS_VIEW_LABEL.equals(ef.getViewClass())
-							|| EDC_CLASS_VIEW_INPUT.equals(ef.getViewClass()))) {
-				// field is string and should be saved on server. No need to send it to device
-
-				try {
-					Object val = params.get(ef.getName());
-					ef.setValueStr(val.toString());
-
-					if (ef.getName().equals(entity.getDescriptionField())) {
-						entity.setDescription(val.toString());
+		Device device = null;
+		
+		if (params.containsKey(ENTITY_DEVICE_DEVICE_DESCRIPTION)){
+			
+			String description = params.get(ENTITY_DEVICE_DEVICE_DESCRIPTION).toString();
+			device = deviceService.getManagedDeviceByName(action.getDeviceName());
+			
+			device.setDescription(description);
+			
+			params.remove(ENTITY_DEVICE_DEVICE_DESCRIPTION);
+			
+		} else {
+			Entity entity = deviceService.getEntityById(action.getTargetId());
+			device = entity.getGroup().getDevice();
+	
+			entity.getEntityFields().stream().forEach(ef -> {
+				if (params.containsKey(ef.getName()) && !ef.isReadOnly() && ef.getClazz().equals(String.class)
+						&& (EDC_CLASS_VIEW_LABEL.equals(ef.getViewClass())
+								|| EDC_CLASS_VIEW_INPUT.equals(ef.getViewClass()))) {
+					// field is string and should be saved on server. No need to send it to device
+	
+					try {
+						Object val = params.get(ef.getName());
+						ef.setValueStr(val.toString());
+	
+						if (ef.getName().equals(entity.getDescriptionField())) {
+							entity.setDescription(val.toString());
+						}
+	
+						params.remove(ef.getName());
+					} catch (Exception e) {
+						log.error(e);
+						throw new IllegalArgumentException("Bad value field " + ef.getName());
 					}
-
-					params.remove(ef.getName());
-				} catch (Exception e) {
-					log.error(e);
-					throw new IllegalArgumentException("Bad value field " + ef.getName());
 				}
-			}
-		});
-
+			});
+		}
 		if (params.size() > 0) {
 			deviceService.sendDataToDevice(action.getDeviceName(), action.getGroupName(), action.getEntityName(), params);
 			return true;
 		}
 
+		deviceService.save(device);
 		return false;
 	}
 

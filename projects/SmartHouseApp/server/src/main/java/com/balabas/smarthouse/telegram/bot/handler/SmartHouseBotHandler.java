@@ -36,6 +36,7 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_GROUPS_
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_NAME;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_DESCRIPTION;
 
 @Log4j2
 @Component
@@ -134,6 +135,11 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 				break;
 			case ACTION_TYPE_EDIT_ENTITITY_FIELD:
 				msgs.add(messageBuilder.getFieldToEdit(action, context));
+				action.setActionRebuildData(ACTION_TYPE_SEND_DATA_TO_DEVICE);
+				currentEditActions.put(context.getChatId(), action);
+				break;
+			case ACTION_TYPE_EDIT_DEVICE_DESCRIPTION:
+				msgs.add(messageBuilder.getDeviceDescriptionToEdit(action, context));
 				action.setActionRebuildData(ACTION_TYPE_SEND_DATA_TO_DEVICE);
 				currentEditActions.put(context.getChatId(), action);
 				break;

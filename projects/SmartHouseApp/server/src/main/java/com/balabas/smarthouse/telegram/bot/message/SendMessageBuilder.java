@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 
+import com.balabas.smarthouse.server.DeviceConstants;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.Device;
@@ -158,6 +159,15 @@ public class SendMessageBuilder {
 		cont.setText(text);
 
 		return cont.createMsg(inlineKeyboard.getFieldsOfEntityInlineKeyboard(entity));
+	}
+	
+	public SendMessage getDeviceDescriptionToEdit(Action action, ReplyContext context) {
+		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceName());
+		
+		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECTED_FIELD,
+				device.getDescription(), DeviceConstants.ENTITY_DEVICE_DEVICE_DESCRIPTION, "Название", device.getDescription());
+
+		return createHtmlMessage(context.getChatId(), text);
 	}
 	
 	public SendMessage getFieldToEdit(Action action, ReplyContext context) {
