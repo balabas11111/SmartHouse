@@ -319,6 +319,7 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 		ActionTimer timer = device.getTimer();
 		Map<String, ActionTimer> groupTimers = new HashMap<>();
 		Map<String, Set<IEntityField>> generatedFields = new HashMap<>();
+		Map<String, Object> fieldValues = new HashMap<>();
 		
 		if(device.getGroups()!=null) {
 			
@@ -330,6 +331,13 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 						if(entity.getGeneratedFields()!=null && !entity.getGeneratedFields().isEmpty()) {
 							String key = group.getName() + entity.getName();
 							generatedFields.put(key, entity.getGeneratedFields());
+						}
+						if(entity.getEntityFields()!=null && !entity.getEntityFields().isEmpty()) {
+							for(IEntityField entityField : entity.getEntityFields()) {
+								String key = group.getName() + entity.getName() + entityField.getName();
+								
+								fieldValues.put(key, entityField.getValue());
+							}
 						}
 					}
 				}
@@ -360,6 +368,16 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 						
 						if(generatedFields.containsKey(key)) {
 							entity.setGeneratedFields(generatedFields.get(key));
+						}
+						
+						if(entity.getEntityFields()!=null && !entity.getEntityFields().isEmpty()) {
+							for(IEntityField entityField : entity.getEntityFields()) {
+								String keyEntityField = group.getName() + entity.getName() + entityField.getName();
+								
+								if(entityField.getValueObj() == null && fieldValues.containsKey(keyEntityField)) {
+									entityField.setValueWithNoCheck(fieldValues.get(keyEntityField));
+								}
+							}
 						}
 					}
 				}

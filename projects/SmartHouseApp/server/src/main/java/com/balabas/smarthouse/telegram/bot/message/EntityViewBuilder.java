@@ -311,14 +311,18 @@ public class EntityViewBuilder {
 		if (fields != null && !fields.isEmpty()) {
 			Map<String, String> keyReplacement = new HashMap<>();
 
-			for (IEntityField entityField : fields) {
-				keyReplacement.put("_" + entityField.getTemplateName() + "_", entityField.getValueStr());
-				keyReplacement.put("_" + entityField.getTemplateName() + ".emoji_",
-						(Optional.ofNullable(entityField.getEmoji()).orElse(Emoji.EMPTY_EMOJI)).toString());
-			}
-
-			for (Entry<String, String> entry : keyReplacement.entrySet()) {
-				templateText = templateText.replaceAll(entry.getKey(), entry.getValue());
+			try {
+				for (IEntityField entityField : fields) {
+					keyReplacement.put("_" + entityField.getTemplateName() + "_", entityField.getValueStr());
+					keyReplacement.put("_" + entityField.getTemplateName() + ".emoji_",
+							(Optional.ofNullable(entityField.getEmoji()).orElse(Emoji.EMPTY_EMOJI)).toString());
+				}
+	
+				for (Entry<String, String> entry : keyReplacement.entrySet()) {
+					templateText = templateText.replaceAll(entry.getKey(), entry.getValue());
+				}
+			}catch(Exception e) {
+				log.debug("");
 			}
 		}
 

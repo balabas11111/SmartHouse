@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 @Entity
 public class EntityFieldString extends EntityField<String> implements IEntityField<String> {
 
-	protected String value;
+	private String value;
 	
 	@Override
 	protected void setValue(String value) {
@@ -15,6 +15,11 @@ public class EntityFieldString extends EntityField<String> implements IEntityFie
 	@Override
 	protected String fromString(String value) {
 		return value;
+	}
+	
+	@Override
+	public String getValue() {
+		return this.value;
 	}
 
 }

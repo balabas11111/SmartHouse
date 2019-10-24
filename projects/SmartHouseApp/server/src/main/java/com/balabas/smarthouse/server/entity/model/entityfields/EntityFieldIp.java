@@ -20,7 +20,7 @@ public class EntityFieldIp extends EntityField<InetAddress> implements IEntityFi
 	
 	@Override
 	public void setValueWithCheck(InetAddress value) throws BadValueException {
-		this.value = value;
+		setValue(value);
 	}
 	
 	void setValue(String value) throws BadValueException{
@@ -29,7 +29,7 @@ public class EntityFieldIp extends EntityField<InetAddress> implements IEntityFi
 	
 	@Override
 	public void setValueWithNoCheck(InetAddress value) {
-		this.value = value;
+		setValue(value);
 	}
 	
 	@Override
@@ -37,7 +37,7 @@ public class EntityFieldIp extends EntityField<InetAddress> implements IEntityFi
 		try {
 			InetAddress addr = InetAddress.getByName(value);
 			validateValue(addr);
-			this.value = addr;
+			setValue(addr);
 		} catch (UnknownHostException e) {
 			log.error(e);
 			throw new BadValueException(e.getMessage());

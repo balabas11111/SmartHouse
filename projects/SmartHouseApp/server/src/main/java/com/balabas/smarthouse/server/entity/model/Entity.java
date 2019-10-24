@@ -38,9 +38,9 @@ public class Entity extends ItemAbstract implements IEntity {
     @JoinColumn(name="group_id", nullable=false)
 	private Group group;
 	
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
 	private Set<String> grouppedFieldsIds;
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
 	private Set<String> grouppedFieldsNames;
 	@Transient
 	private Set<IEntityField> generatedFields;

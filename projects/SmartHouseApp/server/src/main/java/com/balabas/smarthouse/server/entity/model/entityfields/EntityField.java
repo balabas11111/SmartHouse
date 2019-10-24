@@ -39,9 +39,8 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
     @JoinColumn(name="entity_id", nullable=false)
 	private Entity entity;
 	
-	@Getter
 	@Transient
-	protected T value;
+	private T value;
 
 	@Getter	@Setter
 	protected boolean readOnly;
@@ -105,6 +104,11 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 		setValueWithNoCheck(fromString(value));
 	}
 
+	@Override
+	public T getValue() {
+		return this.value;
+	}
+	
 	@Override
 	public String getValueStr() {
 		if (getValue() == null) {
