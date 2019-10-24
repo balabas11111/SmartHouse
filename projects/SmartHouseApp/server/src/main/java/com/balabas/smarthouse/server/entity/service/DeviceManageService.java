@@ -1,11 +1,11 @@
 package com.balabas.smarthouse.server.entity.service;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.json.JSONObject;
@@ -299,16 +299,19 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 		Device device = getManagedDeviceByName(deviceName);
 
 		if (device == null) {
-			throw new ResourceNotFoundException(deviceName);
+			throw new IllegalArgumentException("device name not found" + deviceName);
 		}
 
 		IEntity entity = device.getGroup(groupName).getEntity(entityName);
 
-		String result = deviceRequestor.executePostDataOnDeviceEntity(device, entity, values);
-		processDataReceivedFromDevice(device, result);
-
-		return result;
-
+		try {
+			String result = deviceRequestor.executePostDataOnDeviceEntity(device, entity, values);
+			processDataReceivedFromDevice(device, result);
+			return result;
+		} catch(Exception e) {
+			log.error(e);
+			throw e; 
+		}
 	}
 	
 	@Transactional
@@ -318,7 +321,7 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 		boolean initialized = device.isInitialized();
 		ActionTimer timer = device.getTimer();
 		Map<String, ActionTimer> groupTimers = new HashMap<>();
-		Map<String, Set<IEntityField>> generatedFields = new HashMap<>();
+		//Map<String, Set<IEntityField>> generatedFields = new HashMap<>();
 		Map<String, Object> fieldValues = new HashMap<>();
 		
 		if(device.getGroups()!=null) {
@@ -328,10 +331,10 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 				
 				if (group.getEntities()!=null && !group.getEntities().isEmpty()) {
 					for(Entity entity : group.getEntities()) {
-						if(entity.getGeneratedFields()!=null && !entity.getGeneratedFields().isEmpty()) {
+						/*if(entity.getGeneratedFields()!=null && !entity.getGeneratedFields().isEmpty()) {
 							String key = group.getName() + entity.getName();
 							generatedFields.put(key, entity.getGeneratedFields());
-						}
+						}*/
 						if(entity.getEntityFields()!=null && !entity.getEntityFields().isEmpty()) {
 							for(IEntityField entityField : entity.getEntityFields()) {
 								String key = group.getName() + entity.getName() + entityField.getName();
@@ -364,12 +367,12 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 				
 				if (group.getEntities()!=null && !group.getEntities().isEmpty()) {
 					for(Entity entity : group.getEntities()) {
-						String key = group.getName() + entity.getName();
+						/*String key = group.getName() + entity.getName();
 						
 						if(generatedFields.containsKey(key)) {
 							entity.setGeneratedFields(generatedFields.get(key));
 						}
-						
+						*/
 						if(entity.getEntityFields()!=null && !entity.getEntityFields().isEmpty()) {
 							for(IEntityField entityField : entity.getEntityFields()) {
 								String keyEntityField = group.getName() + entity.getName() + entityField.getName();

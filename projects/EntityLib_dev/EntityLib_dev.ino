@@ -13,8 +13,8 @@
 
 Bme280sensor bme280( (char*) "Микроклимат воздуха");
 Bh1750sensor bh1750( (char*) "Уровень освещения");
-OutputPin rele(BUILTIN_LED,  (char*) "Диод на плате", "built In LED",  LOW);
-DHT22sensor dht22(D5, (char*) "Микроклимат воздуха DHT");
+OutputPin rele(BUILTIN_LED,  (char*) "Диод на плате", "built In LED",  LOW, false);
+DHT22sensor dht22(D5, (char*) "Микроклимат воздуха DHT", DHT22);
 DS18D20sensor ds18d20(D6, (char*) "Температура пола");
 
 Entity* entities[] = { &bme280, &bh1750, &rele, &dht22, &ds18d20 };

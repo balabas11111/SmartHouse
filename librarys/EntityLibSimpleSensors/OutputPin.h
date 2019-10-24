@@ -23,10 +23,12 @@
 class OutputPin:public Pin, public Entity, public EntityUpdate {
 public:
 	OutputPin(uint8_t pin, char* descr = (char*)OUTPUT_PIN_DESCRIPTION, const char* name = OUTPUT_PIN_NAME,
-			uint8_t onLevel = HIGH,
+			uint8_t onLevel = HIGH, bool ro = true,
 			std::function<void(void)> selfEventProcessFunction = nullptr, bool applicationDispatcher = false) :
 			Pin(pin, OUTPUT, onLevel),
 			Entity(GROUP_SENSORS, name, descr, selfEventProcessFunction, applicationDispatcher, true, true) {
+
+		this->ro = ro;
 	}
 
 	virtual ~OutputPin() {
@@ -53,7 +55,7 @@ public:
 
 	virtual void doAppendFieldsSwg(JsonObject& swgJson) override{
 		EntityDescriptor::appendSwgEntityParams(swgJson, EMOJI_BULB);
-		if(!readOnly) {
+		if(!ro) {
 			EntityDescriptor::appendSwgFieldBooleanOnOff(swgJson, ON_FIELD, EDC_DESCR_STATE);
 		}
 	}
@@ -62,9 +64,14 @@ public:
 		UNUSED(response);
 		uint8_t on = isOn();
 		uint8_t onPosted = 0;
+		Serial.println(FPSTR("Output pin do post"));
+
 		if(params.is<char*>(ON_FIELD) && (strcmp("1",params[ON_FIELD])==0 || strcmp("true",params[ON_FIELD])==0)){
 			onPosted = 1;
 		}
+
+		Serial.println(onPosted);
+
 		if (on !=onPosted) {
 			Serial.print(this->getName());
 			Serial.print(FPSTR(" on="));
@@ -81,7 +88,7 @@ public:
 		UNUSED(jsonToFile);
 	}
 protected:
-	bool readOnly = true;
+	bool ro = true;
 
 	bool validateMode() override{
 		if(pinMod == OUTPUT){

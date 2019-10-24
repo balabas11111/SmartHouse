@@ -151,12 +151,12 @@ public class SendMessageBuilder {
 		return cont.createMsg(inlineKeyboard.getEntitiesOfDeviceInlineKeyboard(device));
 	}
 	
-	public SendMessage getFieldsOfDeviceToEdit(Action action, ReplyContext cont) {
+	public SendMessage getFieldsOfEntityToEdit(Action action, ReplyContext cont) {
 		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceName());
 		IEntity entity = device.getEntity(action.getEntityName());
 
 		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECT_FIELD,
-				Emoji.GEAR, device.getDescription());
+				Emoji.GEAR, device.getDescription(), entity.getDescription());
 
 		cont.setText(text);
 

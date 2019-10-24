@@ -32,6 +32,7 @@ import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassC
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.FALSE;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.HIGH;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.TRUE;
+import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_FIELD_COUNT_DESCR;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -218,10 +219,15 @@ public class SmartHouseItemBuildService {
 					}
 
 					if (entityField != null) {
-						setOk = setEntityFieldValueWithNoCheck(entityField, valStr, setOk);
+						if(!(!entityField.isReadOnly() 
+								&& entity.getDescriptionField().equals(entityField.getTemplateName())
+								&& !entityField.getName().equals(entityField.getTemplateName()))) {
+							setOk = setEntityFieldValueWithNoCheck(entityField, valStr, setOk);
+						} else {
+							setOk = true;
+						}
 					} else {
 						createEntityFieldValue(entity, entityJson, entityFieldName);
-
 					}
 				} catch (Exception e) {
 					log.error("field " + entityFieldName + " : ", e);
@@ -381,7 +387,10 @@ public class SmartHouseItemBuildService {
 			if (ENTITY_FIELD_STATUS.equals(fieldName)) {
 				processEntityStatus(entity, entityJson);
 			} else if (ENTITY_FIELD_SENSOR_ITEMS.equals(fieldName)) {
-				processGrouppedValues(entity, entityJson);
+				EntityField countField =processGrouppedValues(entity, entityJson);
+				if(countField!=null) {
+					entityFields.add(countField);
+				}
 			} else if (!ENTITY_FIELD_SWG.equals(fieldName) && !ENTITY_FIELD_ITEM_CLASS.equals(fieldName)) {
 				EntityField field = buildEntityFieldFromJson(entity, entityJson, fieldName);
 				entityFields.add(field);
@@ -403,7 +412,7 @@ public class SmartHouseItemBuildService {
 		}
 	}
 
-	private static void processGrouppedValues(Entity entity, JSONObject entityJson) {
+	private static EntityField processGrouppedValues(Entity entity, JSONObject entityJson) {
 		JSONObject sensorItemsJson = entityJson.getJSONObject(ENTITY_FIELD_SENSOR_ITEMS);
 
 		log.debug("sensorItemsJson : " + sensorItemsJson);
@@ -449,18 +458,25 @@ public class SmartHouseItemBuildService {
 			}
 
 			try {
-				IEntityField countField = new EntityFieldInteger();
+				
+				IEntityField countField = Optional.ofNullable(entity.getEntityField(ENTITY_FIELD_COUNT)).orElse(new EntityFieldInteger());
+				countField.setEntity(entity);
 				countField.setName(ENTITY_FIELD_COUNT);
+				countField.setDescriptionIfEmpty(EDC_FIELD_COUNT_DESCR);
+				countField.setViewClass(EntityFieldClassView.EDC_CLASS_VIEW_LABEL);
 				countField.setReadOnly(true);
 				countField.setValueWithNoCheck(Integer.valueOf(count));
 
-				entity.addGeneratedField(countField);
+				//entity.addGeneratedField(countField);
+				return (EntityField) countField;
 			} catch (IllegalArgumentException e) {
 				log.error(e);
 			}
 
 			log.debug("Sensor items added");
 		}
+		
+		return null;
 
 	}
 

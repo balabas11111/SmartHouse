@@ -13,6 +13,7 @@
 #ifndef SENSORS_MOCKED
 #include <DHT.h>
 #else
+#define DHT22 22
 #include <DHT22Mock.h>
 #endif
 #include "Emoji.h"

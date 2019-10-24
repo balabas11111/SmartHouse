@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,8 @@ public class ActionExecuteService implements IActionExecuteService {
 	@Autowired
 	protected SendMessageBuilder messageBuilder;
 	
-    @Autowired
-    public void setExecutors(List<IActionExecutor> exec) {
+    @Autowired(required = false)
+    public void setExecutors(Set<IActionExecutor> exec) {
         exec.stream().forEach( e -> executors.put(e.getActionName(), e));
     }
 	

@@ -110,7 +110,7 @@ void EntityManager::executeMethod(EntityJsonRequestResponse* reqResp, const char
 
 void EntityManager::executeMethod(JsonObject& params, JsonObject& response,
 		const char* method) {
-	/*
+
 	JsonObjectUtil::printWithPreffix(PARAMETERS, params);
 		JsonObjectUtil::printWithPreffix(RESPONSE, response);
 
@@ -118,7 +118,7 @@ void EntityManager::executeMethod(JsonObject& params, JsonObject& response,
 	Serial.print(FPSTR(" "));
 
 
-
+	/*
 	JsonObject& json = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(response,
 										_DEVICE, _INFO);
 
@@ -129,7 +129,7 @@ void EntityManager::executeMethod(JsonObject& params, JsonObject& response,
 */
 
 	this->getConf()->addDeviceInfoToJson(response);
-	//Serial.println(FPSTR("info added"));
+	Serial.println(FPSTR("info added"));
 	bool changed = false;
 
 	if (hasNoGroupNoName(params) || hasAllGroupNoName(params)) {
@@ -216,10 +216,10 @@ bool EntityManager::executeMethodOnEntity(JsonObject& params, JsonObject& respon
 			allowed = true;
 		}
 	} else if (strcmp(method, REQUEST_POST) == 0) {
-		Serial.print(FPSTR("POST"));
+		Serial.print(FPSTR("POST on entity"));
 		if (entity->hasPostMethod()) {
-			/*Serial.print(FPSTR("entity="));
-			Serial.println(entity->getName());*/
+			Serial.print(FPSTR("entity="));
+			Serial.println(entity->getName());
 
 			JsonObject& paramsToPost = JsonObjectUtil::getFieldIfKeyExistsOrDefault<JsonObject&>(
 					params, BODY, params);
@@ -232,6 +232,8 @@ bool EntityManager::executeMethodOnEntity(JsonObject& params, JsonObject& respon
 			entity->executePost(paramsToPost, responceToPost);
 			allowed = true;
 			changed = entity->isMarkedAsChanged();
+		} else {
+			Serial.println(FPSTR("Post is not allowed"));
 		}
 	} else {
 		JsonObjectUtil::setField(response, MESSAGE, BAD_METHOD);

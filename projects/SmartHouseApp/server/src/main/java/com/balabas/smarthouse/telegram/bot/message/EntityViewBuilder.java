@@ -62,7 +62,7 @@ public class EntityViewBuilder {
 
 		// if template is presented use template. else build by descriptor
 		if (//EntityClass.DEFAULT.equals(entity.getRenderer()) &&
-				entityValueMapToTemplate(entity.getName(), entity.getEntityFields(), entity.getGeneratedFields(), builder,
+				entityValueMapToTemplate(entity.getName(), entity.getEntityFields(),/* entity.getGeneratedFields(),*/ builder,
 				true, false)) {
 
 			if (entity.getGrouppedFieldsIds() != null && !entity.getGrouppedFieldsIds().isEmpty()) {
@@ -81,7 +81,7 @@ public class EntityViewBuilder {
 						}
 					});
 
-					entityValueMapToTemplate(entName, siVals, entity.getGeneratedFields(), builder, true, true);
+					entityValueMapToTemplate(entName, siVals,/* entity.getGeneratedFields(),*/ builder, true, true);
 				});
 			}
 
@@ -260,7 +260,7 @@ public class EntityViewBuilder {
 	}
 
 	private boolean entityValueMapToTemplate(String entName, Set<IEntityField> entityFields,
-			Set<IEntityField> extraFields, StringBuilder builder, boolean addNextLine, boolean renderAsTextIfFail) {
+			/*Set<IEntityField> extraFields,*/ StringBuilder builder, boolean addNextLine, boolean renderAsTextIfFail) {
 		if (entName == null || entityFields == null || entityFields.isEmpty()) {
 			return true;
 		}
@@ -276,7 +276,7 @@ public class EntityViewBuilder {
 
 				result = fieldsToToTemplate(entityFields, result);
 
-				result = fieldsToToTemplate(extraFields, result);
+				//result = fieldsToToTemplate(extraFields, result);
 
 			} catch (NullPointerException e) {
 				// use standard renderer for item
@@ -284,7 +284,7 @@ public class EntityViewBuilder {
 
 				if (renderAsTextIfFail) {
 					result += fieldToStr(entityFields);
-					result += fieldToStr(extraFields);
+					//result += fieldToStr(extraFields);
 					return true;
 				} else {
 					return false;

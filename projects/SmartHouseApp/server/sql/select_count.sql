@@ -3,7 +3,7 @@ correct values
 1 device,
 3 groups,
 7 entities,
-54 fields,
+55 fields,
 3 enabledValue,
 3 grouppedId,
 2 groupped name

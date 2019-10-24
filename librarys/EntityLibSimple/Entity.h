@@ -39,7 +39,12 @@ public:
 			std::function<void(const char*, const char*, const char*, JsonVariant)> putToBuffer = nullptr);
 
 	virtual bool validate(){return true;}
-	virtual void init() {};
+	virtual void init() {
+		Serial.print(getName());
+		Serial.print(FPSTR(" hasPost"));
+		Serial.println(hasPost);
+
+	};
 
 	bool isSaveRequired();
 	void setSaveRequired(bool saveRequired);

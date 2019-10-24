@@ -30,7 +30,7 @@ public class BotMessageConstants {
 	public static final String EDIT_DEVICES_BUTTON = "%s Редактировать";
 	
 	public static final String EDIT_DEVICE_SELECT_ENTITY = "%s Редактировать %s. Выберите датчик для редактирования";
-	public static final String EDIT_DEVICE_SELECT_FIELD = "%s Редактировать %s. Выберите поле для редактирования";
+	public static final String EDIT_DEVICE_SELECT_FIELD = "%s Устройство %s. \n Датчик <b>%s</b>. Выберите поле для редактирования";
 	public static final String EDIT_DEVICE_SELECTED_FIELD =  
 			"%s %s\n Редактируем поле (%s) - <b>%s</b>\n Поточное значение %s\n"
 			+ "введите новое значение и нажмите кнопку отправить";

@@ -11,8 +11,6 @@ public interface IEntity extends IStateable, IItemAbstract {
 	Set<IEntityField> getEntityFields();
 	void setEntityFields(Set<IEntityField> fields);
 	
-	Set<IEntityField> getGeneratedFields();
-	
 	int getRemoteId();
 	void setRemoteId(int remoteId);
 	
@@ -37,5 +35,9 @@ public interface IEntity extends IStateable, IItemAbstract {
 	IEntityField getEntityField(String entityFieldName);
 	
 	void addEntityField(IEntityField entityField);
-	void addGeneratedField(IEntityField entityField);
+	
+	/*
+	  void addGeneratedField(IEntityField entityField);
+	  Set<IEntityField> getGeneratedFields();
+	 */
 }

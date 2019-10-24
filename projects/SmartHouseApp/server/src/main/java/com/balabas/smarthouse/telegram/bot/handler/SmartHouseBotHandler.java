@@ -132,7 +132,7 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 				msgs.add(messageBuilder.getEntitiesOfDeviceToEdit(action, context));
 				break;
 			case ACTION_TYPE_EDIT_ENTITITY:
-				msgs.add(messageBuilder.getFieldsOfDeviceToEdit(action, context));
+				msgs.add(messageBuilder.getFieldsOfEntityToEdit(action, context));
 				break;
 			case ACTION_TYPE_EDIT_ENTITITY_FIELD:
 				msgs.add(messageBuilder.getFieldToEdit(action, context));

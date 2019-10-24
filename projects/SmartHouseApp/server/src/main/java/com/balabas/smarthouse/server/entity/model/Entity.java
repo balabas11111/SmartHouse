@@ -42,9 +42,9 @@ public class Entity extends ItemAbstract implements IEntity {
 	private Set<String> grouppedFieldsIds;
 	@ElementCollection(fetch = FetchType.EAGER)
 	private Set<String> grouppedFieldsNames;
-	@Transient
+	/*@Transient
 	private Set<IEntityField> generatedFields;
-
+*/
 	@JsonIgnore
 	@OneToMany(targetEntity = EntityField.class, mappedBy = "entity", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	protected Set<IEntityField> entityFields;
@@ -67,12 +67,12 @@ public class Entity extends ItemAbstract implements IEntity {
 	public void addEntityField(IEntityField entityField) {
 		this.entityFields = addEntityFieldWithCheck(this.entityFields, entityField);
 	}
-
+/*
 	@Override
 	public void addGeneratedField(IEntityField entityField) {
 		this.generatedFields = addEntityFieldWithCheck(this.generatedFields, entityField);
 	}
-
+*/
 	private Set<IEntityField> addEntityFieldWithCheck(Set<IEntityField> fields, IEntityField entityField) {
 		if (fields == null) {
 			fields = new LinkedHashSet<>();

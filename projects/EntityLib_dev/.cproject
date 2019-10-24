@@ -27,25 +27,30 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WiFi}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WiFi/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/utils}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Wire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/FastCRC}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Ticker}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/DHT_sensor_library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Adafruit_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/SPI}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/DallasTemperature}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/OneWire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibMock}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/BH1750}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSimple}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSimpleSensors}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPClient/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266RestClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Adafruit_BME280}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Adafruit_Sensor}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/BH1750}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibMock}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSimple}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSimpleSensors}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/FastCRC}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/utils}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/PubSubClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/PubSubClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_BH1750}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_BME280}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_DHT22}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_DS18D20}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.392278783" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -59,25 +64,30 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WiFi}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WiFi/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/utils}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Wire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/FastCRC}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Ticker}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/DHT_sensor_library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Adafruit_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/SPI}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/DallasTemperature}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/OneWire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibMock}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/BH1750}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSimple}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSimpleSensors}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPClient/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266RestClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Adafruit_BME280}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Adafruit_Sensor}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/BH1750}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibMock}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSimple}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSimpleSensors}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/FastCRC}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/utils}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/PubSubClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/PubSubClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_BH1750}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_BME280}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_DHT22}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_DS18D20}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1644733984" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -91,25 +101,30 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WiFi}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WiFi/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/utils}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Wire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/FastCRC}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Ticker}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/DHT_sensor_library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Adafruit_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/SPI}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/DallasTemperature}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/OneWire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibMock}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/BH1750}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSimple}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSimpleSensors}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPClient/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266RestClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Adafruit_BME280}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/Adafruit_Sensor}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/BH1750}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibMock}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSimple}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLibSimpleSensors}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/FastCRC}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/utils}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/PubSubClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/PubSubClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_BH1750}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_BME280}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_DHT22}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_DS18D20}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.2126147630" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -117,17 +132,6 @@
 							<tool id="io.sloeber.tool.combine.954431760" name="Arduino combiner" superClass="io.sloeber.tool.combine"/>
 							<tool id="io.sloeber.tool.objcopy.eep.1171148880" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep"/>
 							<tool id="io.sloeber.tool.size.1267829990" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
-						</toolChain>
-					</folderInfo>
-					<folderInfo id="io.sloeber.core.toolChain.release.1805553709.2123946176" name="/" resourcePath="libraries/EntityLibSimple/Notifiers">
-						<toolChain id="io.sloeber.core.toolChain.release.1306676441" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
-							<tool id="io.sloeber.tool.sketch.compiler.cpp.861823457" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1936058145"/>
-							<tool id="io.sloeber.tool.compiler.c.815883745" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.68277832"/>
-							<tool id="io.sloeber.tool.sketch.compiler.s.1796755040" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.1049988600"/>
-							<tool id="io.sloeber.tool.ar.989046674" name="Arduino archiver" superClass="io.sloeber.tool.ar.491533296"/>
-							<tool id="io.sloeber.tool.combine.2128481008" name="Arduino combiner" superClass="io.sloeber.tool.combine.954431760"/>
-							<tool id="io.sloeber.tool.objcopy.eep.83971332" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.1171148880"/>
-							<tool id="io.sloeber.tool.size.622233301" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.1267829990"/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>

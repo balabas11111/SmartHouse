@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -106,12 +107,18 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 	@Override
 	public ResponseEntity<String> executePostRequest(String url, HttpHeaders headers,
 			MultiValueMap<String, Object> map) {
-		RestTemplate rest = new RestTemplate();
+		RestTemplate restTemplate = new RestTemplate();
 		
 		HttpEntity<MultiValueMap<String, Object>> request= 
                 new HttpEntity<MultiValueMap<String, Object>>(map, headers);
 		
-		ResponseEntity<String> result =  rest.postForEntity(url, request, String.class);
+		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
+        SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) restTemplate
+                .getRequestFactory();
+        rf.setReadTimeout(5000);
+        rf.setConnectTimeout(5000);
+		
+		ResponseEntity<String> result =  restTemplate.postForEntity(url, request, String.class);
 		return result;
 	}
 }

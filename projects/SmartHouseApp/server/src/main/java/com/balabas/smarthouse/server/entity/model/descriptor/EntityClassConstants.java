@@ -35,9 +35,10 @@ public class EntityClassConstants {
 	public static final String EDC_FIELD_BOOLEAN_VALUE_ON  = "true";
 	public static final String EDC_FIELD_BOOLEAN_VALUE_OFF = "false";
 
-	public static final String EDC_FIELD_BOOLEAN_VALUE_ON_DESCR  = "Включить";
-	public static final String EDC_FIELD_BOOLEAN_VALUE_OFF_DESCR = "Отключить";
+	public static final String EDC_FIELD_BOOLEAN_VALUE_ON_DESCR      = "Включить";
+	public static final String EDC_FIELD_BOOLEAN_VALUE_OFF_DESCR     = "Отключить";
 	public static final String EDC_FIELD_BOOLEAN_VALUE_RESTART_DESCR = "Перезапустить";
+	public static final String EDC_FIELD_COUNT_DESCR                 = "Количество";
 	
 	
 	public static final String ENTITY_CLASS_PERSISTOR              = "ecP";
