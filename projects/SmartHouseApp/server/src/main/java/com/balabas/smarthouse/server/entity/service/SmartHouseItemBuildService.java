@@ -210,13 +210,15 @@ public class SmartHouseItemBuildService {
 				try {
 					IEntityField entityField = entity.getEntityField(entityFieldName);
 					Object valueObj = entityJson.get(entityFieldName);
+					
+					String valStr = valueObj.toString();
 
 					if (entity.getDescriptionField().equals(entityFieldName)) {
 						entity.setDescriptionIfEmpty(valueObj.toString());
 					}
 
 					if (entityField != null) {
-						setOk = setEntityFieldValueWithNoCheck(entityField, valueObj, setOk);
+						setOk = setEntityFieldValueWithNoCheck(entityField, valStr, setOk);
 					} else {
 						createEntityFieldValue(entity, entityJson, entityFieldName);
 
@@ -230,9 +232,9 @@ public class SmartHouseItemBuildService {
 		return setOk;
 	}
 
-	private static boolean setEntityFieldValueWithNoCheck(IEntityField entityField, Object value, boolean setOk) {
+	private static boolean setEntityFieldValueWithNoCheck(IEntityField entityField, String value, boolean setOk) {
 		try {
-			entityField.setValueWithNoCheck(value);
+			entityField.setValueWithNoCheckStr(value);
 			return setOk;
 		} catch (IllegalArgumentException e) {
 			log.error(e);

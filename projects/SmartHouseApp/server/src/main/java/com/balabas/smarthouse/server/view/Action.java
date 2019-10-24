@@ -33,6 +33,7 @@ public class Action {
 	public static final String ACTION_TYPE_VIEW_GROUPS_OF_DEVICE     = "vgd";
 	public static final String ACTION_TYPE_VIEW_ENTITIES_OF_GROUP    = "veg";
 	public static final String ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE   = "eeg";
+	public static final String ACTION_TYPE_EDIT_DEVICE_DESCRIPTION   = "edd";
 	public static final String ACTION_TYPE_EDIT_ENTITITY             = "een";
 	public static final String ACTION_TYPE_EDIT_ENTITITY_FIELD       = "eef";
 	public static final String ACTION_TYPE_VIEW_ENTITITY             = "ven";

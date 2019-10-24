@@ -24,6 +24,7 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_GROUPS_
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_DESCRIPTION;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY_FIELD;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE;
 
@@ -138,6 +139,15 @@ public class InlineKeyboardBuilder {
 	public InlineKeyboardMarkup getEntitiesOfDeviceInlineKeyboard(IDevice device) {
 		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		
+		List<InlineKeyboardButton> rowD = new ArrayList<>();
+    	
+    	String textD = buttons.getButton(device.getEmoji(), device.getDescription() + " : " + "редактировать описание");
+    	String callbackD = Action.callback(ACTION_TYPE_EDIT_DEVICE_DESCRIPTION, "", device.getName());
+    	
+		rowD.add(createInlineKeyboardButton(textD, callbackD));
+		
+		rowsInline.add(rowD);
 		
 		device.getEntities().stream()
 			.sorted((e1, e2) -> e1.getName().compareToIgnoreCase(e2.getName()))

@@ -7,9 +7,9 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 
 import org.hibernate.Criteria;
@@ -48,8 +48,8 @@ public abstract class AbstractDAOImpl<T extends ItemAbstract> implements Abstrac
 		return result;
 	}
 	
-	public Query getNamedQuery(String name){
-		Query result=getSession().getNamedQuery(name);
+	public Query<?> getNamedQuery(String name){
+		Query<?> result=getSession().getNamedQuery(name);
 		return result;
 	}
 	
@@ -81,15 +81,15 @@ public abstract class AbstractDAOImpl<T extends ItemAbstract> implements Abstrac
 		return result;
 	}
 	
-	public Query createHQLQuery(String query,@SuppressWarnings("rawtypes") Class clazz){
+	public Query<?> createHQLQuery(String query,@SuppressWarnings("rawtypes") Class clazz){
 		return createHQLQuery(query,getSession());
 	}
 	
-	public Query createHQLQuery(String query){
+	public Query<?> createHQLQuery(String query){
 		return createHQLQuery(query,getSession());
 	}
 		
-	public NativeQuery createSQLQuery(String query){
+	public NativeQuery<?> createSQLQuery(String query){
 		return createSQLQuery(query,getSession());
 	}
 	
@@ -125,6 +125,9 @@ public abstract class AbstractDAOImpl<T extends ItemAbstract> implements Abstrac
 	}
 	
 	public Criteria createSimpleCriteria() {
+		CriteriaBuilder cb = getSession().getCriteriaBuilder();
+		
+		
 		return getSession().createCriteria(getEntityClass());
 	}
 	
@@ -149,6 +152,7 @@ public abstract class AbstractDAOImpl<T extends ItemAbstract> implements Abstrac
 	}
 	
 	public List<T> getList(Session session){
+		
 		CriteriaQuery<T> criteriaQuery = session.getCriteriaBuilder().createQuery(clazz);
         criteriaQuery.from(clazz);
         
@@ -158,11 +162,11 @@ public abstract class AbstractDAOImpl<T extends ItemAbstract> implements Abstrac
 		return list;
 	}
 	
-	public Query createHQLQuery(String query,Session session){
+	public Query<?> createHQLQuery(String query,Session session){
 		return session.createQuery(query);
 	}
 	
-	public NativeQuery createSQLQuery(String query,Session session){
+	public NativeQuery<?> createSQLQuery(String query,Session session){
 		return session.createSQLQuery(query);
 	}
 	

@@ -10,7 +10,6 @@ import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IEntityRepository;
-import com.balabas.smarthouse.server.exception.BadValueException;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.view.Action;
 
@@ -128,8 +127,12 @@ public class ActionService implements IActionService {
 					Object val = params.get(ef.getName());
 					ef.setValueStr(val.toString());
 
+					if (ef.getName().equals(entity.getDescriptionField())) {
+						entity.setDescription(val.toString());
+					}
+
 					params.remove(ef.getName());
-				} catch (BadValueException e) {
+				} catch (Exception e) {
 					log.error(e);
 					throw new IllegalArgumentException("Bad value field " + ef.getName());
 				}

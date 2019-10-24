@@ -14,7 +14,7 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	Class getClazz();
 	
 	T getValue();
-	void setValue(T value) throws BadValueException;
+	void setValueWithCheck(T value) throws BadValueException;
 	
 	String getTemplateName();
 	void setTemplateName(String templateName);

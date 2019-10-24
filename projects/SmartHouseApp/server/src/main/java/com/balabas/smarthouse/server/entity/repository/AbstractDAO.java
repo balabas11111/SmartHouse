@@ -17,7 +17,7 @@ public interface AbstractDAO<T extends ItemAbstract> {
 	
 	public Session getSession();
 	
-	public Query getNamedQuery(String name);
+	public Query<?> getNamedQuery(String name);
 	
 	public void saveOrUpdate(T item);
 	
@@ -40,11 +40,11 @@ public interface AbstractDAO<T extends ItemAbstract> {
 	
 	public Criteria createSimpleCriteria();
 	
-	public Query createHQLQuery(String query);
+	public Query<?> createHQLQuery(String query);
 	
-	public Query createHQLQuery(String query,@SuppressWarnings("rawtypes") Class clazz);
+	public Query<?> createHQLQuery(String query,@SuppressWarnings("rawtypes") Class clazz);
 	
-	public NativeQuery createSQLQuery(String query);
+	public NativeQuery<?> createSQLQuery(String query);
 	
 	public T getUniqueByName(String name);
 	

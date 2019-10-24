@@ -1,9 +1,11 @@
 package com.balabas.smarthouse.server.entity.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.json.JSONObject;
@@ -60,20 +62,18 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	IEntityFieldRepository entityFieldRepository;
 
 	@Getter
-	private List<Device> devices = new ArrayList<>();
+	private List<Device> devices = Collections.synchronizedList(new ArrayList<>());
 
 	@Override
 	@Transactional
 	public void afterPropertiesSet() throws Exception {
-		/*
+		
 		deviceRepository.findAll().forEach(d ->{
 			d.setState(State.CONSTRUCTED);
-			devices.add(d);
-			deviceRepository.save(d);
+			save(d);
 		}); 
 		
 		log.info("---Loaded persisted devices---");
-		*/
 	}
 	
 	@Override
@@ -317,11 +317,21 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 		boolean initialized = device.isInitialized();
 		ActionTimer timer = device.getTimer();
 		Map<String, ActionTimer> groupTimers = new HashMap<>();
+		Map<String, Set<IEntityField>> generatedFields = new HashMap<>();
 		
 		if(device.getGroups()!=null) {
 			
 			for(Group group : device.getGroups()) {
 				groupTimers.put(group.getName(), group.getTimer());
+				
+				if (group.getEntities()!=null && !group.getEntities().isEmpty()) {
+					for(Entity entity : group.getEntities()) {
+						if(entity.getGeneratedFields()!=null && !entity.getGeneratedFields().isEmpty()) {
+							String key = group.getName() + entity.getName();
+							generatedFields.put(key, entity.getGeneratedFields());
+						}
+					}
+				}
 			}
 		}
 		
@@ -342,36 +352,20 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 		if(device.getGroups()!=null) {
 			for(Group group : device.getGroups()) {
 				group.setTimer(groupTimers.get(group.getName()));
+				
+				if (group.getEntities()!=null && !group.getEntities().isEmpty()) {
+					for(Entity entity : group.getEntities()) {
+						String key = group.getName() + entity.getName();
+						
+						if(generatedFields.containsKey(key)) {
+							entity.setGeneratedFields(generatedFields.get(key));
+						}
+					}
+				}
 			}
 		}
 		
 		return device;
-		/*
-		device.setId(deviceRepository.save(device).getId());
-		
-		if(device.getGroups()!=null && !device.getGroups().isEmpty()) {
-			for(Group group : device.getGroups()) {
-				
-				group.setId(groupRepository.save(group).getId());
-				
-				if(group.getEntities()!=null && !group.getEntities().isEmpty()) {
-					
-					for(Entity entity : group.getEntities()) {
-						entity.setId(entityRepository.save(entity).getId());
-						
-						if(entity.getEntityFields()!=null && !entity.getEntityFields().isEmpty()) {
-							
-							for(IEntityField entityField : entity.getEntityFields()) {
-								
-								entityField.setId(entityFieldRepository.save((EntityField) entityField).getId());
-							}
-						}
-					}
-				}
-				
-			}
-		}
-		*/
 	}
 
 }

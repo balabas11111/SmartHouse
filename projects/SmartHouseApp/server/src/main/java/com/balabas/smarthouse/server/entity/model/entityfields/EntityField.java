@@ -75,29 +75,29 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	}
 
 	@Override
-	public void setValue(T value) throws BadValueException {
+	public void setValueWithCheck(T value) throws BadValueException {
 		validateValue(value);
 
-		this.value = value;
+		setValue(value);
 	}
 	
 	@Override
 	public void validateValue(T value) throws IllegalArgumentException{
 		if (value != null && enabledValues != null && !enabledValues.isEmpty()
 				&& enabledValues.stream().noneMatch(e -> e.getValue().equals(value))) {
-			this.value = null;
+			setValue(null);
 			throw new IllegalArgumentException();
 		}
 	}
 	
 	@Override
 	public void setValueStr(String value) throws BadValueException {
-		setValue(fromString(value));
+		setValueWithCheck(fromString(value));
 	}
 	
 	@Override
 	public void setValueWithNoCheck(T value) {
-		this.value = value;
+		setValue(value);
 	}
 	
 	@Override
@@ -115,7 +115,7 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 
 	@Override
 	public Object getValueObj() {
-		return value;
+		return getValue();
 	}
 	
 	@Override
@@ -147,6 +147,10 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 
 		return enabledValues.stream().filter(ev -> ev.getValue() != null && ev.getValue().equals(getValue()))
 				.findFirst().orElse(null);
+	}
+	
+	protected void setValue(T value) {
+		this.value = value;
 	}
 	
 	protected abstract T fromString(String value);

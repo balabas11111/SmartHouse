@@ -19,7 +19,7 @@ public class EntityFieldIp extends EntityField<InetAddress> implements IEntityFi
 	}
 	
 	@Override
-	public void setValue(InetAddress value) throws BadValueException {
+	public void setValueWithCheck(InetAddress value) throws BadValueException {
 		this.value = value;
 	}
 	
