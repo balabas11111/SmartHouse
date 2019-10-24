@@ -124,6 +124,7 @@ public abstract class AbstractDAOImpl<T extends ItemAbstract> implements Abstrac
 		return (T) criteria.uniqueResult();
 	}
 	
+	@SuppressWarnings({ "deprecation", "unused" })
 	public Criteria createSimpleCriteria() {
 		CriteriaBuilder cb = getSession().getCriteriaBuilder();
 		
@@ -236,7 +237,7 @@ public abstract class AbstractDAOImpl<T extends ItemAbstract> implements Abstrac
 	 
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	public List<T> getOrderedBy(String fieldName,boolean asc){
 		Criteria cr = getSession().createCriteria(clazz);
 		

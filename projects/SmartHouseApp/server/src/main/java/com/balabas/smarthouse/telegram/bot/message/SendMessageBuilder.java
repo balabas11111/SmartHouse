@@ -164,7 +164,7 @@ public class SendMessageBuilder {
 	public SendMessage getDeviceDescriptionToEdit(Action action, ReplyContext context) {
 		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceName());
 		
-		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECTED_FIELD,
+		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECTED_FIELD, device.getEmoji().toString(),
 				device.getDescription(), DeviceConstants.ENTITY_DEVICE_DEVICE_DESCRIPTION, "Название", device.getDescription());
 
 		return createHtmlMessage(context.getChatId(), text);
@@ -179,7 +179,7 @@ public class SendMessageBuilder {
 		IEntityField<?> entityField = entity.getEntityField(fieldName);
 		
 		
-		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECTED_FIELD,
+		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECTED_FIELD, device.getEmoji().toString(),
 				entity.getDescription(), entityField.getName(), entityField.getDescription(), entityField.getValueStr());
 
 		return createHtmlMessage(context.getChatId(), text);

@@ -31,8 +31,8 @@ public class BotMessageConstants {
 	
 	public static final String EDIT_DEVICE_SELECT_ENTITY = "%s Редактировать %s. Выберите датчик для редактирования";
 	public static final String EDIT_DEVICE_SELECT_FIELD = "%s Редактировать %s. Выберите поле для редактирования";
-	public static final String EDIT_DEVICE_SELECTED_FIELD = Emoji.MEMO.toString() + 
-			" %s\n Редактируем поле (%s) - <b>%s</b>\n Поточное значение %s\n"
+	public static final String EDIT_DEVICE_SELECTED_FIELD =  
+			"%s %s\n Редактируем поле (%s) - <b>%s</b>\n Поточное значение %s\n"
 			+ "введите новое значение и нажмите кнопку отправить";
 	
 	public static final String EDIT_DEVICE_SELECT_ENTITY_FIELD_BUTTON = "(%s) Редактировать : %s";

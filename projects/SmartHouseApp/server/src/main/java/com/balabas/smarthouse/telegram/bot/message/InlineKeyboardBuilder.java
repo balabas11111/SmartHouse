@@ -7,6 +7,7 @@ import java.util.List;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -199,8 +200,10 @@ public class InlineKeyboardBuilder {
 			if(!entityField.isReadOnly() && !DeviceConstants.ENTITY_FIELD_ID.equals(entityField.getName())) {
 		    	List<InlineKeyboardButton> row = new ArrayList<>();
 		    	
+		    	String description = StringUtils.isEmpty(entityField.getDescription())?entityField.getValueStr():entityField.getDescription();
+		    	
 		    	String text = buttons.getButton(BotMessageConstants.EDIT_DEVICE_SELECT_ENTITY_FIELD_BUTTON, 
-		    			entityField.getName(), entityField.getDescription());
+		    			entityField.getName(), description);
 		    	
 		    	String data = new JSONObject()
 		    					.put(ACTION_DATA_FIELD_NAME, entityField.getName()).toString();
