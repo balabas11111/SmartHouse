@@ -73,6 +73,8 @@ public class Action {
 	private String idType;
 	@Getter @Setter
 	private Long targetId;
+	@Getter @Setter
+	private String serverName;
 	
 	@Getter
 	private String callbackData;

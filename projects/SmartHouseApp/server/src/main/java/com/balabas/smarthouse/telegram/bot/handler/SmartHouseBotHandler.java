@@ -1,9 +1,7 @@
 package com.balabas.smarthouse.telegram.bot.handler;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +17,7 @@ import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.telegram.bot.AfterBotRegistration;
 import com.balabas.smarthouse.telegram.bot.message.ActionIdentity;
 import com.balabas.smarthouse.telegram.bot.message.ReplyContext;
+import com.balabas.smarthouse.telegram.bot.service.CurrentEditActionService;
 import com.google.common.collect.Lists;
 
 import lombok.extern.log4j.Log4j2;
@@ -48,7 +47,9 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 	@Autowired
 	IActionService actionService;
 	
-	private Map<Long, Action> currentEditActions = new HashMap<>();
+	@Autowired
+	CurrentEditActionService currentEditActions;
+	
 
 	@Override
 	public void onUpdateReceived(Update update) {
@@ -70,7 +71,7 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 		String data = message.getText();
 		
 		Action action = 
-				(currentEditActions.containsKey(message.getChatId()))?
+				(currentEditActions.has(message.getChatId()))?
 						getFieldEditActionByReply(message.getChatId(), data):
 						ActionIdentity.getByData(data);	
 		
@@ -117,15 +118,15 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 		currentEditActions.remove(context.getChatId());
 		
 		action = actionService.getDeviceGroupEntityNameActionByIdAction(action);
+		action.setServerName(authService.getServerName());
 		
 		try {
 			switch (action.getAction()) {
 			case ACTION_TYPE_VIEW_DEVICE_LIST:
-				msgs.addAll(messageBuilder.createDevicesListView(authService.getServerName(), context));
-				//msgs.addAll(messageBuilder.createRefreshDevicesListReplyKeyboard(context));
+				msgs.addAll(messageBuilder.createDevicesListView(action, context));
 				break;
 			case ACTION_TYPE_EDIT_DEVICE_SELECT_LIST:
-				msgs.add(messageBuilder.createDevicesListEdit(authService.getServerName(), context));
+				msgs.add(messageBuilder.createDevicesListEdit(action, context));
 				break;
 			case ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE:
 				msgs.add(messageBuilder.getEntitiesOfDeviceToEdit(action, context));

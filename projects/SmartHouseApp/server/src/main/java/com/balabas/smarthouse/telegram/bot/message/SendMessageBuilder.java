@@ -90,7 +90,8 @@ public class SendMessageBuilder {
 		.stream().sorted(itemAbstractComparator).collect(Collectors.toList());
 	}
 
-	public List<SendMessage> createDevicesListView(String serverName, ReplyContext cont) {
+	public List<SendMessage> createDevicesListView(Action action, ReplyContext cont) {
+		String serverName = action.getServerName();
 		List<SendMessage> msgs = Lists.newArrayList();
 		List<Device> devices = getDevices();
 
@@ -102,7 +103,8 @@ public class SendMessageBuilder {
 		return msgs;
 	}
 	
-	public SendMessage createDevicesListEdit(String serverName, ReplyContext cont) {
+	public SendMessage createDevicesListEdit(Action action, ReplyContext cont) {
+		String serverName = action.getServerName();
 		List<Device> devices = getDevices();
 
 		cont.setText((devices.isEmpty()) ? String.format(BotMessageConstants.NO_DEVICE_MSG, Emoji.WARNING)
