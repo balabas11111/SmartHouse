@@ -29,6 +29,24 @@ bool canLoad, bool canSave) {
 	this->canSave = canSave;
 
 	this->onSetChangedEventFunction = onSetChangedEventFunction;
+/*
+	constructParams += "group";
+	constructParams += group;
+	constructParams += " name=";
+	constructParams += name;
+	constructParams += " descr=";
+	constructParams += descr;
+	constructParams += " appDispatcher=";
+	constructParams += applicationDispatcher;
+	constructParams += " hasGet=";
+	constructParams += hasGet;
+	constructParams += " hasPost=";
+	constructParams += hasPost;
+	constructParams += " canLoad=";
+	constructParams += canLoad;
+	constructParams +=" canSave=";
+	constructParams += canSave;
+	*/
 }
 
 void Entity::preInitialize(int id, std::function<void(void)> eventProcessFunction,

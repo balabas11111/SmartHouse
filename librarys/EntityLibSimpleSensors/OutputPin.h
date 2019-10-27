@@ -34,9 +34,6 @@ public:
 	virtual ~OutputPin() {
 	}
 
-	virtual void init() override {
-	}
-
 	virtual void doUpdate() override {
 	}
 
@@ -64,13 +61,13 @@ public:
 		UNUSED(response);
 		uint8_t on = isOn();
 		uint8_t onPosted = 0;
-		Serial.println(FPSTR("Output pin do post"));
+		//Serial.println(FPSTR("Output pin do post"));
 
 		if(params.is<char*>(ON_FIELD) && (strcmp("1",params[ON_FIELD])==0 || strcmp("true",params[ON_FIELD])==0)){
 			onPosted = 1;
 		}
 
-		Serial.println(onPosted);
+		//Serial.println(onPosted);
 
 		if (on !=onPosted) {
 			Serial.print(this->getName());

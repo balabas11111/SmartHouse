@@ -8,10 +8,11 @@
 #ifndef LIBRARIES_ENTITYLIBSIMPLE_SERVE_SERVERCONNECTIONMANAGER_H_
 #define LIBRARIES_ENTITYLIBSIMPLE_SERVE_SERVERCONNECTIONMANAGER_H_
 
-#define SMART_HOUSE_SERVER_URL_BASE "/api/v1"
-#define SMART_HOUSE_SERVER_URL_PING        "/security/online?deviceId="
-#define SMART_HOUSE_SERVER_URL_REGISTER        "/security/register/"
-#define SMART_HOUSE_SERVER_URL_ON_DATA_CHANGED "/devices/data/"
+#define SMART_HOUSE_SERVER_URL_BASE                "/api/v1"
+#define SMART_HOUSE_SERVER_URL_PING                "/security/online?deviceId="
+#define SMART_HOUSE_SERVER_URL_REGISTER            "/security/register/"
+#define SMART_HOUSE_SERVER_URL_ISONLINE            "/security/isOnline?deviceId="
+#define SMART_HOUSE_SERVER_URL_ON_DATA_CHANGED     "/devices/data/"
 #define SMART_HOUSE_SERVER_URL_ON_DATA_CHANGED_GET "/devices/data?deviceId="
 
 #include "Arduino.h"
@@ -34,6 +35,7 @@ public:
 
 	void init(std::function<void(void)> onServerRegistered);
 
+	void triggerServerIsOnlineCheck(bool trigger = true);
 	void triggerServerPing(bool trigger = true);
 	void triggerRegisterOnServer(bool trigger = true);
 
@@ -52,6 +54,7 @@ protected:
 
 	void sendPingRequest();
 	void sendRegisterRequest();
+	void sendIsOnlineRequest();
 	void sendDataChangedRequest();
 	void sendDataChangedGetMethod();
 	void sendDataChangedPostMethod();
@@ -71,6 +74,7 @@ private:
 
 	unsigned long nextReqTime = 0;
 
+	bool triggeredServerIsOnlineCheck = false;
 	bool triggeredServerPing = false;
 	bool triggeredServerRegister = false;
 	bool triggeredDataChange = false;
@@ -78,6 +82,7 @@ private:
 	bool serverPinged = false;
 	bool deviceRegistered = false;
 
+	bool runsIsOnlineRequest = false;
 	bool runsPingRequest = false;
 	bool runsRegisterRequest = false;
 	bool runsDataChangeRequest = false;
@@ -88,6 +93,7 @@ private:
 	char* deviceAuthorization = (char*)"";
 
 	String urlPing;
+	String urlIsOnline;
 	String urlRegister;
 	String urlData;
 

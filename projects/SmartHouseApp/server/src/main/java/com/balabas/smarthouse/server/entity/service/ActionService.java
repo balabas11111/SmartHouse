@@ -78,6 +78,7 @@ public class ActionService implements IActionService {
 			deviceName = entity.getGroup().getDevice().getName();
 			groupName = entity.getGroup().getName();
 			entityName = entity.getName();
+			break;
 		case ID_TYPE_ENTITY_FIELD:
 			IEntityField<?> entityField = deviceService.getEntityFieldById(targetId);
 

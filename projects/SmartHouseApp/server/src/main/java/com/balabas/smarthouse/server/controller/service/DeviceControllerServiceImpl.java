@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.exception.DeviceRequestValidateException;
@@ -61,7 +62,9 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 			return DeviceRequestResult.from(HttpStatus.BAD_REQUEST, IS_ONLINE_MESSAGE);
 		}
 		
-		HttpStatus status = deviceService.getDeviceByName(request.getDeviceId())!=null?
+		Device device = deviceService.getDeviceByName(request.getDeviceId());
+		
+		HttpStatus status = device==null || !device.isInitialized()?
 							HttpStatus.NOT_ACCEPTABLE:HttpStatus.OK;
 		String message = String.format(STATUS_MESSAGE, status.name());
 		return DeviceRequestResult.from(status, message);

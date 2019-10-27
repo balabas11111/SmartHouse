@@ -25,8 +25,8 @@ public:
 
 	void registerEntity(EntityUpdate* entity);
 
-	void updateEntities(bool force = false);
-	void loop(bool force = false);
+	bool updateEntities(bool force = false);
+	//void loop(bool force = false);
 
 private:
 	std::list<EntityUpdate*> entities;

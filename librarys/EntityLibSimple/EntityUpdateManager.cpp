@@ -86,7 +86,7 @@ int EntityUpdateManager::init(int interval) {
 	return totalCount;
 }
 
-void EntityUpdateManager::updateEntities(bool force) {
+bool EntityUpdateManager::updateEntities(bool force) {
 	bool updated = false;
 	unsigned long time = millis();
 
@@ -95,18 +95,16 @@ void EntityUpdateManager::updateEntities(bool force) {
 			updated = entity->update(time, force) || updated;
 	}
 
-	if(updated){
-		/*Serial.print(FPSTR("Entities updated force="));
-		Serial.println(force);
-		*/
-	}
+	return updated || force;
+
 /*
 	Serial.println(FPSTR("----------------------------------"));
 	Serial.println(FPSTR("EntityUpdateManager loop DONE"));
 	Serial.println(FPSTR("=================================="));
 	*/
 }
-
+/*
 void EntityUpdateManager::loop(bool force) {
 	updateEntities(force);
 }
+*/

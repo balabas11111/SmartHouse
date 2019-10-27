@@ -40,10 +40,13 @@ public:
 
 	virtual bool validate(){return true;}
 	virtual void init() {
-		Serial.print(getName());
+		/*Serial.print(getName());
 		Serial.print(FPSTR(" hasPost"));
-		Serial.println(hasPost);
-
+		Serial.print(hasPost);
+		Serial.print(FPSTR(" hasPostMethod="));
+		Serial.println(hasPostMethod());
+		Serial.println(constructParams);
+*/
 	};
 
 	bool isSaveRequired();
@@ -105,6 +108,7 @@ public:
 	}
 
 protected:
+	//String constructParams = "";
 	bool forceChanged;
 	bool changed;
 	bool saveRequired;

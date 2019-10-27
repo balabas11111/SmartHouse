@@ -12,6 +12,10 @@ ServerConnectionManager::ServerConnectionManager(SettingsStorage* conf) {
 	this->buffer = new EntityJsonRequestResponse();
 }
 
+void ServerConnectionManager::triggerServerIsOnlineCheck(bool trigger) {
+	this->triggeredServerIsOnlineCheck = trigger;
+}
+
 void ServerConnectionManager::triggerServerPing(bool trigger) {
 	this->triggeredServerPing = trigger;
 }
@@ -53,6 +57,8 @@ void ServerConnectionManager::init(std::function<void(void)> onServerRegistered)
 		Serial.println(tempDeviceKey);
 		Serial.print(FPSTR("urlPing="));
 		Serial.println(urlPing);
+		Serial.print(FPSTR("urlIsOnlineCheck="));
+		Serial.println(urlIsOnline);
 		Serial.print(FPSTR("urlRegister="));
 		Serial.println(urlRegister);
 		Serial.print(FPSTR("urlData="));
@@ -85,6 +91,7 @@ void ServerConnectionManager::generateServerUrls() {
 
 	this->urlPing = baseUrl + SMART_HOUSE_SERVER_URL_PING + conf->deviceId();
 	this->urlRegister = baseUrl + SMART_HOUSE_SERVER_URL_REGISTER;
+	this->urlIsOnline = baseUrl + SMART_HOUSE_SERVER_URL_ISONLINE + conf->deviceId();
 	this->urlData = baseUrl + SMART_HOUSE_SERVER_URL_ON_DATA_CHANGED_GET + conf->deviceId();
 
 }
@@ -117,6 +124,32 @@ void ServerConnectionManager::sendPingRequest() {
 		Serial.println(httpCode);
 		setRequestPostPoned(SERVER_CONNECTION_PING_FAILED_TIMEOUT);
 		serverPinged = false;
+	}
+
+	this->runsPingRequest = false;
+}
+
+void ServerConnectionManager::sendIsOnlineRequest() {
+	this->runsPingRequest = true;
+	Serial.print(FPSTR("check on server registration->"));
+
+	HTTPClient http;
+	http.begin(urlIsOnline);
+
+	int httpCode = http.GET();
+
+	http.end();
+	if(httpCode == 200){
+		Serial.println(FPSTR("...ok"));
+		this->serverPinged = true;
+		this->triggeredServerIsOnlineCheck = false;
+	}else{
+		Serial.print(FPSTR("...ERROR "));
+		Serial.println(httpCode);
+		setRequestPostPoned(SERVER_CONNECTION_PING_FAILED_TIMEOUT);
+		this->serverPinged = false;
+		this->deviceRegistered = false;
+		this->triggeredServerRegister = true;
 	}
 
 	this->runsPingRequest = false;
@@ -270,6 +303,9 @@ void ServerConnectionManager::sendDataChangedPostMethod() {
 void ServerConnectionManager::loop(){
 	if(triggeredServerPing && !runsPingRequest && isRequestEnabled() && !isRegistered()){
 		sendPingRequest();
+	}
+	if(triggeredServerIsOnlineCheck && !runsIsOnlineRequest && isRequestEnabled() &&serverPinged && isRegistered()) {
+		sendIsOnlineRequest();
 	}
 	if(triggeredServerRegister && !runsRegisterRequest && isRequestEnabled() ){
 		if(!serverPinged){

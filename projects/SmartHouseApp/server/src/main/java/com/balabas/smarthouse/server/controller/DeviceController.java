@@ -40,8 +40,11 @@ public class DeviceController {
 	private DeviceManageService deviceService;
 	
 	@GetMapping("/")
-	public ResponseEntity<List<Device>> getAllDevices() {
-		return ResponseEntity.ok().body(deviceService.getDevices());
+	public ResponseEntity<List<Device>> getAllDevices(
+			@RequestParam(value = "deviceId", required = false) String deviceName,
+			@RequestParam(value = "groupId", required = false) String groupName) {
+		
+			return ResponseEntity.ok().body(deviceService.getDevices());
 	}
 	
 	@GetMapping("/requireUpdateDevices")

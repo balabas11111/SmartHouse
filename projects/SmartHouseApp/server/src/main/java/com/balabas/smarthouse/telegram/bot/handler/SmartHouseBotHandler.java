@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.service.IActionService;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
@@ -43,13 +44,12 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 
 	@Autowired
 	IDeviceManageService deviceService;
-	
+
 	@Autowired
 	IActionService actionService;
-	
+
 	@Autowired
 	CurrentEditActionService currentEditActions;
-	
 
 	@Override
 	public void onUpdateReceived(Update update) {
@@ -61,31 +61,27 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			}
 
 			processMessage(message);
-			
+
 		} else if (update.hasCallbackQuery()) {
 			processCallback(update.getCallbackQuery());
 		}
 	}
-	
+
 	private void processMessage(Message message) {
 		String data = message.getText();
-		
-		Action action = 
-				(currentEditActions.has(message.getChatId()))?
-						getFieldEditActionByReply(message.getChatId(), data):
-						ActionIdentity.getByData(data);	
-		
-		ReplyContext cont = ReplyContext.builder()
-				.replyToMessageId(message.getMessageId())
-				.replyToMessageIdIfUnknown(message.getMessageId())
-				.chatId(message.getChatId()).build();
-		
-		List<SendMessage> msgs =
-				executeReplyAction(action, cont);
+
+		Action action = (currentEditActions.has(message.getChatId()))
+				? getFieldEditActionByReply(message.getChatId(), data)
+				: ActionIdentity.getByData(data);
+
+		ReplyContext cont = ReplyContext.builder().replyToMessageId(message.getMessageId())
+				.replyToMessageIdIfUnknown(message.getMessageId()).chatId(message.getChatId()).build();
+
+		List<SendMessage> msgs = executeReplyAction(action, cont);
 
 		sendMessages(msgs);
 	}
-	
+
 	private Action getFieldEditActionByReply(Long chatId, String data) {
 		Action action = currentEditActions.remove(chatId);
 		action.setValueByKeyRemoveKey(ACTION_DATA_FIELD_NAME, data);
@@ -94,32 +90,31 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 
 	private void processCallback(CallbackQuery callback) {
 		Action action = Action.fromCallbackData(callback.getData());
-	
+
 		ReplyContext cont = ReplyContext.builder()
-				//.replyToMessageId(callback.getMessage().getMessageId())
+				// .replyToMessageId(callback.getMessage().getMessageId())
 				.replyToMessageIdIfUnknown(callback.getMessage().getMessageId())
 				.chatId(callback.getMessage().getChatId()).build();
-		
-		List<SendMessage> msgs =
-				executeReplyAction(action, cont);
+
+		List<SendMessage> msgs = executeReplyAction(action, cont);
 
 		try {
 			sendMessages(msgs);
 		} catch (Exception e) {
 			msgs = Collections.singletonList(messageBuilder.createDeviceError(null, callback.getMessage().getChatId()));
 			sendMessages(msgs);
-			
+
 		}
 	}
-	
+
 	private List<SendMessage> executeReplyAction(Action action, ReplyContext context) {
 		List<SendMessage> msgs = Lists.newArrayList();
-		
+
 		currentEditActions.remove(context.getChatId());
-		
+
 		action = actionService.getDeviceGroupEntityNameActionByIdAction(action);
 		action.setServerName(authService.getServerName());
-		
+
 		try {
 			switch (action.getAction()) {
 			case ACTION_TYPE_VIEW_DEVICE_LIST:
@@ -164,40 +159,49 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			log.error(ex);
 			msgs.add(messageBuilder.createServerError(null, context.getChatId()));
 		}
-		
+
 		return msgs;
 	}
-	
-	private void sendDataToDevice(Action action, ReplyContext context, List<SendMessage> msgs){
-		try{
+
+	private void sendDataToDevice(Action action, ReplyContext context, List<SendMessage> msgs) {
+		try {
 			boolean sendExecuted = actionService.executeDeviceAction(action);
 
 			action.setGroupName(ItemType.SENSORS.getCode());
-			
-			if(sendExecuted) {
-				msgs.add(messageBuilder.createDataSentToDevice(null, context.getChatId()));
+
+			if (sendExecuted) {
+				String message = "";
+				if (action.getDeviceName() != null && !action.getDeviceName().isEmpty()) {
+					Device device = deviceService.getDeviceByName(action.getDeviceName());
+
+					if (device != null) {
+						message += device.getEmoji().toString() + " " + device.getDescription();
+					}
+				}
+
+				msgs.add(messageBuilder.createDataSentToDevice(message, context.getChatId()));
 			} else {
 				msgs.add(messageBuilder.createDeviceDataSavedOnServer(null, context.getChatId()));
 			}
 			msgs.addAll(messageBuilder.createGroupView(action, context));
-			
-		}catch(Throwable e){
+
+		} catch (Throwable e) {
 			msgs.add(messageBuilder.createDeviceError(null, context.getChatId()));
 		}
 	}
 
 	@AfterBotRegistration
 	public void sendServerStartedToAllUsers() {
-		authService.getAllowedUserIds().stream().forEach(chatId -> { 
+		authService.getAllowedUserIds().stream().forEach(chatId -> {
 			sendMessages(messageBuilder.createServerStartedMessages(chatId.longValue(), authService.getServerName()));
 		});
-		
+
 	}
 
 	public void sendDeviceRegisteredToAllUsers(String deviceName) {
 		authService.getAllowedUserIds().stream().forEach(chatId -> {
-			sendMessages(messageBuilder.createDeviceRegisteredMessages(deviceName, chatId.longValue() ));
+			sendMessages(messageBuilder.createDeviceRegisteredMessages(deviceName, chatId.longValue()));
 		});
 	}
-	
+
 }

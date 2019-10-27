@@ -315,7 +315,7 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 			device.getTimer().update(60000, false);
 
 			if (logDR || !State.DISCONNECTED.equals(oldState)) {
-				log.error("Error request device values", e);
+				log.error("Error request device values", e.getMessage());
 			}
 
 			stateChanger.stateChanged(device, State.DISCONNECTED);

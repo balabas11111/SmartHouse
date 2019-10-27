@@ -30,7 +30,7 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 @RequestMapping(ControllerConstants.API_V1+ControllerConstants.SECURITY_ROOT)
 @Log4j2
-public class SecurityController {
+public class ConnectionController {
 
 	@Autowired
 	private DeviceControllerService service;
@@ -53,12 +53,12 @@ public class SecurityController {
 		return result.toResponseEntity();
 	}
 	
-	@GetMapping("/register")
+	@GetMapping("/isOnline")
 	public ResponseEntity<String> isDeviceRegistered(
-			@RequestParam(value = "deviceId", required = false) String deviceId,
+			@RequestParam(value = "deviceId", required = true) String deviceId,
 			@RequestHeader HttpHeaders headers) throws UnknownHostException, DeviceOnServerAuthorizationException {
 
-		log.debug("/register");
+		log.debug("/isOnline");
 		
 		DeviceRequest request = DeviceRequest.builder()
 				.deviceId(deviceId)

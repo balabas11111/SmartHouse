@@ -7,16 +7,18 @@
 
 #include <EntityApplication.h>
 
-EntityApplication::EntityApplication(const char* firmWare, char* description, Entity* entities[],
-		int entityCount, EntityUpdate* entityUpdate[], int entityUpdateCount,
-		SettingsStorage* conf, std::function<void(void)> onWiFiConnected,
+EntityApplication::EntityApplication(const char* firmWare, char* description,
+		Entity* entities[], int entityCount, EntityUpdate* entityUpdate[],
+		int entityUpdateCount, SettingsStorage* conf,
+		std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
 
 	this->construct(
 #ifdef SETTINGS_DISPLAY_ENABLED
 			nullptr, nullptr, 0,
 #endif
-			firmWare, description, entities, entityCount, entityUpdate, entityUpdateCount, conf, onWiFiConnected, onWiFiDisConnected);
+			firmWare, description, entities, entityCount, entityUpdate,
+			entityUpdateCount, conf, onWiFiConnected, onWiFiDisConnected);
 }
 
 void EntityApplication::construct(
@@ -35,13 +37,12 @@ void EntityApplication::construct(
 
 	this->conf = (newConf) ? new SettingsStorage(firmWare, description) : conf;
 
-	this->entityManager = new EntityManager(entities, entityCount,this->conf);
+	this->entityManager = new EntityManager(entities, entityCount, this->conf);
 
 	if (newConf) {
 		this->entityManager->registerAndPreInitEntity(this->conf);
 	}
 	this->entityManager->registerAndPreInitEntity(&this->deviceManager);
-
 
 #ifdef SETTINGS_DISPLAY_ENABLED
 	this->displayManager = new DisplayManager(displayAdapter, pages, pageCount, this->conf);
@@ -57,10 +58,10 @@ void EntityApplication::construct(
 }
 
 void EntityApplication::init(bool initSerial,
-		bool initWiFi, bool initServer,
-		bool initFs,
-		bool deleteFs,
-		bool initI2C, uint8_t clockPin, uint8_t dataPin) {
+bool initWiFi, bool initServer,
+bool initFs,
+bool deleteFs,
+bool initI2C, uint8_t clockPin, uint8_t dataPin) {
 
 	if (initSerial) {
 		DeviceUtils::initSerial();
@@ -73,7 +74,7 @@ void EntityApplication::init(bool initSerial,
 		FileUtils::deleteAllFiles("/data/");
 	}
 
-	if(initI2C){
+	if (initI2C) {
 		I2C_utils::initStatic(clockPin, dataPin);
 	}
 
@@ -88,10 +89,10 @@ void EntityApplication::init(bool initSerial,
 	this->entityManager->init();
 	this->entityUpdateManager->init(this->conf->refreshInterval());
 
-	if(initWiFi){
+	if (initWiFi) {
 		this->wifiManager->begin();
 	}
-	if(initServer){
+	if (initServer) {
 		this->wifiServerManager->begin();
 	}
 
@@ -101,10 +102,12 @@ void EntityApplication::init(bool initSerial,
 
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 	this->serverConnectionManager = new ServerConnectionManager(this->conf);
-	this->serverConnectionManager->init([this](){onServerRegistered();});
+	this->serverConnectionManager->init([this]() {onServerRegistered();});
 #endif
-	this->defaultDataSelector = new DataSelectorEntityManager(this->entityManager);
-	this->defaultNotifier = new Notifier("Default Notifier", nullptr, this->getDataSelector());
+	this->defaultDataSelector = new DataSelectorEntityManager(
+			this->entityManager);
+	this->defaultNotifier = new Notifier("Default Notifier", nullptr,
+			this->getDataSelector());
 
 	Serial.println(FPSTR("Init done"));
 
@@ -113,53 +116,57 @@ void EntityApplication::init(bool initSerial,
 	Serial.println(FPSTR("===================================="));
 }
 
-void EntityApplication::initWithWiFi(bool initI2C,
-		uint8_t clockPin, uint8_t dataPin) {
+void EntityApplication::initWithWiFi(bool initI2C, uint8_t clockPin,
+		uint8_t dataPin) {
 	init(true, true, true, true,
-				false, initI2C, clockPin, dataPin);
+	false, initI2C, clockPin, dataPin);
 }
 
-void EntityApplication::initWithoutWiFi(bool initI2C,
-		uint8_t clockPin, uint8_t dataPin) {
+void EntityApplication::initWithoutWiFi(bool initI2C, uint8_t clockPin,
+		uint8_t dataPin) {
 	init(true, false, false, true,
-					false, initI2C, clockPin, dataPin);
+	false, initI2C, clockPin, dataPin);
 }
 
 void EntityApplication::loop() {
-	this->entityUpdateManager->loop();
+	bool updated = this->entityUpdateManager->updateEntities();
 
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED
 
-	#ifdef SETTINGS_SERVER_SEND_DATA_METHOD_GET
+#ifdef SETTINGS_SERVER_SEND_DATA_METHOD_GET
 
-	if(this->entityManager->processChangedEntities(this->serverConnectionManager->getBuffer())){
+	if(this->entityManager->processChangedEntities(this->serverConnectionManager->getBuffer())) {
 		this->serverConnectionManager->triggerDataChangedDoSend();
 	}
 
-	#else
-		#ifndef SETTINGS_SERVER_HTTP_DATA_UPDATE_DISPATCH_DISABLED
-			if(this->entityManager->processChangedEntities()){
-				this->serverConnectionManager->triggerDataChanged();
-			}
-		#endif
-	#endif
+#else
+#ifndef SETTINGS_SERVER_HTTP_DATA_UPDATE_DISPATCH_DISABLED
+	if(this->entityManager->processChangedEntities()) {
+		this->serverConnectionManager->triggerDataChanged();
+	}
+#endif
+#endif
+	if (updated) {
+		this->serverConnectionManager->triggerServerIsOnlineCheck();
+	}
 	this->serverConnectionManager->loop();
 #endif
-	#ifndef SETTINGS_SERVER_MQTT_DISABLED
+#ifndef SETTINGS_SERVER_MQTT_DISABLED
 
-	#ifdef SETTINGS_SERVER_HTTP_DATA_UPDATE_DISPATCH_DISABLED
-		if(this->entityManager->processChangedEntities()){
-			this->mqttManager->publishBuffer();
-		}
-	#endif
+#ifdef SETTINGS_SERVER_HTTP_DATA_UPDATE_DISPATCH_DISABLED
+	if (this->entityManager->processChangedEntities()) {
+
+		this->mqttManager->publishBuffer();
+	}
+#endif
 
 	this->mqttManager->loop();
 	this->wifiServerManager->loop();
 
-	#else
-		this->entityManager->processChangedEntities();
-		this->wifiServerManager->loop();
-	#endif
+#else
+	this->entityManager->processChangedEntities();
+	this->wifiServerManager->loop();
+#endif
 
 }
 
@@ -167,23 +174,23 @@ EntityManager* EntityApplication::getEntityManager() {
 	return this->entityManager;
 }
 
-SettingsStorage* EntityApplication::getConf(){
+SettingsStorage* EntityApplication::getConf() {
 	return this->conf;
 }
 
-void EntityApplication::registerTicker(void (*callback)(void)){
+void EntityApplication::registerTicker(void (*callback)(void)) {
 
 	uint32_t tickInterval = 30000;
 
-	if(this->conf != nullptr && this->conf->refreshInterval()>0){
+	if (this->conf != nullptr && this->conf->refreshInterval() > 0) {
 		tickInterval = conf->refreshInterval() * 1000;
 	}
-
 
 	registerTicker(tickInterval, callback);
 }
 
-void EntityApplication::registerTicker(uint32_t milliseconds, void (*callback)(void)){
+void EntityApplication::registerTicker(uint32_t milliseconds,
+		void (*callback)(void)) {
 	Serial.print(FPSTR("register ticker interval = "));
 	Serial.print(milliseconds);
 	Ticker* ticker = new Ticker();
@@ -191,7 +198,7 @@ void EntityApplication::registerTicker(uint32_t milliseconds, void (*callback)(v
 	Serial.println(FPSTR(" done"));
 }
 
-void EntityApplication::updateEntities(bool force){
+void EntityApplication::updateEntities(bool force) {
 	Serial.println(FPSTR("Entity update triggered by app"));
 	this->entityUpdateManager->updateEntities(force);
 }
@@ -200,9 +207,9 @@ Notifier* EntityApplication::getDefaultNotifier() {
 	return this->defaultNotifier;
 }
 
-void EntityApplication::notify(char* group, char* name,  char* param,
+void EntityApplication::notify(char* group, char* name, char* param,
 		NotificationTarget* notifTarget) {
-	if(this->defaultNotifier == nullptr){
+	if (this->defaultNotifier == nullptr) {
 		return;
 	}
 	getDefaultNotifier()->notify(group, name, param, notifTarget);

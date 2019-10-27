@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.entity.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
@@ -23,6 +24,9 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class DeviceStateChangeService implements IDeviceStateChangeService {
 
+	@Value("${smarthouse.server.send.devicereconnect:true}")
+	private boolean sendDeviceReconnect;
+	
 	@Autowired
 	private IMessageSender sender;
 
@@ -80,7 +84,9 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 	private void onDeviceReRegistered(IDevice device) {
 		String message = buildMessage(MSG_DEVICE_RECONNECTED, device.getDescription());
 		alarmService.activateAlarms(device);
-		sender.sendMessageToAllUsers(Severity.WARN, message);
+		if(sendDeviceReconnect) {
+			sender.sendMessageToAllUsers(Severity.WARN, message);
+		}
 		
 		log.warn(message);
 	}

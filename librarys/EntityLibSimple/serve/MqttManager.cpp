@@ -129,7 +129,7 @@ bool MqttManager::sendRegistrationRequest() {
 	if (now - lastRegisterAttempt < 30000){
 		return false;
 	}
-	Serial.println(FPSTR("Send registration request"));
+	Serial.println(FPSTR("MQ regReq"));
 	if(connectMqtt()){
 		buildRegistrationRequest();
 		//bool subscribed = subscribe(toDeviceTopic);

@@ -18,7 +18,7 @@ DS18D20sensor ds18d20(D1, (char*) "Температура пол");
 Entity* entities[] = { &dht22, &ds18d20 };
 EntityUpdate* updateableEntities[] = { &dht22, &ds18d20};
 
-EntityApplication app("ESP8266_DHT22_DS18D20", (char*)"Микроклимат зал",
+EntityApplication app("ESP8266_DHT22_DS18D20", (char*)"Микроклимат",
 		entities, ARRAY_SIZE(entities),
 		updateableEntities, ARRAY_SIZE(updateableEntities));
 
