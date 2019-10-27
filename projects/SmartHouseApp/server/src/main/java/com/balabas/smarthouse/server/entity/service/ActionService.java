@@ -45,7 +45,7 @@ public class ActionService implements IActionService {
 	public Action getDeviceGroupEntityNameActionByIdAction(Action action) {
 		if (StringUtils.isEmpty(action.getIdType())) {
 			if (!StringUtils.isEmpty(action.getEntityName()) && action.getTargetId() == null) {
-				action.setTargetId(deviceService.getManagedDeviceByName(action.getDeviceName())
+				action.setTargetId(deviceService.getDeviceByName(action.getDeviceName())
 						.getEntity(action.getEntityName()).getId());
 			}
 
@@ -123,7 +123,7 @@ public class ActionService implements IActionService {
 		if (params.containsKey(ENTITY_DEVICE_DEVICE_DESCRIPTION)){
 			
 			String description = params.get(ENTITY_DEVICE_DEVICE_DESCRIPTION).toString();
-			device = deviceService.getManagedDeviceByName(action.getDeviceName());
+			device = deviceService.getDeviceByName(action.getDeviceName());
 			
 			device.setDescription(description);
 			

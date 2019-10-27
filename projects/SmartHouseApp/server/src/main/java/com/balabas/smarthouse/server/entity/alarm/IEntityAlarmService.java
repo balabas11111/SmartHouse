@@ -8,11 +8,10 @@ import com.balabas.smarthouse.server.entity.model.IEntity;
 
 public interface IEntityAlarmService {
 
-	List<IEntityAlarm> getActiveEntityAlarms();
-	
 	List<IEntityAlarm> getEntityAlarmsWithAlarmDetected(IDevice device);
 
-	IEntityAlarm getAlarm(IDevice device, IEntity entity); 
+	IEntityAlarm getAlarm(IEntity entity);
+	List<IEntityAlarm> getAlarms(IDevice device); 
 	
 	void registerAlarm(IEntityAlarm alarm);
 
@@ -30,12 +29,10 @@ public interface IEntityAlarmService {
 	
 	void checkAlarmsSendNotifications(IDevice device);
 
-	List<IEntityAlarm> getActiveEntityAlarms(IDevice device);
-
 	List<IEntityAlarm> getAlarmsWithAlarmNotificationRequired(IDevice device);
 
 	List<IEntityAlarm> getAlarmsWithAlarmFinished(IDevice device);
 
-	IEntityAlarm getAlarm(String deviceName, String entityName);
+	List<IEntityAlarm> getActiveEntityAlarms();
 
 }

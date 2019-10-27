@@ -50,6 +50,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassType;
@@ -75,11 +76,11 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldPasswo
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldString;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
+import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.EntityStatus;
 import com.balabas.smarthouse.server.entity.model.Group;
-import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.exception.BadValueException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
@@ -156,7 +157,7 @@ public class SmartHouseItemBuildService {
 		return null;
 	}
 
-	public boolean updateDeviceEntityValuesFromJson(Device device, JSONObject deviceJson) {
+	public boolean updateDeviceEntityValuesFromJson(Device device, JSONObject deviceJson, boolean updateDeviceTimer, boolean updateGroupTimer) {
 
 		boolean isOk = true;
 
@@ -166,18 +167,18 @@ public class SmartHouseItemBuildService {
 			if (group != null) {
 				JSONObject groupJson = deviceJson.optJSONObject(groupName);
 
-				boolean groupOk = updateGroupEntityValuesFromJson(group, groupJson);
+				boolean groupOk = updateGroupEntityValuesFromJson(group, groupJson, updateGroupTimer);
 
 				isOk = isOk && groupOk;
 			}
 		}
-		if (isOk) {
+		if (isOk && updateDeviceTimer) {
 			device.getTimer().setActionSuccess();
 		}
 		return isOk;
 	}
 
-	private boolean updateGroupEntityValuesFromJson(Group group, JSONObject groupJson) {
+	private boolean updateGroupEntityValuesFromJson(Group group, JSONObject groupJson, boolean updateGroupTimer) {
 		boolean isOk = true;
 		for (String entityName : JSONObject.getNames(groupJson)) {
 
@@ -196,7 +197,7 @@ public class SmartHouseItemBuildService {
 				isOk = isOk && entityOk;
 			}
 		}
-		if (isOk) {
+		if (isOk && updateGroupTimer) {
 			group.getTimer().setActionSuccess();
 		}
 		return isOk;
@@ -513,8 +514,14 @@ public class SmartHouseItemBuildService {
 		entityField.setViewClass(viewClass);
 		entityField.setReadOnly(readOnly);
 		entityField.setEmoji(emoji);
+		
 		try {
-			entityField.setValueWithNoCheckStr(value);
+			if(!(ENTITY_FIELD_DESCRIPTION.equals(entityField.getTemplateName())
+					&& !StringUtils.isEmpty(entityField.getValueStr())
+					&& EntityFieldString.class.equals(entityField.getClass()))) {
+				entityField.setValueWithNoCheckStr(value);
+			}
+			
 		}catch(IllegalArgumentException e) {
 			log.error(e);
 		}

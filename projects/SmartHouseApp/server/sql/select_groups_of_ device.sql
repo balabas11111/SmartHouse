@@ -1,7 +1,7 @@
 SELECT * FROM devices;
 
 SET @deviceId = 1;
-SET @groupId = 2;
+SET @groupId = 5;
 
 SELECT g.* FROM devices d
 	JOIN groups g ON g.device_id = d.id

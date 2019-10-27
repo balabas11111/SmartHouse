@@ -101,7 +101,7 @@ public class DeviceMqService implements IDeviceMqService {
 		
 		messageService.registerSubscriberOrResubscribeExisting(new DataDeviceSubscribtion(topicName, this));
 		
-		deviceService.getManagedDeviceByName(deviceId).getEntities().stream()
+		deviceService.getDeviceByName(deviceId).getEntities().stream()
 			.forEach(entity -> subscribeFromDeviceEntityTopic(entity));
 	}
 	
@@ -152,7 +152,7 @@ public class DeviceMqService implements IDeviceMqService {
 				
 				log.debug("MQ Data received : " + data);
 				
-				deviceService.processDataReceivedFromDevice(entity, data);
+				deviceService.processDataReceivedFromEntity(entity, data);
 			}
 			
 		}catch(Exception e) {

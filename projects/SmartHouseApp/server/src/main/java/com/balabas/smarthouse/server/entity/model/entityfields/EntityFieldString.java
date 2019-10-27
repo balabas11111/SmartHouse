@@ -2,14 +2,17 @@ package com.balabas.smarthouse.server.entity.model.entityfields;
 
 import javax.persistence.Entity;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 @Entity
 public class EntityFieldString extends EntityField<String> implements IEntityField<String> {
 
-	private String value;
+	@JsonAlias("value")
+	private String valueSt;
 	
 	@Override
-	protected void setValue(String value) {
-		this.value = value;
+	public void setValue(String value) {
+		this.valueSt = value;
 	}
 	
 	@Override
@@ -19,7 +22,7 @@ public class EntityFieldString extends EntityField<String> implements IEntityFie
 	
 	@Override
 	public String getValue() {
-		return this.value;
+		return this.valueSt;
 	}
 
 }

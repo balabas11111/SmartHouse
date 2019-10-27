@@ -34,6 +34,7 @@ public class Entity extends ItemAbstract implements IEntity {
 	private String descriptionField;
 	private EntityClass renderer;
 
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="group_id", nullable=false)
 	private Group group;
@@ -42,10 +43,7 @@ public class Entity extends ItemAbstract implements IEntity {
 	private Set<String> grouppedFieldsIds;
 	@ElementCollection(fetch = FetchType.EAGER)
 	private Set<String> grouppedFieldsNames;
-	/*@Transient
-	private Set<IEntityField> generatedFields;
-*/
-	@JsonIgnore
+
 	@OneToMany(targetEntity = EntityField.class, mappedBy = "entity", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	protected Set<IEntityField> entityFields;
 	
@@ -55,6 +53,15 @@ public class Entity extends ItemAbstract implements IEntity {
 	@Enumerated(EnumType.STRING)
 	private State state;
 
+	@JsonIgnore
+	@Override
+	public Device getDevice() {
+		if(getGroup() == null) {
+			return null;
+		}
+		return getGroup().getDevice(); 
+	}
+	
 	@Override
 	public IEntityField getEntityField(String entityFieldName) {
 		if(getEntityFields()==null) {
@@ -67,12 +74,7 @@ public class Entity extends ItemAbstract implements IEntity {
 	public void addEntityField(IEntityField entityField) {
 		this.entityFields = addEntityFieldWithCheck(this.entityFields, entityField);
 	}
-/*
-	@Override
-	public void addGeneratedField(IEntityField entityField) {
-		this.generatedFields = addEntityFieldWithCheck(this.generatedFields, entityField);
-	}
-*/
+
 	private Set<IEntityField> addEntityFieldWithCheck(Set<IEntityField> fields, IEntityField entityField) {
 		if (fields == null) {
 			fields = new LinkedHashSet<>();

@@ -21,7 +21,8 @@ public interface IDevice extends IStateable, IUpdateable, IItemAbstract {
 	Group getGroup(String groupName);
 	
 	Entity getEntity(String entityName);
-	Entity getEntity(int remoteId);
+	Entity getEntity(Long entityId);
+	Entity getEntityByRemoteId(int remoteId);
 	
 	Device update(Device device);
 	

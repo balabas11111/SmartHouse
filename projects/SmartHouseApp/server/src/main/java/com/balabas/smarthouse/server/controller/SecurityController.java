@@ -53,6 +53,24 @@ public class SecurityController {
 		return result.toResponseEntity();
 	}
 	
+	@GetMapping("/register")
+	public ResponseEntity<String> isDeviceRegistered(
+			@RequestParam(value = "deviceId", required = false) String deviceId,
+			@RequestHeader HttpHeaders headers) throws UnknownHostException, DeviceOnServerAuthorizationException {
+
+		log.debug("/register");
+		
+		DeviceRequest request = DeviceRequest.builder()
+				.deviceId(deviceId)
+				.headers(headers)
+				.requestType(DeviceRequestType.CHECK_ONLINE).build();
+
+		DeviceRequestResult<String> result =
+				service.processDeviceIsRegisteredRequest(request);
+		
+		return result.toResponseEntity();
+	}
+	
 	@PostMapping("/register")
 	public ResponseEntity<String> registerDevice(
 			@Valid @RequestBody DeviceRequest request,

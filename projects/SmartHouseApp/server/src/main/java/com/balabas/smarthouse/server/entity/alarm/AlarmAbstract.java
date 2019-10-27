@@ -1,39 +1,56 @@
 package com.balabas.smarthouse.server.entity.alarm;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
+
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
-import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 
 import lombok.Getter;
 import lombok.Setter;
 
-public abstract class AlarmAbstract<T extends IItemAbstract, O extends Object> extends ItemAbstract
+@MappedSuperclass
+public abstract class AlarmAbstract<T extends IItemAbstract, O extends Object>
 		implements IAlarm<T, O> {
 
-	@Getter	@Setter
-	protected O value;
-
-	@Getter	@Setter
-	protected T watchedItem;
-
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Getter @Setter
+	private Long id;
+	
 	@Setter
+	@Transient
 	private boolean alarmed;
+	
+	@Setter @Getter
+	@Transient
+	private boolean activated;
 
 	protected abstract boolean checkItemHasAlarm();
 
 	protected abstract String getItemAlarmText();
+	
+	public abstract T getWatchedItem();
+	
+	public abstract void setWatchedItem(T watchedItem);
+	
+	public abstract O getValue();
+	
+	public abstract void setValue(O value);
 
 	public AlarmAbstract() {
 	}
 
 	public AlarmAbstract(String entityFieldName, O value) {
 		this();
-		this.setName(entityFieldName);
 		this.setValue(value);
 	}
 
 	@Override
 	public boolean isActive() {
-		return this.value != null && this.watchedItem != null;
+		return this.activated && this.getValue() != null && this.getWatchedItem() != null;
 	}
 
 	@Override
@@ -43,7 +60,7 @@ public abstract class AlarmAbstract<T extends IItemAbstract, O extends Object> e
 
 	@Override
 	public boolean check() {
-		if (!isActive() || value == null || watchedItem == null) {
+		if (!isActive() || getValue() == null || getWatchedItem() == null) {
 			return false;
 		}
 		alarmed = checkItemHasAlarm();

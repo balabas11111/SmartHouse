@@ -69,7 +69,7 @@ public class MockedDeviceController {
 
 	@GetMapping("{deviceId}")
 	public ResponseEntity<IDevice> getDeviceById(@PathVariable(value = "deviceId") String deviceId) {
-		Optional<IDevice> device = Optional.ofNullable(deviceService.getManagedDeviceByName(deviceId));
+		Optional<IDevice> device = Optional.ofNullable(deviceService.getDeviceByName(deviceId));
 
 		return device.isPresent()?ResponseEntity.ok().body(device.get()):ResponseEntity.notFound().build();
 	}

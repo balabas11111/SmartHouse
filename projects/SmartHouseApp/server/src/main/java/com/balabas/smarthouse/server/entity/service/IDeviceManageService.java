@@ -18,17 +18,16 @@ public interface IDeviceManageService {
 	
 	Device getManagedDevice(Device device);
 	
-	Device getManagedDeviceByName(String deviceName);
 	
 	List<Device> getDevices();
 	
 	List<Device> getDevicesInitialized();
 	
-	void processDataReceivedFromDevice(Device device, String deviceResponse);
+	void processDataReceivedFromDevice(Device device, String deviceResponse, boolean updateDeviceTimer, boolean updateGroupTimer);
 	
-	void processDataReceivedFromDevice(Device device, JSONObject data);
+	void processDataReceivedFromDevice(Device device, JSONObject data, boolean updateDeviceTimer, boolean updateGroupTimer);
 	
-	void processDataReceivedFromDevice(Entity entity, JSONObject data);
+	void processDataReceivedFromEntity(Entity entity, JSONObject data);
 
 	void requestDevicesValues(Device device, Group group);
 
@@ -40,6 +39,8 @@ public interface IDeviceManageService {
 			throws ResourceNotFoundException;
 
 	Device getDeviceById(Long id);
+	
+	Device getDeviceByName(String name);
 
 	Group getGroupById(Long id);
 
@@ -50,5 +51,9 @@ public interface IDeviceManageService {
 	IEntityFieldEnabledValue getEntityFieldEnabledValueById(Long id);
 
 	Device save(Device device);
+
+	List<Device> getDevicesRequireUpdate();
+
+	List<Group> getGroupsRequireUpdate();
 
 }

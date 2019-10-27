@@ -1,10 +1,17 @@
 package com.balabas.smarthouse.server.entity.model.entityfields;
 
 import javax.persistence.Entity;
+import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
 public class EntityFieldBoolean extends EntityField<Boolean> implements IEntityField<Boolean> {
 
+	@Transient
+	@JsonAlias("value")
+	private Boolean valueB;
+	
 	@Override
 	protected Boolean fromString(String value) {
 		Boolean val = null;
@@ -21,6 +28,16 @@ public class EntityFieldBoolean extends EntityField<Boolean> implements IEntityF
 		}
 		
 		return val;
+	}
+
+	@Override
+	public Boolean getValue() {
+		return this.valueB;
+	}
+
+	@Override
+	public void setValue(Boolean value) {
+		this.valueB = value;
 	}
 
 }

@@ -2,32 +2,85 @@ package com.balabas.smarthouse.server.entity.alarm;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.function.Predicate;
 
+import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
-@SuppressWarnings("rawtypes")
-public abstract class AlarmAbstractEntityField<T> extends AlarmAbstract<IEntityField, T> implements IEntityFieldAlarm<T> {
+import lombok.Getter;
+import lombok.Setter;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
+@Table(name = "entity_alarm_entity_field")
+@javax.persistence.Entity()
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public abstract class AlarmAbstractEntityField<T> extends AlarmAbstract<IEntityField, T>
+		implements IEntityFieldAlarm<T> {
+
+	@Getter
+	@Setter
+	@ManyToOne(targetEntity = EntityField.class, fetch = FetchType.EAGER)
+	@JoinColumn(name = "entity_field_id", nullable = false)
+	private IEntityField watchedItem;
+
+	@Getter
+	@Setter
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "entity_alarm_id", nullable = false)
+	private EntityAlarm alarm;
+
+	@Transient
 	protected Class<T> clazz;
-	
+
+	@Transient
+	@Getter
+	protected Predicate<Integer> predicate;
+
+	@Transient
+	@Getter
+	protected String compareSeparator;
+
+	public AlarmAbstractEntityField() {
+		Type genericSuperClass = getClass().getGenericSuperclass();
+
+		ParameterizedType parametrizedType = null;
+		while (parametrizedType == null) {
+			if ((genericSuperClass instanceof ParameterizedType)) {
+				parametrizedType = (ParameterizedType) genericSuperClass;
+			} else {
+				genericSuperClass = ((Class<?>) genericSuperClass).getGenericSuperclass();
+			}
+		}
+
+		clazz = (Class<T>) parametrizedType.getActualTypeArguments()[0];
+	}
+
+	abstract protected Comparable getAlarmValue();
+
+	abstract protected Comparable getEntityFieldValue();
+
 	@Override
 	public boolean acceptsAsWatched(IEntityField entityField) {
 		return clazz.isAssignableFrom(entityField.getClazz());
 	}
-	
-	@SuppressWarnings("unchecked")
-	public AlarmAbstractEntityField(){
-		Type genericSuperClass = getClass().getGenericSuperclass();
 
-	    ParameterizedType parametrizedType = null;
-	    while (parametrizedType == null) {
-	        if ((genericSuperClass instanceof ParameterizedType)) {
-	            parametrizedType = (ParameterizedType) genericSuperClass;
-	        } else {
-	            genericSuperClass = ((Class<?>) genericSuperClass).getGenericSuperclass();
-	        }
-	    }
+	@Override
+	protected boolean checkItemHasAlarm() {
+		Integer compareValue = getAlarmValue().compareTo(getEntityFieldValue());
+		return getPredicate().test(compareValue);
+	}
 
-	    clazz = (Class<T>) parametrizedType.getActualTypeArguments()[0];
+	@Override
+	protected String getItemAlarmText() {
+		return getWatchedItem().getName() + " " + getWatchedItem().getValueStr() + getCompareSeparator()
+				+ getValue().toString();
 	}
 }

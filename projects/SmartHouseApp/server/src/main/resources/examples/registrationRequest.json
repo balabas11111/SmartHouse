@@ -1,12 +1,208 @@
-{
-	"deviceId": "ESP_Dev_ID",
-	"deviceFirmware": "EntityLib dev device",
-	"deviceDescr": "Default Device description",
-	"deviceKey": "SomeKey",
-	"ip": "192.168.0.120",
-	"data": {
-		"urlRoot": "http://192.168.0.120/",
-		"urlData": "http://192.168.0.120/data",
-		"model": {}
-	}
-}
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::             (v2.2.0.M6)
+
+2019-10-24 23:15:22,957 INFO org.springframework.boot.StartupInfoLogger [main] Starting ServerApplication v2.2.0.M6 on raspberrypi with PID 7459 (/home/pi/apps/SmartHouseApp/server-2.2.0.M6.jar started by root in /home/pi)
+2019-10-24 23:15:22,972 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2019-10-24 23:15:26,668 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data repositories in DEFAULT mode.
+2019-10-24 23:15:27,176 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 471ms. Found 4 repository interfaces.
+2019-10-24 23:15:28,751 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-10-24 23:15:30,290 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 80 (http)
+2019-10-24 23:15:30,334 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-80"]
+2019-10-24 23:15:30,336 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2019-10-24 23:15:30,337 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/9.0.24]
+2019-10-24 23:15:30,580 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2019-10-24 23:15:30,582 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 7372 ms
+2019-10-24 23:15:31,491 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2019-10-24 23:15:31,824 INFO org.hibernate.Version [main] HHH000412: Hibernate Core {5.4.4.Final}
+2019-10-24 23:15:32,451 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.0.Final}
+2019-10-24 23:15:32,851 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2019-10-24 23:15:33,118 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2019-10-24 23:15:33,213 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.MariaDB103Dialect
+2019-10-24 23:15:38,711 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2019-10-24 23:15:38,719 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by com.google.inject.internal.cglib.core.$ReflectUtils$1 (jar:file:/home/pi/apps/SmartHouseApp/server-2.2.0.M6.jar!/BOOT-INF/lib/guice-4.1.0.jar!/) to method java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain)
+WARNING: Please consider reporting this to the maintainers of com.google.inject.internal.cglib.core.$ReflectUtils$1
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+2019-10-24 23:15:41,216 INFO com.balabas.smarthouse.server.entity.alarm.EntityAlarmService [main] Alarm service started
+2019-10-24 23:15:46,165 INFO com.balabas.smarthouse.server.entity.service.DeviceManageService [main] ---Loaded persisted devices---
+2019-10-24 23:15:46,481 INFO com.balabas.smarthouse.server.zzz.mock.MockedDeviceService [main] Mock Key hashed =1772a7525d233a067c93867dba7ed5ce4910ef44
+2019-10-24 23:15:47,300 INFO org.springframework.scheduling.concurrent.ExecutorConfigurationSupport [main] Initializing ExecutorService 'applicationTaskExecutor'
+2019-10-24 23:15:48,123 WARN org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration$DefaultTemplateResolverConfiguration [main] Cannot find template location: classpath:/templates/ (please add some templates or check your Thymeleaf configuration)
+2019-10-24 23:15:48,369 INFO org.springframework.scheduling.concurrent.ExecutorConfigurationSupport [main] Initializing ExecutorService 'taskScheduler'
+2019-10-24 23:15:48,486 INFO com.balabas.smarthouse.server.controller.service.DeviceControllerServiceImpl [main] -----Server context was started-----
+2019-10-24 23:15:48,535 INFO org.apache.juli.logging.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-80"]
+2019-10-24 23:15:48,638 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat started on port(s): 80 (http) with context path ''
+2019-10-24 23:15:48,648 INFO org.springframework.boot.StartupInfoLogger [main] Started ServerApplication in 28.465691698 seconds (JVM running for 31.267)
+2019-10-24 23:16:47,450 INFO org.apache.juli.logging.DirectJDKLog [http-nio-80-exec-1] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2019-10-24 23:16:47,452 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-80-exec-1] Initializing Servlet 'dispatcherServlet'
+2019-10-24 23:16:47,487 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-80-exec-1] Completed initialization in 34 ms
+2019-10-24 23:16:47,794 INFO com.balabas.smarthouse.server.controller.service.DeviceControllerServiceImpl [http-nio-80-exec-2] Register device DeviceRequest(deviceId=ESP_15818258, deviceFirmware=ESP8266_DHT22_DS18D20, deviceDescr=Микроклимат зал, deviceKey=null, ip=192.168.0.108, data=null, headers=[host:"192.168.0.101", user-agent:"ESP8266HTTPClient", connection:"close", accept-encoding:"identity;q=1,chunked;q=0.1,*;q=0", authorization:"Basic f67d39297ccf89c697176ed8b264732bda126996", content-type:"application/json", content-length:"114"], requestType=REGISTER)
+2019-10-24 23:16:47,798 INFO com.balabas.smarthouse.server.security.DeviceSecurityServiceImpl [http-nio-80-exec-2] ---------------Security service--------------
+2019-10-24 23:16:47,799 INFO com.balabas.smarthouse.server.security.DeviceSecurityServiceImpl [http-nio-80-exec-2] unhashedDeviceToken = 1772a7525d233a067c93867dba7ed5ce4910ef44032af61eae448fef85ed184429eeed96ef2972edf67d39297ccf89c697176ed8b264732bda126996
+2019-10-24 23:16:47,800 INFO com.balabas.smarthouse.server.security.DeviceSecurityServiceImpl [http-nio-80-exec-2] unhashedServerToken = 032af61eae448fef85ed184429eeed96ef2972edSomeServerKeyESP_15818258
+2019-10-24 23:16:47,801 INFO com.balabas.smarthouse.server.security.DeviceSecurityServiceImpl [http-nio-80-exec-2] tempDeviceKey = f67d39297ccf89c697176ed8b264732bda126996
+2019-10-24 23:16:47,802 INFO com.balabas.smarthouse.server.security.DeviceSecurityServiceImpl [http-nio-80-exec-2] tempServerKey = 032af61eae448fef85ed184429eeed96ef2972ed
+2019-10-24 23:16:47,802 INFO com.balabas.smarthouse.server.security.DeviceSecurityServiceImpl [http-nio-80-exec-2] deviceHash = 3ae5f9ca9fcafebcccb9610770d1644153ce6325
+2019-10-24 23:16:47,803 INFO com.balabas.smarthouse.server.security.DeviceSecurityServiceImpl [http-nio-80-exec-2] serverHash = 78f2c7340cdc8a58a07ccbad0f9f98dbf4c24e7e
+2019-10-24 23:16:48,083 INFO com.balabas.smarthouse.server.entity.service.DeviceManageService [http-nio-80-exec-2] Registered :ESP_15818258
+2019-10-24 23:16:48,957 INFO com.balabas.smarthouse.server.entity.service.DeviceStateChangeService [scheduling-1] Устройство инициализировано : Микроклимат кухня
+2019-10-24 23:16:53,244 ERROR org.telegram.telegrambots.meta.logging.BotLogger [BotName Telegram Connection] BOTSESSION
+org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException: Error getting updates
+	at org.telegram.telegrambots.meta.api.methods.updates.GetUpdates.deserializeResponse(GetUpdates.java:119)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.getUpdatesFromServer(DefaultBotSession.java:256)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.run(DefaultBotSession.java:185)
+2019-10-24 23:16:57,621 ERROR org.telegram.telegrambots.meta.logging.BotLogger [BotName Telegram Connection] BOTSESSION
+org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException: Error getting updates
+	at org.telegram.telegrambots.meta.api.methods.updates.GetUpdates.deserializeResponse(GetUpdates.java:119)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.getUpdatesFromServer(DefaultBotSession.java:256)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.run(DefaultBotSession.java:185)
+2019-10-24 23:17:01,720 ERROR org.telegram.telegrambots.meta.logging.BotLogger [BotName Telegram Connection] BOTSESSION
+org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException: Error getting updates
+	at org.telegram.telegrambots.meta.api.methods.updates.GetUpdates.deserializeResponse(GetUpdates.java:119)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.getUpdatesFromServer(DefaultBotSession.java:256)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.run(DefaultBotSession.java:185)
+2019-10-24 23:17:05,815 ERROR org.telegram.telegrambots.meta.logging.BotLogger [BotName Telegram Connection] BOTSESSION
+org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException: Error getting updates
+	at org.telegram.telegrambots.meta.api.methods.updates.GetUpdates.deserializeResponse(GetUpdates.java:119)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.getUpdatesFromServer(DefaultBotSession.java:256)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.run(DefaultBotSession.java:185)
+2019-10-25 03:33:34,519 WARN org.telegram.telegrambots.meta.logging.BotLogger [BotName Telegram Connection] BOTSESSION - {"ok":false,"error_code":500,"description":"Internal server error: restart"}
+2019-10-25 03:33:41,964 WARN org.telegram.telegrambots.meta.logging.BotLogger [BotName Telegram Connection] BOTSESSION - {"ok":false,"error_code":502,"description":"Bad Gateway"}
+2019-10-26 00:39:21,820 ERROR org.telegram.telegrambots.meta.logging.BotLogger [BotName Telegram Connection] BOTSESSION
+java.net.UnknownHostException: api.telegram.org: Temporary failure in name resolution
+	at java.base/java.net.Inet6AddressImpl.lookupAllHostAddr(Native Method)
+	at java.base/java.net.InetAddress$PlatformNameService.lookupAllHostAddr(InetAddress.java:929)
+	at java.base/java.net.InetAddress.getAddressesFromNameService(InetAddress.java:1515)
+	at java.base/java.net.InetAddress$NameServiceAddresses.get(InetAddress.java:848)
+	at java.base/java.net.InetAddress.getAllByName0(InetAddress.java:1505)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1364)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1298)
+	at org.apache.http.impl.conn.SystemDefaultDnsResolver.resolve(SystemDefaultDnsResolver.java:45)
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:112)
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:374)
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:393)
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:236)
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:186)
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89)
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:110)
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185)
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:83)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.getUpdatesFromServer(DefaultBotSession.java:244)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.run(DefaultBotSession.java:185)
+2019-10-26 00:39:22,143 ERROR org.telegram.telegrambots.meta.logging.BotLogger [BotName Telegram Connection] BOTSESSION
+java.net.UnknownHostException: api.telegram.org
+	at java.base/java.net.InetAddress$CachedAddresses.get(InetAddress.java:797)
+	at java.base/java.net.InetAddress.getAllByName0(InetAddress.java:1505)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1364)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1298)
+	at org.apache.http.impl.conn.SystemDefaultDnsResolver.resolve(SystemDefaultDnsResolver.java:45)
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:112)
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:374)
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:393)
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:236)
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:186)
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89)
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:110)
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185)
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:83)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.getUpdatesFromServer(DefaultBotSession.java:244)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.run(DefaultBotSession.java:185)
+2019-10-26 00:39:22,541 ERROR org.telegram.telegrambots.meta.logging.BotLogger [BotName Telegram Connection] BOTSESSION
+java.net.UnknownHostException: api.telegram.org
+	at java.base/java.net.InetAddress$CachedAddresses.get(InetAddress.java:797)
+	at java.base/java.net.InetAddress.getAllByName0(InetAddress.java:1505)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1364)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1298)
+	at org.apache.http.impl.conn.SystemDefaultDnsResolver.resolve(SystemDefaultDnsResolver.java:45)
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:112)
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:374)
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:393)
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:236)
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:186)
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89)
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:110)
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185)
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:83)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.getUpdatesFromServer(DefaultBotSession.java:244)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.run(DefaultBotSession.java:185)
+2019-10-26 00:39:23,249 ERROR org.telegram.telegrambots.meta.logging.BotLogger [BotName Telegram Connection] BOTSESSION
+java.net.UnknownHostException: api.telegram.org
+	at java.base/java.net.InetAddress$CachedAddresses.get(InetAddress.java:797)
+	at java.base/java.net.InetAddress.getAllByName0(InetAddress.java:1505)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1364)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1298)
+	at org.apache.http.impl.conn.SystemDefaultDnsResolver.resolve(SystemDefaultDnsResolver.java:45)
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:112)
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:374)
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:393)
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:236)
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:186)
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89)
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:110)
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185)
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:83)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.getUpdatesFromServer(DefaultBotSession.java:244)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.run(DefaultBotSession.java:185)
+2019-10-26 00:39:24,314 ERROR org.telegram.telegrambots.meta.logging.BotLogger [BotName Telegram Connection] BOTSESSION
+java.net.UnknownHostException: api.telegram.org
+	at java.base/java.net.InetAddress$CachedAddresses.get(InetAddress.java:797)
+	at java.base/java.net.InetAddress.getAllByName0(InetAddress.java:1505)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1364)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1298)
+	at org.apache.http.impl.conn.SystemDefaultDnsResolver.resolve(SystemDefaultDnsResolver.java:45)
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:112)
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:374)
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:393)
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:236)
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:186)
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89)
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:110)
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185)
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:83)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.getUpdatesFromServer(DefaultBotSession.java:244)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.run(DefaultBotSession.java:185)
+2019-10-26 00:39:27,822 ERROR org.telegram.telegrambots.meta.logging.BotLogger [BotName Telegram Connection] BOTSESSION
+java.net.UnknownHostException: api.telegram.org
+	at java.base/java.net.InetAddress$CachedAddresses.get(InetAddress.java:797)
+	at java.base/java.net.InetAddress.getAllByName0(InetAddress.java:1505)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1364)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1298)
+	at org.apache.http.impl.conn.SystemDefaultDnsResolver.resolve(SystemDefaultDnsResolver.java:45)
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:112)
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:374)
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:393)
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:236)
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:186)
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89)
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:110)
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185)
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:83)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.getUpdatesFromServer(DefaultBotSession.java:244)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.run(DefaultBotSession.java:185)
+2019-10-26 00:39:31,160 ERROR org.telegram.telegrambots.meta.logging.BotLogger [BotName Telegram Connection] BOTSESSION
+java.net.UnknownHostException: api.telegram.org
+	at java.base/java.net.InetAddress$CachedAddresses.get(InetAddress.java:797)
+	at java.base/java.net.InetAddress.getAllByName0(InetAddress.java:1505)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1364)
+	at java.base/java.net.InetAddress.getAllByName(InetAddress.java:1298)
+	at org.apache.http.impl.conn.SystemDefaultDnsResolver.resolve(SystemDefaultDnsResolver.java:45)
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:112)
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:374)
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:393)
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:236)
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:186)
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89)
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:110)
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185)
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:83)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.getUpdatesFromServer(DefaultBotSession.java:244)
+	at org.telegram.telegrambots.updatesreceivers.DefaultBotSession$ReaderThread.run(DefaultBotSession.java:185)
+

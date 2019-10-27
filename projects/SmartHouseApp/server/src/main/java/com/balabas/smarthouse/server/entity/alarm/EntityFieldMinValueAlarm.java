@@ -1,25 +1,19 @@
 package com.balabas.smarthouse.server.entity.alarm;
 
+import javax.persistence.Entity;
+
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 @SuppressWarnings("rawtypes")
+@Entity
 public class EntityFieldMinValueAlarm extends AlarmAbstractEntityFieldNumber {
 
-	public EntityFieldMinValueAlarm(IEntityField field){
-		this.watchedItem = field;
+	public EntityFieldMinValueAlarm() {
+		super(compRes -> compRes >= 0, " < ");
 	}
 	
-	@Override
-	protected boolean checkItemHasAlarm() {
-		Float val = getValue().floatValue();
-		Float itemValue = ((Number)this.getWatchedItem().getValue()).floatValue();
-		
-		return itemValue.compareTo(val) <= 0;
-	}
-
-	@Override
-	protected String getItemAlarmText() {
-		return getWatchedItem().getName() + " " + getWatchedItem().getValueStr() + " < " + getValue().floatValue();
+	public EntityFieldMinValueAlarm(IEntityField entityField, Number minValue){
+		super(entityField, minValue, compRes -> compRes >= 0, " < ");
 	}
 
 }

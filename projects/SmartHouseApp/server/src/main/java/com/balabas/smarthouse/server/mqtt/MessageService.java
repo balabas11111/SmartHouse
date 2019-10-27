@@ -30,6 +30,9 @@ public class MessageService implements InitializingBean, IMessageService {
 	public static final String PING = "ping";
 	public static final String PONG = "pong";
 
+	@Value("${smarthouse.server.mock}")
+	private boolean mock;
+	
 	@Value("${mosquito.mqtt.enabled}")
 	private boolean enabled;
 
@@ -52,6 +55,9 @@ public class MessageService implements InitializingBean, IMessageService {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		if(mock) {
+			enabled = false;
+		}
 		if(enabled){
 			subscribers.stream().forEach(this::subscribe);
 		} else{

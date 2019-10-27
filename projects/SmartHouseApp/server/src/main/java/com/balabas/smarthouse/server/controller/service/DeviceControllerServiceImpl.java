@@ -25,7 +25,9 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 
 	public static final String IS_OFFLINE_MESSAGE = "{\"status\":\"OFFLINE\"}";
 	public static final String IS_ONLINE_MESSAGE = "{\"status\":\"ONLINE\"}";
-
+	public static final String STATUS_MESSAGE = "{\"status\":\"%s\"}";
+	public static final String OK_MESSAGE = "{\"status\":\"OK\"}";
+	
 	@Autowired
 	private IDeviceManageService deviceService;
 
@@ -38,9 +40,9 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 	public DeviceRequestResult<String> processIsServerOnlineRequest(DeviceRequest request) {
 
 		if (!isOnline) {
-			return DeviceRequestResult.from(HttpStatus.NOT_ACCEPTABLE, IS_OFFLINE_MESSAGE);
+			return DeviceRequestResult.from(HttpStatus.SERVICE_UNAVAILABLE, IS_OFFLINE_MESSAGE);
 		}
-
+		
 		return DeviceRequestResult.from(HttpStatus.OK, IS_ONLINE_MESSAGE);
 
 		/*
@@ -50,6 +52,20 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 		 * } catch (DeviceRequestValidateException e) { return
 		 * DeviceRequestResult.from(e.getStatus()); }
 		 */
+	}
+	
+	@Override
+	public DeviceRequestResult<String> processDeviceIsRegisteredRequest(DeviceRequest request) {
+		
+		if (request.getDeviceId() == null) {
+			return DeviceRequestResult.from(HttpStatus.BAD_REQUEST, IS_ONLINE_MESSAGE);
+		}
+		
+		HttpStatus status = deviceService.getDeviceByName(request.getDeviceId())!=null?
+							HttpStatus.NOT_ACCEPTABLE:HttpStatus.OK;
+		String message = String.format(STATUS_MESSAGE, status.name());
+		return DeviceRequestResult.from(status, message);
+		
 	}
 
 	@Override
@@ -75,7 +91,7 @@ public class DeviceControllerServiceImpl implements DeviceControllerService {
 		try {
 			if(request.hasData()) {
 				securityService.validateDeviceRequestDataUpdate(request);
-				IDevice device = deviceService.getManagedDeviceByName(request.getDeviceId());
+				IDevice device = deviceService.getDeviceByName(request.getDeviceId());
 				device.getTimer().setActionForced(true);
 			}
 			return DeviceRequestResult.from(HttpStatus.OK);

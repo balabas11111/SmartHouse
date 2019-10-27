@@ -32,6 +32,8 @@ public interface IEntity extends IStateable, IItemAbstract {
 	Group getGroup();
 	void setGroup(Group group);
 	
+	Device getDevice();
+	
 	IEntityField getEntityField(String entityFieldName);
 	
 	void addEntityField(IEntityField entityField);

@@ -1,8 +1,8 @@
 package com.balabas.smarthouse.server.entity.service;
 
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,17 +11,18 @@ import java.util.stream.Collectors;
 import org.json.JSONObject;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.balabas.smarthouse.server.controller.service.DeviceRequestorService;
+import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IUpdateable;
-import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -40,6 +41,12 @@ import lombok.extern.log4j.Log4j2;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class DeviceManageService implements IDeviceManageService, InitializingBean {
 
+	@Value("${smarthouse.server.mock}")
+	private boolean mock;
+	
+	@Value("${smarthouse.server.log.devicerequests}")
+	private boolean logDeviceRequests;
+	
 	@Autowired
 	DeviceRequestorService deviceRequestor;
 
@@ -63,6 +70,9 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 
 	@Getter
 	private List<Device> devices = Collections.synchronizedList(new ArrayList<>());
+	
+	@Getter
+	private Date lastDeviceDRUcheck;
 
 	@Override
 	@Transactional
@@ -80,13 +90,7 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	public List<Device> getDevicesInitialized() {
 		return devices.stream().filter(Device::isInitialized).collect(Collectors.toList());
 	}
-
-	@Override
-	public Device getManagedDeviceByName(String deviceName) {
-		return this.devices.stream().filter(d -> d.getName().equals(deviceName)).map(d -> (Device) d).findFirst()
-				.orElse(null);
-	}
-
+	
 	@Override
 	public Device getManagedDevice(Device dev) {
 		for(Device device : devices) {
@@ -107,6 +111,12 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 		}
 			
 		return null;
+	}
+	
+	@Override
+	public Device getDeviceByName(String deviceName) {
+		return this.devices.stream().filter(d -> deviceName.equals(d.getName())).map(d -> (Device) d).findFirst()
+				.orElse(null);
 	}
 
 	@Override
@@ -173,17 +183,17 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	}
 
 	@Override
-	public void processDataReceivedFromDevice(Entity entity, JSONObject data) {
+	public void processDataReceivedFromEntity(Entity entity, JSONObject data) {
 		Device device = entity.getGroup().getDevice();
 
-		processDataReceivedFromDevice(device, data);
+		processDataReceivedFromDevice(device, data, false, false);
 	}
 
 	@Override
-	public void processDataReceivedFromDevice(Device device, String deviceResponse) {
+	public void processDataReceivedFromDevice(Device device, String deviceResponse, boolean updateDeviceTimer, boolean updateGroupTimer) {
 		try {
 			JSONObject deviceJson = new JSONObject(deviceResponse);
-			processDataReceivedFromDevice(device, deviceJson);
+			processDataReceivedFromDevice(device, deviceJson, updateDeviceTimer, updateGroupTimer);
 
 		} catch (Exception e) {
 			log.error(e);
@@ -193,7 +203,7 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 
 	@Override
 	@Transactional
-	public void processDataReceivedFromDevice(Device device, JSONObject deviceJson) {
+	public void processDataReceivedFromDevice(Device device, JSONObject deviceJson, boolean updateDeviceTimer, boolean updateGroupTimer) {
 		boolean doSave = false;
 		
 		try {
@@ -212,7 +222,7 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 				doSave = true;
 			} else {
 				// setDevice values
-				boolean ok = itemBuildService.updateDeviceEntityValuesFromJson(device, deviceJson);
+				boolean ok = itemBuildService.updateDeviceEntityValuesFromJson(device, deviceJson, updateDeviceTimer, updateGroupTimer);
 
 				State newState = (ok) ? State.UPDATED : State.BAD_DATA;
 				stateChanger.stateChanged(device, newState);
@@ -236,50 +246,82 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	@Scheduled(fixedRate = 5000)
 	public void requestAllDevicesDataWithUpdateRequired() {
 		if (!getDevices().isEmpty()) {
+			
+			lastDeviceDRUcheck = new Date();
 
 			Map<String, String> deviceIds = new HashMap<>();
-
-			getDevices().stream().filter(dev -> dev.isRegistered() && checkItemRequiresUpdate(dev, dev))
-					.forEach(device -> {
+			
+			List<Device> devicesRu = getDevicesRequireUpdate();
+			
+			List<Group> groupsRu = getGroupsRequireUpdate();
+			
+			devicesRu.forEach(device -> {
 						deviceIds.put(device.getName(), null);
 						stateChanger.stateChanged(device, State.TIMED_OUT);
 						requestDevicesValues(device, null);
 					});
-
-			getDevices().stream()
-					.filter(device -> device.isRegistered() && device.getGroups() != null
-							&& !device.getGroups().isEmpty() && !deviceIds.containsKey(device.getName()))
-					.forEach(device -> device.getGroups().stream()
-							.filter(group -> checkItemRequiresUpdate(device, group)).forEach(group -> {
-								stateChanger.stateChanged(device, State.TIMED_OUT);
-								requestDevicesValues(device, group);
-							}));
+			groupsRu.stream()
+				.filter(group -> !deviceIds.containsKey(group.getDevice().getName()))
+			    .forEach(group -> {
+								stateChanger.stateChanged(group.getDevice(), State.TIMED_OUT);
+								requestDevicesValues(group.getDevice(), group);
+							});
 		}
+	}
+	
+	@Override
+	public List<Device> getDevicesRequireUpdate() {
+		return getDevices().stream().filter(dev -> dev.isRegistered() && checkItemRequiresUpdate(dev, dev))
+				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<Group> getGroupsRequireUpdate() {
+		return getDevices().stream()
+				.filter(device -> device.isRegistered() && device.getGroups() != null
+				&& !device.getGroups().isEmpty() )
+		.flatMap(device -> device.getGroups().stream())
+		.filter(group -> checkItemRequiresUpdate(group.getDevice(), group))
+		.collect(Collectors.toList());
 	}
 
 	@Override
 	public void requestDevicesValues(Device device, Group group) {
 		State oldState = device.getState();
-
+		
+		boolean groupRequest = group!=null;
+		boolean logDR = mock || logDeviceRequests; 
+		
 		try {
-			log.debug("Request data " + device.getName());
+			if(logDR) {
+				String message = "Request d=" + device.getName();
+					
+				if(group!=null) {
+					message += " g=" + group.getName();
+				}
+					log.info(message);
+					
+			} else {
+				log.debug("Request data " + device.getName());
+			}
+			
 
-			String groupId = group != null ? group.getName() : null;
+			String groupId = groupRequest ? group.getName() : null;
 			String result = deviceRequestor.executeGetDataOnDevice(device, groupId);
 
-			processDataReceivedFromDevice(device, result);
+			processDataReceivedFromDevice(device, result, !groupRequest, groupRequest);
 
 		} catch (Exception e) {
 			device.getTimer().update(60000, false);
 
-			if (!State.DISCONNECTED.equals(oldState)) {
+			if (logDR || !State.DISCONNECTED.equals(oldState)) {
 				log.error("Error request device values", e);
 			}
 
 			stateChanger.stateChanged(device, State.DISCONNECTED);
 		}
 	}
-
+	
 	protected boolean checkItemRequiresUpdate(Device target, IUpdateable source) {
 		boolean waits = source.getTimer().isActionForced();
 		boolean dataTooOld = source.getTimer().isTimeToExecuteAction();
@@ -296,7 +338,7 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	public String sendDataToDevice(String deviceName, String groupName, String entityName, Map<String, Object> values)
 			throws ResourceNotFoundException {
 
-		Device device = getManagedDeviceByName(deviceName);
+		Device device = getDeviceByName(deviceName);
 
 		if (device == null) {
 			throw new IllegalArgumentException("device name not found" + deviceName);
@@ -306,7 +348,7 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 
 		try {
 			String result = deviceRequestor.executePostDataOnDeviceEntity(device, entity, values);
-			processDataReceivedFromDevice(device, result);
+			processDataReceivedFromDevice(device, result, false, false);
 			return result;
 		} catch(Exception e) {
 			log.error(e);
@@ -327,6 +369,9 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 		if(device.getGroups()!=null) {
 			
 			for(Group group : device.getGroups()) {
+				if(group.getTimer() == null) {
+					
+				}
 				groupTimers.put(group.getName(), group.getTimer());
 				
 				if (group.getEntities()!=null && !group.getEntities().isEmpty()) {

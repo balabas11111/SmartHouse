@@ -3,11 +3,18 @@ package com.balabas.smarthouse.server.entity.alarm;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
+import com.balabas.smarthouse.server.entity.model.ActionTimer;
+import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
-import com.balabas.smarthouse.server.entity.model.descriptor.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -15,40 +22,42 @@ import lombok.Getter;
 import lombok.Setter;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
+@javax.persistence.Entity
 public class EntityAlarm implements IEntityAlarm {
 
 	@Id
 	@Getter	@Setter
 	private Long id;
-	
-	@JsonIgnore
-	@Getter	@Setter
-	private IDevice device;
 
-	@JsonIgnore
 	@Getter	@Setter
+	@ManyToOne(targetEntity = Entity.class, fetch = FetchType.EAGER)
+	@JoinColumn(name="entity_id", nullable=false)
 	private IEntity entity;
 
-	@Getter	@Setter
-	private String deviceName;
-
-	@Getter	@Setter
-	private String entityName;
-	
+	@Transient
 	@Getter	@Setter
 	private ActionTimer timer;
+	
+	@Transient
+	@Getter @Setter
+	private boolean activated;
 
 	@Getter	@Setter
+	@OneToMany(targetEntity = AlarmAbstractEntityField.class, mappedBy = "alarm", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private List<IAlarm> alarms = new LinkedList<>();
 	
 	@Getter
+	@Transient
 	boolean alarmed;
 	
 	@Getter @Setter
+	@Transient
 	boolean singleAlarmMessage;
 	
 	//true = alarmMessage, false = finishedMessage, null - nothing
+	@Transient
 	boolean sendAlarmStartedMessage = false;
+	@Transient
 	boolean sendAlarmFinishedMessage = false;
 
 	@Override
@@ -68,18 +77,19 @@ public class EntityAlarm implements IEntityAlarm {
 
 	@Override
 	public boolean check() {
-		alarmed = alarms.stream().map(IAlarm::check).reduce(Boolean::logicalOr).orElse(false);
+		if(activated) {
+			alarmed = alarms.stream().map(IAlarm::check).reduce(Boolean::logicalOr).orElse(false);
 
-		if( alarmed && !timer.isActionForced()){
-			sendAlarmStartedMessage = true;
-			sendAlarmFinishedMessage = false;
-			timer.update(0, true);
-		} else if(!alarmed && timer.isActionForced()) {
-			sendAlarmStartedMessage = false;
-			sendAlarmFinishedMessage = true;
-			timer.update(0, true);
+			if (alarmed && !timer.isActionForced()) {
+				sendAlarmStartedMessage = true;
+				sendAlarmFinishedMessage = false;
+				timer.update(0, true);
+			} else if (!alarmed && timer.isActionForced()) {
+				sendAlarmStartedMessage = false;
+				sendAlarmFinishedMessage = true;
+				timer.update(0, true);
+			}
 		}
-		
 		return alarmed;
 	}
 
@@ -146,8 +156,16 @@ public class EntityAlarm implements IEntityAlarm {
 
 	@Override
 	public boolean isActive() {
-		return device!=null && entity!=null;
+		return getDevice()!=null && entity!=null;
 		
+	}
+
+	@Override
+	public IDevice getDevice() {
+		if(getEntity() == null || getEntity().getGroup() == null) {
+			return null;
+		}
+		return getEntity().getGroup().getDevice();
 	}
 
 }

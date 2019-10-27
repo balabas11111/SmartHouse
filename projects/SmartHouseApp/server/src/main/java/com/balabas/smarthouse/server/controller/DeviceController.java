@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.server.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.balabas.smarthouse.server.controller.service.DeviceControllerService;
+import com.balabas.smarthouse.server.entity.model.Device;
+import com.balabas.smarthouse.server.entity.model.Group;
+import com.balabas.smarthouse.server.entity.service.DeviceManageService;
 import com.balabas.smarthouse.server.exception.DeviceOnServerAuthorizationException;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
@@ -31,6 +36,24 @@ public class DeviceController {
 	@Autowired
 	private DeviceControllerService service;
 
+	@Autowired
+	private DeviceManageService deviceService;
+	
+	@GetMapping("/")
+	public ResponseEntity<List<Device>> getAllDevices() {
+		return ResponseEntity.ok().body(deviceService.getDevices());
+	}
+	
+	@GetMapping("/requireUpdateDevices")
+	public ResponseEntity<List<Device>> getAllDevicesRequireUpdate() {
+		return ResponseEntity.ok().body(deviceService.getDevicesRequireUpdate());
+	}
+	
+	@GetMapping("/requireUpdateGroups")
+	public ResponseEntity<List<Group>> getAllGroupsRequireUpdate() {
+		return ResponseEntity.ok().body(deviceService.getGroupsRequireUpdate());
+	}
+	
 	@GetMapping("/data")
 	public ResponseEntity<String> dataChangeDispatchedOnDeviceGet(
 			@RequestParam(value = "deviceId") String deviceId,

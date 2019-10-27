@@ -118,7 +118,7 @@ public class SendMessageBuilder {
 	}
 
 	public SendMessage createGroupsOfDeviceInlineKeyboard(Action action, ReplyContext cont) {
-		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceName());
+		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 
 		cont.setText(String.format(BotMessageConstants.SELECT_GROUP_MSG, Emoji.OUTBOX_TRAY, device.getDescription(),
 				device.getFirmware()));
@@ -127,7 +127,7 @@ public class SendMessageBuilder {
 	}
 
 	public SendMessage getEntitiesOfGroupInlineKeyboard(String deviceName, String groupName, ReplyContext cont) {
-		IDevice device = deviceService.getManagedDeviceByName(deviceName);
+		IDevice device = deviceService.getDeviceByName(deviceName);
 		IGroup group = device.getGroup(groupName);
 
 		Emoji groupEmoji = itemTextHelper.getEmojiByGroupName(groupName);
@@ -141,7 +141,7 @@ public class SendMessageBuilder {
 	}
 	
 	public SendMessage getEntitiesOfDeviceToEdit(Action action, ReplyContext cont) {
-		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceName());
+		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 
 		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECT_ENTITY,
 				Emoji.GEAR, device.getDescription());
@@ -152,7 +152,7 @@ public class SendMessageBuilder {
 	}
 	
 	public SendMessage getFieldsOfEntityToEdit(Action action, ReplyContext cont) {
-		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceName());
+		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 		IEntity entity = device.getEntity(action.getEntityName());
 
 		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECT_FIELD,
@@ -164,7 +164,7 @@ public class SendMessageBuilder {
 	}
 	
 	public SendMessage getDeviceDescriptionToEdit(Action action, ReplyContext context) {
-		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceName());
+		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 		
 		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECTED_FIELD, device.getEmoji().toString(),
 				device.getDescription(), DeviceConstants.ENTITY_DEVICE_DEVICE_DESCRIPTION, "Название", device.getDescription());
@@ -173,7 +173,7 @@ public class SendMessageBuilder {
 	}
 	
 	public SendMessage getFieldToEdit(Action action, ReplyContext context) {
-		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceName());
+		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 		IEntity entity = device.getEntity(action.getEntityName());
 
 		String fieldName = new JSONObject(action.getData()).getString(ACTION_DATA_FIELD_NAME);
@@ -190,7 +190,7 @@ public class SendMessageBuilder {
 	public List<SendMessage> createGroupView(Action action, ReplyContext context) {
 		List<SendMessage> result = Lists.newArrayList();
 
-		IDevice device = deviceService.getManagedDeviceByName(action.getDeviceName());
+		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 		if (device != null) {
 			IGroup group = device.getGroup(action.getGroupName());
 
@@ -210,7 +210,7 @@ public class SendMessageBuilder {
 				builder.append("<code> Режимы тревоги </code>\n");
 
 				group.getEntities().stream().forEach(entity -> 
-					alarms.stream().filter(alarm -> entity.getName().equals(alarm.getEntityName())).forEach(alarm -> 
+					alarms.stream().filter(alarm -> entity.getName().equals(alarm.getEntity().getName())).forEach(alarm -> 
 						Optional.ofNullable(alarm.getAlarmStartedText()).ifPresent(builder::append)
 					)
 				);

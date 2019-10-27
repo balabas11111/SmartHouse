@@ -1,6 +1,8 @@
-package com.balabas.smarthouse.server.entity.model.descriptor;
+package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +20,7 @@ public class ActionTimer {
     @Getter
     private long lastSuccessActionTime;
     
+    @Getter
     private long nextActionTime = -1;
     
     @Getter @Setter
@@ -48,6 +51,7 @@ public class ActionTimer {
         }
     }
     
+    @JsonIgnore
     public boolean isActive(){
     	return this.nextActionTime > -1;
     }
@@ -56,6 +60,7 @@ public class ActionTimer {
     	this.nextActionTime = -1;
     }
     
+    @JsonIgnore
     public boolean isTimeToExecuteAction() {
     	if(this.nextActionTime > -1){
             return this.nextActionTime < (new Date()).getTime();
@@ -63,10 +68,12 @@ public class ActionTimer {
     	return false;
     }
     
+    @JsonIgnore
     public boolean isForcedAndTimeToExecute(){
     	return isActionForced() && isTimeToExecuteAction();
     }
     
+    @JsonIgnore
     public boolean isForcedOrTimeToExecute(){
     	return isActionForced() || isTimeToExecuteAction();
     }

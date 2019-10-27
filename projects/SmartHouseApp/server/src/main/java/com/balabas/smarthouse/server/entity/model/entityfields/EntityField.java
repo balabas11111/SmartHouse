@@ -4,13 +4,14 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
@@ -34,22 +35,20 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	@JsonIgnore
 	private Class clazz;
 
+	@JsonIgnore
 	@Getter @Setter
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="entity_id", nullable=false)
 	private Entity entity;
-	
-	@Transient
-	private T value;
 
 	@Getter	@Setter
 	protected boolean readOnly;
 
 	@Getter	@Setter
+	@Enumerated(EnumType.STRING)
 	protected EntityFieldClassView viewClass;
 
 	@Getter	@Setter
-	@JsonIgnore
 	@OneToMany(targetEntity = EntityFieldEnabledValue.class, mappedBy="entityField", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	protected Set<IEntityFieldEnabledValue> enabledValues;
 
@@ -104,19 +103,17 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 		setValueWithNoCheck(fromString(value));
 	}
 
-	@Override
-	public T getValue() {
-		return this.value;
-	}
-	
+	@JsonIgnore
 	@Override
 	public String getValueStr() {
 		if (getValue() == null) {
 			return null; 
 		}
-		return getValue().toString();
+		String result = getValue().toString();
+		return result;
 	}
 
+	@JsonIgnore
 	@Override
 	public Object getValueObj() {
 		return getValue();
@@ -142,7 +139,7 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 				.findFirst().orElse(null);
 	}
 
-
+	@JsonIgnore
 	@Override
 	public IEntityFieldEnabledValue getEntityFieldEnabledValueByCurrentValue() {
 		if (enabledValues == null || enabledValues.isEmpty()) {
@@ -153,9 +150,7 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 				.findFirst().orElse(null);
 	}
 	
-	protected void setValue(T value) {
-		this.value = value;
-	}
+	public abstract void setValue(T value);
 	
 	protected abstract T fromString(String value);
 	

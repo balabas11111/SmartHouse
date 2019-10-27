@@ -31,6 +31,12 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 		
 		log.info("GET "+execUrl);
 		
+		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
+        SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) restTemplate
+                .getRequestFactory();
+        rf.setReadTimeout(5000);
+        rf.setConnectTimeout(5000);
+		
 		return restTemplate.getForEntity(execUrl, String.class);
 	}
 	
@@ -41,16 +47,28 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 		
 		log.info("GET "+execUrl);
 		
+		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
+        SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) restTemplate
+                .getRequestFactory();
+        rf.setReadTimeout(5000);
+        rf.setConnectTimeout(5000);
+		
 		return restTemplate.getForEntity(execUrl, Device.class);
 	}
 
 	@Override
 	public ResponseEntity<List<Device>> executeGetRequestDeviceList(String url, Map<String, String> params)
 			throws UnsupportedEncodingException {
-		RestTemplate tmpl = new RestTemplate();
+		RestTemplate restTemplate = new RestTemplate();
 		String execUrl = url + getParamsString(params);
         
-        return (tmpl.exchange(
+		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
+        SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) restTemplate
+                .getRequestFactory();
+        rf.setReadTimeout(5000);
+        rf.setConnectTimeout(5000);
+		
+        return (restTemplate.exchange(
         		execUrl,
                 HttpMethod.GET,
                 null,
@@ -59,22 +77,19 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 
 	@Override
 	public ResponseEntity<String> executePostRequest(String url, String body) throws UnsupportedEncodingException {
-		RestTemplate rest = new RestTemplate();
+		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.APPLICATION_JSON);
 	    
 		HttpEntity<String> request = new HttpEntity<>(body, headers);
-		return rest.postForEntity(url, request, String.class);
-	}
-	
-	@Override
-	public ResponseEntity<String> executeGetRequest(String url, HttpHeaders headers, Map<String,String> params){
-		RestTemplate restTemplate = new RestTemplate();
 		
-		HttpEntity<String> request = new HttpEntity<>(headers);
-		
-		return restTemplate.exchange(url, HttpMethod.GET, request, String.class, params);
-		
+		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
+        SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) restTemplate
+                .getRequestFactory();
+        rf.setReadTimeout(5000);
+        rf.setConnectTimeout(5000);
+        
+		return restTemplate.postForEntity(url, request, String.class);
 	}
 	
 	public static String getParamsString(Map<String, String> params) throws UnsupportedEncodingException {
@@ -97,13 +112,35 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 	
 	@Override
 	public ResponseEntity<String> executePostRequest(String url, HttpHeaders headers, String body) {
-		RestTemplate rest = new RestTemplate();
+		RestTemplate restTemplate = new RestTemplate();
 	    
 		HttpEntity<String> request = new HttpEntity<>(body, headers);
 		
-		return rest.postForEntity(url, request, String.class);
+		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
+        SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) restTemplate
+                .getRequestFactory();
+        rf.setReadTimeout(5000);
+        rf.setConnectTimeout(5000);
+		
+		return restTemplate.postForEntity(url, request, String.class);
 	}
 
+	@Override
+	public ResponseEntity<String> executeGetRequest(String url, HttpHeaders headers, Map<String,String> params){
+		RestTemplate restTemplate = new RestTemplate();
+		
+		HttpEntity<String> request = new HttpEntity<>(headers);
+		
+		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
+        SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) restTemplate
+                .getRequestFactory();
+        rf.setReadTimeout(5000);
+        rf.setConnectTimeout(5000);
+		
+		return restTemplate.exchange(url, HttpMethod.GET, request, String.class, params);
+		
+	}
+	
 	@Override
 	public ResponseEntity<String> executePostRequest(String url, HttpHeaders headers,
 			MultiValueMap<String, Object> map) {

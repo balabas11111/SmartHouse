@@ -4,8 +4,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.exception.BadValueException;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -13,6 +15,10 @@ import lombok.extern.log4j.Log4j2;
 @Entity
 public class EntityFieldIp extends EntityField<InetAddress> implements IEntityField<InetAddress> {
 
+	@Transient
+	@JsonAlias("value")
+	private InetAddress valueAddr;
+	
 	@Override
 	public void validateValue(InetAddress value) throws IllegalArgumentException {
 		super.validateValue(value);
@@ -55,6 +61,16 @@ public class EntityFieldIp extends EntityField<InetAddress> implements IEntityFi
 			log.error(e);
 			throw new IllegalArgumentException(e.getMessage());
 		}
+	}
+
+	@Override
+	public InetAddress getValue() {
+		return valueAddr;
+	}
+
+	@Override
+	public void setValue(InetAddress value) {
+		this.valueAddr = value;
 	}
 
 }

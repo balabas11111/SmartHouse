@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +31,7 @@ public abstract class EntityFieldEnabledValue<T> implements IEntityFieldEnabledV
 	@Getter
 	Long id;
 	
+	@JsonIgnore
 	@Getter @Setter
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="entity_field_id", nullable=false)
@@ -46,6 +48,7 @@ public abstract class EntityFieldEnabledValue<T> implements IEntityFieldEnabledV
 	private Emoji emoji;
 	
 	@Getter @Setter
+	@Enumerated(EnumType.STRING)
 	private EntityFieldClassView viewClass;
 	
 	@Override

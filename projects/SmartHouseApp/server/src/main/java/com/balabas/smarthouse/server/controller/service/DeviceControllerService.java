@@ -8,6 +8,8 @@ public interface DeviceControllerService {
 	DeviceRequestResult<String> processIsServerOnlineRequest(DeviceRequest request);
 
 	DeviceRequestResult<String> processDeviceRegistrationRequest(DeviceRequest request);
+	
+	DeviceRequestResult<String> processDeviceIsRegisteredRequest(DeviceRequest request);
 
 	DeviceRequestResult<String> processDataChangedOnDeviceRequest(DeviceRequest request, boolean withData);
 	

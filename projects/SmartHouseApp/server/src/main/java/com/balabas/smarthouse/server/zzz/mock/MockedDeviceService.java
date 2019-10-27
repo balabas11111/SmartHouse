@@ -28,6 +28,7 @@ import com.balabas.smarthouse.server.entity.alarm.IAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
@@ -103,20 +104,18 @@ public class MockedDeviceService implements InitializingBean {
 
 		if (alarms != null && alarms.isEmpty()) {
 			DeviceRequest req = reqs.get(0);
-			IDevice device = deviceService.getManagedDeviceByName(req.getDeviceId());
+			IDevice device = deviceService.getDeviceByName(req.getDeviceId());
 
 			if (device != null) {
-			String deviceName = device.getName();
-			String entityName = "bme280";
-			String entityFieldName = "t";
-
+				String entityName = "bme280";
+				String entityFieldName = "t";
+	
+				IEntityField entityField = device.getEntity(entityName).getEntityField(entityFieldName);
 			
 
-				IAlarm entityFieldAlarm = new EntityFieldMaxValueAlarm(entityFieldName, 31);
+				IAlarm entityFieldAlarm = new EntityFieldMaxValueAlarm(entityField, 31);
 
 				IEntityAlarm alarm = new EntityAlarm();
-				alarm.setDeviceName(deviceName);
-				alarm.setEntityName(entityName);
 				alarm.putAlarm(entityFieldAlarm);
 
 				//alarmService.registerAlarm(alarm);
