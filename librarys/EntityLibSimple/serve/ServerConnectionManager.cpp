@@ -143,13 +143,16 @@ void ServerConnectionManager::sendIsOnlineRequest() {
 		Serial.println(FPSTR("...ok"));
 		this->serverPinged = true;
 		this->triggeredServerIsOnlineCheck = false;
-	}else{
+	}else if(httpCode == 406){
 		Serial.print(FPSTR("...ERROR "));
 		Serial.println(httpCode);
-		setRequestPostPoned(SERVER_CONNECTION_PING_FAILED_TIMEOUT);
+		//setRequestPostPoned(SERVER_CONNECTION_PING_FAILED_TIMEOUT);
 		this->serverPinged = false;
 		this->deviceRegistered = false;
 		this->triggeredServerRegister = true;
+	} else {
+		setRequestPostPoned(SERVER_CONNECTION_PING_FAILED_TIMEOUT);
+		this->serverPinged = false;
 	}
 
 	this->runsPingRequest = false;
