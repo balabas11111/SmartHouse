@@ -51,6 +51,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_DHT22}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_DS18D20}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPUpdateServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.392278783" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -88,6 +90,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_DHT22}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_DS18D20}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPUpdateServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1644733984" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -125,6 +129,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_DHT22}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/EntityLib_S_DS18D20}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPUpdateServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.2126147630" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>

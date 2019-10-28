@@ -177,7 +177,7 @@ public class SmartHouseItemBuildService {
 		return isOk;
 	}
 
-	private boolean updateGroupEntityValuesFromJson(Group group, JSONObject groupJson, boolean updateGroupTimer) {
+	private static boolean updateGroupEntityValuesFromJson(Group group, JSONObject groupJson, boolean updateGroupTimer) {
 		boolean isOk = true;
 		for (String entityName : JSONObject.getNames(groupJson)) {
 
@@ -202,7 +202,7 @@ public class SmartHouseItemBuildService {
 		return isOk;
 	}
 
-	private boolean updateEntityValuesFromJson(Entity entity, JSONObject entityJson) {
+	private static boolean updateEntityValuesFromJson(Entity entity, JSONObject entityJson) {
 		boolean setOk = true;
 
 		for (String entityFieldName : JSONObject.getNames(entityJson)) {

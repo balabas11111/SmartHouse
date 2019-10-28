@@ -11,7 +11,7 @@
 #include "ESP8266WiFi.h"
 #include "PubSubClient.h"
 
-Bme280sensor bme280( (char*) "Микроклимат воздуха");
+Bme280sensor bme280( (char*) "222 Микроклимат воздуха");
 Bh1750sensor bh1750( (char*) "Уровень освещения");
 OutputPin rele(BUILTIN_LED,  (char*) "Диод на плате", "built In LED",  LOW, false);
 DHT22sensor dht22(D5, (char*) "Микроклимат воздуха DHT", DHT22);
