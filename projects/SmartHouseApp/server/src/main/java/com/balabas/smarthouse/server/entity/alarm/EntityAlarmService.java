@@ -54,6 +54,7 @@ public class EntityAlarmService implements IEntityAlarmService, InitializingBean
 
 	@Override
 	public void saveAlarms() throws IOException {
+		alarms.stream().forEach(this::save);
 	}
 
 	@Override
@@ -131,7 +132,7 @@ public class EntityAlarmService implements IEntityAlarmService, InitializingBean
 		sendAlarmNotifications(device);
 		sendAlarmFinishedNotifications(device);
 	}
-
+	
 	private void sendAlarmNotifications(IDevice device) {
 		List<IEntityAlarm> alarmsWithStarted = getAlarmsWithAlarmNotificationRequired(device);
 
@@ -159,6 +160,18 @@ public class EntityAlarmService implements IEntityAlarmService, InitializingBean
 
 		}
 
+	}
+	
+	@Override
+	public IEntityAlarm save(IEntityAlarm alarm) {
+		
+		return alarm;
+	}
+	
+	@Override
+	public List<IEntityAlarm> loadAlarmsForDevice(IDevice device) {
+		
+		return null;
 	}
 
 	private void sendAlarmFinishedNotifications(IDevice device) {

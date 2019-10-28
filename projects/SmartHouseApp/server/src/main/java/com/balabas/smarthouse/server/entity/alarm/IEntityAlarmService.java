@@ -35,4 +35,8 @@ public interface IEntityAlarmService {
 
 	List<IEntityAlarm> getActiveEntityAlarms();
 
+	IEntityAlarm save(IEntityAlarm alarm);
+
+	List<IEntityAlarm> loadAlarmsForDevice(IDevice device);
+
 }
