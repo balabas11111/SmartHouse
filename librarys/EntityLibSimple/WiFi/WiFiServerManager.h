@@ -20,6 +20,8 @@
 #include <EntityJsonRequestResponse.h>
 #include <WiFi/HttpConstants.h>
 #include <functional>
+#include <ESP8266HTTPUpdateServer.h>
+
 
 class WiFiServerManager {
 public:
@@ -60,6 +62,7 @@ private:
 	SettingsStorage* conf;
 
 	File fsUploadFile;
+	ESP8266HTTPUpdateServer* updateServer;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_WIFI_WIFISERVERMANAGER_H_ */

@@ -10,12 +10,14 @@
 
 WiFiServerManager::WiFiServerManager(EntityManager* manager, SettingsStorage* conf, int port) {
 	this->server = new ESP8266WebServer(port);
+	this->updateServer = new ESP8266HTTPUpdateServer(true);
 	this->manager = manager;
 	this->conf = conf;
 }
 
 void WiFiServerManager::begin() {
-	server->begin();
+	this->server->begin();
+	this->updateServer->setup(this->server, conf->adminLogin(), conf->adminPassword());
 
 	deployDefaultUrls();
 	deployStaticFiles();

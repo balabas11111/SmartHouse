@@ -43,6 +43,9 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 
 	@Getter	@Setter
 	protected boolean readOnly;
+	
+	@Getter	@Setter
+	protected boolean active;
 
 	@Getter	@Setter
 	@Enumerated(EnumType.STRING)

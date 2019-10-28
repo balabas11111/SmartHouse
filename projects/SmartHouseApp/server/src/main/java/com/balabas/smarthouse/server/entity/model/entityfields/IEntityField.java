@@ -22,6 +22,9 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	boolean isReadOnly();
 	void setReadOnly(boolean readOnly);
 	
+	boolean isActive();
+	void setActive(boolean active);
+	
 	Entity getEntity();
 	void setEntity(Entity entity);
 	

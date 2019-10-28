@@ -82,7 +82,6 @@ import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.EntityStatus;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
-import com.balabas.smarthouse.server.exception.BadValueException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 
 import lombok.extern.log4j.Log4j2;
@@ -216,7 +215,7 @@ public class SmartHouseItemBuildService {
 					String valStr = valueObj.toString();
 
 					if (entity.getDescriptionField().equals(entityFieldName)) {
-						entity.setDescriptionIfEmpty(valueObj.toString());
+						entity.setDescriptionIfEmpty(valStr);
 					}
 
 					if (entityField != null) {
@@ -229,6 +228,7 @@ public class SmartHouseItemBuildService {
 						}
 					} else {
 						createEntityFieldValue(entity, entityJson, entityFieldName);
+						log.info("new field added" + entityFieldName);
 					}
 				} catch (Exception e) {
 					log.error("field " + entityFieldName + " : ", e);
@@ -255,7 +255,7 @@ public class SmartHouseItemBuildService {
 		try {
 			EntityField field = buildEntityFieldFromJson(entity, entityJson, entityFieldName);
 			entity.getEntityFields().add(field);
-		} catch (BadValueException e) {
+		} catch (IllegalArgumentException e) {
 			log.error(e);
 		}
 	}
@@ -338,13 +338,13 @@ public class SmartHouseItemBuildService {
 	public Set<Entity> buildEntitiesForGroupNoEx(Group group, JSONObject deviceJson) {
 		try {
 			return buildEntitiesForGroup(group, deviceJson);
-		} catch (BadValueException e) {
+		} catch (IllegalArgumentException e) {
 			log.error(e);
 			return Collections.emptySet();
 		}
 	}
 
-	public Set<Entity> buildEntitiesForGroup(Group group, JSONObject deviceJson) throws BadValueException {
+	public Set<Entity> buildEntitiesForGroup(Group group, JSONObject deviceJson) {
 		Set<Entity> entities = new LinkedHashSet<>();
 
 		JSONObject groupJson = deviceJson.optJSONObject(group.getName());
@@ -359,7 +359,7 @@ public class SmartHouseItemBuildService {
 		return entities;
 	}
 
-	public Entity buildEntityFromJson(Group group, JSONObject groupJson, String entityName) throws BadValueException {
+	public Entity buildEntityFromJson(Group group, JSONObject groupJson, String entityName) {
 
 		JSONObject entityJson = groupJson.optJSONObject(entityName);
 		JSONObject descriptorJson = Optional.ofNullable(entityJson.optJSONObject(ENTITY_FIELD_SWG))
@@ -384,7 +384,11 @@ public class SmartHouseItemBuildService {
 
 		Set<IEntityField> entityFields = new LinkedHashSet<>();
 
-		for (String fieldName : JSONObject.getNames(entityJson)) {
+		Map<String, Object> entityJsonObj = entityJson.toMap();
+		
+		for (Entry<String, Object> entry : entityJsonObj.entrySet()) {
+			String fieldName = entry.getKey();
+			
 			if (ENTITY_FIELD_STATUS.equals(fieldName)) {
 				processEntityStatus(entity, entityJson);
 			} else if (ENTITY_FIELD_SENSOR_ITEMS.equals(fieldName)) {
@@ -399,6 +403,12 @@ public class SmartHouseItemBuildService {
 		}
 
 		entity.setEntityFields(entityFields);
+		
+		entity.getEntityFields().forEach( entField -> {
+			if(!entityJsonObj.containsKey(entField.getName())) {
+				entField.setActive(false);
+			}
+		});
 
 		return entity;
 	}
@@ -467,6 +477,7 @@ public class SmartHouseItemBuildService {
 				countField.setViewClass(EntityFieldClassView.EDC_CLASS_VIEW_LABEL);
 				countField.setReadOnly(true);
 				countField.setValueWithNoCheck(Integer.valueOf(count));
+				countField.setActive(true);
 
 				//entity.addGeneratedField(countField);
 				return (EntityField) countField;
@@ -482,7 +493,7 @@ public class SmartHouseItemBuildService {
 	}
 
 	private static EntityField buildEntityFieldFromJson(Entity entity, JSONObject entityJson, String fieldName)
-			throws BadValueException {
+			 {
 		JSONObject descriptorJson = entityJson.optJSONObject(ENTITY_FIELD_SWG);
 		JSONObject allFieldsDecriptor = descriptorJson.optJSONObject(EDC_ENTITY_FIELDS);
 
@@ -514,6 +525,7 @@ public class SmartHouseItemBuildService {
 		entityField.setViewClass(viewClass);
 		entityField.setReadOnly(readOnly);
 		entityField.setEmoji(emoji);
+		entityField.setActive(true);
 		
 		try {
 			if(!(ENTITY_FIELD_DESCRIPTION.equals(entityField.getTemplateName())
@@ -534,7 +546,7 @@ public class SmartHouseItemBuildService {
 	}
 
 	private static Set<IEntityFieldEnabledValue> getEnabledFieldValues(JSONObject fieldDecriptor, String fieldName,
-			EntityFieldClassType fieldClassType, EntityField entityField) throws BadValueException {
+			EntityFieldClassType fieldClassType, EntityField entityField) {
 		if (fieldDecriptor.has(EDC_FIELD_ENABLED_VALUES)) {
 			JSONObject enabledFieldJson = fieldDecriptor.getJSONObject(EDC_FIELD_ENABLED_VALUES);
 
