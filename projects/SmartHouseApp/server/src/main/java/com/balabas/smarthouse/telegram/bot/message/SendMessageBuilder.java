@@ -33,6 +33,7 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_NAME;
 import lombok.Getter;
 
 @Component
+@SuppressWarnings("rawtypes")
 public class SendMessageBuilder {
 
 	@Autowired
@@ -100,6 +101,67 @@ public class SendMessageBuilder {
 
 		msgs.add(cont.createMsg(inlineKeyboard.getDevicesOfServerInlineKeyboardView(devices)));
 
+		return msgs;
+	}
+	
+	public List<SendMessage> createSetupMenu(Action action, ReplyContext context) {
+		List<SendMessage> msgs = Lists.newArrayList();
+		
+		context.setText(String.format(BotMessageConstants.SELECT_SETUP_ACTION, Emoji.WARNING));
+		msgs.add(context.createMsg(inlineKeyboard.getSetupMenuKeyboard()));
+
+		return msgs;
+	}
+	
+	public List<SendMessage> createEditAlarmsMenu(Action action, ReplyContext context) {
+		List<SendMessage> msgs = Lists.newArrayList();
+		List<Device> devices = getDevices();
+		
+		context.setText(String.format(BotMessageConstants.SELECT_DEVICE_TO_EDIT_ALARMS, Emoji.WARNING));
+		msgs.add(context.createMsg(inlineKeyboard.getAlarmsMenuKeyboard(devices)));
+
+		return msgs;
+	}
+	
+
+	public List<SendMessage> createEditAlarmsOfDevice(Action action, ReplyContext context) {
+		List<SendMessage> msgs = Lists.newArrayList();
+		
+		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
+		
+		List<IEntity> entities = entityAlarmService.getEntitiesWithPossibleAlarms(device);
+		
+		context.setText(String.format(BotMessageConstants.SELECT_ENTITY_TO_EDIT_ALARMS, Emoji.ERROR));
+		msgs.add(context.createMsg(inlineKeyboard.getEntitiesAlarmsOfDeviceMenuKeyboard(entities)));
+		
+		return msgs;
+	}
+
+	public List<SendMessage> createEditAlarmsOfEntity(Action action, ReplyContext context) {
+		List<SendMessage> msgs = Lists.newArrayList();
+		
+		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
+		IEntity entity = device.getEntity(action.getEntityName());
+		
+		List<IEntityField> entityFields = entityAlarmService.getEntityFieldsWithPossibleAlarms(entity);
+		
+		context.setText(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_TO_EDIT_ALARMS, Emoji.ERROR));
+		msgs.add(context.createMsg(inlineKeyboard.getEntityFieldsAlarmsOfEntityMenuKeyboard(entityFields)));
+		
+		return msgs;
+	}
+	
+	public List<SendMessage> createEditAlarmsOfEntityField(Action action, ReplyContext context) {
+		List<SendMessage> msgs = Lists.newArrayList();
+		
+		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
+		IEntity entity = device.getEntity(action.getEntityName());
+		
+		IEntityField entityField = entity.getEntityField(action.getData());
+		
+		context.setText(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_EDIT_ALARMS, Emoji.ERROR,
+				entityField.getDescription()));
+		
 		return msgs;
 	}
 	
@@ -269,7 +331,7 @@ public class SendMessageBuilder {
 	}
 	
 	public SendMessage createDeviceDataSavedOnServer(String msg, Long chatId) {
-		return createMessage(BotMessageConstants.MESSAGE_DEVICE_REFRESHED, Emoji.CHECK_MARK.toString(), chatId, msg);
+		return createMessage(BotMessageConstants.MESSAGE_DATA_WAS_SAVED_ON_SERVER, Emoji.FLOPPY.toString(), chatId, msg);
 	}
 
 	public SendMessage createMessage(String format, String emoji, Long chatId, String msg) {

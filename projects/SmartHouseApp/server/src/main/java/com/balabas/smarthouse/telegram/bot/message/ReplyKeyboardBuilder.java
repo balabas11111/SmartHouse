@@ -37,7 +37,7 @@ public class ReplyKeyboardBuilder {
 	}
 	
 	public KeyboardRow getRefreshDevicesListEditReplyKeyboard() {
-		return getKeyboardRow(ItemTextHelper.getEditDeviceListButton());
+		return getKeyboardRow(ItemTextHelper.getSetupButton());
 	}
 	
 	private KeyboardRow getKeyboardRow(String text) {

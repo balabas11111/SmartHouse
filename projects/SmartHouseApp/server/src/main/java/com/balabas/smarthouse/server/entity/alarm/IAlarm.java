@@ -14,6 +14,8 @@ public interface IAlarm<T extends IItemAbstract, O>{
 	void setValue(O value);
 	O getValue();
 	
+	void setValueStr(String value);
+	
 	T getWatchedItem();
 	void setWatchedItem(T watchedItem);
 	

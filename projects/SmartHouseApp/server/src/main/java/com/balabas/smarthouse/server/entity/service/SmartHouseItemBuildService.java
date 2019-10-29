@@ -513,7 +513,7 @@ public class SmartHouseItemBuildService {
 						EntityFieldClassType.STRING
 					);
 		
-		String descriptionField = descriptorJson.optString(EDC_FIELD_DESCR_FIELD, null);
+		String descriptionField = fieldDecriptor.optString(EDC_FIELD_DESCR_FIELD, null);
 		String description = fieldDecriptor.optString(EDC_FIELD_DESCRIPTION, EMPTY_STR);
 		EntityFieldClassView viewClass = EntityFieldClassView.from(fieldDecriptor.optString(EDC_CLASS_VIEW, null));
 		boolean readOnly = booleanFromString(fieldDecriptor.optString(EDC_READ_ONLY, ENTITY_FIELD_ID.equals(entityFieldName)?TRUE:FALSE));
@@ -521,6 +521,12 @@ public class SmartHouseItemBuildService {
 		
 		EntityField entityField = Optional.ofNullable((EntityField)entity.getEntityField(entityFieldName)).orElse(createEntityFieldByClass(fieldClassType));
 
+		if(!entityFieldName.contains(":")) {
+			descriptionField = null;
+		} else {
+			log.debug(entityFieldName);
+		}
+		
 		entityField.setEntity(entity);
 		entityField.setName(entityFieldName);
 		entityField.setDescriptionIfEmpty(description);

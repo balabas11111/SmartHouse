@@ -48,8 +48,16 @@ public class ItemTextHelper {
     	return String.format(BotMessageConstants.VIEW_DEVICES_BUTTON, Emoji.BOOKMARK_TABS);
     }
     
-    public static String getEditDeviceListButton(){
-    	return String.format(BotMessageConstants.EDIT_DEVICES_BUTTON, Emoji.HAMMER_AND_WRENCH);
+    public static String getSetupButton(){
+    	return String.format(BotMessageConstants.SETUP_BUTTON, Emoji.HAMMER_AND_WRENCH);
+    }
+    
+    public static String getEditAlarmsButton(){
+    	return String.format(BotMessageConstants.EDIT_ALARMS_BUTTON, Emoji.ERROR);
+    }
+    
+    public static String getEditPropertiesButton(){
+    	return String.format(BotMessageConstants.EDIT_PROPERTIES_BUTTON, Emoji.MEMO);
     }
 	
     public String getDeviceButton(Emoji emoji, String deviceDescr) {

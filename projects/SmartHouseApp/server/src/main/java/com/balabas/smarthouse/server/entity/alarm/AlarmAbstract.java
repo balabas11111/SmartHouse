@@ -39,6 +39,8 @@ public abstract class AlarmAbstract<T extends IItemAbstract, O extends Object>
 	public abstract O getValue();
 	
 	public abstract void setValue(O value);
+	
+	public abstract void setValueStr(String value);
 
 	public AlarmAbstract() {
 	}

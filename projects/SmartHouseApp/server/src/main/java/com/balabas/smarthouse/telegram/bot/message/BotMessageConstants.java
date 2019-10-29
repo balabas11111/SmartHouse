@@ -22,12 +22,16 @@ public class BotMessageConstants {
 	
 	public static final String MESSAGE_DEVICE_REFRESHED = "%s Устройство обновлено.  %s";
 	public static final String MESSAGE_DEVICE_DATA_SAVED = "%s Данные сохранены.  %s";
+	public static final String MESSAGE_DATA_WAS_SAVED_ON_SERVER = "%s Данные устройства сохранены.  %s";
 	public static final String MESSAGE_DATA_WAS_SENT_TO_DEVICE = "%s Данные отправлены на устройство.  %s";
 	
 	public static final String BUTTON = "%s %s";
 	
 	public static final String VIEW_DEVICES_BUTTON = "%s Просмотр показателей";
-	public static final String EDIT_DEVICES_BUTTON = "%s Редактировать";
+	public static final String SETUP_BUTTON = "%s Настройки";
+	
+	public static final String EDIT_ALARMS_BUTTON = "%s Режимы тревоги";
+	public static final String EDIT_PROPERTIES_BUTTON = "%s Настройки описаний";
 	
 	public static final String EDIT_DEVICE_SELECT_ENTITY = "%s Редактировать %s. Выберите датчик для редактирования";
 	public static final String EDIT_DEVICE_SELECT_FIELD = "%s Устройство %s. \n Датчик <b>%s</b>. Выберите поле для редактирования";
@@ -50,10 +54,17 @@ public class BotMessageConstants {
 	public static final String SERVER_SELECT_DEVICE_VIEW_MSG = "%s Сервер %s";
 	public static final String SERVER_SELECT_DEVICE_EDIT_MSG = "%s Сервер %s - Редактировать параметры";
 	public static final String NO_DEVICE_MSG = "%s На сервере не зарегистрировано ни одно устройство";
+	
 	public static final String SELECT_GROUP_MSG = 
 	        "%s Устройство \n"+
 	        "<b>: %s </b>\n"+
 	        ": %s ";
+	
+	public static final String SELECT_SETUP_ACTION = "%s Выберите группу настроек";
+	public static final String SELECT_DEVICE_TO_EDIT_ALARMS = "%s Выберите устройство для просмотра режима тревоги";
+	public static final String SELECT_ENTITY_TO_EDIT_ALARMS = "%s Выберите датчик для просмотра режима тревоги";
+	public static final String SELECT_ENTITY_FIELD_TO_EDIT_ALARMS = "%s Выберите поле для просмотра режима тревоги";
+	public static final String SELECT_ENTITY_FIELD_EDIT_ALARMS = "%s Поле %s";
 	
 	public static final String SPACE = " ";
 	public static final String USER = "Пользователь";
@@ -63,6 +74,8 @@ public class BotMessageConstants {
 	public static final String COMMAND_HOME = "/home";
 	public static final String COMMAND_ROOT = "/";
 	public static final String COMMAND_SETUP = "/setup";
+	public static final String COMMAND_ALARM = "/alarm";
+	public static final String COMMAND_EDIT = "/alarm";
 	public static final String COMMAND_HELP = "/help";
 	
 	public static final String TOOGLE_STATE = "сост";
@@ -71,6 +84,8 @@ public class BotMessageConstants {
 	
 	public static final String HELP_MESSAGE = Emoji.HAND_OK.toString() + " Справка "
 			+ COMMAND_SETUP + " - " + "Установки устройства" + " \n"
+			+ COMMAND_ALARM + " - " + "Режимы тревоги" + " \n"
+			+ COMMAND_EDIT + " - " + "Редактировать устройства" + " \n"
 			+ COMMAND_HOME + " - " + "Датчики / управление устройством" + " \n"
 			+ COMMAND_HELP + " - " + "Справка по коммандам" + " \n";
 	

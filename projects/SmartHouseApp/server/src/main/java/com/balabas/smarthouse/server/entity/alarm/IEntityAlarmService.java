@@ -8,6 +8,7 @@ import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
+@SuppressWarnings("rawtypes")
 public interface IEntityAlarmService {
 
 	List<IEntityAlarm> getEntityAlarmsWithAlarmDetected(IDevice device);
@@ -41,7 +42,12 @@ public interface IEntityAlarmService {
 
 	void activateAlarm(IEntityAlarm alarm, Entity entity);
 
-	@SuppressWarnings("rawtypes")
 	List<Class> getEnabledAlarmsForField(IEntityField entityField);
+
+	List<IEntity> getEntitiesWithPossibleAlarms(IDevice device);
+
+	List<IEntityField> getEntityFieldsWithPossibleAlarms(IEntity entity);
+
+	List<IEntityFieldAlarm> getEntityFieldAlarms(IEntityField entityField);
 
 }

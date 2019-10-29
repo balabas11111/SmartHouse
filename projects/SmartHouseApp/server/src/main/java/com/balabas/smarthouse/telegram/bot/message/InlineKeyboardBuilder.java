@@ -16,6 +16,7 @@ import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.view.Action;
 
 import lombok.Getter;
@@ -23,6 +24,11 @@ import lombok.Getter;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_DEVICE_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_GROUPS_OF_DEVICE;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_OF_DEVICE;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_OF_ENTITY;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_SELECT_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_DESCRIPTION;
@@ -81,6 +87,104 @@ public class InlineKeyboardBuilder {
 	    	
 	    	String text = buttons.getDeviceButton(ac.getEmoji(), ac.getDescription());
 	    	String callback = Action.callback(ACTION_TYPE_VIEW_ENTITIES_OF_GROUP, "", device.getName(), GROUP_SENSORS);
+	    	
+			row.add(createInlineKeyboardButton(text, callback));
+			
+			rowsInline.add(row);
+		}
+		
+		markup.setKeyboard(rowsInline);
+
+		return markup;
+	}
+	
+	public InlineKeyboardMarkup getSetupMenuKeyboard() {
+		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+    			
+    	List<InlineKeyboardButton> row = new ArrayList<>();
+    	
+		row.add(createInlineKeyboardButton(
+				ItemTextHelper.getEditAlarmsButton(), 
+					Action.callback(ACTION_TYPE_EDIT_ALARMS, "", "")));
+		row.add(createInlineKeyboardButton(
+				ItemTextHelper.getEditPropertiesButton(), 
+					Action.callback(ACTION_TYPE_EDIT_DEVICE_SELECT_LIST, "", "")));
+		
+		rowsInline.add(row);
+		
+		markup.setKeyboard(rowsInline);
+
+		return markup;
+	}
+		
+	public InlineKeyboardMarkup getAlarmsMenuKeyboard(List<Device> devices) {
+		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
+		
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		
+		for (IDevice device : devices) {
+    			
+	    	List<InlineKeyboardButton> row = new ArrayList<>();
+	    	
+	    	ActionContext ac = new ActionContext(device);
+	    	
+	    	String text = buttons.getDeviceButton(ac.getEmoji(), ac.getDescription());
+	    	String callback = Action.callback(ACTION_TYPE_EDIT_ALARMS_OF_DEVICE, "", device.getName());
+	    	
+			row.add(createInlineKeyboardButton(text, callback));
+			
+			rowsInline.add(row);
+		}
+		
+		markup.setKeyboard(rowsInline);
+
+		return markup;
+	}
+	
+	public InlineKeyboardMarkup getEntitiesAlarmsOfDeviceMenuKeyboard(List<IEntity> entities) {
+		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
+		
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		
+		for (IEntity entity : entities) {
+    			
+	    	List<InlineKeyboardButton> row = new ArrayList<>();
+	    	
+	    	ActionContext ac = new ActionContext(entity);
+	    	
+	    	String text = buttons.getDeviceButton(ac.getEmoji(), ac.getDescription());
+	    	String callback = Action.callback(ACTION_TYPE_EDIT_ALARMS_OF_ENTITY, "", 
+	    			entity.getGroup().getDevice().getName(), entity.getGroup().getName(), entity.getName());
+	    	
+			row.add(createInlineKeyboardButton(text, callback));
+			
+			rowsInline.add(row);
+		}
+		
+		markup.setKeyboard(rowsInline);
+
+		return markup;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public InlineKeyboardMarkup getEntityFieldsAlarmsOfEntityMenuKeyboard(List<IEntityField> entityFields) {
+		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
+		
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		
+		for (IEntityField entityField : entityFields) {
+    			
+			List<InlineKeyboardButton> row = new ArrayList<>();
+	    	
+	    	ActionContext ac = new ActionContext(entityField);
+	    	
+	    	String text = buttons.getDeviceButton(ac.getEmoji(), ac.getDescription());
+	    	String callback = Action.callback(ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD,
+	    			entityField.getName(), 
+	    			entityField.getEntity().getGroup().getDevice().getName(), 
+	    			entityField.getEntity().getGroup().getName(),
+	    			entityField.getEntity().getName());
 	    	
 			row.add(createInlineKeyboardButton(text, callback));
 			

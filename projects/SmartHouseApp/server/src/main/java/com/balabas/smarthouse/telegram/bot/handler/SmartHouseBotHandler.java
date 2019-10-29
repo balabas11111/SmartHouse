@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.log4j.Log4j2;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SAVE_DEVICE_PROPERTY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_DEVICE_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_SELECT_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE;
@@ -36,6 +37,11 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_GROUPS_
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_NAME;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SETUP;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_OF_DEVICE;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_OF_ENTITY;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_DESCRIPTION;
 
 @Log4j2
@@ -120,6 +126,21 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			case ACTION_TYPE_VIEW_DEVICE_LIST:
 				msgs.addAll(messageBuilder.createDevicesListView(action, context));
 				break;
+			case ACTION_TYPE_SETUP:
+				msgs.addAll(messageBuilder.createSetupMenu(action, context));
+				break;
+			case ACTION_TYPE_EDIT_ALARMS:
+				msgs.addAll(messageBuilder.createEditAlarmsMenu(action, context));
+				break;
+			case ACTION_TYPE_EDIT_ALARMS_OF_DEVICE:
+				msgs.addAll(messageBuilder.createEditAlarmsOfDevice(action, context));
+				break;
+			case ACTION_TYPE_EDIT_ALARMS_OF_ENTITY:
+				msgs.addAll(messageBuilder.createEditAlarmsOfEntity(action, context));
+				break;
+			case ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD:
+				msgs.addAll(messageBuilder.createEditAlarmsOfEntityField(action, context));
+				break;
 			case ACTION_TYPE_EDIT_DEVICE_SELECT_LIST:
 				msgs.add(messageBuilder.createDevicesListEdit(action, context));
 				break;
@@ -136,7 +157,7 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 				break;
 			case ACTION_TYPE_EDIT_DEVICE_DESCRIPTION:
 				msgs.add(messageBuilder.getDeviceDescriptionToEdit(action, context));
-				action.setActionRebuildData(ACTION_TYPE_SEND_DATA_TO_DEVICE);
+				action.setActionRebuildData(ACTION_TYPE_SAVE_DEVICE_PROPERTY);
 				currentEditActions.put(context.getChatId(), action);
 				break;
 			case ACTION_TYPE_VIEW_HELP:
@@ -148,8 +169,13 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			case ACTION_TYPE_VIEW_ENTITIES_OF_GROUP:
 				msgs.addAll(messageBuilder.createGroupView(action, context));
 				break;
+			case ACTION_TYPE_SAVE_DEVICE_PROPERTY:
+				sendDataToDevice(action, context, msgs);
+				msgs.add(messageBuilder.getEntitiesOfDeviceToEdit(action, context));
+				break;
 			case ACTION_TYPE_SEND_DATA_TO_DEVICE:
 				sendDataToDevice(action, context, msgs);
+				msgs.add(messageBuilder.getEntitiesOfDeviceToEdit(action, context));
 				break;
 			default:
 				context.setText(null);
@@ -180,10 +206,13 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 				}
 
 				msgs.add(messageBuilder.createDataSentToDevice(message, context.getChatId()));
+				msgs.addAll(messageBuilder.createGroupView(action, context));
+				
+				log.info("Data sent to device");
 			} else {
 				msgs.add(messageBuilder.createDeviceDataSavedOnServer(null, context.getChatId()));
+				log.info("Device properties updated");
 			}
-			msgs.addAll(messageBuilder.createGroupView(action, context));
 
 		} catch (Throwable e) {
 			msgs.add(messageBuilder.createDeviceError(null, context.getChatId()));

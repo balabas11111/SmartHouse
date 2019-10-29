@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.util.MathUtil;
 
 @SuppressWarnings( {"rawtypes"})
 @MappedSuperclass
@@ -39,6 +40,11 @@ public abstract class AlarmAbstractEntityFieldNumber extends AlarmAbstractEntity
 	@Override 
 	public void setValue(Number number) {
 		this.number = number.floatValue();
+	}
+	
+	@Override 
+	public void setValueStr(String number) {
+		this.number = MathUtil.precise(Float.valueOf(number));
 	}
 	
 	public Comparable getAlarmValue() {
