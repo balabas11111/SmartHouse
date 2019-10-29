@@ -2,6 +2,7 @@ package com.balabas.smarthouse.server.entity.alarm;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import javax.persistence.FetchType;
@@ -33,9 +34,9 @@ public abstract class AlarmAbstractEntityField<T> extends AlarmAbstract<IEntityF
 
 	@Getter
 	@Setter
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(targetEntity = EntityAlarm.class, fetch = FetchType.EAGER)
 	@JoinColumn(name = "entity_alarm_id", nullable = false)
-	private EntityAlarm alarm;
+	private IEntityAlarm entityAlarm;
 
 	@Transient
 	protected Class<T> clazz;
@@ -80,7 +81,7 @@ public abstract class AlarmAbstractEntityField<T> extends AlarmAbstract<IEntityF
 
 	@Override
 	protected String getItemAlarmText() {
-		return getWatchedItem().getName() + " " + getWatchedItem().getValueStr() + getCompareSeparator()
-				+ getValue().toString();
+		return getWatchedItem().getName() + " (" + Optional.ofNullable(getWatchedItem().getDescription()).orElse("")
+				+ ") " + getWatchedItem().getValueStr() + getCompareSeparator() + getValue().toString();
 	}
 }

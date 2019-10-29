@@ -12,6 +12,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
@@ -46,6 +47,14 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	
 	@Getter	@Setter
 	protected boolean active;
+	
+	@Transient
+	@Getter	@Setter
+	protected boolean calculated;
+	
+	@Transient
+	@Getter	@Setter
+	protected String descriptionField;
 
 	@Getter	@Setter
 	@Enumerated(EnumType.STRING)

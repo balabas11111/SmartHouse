@@ -25,6 +25,12 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	boolean isActive();
 	void setActive(boolean active);
 	
+	boolean isCalculated();
+	void setCalculated(boolean calculated);
+	
+	String getDescriptionField();
+	void setDescriptionField(String descriptionField);
+	
 	Entity getEntity();
 	void setEntity(Entity entity);
 	

@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -24,10 +25,11 @@ import org.springframework.web.client.RestTemplate;
 
 import com.balabas.smarthouse.server.entity.alarm.EntityAlarm;
 import com.balabas.smarthouse.server.entity.alarm.EntityFieldMaxValueAlarm;
-import com.balabas.smarthouse.server.entity.alarm.IAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
+import com.balabas.smarthouse.server.entity.alarm.IEntityFieldAlarm;
 import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
@@ -86,10 +88,10 @@ public class MockedDeviceService implements InitializingBean {
 
 	public void initMocks() throws IOException {
 		log.info("-----Server context was started MockedDevice-----");
-		reqs = ServerValuesMockUtil.getDevicesMockedRegisterRequest(1);
+		reqs = ServerValuesMockUtil.getDevicesMockedRegisterRequest(2);
 
 		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(reqs.size());
-		
+
 		reqs.stream().forEach(request -> {
 			RegisterTask task = new RegisterTask(request, this);
 			executor.execute(task);
@@ -100,29 +102,37 @@ public class MockedDeviceService implements InitializingBean {
 	}
 
 	public void initAlarms() throws IOException {
-		List<IEntityAlarm> alarms = alarmService.getActiveEntityAlarms();
+		//List<IEntityAlarm> alarms = alarmService.getActiveEntityAlarms();
 
-		if (alarms != null && alarms.isEmpty()) {
-			DeviceRequest req = reqs.get(0);
-			IDevice device = deviceService.getDeviceByName(req.getDeviceId());
+		DeviceRequest req = reqs.get(0);
+		IDevice device = deviceService.getDeviceByName(req.getDeviceId());
 
-			if (device != null) {
-				String entityName = "bme280";
-				String entityFieldName = "t";
-	
-				IEntityField entityField = device.getEntity(entityName).getEntityField(entityFieldName);
+		if (device != null) {
+			String entityName = "bme280";
+			String entityFieldName = "t";
 			
+			IEntity entity = device.getEntity(entityName);
+			IEntityField entityField = entity.getEntityField(entityFieldName);
 
-				IAlarm entityFieldAlarm = new EntityFieldMaxValueAlarm(entityField, 31);
+			IEntityAlarm alarm = Optional.ofNullable(alarmService.getAlarm(entity)).orElse(new EntityAlarm(entityField.getEntity()));
+			
+			alarm.putAlarm(new EntityFieldMaxValueAlarm(entityField, 31.01));
 
-				IEntityAlarm alarm = new EntityAlarm();
-				alarm.putAlarm(entityFieldAlarm);
+			alarmService.registerAlarm(alarm);
 
-				//alarmService.registerAlarm(alarm);
-				//alarmService.activateAlarms(device);
-				
-				alarmRegistered = true;
+			List<Class> enabledAlarms = alarmService.getEnabledAlarmsForField(entityField);
+
+			try {
+				for (Class clazz : enabledAlarms) {
+					IEntityFieldAlarm na = (IEntityFieldAlarm) clazz.newInstance();
+					log.info(na.getClass().getSimpleName());
+
+				}
+			} catch (Exception e) {
+				log.error(e);
 			}
+
+			alarmRegistered = true;
 		}
 	}
 

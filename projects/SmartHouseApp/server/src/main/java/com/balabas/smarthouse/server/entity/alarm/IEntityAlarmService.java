@@ -3,8 +3,10 @@ package com.balabas.smarthouse.server.entity.alarm;
 import java.io.IOException;
 import java.util.List;
 
+import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 public interface IEntityAlarmService {
 
@@ -16,12 +18,6 @@ public interface IEntityAlarmService {
 	void registerAlarm(IEntityAlarm alarm);
 
 	void saveAlarms() throws IOException;
-	
-	void loadAlarms() throws IOException;
-	
-	default void activateAlarms(List<IDevice> devices){
-		devices.stream().forEach(this::activateAlarms);
-	}
 	
 	void activateAlarms(IDevice device);
 
@@ -37,6 +33,15 @@ public interface IEntityAlarmService {
 
 	IEntityAlarm save(IEntityAlarm alarm);
 
-	List<IEntityAlarm> loadAlarmsForDevice(IDevice device);
+	List<EntityAlarm> loadAlarmsForDevice(IDevice device);
+
+	IEntityAlarm getAlarmById(Long alarmId);
+
+	int getAlarmIndexById(Long alarmId);
+
+	void activateAlarm(IEntityAlarm alarm, Entity entity);
+
+	@SuppressWarnings("rawtypes")
+	List<Class> getEnabledAlarmsForField(IEntityField entityField);
 
 }

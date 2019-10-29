@@ -405,7 +405,7 @@ public class SmartHouseItemBuildService {
 		entity.setEntityFields(entityFields);
 		
 		entity.getEntityFields().forEach( entField -> {
-			if(!entityJsonObj.containsKey(entField.getName())) {
+			if(!entityJsonObj.containsKey(entField.getName()) && !entField.isCalculated()) {
 				entField.setActive(false);
 			}
 		});
@@ -478,6 +478,7 @@ public class SmartHouseItemBuildService {
 				countField.setReadOnly(true);
 				countField.setValueWithNoCheck(Integer.valueOf(count));
 				countField.setActive(true);
+				countField.setCalculated(true);
 
 				//entity.addGeneratedField(countField);
 				return (EntityField) countField;
@@ -512,6 +513,7 @@ public class SmartHouseItemBuildService {
 						EntityFieldClassType.STRING
 					);
 		
+		String descriptionField = descriptorJson.optString(EDC_FIELD_DESCR_FIELD, null);
 		String description = fieldDecriptor.optString(EDC_FIELD_DESCRIPTION, EMPTY_STR);
 		EntityFieldClassView viewClass = EntityFieldClassView.from(fieldDecriptor.optString(EDC_CLASS_VIEW, null));
 		boolean readOnly = booleanFromString(fieldDecriptor.optString(EDC_READ_ONLY, ENTITY_FIELD_ID.equals(entityFieldName)?TRUE:FALSE));
@@ -522,6 +524,7 @@ public class SmartHouseItemBuildService {
 		entityField.setEntity(entity);
 		entityField.setName(entityFieldName);
 		entityField.setDescriptionIfEmpty(description);
+		entityField.setDescriptionField(descriptionField);
 		entityField.setViewClass(viewClass);
 		entityField.setReadOnly(readOnly);
 		entityField.setEmoji(emoji);

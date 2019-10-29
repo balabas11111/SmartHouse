@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.balabas.smarthouse.server.controller.service.DeviceRequestorService;
+import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
@@ -27,9 +28,6 @@ import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
-import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
-import com.balabas.smarthouse.server.entity.repository.IEntityRepository;
-import com.balabas.smarthouse.server.entity.repository.IGroupRepository;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 
@@ -55,18 +53,14 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 
 	@Autowired
 	SmartHouseItemBuildService itemBuildService;
+	
+	@Autowired
+	IEntityAlarmService alarmService;
 
 	@Autowired
 	IDeviceRepository deviceRepository;
-
-	@Autowired
-	IGroupRepository groupRepository;
 	
-	@Autowired
-	IEntityRepository entityRepository;
 	
-	@Autowired
-	IEntityFieldRepository entityFieldRepository;
 
 	@Getter
 	private List<Device> devices = Collections.synchronizedList(new ArrayList<>());
@@ -167,7 +161,9 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 			// register device
 			device = deviceFromRequest;
 			stateChanger.stateChanged(device, State.REGISTERED);
-
+			
+			alarmService.loadAlarmsForDevice(device);
+			
 			log.info("Registered :" + device.getName());
 			
 		} else {
@@ -237,7 +233,7 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 		}
 
 		if (doSave) {
-			save(device);
+			device = save(device);
 			log.debug("device saved");
 		}
 	}
@@ -431,6 +427,10 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 				}
 			}
 		}
+		
+		alarmService.activateAlarms(device);
+		
+		log.info("saved " + device.getName());
 		
 		return device;
 	}

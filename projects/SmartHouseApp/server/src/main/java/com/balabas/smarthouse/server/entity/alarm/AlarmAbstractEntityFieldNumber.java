@@ -2,6 +2,7 @@ package com.balabas.smarthouse.server.entity.alarm;
 
 import java.util.function.Predicate;
 
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -10,7 +11,8 @@ import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 @MappedSuperclass
 public abstract class AlarmAbstractEntityFieldNumber extends AlarmAbstractEntityField<Number> {
 
-	private Number number;
+	@Column(precision = 6, scale = 2)
+	private Float number;
 	
 	public AlarmAbstractEntityFieldNumber(Predicate<Integer> predicate, String compareSeparator){
 		this.predicate = predicate;
@@ -36,7 +38,7 @@ public abstract class AlarmAbstractEntityFieldNumber extends AlarmAbstractEntity
 	
 	@Override 
 	public void setValue(Number number) {
-		this.number = number;
+		this.number = number.floatValue();
 	}
 	
 	public Comparable getAlarmValue() {
@@ -44,6 +46,11 @@ public abstract class AlarmAbstractEntityFieldNumber extends AlarmAbstractEntity
 	}
 	
 	public Comparable getEntityFieldValue() {
-		return ((Number)this.getWatchedItem().getValue()).floatValue();
+		try {
+			return ((Number)this.getWatchedItem().getValue()).floatValue();
+		}catch(NullPointerException e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 }

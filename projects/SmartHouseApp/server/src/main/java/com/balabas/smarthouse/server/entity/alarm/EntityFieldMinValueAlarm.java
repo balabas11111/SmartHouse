@@ -4,8 +4,12 @@ import javax.persistence.Entity;
 
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
+import lombok.ToString;
+
 @SuppressWarnings("rawtypes")
 @Entity
+@ToString
+@EntityFieldAlarm(target = Number.class)
 public class EntityFieldMinValueAlarm extends AlarmAbstractEntityFieldNumber {
 
 	public EntityFieldMinValueAlarm() {

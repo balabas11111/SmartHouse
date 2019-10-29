@@ -8,16 +8,25 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
+import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.descriptor.Severity;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.repository.IEntityAlarmRepository;
 import com.balabas.smarthouse.server.entity.service.IMessageSender;
+import com.google.common.collect.Lists;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -28,11 +37,11 @@ import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_AL
 
 @Service
 @Log4j2
-public class EntityAlarmService implements IEntityAlarmService, InitializingBean {
+public class EntityAlarmService implements IEntityAlarmService {
 
 	@Getter
 	@Value("${smarthouse.server.alarm.interval:30}")
-	private Long alarmInterval;
+	private Integer defaultAlarmInterval;
 
 	@Getter
 	@Value("${smarthouse.server.alarm.singleAlarmMessage:true}")
@@ -40,17 +49,11 @@ public class EntityAlarmService implements IEntityAlarmService, InitializingBean
 
 	@Autowired
 	private IMessageSender sender;
+	
+	@Autowired
+	private IEntityAlarmRepository alarmRepository;
 
 	List<IEntityAlarm> alarms = Collections.synchronizedList(new ArrayList<>());
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		log.info("Alarm service started");
-	}
-
-	@Override
-	public void loadAlarms() throws IOException {
-	}
 
 	@Override
 	public void saveAlarms() throws IOException {
@@ -78,35 +81,79 @@ public class EntityAlarmService implements IEntityAlarmService, InitializingBean
 		return alarms.stream().filter(a -> a.isActive() && a.getEntity().getId().equals(entity.getId()))
 				.findFirst().orElse(null);
 	}
+	
+	@Override
+	public IEntityAlarm getAlarmById(Long alarmId) {
+		return alarms.stream().filter(a -> a.getId().equals(alarmId))
+				.findFirst().orElse(null);
+	}
+	
+	@Override
+	public int getAlarmIndexById(Long alarmId) {
+		int result = -1;
+		
+		for (IEntityAlarm ea : this.alarms) {
+			result++;
+			if(ea.getId().equals(alarmId)) {
+				break;
+			}
+		}
+		return result;
+	}
 
 	@Override
 	public void registerAlarm(IEntityAlarm alarm) {
-		if(alarm.getEntity() == null) {
+		IEntity entity = alarm.getEntity(); 
+		
+		if( entity == null) {
 			throw new IllegalArgumentException("Empty entity");
 		}
 		
-		IEntityAlarm existing = getAlarm(alarm.getEntity());
+		IEntityAlarm existing = getAlarm(entity);
 
-		if (existing != null) {
-			alarms.remove(existing);
+		if (existing == null) {
+			log.info("Alarm registered " + entity.getName() + " d=" + entity.getGroup().getDevice().getName());
+		} else {
+			Optional.ofNullable(alarm.getAlarms()).orElse(Collections.emptyList())
+				.stream().forEach(existing::putAlarm);
+			
+			log.warn("Alarm exists " + entity.getName() + " d=" + entity.getGroup().getDevice().getName());
 		}
-
-		alarms.add(alarm);
-
-		log.info("Alarm registered " + alarm.getEntity().getName() + alarm.getEntity().getGroup().getDevice().getName());
+		
+		activateAlarm(save(alarm), (Entity)entity);
 	}
 
 	@Override
 	public void activateAlarms(IDevice device) {
-		device.getEntities().stream().forEach(e -> Optional.ofNullable(getAlarm(e)).ifPresent(al -> {
+		if (device.isInitialized()) {
+			device.getEntities().stream().forEach(e -> Optional.ofNullable(
+				getAlarm(e)).ifPresent(a -> activateAlarm(a, e)));
+		}
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void activateAlarm(IEntityAlarm alarm, Entity entity) {
+			int messageInterval = alarm.getId()!=null?alarm.getMessageInterval():defaultAlarmInterval;
+			
+			alarm.setEntity(entity);
 
-			al.setActivated(true);
+			if(alarm.getTimer() == null ) {
+				alarm.setMessageInterval(messageInterval);
+				alarm.setTimer(new ActionTimer(1000 * messageInterval));
+			}
+			if(alarm.getAlarms()!=null) {
+				for(IEntityFieldAlarm efa : alarm.getAlarms()) {
+					IEntityField ef = entity.getEntityField(efa.getWatchedItem().getId());
+					
+					efa.setWatchedItem(ef);
+					efa.setActivated(true);
+				}
+			}
+			
+			alarm.setActivated(true);
 
-			al.setSingleAlarmMessage(singleAlarmMessage);
-			al.setTimer(new ActionTimer(1000 * alarmInterval));
-
-			log.info("Alarm activated " + device.getName() + " e=" + e.getName());
-		}));
+			log.info("Alarm activated d=" + alarm.getEntity().getGroup().getDevice().getName() + " e=" + alarm.getEntity().getName());
 	}
 
 	@Override
@@ -164,15 +211,70 @@ public class EntityAlarmService implements IEntityAlarmService, InitializingBean
 	
 	@Override
 	public IEntityAlarm save(IEntityAlarm alarm) {
+		ActionTimer timer = alarm.getTimer();
+		boolean activated  = alarm.isActivated();
+		
+		IEntityAlarm al = alarm;
+		
+		if(alarm.getAlarms()!=null) {
+			alarm.getAlarms().stream().forEach( efa -> efa.setEntityAlarm(al));
+		}
+		
+		alarm = alarmRepository.save((EntityAlarm)alarm);
+		alarm.setTimer(timer);
+		alarm.setActivated(activated);
+		
+		int index = getAlarmIndexById(alarm.getId());
+		
+		if(index == -1) {
+			alarms.add(alarm);
+		} else {
+			alarms.set(index, alarm);
+		}
 		
 		return alarm;
 	}
 	
 	@Override
-	public List<IEntityAlarm> loadAlarmsForDevice(IDevice device) {
+	@Transactional
+	public List<EntityAlarm> loadAlarmsForDevice(IDevice device) {
+		List<EntityAlarm> als = alarmRepository.findAlarmsForDevice(device.getId());
 		
-		return null;
+		als.stream().filter(al -> getAlarmIndexById(al.getId()) == -1).forEach(alarms::add);
+		
+		return als;
 	}
+	
+	@SuppressWarnings("rawtypes")
+	@Override
+	public List<Class> getEnabledAlarmsForField(IEntityField entityField) {
+		String scanPackage = this.getClass().getPackage().getName();
+		//String scanPackage = "com.balabas.smarthouse.server.entity.alarm";
+		List<Class> result = Lists.newArrayList();
+		
+		 ClassPathScanningCandidateComponentProvider provider = createComponentScanner(EntityFieldAlarm.class);
+	        for (BeanDefinition beanDef : provider.findCandidateComponents(scanPackage)) {
+				try {
+					Class  clazz = Class.forName(beanDef.getBeanClassName());
+					EntityFieldAlarm classNameAnnotation = AnnotationUtils.findAnnotation(clazz, EntityFieldAlarm.class);
+					
+					if (classNameAnnotation.target().isAssignableFrom(entityField.getClazz())) {
+						result.add(clazz);
+					}
+				} catch (ClassNotFoundException e) {
+					log.error(e);
+				}
+	        }
+	     return result;
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private ClassPathScanningCandidateComponentProvider createComponentScanner(Class clazz) {
+        ClassPathScanningCandidateComponentProvider provider
+                = new ClassPathScanningCandidateComponentProvider(false);
+        provider.addIncludeFilter(new AnnotationTypeFilter(clazz));
+        return provider;
+    }
 
 	private void sendAlarmFinishedNotifications(IDevice device) {
 		List<IEntityAlarm> alarmsWithFinished = getAlarmsWithAlarmFinished(device);

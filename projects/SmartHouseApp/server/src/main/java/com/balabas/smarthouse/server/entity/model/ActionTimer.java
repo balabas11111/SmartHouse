@@ -51,6 +51,10 @@ public class ActionTimer {
         }
     }
     
+    public void setNextActionTimeAsNow() {
+        this.nextActionTime =(new Date()).getTime();
+    }
+    
     @JsonIgnore
     public boolean isActive(){
     	return this.nextActionTime > -1;
@@ -63,7 +67,7 @@ public class ActionTimer {
     @JsonIgnore
     public boolean isTimeToExecuteAction() {
     	if(this.nextActionTime > -1){
-            return this.nextActionTime < (new Date()).getTime();
+            return this.nextActionTime <= (new Date()).getTime();
         }
     	return false;
     }

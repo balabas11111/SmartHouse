@@ -206,8 +206,9 @@ public class SendMessageBuilder {
 
 			if (!alarms.isEmpty()) {
 
+				builder.append("\n---------------------");
 				builder.append(Emoji.ERROR.toString());
-				builder.append("<code> Режимы тревоги </code>\n");
+				builder.append("<code> Режимы тревоги </code>\n\n");
 
 				group.getEntities().stream().forEach(entity -> 
 					alarms.stream().filter(alarm -> entity.getName().equals(alarm.getEntity().getName())).forEach(alarm -> 

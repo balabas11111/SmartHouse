@@ -63,6 +63,14 @@ public class Entity extends ItemAbstract implements IEntity {
 	}
 	
 	@Override
+	public IEntityField getEntityField(Long entityFieldId) {
+		if(getEntityFields()==null) {
+			return null;
+		}
+		return getEntityFields().stream().filter( ef -> ef.getId().equals(entityFieldId)).findFirst().orElse(null);
+	}
+	
+	@Override
 	public IEntityField getEntityField(String entityFieldName) {
 		if(getEntityFields()==null) {
 			return null;
