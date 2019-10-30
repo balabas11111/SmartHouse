@@ -64,6 +64,10 @@ public class ItemTextHelper {
 		return String.format(BotMessageConstants.EDIT_ALARMS_BUTTON, Emoji.ERROR);
 	}
 
+	public static String getRestartApplicationButton() {
+		return String.format(BotMessageConstants.RESTART_APPLICATION_BUTTON, Emoji.ELECTRIC_PLUG);
+	}
+	
 	public static String getEditPropertiesButton() {
 		return String.format(BotMessageConstants.EDIT_PROPERTIES_BUTTON, Emoji.MEMO);
 	}

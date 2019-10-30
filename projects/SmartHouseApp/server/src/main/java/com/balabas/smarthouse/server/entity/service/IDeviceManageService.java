@@ -56,4 +56,6 @@ public interface IDeviceManageService {
 
 	List<Group> getGroupsRequireUpdate();
 
+	void createNewEntityAlarm(Long entityId);
+
 }

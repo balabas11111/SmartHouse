@@ -65,7 +65,6 @@ public class EntityAlarm implements IEntityAlarm {
 
 	// if -1 send only one message
 	@Getter
-	@Setter
 	Integer messageInterval;
 
 	// true = alarmMessage, false = finishedMessage, null - nothing
@@ -76,7 +75,7 @@ public class EntityAlarm implements IEntityAlarm {
 
 	public EntityAlarm(IEntity entity) {
 		this.entity = entity;
-		this.messageInterval = NO_MESSAGE_SEND_REPEATS;
+		setMessageInterval(NO_MESSAGE_SEND_REPEATS);
 	}
 	
 	public EntityAlarm(IEntity entity, int messageInterval) {
@@ -213,6 +212,17 @@ public class EntityAlarm implements IEntityAlarm {
 		sendAlarmFinishedMessage = !started;
 		timer.setNextActionTimeAsNow();
 		timer.update(0, true);
+	}
+
+	@Override
+	public void setMessageInterval(Integer messageInterval) {
+		this.messageInterval = messageInterval;
+		
+		if(this.getTimer() == null) {
+			this.timer = new ActionTimer(1000 * messageInterval);
+		} else {
+			this.timer.setMessageInterval(1000 * messageInterval);
+		}
 	}
 
 }

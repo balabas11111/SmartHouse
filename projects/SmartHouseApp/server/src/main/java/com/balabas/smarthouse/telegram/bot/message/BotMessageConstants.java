@@ -30,6 +30,7 @@ public class BotMessageConstants {
 	public static final String VIEW_DEVICES_BUTTON = "%s Просмотр показателей";
 	public static final String SETUP_BUTTON = "%s Настройки";
 	
+	public static final String RESTART_APPLICATION_BUTTON = "%s Перезапустить сервер";
 	public static final String EDIT_ALARMS_BUTTON = "%s Режимы тревоги";
 	public static final String EDIT_PROPERTIES_BUTTON = "%s Настройки описаний";
 	
@@ -68,17 +69,20 @@ public class BotMessageConstants {
 	public static final String SELECT_DEVICE_TO_EDIT_ALARMS = "%s Выберите устройство для просмотра режима тревоги";
 	public static final String SELECT_ENTITY_TO_EDIT_ALARMS = "%s Выберите датчик для просмотра режима тревоги";
 	
+	public static final String NO_ENTITY_ALARMS_MESSAGE = Emoji.FACE_WITH_TONGUE_AND_CLOSED_ONE_EYE.toString() + " нет проверок тревоги\n";
 	public static final String SELECT_ENTITY_FIELD_TO_EDIT_ALARMS = "%s Датчик <b>%s</b>. Выберите поле для просмотра режима тревоги\n";
 	public static final String ENTITY_ALARM_ACTIVATED_MESSAGE = Emoji.CHECK_MARK.toString() + " проверка тревоги активирована\n";
 	public static final String ENTITY_ALARM_NOT_ACTIVATED_MESSAGE = Emoji.ERROR.toString() + " проверка тревоги НЕ активирована\n";
-	public static final String ENTITY_HAS_ALARM_INTERVAL_MESSAGE = "Интервал повторной отпраки оповещений о тревоге %d сек\n";
-	public static final String ENTITY_HAS_NO_ALARM_INTERVAL_MESSAGE = "Только одно оповещение начала/конца тревоги\n";
-	public static final String ENTITY_ALARM_COUNT_MESSAGE = "Проверок на тревогу %d\n";
+	public static final String ENTITY_HAS_ALARM_INTERVAL_MESSAGE = "Интервал повторной отправки оповещений о тревоге %d сек\n";
+	public static final String ENTITY_HAS_NO_ALARM_INTERVAL_MESSAGE = "Только одно оповещение начала/конца тревоги (Оповещение не отправляется повторно)\n";
+	public static final String ENTITY_ALARM_COUNT_MESSAGE = "Полей проверяется на тревогу %d\n";
 	
 	public static final String ENTITY_ALARM_SAVED_MESSAGE = Emoji.FLOPPY.toString() + " Настройки тревоги сохранены %s";
 	public static final String ENTITY_ENTITY_FIELD_ALARM_INPUT_VALUE_MESSAGE = Emoji.GEAR.toString() + " Введите значение тревоги %s для поля %s";
 	
-	public static final String ENTITY_ALARM_DEACTIVATE_MESSAGE = Emoji.ARROW_DOWN.toString() + " деактивировать проверку тревоги";
+	public static final String ENTITY_ALARM_CREATE_MESSAGE = Emoji.CHECK_MARK.toString() + " создать проверку тревоги";
+	public static final String ENTITY_ALARM_ACTIVATE_MESSAGE = Emoji.ARROW_DOWN.toString() + " активировать проверку тревоги";
+	public static final String ENTITY_ALARM_DEACTIVATE_MESSAGE = Emoji.ERROR.toString() + " деактивировать проверку тревоги";
 	public static final String ENTITY_ALARM_EDIT_INTERVAL_MESSAGE = Emoji.HOURGLASS.toString() + " редактировать интервал";
 	public static final String ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE = Emoji.ERROR.toString() + " удалить интервал";
 			
@@ -100,6 +104,7 @@ public class BotMessageConstants {
 	public static final String TOOGLE_ON = "Включено";
 	public static final String TOOGLE_OF = "Отключено";
 	
+	public static final String SERVER_WILL_BE_RESTARTED_MESSAGE = Emoji.WAVING_HAND_SIGN.toString() + " Сервер перезапускается";
 	public static final String HELP_MESSAGE = Emoji.HAND_OK.toString() + " Справка "
 			+ COMMAND_SETUP + " - " + "Установки устройства" + " \n"
 			+ COMMAND_ALARM + " - " + "Режимы тревоги" + " \n"

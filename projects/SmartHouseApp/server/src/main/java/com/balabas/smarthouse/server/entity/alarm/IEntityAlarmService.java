@@ -48,18 +48,20 @@ public interface IEntityAlarmService {
 
 	List<IEntityField> getEntityFieldsWithPossibleAlarms(IEntity entity);
 
-	List<IEntityFieldAlarm> getEntityFieldAlarms(IEntityField entityField);
-
 	IEntityFieldAlarm getEntityAlarmFieldById(Long entityFieldId);
 
-	void deactivateEntityAlarm(Long entityAlarmId);
+	void changeEntityAlarmActivation(Long entityAlarmId);
 
 	void removeMessageIntervalOnEntityAlarm(Long entityAlarmId);
 
 	void removeEntityFieldAlarm(Long entityFieldAlarmId);
 
-	void createNewEntityFieldAlarmInEntityAlarm(String newAlarmClassName, String value, Long entityAlarmId);
+	void createNewEntityFieldAlarmInEntityAlarm(String newAlarmClassName, String value, Long entityAlarmId) throws InstantiationException, IllegalAccessException, ClassNotFoundException;
 
 	void updateAlarmValueOfEntityAlarm(String val, Long entityFieldAlarmId);
+
+	void createNewEntityAlarm(IEntity entity);
+
+	IEntityAlarm getAlarmActive(IEntity entity);
 
 }

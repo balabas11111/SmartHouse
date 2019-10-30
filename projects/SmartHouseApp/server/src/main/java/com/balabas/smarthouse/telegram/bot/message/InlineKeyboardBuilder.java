@@ -25,6 +25,7 @@ import com.balabas.smarthouse.server.view.Action;
 
 import lombok.Getter;
 
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_RESTART_APPLICATION;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_DEVICE_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_GROUPS_OF_DEVICE;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
@@ -39,7 +40,8 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY_FIELD;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE;
 
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_DEACTIVATE_ALARM_OF_ENTITY;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_CREATE_ALARM_OF_ENTITY;
+import static com.balabas.smarthouse.server.view.Action.ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARM_INTERVAL_OF_ENTITY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY;
 
@@ -57,7 +59,9 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_NAME;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_DEVICE;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SENSORS;
 
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_CREATE_MESSAGE;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_DEACTIVATE_MESSAGE;
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_ACTIVATE_MESSAGE;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_EDIT_INTERVAL_MESSAGE;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE;
 
@@ -132,6 +136,9 @@ public class InlineKeyboardBuilder {
 		row.add(createInlineKeyboardButton(
 				ItemTextHelper.getEditPropertiesButton(), 
 					Action.callback(ACTION_TYPE_EDIT_DEVICE_SELECT_LIST, "", "")));
+		row.add(createInlineKeyboardButton(
+				ItemTextHelper.getRestartApplicationButton(), 
+					Action.callback(ACTION_TYPE_RESTART_APPLICATION, "", "")));
 		
 		rowsInline.add(row);
 		
@@ -184,32 +191,46 @@ public class InlineKeyboardBuilder {
 		return markup;
 	}
 	
-	public InlineKeyboardMarkup getEntityFieldsAlarmsOfEntityMenuKeyboard(IEntityAlarm entityAlarm, List<IEntityField> entityFields) {
+	public InlineKeyboardMarkup getEntityFieldsAlarmsOfEntityMenuKeyboard(IEntity entity, IEntityAlarm entityAlarm, List<IEntityField> entityFields) {
 		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
 		
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		
 		List<InlineKeyboardButton> row = new ArrayList<>();
 		
-		row.add(createInlineKeyboardButton(ENTITY_ALARM_DEACTIVATE_MESSAGE, 
-				Action.callback(ACTION_TYPE_DEACTIVATE_ALARM_OF_ENTITY, "", ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
-		row.add(createInlineKeyboardButton(ENTITY_ALARM_EDIT_INTERVAL_MESSAGE, 
-				Action.callback(ACTION_TYPE_EDIT_ALARM_INTERVAL_OF_ENTITY, "", ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
-		row.add(createInlineKeyboardButton(ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE, 
-				Action.callback(ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY, "", ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
-		
-		rowsInline.add(row);
-		
-		for (IEntityField entityField : entityFields) {
-    			
-			row = new ArrayList<>();
-	    	
-			row.add(createInlineKeyboardButton(buttons.getEntityFieldButton(entityField), 
-					Action.callback(ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD, "", ID_TYPE_ENTITY_FIELD, entityField.getId())));
+		if (entityAlarm == null) {
+			row.add(createInlineKeyboardButton(ENTITY_ALARM_CREATE_MESSAGE, 
+					Action.callback(ACTION_TYPE_CREATE_ALARM_OF_ENTITY, "", ID_TYPE_ENTITY, entity.getId())));
 			
 			rowsInline.add(row);
-		}
+		} else {
 		
+			if (entityAlarm.isActivated()) {
+				row.add(createInlineKeyboardButton(ENTITY_ALARM_DEACTIVATE_MESSAGE, 
+					Action.callback(ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION, "", ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
+			} else {
+				row.add(createInlineKeyboardButton(ENTITY_ALARM_ACTIVATE_MESSAGE, 
+					Action.callback(ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION, "", ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
+			}
+			row.add(createInlineKeyboardButton(ENTITY_ALARM_EDIT_INTERVAL_MESSAGE, 
+					Action.callback(ACTION_TYPE_EDIT_ALARM_INTERVAL_OF_ENTITY, "", ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
+			if(entityAlarm.isNotificationRepeatable()) {
+				row.add(createInlineKeyboardButton(ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE, 
+					Action.callback(ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY, "", ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
+			}
+			
+			rowsInline.add(row);
+			
+			for (IEntityField entityField : entityFields) {
+	    			
+				row = new ArrayList<>();
+		    	
+				row.add(createInlineKeyboardButton(buttons.getEntityFieldButton(entityField), 
+						Action.callback(ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD, "", ID_TYPE_ENTITY_FIELD, entityField.getId())));
+				
+				rowsInline.add(row);
+			}
+		}
 		markup.setKeyboard(rowsInline);
 
 		return markup;

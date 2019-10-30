@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import com.balabas.smarthouse.server.ServerApplication;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
@@ -33,6 +34,7 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITIE
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY_FIELD;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_RESTART_APPLICATION;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_HELP;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_GROUPS_OF_DEVICE;
@@ -43,10 +45,11 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_DELETE_ENTITY_FIE
 import static com.balabas.smarthouse.server.view.Action.ACTION_EDIT_ENTITY_FIELD_ALARM;
 import static com.balabas.smarthouse.server.view.Action.ACTION_ADD_ENTITY_FIELD_ALARM;
 import static com.balabas.smarthouse.server.view.Action.ACTION_SAVE_NEW_ENTITY_FIELD_ALARM;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_CREATE_ALARM_OF_ENTITY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_SAVE_ENTITY_FIELD_ALARM;
 
 
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_DEACTIVATE_ALARM_OF_ENTITY;
+import static com.balabas.smarthouse.server.view.Action.ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SETUP;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_OF_DEVICE;
@@ -136,6 +139,10 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 
 		try {
 			switch (action.getAction()) {
+			case ACTION_TYPE_RESTART_APPLICATION:
+				msgs.add(messageBuilder.createServerWillBeRestartedMsg(context));
+				ServerApplication.restart();
+				break;
 			case ACTION_TYPE_VIEW_DEVICE_LIST:
 				msgs.addAll(messageBuilder.createDevicesListView(action, context));
 				break;
@@ -151,7 +158,8 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			case ACTION_TYPE_EDIT_ALARMS_OF_ENTITY:
 				msgs.addAll(messageBuilder.createEditAlarmsOfEntity(action, context));
 				break;
-			case ACTION_TYPE_DEACTIVATE_ALARM_OF_ENTITY:
+			case ACTION_TYPE_CREATE_ALARM_OF_ENTITY:
+			case ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION:
 			case ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY:
 				sendDataToAlarmService(action, context, msgs);
 				msgs.addAll(messageBuilder.createEditAlarmsOfEntity(action, context));
@@ -222,10 +230,13 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 		return msgs;
 	}
 	
-	private void sendDataToAlarmService(Action action, ReplyContext context, List<SendMessage> msgs) {
+	private void sendDataToAlarmService(Action action, ReplyContext context, List<SendMessage> msgs) throws ReflectiveOperationException {
 		switch (action.getAction()) {
-		case ACTION_TYPE_DEACTIVATE_ALARM_OF_ENTITY:
-			alarmService.deactivateEntityAlarm(action.getTargetId());
+		case ACTION_TYPE_CREATE_ALARM_OF_ENTITY:
+			deviceService.createNewEntityAlarm(action.getTargetId());
+			break;
+		case ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION:
+			alarmService.changeEntityAlarmActivation(action.getTargetId());
 			break;
 		case ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY:
 			alarmService.removeMessageIntervalOnEntityAlarm(action.getTargetId());

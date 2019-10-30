@@ -435,4 +435,14 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 		return device;
 	}
 
+	@Override
+	public void createNewEntityAlarm(Long entityId) {
+		IEntity entity = getEntityById(entityId);
+		
+		alarmService.createNewEntityAlarm(entity);
+
+		Device device = entity.getGroup().getDevice();
+		alarmService.activateAlarms(device);
+	}
+
 }

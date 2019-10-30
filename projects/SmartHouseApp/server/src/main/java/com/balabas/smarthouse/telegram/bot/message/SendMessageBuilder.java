@@ -146,28 +146,31 @@ public class SendMessageBuilder {
 
 		IEntityAlarm entityAlarm = entityAlarmService.getAlarm(entity);
 
-		StringBuilder buf = new StringBuilder(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_TO_EDIT_ALARMS,
-				Emoji.ERROR, entity.getDescription()));
+		StringBuilder buf = new StringBuilder();
 
-		buf.append(entityAlarm.isActivated() ? BotMessageConstants.ENTITY_ALARM_ACTIVATED_MESSAGE
-				: BotMessageConstants.ENTITY_ALARM_NOT_ACTIVATED_MESSAGE);
-
-		if (entityAlarm.isNotificationRepeatable()) {
-			buf.append(String.format(BotMessageConstants.ENTITY_HAS_ALARM_INTERVAL_MESSAGE,
-					entityAlarm.getMessageInterval()));
+		if (entityAlarm == null) {
+			buf.append(BotMessageConstants.NO_ENTITY_ALARMS_MESSAGE);
 		} else {
-			buf.append(BotMessageConstants.ENTITY_HAS_NO_ALARM_INTERVAL_MESSAGE);
+			buf.append(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_TO_EDIT_ALARMS, Emoji.ERROR,
+					entity.getDescription()));
+
+			buf.append(entityAlarm.isActivated() ? BotMessageConstants.ENTITY_ALARM_ACTIVATED_MESSAGE
+					: BotMessageConstants.ENTITY_ALARM_NOT_ACTIVATED_MESSAGE);
+
+			if (entityAlarm.isNotificationRepeatable()) {
+				buf.append(String.format(BotMessageConstants.ENTITY_HAS_ALARM_INTERVAL_MESSAGE,
+						entityAlarm.getMessageInterval()));
+			} else {
+				buf.append(BotMessageConstants.ENTITY_HAS_NO_ALARM_INTERVAL_MESSAGE);
+			}
+
+			buf.append(String.format(BotMessageConstants.ENTITY_ALARM_COUNT_MESSAGE, entityAlarm.getAlarms().size()));
 		}
 
-		buf.append(String.format(BotMessageConstants.ENTITY_ALARM_COUNT_MESSAGE, entityAlarm.getAlarms().size()));
-
 		context.setText(buf.toString());
-		/*
-		 * edit interval; only one notification; deactivate; all possible fields with
-		 * alarms functionality
-		 */
+
 		msgs.add(
-				context.createMsg(inlineKeyboard.getEntityFieldsAlarmsOfEntityMenuKeyboard(entityAlarm, entityFields)));
+				context.createMsg(inlineKeyboard.getEntityFieldsAlarmsOfEntityMenuKeyboard(entity, entityAlarm, entityFields)));
 
 		return msgs;
 	}
@@ -177,10 +180,10 @@ public class SendMessageBuilder {
 				.getDeviceByName(action.getDeviceName()).getEntity(action.getEntityName()).getDescription());
 		return createHtmlMessage(context.getChatId(), message);
 	}
-	
+
 	public SendMessage getAlarmToBeSavedMessage(Action action, ReplyContext context) {
-		String message = String.format(BotMessageConstants.ENTITY_ENTITY_FIELD_ALARM_INPUT_VALUE_MESSAGE,
-				deviceService.getDeviceByName(action.getDeviceName()).getEntity(action.getEntityName()).getDescription());
+		String message = String.format(BotMessageConstants.ENTITY_ENTITY_FIELD_ALARM_INPUT_VALUE_MESSAGE, deviceService
+				.getDeviceByName(action.getDeviceName()).getEntity(action.getEntityName()).getDescription());
 		return createHtmlMessage(context.getChatId(), message);
 	}
 
@@ -212,6 +215,10 @@ public class SendMessageBuilder {
 				: String.format(BotMessageConstants.SERVER_SELECT_DEVICE_EDIT_MSG, Emoji.OUTBOX_TRAY, serverName));
 
 		return cont.createMsg(inlineKeyboard.getDevicesOfServerInlineKeyboardEdit(devices));
+	}
+
+	public SendMessage createServerWillBeRestartedMsg(ReplyContext context) {
+		return createHtmlMessage(context.getChatId(), BotMessageConstants.SERVER_WILL_BE_RESTARTED_MESSAGE);
 	}
 
 	public SendMessage createHelpMsg(ReplyContext context) {

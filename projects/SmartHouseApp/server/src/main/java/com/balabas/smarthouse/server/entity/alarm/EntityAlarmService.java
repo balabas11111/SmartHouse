@@ -35,6 +35,7 @@ import lombok.extern.log4j.Log4j2;
 import static com.balabas.smarthouse.server.DeviceMessageConstants.buildMessage;
 import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_ALARM_STARTED;
 import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_ALARM_FINISHED;
+import static com.balabas.smarthouse.server.entity.alarm.EntityAlarm.NO_MESSAGE_SEND_REPEATS;
 
 @Service
 @Log4j2
@@ -76,9 +77,15 @@ public class EntityAlarmService implements IEntityAlarmService {
 	public List<IEntityAlarm> getAlarms(IDevice device) {
 		return getAlarmsByPredicate(a -> a.isActive() && a.getDevice().getId().equals(device.getId()));
 	}
-
+	
 	@Override
 	public IEntityAlarm getAlarm(IEntity entity) {
+		return alarms.stream().filter(a -> a.getEntity().getId().equals(entity.getId())).findFirst()
+				.orElse(null);
+	}
+	
+	@Override
+	public IEntityAlarm getAlarmActive(IEntity entity) {
 		return alarms.stream().filter(a -> a.isActive() && a.getEntity().getId().equals(entity.getId())).findFirst()
 				.orElse(null);
 	}
@@ -138,7 +145,6 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 		if (alarm.getTimer() == null) {
 			alarm.setMessageInterval(messageInterval);
-			alarm.setTimer(new ActionTimer(1000 * messageInterval));
 		}
 		if (alarm.getAlarms() != null) {
 			for (IEntityFieldAlarm efa : alarm.getAlarms()) {
@@ -276,12 +282,6 @@ public class EntityAlarmService implements IEntityAlarmService {
 				.collect(Collectors.toList());
 	}
 
-	@Override
-	public List<IEntityFieldAlarm> getEntityFieldAlarms(IEntityField entityField) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	private boolean entityHasPossibleAlarms(IEntity entity) {
 		for (IEntityField entityField : entity.getEntityFields()) {
 			if (entityFieldHasPossibleAlarms(entityField)) {
@@ -341,21 +341,51 @@ public class EntityAlarmService implements IEntityAlarmService {
 	}
 
 	@Override
-	public void deactivateEntityAlarm(Long entityAlarmId) {
-		// TODO Auto-generated method stub
-		
+	public void changeEntityAlarmActivation(Long entityAlarmId) {
+		IEntityAlarm alarm = getAlarmById(entityAlarmId); 
+		alarm.setActivated(!alarm.isActivated());
 	}
 
 	@Override
 	public void removeMessageIntervalOnEntityAlarm(Long entityAlarmId) {
-		// TODO Auto-generated method stub
-		
+		getAlarmById(entityAlarmId).setMessageInterval(NO_MESSAGE_SEND_REPEATS);
 	}
 
 	@Override
 	public void removeEntityFieldAlarm(Long entityFieldAlarmId) {
-		// TODO Auto-generated method stub
+		IEntityFieldAlarm entityFieldAlarm = getEntityAlarmFieldById(entityFieldAlarmId);
+		IEntityAlarm entityAlarm = entityFieldAlarm.getEntityAlarm();
 		
+		entityAlarm.getAlarms().remove(entityFieldAlarm);
+		
+		save(entityAlarm);
+	}
+
+	@Override
+	public void createNewEntityFieldAlarmInEntityAlarm(String newAlarmClassName, String value, Long entityAlarmId) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		IEntityAlarm entityAlarm = getAlarmById(entityAlarmId);
+		
+		IEntityFieldAlarm entityFieldAlarm = (IEntityFieldAlarm) Class.forName(newAlarmClassName).newInstance();
+		entityFieldAlarm.setValueStr(value);
+		
+		entityAlarm.putAlarm(entityFieldAlarm);
+		
+		save(entityAlarm);
+	}
+
+	@Override
+	public void updateAlarmValueOfEntityAlarm(String val, Long entityFieldAlarmId) {
+		IEntityFieldAlarm entityFieldAlarm = getEntityAlarmFieldById(entityFieldAlarmId);
+		
+		entityFieldAlarm.setValueStr(val);
+		IEntityAlarm entityAlarm = entityFieldAlarm.getEntityAlarm();
+		
+		save(entityAlarm);
+	}
+
+	@Override
+	public void createNewEntityAlarm(IEntity entity) {
+		save(new EntityAlarm(entity));
 	}
 
 }

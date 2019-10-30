@@ -86,4 +86,8 @@ public class ActionTimer {
 		setActionForced(force);
 		setNextActionTime(incrementMs);
 	}
+
+	public void setMessageInterval(long interval) {
+		this.interval = interval;
+	}
 }

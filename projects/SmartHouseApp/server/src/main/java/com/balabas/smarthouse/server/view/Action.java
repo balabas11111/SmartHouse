@@ -29,6 +29,7 @@ public class Action {
 	public static final String CALLBACK_TYPE_ACTION = "Act";
 
 	public static final String ACTION_TYPE_UNKNOWN = "NUL";
+	public static final String ACTION_TYPE_RESTART_APPLICATION = "rea";
 	public static final String ACTION_TYPE_VIEW_DEVICE_LIST = "vdl";
 	public static final String ACTION_TYPE_VIEW_HELP = "vhp";
 	public static final String ACTION_TYPE_SETUP = "ats";
@@ -43,7 +44,8 @@ public class Action {
 	public static final String ACTION_TYPE_EDIT_ALARMS_OF_ENTITY = "eae";
 	public static final String ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD = "aef";
 
-	public static final String ACTION_TYPE_DEACTIVATE_ALARM_OF_ENTITY = "dae";
+	public static final String ACTION_TYPE_CREATE_ALARM_OF_ENTITY = "cae";
+	public static final String ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION = "dae";
 	public static final String ACTION_TYPE_EDIT_ALARM_INTERVAL_OF_ENTITY = "eai";
 	public static final String ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY = "rai";
 	public static final String ACTION_SAVE_ALARM_INTERVAL_OF_ENTITY = "sAi";

@@ -6,6 +6,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
+import javax.annotation.PreDestroy;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +40,8 @@ public class BotServiceImpl implements IMessageSender, InitializingBean {
 
 	@Autowired
 	AuthService authService;
+	
+	private BotSession session;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -47,9 +51,17 @@ public class BotServiceImpl implements IMessageSender, InitializingBean {
 		}
 		this.api = new TelegramBotsApi();
 
-		BotSession session = api.registerBot(bot);
+		session = api.registerBot(bot);
 		handleAfterRegistrationHook(bot, session);
 	}
+	
+	@PreDestroy
+	public void closeBotSession() {
+		log.warn("BotSession will be closed");
+		session.stop();
+		log.warn("---------------No BotSession------------------");
+	}
+	
 
 	private void handleAfterRegistrationHook(Object bot, BotSession botSession) {
 		Stream.of(bot.getClass().getMethods())
