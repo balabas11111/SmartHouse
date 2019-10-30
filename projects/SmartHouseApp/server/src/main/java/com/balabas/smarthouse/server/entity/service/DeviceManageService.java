@@ -22,6 +22,7 @@ import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.Group;
+import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IUpdateable;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
@@ -372,10 +373,6 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 				
 				if (group.getEntities()!=null && !group.getEntities().isEmpty()) {
 					for(Entity entity : group.getEntities()) {
-						/*if(entity.getGeneratedFields()!=null && !entity.getGeneratedFields().isEmpty()) {
-							String key = group.getName() + entity.getName();
-							generatedFields.put(key, entity.getGeneratedFields());
-						}*/
 						if(entity.getEntityFields()!=null && !entity.getEntityFields().isEmpty()) {
 							for(IEntityField entityField : entity.getEntityFields()) {
 								String key = group.getName() + entity.getName() + entityField.getName();
@@ -408,12 +405,6 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 				
 				if (group.getEntities()!=null && !group.getEntities().isEmpty()) {
 					for(Entity entity : group.getEntities()) {
-						/*String key = group.getName() + entity.getName();
-						
-						if(generatedFields.containsKey(key)) {
-							entity.setGeneratedFields(generatedFields.get(key));
-						}
-						*/
 						if(entity.getEntityFields()!=null && !entity.getEntityFields().isEmpty()) {
 							for(IEntityField entityField : entity.getEntityFields()) {
 								String keyEntityField = group.getName() + entity.getName() + entityField.getName();
@@ -428,7 +419,7 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 			}
 		}
 		
-		alarmService.activateAlarms(device);
+		alarmService.reattachAlarms(device);
 		
 		log.info("saved " + device.getName());
 		
@@ -436,13 +427,37 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	}
 
 	@Override
-	public void createNewEntityAlarm(Long entityId) {
-		IEntity entity = getEntityById(entityId);
-		
-		alarmService.createNewEntityAlarm(entity);
-
+	public void reattachAlarmsForDevice(IDevice device) {
+		alarmService.reattachAlarms(device);
+	}
+	
+	@Override
+	public void reattachAlarmsForDevice(String deviceName) {
+		IDevice device = getDeviceByName(deviceName);
+		reattachAlarmsForDevice(device);
+	}
+	
+	@Override
+	public void reattachAlarmsForEntity(IEntity entity) {
 		Device device = entity.getGroup().getDevice();
-		alarmService.activateAlarms(device);
+		reattachAlarmsForDevice(device);
+	}
+	
+	@Override
+	public void reattachAlarmsForEntity(Long entityId) {
+		reattachAlarmsForEntity(getEntityById(entityId));
+	}
+
+	@Override
+	public void reattachAlarmsForEntityAlarm(Long entityAlarmId) {
+		IEntity entity = alarmService.getAlarmById(entityAlarmId).getEntity();
+		reattachAlarmsForEntity(entity);
+	}
+
+	@Override
+	public void reattachAlarmsForEntityFieldAlarm(Long entityFieldAlarmId) {
+		IEntityField entityField = getEntityFieldById(entityFieldAlarmId);
+		reattachAlarmsForEntity(entityField.getEntity());
 	}
 
 }

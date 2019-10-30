@@ -2,6 +2,7 @@ package com.balabas.smarthouse.server.entity.alarm;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IDevice;
@@ -20,7 +21,7 @@ public interface IEntityAlarmService {
 
 	void saveAlarms() throws IOException;
 	
-	void activateAlarms(IDevice device);
+	void reattachAlarms(IDevice device);
 
 	void checkAlarms(IDevice device);
 	
@@ -40,9 +41,9 @@ public interface IEntityAlarmService {
 
 	int getAlarmIndexById(Long alarmId);
 
-	void activateAlarm(IEntityAlarm alarm, Entity entity);
+	void reattachAlarms(IEntityAlarm alarm, Entity entity);
 
-	List<Class> getEnabledAlarmsForField(IEntityField entityField);
+	Map<Integer, Class> getEnabledAlarmsForField(IEntityField entityField);
 
 	List<IEntity> getEntitiesWithPossibleAlarms(IDevice device);
 
@@ -56,12 +57,14 @@ public interface IEntityAlarmService {
 
 	void removeEntityFieldAlarm(Long entityFieldAlarmId);
 
-	void createNewEntityFieldAlarmInEntityAlarm(String newAlarmClassName, String value, Long entityAlarmId) throws InstantiationException, IllegalAccessException, ClassNotFoundException;
+	void createNewEntityFieldAlarmInEntityAlarm(String newAlarmClassIndex, String value, Long entityAlarmId) throws InstantiationException, IllegalAccessException, ClassNotFoundException;
 
 	void updateAlarmValueOfEntityAlarm(String val, Long entityFieldAlarmId);
 
 	void createNewEntityAlarm(IEntity entity);
 
 	IEntityAlarm getAlarmActive(IEntity entity);
+
+	void updateEntityAlarmMessageInterval(Integer messageInterval, Long entityAlarmId);
 
 }

@@ -3,11 +3,15 @@ package com.balabas.smarthouse.server.entity.alarm;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +31,7 @@ import com.balabas.smarthouse.server.entity.model.descriptor.Severity;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IEntityAlarmRepository;
 import com.balabas.smarthouse.server.entity.service.IMessageSender;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -57,7 +61,29 @@ public class EntityAlarmService implements IEntityAlarmService {
 	private IEntityAlarmRepository alarmRepository;
 
 	List<IEntityAlarm> alarms = Collections.synchronizedList(new ArrayList<>());
+	
+	Map<Integer, Class> entityFieldAllowedClasses = new HashMap<>();
 
+	@PostConstruct
+	public void loadAllowedClasses() {
+		String scanPackage = this.getClass().getPackage().getName();
+		int i = 0;
+		
+		ClassPathScanningCandidateComponentProvider provider = createComponentScanner(EntityFieldAlarm.class);
+		for (BeanDefinition beanDef : provider.findCandidateComponents(scanPackage)) {
+			try {
+				Class clazz = Class.forName(beanDef.getBeanClassName());
+				entityFieldAllowedClasses.put(Integer.valueOf(i), clazz);
+				
+				i++;
+			} catch (ClassNotFoundException e) {
+				log.error(e);
+			}
+		}
+		
+		log.info("total classes cached as allowed for entityField Alarm =" + (i-1));
+	}
+	
 	@Override
 	public void saveAlarms() throws IOException {
 		alarms.stream().forEach(this::save);
@@ -126,19 +152,19 @@ public class EntityAlarmService implements IEntityAlarmService {
 			log.warn("Alarm exists " + entity.getName() + " d=" + entity.getGroup().getDevice().getName());
 		}
 
-		activateAlarm(save(alarm), (Entity) entity);
+		reattachAlarms(save(alarm), (Entity) entity);
 	}
 
 	@Override
-	public void activateAlarms(IDevice device) {
+	public void reattachAlarms(IDevice device) {
 		if (device.isInitialized()) {
 			device.getEntities().stream()
-					.forEach(e -> Optional.ofNullable(getAlarm(e)).ifPresent(a -> activateAlarm(a, e)));
+					.forEach(e -> Optional.ofNullable(getAlarm(e)).ifPresent(a -> reattachAlarms(a, e)));
 		}
 	}
 
 	@Override
-	public void activateAlarm(IEntityAlarm alarm, Entity entity) {
+	public void reattachAlarms(IEntityAlarm alarm, Entity entity) {
 		int messageInterval = alarm.getId() != null ? alarm.getMessageInterval() : defaultAlarmInterval;
 
 		alarm.setEntity(entity);
@@ -155,7 +181,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 			}
 		}
 
-		alarm.setActivated(true);
+		//alarm.setActivated(true);
 
 		log.info("Alarm activated d=" + alarm.getEntity().getGroup().getDevice().getName() + " e="
 				+ alarm.getEntity().getName());
@@ -236,6 +262,8 @@ public class EntityAlarmService implements IEntityAlarmService {
 			alarms.set(index, alarm);
 		}
 
+		log.info("EntityAlarm saved");
+		
 		return alarm;
 	}
 
@@ -250,24 +278,17 @@ public class EntityAlarmService implements IEntityAlarmService {
 	}
 
 	@Override
-	public List<Class> getEnabledAlarmsForField(IEntityField entityField) {
-		String scanPackage = this.getClass().getPackage().getName();
-		// String scanPackage = "com.balabas.smarthouse.server.entity.alarm";
-		List<Class> result = Lists.newArrayList();
+	public Map<Integer, Class> getEnabledAlarmsForField(IEntityField entityField) {
+		Map<Integer, Class> result = Maps.newHashMap();
 
-		ClassPathScanningCandidateComponentProvider provider = createComponentScanner(EntityFieldAlarm.class);
-		for (BeanDefinition beanDef : provider.findCandidateComponents(scanPackage)) {
-			try {
-				Class clazz = Class.forName(beanDef.getBeanClassName());
-				EntityFieldAlarm classNameAnnotation = AnnotationUtils.findAnnotation(clazz, EntityFieldAlarm.class);
+		for(Entry<Integer, Class> entity : this.entityFieldAllowedClasses.entrySet()) {
+			EntityFieldAlarm classNameAnnotation = AnnotationUtils.findAnnotation(entity.getValue(), EntityFieldAlarm.class);
 
-				if (classNameAnnotation.target().isAssignableFrom(entityField.getClazz())) {
-					result.add(clazz);
-				}
-			} catch (ClassNotFoundException e) {
-				log.error(e);
+			if (classNameAnnotation.target().isAssignableFrom(entityField.getClazz())) {
+				result.put(entity.getKey(), entity.getValue());
 			}
 		}
+		
 		return result;
 	}
 
@@ -342,13 +363,17 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 	@Override
 	public void changeEntityAlarmActivation(Long entityAlarmId) {
-		IEntityAlarm alarm = getAlarmById(entityAlarmId); 
-		alarm.setActivated(!alarm.isActivated());
+		IEntityAlarm entityAlarm = getAlarmById(entityAlarmId); 
+		entityAlarm.setActivated(!entityAlarm.isActivated());
+		
+		save(entityAlarm);
 	}
 
 	@Override
 	public void removeMessageIntervalOnEntityAlarm(Long entityAlarmId) {
-		getAlarmById(entityAlarmId).setMessageInterval(NO_MESSAGE_SEND_REPEATS);
+		IEntityAlarm entityAlarm = getAlarmById(entityAlarmId);
+		entityAlarm.setMessageInterval(NO_MESSAGE_SEND_REPEATS);
+		save(entityAlarm);
 	}
 
 	@Override
@@ -362,10 +387,10 @@ public class EntityAlarmService implements IEntityAlarmService {
 	}
 
 	@Override
-	public void createNewEntityFieldAlarmInEntityAlarm(String newAlarmClassName, String value, Long entityAlarmId) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+	public void createNewEntityFieldAlarmInEntityAlarm(String newAlarmClassIndex, String value, Long entityAlarmId) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		IEntityAlarm entityAlarm = getAlarmById(entityAlarmId);
 		
-		IEntityFieldAlarm entityFieldAlarm = (IEntityFieldAlarm) Class.forName(newAlarmClassName).newInstance();
+		IEntityFieldAlarm entityFieldAlarm = (IEntityFieldAlarm) entityFieldAllowedClasses.get(Integer.valueOf(newAlarmClassIndex)).newInstance();
 		entityFieldAlarm.setValueStr(value);
 		
 		entityAlarm.putAlarm(entityFieldAlarm);
@@ -386,6 +411,13 @@ public class EntityAlarmService implements IEntityAlarmService {
 	@Override
 	public void createNewEntityAlarm(IEntity entity) {
 		save(new EntityAlarm(entity));
+	}
+
+	@Override
+	public void updateEntityAlarmMessageInterval(Integer messageInterval, Long entityAlarmId) {
+		IEntityAlarm entityAlarm = getAlarmById(entityAlarmId);
+		entityAlarm.setMessageInterval(messageInterval);
+		save(entityAlarm);
 	}
 
 }

@@ -78,7 +78,8 @@ public class BotMessageConstants {
 	public static final String ENTITY_ALARM_COUNT_MESSAGE = "Полей проверяется на тревогу %d\n";
 	
 	public static final String ENTITY_ALARM_SAVED_MESSAGE = Emoji.FLOPPY.toString() + " Настройки тревоги сохранены %s";
-	public static final String ENTITY_ENTITY_FIELD_ALARM_INPUT_VALUE_MESSAGE = Emoji.GEAR.toString() + " Введите значение тревоги %s для поля %s";
+	public static final String ENTITY_ENTITY_ALARM_INTERVAL_VALUE_MESSAGE = Emoji.GEAR.toString() + " Введите значение интервала оповещения для датчика %s";
+	public static final String ENTITY_ENTITY_FIELD_ALARM_INPUT_VALUE_MESSAGE = Emoji.GEAR.toString() + " Введите значение тревоги %s для поля";
 	
 	public static final String ENTITY_ALARM_CREATE_MESSAGE = Emoji.CHECK_MARK.toString() + " создать проверку тревоги";
 	public static final String ENTITY_ALARM_ACTIVATE_MESSAGE = Emoji.ARROW_DOWN.toString() + " активировать проверку тревоги";

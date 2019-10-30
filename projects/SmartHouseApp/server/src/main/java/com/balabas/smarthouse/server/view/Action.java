@@ -44,11 +44,11 @@ public class Action {
 	public static final String ACTION_TYPE_EDIT_ALARMS_OF_ENTITY = "eae";
 	public static final String ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD = "aef";
 
-	public static final String ACTION_TYPE_CREATE_ALARM_OF_ENTITY = "cae";
-	public static final String ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION = "dae";
+	public static final String ACTION_TYPE_CREATE_ALARM_OF_ENTITY        = "cae";
+	public static final String ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION  = "dae";
 	public static final String ACTION_TYPE_EDIT_ALARM_INTERVAL_OF_ENTITY = "eai";
-	public static final String ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY = "rai";
-	public static final String ACTION_SAVE_ALARM_INTERVAL_OF_ENTITY = "sAi";
+	public static final String ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY  = "rai";
+	public static final String ACTION_SAVE_ALARM_INTERVAL_OF_ENTITY      = "sAi";
 
 	public static final String ACTION_DELETE_ENTITY_FIELD_ALARM = "dfa";
 	public static final String ACTION_EDIT_ENTITY_FIELD_ALARM = "efa";
@@ -67,7 +67,8 @@ public class Action {
 	public static final String ACTION_DATA_FIELD_NAME = "adfn";
 	public static final String ACTION_DATA_FIELD_DESCRIPTION = "adfd";
 	public static final String ACTION_DATA_FIELD_VALUE = "adfv";
-
+	public static final String ACTION_DATA_FIELD_CLASS = "adfc";
+	
 	public static final String ID_TYPE_DEVICE = "_dev";
 	public static final String ID_TYPE_GROUP = "_grp";
 	public static final String ID_TYPE_ENTITY = "_ent";
@@ -173,6 +174,10 @@ public class Action {
 		this.callbackData = buildCallBackData();
 	}
 
+	public void setValueByKeyRemoveKey(String fieldValue) {
+		setValueByKeyRemoveKey(ACTION_DATA_FIELD_NAME, fieldValue);
+	}
+	
 	public void setValueByKeyRemoveKey(String keyToSelectAndRemove, String fieldValue) {
 		JSONObject dataJson = new JSONObject(getData());
 
@@ -182,6 +187,39 @@ public class Action {
 		dataJson.put(fieldName, fieldValue);
 
 		this.setData(dataJson.toString());
+	}
+	
+	public String getDataJsonFieldValue() {
+		return getDataJsonField(ACTION_DATA_FIELD_VALUE);
+	}
+	
+	public String getDataJsonField(String fieldName) {
+		return new JSONObject(getData()).getString(fieldName);
+	}
+	
+	public static String createActionDataFieldByFieldValue() {
+		return createActionDataFieldByFieldValue(ACTION_DATA_FIELD_VALUE);
+	}
+	
+	public static String createActionDataFieldByFieldValue(String fieldValue) {
+		
+		return new JSONObject()
+				.put(ACTION_DATA_FIELD_NAME, fieldValue)
+				.toString();
+	}
+	
+	public static String createActionDataFieldByFieldValueAndClassName(String className) {
+		return createActionDataFieldByFieldValueAndClassName(
+				ACTION_DATA_FIELD_VALUE, className);
+	}
+	
+	public static String createActionDataFieldByFieldValueAndClassName(
+			String fieldValue, String className) {
+		
+		return new JSONObject()
+				.put(ACTION_DATA_FIELD_NAME, fieldValue)
+				.put(ACTION_DATA_FIELD_CLASS, className)
+				.toString();
 	}
 
 	public static Action fromDevice(String action, IDevice device, String data) {

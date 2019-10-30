@@ -3,6 +3,7 @@ package com.balabas.smarthouse.telegram.bot.message;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -186,6 +187,12 @@ public class SendMessageBuilder {
 				.getDeviceByName(action.getDeviceName()).getEntity(action.getEntityName()).getDescription());
 		return createHtmlMessage(context.getChatId(), message);
 	}
+	
+	public SendMessage getAlarmIntervalToBeSavedMessage(Action action, ReplyContext context) {
+		String message = String.format(BotMessageConstants.ENTITY_ENTITY_ALARM_INTERVAL_VALUE_MESSAGE, deviceService
+				.getDeviceByName(action.getDeviceName()).getEntity(action.getEntityName()).getDescription());
+		return createHtmlMessage(context.getChatId(), message);
+	}
 
 	public List<SendMessage> createEditAlarmsOfEntityField(Action action, ReplyContext context) {
 		List<SendMessage> msgs = Lists.newArrayList();
@@ -193,9 +200,9 @@ public class SendMessageBuilder {
 		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 		IEntity entity = device.getEntity(action.getEntityName());
 		IEntityAlarm entityAlarm = entityAlarmService.getAlarm(entity);
-		IEntityField entityField = entity.getEntityField(action.getData());
+		IEntityField entityField = entity.getEntityField(action.getTargetId());
 
-		List<Class> enabledAlarmClasses = entityAlarmService.getEnabledAlarmsForField(entityField);
+		Map<Integer, Class> enabledAlarmClasses = entityAlarmService.getEnabledAlarmsForField(entityField);
 
 		context.setText(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_EDIT_ALARMS, Emoji.WARNING,
 				entityField.getDescription()));

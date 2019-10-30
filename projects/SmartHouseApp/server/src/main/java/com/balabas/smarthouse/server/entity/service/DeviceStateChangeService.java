@@ -83,7 +83,7 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 
 	private void onDeviceReRegistered(IDevice device) {
 		String message = buildMessage(MSG_DEVICE_RECONNECTED, device.getDescription());
-		alarmService.activateAlarms(device);
+		alarmService.reattachAlarms(device);
 		if(sendDeviceReconnect) {
 			sender.sendMessageToAllUsers(Severity.WARN, message);
 		}
@@ -93,7 +93,7 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 
 	private void onDeviceInitialDataReceived(IDevice device) {
 		// init data was received
-		alarmService.activateAlarms(device);
+		alarmService.reattachAlarms(device);
 		alarmService.checkAlarmsSendNotifications(device);
 
 		String message = buildMessage(MSG_DEVICE_INITIALIZED, device.getDescription());

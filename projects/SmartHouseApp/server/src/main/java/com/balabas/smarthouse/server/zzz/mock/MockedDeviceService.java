@@ -108,6 +108,7 @@ public class MockedDeviceService implements InitializingBean {
 		IDevice device = deviceService.getDeviceByName(req.getDeviceId());
 
 		if (device != null) {
+			/*
 			String entityName = "bme280";
 			String entityFieldName = "t";
 			
@@ -131,7 +132,7 @@ public class MockedDeviceService implements InitializingBean {
 			} catch (Exception e) {
 				log.error(e);
 			}
-
+*/
 			alarmRegistered = true;
 		}
 	}

@@ -109,7 +109,7 @@ public class ItemTextHelper {
 	
 	@SuppressWarnings("rawtypes")
 	public String getAddEntityFieldAlarmButton(Class clazz) {
-		return String.format(ADD_ALARM_BUTTON, Emoji.CHECK_MARK, clazz.getName());
+		return String.format(ADD_ALARM_BUTTON, Emoji.CHECK_MARK, clazz.getSimpleName());
 	}
 	
 	@SuppressWarnings("rawtypes")

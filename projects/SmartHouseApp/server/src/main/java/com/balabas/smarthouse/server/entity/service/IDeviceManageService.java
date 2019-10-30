@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.Group;
+import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
@@ -56,6 +58,15 @@ public interface IDeviceManageService {
 
 	List<Group> getGroupsRequireUpdate();
 
-	void createNewEntityAlarm(Long entityId);
+	void reattachAlarmsForDevice(IDevice device);
 
+	void reattachAlarmsForDevice(String deviceName);
+
+	void reattachAlarmsForEntity(Long entityId);
+
+	void reattachAlarmsForEntity(IEntity entity);
+	
+	void reattachAlarmsForEntityAlarm(Long entityAlarmId);
+
+	void reattachAlarmsForEntityFieldAlarm(Long entityFieldAlarmId);
 }

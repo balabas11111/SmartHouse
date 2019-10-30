@@ -49,7 +49,6 @@ public class EntityAlarm implements IEntityAlarm {
 	@Setter
 	private ActionTimer timer;
 
-	@Transient
 	@Getter
 	@Setter
 	private boolean activated;
@@ -96,7 +95,9 @@ public class EntityAlarm implements IEntityAlarm {
 		
 		IEntityFieldAlarm existing = alarms.stream()
 				.filter(a -> a.getClass().equals(entityFieldAlarm.getClass())
-						&& a.getWatchedItem().getName().equals(entityFieldAlarm.getWatchedItem().getName()))
+						&& (a.getWatchedItem().getId().equals(entityFieldAlarm.getWatchedItem().getId()) ||
+							a.getWatchedItem().getName().equals(entityFieldAlarm.getWatchedItem().getName()))
+						&& a.getValue().equals(entityFieldAlarm.getValue()))
 				.findFirst().orElse(null);
 
 		if (existing == null) {
@@ -116,6 +117,7 @@ public class EntityAlarm implements IEntityAlarm {
 	@Override
 	public boolean check() {
 		if (activated) {
+			checkTimer();
 			alarmed = alarms.stream().map(IAlarm::check).reduce(Boolean::logicalOr).orElse(false);
 
 			if (alarmed && !timer.isActionForced()) {
@@ -222,6 +224,12 @@ public class EntityAlarm implements IEntityAlarm {
 			this.timer = new ActionTimer(1000 * messageInterval);
 		} else {
 			this.timer.setMessageInterval(1000 * messageInterval);
+		}
+	}
+	
+	private void checkTimer() {
+		if(this.timer == null) {
+			this.timer = new ActionTimer(1000 * messageInterval);
 		}
 	}
 
