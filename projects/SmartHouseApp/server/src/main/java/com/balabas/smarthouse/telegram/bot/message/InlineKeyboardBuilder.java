@@ -2,7 +2,9 @@ package com.balabas.smarthouse.telegram.bot.message;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import com.balabas.smarthouse.server.DeviceConstants;
+import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
+import com.balabas.smarthouse.server.entity.alarm.IEntityFieldAlarm;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
@@ -35,12 +39,30 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY_FIELD;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE;
 
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_DEACTIVATE_ALARM_OF_ENTITY;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARM_INTERVAL_OF_ENTITY;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY;
+
+import static com.balabas.smarthouse.server.view.Action.ACTION_DELETE_ENTITY_FIELD_ALARM;
+import static com.balabas.smarthouse.server.view.Action.ACTION_EDIT_ENTITY_FIELD_ALARM;
+import static com.balabas.smarthouse.server.view.Action.ACTION_ADD_ENTITY_FIELD_ALARM;
+
+import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENTITY;
+import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENTITY_FIELD;
+import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENTITY_ALARM;
+import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENTITY_ALARM_FIELD;
+
 import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_NAME;
 
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_DEVICE;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SENSORS;
 
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_DEACTIVATE_MESSAGE;
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_EDIT_INTERVAL_MESSAGE;
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE;
+
 @Component
+@SuppressWarnings("rawtypes")
 public class InlineKeyboardBuilder {
 
 	@Autowired
@@ -127,10 +149,8 @@ public class InlineKeyboardBuilder {
     			
 	    	List<InlineKeyboardButton> row = new ArrayList<>();
 	    	
-	    	ActionContext ac = new ActionContext(device);
-	    	
-	    	String text = buttons.getDeviceButton(ac.getEmoji(), ac.getDescription());
-	    	String callback = Action.callback(ACTION_TYPE_EDIT_ALARMS_OF_DEVICE, "", device.getName());
+	    	String text = buttons.getDeviceButton(device);
+	    	String callback = Action.callback(ACTION_TYPE_EDIT_ALARMS_OF_DEVICE, "", device);
 	    	
 			row.add(createInlineKeyboardButton(text, callback));
 			
@@ -151,11 +171,8 @@ public class InlineKeyboardBuilder {
     			
 	    	List<InlineKeyboardButton> row = new ArrayList<>();
 	    	
-	    	ActionContext ac = new ActionContext(entity);
-	    	
-	    	String text = buttons.getDeviceButton(ac.getEmoji(), ac.getDescription());
-	    	String callback = Action.callback(ACTION_TYPE_EDIT_ALARMS_OF_ENTITY, "", 
-	    			entity.getGroup().getDevice().getName(), entity.getGroup().getName(), entity.getName());
+	    	String text = buttons.getEntityButton(entity);
+	    	String callback = Action.callback(ACTION_TYPE_EDIT_ALARMS_OF_ENTITY, "", ID_TYPE_ENTITY, entity.getId());
 	    	
 			row.add(createInlineKeyboardButton(text, callback));
 			
@@ -167,28 +184,82 @@ public class InlineKeyboardBuilder {
 		return markup;
 	}
 	
-	@SuppressWarnings("rawtypes")
-	public InlineKeyboardMarkup getEntityFieldsAlarmsOfEntityMenuKeyboard(List<IEntityField> entityFields) {
+	public InlineKeyboardMarkup getEntityFieldsAlarmsOfEntityMenuKeyboard(IEntityAlarm entityAlarm, List<IEntityField> entityFields) {
 		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
 		
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		
+		List<InlineKeyboardButton> row = new ArrayList<>();
+		
+		row.add(createInlineKeyboardButton(ENTITY_ALARM_DEACTIVATE_MESSAGE, 
+				Action.callback(ACTION_TYPE_DEACTIVATE_ALARM_OF_ENTITY, "", ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
+		row.add(createInlineKeyboardButton(ENTITY_ALARM_EDIT_INTERVAL_MESSAGE, 
+				Action.callback(ACTION_TYPE_EDIT_ALARM_INTERVAL_OF_ENTITY, "", ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
+		row.add(createInlineKeyboardButton(ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE, 
+				Action.callback(ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY, "", ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
+		
+		rowsInline.add(row);
+		
 		for (IEntityField entityField : entityFields) {
     			
-			List<InlineKeyboardButton> row = new ArrayList<>();
+			row = new ArrayList<>();
 	    	
-	    	ActionContext ac = new ActionContext(entityField);
-	    	
-	    	String text = buttons.getDeviceButton(ac.getEmoji(), ac.getDescription());
-	    	String callback = Action.callback(ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD,
-	    			entityField.getName(), 
-	    			entityField.getEntity().getGroup().getDevice().getName(), 
-	    			entityField.getEntity().getGroup().getName(),
-	    			entityField.getEntity().getName());
-	    	
-			row.add(createInlineKeyboardButton(text, callback));
+			row.add(createInlineKeyboardButton(buttons.getEntityFieldButton(entityField), 
+					Action.callback(ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD, "", ID_TYPE_ENTITY_FIELD, entityField.getId())));
 			
 			rowsInline.add(row);
+		}
+		
+		markup.setKeyboard(rowsInline);
+
+		return markup;
+	}
+	
+	public InlineKeyboardMarkup getEntityFieldsAlarmEditMenuKeyboard(IEntityAlarm entityAlarm, IEntityField entityField,
+			List<Class> enabledAlarmClasses) {
+		InlineKeyboardMarkup markup =new InlineKeyboardMarkup();
+		
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		List<InlineKeyboardButton> row = new ArrayList<>();
+		
+		Map<String, Class> possibleAlarms = new HashMap<>();
+		Map<String, IEntityFieldAlarm> existingAlarms = new HashMap<>();
+		
+		enabledAlarmClasses.stream().forEach(c -> possibleAlarms.put(c.getName(), c));
+		
+		String data = new JSONObject()
+				.put(ACTION_DATA_FIELD_NAME, "value")
+				.toString();
+		
+		//remove/edit existing alarms
+		for (IEntityFieldAlarm entityFieldAlarm : entityAlarm.getAlarms()) {
+    		
+			existingAlarms.put(entityFieldAlarm.getClass().getName(), entityFieldAlarm);
+			
+			row = new ArrayList<>();
+			row.add(createInlineKeyboardButton(buttons.getEditEntityFieldAlarmButton(entityFieldAlarm), 
+					Action.callback(ACTION_EDIT_ENTITY_FIELD_ALARM, data, ID_TYPE_ENTITY_ALARM_FIELD, entityFieldAlarm.getId())));
+			row.add(createInlineKeyboardButton(buttons.getDeleteEntityFieldAlarmButton(entityFieldAlarm), 
+					Action.callback(ACTION_DELETE_ENTITY_FIELD_ALARM, "", ID_TYPE_ENTITY_ALARM_FIELD, entityFieldAlarm.getId())));
+			
+			rowsInline.add(row);
+		}
+		//add alarms
+		for (Class clazz : enabledAlarmClasses) {
+    		
+			if (!existingAlarms.containsKey(clazz.getName())) {
+				
+				data = new JSONObject()
+								.put(ACTION_DATA_FIELD_NAME, "value")
+								.put("class", clazz.getName())
+								.toString();
+				
+				row = new ArrayList<>();
+				row.add(createInlineKeyboardButton(buttons.getAddEntityFieldAlarmButton(clazz), 
+						Action.callback(ACTION_ADD_ENTITY_FIELD_ALARM, data, ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
+				
+				rowsInline.add(row);
+			}
 		}
 		
 		markup.setKeyboard(rowsInline);
@@ -266,7 +337,7 @@ public class InlineKeyboardBuilder {
 		    	List<InlineKeyboardButton> row = new ArrayList<>();
 		    	
 		    	String text = buttons.getButton(entity.getEmoji(), entity.getDescription());
-		    	String callback = Action.callback(ACTION_TYPE_EDIT_ENTITITY, "", entity);
+		    	String callback = Action.callback(ACTION_TYPE_EDIT_ENTITITY, "", ID_TYPE_ENTITY, entity.getId());
 		    	
 				row.add(createInlineKeyboardButton(text, callback));
 				
@@ -385,5 +456,5 @@ public class InlineKeyboardBuilder {
 
 		return markup;
 	}
-	
+
 }

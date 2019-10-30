@@ -39,9 +39,9 @@ public interface IEntityAlarm extends IUpdateable {
 	String getAlarmStartedText();
 	String getAlarmFinishedText();
 	
-	void setMessageInterval(int messageInterval);
-	int getMessageInterval();
+	void setMessageInterval(Integer messageInterval);
+	Integer getMessageInterval();
 	
-	
+	boolean isNotificationRepeatable();
 	
 }

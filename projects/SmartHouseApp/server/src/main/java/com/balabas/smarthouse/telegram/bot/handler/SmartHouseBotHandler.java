@@ -3,6 +3,7 @@ package com.balabas.smarthouse.telegram.bot.handler;
 import java.util.Collections;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -10,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.service.IActionService;
@@ -30,13 +32,21 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY_FIELD;
-
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_HELP;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_GROUPS_OF_DEVICE;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_NAME;
+import static com.balabas.smarthouse.server.view.Action.ACTION_DELETE_ENTITY_FIELD_ALARM;
+import static com.balabas.smarthouse.server.view.Action.ACTION_EDIT_ENTITY_FIELD_ALARM;
+import static com.balabas.smarthouse.server.view.Action.ACTION_ADD_ENTITY_FIELD_ALARM;
+import static com.balabas.smarthouse.server.view.Action.ACTION_SAVE_NEW_ENTITY_FIELD_ALARM;
+import static com.balabas.smarthouse.server.view.Action.ACTION_SAVE_ENTITY_FIELD_ALARM;
+
+
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_DEACTIVATE_ALARM_OF_ENTITY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SETUP;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_OF_DEVICE;
@@ -53,6 +63,9 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 
 	@Autowired
 	IActionService actionService;
+	
+	@Autowired
+	IEntityAlarmService alarmService;
 
 	@Autowired
 	CurrentEditActionService currentEditActions;
@@ -138,8 +151,30 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			case ACTION_TYPE_EDIT_ALARMS_OF_ENTITY:
 				msgs.addAll(messageBuilder.createEditAlarmsOfEntity(action, context));
 				break;
+			case ACTION_TYPE_DEACTIVATE_ALARM_OF_ENTITY:
+			case ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY:
+				sendDataToAlarmService(action, context, msgs);
+				msgs.addAll(messageBuilder.createEditAlarmsOfEntity(action, context));
+				break;
 			case ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD:
 				msgs.addAll(messageBuilder.createEditAlarmsOfEntityField(action, context));
+				break;
+			case ACTION_EDIT_ENTITY_FIELD_ALARM:
+				msgs.add(messageBuilder.getAlarmToBeSavedMessage(action, context));
+				rebuildAndSaveCurrentAction(action, context, ACTION_SAVE_ENTITY_FIELD_ALARM);
+				break;
+			case ACTION_DELETE_ENTITY_FIELD_ALARM:
+				sendDataToAlarmService(action, context, msgs);
+				msgs.addAll(messageBuilder.createEditAlarmsOfEntity(action, context));
+				break;
+			case ACTION_ADD_ENTITY_FIELD_ALARM:
+				msgs.add(messageBuilder.getAlarmToBeSavedMessage(action, context));
+				rebuildAndSaveCurrentAction(action, context, ACTION_SAVE_NEW_ENTITY_FIELD_ALARM);
+				break;
+			case ACTION_SAVE_ENTITY_FIELD_ALARM:
+			case ACTION_SAVE_NEW_ENTITY_FIELD_ALARM:
+				sendDataToAlarmService(action, context, msgs);
+				msgs.addAll(messageBuilder.createEditAlarmsOfEntity(action, context));
 				break;
 			case ACTION_TYPE_EDIT_DEVICE_SELECT_LIST:
 				msgs.add(messageBuilder.createDevicesListEdit(action, context));
@@ -152,13 +187,11 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 				break;
 			case ACTION_TYPE_EDIT_ENTITITY_FIELD:
 				msgs.add(messageBuilder.getFieldToEdit(action, context));
-				action.setActionRebuildData(ACTION_TYPE_SEND_DATA_TO_DEVICE);
-				currentEditActions.put(context.getChatId(), action);
+				rebuildAndSaveCurrentAction(action, context, ACTION_TYPE_SEND_DATA_TO_DEVICE);
 				break;
 			case ACTION_TYPE_EDIT_DEVICE_DESCRIPTION:
 				msgs.add(messageBuilder.getDeviceDescriptionToEdit(action, context));
-				action.setActionRebuildData(ACTION_TYPE_SAVE_DEVICE_PROPERTY);
-				currentEditActions.put(context.getChatId(), action);
+				rebuildAndSaveCurrentAction(action, context, ACTION_TYPE_SAVE_DEVICE_PROPERTY);
 				break;
 			case ACTION_TYPE_VIEW_HELP:
 				msgs.add(messageBuilder.createHelpMsg(context));
@@ -187,6 +220,40 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 		}
 
 		return msgs;
+	}
+	
+	private void sendDataToAlarmService(Action action, ReplyContext context, List<SendMessage> msgs) {
+		switch (action.getAction()) {
+		case ACTION_TYPE_DEACTIVATE_ALARM_OF_ENTITY:
+			alarmService.deactivateEntityAlarm(action.getTargetId());
+			break;
+		case ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY:
+			alarmService.removeMessageIntervalOnEntityAlarm(action.getTargetId());
+			break;
+		case ACTION_DELETE_ENTITY_FIELD_ALARM:
+			alarmService.removeEntityFieldAlarm(action.getTargetId());
+			break;
+		case ACTION_SAVE_ENTITY_FIELD_ALARM:
+			String val = new JSONObject(action.getData()).getString("value");
+			
+			alarmService.updateAlarmValueOfEntityAlarm(val, action.getTargetId());
+			break;
+		case ACTION_SAVE_NEW_ENTITY_FIELD_ALARM:
+			JSONObject json = new JSONObject(action.getData());
+			
+			String newAlarmClassName = json.getString("class");
+			String value = json.getString("value");
+			
+			alarmService.createNewEntityFieldAlarmInEntityAlarm(newAlarmClassName, value, action.getTargetId());
+			break;
+		}
+		
+		msgs.add(messageBuilder.createAlarmUpdatedMessage(action, context));
+	}
+	
+	private void rebuildAndSaveCurrentAction(Action action, ReplyContext context, String newActionName) {
+		action.setActionRebuildData(newActionName);
+		currentEditActions.put(context.getChatId(), action);
 	}
 
 	private void sendDataToDevice(Action action, ReplyContext context, List<SendMessage> msgs) {

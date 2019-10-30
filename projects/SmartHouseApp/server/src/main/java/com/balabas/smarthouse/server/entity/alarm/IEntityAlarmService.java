@@ -50,4 +50,16 @@ public interface IEntityAlarmService {
 
 	List<IEntityFieldAlarm> getEntityFieldAlarms(IEntityField entityField);
 
+	IEntityFieldAlarm getEntityAlarmFieldById(Long entityFieldId);
+
+	void deactivateEntityAlarm(Long entityAlarmId);
+
+	void removeMessageIntervalOnEntityAlarm(Long entityAlarmId);
+
+	void removeEntityFieldAlarm(Long entityFieldAlarmId);
+
+	void createNewEntityFieldAlarmInEntityAlarm(String newAlarmClassName, String value, Long entityAlarmId);
+
+	void updateAlarmValueOfEntityAlarm(String val, Long entityFieldAlarmId);
+
 }

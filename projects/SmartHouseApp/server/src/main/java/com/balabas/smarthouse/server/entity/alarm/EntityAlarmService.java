@@ -334,4 +334,28 @@ public class EntityAlarmService implements IEntityAlarmService {
 		return alarms.stream().filter(predicate).collect(Collectors.toList());
 	}
 
+	@Override
+	public IEntityFieldAlarm getEntityAlarmFieldById(Long targetId) {
+		return alarms.stream().flatMap(a -> a.getAlarms().stream())
+				.filter( efa -> efa.getId().equals(targetId)).findFirst().orElse(null);
+	}
+
+	@Override
+	public void deactivateEntityAlarm(Long entityAlarmId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeMessageIntervalOnEntityAlarm(Long entityAlarmId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeEntityFieldAlarm(Long entityFieldAlarmId) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

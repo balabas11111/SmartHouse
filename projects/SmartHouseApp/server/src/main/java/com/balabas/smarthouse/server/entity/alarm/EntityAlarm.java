@@ -30,7 +30,7 @@ import lombok.extern.log4j.Log4j2;
 @NoArgsConstructor
 public class EntityAlarm implements IEntityAlarm {
 
-	public static final int NO_MESSAGE_SEND_REPEATS = -1;
+	public static final Integer NO_MESSAGE_SEND_REPEATS = -1;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,7 +66,7 @@ public class EntityAlarm implements IEntityAlarm {
 	// if -1 send only one message
 	@Getter
 	@Setter
-	int messageInterval;
+	Integer messageInterval;
 
 	// true = alarmMessage, false = finishedMessage, null - nothing
 	@Transient
@@ -126,6 +126,11 @@ public class EntityAlarm implements IEntityAlarm {
 			}
 		}
 		return alarmed;
+	}
+	
+	@Override
+	public boolean isNotificationRepeatable() {
+		return messageInterval!=null && messageInterval.compareTo(NO_MESSAGE_SEND_REPEATS)>0;
 	}
 
 	@JsonIgnore
@@ -190,7 +195,7 @@ public class EntityAlarm implements IEntityAlarm {
 
 	@Override
 	public boolean isActive() {
-		return getDevice() != null && entity != null;
+		return activated && getDevice() != null;
 
 	}
 

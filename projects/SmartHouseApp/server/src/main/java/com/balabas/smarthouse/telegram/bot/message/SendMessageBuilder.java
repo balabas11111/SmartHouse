@@ -54,7 +54,7 @@ public class SendMessageBuilder {
 
 	@Autowired
 	private ItemTextHelper itemTextHelper;
-	
+
 	Comparator<ItemAbstract> itemAbstractComparator = new ItemAbstractByDescriptionComparator();
 
 	public List<SendMessage> createServerStartedMessages(Long chatId, String serverName) {
@@ -85,10 +85,10 @@ public class SendMessageBuilder {
 	public SendMessage createRefreshDevicesListReplyKeyboard(Long chatId, String text) {
 		return ReplyContext.createMsg(replyKeyboard.getMainMenuReplyKeyboard(), null, chatId, text, true);
 	}
-	
+
 	public List<Device> getDevices() {
-		return deviceService.getDevicesInitialized()
-		.stream().sorted(itemAbstractComparator).collect(Collectors.toList());
+		return deviceService.getDevicesInitialized().stream().sorted(itemAbstractComparator)
+				.collect(Collectors.toList());
 	}
 
 	public List<SendMessage> createDevicesListView(Action action, ReplyContext cont) {
@@ -103,68 +103,107 @@ public class SendMessageBuilder {
 
 		return msgs;
 	}
-	
+
 	public List<SendMessage> createSetupMenu(Action action, ReplyContext context) {
 		List<SendMessage> msgs = Lists.newArrayList();
-		
+
 		context.setText(String.format(BotMessageConstants.SELECT_SETUP_ACTION, Emoji.WARNING));
 		msgs.add(context.createMsg(inlineKeyboard.getSetupMenuKeyboard()));
 
 		return msgs;
 	}
-	
+
 	public List<SendMessage> createEditAlarmsMenu(Action action, ReplyContext context) {
 		List<SendMessage> msgs = Lists.newArrayList();
 		List<Device> devices = getDevices();
-		
+
 		context.setText(String.format(BotMessageConstants.SELECT_DEVICE_TO_EDIT_ALARMS, Emoji.WARNING));
 		msgs.add(context.createMsg(inlineKeyboard.getAlarmsMenuKeyboard(devices)));
 
 		return msgs;
 	}
-	
 
 	public List<SendMessage> createEditAlarmsOfDevice(Action action, ReplyContext context) {
 		List<SendMessage> msgs = Lists.newArrayList();
-		
+
 		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
-		
+
 		List<IEntity> entities = entityAlarmService.getEntitiesWithPossibleAlarms(device);
-		
+
 		context.setText(String.format(BotMessageConstants.SELECT_ENTITY_TO_EDIT_ALARMS, Emoji.ERROR));
 		msgs.add(context.createMsg(inlineKeyboard.getEntitiesAlarmsOfDeviceMenuKeyboard(entities)));
-		
+
 		return msgs;
 	}
 
 	public List<SendMessage> createEditAlarmsOfEntity(Action action, ReplyContext context) {
 		List<SendMessage> msgs = Lists.newArrayList();
-		
+
 		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 		IEntity entity = device.getEntity(action.getEntityName());
-		
+
 		List<IEntityField> entityFields = entityAlarmService.getEntityFieldsWithPossibleAlarms(entity);
-		
-		context.setText(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_TO_EDIT_ALARMS, Emoji.ERROR));
-		msgs.add(context.createMsg(inlineKeyboard.getEntityFieldsAlarmsOfEntityMenuKeyboard(entityFields)));
-		
+
+		IEntityAlarm entityAlarm = entityAlarmService.getAlarm(entity);
+
+		StringBuilder buf = new StringBuilder(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_TO_EDIT_ALARMS,
+				Emoji.ERROR, entity.getDescription()));
+
+		buf.append(entityAlarm.isActivated() ? BotMessageConstants.ENTITY_ALARM_ACTIVATED_MESSAGE
+				: BotMessageConstants.ENTITY_ALARM_NOT_ACTIVATED_MESSAGE);
+
+		if (entityAlarm.isNotificationRepeatable()) {
+			buf.append(String.format(BotMessageConstants.ENTITY_HAS_ALARM_INTERVAL_MESSAGE,
+					entityAlarm.getMessageInterval()));
+		} else {
+			buf.append(BotMessageConstants.ENTITY_HAS_NO_ALARM_INTERVAL_MESSAGE);
+		}
+
+		buf.append(String.format(BotMessageConstants.ENTITY_ALARM_COUNT_MESSAGE, entityAlarm.getAlarms().size()));
+
+		context.setText(buf.toString());
+		/*
+		 * edit interval; only one notification; deactivate; all possible fields with
+		 * alarms functionality
+		 */
+		msgs.add(
+				context.createMsg(inlineKeyboard.getEntityFieldsAlarmsOfEntityMenuKeyboard(entityAlarm, entityFields)));
+
 		return msgs;
 	}
+
+	public SendMessage createAlarmUpdatedMessage(Action action, ReplyContext context) {
+		String message = String.format(BotMessageConstants.ENTITY_ALARM_SAVED_MESSAGE, deviceService
+				.getDeviceByName(action.getDeviceName()).getEntity(action.getEntityName()).getDescription());
+		return createHtmlMessage(context.getChatId(), message);
+	}
 	
+	public SendMessage getAlarmToBeSavedMessage(Action action, ReplyContext context) {
+		String message = String.format(BotMessageConstants.ENTITY_ENTITY_FIELD_ALARM_INPUT_VALUE_MESSAGE,
+				deviceService.getDeviceByName(action.getDeviceName()).getEntity(action.getEntityName()).getDescription());
+		return createHtmlMessage(context.getChatId(), message);
+	}
+
 	public List<SendMessage> createEditAlarmsOfEntityField(Action action, ReplyContext context) {
 		List<SendMessage> msgs = Lists.newArrayList();
-		
+
 		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 		IEntity entity = device.getEntity(action.getEntityName());
-		
+		IEntityAlarm entityAlarm = entityAlarmService.getAlarm(entity);
 		IEntityField entityField = entity.getEntityField(action.getData());
-		
-		context.setText(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_EDIT_ALARMS, Emoji.ERROR,
+
+		List<Class> enabledAlarmClasses = entityAlarmService.getEnabledAlarmsForField(entityField);
+
+		context.setText(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_EDIT_ALARMS, Emoji.WARNING,
 				entityField.getDescription()));
-		
+
+		msgs.add(context.createMsg(
+				inlineKeyboard.getEntityFieldsAlarmEditMenuKeyboard(entityAlarm, entityField, enabledAlarmClasses)));
+
 		return msgs;
 	}
-	
+	// edit device properties functionality
+
 	public SendMessage createDevicesListEdit(Action action, ReplyContext cont) {
 		String serverName = action.getServerName();
 		List<Device> devices = getDevices();
@@ -174,7 +213,7 @@ public class SendMessageBuilder {
 
 		return cont.createMsg(inlineKeyboard.getDevicesOfServerInlineKeyboardEdit(devices));
 	}
-	
+
 	public SendMessage createHelpMsg(ReplyContext context) {
 		return createHtmlMessage(context.getChatId(), BotMessageConstants.HELP_MESSAGE);
 	}
@@ -201,50 +240,50 @@ public class SendMessageBuilder {
 
 		return cont.createMsg(inlineKeyboard.getEntitiesOfGroupInlineKeyboard(device, group));
 	}
-	
+
 	public SendMessage getEntitiesOfDeviceToEdit(Action action, ReplyContext cont) {
 		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 
-		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECT_ENTITY,
-				Emoji.GEAR, device.getDescription());
+		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECT_ENTITY, Emoji.GEAR, device.getDescription());
 
 		cont.setText(text);
 
 		return cont.createMsg(inlineKeyboard.getEntitiesOfDeviceInlineKeyboard(device));
 	}
-	
+
 	public SendMessage getFieldsOfEntityToEdit(Action action, ReplyContext cont) {
 		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 		IEntity entity = device.getEntity(action.getEntityName());
 
-		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECT_FIELD,
-				Emoji.GEAR, device.getDescription(), entity.getDescription());
+		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECT_FIELD, Emoji.GEAR, device.getDescription(),
+				entity.getDescription());
 
 		cont.setText(text);
 
 		return cont.createMsg(inlineKeyboard.getFieldsOfEntityInlineKeyboard(entity));
 	}
-	
+
 	public SendMessage getDeviceDescriptionToEdit(Action action, ReplyContext context) {
 		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
-		
+
 		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECTED_FIELD, device.getEmoji().toString(),
-				device.getDescription(), DeviceConstants.ENTITY_DEVICE_DEVICE_DESCRIPTION, "Название", device.getDescription());
+				device.getDescription(), DeviceConstants.ENTITY_DEVICE_DEVICE_DESCRIPTION, "Название",
+				device.getDescription());
 
 		return createHtmlMessage(context.getChatId(), text);
 	}
-	
+
 	public SendMessage getFieldToEdit(Action action, ReplyContext context) {
 		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 		IEntity entity = device.getEntity(action.getEntityName());
 
 		String fieldName = new JSONObject(action.getData()).getString(ACTION_DATA_FIELD_NAME);
-		
+
 		IEntityField<?> entityField = entity.getEntityField(fieldName);
-		
-		
+
 		String text = String.format(BotMessageConstants.EDIT_DEVICE_SELECTED_FIELD, device.getEmoji().toString(),
-				entity.getDescription(), entityField.getName(), entityField.getDescription(), entityField.getValueStr());
+				entity.getDescription(), entityField.getName(), entityField.getDescription(),
+				entityField.getValueStr());
 
 		return createHtmlMessage(context.getChatId(), text);
 	}
@@ -260,9 +299,8 @@ public class SendMessageBuilder {
 
 			itemRendererBuilder.buildDeviceGroupHeaderView(device, group, builder);
 
-			group.getEntities().stream()//.filter(e -> EntityClass.DEFAULT.equals(e.getRenderer()))
-					.sorted(itemAbstractComparator)
-					.forEach(ent -> itemRendererBuilder.buildEntityView(ent, builder));
+			group.getEntities().stream()// .filter(e -> EntityClass.DEFAULT.equals(e.getRenderer()))
+					.sorted(itemAbstractComparator).forEach(ent -> itemRendererBuilder.buildEntityView(ent, builder));
 
 			List<IEntityAlarm> alarms = entityAlarmService.getEntityAlarmsWithAlarmDetected(device);
 
@@ -272,11 +310,9 @@ public class SendMessageBuilder {
 				builder.append(Emoji.ERROR.toString());
 				builder.append("<code> Режимы тревоги </code>\n\n");
 
-				group.getEntities().stream().forEach(entity -> 
-					alarms.stream().filter(alarm -> entity.getName().equals(alarm.getEntity().getName())).forEach(alarm -> 
-						Optional.ofNullable(alarm.getAlarmStartedText()).ifPresent(builder::append)
-					)
-				);
+				group.getEntities().stream().forEach(entity -> alarms.stream()
+						.filter(alarm -> entity.getName().equals(alarm.getEntity().getName()))
+						.forEach(alarm -> Optional.ofNullable(alarm.getAlarmStartedText()).ifPresent(builder::append)));
 			}
 
 			result.add(createHtmlMessage(context.getChatId(), builder.toString()));
@@ -287,16 +323,16 @@ public class SendMessageBuilder {
 	}
 
 	private SendMessage buildGroupCommandInterface(IDevice device, IGroup group, Long chatId) {
-		
-		List<Action> actions = EntityViewBuilder.getCommandButtonsForGroup(Action.ACTION_TYPE_SEND_DATA_TO_DEVICE, group);
-		
+
+		List<Action> actions = EntityViewBuilder.getCommandButtonsForGroup(Action.ACTION_TYPE_SEND_DATA_TO_DEVICE,
+				group);
+
 		if (actions.isEmpty()) {
 			return null;
 		}
-		
-		return ReplyContext.createMsg(
-					inlineKeyboard.getCommandButtonsByEnabledFieldCommandButtonList(actions), 
-					chatId, itemRendererBuilder.buildDeviceGroupHeaderCommandsView(device, group));
+
+		return ReplyContext.createMsg(inlineKeyboard.getCommandButtonsByEnabledFieldCommandButtonList(actions), chatId,
+				itemRendererBuilder.buildDeviceGroupHeaderCommandsView(device, group));
 	}
 
 	public SendMessage createUnknown(ReplyContext context) {
@@ -325,13 +361,15 @@ public class SendMessageBuilder {
 	public SendMessage createDeviceRefreshed(String msg, Long chatId) {
 		return createMessage(BotMessageConstants.MESSAGE_DEVICE_REFRESHED, Emoji.REFRESH.toString(), chatId, msg);
 	}
-	
+
 	public SendMessage createDataSentToDevice(String msg, Long chatId) {
-		return createMessage(BotMessageConstants.MESSAGE_DATA_WAS_SENT_TO_DEVICE, Emoji.PHONE_WITH_ARROW.toString(), chatId, msg);
+		return createMessage(BotMessageConstants.MESSAGE_DATA_WAS_SENT_TO_DEVICE, Emoji.PHONE_WITH_ARROW.toString(),
+				chatId, msg);
 	}
-	
+
 	public SendMessage createDeviceDataSavedOnServer(String msg, Long chatId) {
-		return createMessage(BotMessageConstants.MESSAGE_DATA_WAS_SAVED_ON_SERVER, Emoji.FLOPPY.toString(), chatId, msg);
+		return createMessage(BotMessageConstants.MESSAGE_DATA_WAS_SAVED_ON_SERVER, Emoji.FLOPPY.toString(), chatId,
+				msg);
 	}
 
 	public SendMessage createMessage(String format, String emoji, Long chatId, String msg) {
