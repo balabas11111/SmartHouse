@@ -387,10 +387,13 @@ public class EntityAlarmService implements IEntityAlarmService {
 	}
 
 	@Override
-	public void createNewEntityFieldAlarmInEntityAlarm(String newAlarmClassIndex, String value, Long entityAlarmId) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		IEntityAlarm entityAlarm = getAlarmById(entityAlarmId);
+	public void createNewEntityFieldAlarmInEntityAlarm(String newAlarmClassIndex, String value, IEntityField entityField) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		IEntity entity = entityField.getEntity();
 		
+		IEntityAlarm entityAlarm = getAlarm(entity);
+				
 		IEntityFieldAlarm entityFieldAlarm = (IEntityFieldAlarm) entityFieldAllowedClasses.get(Integer.valueOf(newAlarmClassIndex)).newInstance();
+		entityFieldAlarm.setWatchedItem(entityField);
 		entityFieldAlarm.setValueStr(value);
 		
 		entityAlarm.putAlarm(entityFieldAlarm);

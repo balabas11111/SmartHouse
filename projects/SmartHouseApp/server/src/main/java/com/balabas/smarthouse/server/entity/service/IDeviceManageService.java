@@ -69,4 +69,6 @@ public interface IDeviceManageService {
 	void reattachAlarmsForEntityAlarm(Long entityAlarmId);
 
 	void reattachAlarmsForEntityFieldAlarm(Long entityFieldAlarmId);
+
+	void reattachAlarmsForEntityField(IEntityField entityField);
 }

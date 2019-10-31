@@ -57,7 +57,7 @@ public interface IEntityAlarmService {
 
 	void removeEntityFieldAlarm(Long entityFieldAlarmId);
 
-	void createNewEntityFieldAlarmInEntityAlarm(String newAlarmClassIndex, String value, Long entityAlarmId) throws InstantiationException, IllegalAccessException, ClassNotFoundException;
+	void createNewEntityFieldAlarmInEntityAlarm(String newAlarmClassIndex, String value, IEntityField entityField) throws InstantiationException, IllegalAccessException, ClassNotFoundException;
 
 	void updateAlarmValueOfEntityAlarm(String val, Long entityFieldAlarmId);
 

@@ -444,6 +444,11 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	}
 	
 	@Override
+	public void reattachAlarmsForEntityField(IEntityField entityField) {
+		reattachAlarmsForEntity(entityField.getEntity());
+	}
+	
+	@Override
 	public void reattachAlarmsForEntity(Long entityId) {
 		reattachAlarmsForEntity(getEntityById(entityId));
 	}

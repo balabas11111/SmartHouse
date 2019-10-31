@@ -238,10 +238,7 @@ public class InlineKeyboardBuilder {
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		List<InlineKeyboardButton> row = new ArrayList<>();
 
-		//Map<String, Class> possibleAlarms = new HashMap<>();
 		Map<String, IEntityFieldAlarm> existingAlarms = new HashMap<>();
-
-		//enabledAlarmClasses.stream().forEach(c -> possibleAlarms.put(c.getName(), c));
 
 		String data = Action.createActionDataFieldByFieldValue();
 
@@ -266,11 +263,12 @@ public class InlineKeyboardBuilder {
 			
 			if (!existingAlarms.containsKey(clazz.getName())) {
 
-				data = Action.createActionDataFieldByFieldValueAndClassName(entry.getKey().toString());
+				data = Action.createActionDataFieldByFieldValueAndClassName(
+						entry.getKey().toString());
 
 				row = new ArrayList<>();
 				row.add(createInlineKeyboardButton(buttons.getAddEntityFieldAlarmButton(clazz), Action
-						.callback(ACTION_ADD_ENTITY_FIELD_ALARM, data, ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
+						.callback(ACTION_ADD_ENTITY_FIELD_ALARM, data, ID_TYPE_ENTITY_FIELD, entityField.getId())));
 
 				rowsInline.add(row);
 			}

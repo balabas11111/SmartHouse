@@ -3,7 +3,6 @@ package com.balabas.smarthouse.telegram.bot.handler;
 import java.util.Collections;
 import java.util.List;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -12,11 +11,11 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import com.balabas.smarthouse.server.ServerApplication;
-import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IActionService;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.view.Action;
@@ -60,7 +59,6 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARM_I
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_DESCRIPTION;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_CLASS;
-import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_VALUE;
 
 @Log4j2
 @Component
@@ -240,10 +238,10 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 		return msgs;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private void sendDataToAlarmService(Action action, ReplyContext context, List<SendMessage> msgs) throws ReflectiveOperationException {
 		//Device device = deviceService.getDeviceByName(action.getDeviceName());
 		IEntity entity = null;
-		IEntityAlarm entityAlarm = null;
 		
 		switch (action.getAction()) {
 		case ACTION_TYPE_CREATE_ALARM_OF_ENTITY:
@@ -270,12 +268,13 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			deviceService.reattachAlarmsForEntityFieldAlarm(action.getTargetId());
 			break;
 		case ACTION_SAVE_NEW_ENTITY_FIELD_ALARM:
+			IEntityField entityField = deviceService.getEntityFieldById(action.getTargetId());
 			
 			String newAlarmClassName = action.getDataJsonField(ACTION_DATA_FIELD_CLASS);
 			String value = action.getDataJsonFieldValue();
 			
-			alarmService.createNewEntityFieldAlarmInEntityAlarm(newAlarmClassName, value, action.getTargetId());
-			deviceService.reattachAlarmsForEntityAlarm(action.getTargetId());
+			alarmService.createNewEntityFieldAlarmInEntityAlarm(newAlarmClassName, value, entityField);
+			deviceService.reattachAlarmsForEntityField(entityField);
 			break;
 		case ACTION_SAVE_ALARM_INTERVAL_OF_ENTITY:
 			Integer messageInterval =
