@@ -50,6 +50,7 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_SAVE_ENTITY_FIELD
 import static com.balabas.smarthouse.server.view.Action.ACTION_SAVE_ALARM_INTERVAL_OF_ENTITY;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION;
+import static com.balabas.smarthouse.server.view.Action.ACTION_ALARM_OF_ENTITY_CHANGE_SOUND;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SETUP;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_OF_DEVICE;
@@ -165,6 +166,7 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			case ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION:
 			case ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY:
 			case ACTION_SAVE_ALARM_INTERVAL_OF_ENTITY:
+			case ACTION_ALARM_OF_ENTITY_CHANGE_SOUND:
 				sendDataToAlarmService(action, context, msgs);
 				msgs.addAll(messageBuilder.createEditAlarmsOfEntity(action, context));
 				break;
@@ -184,7 +186,7 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 				msgs.addAll(messageBuilder.createEditAlarmsOfEntity(action, context));
 				break;
 			case ACTION_ADD_ENTITY_FIELD_ALARM:
-				msgs.add(messageBuilder.getAlarmToBeSavedMessage(action, context));
+				msgs.add(messageBuilder.getAlarmToBeAddedMessage(action, context));
 				rebuildAndSaveCurrentAction(action, context, ACTION_SAVE_NEW_ENTITY_FIELD_ALARM);
 				break;
 			case ACTION_SAVE_ENTITY_FIELD_ALARM:
@@ -240,7 +242,7 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 	
 	@SuppressWarnings("rawtypes")
 	private void sendDataToAlarmService(Action action, ReplyContext context, List<SendMessage> msgs) throws ReflectiveOperationException {
-		//Device device = deviceService.getDeviceByName(action.getDeviceName());
+		Device device = deviceService.getDeviceByName(action.getDeviceName());
 		IEntity entity = null;
 		
 		switch (action.getAction()) {
@@ -248,15 +250,14 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			entity = deviceService.getEntityById(action.getTargetId());
 			alarmService.createNewEntityAlarm(entity);
 			
-			deviceService.reattachAlarmsForEntity(entity);
 			break;
+		case ACTION_ALARM_OF_ENTITY_CHANGE_SOUND:
+			alarmService.changeEntityAlarmSound(action.getTargetId());
 		case ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION:
 			alarmService.changeEntityAlarmActivation(action.getTargetId());
-			deviceService.reattachAlarmsForEntityAlarm(action.getTargetId());
 			break;
 		case ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY:
 			alarmService.removeMessageIntervalOnEntityAlarm(action.getTargetId());
-			deviceService.reattachAlarmsForEntityAlarm(action.getTargetId());
 			break;
 		case ACTION_DELETE_ENTITY_FIELD_ALARM:
 			alarmService.removeEntityFieldAlarm(action.getTargetId());
@@ -265,7 +266,6 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			String val = action.getDataJsonFieldValue();
 			
 			alarmService.updateAlarmValueOfEntityAlarm(val, action.getTargetId());
-			deviceService.reattachAlarmsForEntityFieldAlarm(action.getTargetId());
 			break;
 		case ACTION_SAVE_NEW_ENTITY_FIELD_ALARM:
 			IEntityField entityField = deviceService.getEntityFieldById(action.getTargetId());
@@ -274,17 +274,16 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			String value = action.getDataJsonFieldValue();
 			
 			alarmService.createNewEntityFieldAlarmInEntityAlarm(newAlarmClassName, value, entityField);
-			deviceService.reattachAlarmsForEntityField(entityField);
 			break;
 		case ACTION_SAVE_ALARM_INTERVAL_OF_ENTITY:
 			Integer messageInterval =
 					Integer.valueOf(action.getDataJsonFieldValue());
 			
 			alarmService.updateEntityAlarmMessageInterval(messageInterval, action.getTargetId());
-			deviceService.reattachAlarmsForEntityAlarm(action.getTargetId());
 			break;
 		}
 		
+		deviceService.reattachAlarmsForDevice(device);
 		msgs.add(messageBuilder.createAlarmUpdatedMessage(action, context));
 	}
 	

@@ -52,6 +52,10 @@ public class EntityAlarm implements IEntityAlarm {
 	@Getter
 	@Setter
 	private boolean activated;
+	
+	@Getter
+	@Setter
+	private boolean sound;
 
 	@Getter
 	@Setter
@@ -61,6 +65,10 @@ public class EntityAlarm implements IEntityAlarm {
 	@Getter
 	@Transient
 	boolean alarmed;
+	
+	@Getter @Setter
+	@Transient
+	boolean logAlarmCheck;
 
 	// if -1 send only one message
 	@Getter
@@ -120,6 +128,34 @@ public class EntityAlarm implements IEntityAlarm {
 			checkTimer();
 			alarmed = alarms.stream().map(IAlarm::check).reduce(Boolean::logicalOr).orElse(false);
 
+			if(logAlarmCheck) {
+				StringBuilder buf = new StringBuilder();
+				buf.append("Alarm check device=");
+				buf.append(this.getEntity().getDevice().getName());
+				buf.append(" entity=");
+				buf.append(this.getEntity().getName());
+				buf.append(" alarmed=");
+				buf.append(alarmed);
+				buf.append(" ");
+				
+				if(this.getAlarms()!=null) {
+					this.getAlarms().stream().forEach( efa ->{
+						buf.append(" class=");
+						buf.append(efa.getClassSimpleName());
+						buf.append(" (");
+						buf.append(efa.getCompareSeparator());
+						buf.append(" ");
+						buf.append(efa.getValueStr());
+						buf.append(") watch=");
+						buf.append(efa.getWatchedItem().getName());
+						buf.append(" val=");
+						buf.append(efa.getWatchedItem().getValueStr());
+					});
+				}
+				
+				log.info(buf.toString());
+			}
+			
 			if (alarmed && !timer.isActionForced()) {
 				updateAlarmState(true);
 			} else if (!alarmed && timer.isActionForced()) {

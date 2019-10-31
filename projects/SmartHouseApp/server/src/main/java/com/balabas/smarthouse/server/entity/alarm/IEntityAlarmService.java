@@ -67,4 +67,10 @@ public interface IEntityAlarmService {
 
 	void updateEntityAlarmMessageInterval(Integer messageInterval, Long entityAlarmId);
 
+	IEntityAlarm load(Long id);
+
+	Class getEntityFieldAllowedClassByIndex(Integer alarmClassIndex);
+
+	void changeEntityAlarmSound(Long entityAlarmId);
+
 }

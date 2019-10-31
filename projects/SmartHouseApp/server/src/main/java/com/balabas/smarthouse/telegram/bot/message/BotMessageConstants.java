@@ -40,9 +40,9 @@ public class BotMessageConstants {
 			"%s %s\n Редактируем поле (%s) - <b>%s</b>\n Поточное значение %s\n"
 			+ "введите новое значение и нажмите кнопку отправить";
 	
-	public static final String ADD_ALARM_BUTTON = "%s Добавить тревогу тип : %s";
-	public static final String REMOVE_ALARM_BUTTON = "%s Удалить тревогу : %s тип : %s";
-	public static final String EDIT_ALARM_BUTTON = "%s Редактировать тревогу : %s тип : %s";
+	public static final String ADD_ALARM_BUTTON = "%s Добавить : %s";
+	public static final String REMOVE_ALARM_BUTTON = "%s Удалить : %s";
+	public static final String EDIT_ALARM_BUTTON = "%s Редактировать %s";
 	
 	public static final String EDIT_DEVICE_SELECT_ENTITY_FIELD_BUTTON = "(%s) Редактировать : %s";
 	
@@ -70,24 +70,34 @@ public class BotMessageConstants {
 	public static final String SELECT_ENTITY_TO_EDIT_ALARMS = "%s Выберите датчик для просмотра режима тревоги";
 	
 	public static final String NO_ENTITY_ALARMS_MESSAGE = Emoji.FACE_WITH_TONGUE_AND_CLOSED_ONE_EYE.toString() + " нет проверок тревоги\n";
-	public static final String SELECT_ENTITY_FIELD_TO_EDIT_ALARMS = "%s Датчик <b>%s</b>. Выберите поле для просмотра режима тревоги\n";
-	public static final String ENTITY_ALARM_ACTIVATED_MESSAGE = Emoji.CHECK_MARK.toString() + " проверка тревоги активирована\n";
-	public static final String ENTITY_ALARM_NOT_ACTIVATED_MESSAGE = Emoji.ERROR.toString() + " проверка тревоги НЕ активирована\n";
-	public static final String ENTITY_HAS_ALARM_INTERVAL_MESSAGE = "Интервал повторной отправки оповещений о тревоге %d сек\n";
-	public static final String ENTITY_HAS_NO_ALARM_INTERVAL_MESSAGE = "Только одно оповещение начала/конца тревоги (Оповещение не отправляется повторно)\n";
+	public static final String SELECT_ENTITY_FIELD_TO_EDIT_ALARMS = 
+			Emoji.BAR_CHART.toString() + "Редактировать режимы тревоги %s <b>%s</b> \n";
+	public static final String ENTITY_ALARM_ACTIVATED_MESSAGE = Emoji.CHECK_MARK.toString() + " проверка активирована. ";
+	public static final String ENTITY_ALARM_NOT_ACTIVATED_MESSAGE = Emoji.ERROR.toString() + " проверка НЕ активирована. ";
+	public static final String ENTITY_HAS_ALARM_INTERVAL_MESSAGE = " Интервал оповещений %d сек\n";
+	public static final String ENTITY_HAS_NO_ALARM_INTERVAL_MESSAGE = " Оповещение не отправляется повторно\n";
 	public static final String ENTITY_ALARM_COUNT_MESSAGE = "Полей проверяется на тревогу %d\n";
+	public static final String ENTITY_ALARM_DISPLAY_MESSAGE = "<b>%s</b> значение %s;\n";
+	public static final String ENTITY_FIELD_ALARM_DISPLAY_MESSAGE = "%s;\n";
 	
 	public static final String ENTITY_ALARM_SAVED_MESSAGE = Emoji.FLOPPY.toString() + " Настройки тревоги сохранены %s";
-	public static final String ENTITY_ENTITY_ALARM_INTERVAL_VALUE_MESSAGE = Emoji.GEAR.toString() + " Введите значение интервала оповещения для датчика %s";
-	public static final String ENTITY_ENTITY_FIELD_ALARM_INPUT_VALUE_MESSAGE = Emoji.GEAR.toString() + " Введите значение тревоги %s для поля";
+	public static final String ENTITY_ENTITY_ALARM_INTERVAL_VALUE_MESSAGE = 
+			Emoji.GEAR.toString() + " Введите значение интервала оповещения для датчика %s";
+	
+	public static final String ENTITY_ENTITY_FIELD_ALARM_ADD_VALUE_MESSAGE = 
+			Emoji.GEAR.toString() + " Введите Новое значение <b>%s</b> для <b>%s</b> -> %s";
+	public static final String ENTITY_ENTITY_FIELD_ALARM_EDIT_VALUE_MESSAGE = 
+			Emoji.GEAR.toString() + " Введите значение <b>%s</b> для <b>%s</b> -> %s  текущее значение %s";
 	
 	public static final String ENTITY_ALARM_CREATE_MESSAGE = Emoji.CHECK_MARK.toString() + " создать проверку тревоги";
 	public static final String ENTITY_ALARM_ACTIVATE_MESSAGE = Emoji.ARROW_DOWN.toString() + " активировать проверку тревоги";
-	public static final String ENTITY_ALARM_DEACTIVATE_MESSAGE = Emoji.ERROR.toString() + " деактивировать проверку тревоги";
-	public static final String ENTITY_ALARM_EDIT_INTERVAL_MESSAGE = Emoji.HOURGLASS.toString() + " редактировать интервал";
+	public static final String ENTITY_ALARM_DEACTIVATE_MESSAGE = Emoji.CROSS_MARK_RED.toString() + " деактивировать проверку тревоги";
+	public static final String ENTITY_ALARM_ENABLE_SOUND_MESSAGE = Emoji.BELL.toString() + " разрешить звук на сервере";
+	public static final String ENTITY_ALARM_DISABLE_SOUND_MESSAGE = Emoji.BELL_CANCEL.toString() + "  отменить звук на сервере";
+	public static final String ENTITY_ALARM_EDIT_INTERVAL_MESSAGE = Emoji.HOURGLASS.toString() + " редактировать интервал оповещений";
 	public static final String ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE = Emoji.ERROR.toString() + " удалить интервал";
 			
-	public static final String SELECT_ENTITY_FIELD_EDIT_ALARMS = "%s опции режимов тревоги для поля %s";
+	public static final String SELECT_ENTITY_FIELD_EDIT_ALARMS = "%s Режимы тревоги %s \n\n";
 	
 	public static final String SPACE = " ";
 	public static final String USER = "Пользователь";

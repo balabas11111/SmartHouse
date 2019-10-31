@@ -31,6 +31,9 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	String getDescriptionField();
 	void setDescriptionField(String descriptionField);
 	
+	String getNameDescriptionByDescriptionField();
+	String getDescriptionByDescriptionField();
+	
 	Entity getEntity();
 	void setEntity(Entity entity);
 	

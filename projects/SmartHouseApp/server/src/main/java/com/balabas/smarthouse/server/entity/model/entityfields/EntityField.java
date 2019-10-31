@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.entity.model.entityfields;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -12,6 +13,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import org.thymeleaf.util.StringUtils;
 
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
@@ -68,6 +71,11 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 		ParameterizedType type = (ParameterizedType) this.getClass().getGenericSuperclass();
 		clazz = (Class) type.getActualTypeArguments()[0];
 	}
+	
+
+	public abstract void setValue(T value);
+	
+	protected abstract T fromString(String value);
 
 	@Override
 	public void setName(String name) {
@@ -159,8 +167,24 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 				.findFirst().orElse(null);
 	}
 	
-	public abstract void setValue(T value);
+	@Override
+	public String getNameDescriptionByDescriptionField() {
+		return getName() +" (" + getDescriptionByDescriptionField() + ")";
+	}
 	
-	protected abstract T fromString(String value);
+	@Override
+	public String getDescriptionByDescriptionField() {
+		if(StringUtils.isEmpty(descriptionField)) {
+			return Optional.ofNullable(description).orElse("");
+		}
+		
+		Optional<IEntityField> descrField = Optional.ofNullable(entity.getEntityField(descriptionField));
+		
+		if(descrField.isPresent()) {
+			return Optional.ofNullable(descrField.get().getValueStr()).orElse(description);
+		}
+		
+		return description;
+	}
 	
 }

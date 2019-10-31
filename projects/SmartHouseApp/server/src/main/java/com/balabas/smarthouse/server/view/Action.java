@@ -46,6 +46,7 @@ public class Action {
 
 	public static final String ACTION_TYPE_CREATE_ALARM_OF_ENTITY        = "cae";
 	public static final String ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION  = "dae";
+	public static final String ACTION_ALARM_OF_ENTITY_CHANGE_SOUND       = "ecs";
 	public static final String ACTION_TYPE_EDIT_ALARM_INTERVAL_OF_ENTITY = "eai";
 	public static final String ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY  = "rai";
 	public static final String ACTION_SAVE_ALARM_INTERVAL_OF_ENTITY      = "sAi";
@@ -194,7 +195,7 @@ public class Action {
 	}
 	
 	public String getDataJsonField(String fieldName) {
-		return new JSONObject(getData()).getString(fieldName);
+		return new JSONObject(getData()).optString(fieldName, null);
 	}
 	
 	public static String createActionDataFieldByFieldValue() {

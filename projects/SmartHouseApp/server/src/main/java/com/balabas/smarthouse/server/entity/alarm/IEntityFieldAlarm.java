@@ -13,5 +13,11 @@ public interface IEntityFieldAlarm<T> extends IAlarm<IEntityField, T> {
 	void setEntityAlarm(IEntityAlarm entityAlarm);
 	
 	T getValue();
+	String getValueStr();
 	void setValue(T value);
+	
+	String getClassSimpleName();
+	String getCompareSeparator();
+	
+	String getTriggerDescription();
 }

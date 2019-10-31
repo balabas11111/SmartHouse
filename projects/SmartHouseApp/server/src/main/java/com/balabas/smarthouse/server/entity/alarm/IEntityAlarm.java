@@ -25,6 +25,8 @@ public interface IEntityAlarm extends IUpdateable {
 	void setActivated(boolean activated);
 	
 	boolean isAlarmed();
+	boolean isSound();
+	void setSound(boolean sound);
 	
 	boolean check();
 	
@@ -43,5 +45,6 @@ public interface IEntityAlarm extends IUpdateable {
 	Integer getMessageInterval();
 	
 	boolean isNotificationRepeatable();
+	void setLogAlarmCheck(boolean logAlarmCheck);
 	
 }

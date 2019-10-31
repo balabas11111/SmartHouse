@@ -2,7 +2,6 @@ package com.balabas.smarthouse.server.entity.alarm;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import javax.persistence.FetchType;
@@ -72,6 +71,11 @@ public abstract class AlarmAbstractEntityField<T> extends AlarmAbstract<IEntityF
 	public boolean acceptsAsWatched(IEntityField entityField) {
 		return clazz.isAssignableFrom(entityField.getClazz());
 	}
+	
+	@Override
+	public String getClassSimpleName() {
+		return this.getClass().getSimpleName();
+	}
 
 	@Override
 	protected boolean checkItemHasAlarm() {
@@ -81,7 +85,11 @@ public abstract class AlarmAbstractEntityField<T> extends AlarmAbstract<IEntityF
 
 	@Override
 	protected String getItemAlarmText() {
-		return getWatchedItem().getName() + " (" + Optional.ofNullable(getWatchedItem().getDescription()).orElse("")
-				+ ") " + getWatchedItem().getValueStr() + getCompareSeparator() + getValue().toString();
+		return getWatchedItem().getNameDescriptionByDescriptionField() + " ="
+				+ getWatchedItem().getValueStr() + getTriggerDescription();
+	}
+	@Override
+	public String getTriggerDescription() {
+		return getCompareSeparator() + getValueStr();
 	}
 }

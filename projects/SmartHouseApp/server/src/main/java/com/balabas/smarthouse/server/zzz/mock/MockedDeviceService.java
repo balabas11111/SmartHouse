@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -23,15 +22,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.balabas.smarthouse.server.entity.alarm.EntityAlarm;
-import com.balabas.smarthouse.server.entity.alarm.EntityFieldMaxValueAlarm;
-import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
-import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
-import com.balabas.smarthouse.server.entity.alarm.IEntityFieldAlarm;
-import com.balabas.smarthouse.server.entity.model.IDevice;
-import com.balabas.smarthouse.server.entity.model.IEntity;
-import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
-import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.security.DeviceSecurityService;
 import com.google.common.hash.Hashing;
@@ -65,20 +55,12 @@ public class MockedDeviceService implements InitializingBean {
 	private int initStep = 0;
 
 	@Autowired
-	private IEntityAlarmService alarmService;
-
-	@Autowired
-	private IDeviceManageService deviceService;
-
-	@Autowired
 	private DeviceSecurityService secService;
 
 	private List<DeviceRequest> reqs;
 
 	private Map<String, String> serverKeys = new HashMap<>();
 	private Map<String, String> deviceKeys = new HashMap<>();
-
-	private boolean alarmRegistered = false;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -101,42 +83,6 @@ public class MockedDeviceService implements InitializingBean {
 		initDone = true;
 	}
 
-	public void initAlarms() throws IOException {
-		//List<IEntityAlarm> alarms = alarmService.getActiveEntityAlarms();
-
-		DeviceRequest req = reqs.get(0);
-		IDevice device = deviceService.getDeviceByName(req.getDeviceId());
-
-		if (device != null) {
-			/*
-			String entityName = "bme280";
-			String entityFieldName = "t";
-			
-			IEntity entity = device.getEntity(entityName);
-			IEntityField entityField = entity.getEntityField(entityFieldName);
-
-			IEntityAlarm alarm = Optional.ofNullable(alarmService.getAlarm(entity)).orElse(new EntityAlarm(entityField.getEntity()));
-			
-			alarm.putAlarm(new EntityFieldMaxValueAlarm(entityField, 31.01));
-
-			alarmService.registerAlarm(alarm);
-
-			List<Class> enabledAlarms = alarmService.getEnabledAlarmsForField(entityField);
-
-			try {
-				for (Class clazz : enabledAlarms) {
-					IEntityFieldAlarm na = (IEntityFieldAlarm) clazz.newInstance();
-					log.info(na.getClass().getSimpleName());
-
-				}
-			} catch (Exception e) {
-				log.error(e);
-			}
-*/
-			alarmRegistered = true;
-		}
-	}
-
 	@Scheduled(fixedRate = 10000)
 	public void mockDeviceDataUpdateRequest() throws IOException {
 		if (!mockActive || !contStarted) {
@@ -147,10 +93,6 @@ public class MockedDeviceService implements InitializingBean {
 		} else {
 			if (!initDone) {
 				initMocks();
-			} else {
-				if (!alarmRegistered) {
-					initAlarms();
-				}
 			}
 		}
 

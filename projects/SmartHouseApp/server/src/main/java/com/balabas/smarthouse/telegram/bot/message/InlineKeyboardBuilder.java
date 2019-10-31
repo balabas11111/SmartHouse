@@ -22,6 +22,7 @@ import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.view.Action;
+import com.google.common.collect.Lists;
 
 import lombok.Getter;
 
@@ -42,6 +43,7 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_CREATE_ALARM_OF_ENTITY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION;
+import static com.balabas.smarthouse.server.view.Action.ACTION_ALARM_OF_ENTITY_CHANGE_SOUND;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARM_INTERVAL_OF_ENTITY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY;
 
@@ -62,6 +64,8 @@ import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.EN
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_ACTIVATE_MESSAGE;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_EDIT_INTERVAL_MESSAGE;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE;
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_ENABLE_SOUND_MESSAGE;
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_DISABLE_SOUND_MESSAGE;
 
 @Component
 @SuppressWarnings("rawtypes")
@@ -71,6 +75,13 @@ public class InlineKeyboardBuilder {
 	@Getter
 	private ItemTextHelper buttons;
 
+	public static List<InlineKeyboardButton> createInlineKeyboardButtonRow(String text, String callbackData) {
+		List<InlineKeyboardButton> row = Lists.newArrayList();
+		InlineKeyboardButton btn = new InlineKeyboardButton().setText(text).setCallbackData(callbackData);
+		row.add(btn);
+		return row;
+	}
+	
 	public static InlineKeyboardButton createInlineKeyboardButton(String text, String callbackData) {
 		return new InlineKeyboardButton().setText(text).setCallbackData(callbackData);
 	}
@@ -122,16 +133,12 @@ public class InlineKeyboardBuilder {
 		InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
-		List<InlineKeyboardButton> row = new ArrayList<>();
-
-		row.add(createInlineKeyboardButton(ItemTextHelper.getEditAlarmsButton(),
+		rowsInline.add(createInlineKeyboardButtonRow(ItemTextHelper.getEditAlarmsButton(),
 				Action.callback(ACTION_TYPE_EDIT_ALARMS, "", "")));
-		row.add(createInlineKeyboardButton(ItemTextHelper.getEditPropertiesButton(),
+		rowsInline.add(createInlineKeyboardButtonRow(ItemTextHelper.getEditPropertiesButton(),
 				Action.callback(ACTION_TYPE_EDIT_DEVICE_SELECT_LIST, "", "")));
-		row.add(createInlineKeyboardButton(ItemTextHelper.getRestartApplicationButton(),
+		rowsInline.add(createInlineKeyboardButtonRow(ItemTextHelper.getRestartApplicationButton(),
 				Action.callback(ACTION_TYPE_RESTART_APPLICATION, "", "")));
-
-		rowsInline.add(row);
 
 		markup.setKeyboard(rowsInline);
 
@@ -167,14 +174,10 @@ public class InlineKeyboardBuilder {
 
 		for (IEntity entity : entities) {
 
-			List<InlineKeyboardButton> row = new ArrayList<>();
-
 			String text = buttons.getEntityButton(entity);
 			String callback = Action.callback(ACTION_TYPE_EDIT_ALARMS_OF_ENTITY, "", ID_TYPE_ENTITY, entity.getId());
 
-			row.add(createInlineKeyboardButton(text, callback));
-
-			rowsInline.add(row);
+			rowsInline.add(createInlineKeyboardButtonRow(text, callback));
 		}
 
 		markup.setKeyboard(rowsInline);
@@ -188,42 +191,40 @@ public class InlineKeyboardBuilder {
 
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
-		List<InlineKeyboardButton> row = new ArrayList<>();
-
 		if (entityAlarm == null) {
-			row.add(createInlineKeyboardButton(ENTITY_ALARM_CREATE_MESSAGE,
+			rowsInline.add(createInlineKeyboardButtonRow(ENTITY_ALARM_CREATE_MESSAGE,
 					Action.callback(ACTION_TYPE_CREATE_ALARM_OF_ENTITY, "", ID_TYPE_ENTITY, entity.getId())));
-
-			rowsInline.add(row);
 		} else {
 
 			if (entityAlarm.isActivated()) {
-				row.add(createInlineKeyboardButton(ENTITY_ALARM_DEACTIVATE_MESSAGE, Action.callback(
+				rowsInline.add(createInlineKeyboardButtonRow(ENTITY_ALARM_DEACTIVATE_MESSAGE, Action.callback(
 						ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION, "", ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
 				
-				row.add(createInlineKeyboardButton(ENTITY_ALARM_EDIT_INTERVAL_MESSAGE,
+				String soundMessage = entityAlarm.isSound()?ENTITY_ALARM_DISABLE_SOUND_MESSAGE:ENTITY_ALARM_ENABLE_SOUND_MESSAGE;
+				
+				rowsInline.add(createInlineKeyboardButtonRow(soundMessage, Action.callback(
+						ACTION_ALARM_OF_ENTITY_CHANGE_SOUND, "", ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
+				
+				rowsInline.add(createInlineKeyboardButtonRow(ENTITY_ALARM_EDIT_INTERVAL_MESSAGE,
 						Action.callback(ACTION_TYPE_EDIT_ALARM_INTERVAL_OF_ENTITY,
-								Action.createActionDataFieldByFieldValue(), ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
+								Action.createActionDataFieldByFieldValue(), ID_TYPE_ENTITY_ALARM,
+								entityAlarm.getId())));
 				
 				if (entityAlarm.isNotificationRepeatable()) {
-					row.add(createInlineKeyboardButton(ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE, Action.callback(
+					rowsInline.add(createInlineKeyboardButtonRow(ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE, Action.callback(
 							ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY, "", ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
 				}
 			} else {
-				row.add(createInlineKeyboardButton(ENTITY_ALARM_ACTIVATE_MESSAGE, Action.callback(
+				rowsInline.add(createInlineKeyboardButtonRow(ENTITY_ALARM_ACTIVATE_MESSAGE, Action.callback(
 						ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION, "", ID_TYPE_ENTITY_ALARM, entityAlarm.getId())));
 			}
 
-			rowsInline.add(row);
-
 			for (IEntityField entityField : entityFields) {
 
-				row = new ArrayList<>();
+				rowsInline.add(createInlineKeyboardButtonRow(ItemTextHelper.getEntityFieldButtonText(entityField),
+						Action.callback(ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD, "", ID_TYPE_ENTITY_FIELD,
+								entityField.getId())));
 
-				row.add(createInlineKeyboardButton(buttons.getEntityFieldButton(entityField), Action.callback(
-						ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD, "", ID_TYPE_ENTITY_FIELD, entityField.getId())));
-
-				rowsInline.add(row);
 			}
 		}
 		markup.setKeyboard(rowsInline);
@@ -236,8 +237,6 @@ public class InlineKeyboardBuilder {
 		InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-		List<InlineKeyboardButton> row = new ArrayList<>();
-
 		Map<String, IEntityFieldAlarm> existingAlarms = new HashMap<>();
 
 		String data = Action.createActionDataFieldByFieldValue();
@@ -247,30 +246,24 @@ public class InlineKeyboardBuilder {
 
 			existingAlarms.put(entityFieldAlarm.getClass().getName(), entityFieldAlarm);
 
-			row = new ArrayList<>();
-			row.add(createInlineKeyboardButton(buttons.getEditEntityFieldAlarmButton(entityFieldAlarm), Action.callback(
+			rowsInline.add(createInlineKeyboardButtonRow(buttons.getEditEntityFieldAlarmButton(entityFieldAlarm), Action.callback(
 					ACTION_EDIT_ENTITY_FIELD_ALARM, data, ID_TYPE_ENTITY_ALARM_FIELD, entityFieldAlarm.getId())));
-			row.add(createInlineKeyboardButton(buttons.getDeleteEntityFieldAlarmButton(entityFieldAlarm),
+			
+			rowsInline.add(createInlineKeyboardButtonRow(buttons.getDeleteEntityFieldAlarmButton(entityFieldAlarm),
 					Action.callback(ACTION_DELETE_ENTITY_FIELD_ALARM, "", ID_TYPE_ENTITY_ALARM_FIELD,
 							entityFieldAlarm.getId())));
-
-			rowsInline.add(row);
 		}
 		// add alarms
 		for (Entry<Integer, Class> entry : enabledAlarmClasses.entrySet()) {
 
 			Class clazz = entry.getValue();
-			
+
 			if (!existingAlarms.containsKey(clazz.getName())) {
 
-				data = Action.createActionDataFieldByFieldValueAndClassName(
-						entry.getKey().toString());
+				data = Action.createActionDataFieldByFieldValueAndClassName(entry.getKey().toString());
 
-				row = new ArrayList<>();
-				row.add(createInlineKeyboardButton(buttons.getAddEntityFieldAlarmButton(clazz), Action
+				rowsInline.add(createInlineKeyboardButtonRow(buttons.getAddEntityFieldAlarmButton(clazz), Action
 						.callback(ACTION_ADD_ENTITY_FIELD_ALARM, data, ID_TYPE_ENTITY_FIELD, entityField.getId())));
-
-				rowsInline.add(row);
 			}
 		}
 
@@ -285,16 +278,12 @@ public class InlineKeyboardBuilder {
 
 		for (IDevice device : devices) {
 
-			List<InlineKeyboardButton> row = new ArrayList<>();
-
 			ActionContext ac = new ActionContext(device);
 
 			String text = buttons.getDeviceButton(ac.getEmoji(), ac.getDescription());
 			String callback = Action.callback(ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE, "", device.getName());
 
-			row.add(createInlineKeyboardButton(text, callback));
-
-			rowsInline.add(row);
+			rowsInline.add(createInlineKeyboardButtonRow(text, callback));
 		}
 
 		markup.setKeyboard(rowsInline);
@@ -309,11 +298,8 @@ public class InlineKeyboardBuilder {
 		for (IGroup group : device.getGroups()) {
 			if (!GROUP_DEVICE.equals(group.getName())) {
 
-				List<InlineKeyboardButton> row = new ArrayList<>();
-				row.add(createInlineKeyboardButton(buttons.getGroupButton(group.getName()),
+				rowsInline.add(createInlineKeyboardButtonRow(buttons.getGroupButton(group.getName()),
 						Action.callback(ACTION_TYPE_VIEW_ENTITIES_OF_GROUP, "", device.getName(), group.getName())));
-
-				rowsInline.add(row);
 			}
 		}
 
@@ -328,7 +314,8 @@ public class InlineKeyboardBuilder {
 
 		List<InlineKeyboardButton> rowD = new ArrayList<>();
 
-		String textD = buttons.getButton(device.getEmoji(), device.getDescription() + " : " + "редактировать описание");
+		String textD = ItemTextHelper.getButton(device.getEmoji(),
+				device.getDescription() + " : " + "редактировать описание");
 
 		String data = Action.createActionDataFieldByFieldValue(DeviceConstants.ENTITY_DEVICE_DEVICE_DESCRIPTION);
 
@@ -343,7 +330,7 @@ public class InlineKeyboardBuilder {
 
 					List<InlineKeyboardButton> row = new ArrayList<>();
 
-					String text = buttons.getButton(entity.getEmoji(), entity.getDescription());
+					String text = ItemTextHelper.getButton(entity.getEmoji(), entity.getDescription());
 					String callback = Action.callback(ACTION_TYPE_EDIT_ENTITITY, "", ID_TYPE_ENTITY, entity.getId());
 
 					row.add(createInlineKeyboardButton(text, callback));
@@ -372,14 +359,11 @@ public class InlineKeyboardBuilder {
 							String text = action.getDescription();
 							String callback = action.getCallbackData();
 
-							List<InlineKeyboardButton> row = new ArrayList<>();
-							row.add(createInlineKeyboardButton(text, callback));
-							rowsInline.add(row);
+							rowsInline.add(createInlineKeyboardButtonRow(text, callback));
 						}
 
 					} else if (!entityField.isReadOnly()
 							&& !DeviceConstants.ENTITY_FIELD_ID.equals(entityField.getName())) {
-						List<InlineKeyboardButton> row = new ArrayList<>();
 
 						String description = StringUtils.isEmpty(entityField.getDescription())
 								? entityField.getValueStr()
@@ -392,9 +376,7 @@ public class InlineKeyboardBuilder {
 
 						String callback = Action.callback(ACTION_TYPE_EDIT_ENTITITY_FIELD, data, entity);
 
-						row.add(createInlineKeyboardButton(text, callback));
-
-						rowsInline.add(row);
+						rowsInline.add(createInlineKeyboardButtonRow(text, callback));
 					}
 				});
 
@@ -409,10 +391,7 @@ public class InlineKeyboardBuilder {
 
 		String callback = Action.callback(ACTION_TYPE_VIEW_GROUPS_OF_DEVICE, "", device.getName(), group.getName());
 
-		List<InlineKeyboardButton> row = new ArrayList<>();
-		row.add(createInlineKeyboardButton(buttons.getDeviceButton(device.getDescription()), callback));
-
-		rowsInline.add(row);
+		rowsInline.add(createInlineKeyboardButtonRow(buttons.getDeviceButton(device.getDescription()), callback));
 
 		markup.setKeyboard(rowsInline);
 
@@ -440,9 +419,9 @@ public class InlineKeyboardBuilder {
 
 		List<InlineKeyboardButton> row = new ArrayList<>();
 
-		row.add(createInlineKeyboardButton(buttons.getButton(null, onText), actionOn));
+		row.add(createInlineKeyboardButton(ItemTextHelper.getButton(null, onText), actionOn));
 
-		row.add(createInlineKeyboardButton(buttons.getButton(null, offText), actionOff));
+		row.add(createInlineKeyboardButton(ItemTextHelper.getButton(null, offText), actionOff));
 
 		rowsInline.add(row);
 

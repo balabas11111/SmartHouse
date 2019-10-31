@@ -17,6 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRem
 import com.balabas.smarthouse.server.DeviceConstants;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
+import com.balabas.smarthouse.server.entity.alarm.IEntityFieldAlarm;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
@@ -30,6 +31,9 @@ import com.balabas.smarthouse.server.view.Action;
 import com.google.common.collect.Lists;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_NAME;
+import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_CLASS;
+
+import static com.balabas.smarthouse.telegram.bot.message.ItemTextHelper.getEntityFieldButtonText;
 
 import lombok.Getter;
 
@@ -152,7 +156,8 @@ public class SendMessageBuilder {
 		if (entityAlarm == null) {
 			buf.append(BotMessageConstants.NO_ENTITY_ALARMS_MESSAGE);
 		} else {
-			buf.append(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_TO_EDIT_ALARMS, Emoji.ERROR,
+			buf.append(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_TO_EDIT_ALARMS, 
+					Optional.ofNullable(entity.getEmoji()).orElse(Emoji.PAGER),
 					entity.getDescription()));
 
 			buf.append(entityAlarm.isActivated() ? BotMessageConstants.ENTITY_ALARM_ACTIVATED_MESSAGE
@@ -166,12 +171,21 @@ public class SendMessageBuilder {
 			}
 
 			buf.append(String.format(BotMessageConstants.ENTITY_ALARM_COUNT_MESSAGE, entityAlarm.getAlarms().size()));
+			
+			buf.append("\n");
+			
+			for(IEntityFieldAlarm entityFieldAlarm : entityAlarm.getAlarms()) {
+				buf.append(String.format(BotMessageConstants.ENTITY_ALARM_DISPLAY_MESSAGE, 
+						entityFieldAlarm.getWatchedItem().getNameDescriptionByDescriptionField(),
+						entityFieldAlarm.getTriggerDescription()));
+				
+			}
 		}
 
 		context.setText(buf.toString());
 
-		msgs.add(
-				context.createMsg(inlineKeyboard.getEntityFieldsAlarmsOfEntityMenuKeyboard(entity, entityAlarm, entityFields)));
+		msgs.add(context.createMsg(
+				inlineKeyboard.getEntityFieldsAlarmsOfEntityMenuKeyboard(entity, entityAlarm, entityFields)));
 
 		return msgs;
 	}
@@ -182,12 +196,37 @@ public class SendMessageBuilder {
 		return createHtmlMessage(context.getChatId(), message);
 	}
 
-	public SendMessage getAlarmToBeSavedMessage(Action action, ReplyContext context) {
-		String message = String.format(BotMessageConstants.ENTITY_ENTITY_FIELD_ALARM_INPUT_VALUE_MESSAGE, deviceService
-				.getDeviceByName(action.getDeviceName()).getEntity(action.getEntityName()).getDescription());
+	public SendMessage getAlarmToBeAddedMessage(Action action, ReplyContext context) {
+
+		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
+		IEntity entity = device.getEntity(action.getEntityName());
+
+		IEntityField entityField = entity.getEntityField(action.getTargetId());
+
+		Integer alarmClassIndex = Integer.valueOf(action.getDataJsonField(ACTION_DATA_FIELD_CLASS));
+		String alarmClassName = entityAlarmService.getEntityFieldAllowedClassByIndex(alarmClassIndex).getSimpleName();
+
+		String message = String.format(BotMessageConstants.ENTITY_ENTITY_FIELD_ALARM_ADD_VALUE_MESSAGE, alarmClassName,
+				entity.getName(), getEntityFieldButtonText(entityField));
 		return createHtmlMessage(context.getChatId(), message);
 	}
-	
+
+	public SendMessage getAlarmToBeSavedMessage(Action action, ReplyContext context) {
+
+		IEntityFieldAlarm entityFieldAlarm = entityAlarmService.getEntityAlarmFieldById(action.getTargetId());
+
+		IEntityField entityField = entityFieldAlarm.getWatchedItem();
+
+		IEntity entity = entityField.getEntity();
+
+		String alarmClassName = entityFieldAlarm.getClass().getSimpleName();
+		String currentValue = entityFieldAlarm.getValue().toString();
+
+		String message = String.format(BotMessageConstants.ENTITY_ENTITY_FIELD_ALARM_EDIT_VALUE_MESSAGE, alarmClassName,
+				entity.getName(), getEntityFieldButtonText(entityField), currentValue);
+		return createHtmlMessage(context.getChatId(), message);
+	}
+
 	public SendMessage getAlarmIntervalToBeSavedMessage(Action action, ReplyContext context) {
 		String message = String.format(BotMessageConstants.ENTITY_ENTITY_ALARM_INTERVAL_VALUE_MESSAGE, deviceService
 				.getDeviceByName(action.getDeviceName()).getEntity(action.getEntityName()).getDescription());
@@ -204,8 +243,17 @@ public class SendMessageBuilder {
 
 		Map<Integer, Class> enabledAlarmClasses = entityAlarmService.getEnabledAlarmsForField(entityField);
 
-		context.setText(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_EDIT_ALARMS, Emoji.WARNING,
-				entityField.getDescription()));
+		StringBuilder buf = new StringBuilder();
+		
+		buf.append(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_EDIT_ALARMS, Emoji.WARNING,
+				entityField.getNameDescriptionByDescriptionField()));
+		
+		for(IEntityFieldAlarm entityFieldAlarm : entityAlarm.getAlarms()) {
+			buf.append(String.format(BotMessageConstants.ENTITY_FIELD_ALARM_DISPLAY_MESSAGE, 
+					entityFieldAlarm.getTriggerDescription()));
+		}
+		
+		context.setText(buf.toString());
 
 		msgs.add(context.createMsg(
 				inlineKeyboard.getEntityFieldsAlarmEditMenuKeyboard(entityAlarm, entityField, enabledAlarmClasses)));

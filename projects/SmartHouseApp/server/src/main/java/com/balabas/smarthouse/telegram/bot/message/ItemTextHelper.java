@@ -102,7 +102,7 @@ public class ItemTextHelper {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public String getEntityFieldButton(IEntityField entityField) {
+	public static String getEntityFieldButtonText(IEntityField entityField) {
 		ActionContext ac = new ActionContext(entityField);
 		return getButton(ac.getEmoji(), ac.getDescription());
 	}
@@ -114,14 +114,12 @@ public class ItemTextHelper {
 	
 	@SuppressWarnings("rawtypes")
 	public String getEditEntityFieldAlarmButton(IEntityFieldAlarm entityFieldAlarm) {
-		return String.format(EDIT_ALARM_BUTTON, Emoji.MEMO, entityFieldAlarm.getWatchedItem().getDescription(),
-				entityFieldAlarm.getClass().getName());
+		return String.format(EDIT_ALARM_BUTTON, Emoji.MEMO, entityFieldAlarm.getClass().getSimpleName());
 	}
 	
 	@SuppressWarnings("rawtypes")
 	public String getDeleteEntityFieldAlarmButton(IEntityFieldAlarm entityFieldAlarm) {
-		return String.format(REMOVE_ALARM_BUTTON, Emoji.MEMO, entityFieldAlarm.getWatchedItem().getDescription(),
-				entityFieldAlarm.getClass().getName());
+		return String.format(REMOVE_ALARM_BUTTON, Emoji.ERROR, entityFieldAlarm.getClass().getSimpleName());
 	}
 	
 	public String getGroupHeader(String deviceDescription, String groupName) {
@@ -143,11 +141,11 @@ public class ItemTextHelper {
 		return String.format(ENTITY_DISPLAY_HEADER_MSG, entityEmoji, entityDescription);
 	}
 
-	public String getButton(Emoji emoji, String text) {
+	public static String getButton(Emoji emoji, String text) {
 		return getButton(BotMessageConstants.BUTTON, emoji, text);
 	}
 
-	public String getButton(String format, Emoji emoji, String text) {
+	public static String getButton(String format, Emoji emoji, String text) {
 		return String.format(format, emoji == null ? "" : emoji.toString(), text);
 	}
 
