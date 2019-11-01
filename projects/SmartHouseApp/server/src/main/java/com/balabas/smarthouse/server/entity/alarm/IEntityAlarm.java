@@ -38,6 +38,12 @@ public interface IEntityAlarm extends IUpdateable {
 	void setAlarmStartedSent(boolean notified);
 	void setAlarmFinishedSent(boolean notified);
 	
+	boolean isSendAlarmStartedMessage();
+	boolean isSendAlarmFinishedMessage();
+	
+	void setSendAlarmStartedMessage(boolean sendAlarmStartedMessage);
+	void setSendAlarmFinishedMessage(boolean sendAlarmFinishedMessage);
+	
 	String getAlarmStartedText();
 	String getAlarmFinishedText();
 	

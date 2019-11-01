@@ -73,10 +73,12 @@ public class BotMessageConstants {
 	public static final String SELECT_ENTITY_FIELD_TO_EDIT_ALARMS = 
 			Emoji.BAR_CHART.toString() + "Редактировать режимы тревоги %s <b>%s</b> \n";
 	public static final String ENTITY_ALARM_ACTIVATED_MESSAGE = Emoji.CHECK_MARK.toString() + " проверка активирована. ";
-	public static final String ENTITY_ALARM_NOT_ACTIVATED_MESSAGE = Emoji.ERROR.toString() + " проверка НЕ активирована. ";
+	public static final String ENTITY_ALARM_NOT_ACTIVATED_MESSAGE = Emoji.ERROR.toString() + " проверка НЕ активирована. \n";
+	public static final String ENTITY_SOUND_ACTIVATED_MESSAGE = Emoji.BELL.toString() + " звуковое оповещение.\n";
+	public static final String ENTITY_SOUND_NOT_ACTIVATED_MESSAGE = Emoji.BELL_CANCEL.toString() + " без звука.\n";
 	public static final String ENTITY_HAS_ALARM_INTERVAL_MESSAGE = " Интервал оповещений %d сек\n";
-	public static final String ENTITY_HAS_NO_ALARM_INTERVAL_MESSAGE = " Оповещение не отправляется повторно\n";
-	public static final String ENTITY_ALARM_COUNT_MESSAGE = "Полей проверяется на тревогу %d\n";
+	public static final String ENTITY_HAS_NO_ALARM_INTERVAL_MESSAGE = " Оповещение не повторяется\n";
+	public static final String ENTITY_ALARM_COUNT_MESSAGE = "Проверок тревоги %d\n";
 	public static final String ENTITY_ALARM_DISPLAY_MESSAGE = "<b>%s</b> значение %s;\n";
 	public static final String ENTITY_FIELD_ALARM_DISPLAY_MESSAGE = "%s;\n";
 	
@@ -95,7 +97,7 @@ public class BotMessageConstants {
 	public static final String ENTITY_ALARM_ENABLE_SOUND_MESSAGE = Emoji.BELL.toString() + " разрешить звук на сервере";
 	public static final String ENTITY_ALARM_DISABLE_SOUND_MESSAGE = Emoji.BELL_CANCEL.toString() + "  отменить звук на сервере";
 	public static final String ENTITY_ALARM_EDIT_INTERVAL_MESSAGE = Emoji.HOURGLASS.toString() + " редактировать интервал оповещений";
-	public static final String ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE = Emoji.ERROR.toString() + " удалить интервал";
+	public static final String ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE = Emoji.CROSS_MARK_RED.toString() + " только одно оповещение";
 			
 	public static final String SELECT_ENTITY_FIELD_EDIT_ALARMS = "%s Режимы тревоги %s \n\n";
 	

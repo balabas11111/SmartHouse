@@ -244,14 +244,16 @@ public class InlineKeyboardBuilder {
 		// remove/edit existing alarms
 		for (IEntityFieldAlarm entityFieldAlarm : entityAlarm.getAlarms()) {
 
-			existingAlarms.put(entityFieldAlarm.getClass().getName(), entityFieldAlarm);
-
-			rowsInline.add(createInlineKeyboardButtonRow(buttons.getEditEntityFieldAlarmButton(entityFieldAlarm), Action.callback(
-					ACTION_EDIT_ENTITY_FIELD_ALARM, data, ID_TYPE_ENTITY_ALARM_FIELD, entityFieldAlarm.getId())));
-			
-			rowsInline.add(createInlineKeyboardButtonRow(buttons.getDeleteEntityFieldAlarmButton(entityFieldAlarm),
-					Action.callback(ACTION_DELETE_ENTITY_FIELD_ALARM, "", ID_TYPE_ENTITY_ALARM_FIELD,
-							entityFieldAlarm.getId())));
+			if(entityFieldAlarm.getWatchedItem().getId().equals(entityField.getId())) {
+				existingAlarms.put(entityFieldAlarm.getClass().getName(), entityFieldAlarm);
+	
+				rowsInline.add(createInlineKeyboardButtonRow(buttons.getEditEntityFieldAlarmButton(entityFieldAlarm), Action.callback(
+						ACTION_EDIT_ENTITY_FIELD_ALARM, data, ID_TYPE_ENTITY_ALARM_FIELD, entityFieldAlarm.getId())));
+				
+				rowsInline.add(createInlineKeyboardButtonRow(buttons.getDeleteEntityFieldAlarmButton(entityFieldAlarm),
+						Action.callback(ACTION_DELETE_ENTITY_FIELD_ALARM, "", ID_TYPE_ENTITY_ALARM_FIELD,
+								entityFieldAlarm.getId())));
+			}
 		}
 		// add alarms
 		for (Entry<Integer, Class> entry : enabledAlarmClasses.entrySet()) {

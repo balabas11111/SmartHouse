@@ -156,29 +156,35 @@ public class SendMessageBuilder {
 		if (entityAlarm == null) {
 			buf.append(BotMessageConstants.NO_ENTITY_ALARMS_MESSAGE);
 		} else {
-			buf.append(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_TO_EDIT_ALARMS, 
-					Optional.ofNullable(entity.getEmoji()).orElse(Emoji.PAGER),
-					entity.getDescription()));
+			buf.append(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_TO_EDIT_ALARMS,
+					Optional.ofNullable(entity.getEmoji()).orElse(Emoji.PAGER), entity.getDescription()));
 
-			buf.append(entityAlarm.isActivated() ? BotMessageConstants.ENTITY_ALARM_ACTIVATED_MESSAGE
-					: BotMessageConstants.ENTITY_ALARM_NOT_ACTIVATED_MESSAGE);
-
-			if (entityAlarm.isNotificationRepeatable()) {
-				buf.append(String.format(BotMessageConstants.ENTITY_HAS_ALARM_INTERVAL_MESSAGE,
-						entityAlarm.getMessageInterval()));
+			if (!entityAlarm.isActivated()) {
+				buf.append(BotMessageConstants.ENTITY_ALARM_NOT_ACTIVATED_MESSAGE);
 			} else {
-				buf.append(BotMessageConstants.ENTITY_HAS_NO_ALARM_INTERVAL_MESSAGE);
-			}
+				buf.append(BotMessageConstants.ENTITY_ALARM_ACTIVATED_MESSAGE);
 
-			buf.append(String.format(BotMessageConstants.ENTITY_ALARM_COUNT_MESSAGE, entityAlarm.getAlarms().size()));
-			
+				if (entityAlarm.isNotificationRepeatable()) {
+					buf.append(String.format(BotMessageConstants.ENTITY_HAS_ALARM_INTERVAL_MESSAGE,
+							entityAlarm.getMessageInterval()));
+				} else {
+					buf.append(BotMessageConstants.ENTITY_HAS_NO_ALARM_INTERVAL_MESSAGE);
+				}
+
+				buf.append(entityAlarm.isSound() ? BotMessageConstants.ENTITY_SOUND_ACTIVATED_MESSAGE
+						: BotMessageConstants.ENTITY_SOUND_NOT_ACTIVATED_MESSAGE);
+
+				buf.append("\n");
+				buf.append(
+						String.format(BotMessageConstants.ENTITY_ALARM_COUNT_MESSAGE, entityAlarm.getAlarms().size()));
+			}
 			buf.append("\n");
-			
-			for(IEntityFieldAlarm entityFieldAlarm : entityAlarm.getAlarms()) {
-				buf.append(String.format(BotMessageConstants.ENTITY_ALARM_DISPLAY_MESSAGE, 
+
+			for (IEntityFieldAlarm entityFieldAlarm : entityAlarm.getAlarms()) {
+				buf.append(String.format(BotMessageConstants.ENTITY_ALARM_DISPLAY_MESSAGE,
 						entityFieldAlarm.getWatchedItem().getNameDescriptionByDescriptionField(),
 						entityFieldAlarm.getTriggerDescription()));
-				
+
 			}
 		}
 
@@ -220,10 +226,10 @@ public class SendMessageBuilder {
 		IEntity entity = entityField.getEntity();
 
 		String alarmClassName = entityFieldAlarm.getClass().getSimpleName();
-		String currentValue = entityFieldAlarm.getValue().toString();
+		String currentValue = entityFieldAlarm.getTriggerDescription();
 
 		String message = String.format(BotMessageConstants.ENTITY_ENTITY_FIELD_ALARM_EDIT_VALUE_MESSAGE, alarmClassName,
-				entity.getName(), getEntityFieldButtonText(entityField), currentValue);
+				entity.getName(), entityField.getNameDescriptionByDescriptionField(), currentValue);
 		return createHtmlMessage(context.getChatId(), message);
 	}
 
@@ -244,15 +250,15 @@ public class SendMessageBuilder {
 		Map<Integer, Class> enabledAlarmClasses = entityAlarmService.getEnabledAlarmsForField(entityField);
 
 		StringBuilder buf = new StringBuilder();
-		
+
 		buf.append(String.format(BotMessageConstants.SELECT_ENTITY_FIELD_EDIT_ALARMS, Emoji.WARNING,
 				entityField.getNameDescriptionByDescriptionField()));
-		
-		for(IEntityFieldAlarm entityFieldAlarm : entityAlarm.getAlarms()) {
-			buf.append(String.format(BotMessageConstants.ENTITY_FIELD_ALARM_DISPLAY_MESSAGE, 
+
+		for (IEntityFieldAlarm entityFieldAlarm : entityAlarm.getAlarms()) {
+			buf.append(String.format(BotMessageConstants.ENTITY_FIELD_ALARM_DISPLAY_MESSAGE,
 					entityFieldAlarm.getTriggerDescription()));
 		}
-		
+
 		context.setText(buf.toString());
 
 		msgs.add(context.createMsg(
@@ -368,9 +374,9 @@ public class SendMessageBuilder {
 
 			if (!alarms.isEmpty()) {
 
-				builder.append("\n---------------------");
+				builder.append("\n---------------------\n");
 				builder.append(Emoji.ERROR.toString());
-				builder.append("<code> Режимы тревоги </code>\n\n");
+				builder.append("<code> Режим ТРЕВОГИ </code>\n\n");
 
 				group.getEntities().stream().forEach(entity -> alarms.stream()
 						.filter(alarm -> entity.getName().equals(alarm.getEntity().getName()))

@@ -253,6 +253,7 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			break;
 		case ACTION_ALARM_OF_ENTITY_CHANGE_SOUND:
 			alarmService.changeEntityAlarmSound(action.getTargetId());
+			break;
 		case ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION:
 			alarmService.changeEntityAlarmActivation(action.getTargetId());
 			break;

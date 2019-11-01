@@ -138,15 +138,27 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 	@Override
 	public int getAlarmIndexById(Long alarmId) {
-		int result = -1;
 
-		for (IEntityAlarm ea : this.alarms) {
-			result++;
-			if (ea.getId().equals(alarmId)) {
-				break;
+		if(alarms.size()>0) {
+			for (int i = 0; i<alarms.size(); i++) {
+				IEntityAlarm ea = alarms.get(i);
+				
+				if (ea.getId().equals(alarmId)) {
+					return i;
+				}
 			}
 		}
-		return result;
+		return -1;
+	}
+	
+	@Override
+	@Transactional
+	public List<EntityAlarm> loadAlarmsForDevice(IDevice device) {
+		List<EntityAlarm> als = alarmRepository.findAlarmsForDevice(device.getId());
+
+		als.stream().filter(al -> getAlarmIndexById(al.getId()) == -1).forEach(alarms::add);
+
+		return als;
 	}
 
 	@Override
@@ -199,8 +211,10 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 		// alarm.setActivated(true);
 
-		log.info("Alarm activated d=" + alarm.getEntity().getGroup().getDevice().getName() + " e="
+		log.info("Alarm reattached d=" + alarm.getEntity().getGroup().getDevice().getName() + " e="
 				+ alarm.getEntity().getName());
+		
+		checkWithClear(alarm);
 	}
 
 	@Override
@@ -289,7 +303,8 @@ public class EntityAlarmService implements IEntityAlarmService {
 	@Override
 	public IEntityAlarm save(IEntityAlarm alarm) {
 		ActionTimer timer = alarm.getTimer();
-		boolean activated = alarm.isActivated();
+		boolean sendAlarmStartedMessage = alarm.isSendAlarmStartedMessage();
+		boolean sendAlarmFinishedMessage = alarm.isSendAlarmFinishedMessage();
 
 		IEntityAlarm al = alarm;
 
@@ -298,8 +313,10 @@ public class EntityAlarmService implements IEntityAlarmService {
 		}
 
 		alarm = alarmRepository.save((EntityAlarm) alarm);
+		
 		alarm.setTimer(timer);
-		alarm.setActivated(activated);
+		alarm.setSendAlarmStartedMessage(sendAlarmStartedMessage);
+		alarm.setSendAlarmFinishedMessage(sendAlarmFinishedMessage);
 
 		int index = getAlarmIndexById(alarm.getId());
 
@@ -323,22 +340,14 @@ public class EntityAlarmService implements IEntityAlarmService {
 		if (index == -1) {
 			alarms.add(alarm);
 		} else {
+			ActionTimer timer = alarms.get(index).getTimer();
+			alarm.setTimer(timer);
 			alarms.set(index, alarm);
 		}
 
 		log.info("EntityAlarm loaded");
 
 		return alarm;
-	}
-
-	@Override
-	@Transactional
-	public List<EntityAlarm> loadAlarmsForDevice(IDevice device) {
-		List<EntityAlarm> als = alarmRepository.findAlarmsForDevice(device.getId());
-
-		als.stream().filter(al -> getAlarmIndexById(al.getId()) == -1).forEach(alarms::add);
-
-		return als;
 	}
 
 	@Override
@@ -401,9 +410,39 @@ public class EntityAlarmService implements IEntityAlarmService {
 	@Override
 	public void changeEntityAlarmActivation(Long entityAlarmId) {
 		IEntityAlarm entityAlarm = getAlarmById(entityAlarmId);
-		entityAlarm.setActivated(!entityAlarm.isActivated());
-
+		boolean activated = !entityAlarm.isActivated();
+		
+		entityAlarm.setActivated(activated);
+		
 		save(entityAlarm);
+		
+		if(activated) {
+			/*
+			entityAlarm.setSendAlarmStartedMessage(false);
+			entityAlarm.setSendAlarmFinishedMessage(false);
+			
+			entityAlarm.getTimer().setActionForced(false);
+			*/
+			entityAlarm.check();
+		}
+	}
+	
+	@Override
+	public void updateEntityAlarmMessageInterval(Integer messageInterval, Long entityAlarmId) {
+		IEntityAlarm entityAlarm = getAlarmById(entityAlarmId);
+		entityAlarm.setMessageInterval(messageInterval);
+		save(entityAlarm);
+		
+	}
+	
+	@Override
+	public void checkWithClear(IEntityAlarm entityAlarm) {
+		entityAlarm.setSendAlarmStartedMessage(false);
+		entityAlarm.setSendAlarmFinishedMessage(false);
+		
+		entityAlarm.getTimer().setActionForced(false);
+		
+		entityAlarm.check();
 	}
 	
 
@@ -470,13 +509,6 @@ public class EntityAlarmService implements IEntityAlarmService {
 	@Override
 	public void createNewEntityAlarm(IEntity entity) {
 		save(new EntityAlarm(entity));
-	}
-
-	@Override
-	public void updateEntityAlarmMessageInterval(Integer messageInterval, Long entityAlarmId) {
-		IEntityAlarm entityAlarm = getAlarmById(entityAlarmId);
-		entityAlarm.setMessageInterval(messageInterval);
-		save(entityAlarm);
 	}
 
 }

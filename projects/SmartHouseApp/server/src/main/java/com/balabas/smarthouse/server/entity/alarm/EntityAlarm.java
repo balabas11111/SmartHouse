@@ -76,8 +76,10 @@ public class EntityAlarm implements IEntityAlarm {
 
 	// true = alarmMessage, false = finishedMessage, null - nothing
 	@Transient
+	@Getter @Setter
 	boolean sendAlarmStartedMessage = false;
 	@Transient
+	@Getter @Setter
 	boolean sendAlarmFinishedMessage = false;
 
 	public EntityAlarm(IEntity entity) {
@@ -126,40 +128,16 @@ public class EntityAlarm implements IEntityAlarm {
 	public boolean check() {
 		if (activated) {
 			checkTimer();
-			alarmed = alarms.stream().map(IAlarm::check).reduce(Boolean::logicalOr).orElse(false);
+			alarmed = checkFieldsAlarms();
 
-			if(logAlarmCheck) {
-				StringBuilder buf = new StringBuilder();
-				buf.append("Alarm check device=");
-				buf.append(this.getEntity().getDevice().getName());
-				buf.append(" entity=");
-				buf.append(this.getEntity().getName());
-				buf.append(" alarmed=");
-				buf.append(alarmed);
-				buf.append(" ");
-				
-				if(this.getAlarms()!=null) {
-					this.getAlarms().stream().forEach( efa ->{
-						buf.append(" class=");
-						buf.append(efa.getClassSimpleName());
-						buf.append(" (");
-						buf.append(efa.getCompareSeparator());
-						buf.append(" ");
-						buf.append(efa.getValueStr());
-						buf.append(") watch=");
-						buf.append(efa.getWatchedItem().getName());
-						buf.append(" val=");
-						buf.append(efa.getWatchedItem().getValueStr());
-					});
-				}
-				
-				log.info(buf.toString());
-			}
-			
 			if (alarmed && !timer.isActionForced()) {
 				updateAlarmState(true);
 			} else if (!alarmed && timer.isActionForced()) {
 				updateAlarmState(false);
+			}
+			
+			if(logAlarmCheck) {
+				logAlarmState();
 			}
 		}
 		return alarmed;
@@ -244,14 +222,6 @@ public class EntityAlarm implements IEntityAlarm {
 		return getEntity().getGroup().getDevice();
 	}
 	
-	private void updateAlarmState(boolean started) {
-		log.warn("Alarm mode "+ (started?"started":"finished") +" " + entity.getGroup().getDevice().getName() + entity.getName());
-		sendAlarmStartedMessage = started;
-		sendAlarmFinishedMessage = !started;
-		timer.setNextActionTimeAsNow();
-		timer.update(0, true);
-	}
-
 	@Override
 	public void setMessageInterval(Integer messageInterval) {
 		this.messageInterval = messageInterval;
@@ -263,10 +233,61 @@ public class EntityAlarm implements IEntityAlarm {
 		}
 	}
 	
+	private boolean checkFieldsAlarms() {
+		return alarms.stream().map(IAlarm::check).reduce(Boolean::logicalOr).orElse(false);
+	}
+	
+	private void updateAlarmState(boolean started) {
+		log.warn("Alarm mode "+ (started?"started":"finished") +" " + entity.getGroup().getDevice().getName() + entity.getName());
+		sendAlarmStartedMessage = started;
+		sendAlarmFinishedMessage = !started;
+		timer.setNextActionTimeAsNow();
+		timer.update(0, true);
+	}
+
 	private void checkTimer() {
 		if(this.timer == null) {
 			this.timer = new ActionTimer(1000 * messageInterval);
 		}
+	}
+	
+	private void logAlarmState() {
+		StringBuilder buf = new StringBuilder();
+		buf.append("Alarm check device=");
+		buf.append(this.getEntity().getDevice().getName());
+		buf.append(" entity=");
+		buf.append(this.getEntity().getName());
+		buf.append(" alarmed=");
+		buf.append(alarmed);
+		buf.append("\n sound=");
+		buf.append(sound);
+		buf.append(" activated=");
+		buf.append(activated);
+		buf.append(" forced=");
+		buf.append(timer.isActionForced());
+		buf.append(" sendAlarmStartedMessage=");
+		buf.append(sendAlarmStartedMessage);
+		buf.append(" sendAlarmFinishedMessage=");
+		buf.append(sendAlarmFinishedMessage);
+		buf.append("\n timeTo=");
+		buf.append(timer.isTimeToExecuteAction());
+		
+		if(this.getAlarms()!=null) {
+			this.getAlarms().stream().forEach( efa ->{
+				buf.append(" class=");
+				buf.append(efa.getClassSimpleName());
+				buf.append(" (");
+				buf.append(efa.getCompareSeparator());
+				buf.append(" ");
+				buf.append(efa.getValueStr());
+				buf.append(") watch=");
+				buf.append(efa.getWatchedItem().getName());
+				buf.append(" val=");
+				buf.append(efa.getWatchedItem().getValueStr());
+			});
+		}
+		
+		log.info(buf.toString());
 	}
 
 }
