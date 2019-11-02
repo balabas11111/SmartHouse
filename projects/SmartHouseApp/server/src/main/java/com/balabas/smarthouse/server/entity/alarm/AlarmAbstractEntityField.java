@@ -1,7 +1,5 @@
 package com.balabas.smarthouse.server.entity.alarm;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.function.Predicate;
 
 import javax.persistence.FetchType;
@@ -36,10 +34,10 @@ public abstract class AlarmAbstractEntityField<T> extends AlarmAbstract<IEntityF
 	@ManyToOne(targetEntity = EntityAlarm.class, fetch = FetchType.EAGER)
 	@JoinColumn(name = "entity_alarm_id", nullable = false)
 	private IEntityAlarm entityAlarm;
-
+/*
 	@Transient
 	protected Class<T> clazz;
-
+*/
 	@Transient
 	@Getter
 	protected Predicate<Integer> predicate;
@@ -49,7 +47,7 @@ public abstract class AlarmAbstractEntityField<T> extends AlarmAbstract<IEntityF
 	protected String compareSeparator;
 
 	public AlarmAbstractEntityField() {
-		Type genericSuperClass = getClass().getGenericSuperclass();
+		/*Type genericSuperClass = getClass().getGenericSuperclass();
 
 		ParameterizedType parametrizedType = null;
 		while (parametrizedType == null) {
@@ -61,7 +59,10 @@ public abstract class AlarmAbstractEntityField<T> extends AlarmAbstract<IEntityF
 		}
 
 		clazz = (Class<T>) parametrizedType.getActualTypeArguments()[0];
+		*/
 	}
+	
+	abstract protected Class getWatchedClazz();
 
 	abstract protected Comparable getAlarmValue();
 
@@ -69,7 +70,7 @@ public abstract class AlarmAbstractEntityField<T> extends AlarmAbstract<IEntityF
 
 	@Override
 	public boolean acceptsAsWatched(IEntityField entityField) {
-		return clazz.isAssignableFrom(entityField.getClazz());
+		return getWatchedClazz().isAssignableFrom(entityField.getClazz());
 	}
 	
 	@Override

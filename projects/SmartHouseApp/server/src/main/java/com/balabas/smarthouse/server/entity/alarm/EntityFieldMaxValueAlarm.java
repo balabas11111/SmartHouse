@@ -24,4 +24,5 @@ public class EntityFieldMaxValueAlarm extends AlarmAbstractEntityFieldNumber {
 	public EntityFieldMaxValueAlarm(IEntityField entityField, Number maxValue) {
 		super(entityField, maxValue, COMPARE_PREDICATE, COMPARE_SEPARATOR);
 	}
+
 }

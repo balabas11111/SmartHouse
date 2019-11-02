@@ -1,6 +1,5 @@
 package com.balabas.smarthouse.server.entity.model.entityfields;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.Optional;
 import java.util.Set;
 
@@ -34,10 +33,6 @@ import lombok.ToString;
 @javax.persistence.Entity
 public abstract class EntityField<T> extends ItemAbstract implements IEntityField<T> {
 
-	@Getter
-	@JsonIgnore
-	private Class clazz;
-
 	@JsonIgnore
 	@Getter @Setter
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -67,11 +62,7 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	@Getter	@Setter
 	protected String templateName;
 
-	public EntityField() {
-		ParameterizedType type = (ParameterizedType) this.getClass().getGenericSuperclass();
-		clazz = (Class) type.getActualTypeArguments()[0];
-	}
-	
+	public abstract Class getClazz();
 
 	public abstract void setValue(T value);
 	

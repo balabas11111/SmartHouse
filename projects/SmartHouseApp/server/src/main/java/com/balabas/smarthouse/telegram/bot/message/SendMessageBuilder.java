@@ -135,7 +135,7 @@ public class SendMessageBuilder {
 
 		List<IEntity> entities = entityAlarmService.getEntitiesWithPossibleAlarms(device);
 
-		context.setText(String.format(BotMessageConstants.SELECT_ENTITY_TO_EDIT_ALARMS, Emoji.ERROR));
+		context.setText(String.format(BotMessageConstants.SELECT_ENTITY_TO_EDIT_ALARMS, Emoji.ERROR, device.getName()));
 		msgs.add(context.createMsg(inlineKeyboard.getEntitiesAlarmsOfDeviceMenuKeyboard(entities)));
 
 		return msgs;

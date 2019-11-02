@@ -15,6 +15,11 @@ public abstract class AlarmAbstractEntityFieldNumber extends AlarmAbstractEntity
 	@Column(precision = 6, scale = 2)
 	private Float number;
 	
+	@Override
+	protected Class<Number> getWatchedClazz() {
+		return Number.class;
+	}
+	
 	public AlarmAbstractEntityFieldNumber(Predicate<Integer> predicate, String compareSeparator){
 		this.predicate = predicate;
 		this.compareSeparator = compareSeparator;

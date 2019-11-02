@@ -15,6 +15,11 @@ import lombok.extern.log4j.Log4j2;
 @Entity
 public class EntityFieldIp extends EntityField<InetAddress> implements IEntityField<InetAddress> {
 
+	@Override
+	public Class<InetAddress> getClazz() {
+		return InetAddress.class;
+	}
+	
 	@Transient
 	@JsonAlias("value")
 	private InetAddress valueAddr;

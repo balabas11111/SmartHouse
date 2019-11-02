@@ -8,6 +8,11 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 @Entity
 public class EntityFieldBoolean extends EntityField<Boolean> implements IEntityField<Boolean> {
 
+	@Override
+	public Class<Boolean> getClazz() {
+		return Boolean.class;
+	}
+	
 	@Transient
 	@JsonAlias("value")
 	private Boolean valueB;

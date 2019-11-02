@@ -8,6 +8,11 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 @Entity
 public class EntityFieldInteger extends EntityField<Integer> implements IEntityField<Integer> {
 
+	@Override
+	public Class<Integer> getClazz() {
+		return Integer.class;
+	}
+	
 	@Transient
 	@JsonAlias("value")
 	private Integer valueI;

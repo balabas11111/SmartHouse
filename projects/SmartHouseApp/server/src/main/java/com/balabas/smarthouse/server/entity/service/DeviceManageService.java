@@ -21,6 +21,7 @@ import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
+import com.balabas.smarthouse.server.entity.model.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
@@ -29,8 +30,10 @@ import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
+import com.balabas.smarthouse.server.entity.repository.IEntityFieldValueRepository;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
+import com.google.common.collect.Lists;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -61,7 +64,8 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	@Autowired
 	IDeviceRepository deviceRepository;
 	
-	
+	@Autowired
+	IEntityFieldValueRepository entityFieldValueRepository;
 
 	@Getter
 	private List<Device> devices = Collections.synchronizedList(new ArrayList<>());
@@ -218,13 +222,15 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 
 				doSave = true;
 			} else {
+				List<EntityFieldValue> changedValues = Lists.newArrayList();
 				// setDevice values
-				boolean ok = itemBuildService.updateDeviceEntityValuesFromJson(device, deviceJson, updateDeviceTimer, updateGroupTimer);
+				boolean ok = itemBuildService.updateDeviceEntityValuesFromJson(device, deviceJson, updateDeviceTimer, updateGroupTimer, changedValues);
 
 				State newState = (ok) ? State.UPDATED : State.BAD_DATA;
 				stateChanger.stateChanged(device, newState);
-				
-				deviceRepository.updateDeviceState(device.getId(), device.getState());
+
+				log.info("Values changed = " + changedValues.size());
+				entityFieldValueRepository.saveAll(changedValues);
 				
 				doSave = false;
 			}

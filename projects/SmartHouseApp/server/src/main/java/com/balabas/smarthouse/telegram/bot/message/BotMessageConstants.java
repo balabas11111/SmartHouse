@@ -67,7 +67,7 @@ public class BotMessageConstants {
 	
 	public static final String SELECT_SETUP_ACTION = "%s Выберите группу настроек";
 	public static final String SELECT_DEVICE_TO_EDIT_ALARMS = "%s Выберите устройство для просмотра режима тревоги";
-	public static final String SELECT_ENTITY_TO_EDIT_ALARMS = "%s Выберите датчик для просмотра режима тревоги";
+	public static final String SELECT_ENTITY_TO_EDIT_ALARMS = "%s Выберите датчик для просмотра режима тревоги. устройство %s";
 	
 	public static final String NO_ENTITY_ALARMS_MESSAGE = Emoji.FACE_WITH_TONGUE_AND_CLOSED_ONE_EYE.toString() + " нет проверок тревоги\n";
 	public static final String SELECT_ENTITY_FIELD_TO_EDIT_ALARMS = 

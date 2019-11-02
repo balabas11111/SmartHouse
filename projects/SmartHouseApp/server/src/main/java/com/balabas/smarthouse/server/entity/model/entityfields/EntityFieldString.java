@@ -7,6 +7,11 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 @Entity
 public class EntityFieldString extends EntityField<String> implements IEntityField<String> {
 
+	@Override
+	public Class<String> getClazz() {
+		return String.class;
+	}
+	
 	@JsonAlias("value")
 	private String valueSt;
 	

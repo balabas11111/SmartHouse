@@ -11,4 +11,7 @@ public class ControllerConstants {
 	public static final String API_V1 = "/api/v1";
 	public static final String DEVICES_ROOT = "/devices";
 	public static final String SECURITY_ROOT = "/security";
+	
+	public static final String TEMPLATE_DEVICES_VIEW = "devices/list.html";
+	public static final String TEMPLATE_DEVICE_VIEW = "devices/edit.html";
 }

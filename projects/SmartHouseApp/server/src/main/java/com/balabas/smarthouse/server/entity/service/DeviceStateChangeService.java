@@ -8,6 +8,7 @@ import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.descriptor.Severity;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
+import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 
 import static com.balabas.smarthouse.server.DeviceMessageConstants.buildMessage;
 
@@ -32,6 +33,9 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 
 	@Autowired
 	IEntityAlarmService alarmService;
+	
+	@Autowired
+	IDeviceRepository deviceRepository;
 
 	@Override
 	public void stateChanged(IDevice device, State newState) {
@@ -69,6 +73,8 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 			} 
 			
 			function.accept(device);
+			
+			deviceRepository.updateDeviceState(device.getId(), device.getState());
 		}
 
 		if (setNewState) {

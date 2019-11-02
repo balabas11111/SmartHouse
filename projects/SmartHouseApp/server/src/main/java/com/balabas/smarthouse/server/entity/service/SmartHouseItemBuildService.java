@@ -79,6 +79,8 @@ import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
+import com.balabas.smarthouse.server.entity.model.EntityFieldValue;
+import com.balabas.smarthouse.server.entity.model.EntityFieldValueNumber;
 import com.balabas.smarthouse.server.entity.model.EntityStatus;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
@@ -91,7 +93,7 @@ import lombok.extern.log4j.Log4j2;
 @Service
 public class SmartHouseItemBuildService {
 
-	private static List<String> notUpdateableEntityFields = Arrays.asList(ENTITY_FIELD_STATUS,
+	private static List<String> notUpdateableEntityFields = Arrays.asList(ENTITY_FIELD_ID, ENTITY_FIELD_STATUS,
 			ENTITY_FIELD_SENSOR_ITEMS, ENTITY_FIELD_SWG, ENTITY_FIELD_ITEM_CLASS);
 
 	private static List<String> notParsedAsEntityNames = Arrays.asList(ENTITY_FIELD_DESCRIPTION, EDC_FIELD_EMOJI);
@@ -109,7 +111,7 @@ public class SmartHouseItemBuildService {
 
 		device.setName(request.getDeviceId());
 		device.setFirmware(request.getDeviceFirmware());
-		
+
 		device.setDescriptionIfEmpty(request.getDeviceDescr());
 
 		device.setIp(request.getIp());
@@ -156,7 +158,9 @@ public class SmartHouseItemBuildService {
 		return null;
 	}
 
-	public boolean updateDeviceEntityValuesFromJson(Device device, JSONObject deviceJson, boolean updateDeviceTimer, boolean updateGroupTimer) {
+	public boolean updateDeviceEntityValuesFromJson(Device device, JSONObject deviceJson, boolean updateDeviceTimer,
+			boolean updateGroupTimer,
+			List<EntityFieldValue> changedValues) {
 
 		boolean isOk = true;
 
@@ -166,7 +170,7 @@ public class SmartHouseItemBuildService {
 			if (group != null) {
 				JSONObject groupJson = deviceJson.optJSONObject(groupName);
 
-				boolean groupOk = updateGroupEntityValuesFromJson(group, groupJson, updateGroupTimer);
+				boolean groupOk = updateGroupEntityValuesFromJson(group, groupJson, updateGroupTimer, changedValues);
 
 				isOk = isOk && groupOk;
 			}
@@ -177,7 +181,9 @@ public class SmartHouseItemBuildService {
 		return isOk;
 	}
 
-	private static boolean updateGroupEntityValuesFromJson(Group group, JSONObject groupJson, boolean updateGroupTimer) {
+	private static boolean updateGroupEntityValuesFromJson(Group group, JSONObject groupJson,
+			boolean updateGroupTimer,
+			List<EntityFieldValue> changedValues) {
 		boolean isOk = true;
 		for (String entityName : JSONObject.getNames(groupJson)) {
 
@@ -185,7 +191,7 @@ public class SmartHouseItemBuildService {
 			JSONObject entityJson = groupJson.optJSONObject(entityName);
 
 			if (entity != null && entityJson != null && !entityJson.isEmpty()) {
-				boolean entityOk = updateEntityValuesFromJson(entity, entityJson);
+				boolean entityOk = updateEntityValuesFromJson(entity, entityJson, changedValues);
 
 				if (entityOk) {
 					entity.setState(State.OK);
@@ -202,7 +208,8 @@ public class SmartHouseItemBuildService {
 		return isOk;
 	}
 
-	private static boolean updateEntityValuesFromJson(Entity entity, JSONObject entityJson) {
+	private static boolean updateEntityValuesFromJson(Entity entity, JSONObject entityJson,
+			List<EntityFieldValue> changedValues) {
 		boolean setOk = true;
 
 		for (String entityFieldName : JSONObject.getNames(entityJson)) {
@@ -211,7 +218,7 @@ public class SmartHouseItemBuildService {
 				try {
 					IEntityField entityField = entity.getEntityField(entityFieldName);
 					Object valueObj = entityJson.get(entityFieldName);
-					
+
 					String valStr = valueObj.toString();
 
 					if (entity.getDescriptionField().equals(entityFieldName)) {
@@ -219,10 +226,17 @@ public class SmartHouseItemBuildService {
 					}
 
 					if (entityField != null) {
-						if(!(!entityField.isReadOnly() 
+						if (!(!entityField.isReadOnly()
 								&& entity.getDescriptionField().equals(entityField.getTemplateName())
 								&& !entityField.getName().equals(entityField.getTemplateName()))) {
+
+							String oldValue = entityField.getValueStr();
+
 							setOk = setEntityFieldValueWithNoCheck(entityField, valStr, setOk);
+
+							if (setOk) {
+								processValueChange(entityField, oldValue, valStr, changedValues);
+							}
 						} else {
 							setOk = true;
 						}
@@ -237,6 +251,32 @@ public class SmartHouseItemBuildService {
 		}
 
 		return setOk;
+	}
+
+	private static void processValueChange(IEntityField entityField, String oldValueStr, String newValueStr,
+			List<EntityFieldValue> changedValues) {
+		
+		if (entityField.isReadOnly() && entityField.isActive()
+				&& Number.class.isAssignableFrom(entityField.getClazz())) {
+			boolean doSave = false;
+			Float value = null;
+
+			if (oldValueStr == null && newValueStr != null) {
+				value = Float.valueOf(newValueStr);
+				doSave = true;
+			} else if (oldValueStr != null && newValueStr != null) {
+				value = Float.valueOf(newValueStr);
+				Float oldValue = Float.valueOf(oldValueStr);
+
+				if (Math.abs(oldValue - value) > 0.001) {
+					doSave = true;
+				}
+			}
+
+			if (doSave) {
+				changedValues.add(new EntityFieldValueNumber(entityField, value));
+			}
+		}
 	}
 
 	private static boolean setEntityFieldValueWithNoCheck(IEntityField entityField, String value, boolean setOk) {
@@ -385,15 +425,15 @@ public class SmartHouseItemBuildService {
 		Set<IEntityField> entityFields = new LinkedHashSet<>();
 
 		Map<String, Object> entityJsonObj = entityJson.toMap();
-		
+
 		for (Entry<String, Object> entry : entityJsonObj.entrySet()) {
 			String fieldName = entry.getKey();
-			
+
 			if (ENTITY_FIELD_STATUS.equals(fieldName)) {
 				processEntityStatus(entity, entityJson);
 			} else if (ENTITY_FIELD_SENSOR_ITEMS.equals(fieldName)) {
-				EntityField countField =processGrouppedValues(entity, entityJson);
-				if(countField!=null) {
+				EntityField countField = processGrouppedValues(entity, entityJson);
+				if (countField != null) {
 					entityFields.add(countField);
 				}
 			} else if (!ENTITY_FIELD_SWG.equals(fieldName) && !ENTITY_FIELD_ITEM_CLASS.equals(fieldName)) {
@@ -403,9 +443,9 @@ public class SmartHouseItemBuildService {
 		}
 
 		entity.setEntityFields(entityFields);
-		
-		entity.getEntityFields().forEach( entField -> {
-			if(!entityJsonObj.containsKey(entField.getName()) && !entField.isCalculated()) {
+
+		entity.getEntityFields().forEach(entField -> {
+			if (!entityJsonObj.containsKey(entField.getName()) && !entField.isCalculated()) {
 				entField.setActive(false);
 			}
 		});
@@ -448,29 +488,30 @@ public class SmartHouseItemBuildService {
 			log.error("Bad SensorItems count=" + count + " fields=" + grouppedFieldsNames + " grouppedFieldsIds = "
 					+ grouppedFieldsIds);
 		} else {
-			if(entity.getGrouppedFieldsIds()==null) {
+			if (entity.getGrouppedFieldsIds() == null) {
 				entity.setGrouppedFieldsIds(grouppedFieldsIds);
 			} else {
-				grouppedFieldsIds.stream().forEach( id ->{
-					if(!entity.getGrouppedFieldsIds().contains(id)) {
+				grouppedFieldsIds.stream().forEach(id -> {
+					if (!entity.getGrouppedFieldsIds().contains(id)) {
 						entity.getGrouppedFieldsIds().add(id);
 					}
 				});
 			}
-			
-			if(entity.getGrouppedFieldsNames()==null) {
+
+			if (entity.getGrouppedFieldsNames() == null) {
 				entity.setGrouppedFieldsNames(grouppedFieldsNames);
 			} else {
-				grouppedFieldsNames.stream().forEach( id ->{
-					if(!entity.getGrouppedFieldsNames().contains(id)) {
+				grouppedFieldsNames.stream().forEach(id -> {
+					if (!entity.getGrouppedFieldsNames().contains(id)) {
 						entity.getGrouppedFieldsNames().add(id);
 					}
 				});
 			}
 
 			try {
-				
-				IEntityField countField = Optional.ofNullable(entity.getEntityField(ENTITY_FIELD_COUNT)).orElse(new EntityFieldInteger());
+
+				IEntityField countField = Optional.ofNullable(entity.getEntityField(ENTITY_FIELD_COUNT))
+						.orElse(new EntityFieldInteger());
 				countField.setEntity(entity);
 				countField.setName(ENTITY_FIELD_COUNT);
 				countField.setDescriptionIfEmpty(EDC_FIELD_COUNT_DESCR);
@@ -480,7 +521,7 @@ public class SmartHouseItemBuildService {
 				countField.setActive(true);
 				countField.setCalculated(true);
 
-				//entity.addGeneratedField(countField);
+				// entity.addGeneratedField(countField);
 				return (EntityField) countField;
 			} catch (IllegalArgumentException e) {
 				log.error(e);
@@ -488,13 +529,12 @@ public class SmartHouseItemBuildService {
 
 			log.debug("Sensor items added");
 		}
-		
+
 		return null;
 
 	}
 
-	private static EntityField buildEntityFieldFromJson(Entity entity, JSONObject entityJson, String fieldName)
-			 {
+	private static EntityField buildEntityFieldFromJson(Entity entity, JSONObject entityJson, String fieldName) {
 		JSONObject descriptorJson = entityJson.optJSONObject(ENTITY_FIELD_SWG);
 		JSONObject allFieldsDecriptor = descriptorJson.optJSONObject(EDC_ENTITY_FIELDS);
 
@@ -504,29 +544,28 @@ public class SmartHouseItemBuildService {
 		String value = entityJson.optString(fieldName);
 
 		String entityFieldName = fieldDecriptor.optString(EDC_FIELD_NAME, fieldName);
-		
+
 		EntityFieldClassType fieldClassType = Optional
 				.ofNullable(EntityFieldClassType.from(fieldDecriptor.optString(EDC_CLASS, null)))
-				.orElse(
-						ENTITY_FIELD_ID.equals(entityFieldName)?
-								EntityFieldClassType.INTEGER:		
-						EntityFieldClassType.STRING
-					);
-		
+				.orElse(ENTITY_FIELD_ID.equals(entityFieldName) ? EntityFieldClassType.INTEGER
+						: EntityFieldClassType.STRING);
+
 		String descriptionField = fieldDecriptor.optString(EDC_FIELD_DESCR_FIELD, null);
 		String description = fieldDecriptor.optString(EDC_FIELD_DESCRIPTION, EMPTY_STR);
 		EntityFieldClassView viewClass = EntityFieldClassView.from(fieldDecriptor.optString(EDC_CLASS_VIEW, null));
-		boolean readOnly = booleanFromString(fieldDecriptor.optString(EDC_READ_ONLY, ENTITY_FIELD_ID.equals(entityFieldName)?TRUE:FALSE));
+		boolean readOnly = booleanFromString(
+				fieldDecriptor.optString(EDC_READ_ONLY, ENTITY_FIELD_ID.equals(entityFieldName) ? TRUE : FALSE));
 		Emoji emoji = Emoji.getByCode(fieldDecriptor.optString(EDC_FIELD_EMOJI, null));
-		
-		EntityField entityField = Optional.ofNullable((EntityField)entity.getEntityField(entityFieldName)).orElse(createEntityFieldByClass(fieldClassType));
 
-		if(!entityFieldName.contains(":")) {
+		EntityField entityField = Optional.ofNullable((EntityField) entity.getEntityField(entityFieldName))
+				.orElse(createEntityFieldByClass(fieldClassType));
+
+		if (!entityFieldName.contains(":")) {
 			descriptionField = null;
 		} else {
 			log.debug(entityFieldName);
 		}
-		
+
 		entityField.setEntity(entity);
 		entityField.setName(entityFieldName);
 		entityField.setDescriptionIfEmpty(description);
@@ -535,20 +574,20 @@ public class SmartHouseItemBuildService {
 		entityField.setReadOnly(readOnly);
 		entityField.setEmoji(emoji);
 		entityField.setActive(true);
-		
+
 		try {
-			if(!(ENTITY_FIELD_DESCRIPTION.equals(entityField.getTemplateName())
+			if (!(ENTITY_FIELD_DESCRIPTION.equals(entityField.getTemplateName())
 					&& !StringUtils.isEmpty(entityField.getValueStr())
 					&& EntityFieldString.class.equals(entityField.getClass()))) {
 				entityField.setValueWithNoCheckStr(value);
 			}
-			
-		}catch(IllegalArgumentException e) {
+
+		} catch (IllegalArgumentException e) {
 			log.error(e);
 		}
 
-		Set<IEntityFieldEnabledValue> enabledValues = getEnabledFieldValues(fieldDecriptor, entityFieldName, fieldClassType,
-				entityField);
+		Set<IEntityFieldEnabledValue> enabledValues = getEnabledFieldValues(fieldDecriptor, entityFieldName,
+				fieldClassType, entityField);
 		entityField.setEnabledValues(enabledValues);
 
 		return entityField;
@@ -572,8 +611,9 @@ public class SmartHouseItemBuildService {
 				EntityFieldClassView viewClass = EntityFieldClassView
 						.from(enabledValueBody.getOrDefault(EDC_CLASS_VIEW, entityField.getViewClass().getKey()));
 
-				IEntityFieldEnabledValue enabledValue = Optional.ofNullable(entityField.getEntityFieldEnabledValueByValueStr(enabledValueStr)).orElse 
-						(createEntityFieldEnabledValueByClass(fieldClassType));
+				IEntityFieldEnabledValue enabledValue = Optional
+						.ofNullable(entityField.getEntityFieldEnabledValueByValueStr(enabledValueStr))
+						.orElse(createEntityFieldEnabledValueByClass(fieldClassType));
 				enabledValue.setEntityField(entityField);
 				enabledValue.setDescription(description);
 				enabledValue.setActionDescription(actionDescription);
