@@ -1,8 +1,10 @@
 package com.balabas.smarthouse.server.controller;
 
+import java.net.UnknownHostException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +26,7 @@ import com.balabas.smarthouse.server.entity.service.DeviceManageService;
 import com.balabas.smarthouse.server.exception.DeviceOnServerAuthorizationException;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
+import com.balabas.smarthouse.server.model.request.DeviceRequestResult;
 import com.balabas.smarthouse.server.model.request.DeviceRequest.DeviceRequestType;
 
 import lombok.extern.log4j.Log4j2;
@@ -46,6 +49,24 @@ public class DeviceController {
 			@RequestParam(value = "groupId", required = false) String groupName) {
 		
 			return ResponseEntity.ok().body(deviceService.getDevices());
+	}
+	
+	@PostMapping("/register")
+	public ResponseEntity<String> registerDevice(
+			@Valid @RequestBody DeviceRequest request,
+			@RequestHeader HttpHeaders headers,
+			HttpServletRequest httpRequest) throws UnknownHostException, DeviceOnServerAuthorizationException {
+
+		log.debug("/register");
+		
+		request.setIp(httpRequest.getRemoteAddr());
+		request.setHeaders(headers);
+		request.setRequestType(DeviceRequestType.REGISTER);
+
+		DeviceRequestResult<String> result =
+				service.processDeviceRegistrationRequest(request);
+		
+		return result.toResponseEntity();
 	}
 	
 	@GetMapping("/requireUpdateDevices")

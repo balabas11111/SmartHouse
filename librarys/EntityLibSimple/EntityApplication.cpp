@@ -101,8 +101,7 @@ bool initI2C, uint8_t clockPin, uint8_t dataPin) {
 #endif
 
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED
-	this->serverConnectionManager = new ServerConnectionManager(this->conf);
-	this->serverConnectionManager->init([this]() {onServerRegistered();});
+	this->serverConnector = new ServerConnector(this->conf, [this]() {onServerRegistered();});
 #endif
 	this->defaultDataSelector = new DataSelectorEntityManager(
 			this->entityManager);
@@ -147,9 +146,9 @@ void EntityApplication::loop() {
 #endif
 #endif
 	if (updated) {
-		this->serverConnectionManager->triggerServerIsOnlineCheck();
+		this->getServerConnector()->triggerCheckConnection();
 	}
-	this->serverConnectionManager->loop();
+	this->getServerConnector()->loop();
 #endif
 #ifndef SETTINGS_SERVER_MQTT_DISABLED
 
@@ -233,15 +232,15 @@ WiFiServerManager* EntityApplication::getWifiServerManager() {
 }
 
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED
-ServerConnectionManager* EntityApplication::getServerConnectionManager() {
-	return this->serverConnectionManager;
+ServerConnector* EntityApplication::getServerConnector() {
+	return this->serverConnector;
 }
 
 #endif
 
-void EntityApplication::registerOnServer(bool trigger) {
+void EntityApplication::checkServerRegistration() {
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED
-	this->getServerConnectionManager()->triggerRegisterOnServer(trigger);
+	this->getServerConnector()->checkConnection();
 #endif
 }
 

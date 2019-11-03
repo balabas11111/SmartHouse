@@ -18,6 +18,7 @@
 #include <EntityManager.h>
 #include <EntityUpdate.h>
 #include <EntityUpdateManager.h>
+#include <serve/ServerConnector.h>
 
 #include <FileUtils.h>
 #include <I2C_utils.h>
@@ -29,7 +30,6 @@
 #include <Notifiers/DataSelectorEntityManager.h>
 
 #include <DeviceUtils.h>
-#include <serve/ServerConnectionManager.h>
 #include <serve/DeviceManager.h>
 #include <serve/MqttManager.h>
 
@@ -75,10 +75,10 @@ public:
 	WiFiManager* getWiFiManager();
 	WiFiServerManager* getWifiServerManager();
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED
-	ServerConnectionManager* getServerConnectionManager();
+	ServerConnector* getServerConnector();
 #endif
 
-	void registerOnServer(bool trigger = true);
+	void checkServerRegistration();
 
 	DataSelector* getDataSelector();
 	Notifier* getDefaultNotifier();
@@ -110,7 +110,7 @@ private:
 #endif
 
 #ifndef SETTINGS_SERVER_CONNECTION_DISABLED
-	ServerConnectionManager* serverConnectionManager = nullptr;
+	ServerConnector* serverConnector = nullptr;
 #endif
 
 #ifdef SETTINGS_DISPLAY_ENABLED

@@ -26,7 +26,7 @@ void setup() {
 	app.initWithWiFi(nullptr);
 	app.setOnEntitiesChanged(onEntitiesChanged);
 	app.updateEntities(true);
-	app.registerOnServer();
+	app.checkServerRegistration();
 }
 
 void loop() {
