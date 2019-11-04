@@ -12,8 +12,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.json.JSONObject;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -44,7 +45,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Service
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class DeviceManageService implements IDeviceManageService, InitializingBean {
+public class DeviceManageService implements IDeviceManageService {
 
 	@Value("${smarthouse.server.mock}")
 	private boolean mock;
@@ -76,7 +77,7 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	@Getter
 	private Date lastDeviceDRUcheck;
 
-	@Override
+	@PostConstruct
 	@Transactional
 	public void afterPropertiesSet() throws Exception {
 
@@ -170,13 +171,13 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 
 			if (exDevice.getId() == null || exDevice.getId() == 0L) {
 				exDevice.setName(device.getName());
-				exDevice.setIp(device.getIp());
 				exDevice.setState(State.CONSTRUCTED);
 				exDevice.setDataUrl(HTTP_PREFFIX + device.getIp() + DEVICE_URL_DATA);
 				exDevice.setRegistrationDate(new Date());
 			}
 		}
 
+		exDevice.setIp(device.getIp());
 		device = exDevice;
 
 		if (!device.isInitialized()) {

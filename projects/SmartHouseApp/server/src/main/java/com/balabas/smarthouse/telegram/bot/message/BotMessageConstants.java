@@ -56,9 +56,9 @@ public class BotMessageConstants {
 	public static final String ENTITY_DISPLAY_HEADER_MSG = "--------------------\n %s <b>%s</b> :     ";
 	
 	public static final String SELECT_DEVICE_MSG = "%s Выберите устройство";
-	public static final String SERVER_SELECT_DEVICE_VIEW_MSG = "%s Сервер %s";
+	public static final String SERVER_SELECT_DEVICE_VIEW_MSG = "%s Сервер %s \n %s";
 	public static final String SERVER_SELECT_DEVICE_EDIT_MSG = "%s Сервер %s - Редактировать параметры";
-	public static final String NO_DEVICE_MSG = "%s На сервере не зарегистрировано ни одно устройство";
+	public static final String NO_DEVICE_MSG = "%s На сервере не зарегистрировано ни одно устройство \n %s";
 	
 	public static final String SELECT_GROUP_MSG = 
 	        "%s Устройство \n"+

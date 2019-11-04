@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.util.Strings;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
@@ -41,6 +42,9 @@ import lombok.Getter;
 @SuppressWarnings("rawtypes")
 public class SendMessageBuilder {
 
+	@Value("${telegram.bot.server.display.address:#{null}}")
+	private String serverDisplayAddress;
+	
 	@Autowired
 	private IDeviceManageService deviceService;
 
@@ -97,12 +101,14 @@ public class SendMessageBuilder {
 	}
 
 	public List<SendMessage> createDevicesListView(Action action, ReplyContext cont) {
+		String serverAddress = Optional.ofNullable(serverDisplayAddress).orElse("");
+		
 		String serverName = action.getServerName();
 		List<SendMessage> msgs = Lists.newArrayList();
 		List<Device> devices = getDevices();
 
-		cont.setText((devices.isEmpty()) ? String.format(BotMessageConstants.NO_DEVICE_MSG, Emoji.WARNING)
-				: String.format(BotMessageConstants.SERVER_SELECT_DEVICE_VIEW_MSG, Emoji.OUTBOX_TRAY, serverName));
+		cont.setText((devices.isEmpty()) ? String.format(BotMessageConstants.NO_DEVICE_MSG, Emoji.WARNING, serverAddress)
+				: String.format(BotMessageConstants.SERVER_SELECT_DEVICE_VIEW_MSG, Emoji.OUTBOX_TRAY, serverName, serverAddress));
 
 		msgs.add(cont.createMsg(inlineKeyboard.getDevicesOfServerInlineKeyboardView(devices)));
 

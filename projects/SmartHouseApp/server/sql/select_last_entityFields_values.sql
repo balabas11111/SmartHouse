@@ -1,5 +1,6 @@
-SELECT efv.id, efv.date, efv.value, ef.name AS fieldName,
+SELECT efv.id, efv.date, efv.value, ef.name AS fieldName, ef.read_only,
 	e.name AS entityName,
+	e.id AS entityId,
 	g.name AS groupName,
 	d.name AS deviceName   FROM entity_field_value efv
 JOIN (SELECT MAX(id) AS id FROM entity_field_value GROUP BY entity_field_id) lastEfv ON efv.id = lastEfv.id

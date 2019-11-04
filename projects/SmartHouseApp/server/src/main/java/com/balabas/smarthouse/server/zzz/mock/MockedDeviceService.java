@@ -104,7 +104,7 @@ public class MockedDeviceService implements InitializingBean {
 		HttpEntity ent = new HttpEntity(request, headers);
 		Map<String, String> params = new HashMap<>();
 
-		ResponseEntity<String> result = restTemplate.exchange(url, HttpMethod.POST, ent, String.class, params);
+		ResponseEntity<String> result = restTemplate.exchange(url, HttpMethod.GET, ent, String.class, params);
 
 		OnDeviceProcessRegistrationRequest(result, request);
 

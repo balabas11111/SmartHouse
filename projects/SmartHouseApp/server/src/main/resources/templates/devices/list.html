@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" 
    xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Devices view</title>
+  <title>Устройства сервера</title>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
@@ -19,22 +19,21 @@
       <thead>
         <tr>
           <th>Id</th>
-          <th>Name</th>
-          <th>Firmware</th>
-          <th>Description</th>
-          <th>IP</th>
+          <th>Идентификатор</th>
+          <th>Прошивка</th>
+          <th>Описание</th>
+          <th>Адресс</th>
+		  <th></th>
         </tr>
       </thead>
       <tbody>
          <tr th:each="device : ${devices}">
-         	<td>
-         	  <a th:href="@{~/devices/device_{id}(id=${device.id})}" th:text="${device.id}">
-         	  </td>
-              <!--<td th:text="${device.id}">Id</td>-->
-	          <td th:text="${device.name}">Name</td>
-	          <td th:text="${device.firmware}">Firmware</td>
-              <td th:text="${device.description}">Description</td>
-              <td th:text="${device.ip}">IP</td>
+         	<td th:text="${device.id}">Id</td>
+            <td th:text="${device.name}">Идентификатор</td>
+	        <td th:text="${device.firmware}">Прошивка</td>
+            <td th:text="${device.description}">Описание</td>
+            <td th:text="${device.ip}">Адресс</td>
+            <td ><a th:href="@{~/devices/device_{id}(id=${device.id})}" class="btn btn-default">&#x1F4DD; Просмотр</a></td>
           </tr>
       </tbody>
     </table>

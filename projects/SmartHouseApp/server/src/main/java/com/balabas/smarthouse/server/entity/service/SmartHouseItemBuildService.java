@@ -161,10 +161,10 @@ public class SmartHouseItemBuildService {
 
 	public static boolean isFieldValueSaveAble(IEntityField entityField) {
 		return !StringUtils.isEmpty(entityField.getName())
-				&& notUpdateableEntityFields.contains(entityField.getName())
-				&& !(!entityField.isReadOnly()
-						&& entityField.getEntity().getDescriptionField().equals(entityField.getTemplateName())
-						&& !entityField.getName().equals(entityField.getTemplateName())); 
+				&& !notUpdateableEntityFields.contains(entityField.getName())
+				&& entityField.isReadOnly()
+				&& !(entityField.getEntity().getDescriptionField().equals(entityField.getTemplateName())
+						|| entityField.getName().equals(entityField.getTemplateName())); 
 	}
 	
 	private static boolean updateEntityValuesFromJson(Entity entity, JSONObject entityJson,
