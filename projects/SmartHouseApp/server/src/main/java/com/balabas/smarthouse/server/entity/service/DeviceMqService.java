@@ -22,8 +22,6 @@ import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.mqtt.IMessageService;
 import com.balabas.smarthouse.server.mqtt.subscribers.DataDeviceSubscribtion;
 import com.balabas.smarthouse.server.mqtt.subscribers.DataEntitySubscribtion;
-import com.balabas.smarthouse.server.security.DeviceSecurityContext;
-import com.balabas.smarthouse.server.security.DeviceSecurityService;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -128,14 +126,9 @@ public class DeviceMqService implements IDeviceMqService {
 	protected JSONObject constructRegisterResponse(String deviceId) {
 		JSONObject result = new JSONObject().put(ENTITY_DEVICE_DEVICE_REGISTRATION_RESULT, new JSONObject())
 				.getJSONObject(ENTITY_DEVICE_DEVICE_REGISTRATION_RESULT);
-		DeviceSecurityContext context = securityService.getDeviceSecurityContext(deviceId);
 
-		if (context != null) {
-			result.put(DEVICE_FIELD_TOKEN, context.getServerToken());
-			result.put(ENTITY_FIELD_STATUS, "200");
-		} else {
-			result.put(ENTITY_FIELD_STATUS, "500");
-		}
+		result.put(DEVICE_FIELD_TOKEN, securityService.getServerKey());
+		result.put(ENTITY_FIELD_STATUS, "200");
 
 		return result;
 	}

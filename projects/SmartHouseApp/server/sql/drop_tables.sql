@@ -11,4 +11,3 @@ DROP TABLE entity_field;
 DROP TABLE entities;
 DROP TABLE groups;
 DROP TABLE devices;
-entity_field_value

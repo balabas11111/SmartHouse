@@ -28,6 +28,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.log4j.Log4j2;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE_EDIT_FIELDS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SAVE_DEVICE_PROPERTY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_DEVICE_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_SELECT_LIST;
@@ -225,6 +226,10 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 				msgs.add(messageBuilder.getEntitiesOfDeviceToEdit(action, context));
 				break;
 			case ACTION_TYPE_SEND_DATA_TO_DEVICE:
+				sendDataToDevice(action, context, msgs);
+				//msgs.add(messageBuilder.getEntitiesOfDeviceToEdit(action, context));
+				break;
+			case ACTION_TYPE_SEND_DATA_TO_DEVICE_EDIT_FIELDS:
 				sendDataToDevice(action, context, msgs);
 				msgs.add(messageBuilder.getEntitiesOfDeviceToEdit(action, context));
 				break;

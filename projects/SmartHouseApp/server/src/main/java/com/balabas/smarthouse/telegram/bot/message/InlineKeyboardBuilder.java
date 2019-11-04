@@ -39,7 +39,7 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITIE
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_DESCRIPTION;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY_FIELD;
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE_EDIT_FIELDS;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_CREATE_ALARM_OF_ENTITY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION;
@@ -352,7 +352,7 @@ public class InlineKeyboardBuilder {
 		entity.getEntityFields().stream().sorted((ef1, ef2) -> ef1.getName().compareToIgnoreCase(ef2.getName()))
 				.forEach(entityField -> {
 
-					List<Action> actions = EntityViewBuilder.getCommandButtonsForEntity(ACTION_TYPE_SEND_DATA_TO_DEVICE,
+					List<Action> actions = EntityViewBuilder.getCommandButtonsForEntity(ACTION_TYPE_SEND_DATA_TO_DEVICE_EDIT_FIELDS,
 							entity, entityField);
 
 					if (actions != null && !actions.isEmpty()) {

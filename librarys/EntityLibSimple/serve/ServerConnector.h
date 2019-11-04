@@ -29,7 +29,6 @@ public:
 	virtual ~ServerConnector(){};
 
 	void triggerCheckConnection();
-	void init();
 
 	void checkConnection();
 
@@ -53,9 +52,10 @@ private:
 	bool requestRuns = false;
 
 	bool triggeredRequest = false;
-	long nextReqTime =0;
+	unsigned long nextReqTime =0;
 
 	void setRequestPostPoned(unsigned long delay);
+	void checkCancelRequestPostPoned();
 
 	std::function<void(void)> onServerRegistered;
 

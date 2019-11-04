@@ -2,11 +2,8 @@ package com.balabas.smarthouse.server.entity.service;
 
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_STATUS;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SWG;
-import static com.balabas.smarthouse.server.DeviceConstants.HTTP_PREFFIX;
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_DEVICE;
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_DEVICE_INFO;
-import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_URL_DATA;
-import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_URL_DATA;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_DESCRIPTION;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_FIRMWARE;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_COUNT;
@@ -36,7 +33,6 @@ import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassC
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +72,7 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldPasswo
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldString;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
+import com.balabas.smarthouse.server.util.MathUtil;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
@@ -84,7 +81,6 @@ import com.balabas.smarthouse.server.entity.model.EntityFieldValueNumber;
 import com.balabas.smarthouse.server.entity.model.EntityStatus;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
-import com.balabas.smarthouse.server.model.request.DeviceRequest;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -100,51 +96,6 @@ public class SmartHouseItemBuildService {
 
 	@Autowired
 	IDeviceRepository deviceRepository;
-
-	public Device buildDeviceFromRequest(DeviceRequest request) {
-
-		String deviceDataUrl = getDeviceDataUrl(request);
-
-		Device device = Optional.ofNullable(deviceRepository.findByName(request.getDeviceId())).orElse(new Device());
-
-		Date registrationDate = Optional.ofNullable(device.getRegistrationDate()).orElse(new Date());
-
-		device.setName(request.getDeviceId());
-		device.setFirmware(request.getDeviceFirmware());
-
-		device.setDescriptionIfEmpty(request.getDeviceDescr());
-
-		device.setIp(request.getIp());
-		device.setDataUrl(deviceDataUrl);
-		device.setRegistrationDate(registrationDate);
-		device.setState(State.CONSTRUCTED);
-
-		device.setTimer(buildTimer(ItemType.DEVICE));
-
-		return device;
-	}
-
-	private static String getDeviceDataUrl(DeviceRequest request) {
-		String baseUrl = HTTP_PREFFIX + request.getIp();
-
-		String deviceDataUrl = DEVICE_URL_DATA;
-
-		if (request.hasData()) {
-			String data = request.getData();
-
-			JSONObject dataJson = new JSONObject(data);
-
-			if (dataJson.has(DEVICE_FIELD_URL_DATA)) {
-				deviceDataUrl = dataJson.optString(DEVICE_FIELD_URL_DATA, DEVICE_URL_DATA);
-			}
-		}
-
-		if (!deviceDataUrl.startsWith(HTTP_PREFFIX)) {
-			deviceDataUrl = baseUrl + deviceDataUrl;
-		}
-
-		return deviceDataUrl;
-	}
 
 	private static ActionTimer buildTimer(ItemType itemType) {
 		Long updateInterval = itemType.getRefreshInterval();
@@ -208,6 +159,14 @@ public class SmartHouseItemBuildService {
 		return isOk;
 	}
 
+	public static boolean isFieldValueSaveAble(IEntityField entityField) {
+		return !StringUtils.isEmpty(entityField.getName())
+				&& notUpdateableEntityFields.contains(entityField.getName())
+				&& !(!entityField.isReadOnly()
+						&& entityField.getEntity().getDescriptionField().equals(entityField.getTemplateName())
+						&& !entityField.getName().equals(entityField.getTemplateName())); 
+	}
+	
 	private static boolean updateEntityValuesFromJson(Entity entity, JSONObject entityJson,
 			List<EntityFieldValue> changedValues) {
 		boolean setOk = true;
@@ -235,7 +194,7 @@ public class SmartHouseItemBuildService {
 							setOk = setEntityFieldValueWithNoCheck(entityField, valStr, setOk);
 
 							if (setOk) {
-								processValueChange(entityField, oldValue, valStr, changedValues);
+								processValueChange(entityField, oldValue, changedValues);
 							}
 						} else {
 							setOk = true;
@@ -253,20 +212,22 @@ public class SmartHouseItemBuildService {
 		return setOk;
 	}
 
-	private static void processValueChange(IEntityField entityField, String oldValueStr, String newValueStr,
+	public static void processValueChange(IEntityField entityField, String oldValueStr,
 			List<EntityFieldValue> changedValues) {
 		
 		if (entityField.isReadOnly() && entityField.isActive()
 				&& Number.class.isAssignableFrom(entityField.getClazz())) {
 			boolean doSave = false;
 			Float value = null;
+			
+			String newValueStr = entityField.getValueStr();
 
 			if (oldValueStr == null && newValueStr != null) {
 				value = Float.valueOf(newValueStr);
 				doSave = true;
 			} else if (oldValueStr != null && newValueStr != null) {
 				value = Float.valueOf(newValueStr);
-				Float oldValue = Float.valueOf(oldValueStr);
+				Float oldValue = MathUtil.precise(Float.valueOf(oldValueStr));
 
 				if (Math.abs(oldValue - value) > 0.001) {
 					doSave = true;

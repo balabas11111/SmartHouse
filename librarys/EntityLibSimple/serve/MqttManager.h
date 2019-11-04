@@ -55,7 +55,7 @@ private:
 	char* fromDeviceTopic;//strdup((String(MQTT_FROM_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
 	char* toDeviceTopic;//strdup((String(MQTT_TO_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
 
-	unsigned long lastReconnectAttempt;
+	unsigned long lastReconnectAttempt = 0;
 	unsigned long lastRegisterAttempt;
 
 	bool registered = false;

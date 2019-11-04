@@ -13,7 +13,6 @@ import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
-import com.balabas.smarthouse.server.model.request.DeviceRequest;
 
 @SuppressWarnings({ "rawtypes" })
 public interface IDeviceManageService {
@@ -32,8 +31,10 @@ public interface IDeviceManageService {
 	void processDataReceivedFromEntity(Entity entity, JSONObject data);
 
 	void requestDevicesValues(Device device, Group group);
+	
+	boolean processRegistrationRequest(Device device);
 
-	void processRegistrationRequest(DeviceRequest request);
+	//void processRegistrationRequest(DeviceRequest request);
 
 	void requestAllDevicesDataWithUpdateRequired();
 
@@ -71,4 +72,5 @@ public interface IDeviceManageService {
 	void reattachAlarmsForEntityFieldAlarm(Long entityFieldAlarmId);
 
 	void reattachAlarmsForEntityField(IEntityField entityField);
+
 }

@@ -51,7 +51,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 	@Getter
 	@Value("${smarthouse.server.log.alarmcheck:false}")
 	private boolean logAlarmCheck;
-	
+
 	@Getter
 	@Value("${smarthouse.server.alarm.interval:30}")
 	private Integer defaultAlarmInterval;
@@ -59,7 +59,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 	@Getter
 	@Value("${smarthouse.server.alarm.singleAlarmMessage:true}")
 	private boolean singleAlarmMessage;
-	
+
 	@Getter
 	@Value("${smarthouse.server.alarm.sound.enabled:true}")
 	private boolean soundEnabled;
@@ -72,7 +72,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 	@Autowired
 	private IEntityFieldAlarmRepository alarmFieldRepository;
-	
+
 	@Autowired
 	private ISoundPlayer soundPlayer;
 
@@ -139,10 +139,10 @@ public class EntityAlarmService implements IEntityAlarmService {
 	@Override
 	public int getAlarmIndexById(Long alarmId) {
 
-		if(alarms.size()>0) {
-			for (int i = 0; i<alarms.size(); i++) {
+		if (alarms.size() > 0) {
+			for (int i = 0; i < alarms.size(); i++) {
 				IEntityAlarm ea = alarms.get(i);
-				
+
 				if (ea.getId().equals(alarmId)) {
 					return i;
 				}
@@ -150,7 +150,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 		}
 		return -1;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<EntityAlarm> loadAlarmsForDevice(IDevice device) {
@@ -158,6 +158,9 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 		als.stream().filter(al -> getAlarmIndexById(al.getId()) == -1).forEach(alarms::add);
 
+		if (als.size() > 0) {
+			log.info("Device Alarms loaded " + device.getName());
+		}
 		return als;
 	}
 
@@ -213,7 +216,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 		log.info("Alarm reattached d=" + alarm.getEntity().getGroup().getDevice().getName() + " e="
 				+ alarm.getEntity().getName());
-		
+
 		checkWithClear(alarm);
 	}
 
@@ -262,7 +265,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 			}
 
 			for (IEntityAlarm alarm : alarmsWithStarted) {
-				if(soundEnabled && alarm.isSound()) {
+				if (soundEnabled && alarm.isSound()) {
 					soundPlayer.playAlarmStarted();
 				}
 				alarm.setAlarmStartedSent(sent);
@@ -270,7 +273,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 		}
 	}
-	
+
 	private void sendAlarmFinishedNotifications(IDevice device) {
 		List<IEntityAlarm> alarmsWithFinished = getAlarmsWithAlarmFinished(device);
 
@@ -292,7 +295,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 			}
 
 			for (IEntityAlarm alarm : alarmsWithFinished) {
-				if(soundEnabled && alarm.isSound()) {
+				if (soundEnabled && alarm.isSound()) {
 					soundPlayer.playAlarmFinished();
 				}
 				alarm.setAlarmFinishedSent(sent);
@@ -313,7 +316,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 		}
 
 		alarm = alarmRepository.save((EntityAlarm) alarm);
-		
+
 		alarm.setTimer(timer);
 		alarm.setSendAlarmStartedMessage(sendAlarmStartedMessage);
 		alarm.setSendAlarmFinishedMessage(sendAlarmFinishedMessage);
@@ -411,40 +414,39 @@ public class EntityAlarmService implements IEntityAlarmService {
 	public void changeEntityAlarmActivation(Long entityAlarmId) {
 		IEntityAlarm entityAlarm = getAlarmById(entityAlarmId);
 		boolean activated = !entityAlarm.isActivated();
-		
+
 		entityAlarm.setActivated(activated);
-		
+
 		save(entityAlarm);
-		
-		if(activated) {
+
+		if (activated) {
 			/*
-			entityAlarm.setSendAlarmStartedMessage(false);
-			entityAlarm.setSendAlarmFinishedMessage(false);
-			
-			entityAlarm.getTimer().setActionForced(false);
-			*/
+			 * entityAlarm.setSendAlarmStartedMessage(false);
+			 * entityAlarm.setSendAlarmFinishedMessage(false);
+			 * 
+			 * entityAlarm.getTimer().setActionForced(false);
+			 */
 			entityAlarm.check();
 		}
 	}
-	
+
 	@Override
 	public void updateEntityAlarmMessageInterval(Integer messageInterval, Long entityAlarmId) {
 		IEntityAlarm entityAlarm = getAlarmById(entityAlarmId);
 		entityAlarm.setMessageInterval(messageInterval);
 		save(entityAlarm);
-		
+
 	}
-	
+
 	@Override
 	public void checkWithClear(IEntityAlarm entityAlarm) {
 		entityAlarm.setSendAlarmStartedMessage(false);
 		entityAlarm.setSendAlarmFinishedMessage(false);
-		
+
 		entityAlarm.getTimer().setActionForced(false);
-		
+
 		entityAlarm.check();
 	}
-	
 
 	@Override
 	public void changeEntityAlarmSound(Long entityAlarmId) {

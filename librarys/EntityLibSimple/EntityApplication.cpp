@@ -147,8 +147,9 @@ void EntityApplication::loop() {
 #endif
 	if (updated) {
 		this->getServerConnector()->triggerCheckConnection();
+		this->getServerConnector()->loop();
 	}
-	this->getServerConnector()->loop();
+
 #endif
 #ifndef SETTINGS_SERVER_MQTT_DISABLED
 
@@ -253,6 +254,6 @@ void EntityApplication::restart() {
 }
 
 void EntityApplication::onServerRegistered() {
-	Serial.println(FPSTR("OnServerRegistered"));
+	//Serial.println(FPSTR("OnServerRegistered"));
 	this->mqttManager->init(entityManager->getBuffer());
 }

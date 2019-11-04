@@ -1,11 +1,15 @@
 package com.balabas.smarthouse.server.entity.service;
 
+import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_URL_DATA;
+import static com.balabas.smarthouse.server.DeviceConstants.HTTP_PREFFIX;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.json.JSONObject;
@@ -32,7 +36,6 @@ import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldValueRepository;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
-import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.google.common.collect.Lists;
 
 import lombok.Getter;
@@ -45,10 +48,10 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 
 	@Value("${smarthouse.server.mock}")
 	private boolean mock;
-	
+
 	@Value("${smarthouse.server.log.devicerequests}")
 	private boolean logDeviceRequests;
-	
+
 	@Autowired
 	DeviceRequestorService deviceRequestor;
 
@@ -57,61 +60,61 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 
 	@Autowired
 	SmartHouseItemBuildService itemBuildService;
-	
+
 	@Autowired
 	IEntityAlarmService alarmService;
 
 	@Autowired
 	IDeviceRepository deviceRepository;
-	
+
 	@Autowired
 	IEntityFieldValueRepository entityFieldValueRepository;
 
 	@Getter
 	private List<Device> devices = Collections.synchronizedList(new ArrayList<>());
-	
+
 	@Getter
 	private Date lastDeviceDRUcheck;
 
 	@Override
 	@Transactional
 	public void afterPropertiesSet() throws Exception {
-		
-		deviceRepository.findAll().forEach(d ->{
+
+		deviceRepository.findAll().forEach(d -> {
 			d.setState(State.CONSTRUCTED);
 			save(d);
-		}); 
-		
+		});
+
 		log.info("---Loaded persisted devices---");
 	}
-	
+
 	@Override
 	public List<Device> getDevicesInitialized() {
 		return devices.stream().filter(Device::isInitialized).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public Device getManagedDevice(Device dev) {
-		for(Device device : devices) {
+		for (Device device : devices) {
 			if (device.getName().equals(dev.getName())) {
 				return device;
 			}
 		}
-			
+
 		return null;
 	}
 
 	@Override
 	public Device getDeviceById(Long id) {
-		for(Device device : devices) {
+		for (Device device : devices) {
 			if (id.equals(device.getId())) {
 				return device;
 			}
 		}
-			
+
 		return null;
 	}
-	
+
 	@Override
 	public Device getDeviceByName(String deviceName) {
 		return this.devices.stream().filter(d -> deviceName.equals(d.getName())).map(d -> (Device) d).findFirst()
@@ -120,7 +123,8 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 
 	@Override
 	public Group getGroupById(Long id) {
-		return this.devices.stream().flatMap(d -> d.getGroups().stream()).filter(g -> id.equals(g.getId())).findFirst().orElse(null);
+		return this.devices.stream().flatMap(d -> d.getGroups().stream()).filter(g -> id.equals(g.getId())).findFirst()
+				.orElse(null);
 	}
 
 	@Override
@@ -137,50 +141,56 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 
 	@Override
 	public IEntityFieldEnabledValue getEntityFieldEnabledValueById(Long id) {
-		return (IEntityFieldEnabledValue) this.devices.stream().flatMap(d -> d.getGroups().stream()).flatMap(g -> g.getEntities().stream())
-				.flatMap(e -> e.getEntityFields().stream()).flatMap(ef -> ef.getEnabledValues().stream())
+		return (IEntityFieldEnabledValue) this.devices.stream().flatMap(d -> d.getGroups().stream())
+				.flatMap(g -> g.getEntities().stream()).flatMap(e -> e.getEntityFields().stream())
+				.flatMap(ef -> ef.getEnabledValues().stream())
 				.filter(e -> id.equals(((IEntityFieldEnabledValue) e).getId())).findFirst().orElse(null);
 	}
-	
+
 	private int getDeviceIndex(Long id) {
-		if(id!=null) {
-			for(int i = 0; i<devices.size(); i++) {
-				if(id.equals(devices.get(i).getId())) {
+		if (id != null) {
+			for (int i = 0; i < devices.size(); i++) {
+				if (id.equals(devices.get(i).getId())) {
 					return i;
 				}
 			}
 		}
-		
+
 		return -1;
 	}
 
 	@Override
 	@Transactional
-	public void processRegistrationRequest(DeviceRequest request) {
-		Device deviceFromRequest = itemBuildService.buildDeviceFromRequest(request);
+	public boolean processRegistrationRequest(Device device) {
 
-		Device device = getManagedDevice(deviceFromRequest);
-		
+		Device exDevice = getDeviceByName(device.getName());
 
-		if (device == null || !device.isInitialized()) {
-			// register device
-			device = deviceFromRequest;
-			stateChanger.stateChanged(device, State.REGISTERED);
-			
-			alarmService.loadAlarmsForDevice(device);
-			
-			log.info("Registered :" + device.getName());
-			
-		} else {
-			// reregister device
-			device.update(deviceFromRequest);
-			stateChanger.stateChanged(device, State.REREGISTERED);
-			
-			log.info("ReRegistered :" + device.getName());
+		if (exDevice == null) {
+			exDevice = Optional.ofNullable(deviceRepository.findByName(device.getName())).orElse(new Device());
+
+			if (exDevice.getId() == null || exDevice.getId() == 0L) {
+				exDevice.setName(device.getName());
+				exDevice.setIp(device.getIp());
+				exDevice.setState(State.CONSTRUCTED);
+				exDevice.setDataUrl(HTTP_PREFFIX + device.getIp() + DEVICE_URL_DATA);
+				exDevice.setRegistrationDate(new Date());
+			}
 		}
 
-		save(device).getTimer().setActionForced(true);
+		device = exDevice;
+
+		if (!device.isInitialized()) {
+			// register device
+			stateChanger.stateChanged(device, State.REGISTERED);
+
+			save(device).getTimer().setActionForced(true);
+
+			log.info("Registered :" + device.getName());
+		}
+
 		log.debug("register process complete");
+
+		return true;
 	}
 
 	@Override
@@ -191,7 +201,8 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	}
 
 	@Override
-	public void processDataReceivedFromDevice(Device device, String deviceResponse, boolean updateDeviceTimer, boolean updateGroupTimer) {
+	public void processDataReceivedFromDevice(Device device, String deviceResponse, boolean updateDeviceTimer,
+			boolean updateGroupTimer) {
 		try {
 			JSONObject deviceJson = new JSONObject(deviceResponse);
 			processDataReceivedFromDevice(device, deviceJson, updateDeviceTimer, updateGroupTimer);
@@ -204,9 +215,10 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 
 	@Override
 	@Transactional
-	public void processDataReceivedFromDevice(Device device, JSONObject deviceJson, boolean updateDeviceTimer, boolean updateGroupTimer) {
+	public void processDataReceivedFromDevice(Device device, JSONObject deviceJson, boolean updateDeviceTimer,
+			boolean updateGroupTimer) {
 		boolean doSave = false;
-		
+
 		try {
 			doSave = itemBuildService.processDeviceInfo(device, deviceJson);
 
@@ -216,6 +228,22 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 
 				if (initOk) {
 					stateChanger.stateChanged(device, State.INIT_DATA_RECEIVED);
+					
+					List<EntityFieldValue> changedValues = Lists.newArrayList();
+					
+					device.getEntities().stream().flatMap(entity -> entity.getEntityFields().stream())
+					.forEach( entityField -> {
+							if(SmartHouseItemBuildService.isFieldValueSaveAble(entityField)) {
+								SmartHouseItemBuildService.processValueChange(entityField, null, changedValues);
+							}
+						});
+					
+					entityFieldValueRepository.saveAll(changedValues);
+					
+					alarmService.loadAlarmsForDevice(device);
+					
+					log.info("Device initialized " + device.getName());
+					
 				} else {
 					log.error("Device initialize failed JSON =" + deviceJson.toString());
 				}
@@ -224,14 +252,18 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 			} else {
 				List<EntityFieldValue> changedValues = Lists.newArrayList();
 				// setDevice values
-				boolean ok = itemBuildService.updateDeviceEntityValuesFromJson(device, deviceJson, updateDeviceTimer, updateGroupTimer, changedValues);
+				boolean ok = itemBuildService.updateDeviceEntityValuesFromJson(device, deviceJson, updateDeviceTimer,
+						updateGroupTimer, changedValues);
 
 				State newState = (ok) ? State.UPDATED : State.BAD_DATA;
 				stateChanger.stateChanged(device, newState);
 
-				log.info("Values changed = " + changedValues.size());
-				entityFieldValueRepository.saveAll(changedValues);
+				if (mock || logDeviceRequests) {
+					log.info("Values changed = " + changedValues.size());
+				}
 				
+				entityFieldValueRepository.saveAll(changedValues);
+
 				doSave = false;
 			}
 		} catch (Exception e) {
@@ -249,65 +281,60 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	@Scheduled(fixedRate = 5000)
 	public void requestAllDevicesDataWithUpdateRequired() {
 		if (!getDevices().isEmpty()) {
-			
+
 			lastDeviceDRUcheck = new Date();
 
 			Map<String, String> deviceIds = new HashMap<>();
-			
+
 			List<Device> devicesRu = getDevicesRequireUpdate();
-			
+
 			List<Group> groupsRu = getGroupsRequireUpdate();
-			
+
 			devicesRu.forEach(device -> {
-						deviceIds.put(device.getName(), null);
-						stateChanger.stateChanged(device, State.TIMED_OUT);
-						requestDevicesValues(device, null);
-					});
-			groupsRu.stream()
-				.filter(group -> !deviceIds.containsKey(group.getDevice().getName()))
-			    .forEach(group -> {
-								stateChanger.stateChanged(group.getDevice(), State.TIMED_OUT);
-								requestDevicesValues(group.getDevice(), group);
-							});
+				deviceIds.put(device.getName(), null);
+				stateChanger.stateChanged(device, State.TIMED_OUT);
+				requestDevicesValues(device, null);
+			});
+			groupsRu.stream().filter(group -> !deviceIds.containsKey(group.getDevice().getName())).forEach(group -> {
+				stateChanger.stateChanged(group.getDevice(), State.TIMED_OUT);
+				requestDevicesValues(group.getDevice(), group);
+			});
 		}
 	}
-	
+
 	@Override
 	public List<Device> getDevicesRequireUpdate() {
 		return getDevices().stream().filter(dev -> dev.isRegistered() && checkItemRequiresUpdate(dev, dev))
 				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public List<Group> getGroupsRequireUpdate() {
 		return getDevices().stream()
-				.filter(device -> device.isRegistered() && device.getGroups() != null
-				&& !device.getGroups().isEmpty() )
-		.flatMap(device -> device.getGroups().stream())
-		.filter(group -> checkItemRequiresUpdate(group.getDevice(), group))
-		.collect(Collectors.toList());
+				.filter(device -> device.isRegistered() && device.getGroups() != null && !device.getGroups().isEmpty())
+				.flatMap(device -> device.getGroups().stream())
+				.filter(group -> checkItemRequiresUpdate(group.getDevice(), group)).collect(Collectors.toList());
 	}
 
 	@Override
 	public void requestDevicesValues(Device device, Group group) {
 		State oldState = device.getState();
-		
-		boolean groupRequest = group!=null;
-		boolean logDR = mock || logDeviceRequests; 
-		
+
+		boolean groupRequest = group != null;
+		boolean logDR = mock || logDeviceRequests;
+
 		try {
-			if(logDR) {
+			if (logDR) {
 				String message = "Request d=" + device.getName();
-					
-				if(group!=null) {
+
+				if (group != null) {
 					message += " g=" + group.getName();
 				}
-					log.info(message);
-					
+				log.info(message);
+
 			} else {
 				log.debug("Request data " + device.getName());
 			}
-			
 
 			String groupId = groupRequest ? group.getName() : null;
 			String result = deviceRequestor.executeGetDataOnDevice(device, groupId);
@@ -324,7 +351,7 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 			stateChanger.stateChanged(device, State.DISCONNECTED);
 		}
 	}
-	
+
 	protected boolean checkItemRequiresUpdate(Device target, IUpdateable source) {
 		boolean waits = source.getTimer().isActionForced();
 		boolean dataTooOld = source.getTimer().isTimeToExecuteAction();
@@ -353,12 +380,12 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 			String result = deviceRequestor.executePostDataOnDeviceEntity(device, entity, values);
 			processDataReceivedFromDevice(device, result, false, false);
 			return result;
-		} catch(Exception e) {
+		} catch (Exception e) {
 			log.error(e);
-			throw e; 
+			throw e;
 		}
 	}
-	
+
 	@Transactional
 	@Override
 	public Device save(Device device) {
@@ -366,23 +393,23 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 		boolean initialized = device.isInitialized();
 		ActionTimer timer = device.getTimer();
 		Map<String, ActionTimer> groupTimers = new HashMap<>();
-		//Map<String, Set<IEntityField>> generatedFields = new HashMap<>();
+		// Map<String, Set<IEntityField>> generatedFields = new HashMap<>();
 		Map<String, Object> fieldValues = new HashMap<>();
-		
-		if(device.getGroups()!=null) {
-			
-			for(Group group : device.getGroups()) {
-				if(group.getTimer() == null) {
-					
+
+		if (device.getGroups() != null) {
+
+			for (Group group : device.getGroups()) {
+				if (group.getTimer() == null) {
+
 				}
 				groupTimers.put(group.getName(), group.getTimer());
-				
-				if (group.getEntities()!=null && !group.getEntities().isEmpty()) {
-					for(Entity entity : group.getEntities()) {
-						if(entity.getEntityFields()!=null && !entity.getEntityFields().isEmpty()) {
-							for(IEntityField entityField : entity.getEntityFields()) {
+
+				if (group.getEntities() != null && !group.getEntities().isEmpty()) {
+					for (Entity entity : group.getEntities()) {
+						if (entity.getEntityFields() != null && !entity.getEntityFields().isEmpty()) {
+							for (IEntityField entityField : entity.getEntityFields()) {
 								String key = group.getName() + entity.getName() + entityField.getName();
-								
+
 								fieldValues.put(key, entityField.getValue());
 							}
 						}
@@ -390,32 +417,32 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 				}
 			}
 		}
-		
-		Long id  = deviceRepository.save(device).getId();
+
+		Long id = deviceRepository.save(device).getId();
 		device = deviceRepository.findById(id).orElse(null);
-		
+
 		int index = getDeviceIndex(id);
-		
-		if(index>-1) {
+
+		if (index > -1) {
 			devices.set(index, device);
 		} else {
 			devices.add(device);
 		}
-		
+
 		device.setInitialized(initialized);
 		device.setTimer(timer);
-		
-		if(device.getGroups()!=null) {
-			for(Group group : device.getGroups()) {
+
+		if (device.getGroups() != null) {
+			for (Group group : device.getGroups()) {
 				group.setTimer(groupTimers.get(group.getName()));
-				
-				if (group.getEntities()!=null && !group.getEntities().isEmpty()) {
-					for(Entity entity : group.getEntities()) {
-						if(entity.getEntityFields()!=null && !entity.getEntityFields().isEmpty()) {
-							for(IEntityField entityField : entity.getEntityFields()) {
+
+				if (group.getEntities() != null && !group.getEntities().isEmpty()) {
+					for (Entity entity : group.getEntities()) {
+						if (entity.getEntityFields() != null && !entity.getEntityFields().isEmpty()) {
+							for (IEntityField entityField : entity.getEntityFields()) {
 								String keyEntityField = group.getName() + entity.getName() + entityField.getName();
-								
-								if(entityField.getValueObj() == null && fieldValues.containsKey(keyEntityField)) {
+
+								if (entityField.getValueObj() == null && fieldValues.containsKey(keyEntityField)) {
 									entityField.setValueWithNoCheck(fieldValues.get(keyEntityField));
 								}
 							}
@@ -424,11 +451,11 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 				}
 			}
 		}
-		
+
 		alarmService.reattachAlarms(device);
-		
+
 		log.info("saved " + device.getName());
-		
+
 		return device;
 	}
 
@@ -436,24 +463,24 @@ public class DeviceManageService implements IDeviceManageService, InitializingBe
 	public void reattachAlarmsForDevice(IDevice device) {
 		alarmService.reattachAlarms(device);
 	}
-	
+
 	@Override
 	public void reattachAlarmsForDevice(String deviceName) {
 		IDevice device = getDeviceByName(deviceName);
 		reattachAlarmsForDevice(device);
 	}
-	
+
 	@Override
 	public void reattachAlarmsForEntity(IEntity entity) {
 		Device device = entity.getGroup().getDevice();
 		reattachAlarmsForDevice(device);
 	}
-	
+
 	@Override
 	public void reattachAlarmsForEntityField(IEntityField entityField) {
 		reattachAlarmsForEntity(entityField.getEntity());
 	}
-	
+
 	@Override
 	public void reattachAlarmsForEntity(Long entityId) {
 		reattachAlarmsForEntity(getEntityById(entityId));

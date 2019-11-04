@@ -14,7 +14,6 @@ public class RegisterTask implements Runnable {
 	
 	@Override
 	public void run() {
-		service.sendIsOnlineRequest(request);
 		service.sendRegistrationRequest(request);
 	}
 

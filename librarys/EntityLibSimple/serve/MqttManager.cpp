@@ -37,31 +37,33 @@ void MqttManager::init(EntityJsonRequestResponse* buf, bool registered) {
 		this->buffer = new EntityJsonRequestResponse();
 	}
 
-		this->lastReconnectAttempt = millis();
-		this->lastRegisterAttempt = millis();
+		//this->lastReconnectAttempt = millis();
+		//this->lastRegisterAttempt = millis();
 
-		IPAddress adress = IPAddress(192,168,0,101);
+		if(!initDone) {
+			IPAddress adress = IPAddress(192,168,0,101);
 
-		this->wclient = new WiFiClient();
-		Serial.print(FPSTR(" wifiClient "));
-		this->client = new PubSubClient(adress, MQTT_PORT,
-					[this](char* topic, uint8_t* payload,
-							unsigned int length){ callback(topic, payload, length);},
-							*this->wclient);
+			this->wclient = new WiFiClient();
+			Serial.print(FPSTR(" wifiClient "));
+			this->client = new PubSubClient(adress, MQTT_PORT,
+						[this](char* topic, uint8_t* payload,
+								unsigned int length){ callback(topic, payload, length);},
+								*this->wclient);
 
-		this->initDone = true;
-		this->registered = registered;
+			this->initDone = true;
+			this->registered = registered;
 
+			Serial.println(FPSTR("MqttManager initialized"));
+			Serial.print(FPSTR("host ="));
+			Serial.print(adress.toString());
+			Serial.print(FPSTR(":"));
+			Serial.print(MQTT_PORT);
+		}
 		subscribeToDeviceTopic();
 
-		Serial.print(FPSTR("host ="));
-		Serial.print(adress.toString());
-		Serial.print(FPSTR(":"));
-		Serial.print(MQTT_PORT);
 		Serial.print(FPSTR("  serverSubscribed ="));
 		Serial.println(toDeviceTopicSubscribed);
 
-		Serial.println(FPSTR("MqttManager initialized"));
 }
 
 
@@ -266,7 +268,7 @@ bool MqttManager::subscribe(char* topic, bool showLog) {
 		}
 		return sub;
 	} else {
-		Serial.print(FPSTR("NOT CONNECTED"));
+		Serial.println(FPSTR("SUB NOT CONNECTED"));
 		return false;
 	}
 }
@@ -293,7 +295,7 @@ bool MqttManager::publish(char* topic, JsonObject& data, bool showLog) {
 
 		return pub;
 	} else {
-		Serial.print(FPSTR("NOT CONNECTED"));
+		Serial.println(FPSTR("PUB NOT CONNECTED"));
 		return false;
 	}
 }

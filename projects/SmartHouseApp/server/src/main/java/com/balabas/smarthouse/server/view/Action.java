@@ -62,6 +62,7 @@ public class Action {
 	public static final String ACTION_TYPE_EDIT_ENTITITY_FIELD = "eef";
 	public static final String ACTION_TYPE_VIEW_ENTITITY = "ven";
 	public static final String ACTION_TYPE_SEND_DATA_TO_DEVICE = "sdd";
+	public static final String ACTION_TYPE_SEND_DATA_TO_DEVICE_EDIT_FIELDS = "des";
 	public static final String ACTION_TYPE_SAVE_DEVICE_PROPERTY = "sdp";
 	public static final String ACTION_TYPE_GET_DATA_FROM_DEVICE = "gdd";
 

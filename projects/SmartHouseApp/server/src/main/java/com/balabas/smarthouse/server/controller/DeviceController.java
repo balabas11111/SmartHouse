@@ -4,30 +4,20 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.thymeleaf.util.StringUtils;
 
-import com.balabas.smarthouse.server.controller.service.DeviceControllerService;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.service.DeviceManageService;
 import com.balabas.smarthouse.server.exception.DeviceOnServerAuthorizationException;
-import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
-import com.balabas.smarthouse.server.model.request.DeviceRequest;
-import com.balabas.smarthouse.server.model.request.DeviceRequestResult;
-import com.balabas.smarthouse.server.model.request.DeviceRequest.DeviceRequestType;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -38,10 +28,31 @@ import lombok.extern.log4j.Log4j2;
 public class DeviceController {
 	
 	@Autowired
-	private DeviceControllerService service;
-
-	@Autowired
 	private DeviceManageService deviceService;
+	
+	@GetMapping("/register")
+	public ResponseEntity<String> registerDevice(
+			@RequestParam("deviceId") String name,
+			HttpServletRequest httpRequest) throws UnknownHostException, DeviceOnServerAuthorizationException {
+
+		log.debug("/register");
+		
+		Device device = new Device();
+		device.setName(name);
+		device.setIp(httpRequest.getRemoteAddr());
+		
+		if(StringUtils.isEmpty(device.getName()) || StringUtils.isEmpty(device.getIp())) {
+			throw new UnknownHostException(device.getName());
+		}
+		
+		boolean ok = deviceService.processRegistrationRequest(device);
+		
+		if(ok) {
+			return ResponseEntity.ok().build();
+		}
+		
+		throw new IllegalArgumentException();
+	}
 	
 	@GetMapping("/all")
 	public ResponseEntity<List<Device>> getAllDevices(
@@ -49,24 +60,6 @@ public class DeviceController {
 			@RequestParam(value = "groupId", required = false) String groupName) {
 		
 			return ResponseEntity.ok().body(deviceService.getDevices());
-	}
-	
-	@PostMapping("/register")
-	public ResponseEntity<String> registerDevice(
-			@Valid @RequestBody DeviceRequest request,
-			@RequestHeader HttpHeaders headers,
-			HttpServletRequest httpRequest) throws UnknownHostException, DeviceOnServerAuthorizationException {
-
-		log.debug("/register");
-		
-		request.setIp(httpRequest.getRemoteAddr());
-		request.setHeaders(headers);
-		request.setRequestType(DeviceRequestType.REGISTER);
-
-		DeviceRequestResult<String> result =
-				service.processDeviceRegistrationRequest(request);
-		
-		return result.toResponseEntity();
 	}
 	
 	@GetMapping("/requireUpdateDevices")
@@ -77,38 +70,6 @@ public class DeviceController {
 	@GetMapping("/requireUpdateGroups")
 	public ResponseEntity<List<Group>> getAllGroupsRequireUpdate() {
 		return ResponseEntity.ok().body(deviceService.getGroupsRequireUpdate());
-	}
-	
-	@GetMapping("/data")
-	public ResponseEntity<String> dataChangeDispatchedOnDeviceGet(
-			@RequestParam(value = "deviceId") String deviceId,
-			@RequestHeader HttpHeaders headers,
-			@RequestParam(value = "data", required = false) String data,
-			HttpServletRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
-		log.debug("DataChanged GET dispatched on " + deviceId + " from "+request.getRemoteAddr());
-		
-		DeviceRequest deviceRequest = new DeviceRequest();
-		deviceRequest.setDeviceId(deviceId);
-		deviceRequest.setIp(request.getRemoteAddr());
-		deviceRequest.setHeaders(headers);
-		deviceRequest.setRequestType(DeviceRequestType.DATA_UPDATE_EVENT);
-		deviceRequest.setData(data);
-		
-		return service.processDataChangedOnDeviceRequest(deviceRequest, data != null).toResponseEntity();
-	}
-
-	@PostMapping("/data")
-	public ResponseEntity<String> dataChangeDispatchedOnDevicePost(
-			@RequestBody DeviceRequest deviceRequest,
-			@RequestHeader HttpHeaders headers,
-			HttpServletRequest request) throws ResourceNotFoundException, DeviceOnServerAuthorizationException {
-		
-		log.info("DataChanged dispatched on " + deviceRequest.getDeviceId() + " " + deviceRequest.getData());
-		deviceRequest.setIp(request.getRemoteAddr());
-		deviceRequest.setHeaders(headers);
-		deviceRequest.setRequestType(DeviceRequestType.DATA_UPDATE_EVENT);
-
-		return service.processDataChangedOnDeviceRequest(deviceRequest, true).toResponseEntity();
 	}
 	
 }

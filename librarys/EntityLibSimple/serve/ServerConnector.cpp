@@ -11,6 +11,24 @@ ServerConnector::ServerConnector(SettingsStorage* conf, std::function<void(void)
 	this->conf = conf;
 	this->onServerRegistered = onServerRegistered;
 	this->buffer = new EntityJsonRequestResponse();
+
+	String baseUrl = this->conf->smartServerAddr();
+
+	if(!baseUrl.startsWith(HTTP_PREFFIX)){
+		baseUrl = HTTP_PREFFIX + baseUrl;
+	}
+
+	this->urlRegister = baseUrl + SMART_HOUSE_SERVER_URL_REGISTER + conf->deviceId();
+
+	String authorization = sha1(conf->smartServerKey());
+
+	conf->setServerAuthorization(authorization);
+	conf->setDeviceAuthorization(authorization);
+
+	initComplete = true;
+
+	Serial.print(FPSTR("ServerConnector initialized "));
+	Serial.println(this->urlRegister);
 }
 
 bool ServerConnector::isConnected() {
@@ -35,6 +53,7 @@ void ServerConnector::checkConnection() {
 		Serial.println(FPSTR("...ok"));
 		String tempServerKey = http.getString();
 		http.end();
+		this->registrationFailures = 0;
 		this->deviceRegistered = true;
 
 		if(onServerRegistered!=nullptr){
@@ -57,9 +76,9 @@ void ServerConnector::checkConnection() {
 #endif
 
 		if(registrationFailures > SERVER_CONNECTION_NEXT_REGISTRATION_NEXT_COUNT){
-			setRequestPostPoned(SERVER_CONNECTION_REGISTRATION_FAILED_FIRST_TIMEOUT);
-		}else{
 			setRequestPostPoned(SERVER_CONNECTION_REGISTRATION_FAILED_NEXT_TIMEOUT);
+		}else{
+			setRequestPostPoned(SERVER_CONNECTION_REGISTRATION_FAILED_FIRST_TIMEOUT);
 		}
 	}
 
@@ -72,24 +91,17 @@ void ServerConnector::setRequestPostPoned(unsigned long delay) {
 	requestPostPoned = true;
 	nextReqTime = millis() + delay;
 
-	Serial.println(FPSTR("Req DISABLED"));
+	Serial.print(FPSTR("Req DISABLED delay "));
+	Serial.println(delay);
 }
 
-void ServerConnector::init() {
-	String baseUrl = this->conf->smartServerAddr();
-
-	if(!baseUrl.startsWith(HTTP_PREFFIX)){
-		baseUrl = HTTP_PREFFIX + baseUrl;
+void ServerConnector::checkCancelRequestPostPoned() {
+	if(requestPostPoned){
+		if(millis()>nextReqTime){
+			Serial.println(FPSTR("Req ENABLED"));
+			requestPostPoned = false;
+		}
 	}
-
-	this->urlRegister = baseUrl + SMART_HOUSE_SERVER_URL_REGISTER + conf->deviceId();
-
-	String authorization = sha1(conf->smartServerKey());
-
-	conf->setServerAuthorization(authorization);
-	conf->setDeviceAuthorization(authorization);
-
-	initComplete = true;
 }
 
 void ServerConnector::triggerCheckConnection() {
@@ -101,6 +113,7 @@ bool ServerConnector::isRequestEnabled(){
 }
 
 void ServerConnector::loop() {
+	checkCancelRequestPostPoned();
 	if(triggeredRequest && !requestRuns && isRequestEnabled() ){
 		checkConnection() ;
 	}

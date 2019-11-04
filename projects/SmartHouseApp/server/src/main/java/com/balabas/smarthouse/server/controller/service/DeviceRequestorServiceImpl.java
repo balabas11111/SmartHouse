@@ -19,7 +19,7 @@ import org.springframework.util.MultiValueMap;
 import com.balabas.smarthouse.server.DeviceConstants;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
-import com.balabas.smarthouse.server.security.DeviceSecurityService;
+import com.balabas.smarthouse.server.entity.service.DeviceSecurityService;
 import com.balabas.smarthouse.server.service.HttpRequestExecutor;
 
 import lombok.extern.log4j.Log4j2;
@@ -42,23 +42,10 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 						? Collections.singletonMap(DEVICE_FIELD_GROUP, groupName)
 						: Collections.emptyMap();
 
-				String serverKey = securityService.getServerKey(device.getName());
+				String serverKey = securityService.getServerKey();
 
 				HttpHeaders headers = new HttpHeaders();
-				
-				if (!securityService.isSecurityDisabled()) {
-					if (serverKey == null) {
-						log.error("Empty Server key " + device.getName());
-						return null;
-					}
-					
-					headers.set(HttpHeaders.AUTHORIZATION, serverKey);
-				} else {
-					serverKey = "";
-				}
-
-				
-				
+				headers.set(HttpHeaders.AUTHORIZATION, serverKey);
 
 				String url = (device.isInitialized()) ? device.getDataUrl()
 						: device.getDataUrl() + DeviceConstants.ENTITY_FIELD_SWG_EQ_1;
@@ -83,7 +70,7 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 	public String executePostDataOnDevice(IDevice device, JSONObject json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey(device.getName()));
+		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey());
 
 		return executor.executePostRequest(device.getDataUrl(), headers, json.toString()).getBody();
 	}
@@ -92,7 +79,7 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 	public String executePostDataOnDeviceEntity(IDevice device, IEntity entity, Map<String, Object> values) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey(device.getName()));
+		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey());
 
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
 		map.add(DEVICE_FIELD_GROUP, entity.getGroup().getName());
