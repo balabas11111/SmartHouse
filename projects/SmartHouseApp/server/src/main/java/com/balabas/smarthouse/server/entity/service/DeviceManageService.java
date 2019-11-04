@@ -464,39 +464,15 @@ public class DeviceManageService implements IDeviceManageService {
 	public void reattachAlarmsForDevice(IDevice device) {
 		alarmService.reattachAlarms(device);
 	}
-
+	
 	@Override
-	public void reattachAlarmsForDevice(String deviceName) {
-		IDevice device = getDeviceByName(deviceName);
-		reattachAlarmsForDevice(device);
+	public List<EntityFieldValue> getLastEntityFieldValuesForDevice(Long deviceId) {
+		return entityFieldValueRepository.getLastEntityFieldValuesForDevice(deviceId);
 	}
-
+	
 	@Override
-	public void reattachAlarmsForEntity(IEntity entity) {
-		Device device = entity.getGroup().getDevice();
-		reattachAlarmsForDevice(device);
-	}
-
-	@Override
-	public void reattachAlarmsForEntityField(IEntityField entityField) {
-		reattachAlarmsForEntity(entityField.getEntity());
-	}
-
-	@Override
-	public void reattachAlarmsForEntity(Long entityId) {
-		reattachAlarmsForEntity(getEntityById(entityId));
-	}
-
-	@Override
-	public void reattachAlarmsForEntityAlarm(Long entityAlarmId) {
-		IEntity entity = alarmService.getAlarmById(entityAlarmId).getEntity();
-		reattachAlarmsForEntity(entity);
-	}
-
-	@Override
-	public void reattachAlarmsForEntityFieldAlarm(Long entityFieldAlarmId) {
-		IEntityField entityField = getEntityFieldById(entityFieldAlarmId);
-		reattachAlarmsForEntity(entityField.getEntity());
+	public List<EntityFieldValue> getLastEntityFieldValuesForEntity(Long entityId) {
+		return entityFieldValueRepository.getLastEntityFieldValuesForEntity(entityId);
 	}
 
 }

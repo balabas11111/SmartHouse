@@ -7,9 +7,9 @@ import org.json.JSONObject;
 
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
+import com.balabas.smarthouse.server.entity.model.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IDevice;
-import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
@@ -33,8 +33,6 @@ public interface IDeviceManageService {
 	void requestDevicesValues(Device device, Group group);
 	
 	boolean processRegistrationRequest(Device device);
-
-	//void processRegistrationRequest(DeviceRequest request);
 
 	void requestAllDevicesDataWithUpdateRequired();
 
@@ -61,16 +59,8 @@ public interface IDeviceManageService {
 
 	void reattachAlarmsForDevice(IDevice device);
 
-	void reattachAlarmsForDevice(String deviceName);
+	List<EntityFieldValue> getLastEntityFieldValuesForDevice(Long deviceId);
 
-	void reattachAlarmsForEntity(Long entityId);
-
-	void reattachAlarmsForEntity(IEntity entity);
-	
-	void reattachAlarmsForEntityAlarm(Long entityAlarmId);
-
-	void reattachAlarmsForEntityFieldAlarm(Long entityFieldAlarmId);
-
-	void reattachAlarmsForEntityField(IEntityField entityField);
+	List<EntityFieldValue> getLastEntityFieldValuesForEntity(Long entityId);
 
 }

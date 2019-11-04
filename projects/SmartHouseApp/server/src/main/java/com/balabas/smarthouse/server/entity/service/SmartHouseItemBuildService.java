@@ -77,6 +77,7 @@ import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.EntityFieldValue;
+import com.balabas.smarthouse.server.entity.model.EntityFieldValueBoolean;
 import com.balabas.smarthouse.server.entity.model.EntityFieldValueNumber;
 import com.balabas.smarthouse.server.entity.model.EntityStatus;
 import com.balabas.smarthouse.server.entity.model.Group;
@@ -110,8 +111,7 @@ public class SmartHouseItemBuildService {
 	}
 
 	public boolean updateDeviceEntityValuesFromJson(Device device, JSONObject deviceJson, boolean updateDeviceTimer,
-			boolean updateGroupTimer,
-			List<EntityFieldValue> changedValues) {
+			boolean updateGroupTimer, List<EntityFieldValue> changedValues) {
 
 		boolean isOk = true;
 
@@ -132,8 +132,7 @@ public class SmartHouseItemBuildService {
 		return isOk;
 	}
 
-	private static boolean updateGroupEntityValuesFromJson(Group group, JSONObject groupJson,
-			boolean updateGroupTimer,
+	private static boolean updateGroupEntityValuesFromJson(Group group, JSONObject groupJson, boolean updateGroupTimer,
 			List<EntityFieldValue> changedValues) {
 		boolean isOk = true;
 		for (String entityName : JSONObject.getNames(groupJson)) {
@@ -160,13 +159,11 @@ public class SmartHouseItemBuildService {
 	}
 
 	public static boolean isFieldValueSaveAble(IEntityField entityField) {
-		return !StringUtils.isEmpty(entityField.getName())
+		return entityField != null && !StringUtils.isEmpty(entityField.getName())
 				&& !notUpdateableEntityFields.contains(entityField.getName())
-				&& entityField.isReadOnly()
-				&& !(entityField.getEntity().getDescriptionField().equals(entityField.getTemplateName())
-						|| entityField.getName().equals(entityField.getTemplateName())); 
+				&& !entityField.getEntity().getDescriptionField().equals(entityField.getTemplateName());
 	}
-	
+
 	private static boolean updateEntityValuesFromJson(Entity entity, JSONObject entityJson,
 			List<EntityFieldValue> changedValues) {
 		boolean setOk = true;
@@ -185,9 +182,7 @@ public class SmartHouseItemBuildService {
 					}
 
 					if (entityField != null) {
-						if (!(!entityField.isReadOnly()
-								&& entity.getDescriptionField().equals(entityField.getTemplateName())
-								&& !entityField.getName().equals(entityField.getTemplateName()))) {
+						if (!entity.getDescriptionField().equals(entityField.getTemplateName())) {
 
 							String oldValue = entityField.getValueStr();
 
@@ -214,29 +209,56 @@ public class SmartHouseItemBuildService {
 
 	public static void processValueChange(IEntityField entityField, String oldValueStr,
 			List<EntityFieldValue> changedValues) {
-		
-		if (entityField.isReadOnly() && entityField.isActive()
-				&& Number.class.isAssignableFrom(entityField.getClazz())) {
-			boolean doSave = false;
-			Float value = null;
-			
-			String newValueStr = entityField.getValueStr();
 
-			if (oldValueStr == null && newValueStr != null) {
-				value = Float.valueOf(newValueStr);
-				doSave = true;
-			} else if (oldValueStr != null && newValueStr != null) {
-				value = Float.valueOf(newValueStr);
-				Float oldValue = MathUtil.precise(Float.valueOf(oldValueStr));
+		boolean doSave = false;
 
-				if (Math.abs(oldValue - value) > 0.001) {
+		if (entityField.isActive() 
+				&& ItemType.SENSORS.getCode().equals(entityField.getEntity().getGroup().getName())) {
+
+			if (entityField.isReadOnly() && Number.class.isAssignableFrom(entityField.getClazz())) {
+
+				Float value = null;
+
+				String newValueStr = entityField.getValueStr();
+
+				if (oldValueStr == null && newValueStr != null) {
+					value = Float.valueOf(newValueStr);
 					doSave = true;
+				} else if (oldValueStr != null && newValueStr != null) {
+					value = Float.valueOf(newValueStr);
+					Float oldValue = MathUtil.precise(Float.valueOf(oldValueStr));
+
+					if (Math.abs(oldValue - value) > 0.001) {
+						doSave = true;
+					}
+				}
+
+				if (doSave) {
+					changedValues.add(new EntityFieldValueNumber(entityField, value));
+				}
+			} else if (!entityField.isReadOnly() && Boolean.class.isAssignableFrom(entityField.getClazz())) {
+
+				Boolean value = null;
+
+				String newValueStr = entityField.getValueStr();
+
+				if (oldValueStr == null && newValueStr != null) {
+					value = Boolean.valueOf(newValueStr);
+					doSave = true;
+				} else if (oldValueStr != null && newValueStr != null) {
+					value = Boolean.valueOf(newValueStr);
+					Boolean oldValue = Boolean.valueOf(oldValueStr);
+
+					if (!value.equals(oldValue)) {
+						doSave = true;
+					}
+				}
+
+				if (doSave) {
+					changedValues.add(new EntityFieldValueBoolean(entityField, value));
 				}
 			}
 
-			if (doSave) {
-				changedValues.add(new EntityFieldValueNumber(entityField, value));
-			}
 		}
 	}
 

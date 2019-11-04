@@ -32,25 +32,18 @@ public class DeviceController {
 	@Autowired
 	private DeviceManageService deviceService;
 
-	@Autowired
-	IEntityFieldValueRepository entityFieldValueRepository;
-
 	@GetMapping("/lastEntityFieldValues")
 	public ResponseEntity<List<EntityFieldValue>> getLastEntityFieldValuesByEntityId(
 			@RequestParam("entityId") Long id) {
 
-		List<EntityFieldValue> valuesLast = entityFieldValueRepository.getLastEntityFieldValuesForEntity(id);
-
-		return ResponseEntity.ok().body(valuesLast);
+		return ResponseEntity.ok().body(deviceService.getLastEntityFieldValuesForEntity(id));
 	}
 	
 	@GetMapping("/lastDeviceEntityFieldValues")
 	public ResponseEntity<List<EntityFieldValue>> getLastEntityFieldValuesByDeviceId(
 			@RequestParam("deviceId") Long id) {
 
-		List<EntityFieldValue> valuesLast = entityFieldValueRepository.getLastEntityFieldValuesForDevice(id);
-
-		return ResponseEntity.ok().body(valuesLast);
+		return ResponseEntity.ok().body(deviceService.getLastEntityFieldValuesForDevice(id));
 	}
 
 	@GetMapping("/register")

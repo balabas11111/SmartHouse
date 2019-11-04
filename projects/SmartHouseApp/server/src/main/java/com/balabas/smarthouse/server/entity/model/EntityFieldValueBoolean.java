@@ -12,24 +12,24 @@ import lombok.NoArgsConstructor;
 @Entity
 @SuppressWarnings("rawtypes")
 @NoArgsConstructor
-public class EntityFieldValueNumber extends EntityFieldValue implements IEntityFieldValue {
+public class EntityFieldValueBoolean extends EntityFieldValue implements IEntityFieldValue {
 	
 	@Getter
-	private Float valueFlt;
+	private Boolean valueBool;
 
-	public EntityFieldValueNumber(IEntityField entityField, Float value) {
+	public EntityFieldValueBoolean(IEntityField entityField, Boolean value) {
 		this.entityField = entityField;
-		this.valueFlt = value;
+		this.valueBool = value;
 		this.date = new Date();
 	}
 	
 	@Override
 	public String getValueStr() {
-		return valueFlt.toString();
+		return valueBool.toString();
 	}
 
 	@Override
 	public Object getValue() {
-		return valueFlt;
+		return valueBool;
 	}
 }

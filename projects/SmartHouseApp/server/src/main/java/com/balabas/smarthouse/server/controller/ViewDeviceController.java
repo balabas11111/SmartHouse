@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.balabas.smarthouse.server.entity.service.DeviceManageService;
 
+import static com.balabas.smarthouse.server.entity.model.descriptor.ItemType.DEVICE;
+import static com.balabas.smarthouse.server.entity.model.descriptor.ItemType.SENSORS;
 @Controller
 @RequestMapping(ControllerConstants.DEVICES_ROOT)
 public class ViewDeviceController {
-
+	
 	@Autowired
 	private DeviceManageService deviceService;
 	
@@ -24,7 +26,9 @@ public class ViewDeviceController {
 	
 	@GetMapping("/device_{deviceId}")
     public String getDevice(@PathVariable(name = "deviceId") Long id, Model model) {
-        model.addAttribute("device", deviceService.getDeviceById(id));
+        model.addAttribute(DEVICE.getCode(), deviceService.getDeviceById(id));
+        model.addAttribute(SENSORS.getCode(), deviceService.getLastEntityFieldValuesForDevice(id));
+        
         return ControllerConstants.TEMPLATE_DEVICE_VIEW;
     }
 }
