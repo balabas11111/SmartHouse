@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	 <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.0.M6</version>
-        <relativePath />
-    </parent>
-	
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.2.0.M6</version>
+		<relativePath />
+	</parent>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.balabas.smarthouse</groupId>
 	<artifactId>server</artifactId>
 	<name>!!SmartHouse_server</name>
-		
+
 	<properties>
 		<java.version>1.8</java.version>
 		<junit.jupiter.version>5.5.2</junit.jupiter.version>
-        <junit.platform.version>1.5.2</junit.platform.version>
+		<junit.platform.version>1.5.2</junit.platform.version>
 	</properties>
 
 	<dependencies>
@@ -29,60 +30,49 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-	        <groupId>org.springframework.boot</groupId>
-	        <artifactId>spring-boot-starter-thymeleaf</artifactId>
-	    </dependency>
-		<dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-<!--
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
-		</dependency>
-		 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<scope>runtime</scope>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
 		</dependency>
-		
-		 <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-        </dependency>
-        --> 
-       
-        <dependency>
-		    <groupId>org.mariadb.jdbc</groupId>
-		    <artifactId>mariadb-java-client</artifactId>
-		</dependency>
-        
+		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-devtools</artifactId> 
+			<scope>runtime</scope> <optional>true</optional> </dependency> <dependency> 
+			<groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-security</artifactId> 
+			</dependency> <dependency> <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId> 
+			<scope>runtime</scope> </dependency> <dependency> <groupId>com.h2database</groupId> 
+			<artifactId>h2</artifactId> </dependency> -->
+
 		<dependency>
-		    <groupId>org.json</groupId>
-		    <artifactId>json</artifactId>
-		    <version>20190722</version>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
 		</dependency>
-        
-        <dependency>
-            <groupId>org.telegram</groupId>
-            <artifactId>telegrambots</artifactId>
-            <version>4.0.1</version>
-        </dependency>
-        
-		 <dependency>
-            <groupId>org.eclipse.paho</groupId>
-            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-            <version>1.2.0</version>
-        </dependency>		
-		
+
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20190722</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.telegram</groupId>
+			<artifactId>telegrambots</artifactId>
+			<version>4.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.paho</groupId>
+			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jinq</groupId>
+			<artifactId>jinq-jpa</artifactId>
+			<version>1.8.29</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -103,198 +93,183 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-           <!--   <version>${junit.jupiter.version}</version> -->
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-runner</artifactId>
-            <!--  <version>${junit.platform.version}</version> -->
-            <scope>test</scope>
-        </dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<!-- <version>${junit.jupiter.version}</version> -->
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-runner</artifactId>
+			<!-- <version>${junit.platform.version}</version> -->
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
-<!--
-		<profiles>
-		  <profile>
-		    <id>prod</id>
-		    <build>
-		      <resources>
-		        <resource>
-		          <filtering>true</filtering>
-		          <directory>src/main/resources</directory>
-		          <excludes>
-		            <exclude>*.properties</exclude>
-	                <exclude>**/repository/**</exclude>
-		          </excludes>
-		        </resource>
-		      </resources>
-		    </build>
-		  </profile>
-		</profiles>
-	-->
+	<!-- <profiles> <profile> <id>prod</id> <build> <resources> <resource> <filtering>true</filtering> 
+		<directory>src/main/resources</directory> <excludes> <exclude>*.properties</exclude> 
+		<exclude>**/repository/**</exclude> </excludes> </resource> </resources> 
+		</build> </profile> </profiles> -->
 
 	<build>
-	
+
 		<resources>
-	        <resource>
-	            <directory>src/main/resources</directory>
-	            <excludes>
-	                <!--  <exclude>*.properties</exclude> -->
-	                <exclude>**/repository/**</exclude>
-	            </excludes>
-	            <filtering>false</filtering>
-	        </resource>
-	    </resources>
-	
-        <plugins>
-        	<plugin>
-	            <artifactId>maven-resources-plugin</artifactId>
-	            <executions>
-	                
-	                <execution>
-	                    <id>copy-appProperties-totarget</id>
-	                    <phase>compile</phase>
-	                    <goals>
-	                        <goal>copy-resources</goal>
-	                    </goals>
-	                    <configuration>
-	                        <outputDirectory>${basedir}/target</outputDirectory>
-	                        <resources>
-	                            <resource>
-	                                <directory>src/main/resources</directory>
-	                                <includes>
-							          <include>application.properties</include>
-							           <include>repository/**</include>
-							        </includes>
-	                                <filtering>true</filtering>
-	                            </resource>
-	                        </resources>
-	                    </configuration>
-	                </execution>
-	                
-	                <execution>
-	                    <id>copy-bin-totarget</id>
-	                    <phase>compile</phase>
-	                    <goals>
-	                        <goal>copy-resources</goal>
-	                    </goals>
-	                    <configuration>
-	                        <outputDirectory>${basedir}/target</outputDirectory>
-	                        <resources>
-	                            <resource>
-	                                <directory>src/main/resources/bin</directory>
-	                            </resource>
-	                        </resources>
-	                    </configuration>
-	                </execution>
-	                
-	                <execution>
-	                    <id>copy-appProperties-tobin</id>
-	                    <phase>compile</phase>
-	                    <goals>
-	                        <goal>copy-resources</goal>
-	                    </goals>
-	                    <configuration>
-	                        <outputDirectory>${basedir}/bin</outputDirectory>
-	                        <resources>
-	                            <resource>
-	                                <directory>src/main/resources</directory>
-	                                <includes>
-							          <include>application.properties</include>
-							          <include>repository/**</include>
-							        </includes>
-	                                <filtering>true</filtering>
-	                            </resource>
-	                        </resources>
-	                    </configuration>
-	                </execution>
-	                 <execution>
-	                    <id>copy-bin-tobin</id>
-	                    <phase>compile</phase>
-	                    <goals>
-	                        <goal>copy-resources</goal>
-	                    </goals>
-	                    <configuration>
-	                        <outputDirectory>${basedir}/bin</outputDirectory>
-	                        <resources>
-	                            <resource>
-	                                <directory>src/main/resources/bin</directory>
-	                            </resource>
-	                        </resources>
-	                    </configuration>
-	                </execution>
-	            </executions>
-	        </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <packagingExcludes>WEB-INF/lib/tomcat-*.jar</packagingExcludes>
-                    <warName>tutorial-app</warName>
-                </configuration>
-            </plugin>
+			<resource>
+				<directory>src/main/resources</directory>
+				<excludes>
+					<!-- <exclude>*.properties</exclude> -->
+					<exclude>**/repository/**</exclude>
+				</excludes>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+
+					<execution>
+						<id>copy-appProperties-totarget</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/resources</directory>
+									<includes>
+										<include>application.properties</include>
+										<include>repository/**</include>
+									</includes>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>copy-bin-totarget</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/resources/bin</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>copy-appProperties-tobin</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/bin</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/resources</directory>
+									<includes>
+										<include>application.properties</include>
+										<include>repository/**</include>
+									</includes>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-bin-tobin</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/bin</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/resources/bin</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<packagingExcludes>WEB-INF/lib/tomcat-*.jar</packagingExcludes>
+					<warName>tutorial-app</warName>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
-				  <execution>
-					<id>copy-installed</id>
-					<phase>install</phase>
-					<goals>
-					  <goal>copy</goal>
-					</goals>
-					<configuration>
-					  <artifactItems>
-						<artifactItem>
-						  <groupId>${project.groupId}</groupId>
-						  <artifactId>${project.artifactId}</artifactId>
-						  <version>${project.version}</version>
-						  <type>${project.packaging}</type>
-						</artifactItem>
-					  </artifactItems>
-					  <outputDirectory>${basedir}/bin</outputDirectory>
-					</configuration>
-				  </execution>
+					<execution>
+						<id>copy-installed</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<version>${project.version}</version>
+									<type>${project.packaging}</type>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${basedir}/bin</outputDirectory>
+						</configuration>
+					</execution>
 				</executions>
-			  </plugin>
-			  <plugin>
-					<groupId>com.coderplus.maven.plugins</groupId>
-					<artifactId>copy-rename-maven-plugin</artifactId>
-					<version>1.0</version>
-					<executions>
-						<execution>
-							<id>copy-and-rename-file</id>
-							<phase>install</phase>
-							<goals>
-								<goal>rename</goal>
-							</goals>
-							<configuration>
-								<sourceFile>${project.build.directory}/server-2.2.0.M6.jar.original</sourceFile>
-								<destinationFile>${project.build.directory}/server-2.2.0.M6-or.jar</destinationFile>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-		
-			
-        </plugins>
-    </build>
+			</plugin>
+			<plugin>
+				<groupId>com.coderplus.maven.plugins</groupId>
+				<artifactId>copy-rename-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>copy-and-rename-file</id>
+						<phase>install</phase>
+						<goals>
+							<goal>rename</goal>
+						</goals>
+						<configuration>
+							<sourceFile>${project.build.directory}/server-2.2.0.M6.jar.original</sourceFile>
+							<destinationFile>${project.build.directory}/server-2.2.0.M6-or.jar</destinationFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
+		</plugins>
+	</build>
 
 	<repositories>
 		<repository>
