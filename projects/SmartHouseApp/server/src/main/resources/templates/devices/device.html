@@ -32,7 +32,7 @@
 					<div class="col-md-4">
 
 						<h1><a class="navbar-brand" href="index.html" data-0="line-height:90px;"
-								data-300="line-height:50px;"  th:text="${serverName}"> Hidayah
+								data-300="line-height:50px;" th:text="${serverName}"> Hidayah
 							</a></h1>
 
 					</div>
@@ -51,78 +51,49 @@
 		</div>
 	</header>
 
-		<div class="container">
+	<div class="container">
 
-			<h1 th:text="${device.description}">Устройство сервера</h1>
+		<h1 th:text="${device.description}">Устройство сервера</h1>
 
-			<div class="btn-group">
-				<a th:href="@{http://{addr}/info(addr=${device.ip})}" class="btn btn-default">&#x2139; Информация</a>
-				<a th:href="@{http://{addr}/data(addr=${device.ip})}" class="btn btn-default">&#x1F4DA; Данные</a>
-				<a th:href="@{http://{addr}/update(addr=${device.ip})}" class="btn btn-default">&#x1F4F2; Прошивка</a>
-			</div>
-
-			<div>
-				<table id="devicesTable" class="table table-dark table-striped">
-					<thead>
-						<tr>
-							<th>Идентификатор</th>
-							<th>Прошивка</th>
-							<th>Описание</th>
-							<th>Адресс</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td th:text="${device.name}">Идентификатор</td>
-							<td th:text="${device.firmware}">Прошивка</td>
-							<td th:text="${device.description}">Описание</td>
-							<td th:text="${device.ip}">Адресс</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-
-			<p>Датчики</p>
-
-			<div id="sensorsContent" style="display: flex; flex-wrap: wrap;">
-				<div th:each="entity : ${sensors}" class="panel panel-default"
-					style="width: 400px; float: left; min-width: 300px; margin: 5px;">
-					<div th:text="${entity.description}" class="panel-heading">Entity Heading</div>
-					<div class="panel-body">Panel Content</div>
-				</div>
-			</div>
+		<div class="btn-group">
+			<a th:href="@{http://{addr}/info(addr=${device.ip})}" class="btn btn-default">&#x2139; Информация</a>
+			<a th:href="@{http://{addr}/data(addr=${device.ip})}" class="btn btn-default">&#x1F4DA; Данные</a>
+			<a th:href="@{http://{addr}/update(addr=${device.ip})}" class="btn btn-default">&#x1F4F2; Прошивка</a>
 		</div>
 
-	<section id="footer" class="section footer">
-		<div class="container">
-			<div class="row animated opacity mar-bot20" data-andown="fadeIn" data-animation="animation">
-				<div class="col-sm-12 align-center">
-					<ul class="social-network social-circle">
-						<li><a href="#" class="icoRss" title="Rss"><i class="fa fa-rss"></i></a></li>
-						<li><a href="#" class="icoFacebook" title="Facebook"><i class="fa fa-facebook"></i></a></li>
-						<li><a href="#" class="icoTwitter" title="Twitter"><i class="fa fa-twitter"></i></a></li>
-						<li><a href="#" class="icoGoogle" title="Google +"><i class="fa fa-google-plus"></i></a></li>
-						<li><a href="#" class="icoLinkedin" title="Linkedin"><i class="fa fa-linkedin"></i></a></li>
-					</ul>
-				</div>
-			</div>
-
-			<div class="col-sm-12 text-center">
-				<p>Copyright &copy; Hidayah Theme</p>
-				<div class="credits">
-					<!--
-                All the links in the footer should remain intact. 
-                You can delete the links only if you purchased the pro version.
-                Licensing information: https://bootstrapmade.com/license/
-                Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/buy/?theme=Hidayah
-              -->
-					Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-				</div>
-			</div>
+		<div>
+			<table id="devicesTable" class="table table-dark table-striped">
+				<thead>
+					<tr>
+						<th>Идентификатор</th>
+						<th>Прошивка</th>
+						<th>Описание</th>
+						<th>Адресс</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td th:text="${device.name}">Идентификатор</td>
+						<td th:text="${device.firmware}">Прошивка</td>
+						<td th:text="${device.description}">Описание</td>
+						<td th:text="${device.ip}">Адресс</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 
-	</section>
-	<a href="#" class="scrollup"><i class="fa fa-chevron-up"> </i></a>
+		<p>Датчики</p>
+
+		<div id="sensorsContent" style="display: flex; flex-wrap: wrap;">
+			<div th:each="entity : ${sensors}" class="panel panel-default"
+				style="width: 400px; float: left; min-width: 300px; margin: 5px;">
+				<div th:text="${entity.description}" class="panel-heading">Entity Heading</div>
+				<div class="panel-body">Panel Content</div>
+			</div>
+		</div>
+	</div>
+
+	<footer th:replace="templates :: footer"></footer>
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>

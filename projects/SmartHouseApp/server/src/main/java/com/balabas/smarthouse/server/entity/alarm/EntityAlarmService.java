@@ -513,4 +513,11 @@ public class EntityAlarmService implements IEntityAlarmService {
 		save(new EntityAlarm(entity));
 	}
 
+	@Transactional
+	@Override
+	public void deleteAlarmsByDeviceId(Long deviceId) {
+		alarmFieldRepository.deleteEntityFieldAlarmByDeviceId(deviceId);
+		alarmRepository.deleteEntityAlarmsByDeviceId(deviceId);
+	}
+
 }

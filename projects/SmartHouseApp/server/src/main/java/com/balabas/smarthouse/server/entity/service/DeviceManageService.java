@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,10 +32,13 @@ import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IUpdateable;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
+import com.balabas.smarthouse.server.entity.repository.IEntityFieldEnabledValueRepository;
+import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldValueRepository;
 import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
 import com.google.common.collect.Lists;
@@ -70,6 +74,12 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Autowired
 	IEntityFieldValueRepository entityFieldValueRepository;
+	
+	@Autowired
+	IEntityFieldEnabledValueRepository entityFieldEnabledValueRepository;
+	
+	@Autowired
+	IEntityFieldRepository entityFieldRepository;
 
 	@Getter
 	private List<Device> devices = Collections.synchronizedList(new ArrayList<>());
@@ -466,6 +476,22 @@ public class DeviceManageService implements IDeviceManageService {
 	}
 	
 	@Override
+	public List<Entity> getEntitiesForDevice(Long deviceId) {
+		return getDeviceById(deviceId).getEntities().stream().filter( e-> ItemType.SENSORS.equals(e.getGroup().getType())).collect(Collectors.toList());
+	}
+	
+	@Override
+	public Map<String, List<EntityFieldValue>> getLastEntityFieldValuesForDeviceGroupped(Long deviceId) {
+		List<EntityFieldValue> values = getLastEntityFieldValuesForDevice(deviceId);
+		
+		LinkedHashMap<String, List<EntityFieldValue>> map = values
+	            .stream()
+	            .collect(Collectors.groupingBy( v -> v.getEntityField().getEntity().getName(), LinkedHashMap::new, Collectors.toList()));
+		
+		return map;
+	}
+	
+	@Override
 	public List<EntityFieldValue> getLastEntityFieldValuesForDevice(Long deviceId) {
 		return entityFieldValueRepository.getLastEntityFieldValuesForDevice(deviceId);
 	}
@@ -474,5 +500,20 @@ public class DeviceManageService implements IDeviceManageService {
 	public List<EntityFieldValue> getLastEntityFieldValuesForEntity(Long entityId) {
 		return entityFieldValueRepository.getLastEntityFieldValuesForEntity(entityId);
 	}
+	
+	@Transactional
+	@Override
+	public void deleteDeviceById(Long deviceId) {
+		int index = getDeviceIndex(deviceId);
+		devices.remove(index);
+		
+		entityFieldValueRepository.deleteEntityFieldValuesForDevice(deviceId);
+		entityFieldEnabledValueRepository.deleteEntityFieldEnabledValuesForDevice(deviceId);
+		
+		alarmService.deleteAlarmsByDeviceId(deviceId);
+		
+		deviceRepository.deleteById(deviceId);
+	}
+	
 
 }

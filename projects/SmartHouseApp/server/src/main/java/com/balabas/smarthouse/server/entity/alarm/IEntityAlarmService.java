@@ -74,5 +74,7 @@ public interface IEntityAlarmService {
 	void changeEntityAlarmSound(Long entityAlarmId);
 
 	void checkWithClear(IEntityAlarm entityAlarm);
+	
+	void deleteAlarmsByDeviceId(Long deviceId);
 
 }

@@ -2,6 +2,9 @@ package com.balabas.smarthouse.server.entity.repository;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +20,14 @@ public interface IEntityAlarmRepository extends CrudRepository<EntityAlarm, Long
 	
 	@Query("from EntityAlarm where entity.group.device.id = :id")
 	List<EntityAlarm> findAlarmsForDevice(@Param("id")Long deviceId);
+	
+	@Transactional
+	@Modifying
+	@Query(value = "DELETE FROM entity_alarm" + 
+			" WHERE entity_id IN" + 
+			"	(SELECT e.id AS id from entities e" + 
+			"	JOIN groups g ON g.id = e.group_id" + 
+			"	JOIN devices d ON d.id = g.device_id" + 
+			"	WHERE d.id = :id)", nativeQuery = true)
+	void deleteEntityAlarmsByDeviceId(@Param("id") Long deviceId);
 }

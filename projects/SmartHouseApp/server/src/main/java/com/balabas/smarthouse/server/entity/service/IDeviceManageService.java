@@ -63,4 +63,13 @@ public interface IDeviceManageService {
 
 	List<EntityFieldValue> getLastEntityFieldValuesForEntity(Long entityId);
 
+
+	List<Entity> getEntitiesForDevice(Long deviceId);
+
+
+	Map<String, List<EntityFieldValue>> getLastEntityFieldValuesForDeviceGroupped(Long deviceId);
+
+
+	void deleteDeviceById(Long deviceId);
+
 }

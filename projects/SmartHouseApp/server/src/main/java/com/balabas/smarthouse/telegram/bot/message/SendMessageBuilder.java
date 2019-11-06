@@ -42,8 +42,8 @@ import lombok.Getter;
 @SuppressWarnings("rawtypes")
 public class SendMessageBuilder {
 
-	@Value("${telegram.bot.server.display.address:#{null}}")
-	private String serverDisplayAddress;
+	@Value("${smarthouse.server.url:#{null}}")
+	private String serverUrl;
 	
 	@Autowired
 	private IDeviceManageService deviceService;
@@ -101,7 +101,7 @@ public class SendMessageBuilder {
 	}
 
 	public List<SendMessage> createDevicesListView(Action action, ReplyContext cont) {
-		String serverAddress = Optional.ofNullable(serverDisplayAddress).orElse("");
+		String serverAddress = Optional.ofNullable(serverUrl).orElse("");
 		
 		String serverName = action.getServerName();
 		List<SendMessage> msgs = Lists.newArrayList();
