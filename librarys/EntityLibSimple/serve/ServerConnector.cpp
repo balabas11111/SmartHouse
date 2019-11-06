@@ -77,6 +77,7 @@ void ServerConnector::checkConnection() {
 
 		if(registrationFailures > SERVER_CONNECTION_NEXT_REGISTRATION_NEXT_COUNT){
 			setRequestPostPoned(SERVER_CONNECTION_REGISTRATION_FAILED_NEXT_TIMEOUT);
+			this->registrationFailures = 0;
 		}else{
 			setRequestPostPoned(SERVER_CONNECTION_REGISTRATION_FAILED_FIRST_TIMEOUT);
 		}

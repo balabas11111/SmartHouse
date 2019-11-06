@@ -9,10 +9,10 @@
 #include "ESP8266WiFi.h"
 #include "PubSubClient.h"
 
-OutputPin redLed(D6,  (char*) "Диод", "redLED",  HIGH);
-OutputPin greenLed(D7,  (char*) "Зеленый диод", "greenLED",  HIGH);
+//OutputPin redLed(D6,  (char*) "Диод", "redLED",  HIGH);
+//OutputPin greenLed(D7,  (char*) "Зеленый диод", "greenLED",  HIGH);
 
-DHT22sensor dht22(D5, (char*) "Микроклимат воздух", DHT22);
+DHT22sensor dht22(D5, (char*) "Микроклимат воздух", AM2301);
 DS18D20sensor ds18d20(D1, (char*) "Температура пол");
 
 Entity* entities[] = { &dht22, &ds18d20 };
