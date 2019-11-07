@@ -10,9 +10,10 @@ import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
-import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
+import com.balabas.smarthouse.server.view.DeviceValueActionHolder;
 
 @SuppressWarnings({ "rawtypes" })
 public interface IDeviceManageService {
@@ -36,8 +37,9 @@ public interface IDeviceManageService {
 
 	void requestAllDevicesDataWithUpdateRequired();
 
-	String sendDataToDevice(String deviceName, String groupName, String entityName, Map<String, Object> values)
-			throws ResourceNotFoundException;
+	String sendDataToDevice(Long deviceId, Long entityId, String actionData);
+	String sendDataToDevice(IDevice device, IEntity entity, Map<String, Object> values);
+	String sendDataToDevice(String deviceName, String groupName, String entityName, Map<String, Object> values);
 
 	Device getDeviceById(Long id);
 	
@@ -63,12 +65,9 @@ public interface IDeviceManageService {
 
 	List<EntityFieldValue> getLastEntityFieldValuesForEntity(Long entityId);
 
-
 	List<Entity> getEntitiesForDevice(Long deviceId);
 
-
-	Map<String, List<EntityFieldValue>> getLastEntityFieldValuesForDeviceGroupped(Long deviceId);
-
+	DeviceValueActionHolder getValueActionHolder(Long deviceId);
 
 	void deleteDeviceById(Long deviceId);
 

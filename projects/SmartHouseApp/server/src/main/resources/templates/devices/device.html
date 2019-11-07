@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Bootstrap 1 Template</title>
+	<title th:text="'Устройство ' + ${device.description}">Устройство</title>
 
 	<!-- Bootstrap -->
 	<link href="css/bootstrap.min.css" rel="stylesheet">
@@ -16,12 +16,6 @@
 	<link rel="stylesheet" href="js/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
 	<link rel="stylesheet" type="text/css" href="css/isotope.css" media="screen" />
 	<link rel="stylesheet" href="css/style.css">
-	<!-- =======================================================
-    Theme Name: Hidayah
-    Theme URL: https://bootstrapmade.com/hidayah-free-simple-html-template-for-corporate/
-    Author: BootstrapMade
-    Author URL: https://bootstrapmade.com
-  ======================================================= -->
 </head>
 
 <body>
@@ -32,7 +26,7 @@
 					<div class="col-md-4">
 
 						<h1><a class="navbar-brand" href="index.html" data-0="line-height:90px;"
-								data-300="line-height:50px;" th:text="${serverName}"> Hidayah
+								data-300="line-height:50px;" th:text="${device.description}"> Hidayah
 							</a></h1>
 
 					</div>
@@ -40,7 +34,7 @@
 					<div class="col-md-8">
 						<div class="dropdown">
 							<ul class="nav nav-pills">
-								<li class="active"><a href="index">Устройства</a></li>
+								<li><a href="index">Устройства</a></li>
 								<li><a href="alarms">Режимы тревоги</a></li>
 								<li><a href="settings">Настройки</a></li>
 							</ul>
@@ -53,13 +47,7 @@
 
 	<div class="container">
 
-		<h1 th:text="${device.description}">Устройство сервера</h1>
-
-		<div class="btn-group">
-			<a th:href="@{http://{addr}/info(addr=${device.ip})}" class="btn btn-default">&#x2139; Информация</a>
-			<a th:href="@{http://{addr}/data(addr=${device.ip})}" class="btn btn-default">&#x1F4DA; Данные</a>
-			<a th:href="@{http://{addr}/update(addr=${device.ip})}" class="btn btn-default">&#x1F4F2; Прошивка</a>
-		</div>
+		<h4 th:text="${device.description}">Устройство сервера</h4>
 
 		<div>
 			<table id="devicesTable" class="table table-dark table-striped">
@@ -68,7 +56,9 @@
 						<th>Идентификатор</th>
 						<th>Прошивка</th>
 						<th>Описание</th>
-						<th>Адресс</th>
+						<th>Состояние</th>
+						<th>IP</th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -76,19 +66,56 @@
 						<td th:text="${device.name}">Идентификатор</td>
 						<td th:text="${device.firmware}">Прошивка</td>
 						<td th:text="${device.description}">Описание</td>
-						<td th:text="${device.ip}">Адресс</td>
+						<td th:text="${device.getStateEmoji()} + ' ' + ${device.getStateDescription()}">Состояние</td>
+						<td th:text="${device.ip}">IP</td>
+						<td>
+							<div class="dropdown">
+								<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+									&#x2699; Админ
+									<span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu">
+									<li><a th:href="@{http://{addr}/info(addr=${device.ip})}"
+											class="btn">&#x2139; Информация</a></li>
+									<li><a th:href="@{http://{addr}/data(addr=${device.ip})}"
+											class="btn">&#x1F4DA; Данные</a></li>
+									<li><a th:href="@{http://{addr}/update(addr=${device.ip})}"
+											class="btn">&#x1F4F2; Прошивка</a></li>
+								</ul>
+							</div>
+						</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
 
-		<p>Датчики</p>
+		<p>
+			<h4>Показания датчиков</h4>
+		</p>
 
 		<div id="sensorsContent" style="display: flex; flex-wrap: wrap;">
 			<div th:each="entity : ${sensors}" class="panel panel-default"
 				style="width: 400px; float: left; min-width: 300px; margin: 5px;">
-				<div th:text="${entity.description}" class="panel-heading">Entity Heading</div>
-				<div class="panel-body">Panel Content</div>
+				<div th:text="${entity.emoji} + ' ' + ${entity.description}" class="panel-heading">Entity Heading</div>
+				<div class="panel-body">
+					<table id="devicesTable" class="table table-striped">
+						<tbody>
+							<tr th:each="entityValue : ${holder.getEntityFieldValues().get(entity.name)}">
+								<td th:text="${entityValue.entityField.emoji}">Прошивка</td>
+								<td th:text="${entityValue.entityField.getDescriptionByDescriptionField()}">Описание
+								</td>
+								<td th:text="${entityValue.getValueStr()}">Адресс</td>
+							</tr>
+							<tr th:each="entityAction : ${holder.getEntityFieldActions().get(entity.name)}">
+								<td>
+									<a th:href="@{~/executeAction_{deviceId}_{entityId}_{action}_(deviceId=${device.id},entityId=${entityAction.getTargetId()},action=${entityAction.getData()})}"
+										class="btn btn-default" th:text="${entityAction.getDescription()}">Выполнить</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+				</div>
 			</div>
 		</div>
 	</div>

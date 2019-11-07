@@ -28,6 +28,7 @@ import com.balabas.smarthouse.server.entity.model.ItemAbstractByDescriptionCompa
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
+import com.balabas.smarthouse.server.entity.service.IGroupService;
 import com.balabas.smarthouse.server.view.Action;
 import com.google.common.collect.Lists;
 
@@ -47,6 +48,9 @@ public class SendMessageBuilder {
 	
 	@Autowired
 	private IDeviceManageService deviceService;
+	
+	@Autowired
+	private IGroupService groupService;
 
 	@Autowired
 	private IEntityAlarmService entityAlarmService;
@@ -398,7 +402,7 @@ public class SendMessageBuilder {
 
 	private SendMessage buildGroupCommandInterface(IDevice device, IGroup group, Long chatId) {
 
-		List<Action> actions = EntityViewBuilder.getCommandButtonsForGroup(Action.ACTION_TYPE_SEND_DATA_TO_DEVICE,
+		List<Action> actions = groupService.getActionsForGroup(Action.ACTION_TYPE_SEND_DATA_TO_DEVICE,
 				group);
 
 		if (actions.isEmpty()) {

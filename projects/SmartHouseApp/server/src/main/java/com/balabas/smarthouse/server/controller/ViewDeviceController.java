@@ -18,6 +18,11 @@ public class ViewDeviceController {
 	@Autowired
 	private DeviceManageService deviceService;
 	
+	@GetMapping("/")
+    public String getRoot(Model model) {
+        return "redirect:/index";
+    }
+	
 	@GetMapping("/index")
     public String getDevicesIndex(Model model) {
 		model.addAttribute("serverName", serverName);
@@ -25,22 +30,12 @@ public class ViewDeviceController {
         return "devices/index.html";
     }
 
-	@GetMapping("/alarms")
-    public String getDevicesalarms(Model model) {
-        return "devices/alarms.html";
-    }
-	
-	@GetMapping("/settings")
-    public String getDevicesSettings(Model model) {
-        return "devices/settings.html";
-    }
-	
 	@GetMapping("/device_{deviceId}")
     public String getDevice(@PathVariable(name = "deviceId") Long id, Model model) {
 		model.addAttribute("serverName", serverName);
         model.addAttribute("device", deviceService.getDeviceById(id));
         model.addAttribute("sensors", deviceService.getEntitiesForDevice(id));
-        model.addAttribute("values", deviceService.getLastEntityFieldValuesForDeviceGroupped(id));
+        model.addAttribute("holder", deviceService.getValueActionHolder(id));
         
         return "devices/device.html";
     }
@@ -51,4 +46,28 @@ public class ViewDeviceController {
         
         return "redirect:/index";
     }
+	
+	@GetMapping("/executeAction_{deviceId}_{entityId}_{action}_")
+	public String executeEntityAction(@PathVariable(name = "deviceId") Long deviceId,
+			@PathVariable(name = "entityId") Long entityId, 
+			@PathVariable(name = "action") String action, Model model) {
+		
+		deviceService.sendDataToDevice(deviceId, entityId, action);
+		
+		return "redirect:/device_" + Long.toString(deviceId);
+		
+	}
+	
+	@GetMapping("/alarms")
+    public String getDevicesAlarms(Model model) {
+		model.addAttribute("serverName", serverName);
+        return "devices/alarms.html";
+    }
+	
+	@GetMapping("/settings")
+    public String getDevicesSettings(Model model) {
+		model.addAttribute("serverName", serverName);
+        return "devices/settings.html";
+    }
+
 }

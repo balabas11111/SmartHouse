@@ -21,6 +21,7 @@ import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.service.IEntityFieldService;
 import com.balabas.smarthouse.server.view.Action;
 import com.google.common.collect.Lists;
 
@@ -74,7 +75,14 @@ public class InlineKeyboardBuilder {
 	@Autowired
 	@Getter
 	private ItemTextHelper buttons;
+	
+	@Autowired
+	private IEntityFieldService entityFieldService;
 
+	public static List<InlineKeyboardButton> createInlineKeyboardButtonRow(Action action) {
+		return createInlineKeyboardButtonRow(action.getDescription(), action.getCallbackData());
+	}
+	
 	public static List<InlineKeyboardButton> createInlineKeyboardButtonRow(String text, String callbackData) {
 		List<InlineKeyboardButton> row = Lists.newArrayList();
 		InlineKeyboardButton btn = new InlineKeyboardButton().setText(text).setCallbackData(callbackData);
@@ -352,18 +360,11 @@ public class InlineKeyboardBuilder {
 		entity.getEntityFields().stream().sorted((ef1, ef2) -> ef1.getName().compareToIgnoreCase(ef2.getName()))
 				.forEach(entityField -> {
 
-					List<Action> actions = EntityViewBuilder.getCommandButtonsForEntity(ACTION_TYPE_SEND_DATA_TO_DEVICE_EDIT_FIELDS,
-							entity, entityField);
+					List<Action> actions = entityFieldService.getActionsForEntityField(ACTION_TYPE_SEND_DATA_TO_DEVICE_EDIT_FIELDS,
+							entityField);
 
 					if (actions != null && !actions.isEmpty()) {
-
-						for (Action action : actions) {
-							String text = action.getDescription();
-							String callback = action.getCallbackData();
-
-							rowsInline.add(createInlineKeyboardButtonRow(text, callback));
-						}
-
+						actions.stream().forEach(action -> rowsInline.add(createInlineKeyboardButtonRow(action)));
 					} else if (!entityField.isReadOnly()
 							&& !DeviceConstants.ENTITY_FIELD_ID.equals(entityField.getName())) {
 

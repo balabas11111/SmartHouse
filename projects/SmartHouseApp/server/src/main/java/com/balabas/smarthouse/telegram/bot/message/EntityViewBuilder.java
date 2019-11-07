@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,7 +24,6 @@ import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
-import com.balabas.smarthouse.server.view.Action;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
@@ -61,8 +58,8 @@ public class EntityViewBuilder {
 	public void buildEntityBody(IEntity entity, StringBuilder builder) {
 
 		// if template is presented use template. else build by descriptor
-		if (//EntityClass.DEFAULT.equals(entity.getRenderer()) &&
-				entityValueMapToTemplate(entity.getName(), entity.getEntityFields(),/* entity.getGeneratedFields(),*/ builder,
+		if (// EntityClass.DEFAULT.equals(entity.getRenderer()) &&
+		entityValueMapToTemplate(entity.getName(), entity.getEntityFields(), /* entity.getGeneratedFields(), */ builder,
 				true, false)) {
 
 			if (entity.getGrouppedFieldsIds() != null && !entity.getGrouppedFieldsIds().isEmpty()) {
@@ -81,7 +78,7 @@ public class EntityViewBuilder {
 						}
 					});
 
-					entityValueMapToTemplate(entName, siVals,/* entity.getGeneratedFields(),*/ builder, true, true);
+					entityValueMapToTemplate(entName, siVals, /* entity.getGeneratedFields(), */ builder, true, true);
 				});
 			}
 
@@ -93,32 +90,27 @@ public class EntityViewBuilder {
 
 	public void buildEntityBodyViewByFieldDescriptors(IEntity entity, StringBuilder builder) {
 		Set<IEntityField> entityFields = entity.getEntityFields();
-		
-		List<String> invisibleFields = Arrays.asList(
-				ENTITY_FIELD_SENSOR_ITEMS, ENTITY_FIELD_ID, entity.getDescriptionField());
+
+		List<String> invisibleFields = Arrays.asList(ENTITY_FIELD_SENSOR_ITEMS, ENTITY_FIELD_ID,
+				entity.getDescriptionField());
 
 		for (IEntityField ef : entityFields) {
-			if(!invisibleFields.contains(ef.getName())) {
-			
+			if (!invisibleFields.contains(ef.getName())) {
+
 				builder.append((Optional.ofNullable(ef.getEmoji()).orElse(Emoji.EMPTY_EMOJI)).toString());
 				builder.append(ef.getDescription());
-	
+
 				IEntityFieldEnabledValue enVal = ef.getEntityFieldEnabledValueByCurrentValue();
-	
-				if (enVal != null && enVal.getViewClass() != null) {
-	
-					boolean entityFieldIsBoolean = Boolean.class.equals(ef.getClazz());
-					boolean entityFieldViewClassIsButton = ef.getViewClass().isButton();
-					
-					if (entityFieldIsBoolean && entityFieldViewClassIsButton) {
-						
-						builder.append(" ");
-						builder.append(enVal.getEmoji());
-						builder.append(" (");
-						builder.append(enVal.getDescription());
-						builder.append(")");
-					}
-	
+
+				if (enVal != null && enVal.getViewClass() != null && Boolean.class.equals(ef.getClazz())
+						&& ef.getViewClass().isButton()) {
+
+					builder.append(" ");
+					builder.append(enVal.getEmoji());
+					builder.append(" (");
+					builder.append(enVal.getDescription());
+					builder.append(")");
+
 				} else {
 					builder.append(ef.getValueStr());
 				}
@@ -133,134 +125,10 @@ public class EntityViewBuilder {
 		return itemTextHelper.getGroupCommandHeader(device.getEmoji().toString(), device.getDescription(),
 				group.getEmoji().toString(), group.getDescription());
 	}
-	
-	public static List<Action> getCommandButtonsForGroup(String actionName, IGroup group) {
-		if(group == null || group.getEntities().isEmpty()) {
-			return Collections.emptyList();
-		}
-		
-		return group.getEntities()
-				.stream().flatMap( entity -> getCommandButtonsForEntity(actionName, entity).stream())
-				.collect(Collectors.toList());
-	}
-	
-	public static List<Action> getCommandButtonsForEntity(String actionName, IEntity entity) {
-		return getEnabledEntityFieldWithCommandsForEntity(entity)
-				.stream().map( ef -> Action.fromEntityFieldEnabledValue(actionName, ef))
-				.collect(Collectors.toList());
-	}
-
-	public List<IEntityFieldEnabledValue> getEnabledEntityFieldWithCommandsForGroup(IGroup group) {
-		if(group == null || group.getEntities().isEmpty()) {
-			return Collections.emptyList();
-		}
-		
-		return group.getEntities().stream()
-				.flatMap( ent -> getEnabledEntityFieldWithCommandsForEntity(ent).stream() )
-				.collect(Collectors.toList());
-	}
-
-	public static List<IEntityFieldEnabledValue> getEnabledEntityFieldWithCommandsForEntity(IEntity entity) {
-		Set<IEntityField> entFields = entity.getEntityFields();
-
-		if (entFields == null || entFields.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		return entFields.stream().flatMap( ef -> getCommandsForEntityField(ef).stream())
-				.collect(Collectors.toList());
-	}
-
-	public static List<Action> getCommandButtonsForEntity(String actionName, IEntity entity, IEntityField entityField) {
-		return getCommandsForEntityField(entityField)
-				.stream().map( ef -> Action.fromEntityFieldEnabledValue(actionName, ef))
-				.collect(Collectors.toList());
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static List<IEntityFieldEnabledValue> getCommandsForEntityField(IEntityField entityField) {
-		
-		if (!Boolean.class.equals(entityField.getClazz()) || entityField.getEnabledValues() == null || entityField.getEnabledValues().isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		IEntityFieldEnabledValue currentValue = entityField.getEntityFieldEnabledValueByCurrentValue();
-		
-		Set<IEntityFieldEnabledValue> evals = entityField.getEnabledValues();
-		
-		List<IEntityFieldEnabledValue> result = evals.stream()
-				.filter( ev -> 
-					ev.getViewClass() !=null 
-					&& ev.getViewClass().isButton() 
-					&& (currentValue == null 
-						|| (currentValue !=null && !ev.equals(currentValue))))
-				.collect(Collectors.toList());
-		
-		return result;
-	}
-	
-	
-
-	public boolean groupHasCommandInterface(IGroup group) {
-		if (group.getEntities() == null || group.getEntities().isEmpty()) {
-			return false;
-		}
-
-		boolean result = false;
-
-		for (IEntity entity : group.getEntities()) {
-			boolean entHas = entityHasCommandInterface(entity);
-
-			result = result || entHas;
-
-			if (result) {
-				break;
-			}
-		}
-
-		return result;
-	}
-
-	private boolean entityHasCommandInterface(IEntity entity) {
-		Set<IEntityField> entFields = entity.getEntityFields();
-
-		if (entFields == null || entFields.isEmpty()) {
-			return false;
-		}
-
-		boolean result = false;
-
-		for (IEntityField ef : entFields) {
-			boolean isB = Boolean.class.equals(ef.getClazz());
-			boolean hasButtonAsEnabledValue = false;
-			;
-
-			if (!isB) {
-				continue;
-			}
-
-			if (ef.getEnabledValues() != null && !ef.getEnabledValues().isEmpty()) {
-				for (Object ev : ef.getEnabledValues()) {
-					IEntityField enabledValue = (IEntityField) ev;
-
-					if (enabledValue.getViewClass() != null) {
-						hasButtonAsEnabledValue = enabledValue.getViewClass().isButton() || hasButtonAsEnabledValue;
-					}
-				}
-			}
-
-			result = result || (isB && hasButtonAsEnabledValue);
-
-			if (result) {
-				break;
-			}
-		}
-
-		return result;
-	}
 
 	private boolean entityValueMapToTemplate(String entName, Set<IEntityField> entityFields,
-			/*Set<IEntityField> extraFields,*/ StringBuilder builder, boolean addNextLine, boolean renderAsTextIfFail) {
+			/* Set<IEntityField> extraFields, */ StringBuilder builder, boolean addNextLine,
+			boolean renderAsTextIfFail) {
 		if (entName == null || entityFields == null || entityFields.isEmpty()) {
 			return true;
 		}
@@ -276,7 +144,7 @@ public class EntityViewBuilder {
 
 				result = fieldsToToTemplate(entityFields, result);
 
-				//result = fieldsToToTemplate(extraFields, result);
+				// result = fieldsToToTemplate(extraFields, result);
 
 			} catch (NullPointerException e) {
 				// use standard renderer for item
@@ -284,7 +152,7 @@ public class EntityViewBuilder {
 
 				if (renderAsTextIfFail) {
 					result += fieldToStr(entityFields);
-					//result += fieldToStr(extraFields);
+					// result += fieldToStr(extraFields);
 					return true;
 				} else {
 					return false;
@@ -299,7 +167,7 @@ public class EntityViewBuilder {
 			result = entName + " " + fieldToStr(entityFields);
 			return false;
 		} catch (IllegalArgumentException e) {
-			
+
 			return false;
 		}
 
@@ -312,16 +180,16 @@ public class EntityViewBuilder {
 			Map<String, String> keyReplacement = new HashMap<>();
 
 			try {
-				fields.stream().filter(IEntityField::isActive).forEach( ef ->{
+				fields.stream().filter(IEntityField::isActive).forEach(ef -> {
 					keyReplacement.put("_" + ef.getTemplateName() + "_", ef.getValueStr());
 					keyReplacement.put("_" + ef.getTemplateName() + ".emoji_",
 							(Optional.ofNullable(ef.getEmoji()).orElse(Emoji.EMPTY_EMOJI)).toString());
 				});
-	
+
 				for (Entry<String, String> entry : keyReplacement.entrySet()) {
 					templateText = templateText.replaceAll(entry.getKey(), entry.getValue());
 				}
-			}catch(Exception e) {
+			} catch (Exception e) {
 				log.debug("");
 			}
 		}

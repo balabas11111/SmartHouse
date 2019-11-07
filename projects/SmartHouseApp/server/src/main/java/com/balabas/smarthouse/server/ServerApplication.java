@@ -6,12 +6,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.ApiContextInitializer;
 
 @SpringBootApplication
 @EnableScheduling
 @ComponentScan(basePackages = {"com.balabas.smarthouse.server", "com.balabas.smarthouse.telegram"})
+@PropertySource(value = "classpath:application.properties", encoding = "UTF-8")
 public class ServerApplication {
 
 	private static ConfigurableApplicationContext context;

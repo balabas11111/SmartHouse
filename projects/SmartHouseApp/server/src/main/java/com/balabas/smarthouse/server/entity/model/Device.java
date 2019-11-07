@@ -15,6 +15,7 @@ import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
@@ -24,6 +25,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true, exclude = "groups")
 @Table(name = "devices")
 @javax.persistence.Entity
+@SuppressWarnings("rawtypes")
 public class Device extends ItemAbstract implements IDevice {
 
 	private String firmware;
@@ -73,6 +75,11 @@ public class Device extends ItemAbstract implements IDevice {
 	}
 	
 	@Override
+	public IEntityField getEntityField(Long entityId, Long entityFieldId) {
+		return getEntity(entityId).getEntityField(entityFieldId);
+	}
+	
+	@Override
 	public Entity getEntityByRemoteId(int remoteId) {
 		return getGroups().stream().flatMap(group -> group.getEntities().stream())
 				.filter(e -> e.getRemoteId() == remoteId).findFirst().orElse(null);
@@ -82,23 +89,29 @@ public class Device extends ItemAbstract implements IDevice {
 	public boolean isRegistered() {
 		return state != null && state.compareTo(State.REGISTERED) >= 0;
 	}
-
+	
 	@Override
-	public Device update(Device device) {
-		this.firmware = device.getFirmware();
-		this.description = device.getDescription();
-		this.ip = device.getIp();
-		this.dataUrl = device.getDataUrl();
-		this.timer = device.getTimer();
-		return this;
+	public boolean isInBadState() {
+		return state != null && (State.TIMED_OUT.equals(state) || State.DISCONNECTED.equals(state) || State.FAILED.equals(state));
 	}
 	
+
 	private Entity getEntityByFilter(Predicate<? super Entity> entityPredicate) {
 		if (getGroups() == null) {
 			return null;
 		}
 		return getGroups().stream().flatMap(group -> group.getEntities().stream())
 				.filter(entityPredicate).findFirst().orElse(null);
+	}
+
+	@Override
+	public String getStateEmoji() {
+		return getState().getStateEmoji(false).toString();
+	}
+
+	@Override
+	public String getStateDescription() {
+		return getState().getStateDescription(false);
 	}
 
 }

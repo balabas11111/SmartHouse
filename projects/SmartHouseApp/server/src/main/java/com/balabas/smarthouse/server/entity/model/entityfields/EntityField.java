@@ -158,6 +158,13 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 				.findFirst().orElse(null);
 	}
 	
+	@JsonIgnore
+	@Override
+	public boolean isButton() {
+		return Boolean.class.equals(getClazz())
+				&& getViewClass().isButton();
+	}
+	
 	@Override
 	public String getNameDescriptionByDescriptionField() {
 		return getName() +" (" + getDescriptionByDescriptionField() + ")";

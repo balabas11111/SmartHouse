@@ -2,12 +2,12 @@ package com.balabas.smarthouse.server.entity.service;
 
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_URL_DATA;
 import static com.balabas.smarthouse.server.DeviceConstants.HTTP_PREFFIX;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,6 +22,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.balabas.smarthouse.server.controller.ControllerConstants;
 import com.balabas.smarthouse.server.controller.service.DeviceRequestorService;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
@@ -38,9 +39,9 @@ import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabl
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldEnabledValueRepository;
-import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldValueRepository;
-import com.balabas.smarthouse.server.exception.ResourceNotFoundException;
+import com.balabas.smarthouse.server.view.Action;
+import com.balabas.smarthouse.server.view.DeviceValueActionHolder;
 import com.google.common.collect.Lists;
 
 import lombok.Getter;
@@ -79,8 +80,8 @@ public class DeviceManageService implements IDeviceManageService {
 	IEntityFieldEnabledValueRepository entityFieldEnabledValueRepository;
 	
 	@Autowired
-	IEntityFieldRepository entityFieldRepository;
-
+	IEntityFieldService entityFieldService;
+	
 	@Getter
 	private List<Device> devices = Collections.synchronizedList(new ArrayList<>());
 
@@ -182,12 +183,13 @@ public class DeviceManageService implements IDeviceManageService {
 			if (exDevice.getId() == null || exDevice.getId() == 0L) {
 				exDevice.setName(device.getName());
 				exDevice.setState(State.CONSTRUCTED);
-				exDevice.setDataUrl(HTTP_PREFFIX + device.getIp() + DEVICE_URL_DATA);
 				exDevice.setRegistrationDate(new Date());
 			}
 		}
 
 		exDevice.setIp(device.getIp());
+		exDevice.setDataUrl(getDeviceUrl(device));
+		
 		device = exDevice;
 
 		if (!device.isInitialized()) {
@@ -197,6 +199,14 @@ public class DeviceManageService implements IDeviceManageService {
 			save(device).getTimer().setActionForced(true);
 
 			log.info("Registered :" + device.getName());
+		}
+		
+		if(device.isInBadState()) {
+			stateChanger.stateChanged(device, State.REREGISTERED);
+
+			save(device).getTimer().setActionForced(true);
+
+			log.info("ReREgistered :" + device.getName());
 		}
 
 		log.debug("register process complete");
@@ -374,10 +384,25 @@ public class DeviceManageService implements IDeviceManageService {
 
 		return waits || dataTooOld;
 	}
+	
+	@Override
+	public String sendDataToDevice(Long deviceId, Long entityId, String actionData) {
+		Device device = getDeviceById(deviceId);
+
+		if (device == null) {
+			throw new IllegalArgumentException("device id not found" + deviceId);
+		}
+
+		IEntity entity = device.getEntity(entityId);
+		
+		JSONObject json = new JSONObject(actionData);
+
+		return sendDataToDevice(device, entity, json.toMap());
+		
+	}
 
 	@Override
-	public String sendDataToDevice(String deviceName, String groupName, String entityName, Map<String, Object> values)
-			throws ResourceNotFoundException {
+	public String sendDataToDevice(String deviceName, String groupName, String entityName, Map<String, Object> values) {
 
 		Device device = getDeviceByName(deviceName);
 
@@ -385,11 +410,17 @@ public class DeviceManageService implements IDeviceManageService {
 			throw new IllegalArgumentException("device name not found" + deviceName);
 		}
 
-		IEntity entity = device.getGroup(groupName).getEntity(entityName);
+		IEntity entity = device.getEntity(entityName);
+
+		return sendDataToDevice(device, entity, values);
+	}
+	
+	@Override
+	public String sendDataToDevice(IDevice device, IEntity entity, Map<String, Object> values) {
 
 		try {
 			String result = deviceRequestor.executePostDataOnDeviceEntity(device, entity, values);
-			processDataReceivedFromDevice(device, result, false, false);
+			processDataReceivedFromDevice((Device)device, result, false, false);
 			return result;
 		} catch (Exception e) {
 			log.error(e);
@@ -477,18 +508,31 @@ public class DeviceManageService implements IDeviceManageService {
 	
 	@Override
 	public List<Entity> getEntitiesForDevice(Long deviceId) {
-		return getDeviceById(deviceId).getEntities().stream().filter( e-> ItemType.SENSORS.equals(e.getGroup().getType())).collect(Collectors.toList());
+		return getDeviceById(deviceId).getEntities().stream()
+				.filter( e-> ItemType.SENSORS.equals(e.getGroup().getType()))
+				.sorted((e1, e2)->e1.getName().compareTo(e2.getName()))
+				.collect(Collectors.toList());
 	}
 	
 	@Override
-	public Map<String, List<EntityFieldValue>> getLastEntityFieldValuesForDeviceGroupped(Long deviceId) {
+	public DeviceValueActionHolder getValueActionHolder(Long deviceId) {
+		DeviceValueActionHolder holder = new DeviceValueActionHolder();
 		List<EntityFieldValue> values = getLastEntityFieldValuesForDevice(deviceId);
+
+		for(EntityFieldValue entityFieldValue : values) {
+			
+			if(entityFieldValue.getEntityField().isButton()) {
+				IEntityField entityField = entityFieldValue.getEntityField();
+				entityField.setValueWithNoCheck(entityFieldValue.getValue());
+				
+				List<Action> actions = entityFieldService.getActionsForEntityField(ACTION_TYPE_SEND_DATA_TO_DEVICE, entityField);
+				holder.addFieldAction(entityField.getEntity().getName(), actions);
+			} else {
+				holder.addFieldValue(entityFieldValue);
+			}
+		}
 		
-		LinkedHashMap<String, List<EntityFieldValue>> map = values
-	            .stream()
-	            .collect(Collectors.groupingBy( v -> v.getEntityField().getEntity().getName(), LinkedHashMap::new, Collectors.toList()));
-		
-		return map;
+		return holder;
 	}
 	
 	@Override
@@ -516,4 +560,13 @@ public class DeviceManageService implements IDeviceManageService {
 	}
 	
 
+	private String getDeviceUrl(Device device) {
+		if(mock) {
+			return HTTP_PREFFIX + device.getIp() + ControllerConstants.API_V1 + ControllerConstants.DEVICES_ROOT + "/mock_" + device.getName();
+		}
+		
+		return HTTP_PREFFIX + device.getIp() + DEVICE_URL_DATA;
+	}
+
+	
 }

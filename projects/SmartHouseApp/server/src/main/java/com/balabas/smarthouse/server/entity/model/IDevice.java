@@ -2,11 +2,18 @@ package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Set;
 
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+
+@SuppressWarnings("rawtypes")
 public interface IDevice extends IStateable, IUpdateable, IItemAbstract {
 
 	String getFirmware();
 	void setFirmware(String firmware);
 
+	String getStateEmoji();
+	String getStateDescription();
+	
+	boolean isInBadState();
 	boolean isRegistered();
 	boolean isInitialized();
 	void setInitialized(boolean initialized);
@@ -23,7 +30,6 @@ public interface IDevice extends IStateable, IUpdateable, IItemAbstract {
 	Entity getEntity(String entityName);
 	Entity getEntity(Long entityId);
 	Entity getEntityByRemoteId(int remoteId);
-	
-	Device update(Device device);
+	IEntityField getEntityField(Long entityId, Long entityFieldId);
 	
 }

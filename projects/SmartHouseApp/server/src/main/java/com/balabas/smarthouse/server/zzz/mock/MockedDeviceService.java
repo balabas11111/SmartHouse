@@ -113,8 +113,8 @@ public class MockedDeviceService implements InitializingBean {
 
 	private boolean OnDeviceProcessRegistrationRequest(ResponseEntity<String> result, DeviceRequest request) {
 
-		List<String> authHeaders = result.getHeaders().getOrEmpty(HttpHeaders.AUTHORIZATION);
-		String serverToken = (!authHeaders.isEmpty()) ? authHeaders.get(0) : result.getBody();
+		//List<String> authHeaders = result.getHeaders().getOrEmpty(HttpHeaders.AUTHORIZATION);
+		//String serverToken = (!authHeaders.isEmpty()) ? authHeaders.get(0) : result.getBody();
 		log.info("OnDeviceProcessRegistrationRequest");
 
 		return true;
