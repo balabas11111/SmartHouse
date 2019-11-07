@@ -1,7 +1,7 @@
 /*
  * Emoji.h
  *
- *  Created on: 14 окт. 2019 г.
+ *  Created on: 14 пїЅпїЅпїЅ. 2019 пїЅ.
  *      Author: Vitaliy
  */
 
@@ -28,6 +28,7 @@
 
 //temperature, DS18D20
 #define EMOJI_THERMOMETER  "1F321"
+#define EMOJI_FIRE         "1F525"
 //humidity
 #define EMOJI_DROPLET      "1F4A7"
 //atmpressure

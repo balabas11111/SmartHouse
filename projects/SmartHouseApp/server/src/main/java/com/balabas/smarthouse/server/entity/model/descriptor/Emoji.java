@@ -27,6 +27,7 @@ public enum Emoji {
 	ELECTRIC_PLUG('\uD83D','\uDD0C',"1F50C"),
 	ERROR('\u274C',null, "274C"),
 	FACE_WITH_TONGUE_AND_CLOSED_ONE_EYE('\uD83D', '\uDE1C', "1F61C"),
+	FIRE('\uD83D', '\uDD25', "1F525"),
 	FLOPPY('\uD83D', '\uDCBE', "1F4BE"),
 	GEAR('\u2699', null, "2699"),
 	GHOST('\uD83D', '\uDC7B', "1F47B"),
