@@ -4,9 +4,9 @@
 #include "DHT22sensor.h"
 #include "DS18D20sensor.h"
 
-DHT22sensor dht22(D5, (char*) "Микроклимат Воздух", AM2301);
+DHT22sensor dht22(D5, (char*) "Микроклимат Воздух", 21);
 DS18D20sensor ds18d20(D1, (char*) "Температура бак");
-DS18D20sensor ds18d202(D0, (char*) "Температура гребенка", "ds18d202");
+DS18D20sensor ds18d202(D6, (char*) "Температура гребенка", "ds18d202");
 
 Entity* entities[] = { &dht22, &ds18d20, &ds18d202 };
 EntityUpdate* updateableEntities[] = { &dht22, &ds18d20, &ds18d202};

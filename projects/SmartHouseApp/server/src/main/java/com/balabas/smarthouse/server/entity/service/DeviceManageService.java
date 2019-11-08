@@ -39,7 +39,6 @@ import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabl
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldEnabledValueRepository;
-import com.balabas.smarthouse.server.entity.repository.IEntityFieldValueRepository;
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.server.view.DeviceValueActionHolder;
 import com.google.common.collect.Lists;
@@ -73,9 +72,6 @@ public class DeviceManageService implements IDeviceManageService {
 	@Autowired
 	IDeviceRepository deviceRepository;
 
-	@Autowired
-	IEntityFieldValueRepository entityFieldValueRepository;
-	
 	@Autowired
 	IEntityFieldEnabledValueRepository entityFieldEnabledValueRepository;
 	
@@ -265,7 +261,7 @@ public class DeviceManageService implements IDeviceManageService {
 							}
 						});
 					
-					entityFieldValueRepository.saveAll(changedValues);
+					entityFieldService.saveAll(changedValues);
 					
 					alarmService.loadAlarmsForDevice(device);
 					
@@ -289,7 +285,7 @@ public class DeviceManageService implements IDeviceManageService {
 					log.info("Values changed = " + changedValues.size());
 				}
 				
-				entityFieldValueRepository.saveAll(changedValues);
+				entityFieldService.saveAll(changedValues);
 
 				doSave = false;
 			}
@@ -543,12 +539,12 @@ public class DeviceManageService implements IDeviceManageService {
 	
 	@Override
 	public List<EntityFieldValue> getLastEntityFieldValuesForDevice(Long deviceId) {
-		return entityFieldValueRepository.getLastEntityFieldValuesForDevice(deviceId);
+		return entityFieldService.getLastEntityFieldValuesForDevice(deviceId);
 	}
 	
 	@Override
 	public List<EntityFieldValue> getLastEntityFieldValuesForEntity(Long entityId) {
-		return entityFieldValueRepository.getLastEntityFieldValuesForEntity(entityId);
+		return entityFieldService.getLastEntityFieldValuesForEntity(entityId);
 	}
 	
 	@Transactional
@@ -557,7 +553,7 @@ public class DeviceManageService implements IDeviceManageService {
 		int index = getDeviceIndex(deviceId);
 		devices.remove(index);
 		
-		entityFieldValueRepository.deleteEntityFieldValuesForDevice(deviceId);
+		entityFieldService.deleteEntityFieldValuesForDevice(deviceId);
 		entityFieldEnabledValueRepository.deleteEntityFieldEnabledValuesForDevice(deviceId);
 		
 		alarmService.deleteAlarmsByDeviceId(deviceId);

@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -11,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.balabas.smarthouse.server.entity.model.EntityFieldValue;
+import com.balabas.smarthouse.server.entity.model.EntityFieldValueBoolean;
+import com.balabas.smarthouse.server.entity.model.EntityFieldValueNumber;
 
 @Repository
 public interface IEntityFieldValueRepository extends CrudRepository<EntityFieldValue, Long>  {
@@ -34,4 +37,33 @@ public interface IEntityFieldValueRepository extends CrudRepository<EntityFieldV
 			"	JOIN devices d ON d.id = g.device_id" + 
 			"	WHERE d.id = :id)", nativeQuery = true)
 	void deleteEntityFieldValuesForDevice(@Param("id")Long deviceId);
+	
+	@Transactional
+	@Modifying
+	@Query( value = "INSERT INTO entity_field_value(dtype, date, value_bool, value_flt, entity_field_id)"
+			+ " VALUES('EntityFieldValueNumber', :date, NULL, :value, :entityFieldId)",
+			nativeQuery = true)
+	void insertEntityFieldValueFloat(@Param("date")Date date, @Param("value")Float value, @Param("entityFieldId")Long entityFieldId);
+	
+	@Transactional
+	@Modifying
+	@Query( value = "INSERT INTO entity_field_value(dtype, date, value_bool, value_flt, entity_field_id)"
+			+ " VALUES('EntityFieldValueBoolean', :date, :value, NULL, :entityFieldId)",
+			nativeQuery = true)
+	void insertEntityFieldValueBoolean(@Param("date")Date date, @Param("value")Boolean value, @Param("entityFieldId")Long entityFieldId);
+	
+	default void saveEntityFieldValue(EntityFieldValue entityFieldValue) {
+		if(entityFieldValue.getClass().equals(EntityFieldValueNumber.class)) {
+			EntityFieldValueNumber value =(EntityFieldValueNumber) entityFieldValue;
+			
+			insertEntityFieldValueFloat(new Date(), value.getValueFlt(), value.getEntityField().getId());
+		} else
+			if(entityFieldValue.getClass().equals(EntityFieldValueBoolean.class)) {
+				EntityFieldValueBoolean value =(EntityFieldValueBoolean) entityFieldValue;
+				
+				insertEntityFieldValueBoolean(new Date(), value.getValueBool(), value.getEntityField().getId());
+			}	
+			
+	}
+	
 }
