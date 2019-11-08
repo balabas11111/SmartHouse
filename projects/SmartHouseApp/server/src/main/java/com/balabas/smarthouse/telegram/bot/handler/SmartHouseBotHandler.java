@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -31,6 +30,7 @@ import lombok.extern.log4j.Log4j2;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE_EDIT_FIELDS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SAVE_DEVICE_PROPERTY;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_DEVICES;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_DEVICE_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_SELECT_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE;
@@ -149,6 +149,9 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 				msgs.add(messageBuilder.createServerWillBeRestartedMsg(context));
 				ServerApplication.restart();
 				break;
+			case ACTION_TYPE_VIEW_ALL_DEVICES:
+				msgs.addAll(messageBuilder.createViewOfAllDevicesGroup(action, context));
+				break;
 			case ACTION_TYPE_VIEW_DEVICE_LIST:
 				msgs.addAll(messageBuilder.createDevicesListView(action, context));
 				break;
@@ -220,7 +223,7 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 				msgs.add(messageBuilder.createGroupsOfDeviceInlineKeyboard(action, context));
 				break;
 			case ACTION_TYPE_VIEW_ENTITIES_OF_GROUP:
-				msgs.addAll(messageBuilder.createGroupView(action, context));
+				msgs.addAll(messageBuilder.createViewOfDeviceGroup(action, context));
 				break;
 			case ACTION_TYPE_SAVE_DEVICE_PROPERTY:
 				sendDataToDevice(action, context, msgs);
@@ -316,7 +319,7 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 				}
 
 				msgs.add(messageBuilder.createDataSentToDevice(message, context.getChatId()));
-				msgs.addAll(messageBuilder.createGroupView(action, context));
+				msgs.addAll(messageBuilder.createViewOfDeviceGroup(action, context));
 				
 				log.info("Data sent to device");
 			} else {

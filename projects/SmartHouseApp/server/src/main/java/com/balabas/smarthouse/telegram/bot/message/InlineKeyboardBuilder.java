@@ -20,6 +20,7 @@ import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IEntityFieldService;
 import com.balabas.smarthouse.server.view.Action;
@@ -30,6 +31,7 @@ import lombok.Getter;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_RESTART_APPLICATION;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_DEVICE_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_GROUPS_OF_DEVICE;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_DEVICES;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_OF_DEVICE;
@@ -67,6 +69,7 @@ import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.EN
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_ENABLE_SOUND_MESSAGE;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_DISABLE_SOUND_MESSAGE;
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.SELECT_ALL_DEVICES;
 
 @Component
 @SuppressWarnings("rawtypes")
@@ -118,18 +121,19 @@ public class InlineKeyboardBuilder {
 		InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
+		if(devices.size()>0) {
+			String text = buttons.getDeviceButton(Emoji.PAGER, SELECT_ALL_DEVICES);
+			String callback = Action.callback(ACTION_TYPE_VIEW_ALL_DEVICES, "", "", GROUP_SENSORS);
+			
+			rowsInline.add(createInlineKeyboardButtonRow(text, callback));
+		}
+		
 		for (IDevice device : devices) {
 
-			List<InlineKeyboardButton> row = new ArrayList<>();
-
-			ActionContext ac = new ActionContext(device);
-
-			String text = buttons.getDeviceButton(ac.getEmoji(), ac.getDescription());
+			String text = buttons.getDeviceButton(new ActionContext(device));
 			String callback = Action.callback(ACTION_TYPE_VIEW_ENTITIES_OF_GROUP, "", device.getName(), GROUP_SENSORS);
 
-			row.add(createInlineKeyboardButton(text, callback));
-
-			rowsInline.add(row);
+			rowsInline.add(createInlineKeyboardButtonRow(text, callback));
 		}
 
 		markup.setKeyboard(rowsInline);

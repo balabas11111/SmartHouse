@@ -4,18 +4,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.view.DeviceEntityAlarmHolder;
 
 @SuppressWarnings("rawtypes")
 public interface IEntityAlarmService {
 
+	List<IEntityAlarm> getAlarms(IDevice device);
 	List<IEntityAlarm> getEntityAlarmsWithAlarmDetected(IDevice device);
+	List<IEntityAlarm> getEntityAlarmsWithFieldsAlarmsAttached(IDevice device);
 
 	IEntityAlarm getAlarm(IEntity entity);
-	List<IEntityAlarm> getAlarms(IDevice device); 
+	 
 	
 	void registerAlarm(IEntityAlarm alarm);
 
@@ -76,5 +80,8 @@ public interface IEntityAlarmService {
 	void checkWithClear(IEntityAlarm entityAlarm);
 	
 	void deleteAlarmsByDeviceId(Long deviceId);
+	
+	DeviceEntityAlarmHolder getDeviceAlarmsHolder(IDevice device);
+	Map<String, DeviceEntityAlarmHolder> getDeviceAlarmsHoldersGroupped(List<Device> device);
 
 }

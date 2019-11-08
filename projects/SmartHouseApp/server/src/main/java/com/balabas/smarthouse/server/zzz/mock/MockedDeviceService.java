@@ -52,7 +52,7 @@ public class MockedDeviceService implements InitializingBean {
 
 	private int initStep = 0;
 	
-	private int devicesCount = 1;
+	private int devicesCount = 3;
 
 	@Autowired
 	private DeviceSecurityService securityService;

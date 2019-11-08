@@ -17,6 +17,7 @@ import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
+import com.balabas.smarthouse.server.entity.service.AlarmMessageHolder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
@@ -31,6 +32,7 @@ import lombok.extern.log4j.Log4j2;
 public class EntityAlarm implements IEntityAlarm {
 
 	public static final Integer NO_MESSAGE_SEND_REPEATS = -1;
+	public static final String ALARM_FINISHED_STATUS = "показатели в норме";
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -183,29 +185,26 @@ public class EntityAlarm implements IEntityAlarm {
 
 	@Override
 	@JsonIgnore
-	public String getAlarmStartedText() {
+	public AlarmMessageHolder getAlarmStartedTextHolder() {
 		if (!isAlarmed()) {
 			return null;
 		}
 
-		StringBuilder buf = new StringBuilder();
+		AlarmMessageHolder result = new AlarmMessageHolder(entity.getDevice().getDescription(), entity.getDescription(), "", entity.getEmoji());
+		
+		alarms.stream().filter(IAlarm::isAlarmed).forEach(a -> result.addMessage(a.getAlarmText()));
 
-		buf.append(entity.getEmoji().toString());
-		buf.append(" <b>" + entity.getDescription() + "</b>\n");
-
-		alarms.stream().filter(IAlarm::isAlarmed).forEach(a -> buf.append(a.getAlarmText() + "\n"));
-
-		return buf.toString();
+		return result;
 	}
 
 	@Override
 	@JsonIgnore
-	public String getAlarmFinishedText() {
+	public AlarmMessageHolder getAlarmFinishedTextHolder() {
 		if (isAlarmed()) {
 			return null;
 		}
 
-		return " <b>" + entity.getDescription() + "</b> - показатели в норме\n";
+		return new AlarmMessageHolder(entity.getDevice().getDescription(), entity.getDescription(), ALARM_FINISHED_STATUS, entity.getEmoji());
 	}
 
 	@Override

@@ -28,21 +28,22 @@ public class Action {
 	public static final String CALLBACK_SPLITTER = ";";
 	public static final String CALLBACK_TYPE_ACTION = "Act";
 
-	public static final String ACTION_TYPE_UNKNOWN = "NUL";
-	public static final String ACTION_TYPE_RESTART_APPLICATION = "rea";
-	public static final String ACTION_TYPE_VIEW_DEVICE_LIST = "vdl";
-	public static final String ACTION_TYPE_VIEW_HELP = "vhp";
-	public static final String ACTION_TYPE_SETUP = "ats";
-	public static final String ACTION_TYPE_EDIT_ALARMS = "aea";
-	public static final String ACTION_TYPE_SELECT_DEV_EDIT_ALARMS = "sea";
-	public static final String ACTION_TYPE_EDIT_DEVICE_SELECT_LIST = "eds";
-	public static final String ACTION_TYPE_VIEW_GROUPS_OF_DEVICE = "vgd";
-	public static final String ACTION_TYPE_VIEW_ENTITIES_OF_GROUP = "veg";
-	public static final String ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE = "eeg";
+	public static final String ACTION_TYPE_UNKNOWN                  = "NUL";
+	public static final String ACTION_TYPE_RESTART_APPLICATION      = "rea";
+	public static final String ACTION_TYPE_VIEW_DEVICE_LIST         = "vdl";
+	public static final String ACTION_TYPE_VIEW_HELP                = "vhp";
+	public static final String ACTION_TYPE_SETUP                    = "ats";
+	public static final String ACTION_TYPE_EDIT_ALARMS              = "aea";
+	public static final String ACTION_TYPE_SELECT_DEV_EDIT_ALARMS   = "sea";
+	public static final String ACTION_TYPE_EDIT_DEVICE_SELECT_LIST  = "eds";
+	public static final String ACTION_TYPE_VIEW_GROUPS_OF_DEVICE    = "vgd";
+	public static final String ACTION_TYPE_VIEW_ALL_DEVICES         = "vad";
+	public static final String ACTION_TYPE_VIEW_ENTITIES_OF_GROUP   = "veg";
+	public static final String ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE  = "eeg";
 
-	public static final String ACTION_TYPE_EDIT_ALARMS_OF_DEVICE = "ead";
-	public static final String ACTION_TYPE_EDIT_ALARMS_OF_ENTITY = "eae";
-	public static final String ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD = "aef";
+	public static final String ACTION_TYPE_EDIT_ALARMS_OF_DEVICE         = "ead";
+	public static final String ACTION_TYPE_EDIT_ALARMS_OF_ENTITY         = "eae";
+	public static final String ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD   = "aef";
 
 	public static final String ACTION_TYPE_CREATE_ALARM_OF_ENTITY        = "cae";
 	public static final String ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION  = "dae";
@@ -51,11 +52,11 @@ public class Action {
 	public static final String ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY  = "rai";
 	public static final String ACTION_SAVE_ALARM_INTERVAL_OF_ENTITY      = "sAi";
 
-	public static final String ACTION_DELETE_ENTITY_FIELD_ALARM = "dfa";
-	public static final String ACTION_EDIT_ENTITY_FIELD_ALARM = "efa";
-	public static final String ACTION_ADD_ENTITY_FIELD_ALARM = "afa";
-	public static final String ACTION_SAVE_NEW_ENTITY_FIELD_ALARM = "nfa";
-	public static final String ACTION_SAVE_ENTITY_FIELD_ALARM = "sfa";
+	public static final String ACTION_DELETE_ENTITY_FIELD_ALARM          = "dfa";
+	public static final String ACTION_EDIT_ENTITY_FIELD_ALARM            = "efa";
+	public static final String ACTION_ADD_ENTITY_FIELD_ALARM             = "afa";
+	public static final String ACTION_SAVE_NEW_ENTITY_FIELD_ALARM        = "nfa";
+	public static final String ACTION_SAVE_ENTITY_FIELD_ALARM            = "sfa";
 
 	public static final String ACTION_TYPE_EDIT_DEVICE_DESCRIPTION = "edd";
 	public static final String ACTION_TYPE_EDIT_ENTITITY = "een";

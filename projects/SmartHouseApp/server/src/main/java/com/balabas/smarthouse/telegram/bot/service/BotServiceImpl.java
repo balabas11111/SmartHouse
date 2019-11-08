@@ -4,6 +4,7 @@ import static java.lang.String.format;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.stream.Stream;
 
 import javax.annotation.PreDestroy;
@@ -16,10 +17,12 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.generics.BotSession;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.Severity;
+import com.balabas.smarthouse.server.entity.service.AlarmMessageHolder;
 import com.balabas.smarthouse.server.entity.service.IMessageSender;
 import com.balabas.smarthouse.telegram.bot.AfterBotRegistration;
 import com.balabas.smarthouse.telegram.bot.handler.SmartHouseBotHandler;
 import com.balabas.smarthouse.telegram.bot.message.BotMessageConstants;
+import com.balabas.smarthouse.telegram.bot.message.SendMessageBuilder;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -114,6 +117,17 @@ public class BotServiceImpl implements IMessageSender, InitializingBean {
 	@Override
 	public void sendDeviceRegisteredToAllUsers(String deviceName) {
 		bot.sendDeviceRegisteredToAllUsers(deviceName);
+	}
+
+	@Override
+	public boolean sendMessageToAllUsers(Severity severity, String header, List<AlarmMessageHolder> messageHolders) {
+		
+		StringBuilder builder = new StringBuilder(); 
+
+		builder.append(header);
+		builder.append(SendMessageBuilder.alarmMessageHoldersToString(messageHolders));
+		
+		return sendMessageToAllUsers(severity, builder.toString());
 	}
 
 }

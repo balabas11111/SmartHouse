@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 
@@ -27,6 +28,7 @@ import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstractByDescriptionComparator;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.service.AlarmMessageHolder;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.entity.service.IGroupService;
 import com.balabas.smarthouse.server.view.Action;
@@ -53,7 +55,7 @@ public class SendMessageBuilder {
 	private IGroupService groupService;
 
 	@Autowired
-	private IEntityAlarmService entityAlarmService;
+	private IEntityAlarmService alarmService;
 
 	@Autowired
 	private InlineKeyboardBuilder inlineKeyboard;
@@ -143,7 +145,7 @@ public class SendMessageBuilder {
 
 		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 
-		List<IEntity> entities = entityAlarmService.getEntitiesWithPossibleAlarms(device);
+		List<IEntity> entities = alarmService.getEntitiesWithPossibleAlarms(device);
 
 		context.setText(String.format(BotMessageConstants.SELECT_ENTITY_TO_EDIT_ALARMS, Emoji.ERROR, device.getName()));
 		msgs.add(context.createMsg(inlineKeyboard.getEntitiesAlarmsOfDeviceMenuKeyboard(entities)));
@@ -157,9 +159,9 @@ public class SendMessageBuilder {
 		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 		IEntity entity = device.getEntity(action.getEntityName());
 
-		List<IEntityField> entityFields = entityAlarmService.getEntityFieldsWithPossibleAlarms(entity);
+		List<IEntityField> entityFields = alarmService.getEntityFieldsWithPossibleAlarms(entity);
 
-		IEntityAlarm entityAlarm = entityAlarmService.getAlarm(entity);
+		IEntityAlarm entityAlarm = alarmService.getAlarm(entity);
 
 		StringBuilder buf = new StringBuilder();
 
@@ -220,7 +222,7 @@ public class SendMessageBuilder {
 		IEntityField entityField = entity.getEntityField(action.getTargetId());
 
 		Integer alarmClassIndex = Integer.valueOf(action.getDataJsonField(ACTION_DATA_FIELD_CLASS));
-		String alarmClassName = entityAlarmService.getEntityFieldAllowedClassByIndex(alarmClassIndex).getSimpleName();
+		String alarmClassName = alarmService.getEntityFieldAllowedClassByIndex(alarmClassIndex).getSimpleName();
 
 		String message = String.format(BotMessageConstants.ENTITY_ENTITY_FIELD_ALARM_ADD_VALUE_MESSAGE, alarmClassName,
 				entity.getName(), getEntityFieldButtonText(entityField));
@@ -229,7 +231,7 @@ public class SendMessageBuilder {
 
 	public SendMessage getAlarmToBeSavedMessage(Action action, ReplyContext context) {
 
-		IEntityFieldAlarm entityFieldAlarm = entityAlarmService.getEntityAlarmFieldById(action.getTargetId());
+		IEntityFieldAlarm entityFieldAlarm = alarmService.getEntityAlarmFieldById(action.getTargetId());
 
 		IEntityField entityField = entityFieldAlarm.getWatchedItem();
 
@@ -254,10 +256,10 @@ public class SendMessageBuilder {
 
 		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
 		IEntity entity = device.getEntity(action.getEntityName());
-		IEntityAlarm entityAlarm = entityAlarmService.getAlarm(entity);
+		IEntityAlarm entityAlarm = alarmService.getAlarm(entity);
 		IEntityField entityField = entity.getEntityField(action.getTargetId());
 
-		Map<Integer, Class> enabledAlarmClasses = entityAlarmService.getEnabledAlarmsForField(entityField);
+		Map<Integer, Class> enabledAlarmClasses = alarmService.getEnabledAlarmsForField(entityField);
 
 		StringBuilder buf = new StringBuilder();
 
@@ -265,8 +267,10 @@ public class SendMessageBuilder {
 				entityField.getNameDescriptionByDescriptionField()));
 
 		for (IEntityFieldAlarm entityFieldAlarm : entityAlarm.getAlarms()) {
-			buf.append(String.format(BotMessageConstants.ENTITY_FIELD_ALARM_DISPLAY_MESSAGE,
+			if(entityField.getId().equals(entityFieldAlarm.getWatchedItem().getId())) {
+				buf.append(String.format(BotMessageConstants.ENTITY_FIELD_ALARM_DISPLAY_MESSAGE,
 					entityFieldAlarm.getTriggerDescription()));
+			}
 		}
 
 		context.setText(buf.toString());
@@ -365,32 +369,59 @@ public class SendMessageBuilder {
 
 		return createHtmlMessage(context.getChatId(), text);
 	}
+	
+	public List<SendMessage> createViewOfAllDevicesGroup(Action action, ReplyContext context) {
+		List<SendMessage> result = Lists.newArrayList();
 
-	public List<SendMessage> createGroupView(Action action, ReplyContext context) {
+		List<Device> devices = deviceService.getDevicesInitialized();
+		
+		for(Device device : devices) {
+			IGroup group = device.getGroup(action.getGroupName());
+			result.addAll(createViewOfDeviceGroup(device, group, context));
+		}
+		
+		return result;
+	}
+
+	public List<SendMessage> createViewOfDeviceGroup(Action action, ReplyContext context) {
 		List<SendMessage> result = Lists.newArrayList();
 
 		IDevice device = deviceService.getDeviceByName(action.getDeviceName());
-		if (device != null) {
-			IGroup group = device.getGroup(action.getGroupName());
+
+		IGroup group = device.getGroup(action.getGroupName());
+		result.addAll(createViewOfDeviceGroup(device, group, context));
+
+		return result;
+	}
+	
+	private List<SendMessage> createViewOfDeviceGroup(IDevice device, IGroup group, ReplyContext context) {
+		List<SendMessage> result = Lists.newArrayList();
+
+		if (device != null && group!=null) {
 
 			StringBuilder builder = new StringBuilder();
 
 			itemRendererBuilder.buildDeviceGroupHeaderView(device, group, builder);
 
-			group.getEntities().stream()// .filter(e -> EntityClass.DEFAULT.equals(e.getRenderer()))
+			group.getEntities().stream()
 					.sorted(itemAbstractComparator).forEach(ent -> itemRendererBuilder.buildEntityView(ent, builder));
 
-			List<IEntityAlarm> alarms = entityAlarmService.getEntityAlarmsWithAlarmDetected(device);
+			List<IEntityAlarm> alarms = alarmService.getEntityAlarmsWithAlarmDetected(device);
 
 			if (!alarms.isEmpty()) {
 
 				builder.append("\n---------------------\n");
 				builder.append(Emoji.ERROR.toString());
 				builder.append("<code> Режим ТРЕВОГИ </code>\n\n");
+				
+				List<AlarmMessageHolder> alarmHolders = Lists.newArrayList();
 
 				group.getEntities().stream().forEach(entity -> alarms.stream()
 						.filter(alarm -> entity.getName().equals(alarm.getEntity().getName()))
-						.forEach(alarm -> Optional.ofNullable(alarm.getAlarmStartedText()).ifPresent(builder::append)));
+						.forEach(alarm -> Optional.ofNullable(alarm.getAlarmStartedTextHolder()).ifPresent(alarmHolders::add)));
+				
+				builder.append(alarmMessageHoldersToString(alarmHolders));
+				
 			}
 
 			result.add(createHtmlMessage(context.getChatId(), builder.toString()));
@@ -398,6 +429,28 @@ public class SendMessageBuilder {
 			Optional.ofNullable(buildGroupCommandInterface(device, group, context.getChatId())).ifPresent(result::add);
 		}
 		return result;
+	}
+	
+	public static String alarmMessageHoldersToString(List<AlarmMessageHolder> alarmHolders ) {
+		StringBuilder builder = new StringBuilder();
+		
+		for(AlarmMessageHolder holder : alarmHolders) {
+			builder.append(holder.getEmoji().toString());
+			builder.append("  <b>");
+			builder.append(holder.getName());
+			builder.append("</b>");
+			
+			if(!StringUtils.isEmpty(holder.getStatus())) {
+				builder.append(" - ");
+				builder.append(holder.getStatus());
+			}
+			
+			builder.append("\n\n");
+			
+			holder.getMessages().stream().forEach(message -> {builder.append(message); builder.append("\n");}); 
+		}
+		
+		return builder.toString();
 	}
 
 	private SendMessage buildGroupCommandInterface(IDevice device, IGroup group, Long chatId) {

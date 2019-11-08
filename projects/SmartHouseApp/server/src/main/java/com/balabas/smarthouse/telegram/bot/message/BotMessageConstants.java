@@ -64,7 +64,7 @@ public class BotMessageConstants {
 	        "%s Устройство \n"+
 	        "<b>: %s </b>\n"+
 	        ": %s ";
-	
+	public static final String SELECT_ALL_DEVICES = " Все устройства";
 	public static final String SELECT_SETUP_ACTION = "%s Выберите группу настроек";
 	public static final String SELECT_DEVICE_TO_EDIT_ALARMS = "%s Выберите устройство для просмотра режима тревоги";
 	public static final String SELECT_ENTITY_TO_EDIT_ALARMS = "%s Выберите датчик для просмотра режима тревоги. устройство %s";

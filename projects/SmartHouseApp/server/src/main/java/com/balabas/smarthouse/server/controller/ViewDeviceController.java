@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.server.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -9,8 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.Device;
-import com.balabas.smarthouse.server.entity.service.DeviceManageService;
+import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 
 @Controller
 public class ViewDeviceController {
@@ -19,7 +22,10 @@ public class ViewDeviceController {
 	private String serverName;
 
 	@Autowired
-	private DeviceManageService deviceService;
+	private IDeviceManageService deviceService;
+	
+	@Autowired
+	private IEntityAlarmService alarmService;
 
 	@GetMapping("/")
 	public String getRoot(Model model) {
@@ -74,6 +80,11 @@ public class ViewDeviceController {
 	@GetMapping("/alarms")
 	public String getDevicesAlarms(Model model) {
 		model.addAttribute("serverName", serverName);
+		List<Device> devices = deviceService.getDevices();
+		
+		model.addAttribute("devices", devices);
+		model.addAttribute("alarms", alarmService.getDeviceAlarmsHoldersGroupped(devices));
+		
 		return "devices/alarms.html";
 	}
 

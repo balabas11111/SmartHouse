@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.DeviceConstants;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
+import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
@@ -31,8 +32,11 @@ import com.balabas.smarthouse.server.entity.model.descriptor.Severity;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IEntityAlarmRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldAlarmRepository;
+import com.balabas.smarthouse.server.entity.service.AlarmMessageHolder;
 import com.balabas.smarthouse.server.entity.service.IMessageSender;
 import com.balabas.smarthouse.server.service.ISoundPlayer;
+import com.balabas.smarthouse.server.view.DeviceEntityAlarmHolder;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import lombok.Getter;
@@ -106,18 +110,43 @@ public class EntityAlarmService implements IEntityAlarmService {
 	}
 
 	@Override
+	public DeviceEntityAlarmHolder getDeviceAlarmsHolder(IDevice device) {
+		return new DeviceEntityAlarmHolder(device, getEntityAlarmsWithFieldsAlarmsAttached(device),getEntityAlarmsWithAlarmDetected(device));
+	}
+	
+	@Override
+	public Map<String, DeviceEntityAlarmHolder> getDeviceAlarmsHoldersGroupped(List<Device> devices) {
+		Map<String, DeviceEntityAlarmHolder> result = Maps.newHashMap();
+		
+		for(IDevice device : devices) {
+			String key = device.getName();
+			DeviceEntityAlarmHolder value = getDeviceAlarmsHolder(device);
+			
+			result.put(key, value);
+		}
+		
+		return result;
+	}
+	
+	@Override
 	public List<IEntityAlarm> getActiveEntityAlarms() {
 		return alarms.stream().filter(IEntityAlarm::isActive).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<IEntityAlarm> getEntityAlarmsWithAlarmDetected(IDevice device) {
-		return getAlarmsByPredicate(a -> a.isActive() && a.isAlarmed() && a.getDevice().getId().equals(device.getId()));
-	}
-
-	@Override
 	public List<IEntityAlarm> getAlarms(IDevice device) {
 		return getAlarmsByPredicate(a -> a.isActive() && a.getDevice().getId().equals(device.getId()));
+	}
+	
+	@Override
+	public List<IEntityAlarm> getEntityAlarmsWithFieldsAlarmsAttached(IDevice device) {
+		return getAlarmsByPredicate(a -> a.isActive() && a.getDevice().getId().equals(device.getId())
+				&& a.getAlarms() != null && a.getAlarms().size() > 0);
+	}
+	
+	@Override
+	public List<IEntityAlarm> getEntityAlarmsWithAlarmDetected(IDevice device) {
+		return getAlarmsByPredicate(a -> a.isActive() && a.isAlarmed() && a.getDevice().getId().equals(device.getId()));
 	}
 
 	@Override
@@ -250,15 +279,16 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 			log.debug("AlarmsStarted " + device.getName() + " total =" + alarmsWithStarted.size());
 
-			StringBuilder buf = new StringBuilder(buildMessage(MSG_DEVICE_ALARM_STARTED, device));
-			buf.append("\n\n");
+			String header = buildMessage(MSG_DEVICE_ALARM_STARTED, device) + "\n\n";
 
-			alarmsWithStarted.forEach(alarm -> buf.append(alarm.getAlarmStartedText()));
+			List<AlarmMessageHolder> holders = Lists.newArrayList();
+			
+			alarmsWithStarted.forEach(alarm -> holders.add(alarm.getAlarmStartedTextHolder()));
 
 			boolean sent = true;
 
 			try {
-				sent = sender.sendMessageToAllUsers(Severity.WARN, buf.toString()) && sent;
+				sent = sender.sendMessageToAllUsers(Severity.WARN, header, holders) && sent;
 			} catch (Exception e) {
 				log.error(e);
 				sent = false;
@@ -280,15 +310,15 @@ public class EntityAlarmService implements IEntityAlarmService {
 		if (!alarmsWithFinished.isEmpty()) {
 			log.debug("AlarmsFinished " + device.getName() + " total =" + alarmsWithFinished.size());
 
-			StringBuilder buf = new StringBuilder(buildMessage(MSG_DEVICE_ALARM_FINISHED, device));
-			buf.append("\n\n");
+			String header = buildMessage(MSG_DEVICE_ALARM_FINISHED, device) + "\n\n";
+			List<AlarmMessageHolder> holders = Lists.newArrayList();
 
-			alarmsWithFinished.forEach(alarm -> buf.append(alarm.getAlarmFinishedText()));
+			alarmsWithFinished.forEach(alarm -> holders.add(alarm.getAlarmFinishedTextHolder()));
 
 			boolean sent = true;
 
 			try {
-				sent = sender.sendMessageToAllUsers(Severity.INFO, buf.toString()) && sent;
+				sent = sender.sendMessageToAllUsers(Severity.INFO, header, holders) && sent;
 			} catch (Exception e) {
 				log.error(e);
 				sent = false;
