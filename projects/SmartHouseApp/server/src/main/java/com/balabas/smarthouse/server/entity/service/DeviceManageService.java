@@ -568,7 +568,7 @@ public class DeviceManageService implements IDeviceManageService {
 
 	private String getDeviceUrl(Device device) {
 		if(mock) {
-			return HTTP_PREFFIX + device.getIp() + ControllerConstants.API_V1 + ControllerConstants.DEVICES_ROOT + "/mock_" + device.getName();
+			return HTTP_PREFFIX + device.getIp() + ControllerConstants.MOCK + "/mock_" + device.getName();
 		}
 		
 		return HTTP_PREFFIX + device.getIp() + DEVICE_URL_DATA;

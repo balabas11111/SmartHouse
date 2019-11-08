@@ -2,6 +2,7 @@ package com.balabas.smarthouse.server.controller.service;
 
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_GROUP;
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_ENTITY_NAME;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SWG;
 
 import java.util.Collections;
 import java.util.Map;
@@ -47,8 +48,7 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 				HttpHeaders headers = new HttpHeaders();
 				headers.set(HttpHeaders.AUTHORIZATION, serverKey);
 
-				String url = (device.isInitialized()) ? device.getDataUrl()
-						: device.getDataUrl() + DeviceConstants.ENTITY_FIELD_SWG_EQ_1;
+				String url = getDeviceDataUrl(device);
 
 				ResponseEntity<String> result = executor.executeGetRequest(url, headers, params);
 
@@ -71,6 +71,7 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey());
+		headers.add(ENTITY_FIELD_SWG, "1");
 
 		return executor.executePostRequest(device.getDataUrl(), headers, json.toString()).getBody();
 	}
@@ -84,9 +85,15 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
 		map.add(DEVICE_FIELD_GROUP, entity.getGroup().getName());
 		map.add(DEVICE_FIELD_ENTITY_NAME, entity.getName());
+		map.add(ENTITY_FIELD_SWG, 1);
 
 		values.entrySet().stream().forEach(e -> map.add(e.getKey(), e.getValue()));
 
 		return executor.executePostRequest(device.getDataUrl(), headers, map).getBody();
+	}
+	
+	private String getDeviceDataUrl(IDevice device) {
+		return //(device.isInitialized()) ? device.getDataUrl(): 
+				device.getDataUrl() + DeviceConstants.ENTITY_FIELD_SWG_EQ_1;
 	}
 }

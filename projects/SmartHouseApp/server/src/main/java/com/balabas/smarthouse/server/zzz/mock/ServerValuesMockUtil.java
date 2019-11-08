@@ -33,7 +33,7 @@ public class ServerValuesMockUtil {
 	public static DeviceRequest createMockedRequest(int i) throws IOException {
 		JSONObject data = new JSONObject()
 							.put(DEVICE_FIELD_URL_ROOT, "/")
-							.put(DEVICE_FIELD_URL_DATA, ControllerConstants.API_V1+ControllerConstants.DEVICES_ROOT+"/mock_MockedDeviceId" + i);
+							.put(DEVICE_FIELD_URL_DATA, ControllerConstants.MOCK + "/mock_MockedDeviceId" + i);
 		
 		return DeviceRequest.builder()
 			.deviceId("MockedDeviceId" + i)

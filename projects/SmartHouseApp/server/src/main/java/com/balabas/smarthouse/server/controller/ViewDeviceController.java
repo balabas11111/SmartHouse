@@ -34,7 +34,7 @@ public class ViewDeviceController {
 	}
 
 	@GetMapping("/device")
-	public String getDevice(@RequestParam("id") Long deviceId, @RequestParam("name") String deviceName, Model model) {
+	public String getDevice(@RequestParam(name = "id", required = false) Long deviceId, @RequestParam(name = "name", required = false) String deviceName, Model model) {
 		
 		if(deviceId==null && StringUtils.isEmpty(deviceName)) {
 			 throw new IllegalArgumentException("Bad arguments");

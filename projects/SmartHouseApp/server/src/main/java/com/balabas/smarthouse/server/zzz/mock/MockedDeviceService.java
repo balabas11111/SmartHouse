@@ -51,6 +51,8 @@ public class MockedDeviceService implements InitializingBean {
 	private boolean initDone = false;
 
 	private int initStep = 0;
+	
+	private int devicesCount = 1;
 
 	@Autowired
 	private DeviceSecurityService securityService;
@@ -65,7 +67,7 @@ public class MockedDeviceService implements InitializingBean {
 
 	public void initMocks() throws IOException {
 		log.info("-----Server context was started MockedDevice-----");
-		reqs = ServerValuesMockUtil.getDevicesMockedRegisterRequest(5);
+		reqs = ServerValuesMockUtil.getDevicesMockedRegisterRequest(devicesCount);
 
 		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(reqs.size());
 
