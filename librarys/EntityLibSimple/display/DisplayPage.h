@@ -13,8 +13,8 @@
 #include "Entity.h"
 #include "functional"
 #include "EntityJsonRequestResponse.h"
-#include "JsonObjectUtil.h"
-#include "DeviceUtils.h"
+#include "utils/JsonObjectUtil.h"
+#include "utils/DeviceUtils.h"
 #include <display/PageToDisplayAdapter.h>
 
 #define DISPLAY_DATA "dd"

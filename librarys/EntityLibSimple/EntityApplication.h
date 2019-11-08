@@ -1,7 +1,7 @@
 /*
  * EntityApplication.h
  *
- *  Created on: 30 àâã. 2019 ã.
+ *  Created on: 30 ï¿½ï¿½ï¿½. 2019 ï¿½.
  *      Author: Vitaliy
  */
 
@@ -20,8 +20,9 @@
 #include <EntityUpdateManager.h>
 #include <serve/ServerConnector.h>
 
-#include <FileUtils.h>
-#include <I2C_utils.h>
+#include <utils/DeviceUtils.h>
+#include <utils/FileUtils.h>
+#include <utils/I2C_utils.h>
 #include <functional>
 
 #include <Ticker.h>
@@ -29,7 +30,7 @@
 #include <Notifiers/DataSelector.h>
 #include <Notifiers/DataSelectorEntityManager.h>
 
-#include <DeviceUtils.h>
+
 #include <serve/DeviceManager.h>
 #include <serve/MqttManager.h>
 
@@ -42,7 +43,7 @@
 class EntityApplication {
 public:
 	EntityApplication(const char* firmWare, char* description, Entity* entities[], int entityCount,
-			EntityUpdate* entityUpdate[], int entityUpdateCount,
+			EntityUpdate* entityUpdate[], int entityUpdateCount, const char* emoji = EMOJI_FIRE,
 			SettingsStorage* conf = nullptr,
 			std::function<void(void)> onWiFiConnected = nullptr,
 			std::function<void(void)> onWiFiDisConnected = nullptr);
@@ -54,11 +55,13 @@ public:
 			PageToDisplayAdapter* displayAdapter, DisplayPage* pages[], unsigned char pageCount,
 #endif
 				const char* firmWare, char* description, Entity* entities[], int entityCount,
-				EntityUpdate* entityUpdate[], int entityUpdateCount,
+				EntityUpdate* entityUpdate[], int entityUpdateCount, const char* emoji,
 				SettingsStorage* conf = nullptr,
 				std::function<void(void)> onWiFiConnected = nullptr,
 				std::function<void(void)> onWiFiDisConnected = nullptr
 				);
+
+	void begin();
 
 	void initWithWiFi(bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
 	void initWithoutWiFi(bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);

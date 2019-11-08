@@ -1,12 +1,12 @@
 /*
  * EntityJsonRequestResponseHelper.h
  *
- *  Created on: 13 сент. 2019 г.
+ *  Created on: 13 пїЅпїЅпїЅпїЅ. 2019 пїЅ.
  *      Author: Vitaliy
  */
 
-#ifndef LIBRARIES_UTILS_ENTITYJSONREQUESTRESPONSEUTIL_H_
-#define LIBRARIES_UTILS_ENTITYJSONREQUESTRESPONSEUTIL_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_UTILS_ENTITYJSONREQUESTRESPONSEUTIL_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_UTILS_ENTITYJSONREQUESTRESPONSEUTIL_H_
 
 #include <Arduino.h>
 #include <ArduinoJson.h>

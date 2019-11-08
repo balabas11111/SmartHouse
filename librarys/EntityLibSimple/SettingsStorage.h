@@ -72,7 +72,7 @@
 #include <Entity.h>
 #include <IPAddress.h>
 #include <sstream>
-#include <DeviceUtils.h>
+#include <utils/DeviceUtils.h>
 #include "Hash.h"
 #include <DeviceConfig.h>
 #include <DeviceConstants.h>
@@ -82,11 +82,12 @@
 
 class SettingsStorage: public Entity {
 public:
-	SettingsStorage(const char* firmware, char* description) :
+	SettingsStorage(const char* firmware, char* description, const char* emoji = EMOJI_PAGER) :
 			Entity(GROUP_SETTINGS, _WIFI_SETTINGS_DEF_NAME,
 					(char*)_WIFI_SETTINGS_DEF_DESCR) {
 		this->_firmware = firmware;
 		this->_deviceDescr = description;
+		this->_emoji = emoji;
 	}
 	virtual ~SettingsStorage() {
 	}
@@ -245,6 +246,9 @@ public:
 	const char* deviceId() {
 		return this->_devId;
 	}
+	const char* deviceEmoji() {
+		return this->_emoji;
+	}
 	const char* deviceFirmWare() {
 		return this->_firmware;
 	}
@@ -288,12 +292,9 @@ public:
 		JsonObjectUtil::setField(info, _DEVICE_ID, deviceId());
 		JsonObjectUtil::setField(info, _DEVICE_FIRMWARE, deviceFirmWare());
 		JsonObjectUtil::setField(info, _DEVICE_DESCR, deviceDescr());
-#ifndef SETTINGS_DEVICE_EMOJI
-		JsonObjectUtil::setField(info, EDC_FIELD_EMOJI, EMOJI_PAGER);
-#else
-		JsonObjectUtil::setField(info, EDC_FIELD_EMOJI, SETTINGS_DEVICE_EMOJI);
-#endif
+		JsonObjectUtil::setField(info, EDC_FIELD_EMOJI, deviceEmoji());
 	}
+
 	const String& getServerAuthorization() const {
 		return serverAuthorization;
 	}
@@ -371,6 +372,7 @@ protected:
 	char* _devId = (char*)" ";
 	const char* _firmware;
 	char* _deviceDescr = (char*)"Default Device description";
+	const char* _emoji = EMOJI_PAGER;
 
 	char* _ssid = (char*)SETTINGS_WIFI_SSSID;
 	char* _pass = (char*)SETTINGS_WIFI_PASSWORD;

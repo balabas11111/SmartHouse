@@ -1,15 +1,16 @@
 /*
  * Pin.h
  *
- *  Created on: 13 сент. 2019 г.
+ *  Created on: 13 пїЅпїЅпїЅпїЅ. 2019 пїЅ.
  *      Author: Vitaliy
  */
 
-#ifndef LIBRARIES_ENTITYLIBSIMPLE_COMP_PIN_H_
-#define LIBRARIES_ENTITYLIBSIMPLE_COMP_PIN_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_PIN_PIN_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_PIN_PIN_H_
 
 #include <Arduino.h>
 #include <FunctionalInterrupt.h>
+#include <utils/DeviceUtils.h>
 
 class Pin {
 public:
@@ -70,4 +71,4 @@ protected:
 	uint8_t offLevel = LOW;
 };
 
-#endif /* LIBRARIES_ENTITYLIBSIMPLE_COMP_PIN_H_ */
+#endif /* LIBRARIES_ENTITYLIBSIMPLE_PIN_PIN_H_ */

@@ -10,7 +10,7 @@
 
 #include "Arduino.h"
 #include "ArduinoJson.h"
-#include "JsonObjectUtil.h"
+#include "utils/JsonObjectUtil.h"
 #include "Emoji.h"
 
 #define EDC_ENTITY_FIELDS          "f"

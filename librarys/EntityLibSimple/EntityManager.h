@@ -10,8 +10,8 @@
 
 #include "Arduino.h"
 #include "ArduinoJson.h"
-#include "JsonObjectUtil.h"
-#include "FileUtils.h"
+#include "utils/JsonObjectUtil.h"
+#include "utils/FileUtils.h"
 
 #include <list>
 #include <functional>

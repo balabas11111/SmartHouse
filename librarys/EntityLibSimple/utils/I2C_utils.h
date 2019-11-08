@@ -5,8 +5,8 @@
  *      Author: Vitaliy
  */
 
-#ifndef LIBRARIES_I2C_utils_I2C_utils_H_
-#define LIBRARIES_I2C_utils_I2C_utils_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_I2C_utils_I2C_utils_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_I2C_utils_I2C_utils_H_
 
 #include <Arduino.h>
 #include "ConstUtil.h"

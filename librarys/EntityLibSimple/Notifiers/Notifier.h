@@ -1,7 +1,7 @@
 /*
  * Notifier.h
  *
- *  Created on: 5 сент. 2019 г.
+ *  Created on: 5 пїЅпїЅпїЅпїЅ. 2019 пїЅ.
  *      Author: Vitaliy
  */
 
@@ -10,9 +10,10 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
-#include <DeviceUtils.h>
 
-#include <JsonObjectUtil.h>
+#include <utils/DeviceUtils.h>
+#include <utils/JsonObjectUtil.h>
+
 #include <Notifiers/NotificationTarget.h>
 #include <Notifiers/DataSelector.h>
 

@@ -18,7 +18,7 @@
 
 #include "ESP8266WiFi.h"
 #include "PubSubClient.h"
-#include "DeviceUtils.h"
+#include "utils/DeviceUtils.h"
 
 #define MQTT_REGISTRATION_TOPIC     "fromDevice/register"
 #define MQTT_TO_DEVICE_TOPIC   "to/"

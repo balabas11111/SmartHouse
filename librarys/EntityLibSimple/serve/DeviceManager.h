@@ -11,7 +11,7 @@
 #include "Arduino.h"
 #include <ArduinoJson.h>
 #include <DeviceConfig.h>
-#include <DeviceUtils.h>
+#include <utils/DeviceUtils.h>
 #include "Entity.h"
 #include <EntityUpdate.h>
 #include "EntityDescriptor.h"

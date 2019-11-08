@@ -12,7 +12,7 @@
 #include <FS.h>
 #include <ArduinoJson.h>
 
-#include <FileUtils.h>
+#include <utils/FileUtils.h>
 #include <SettingsStorage.h>
 #include <DeviceConstants.h>
 #include <ESP8266WebServer.h>

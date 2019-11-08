@@ -1,7 +1,7 @@
 /*
  * EntityApplication.cpp
  *
- *  Created on: 30 àâã. 2019 ã.
+ *  Created on: 30 ï¿½ï¿½ï¿½. 2019 ï¿½.
  *      Author: Vitaliy
  */
 
@@ -9,7 +9,7 @@
 
 EntityApplication::EntityApplication(const char* firmWare, char* description,
 		Entity* entities[], int entityCount, EntityUpdate* entityUpdate[],
-		int entityUpdateCount, SettingsStorage* conf,
+		int entityUpdateCount, const char* emoji, SettingsStorage* conf,
 		std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
 
@@ -18,7 +18,7 @@ EntityApplication::EntityApplication(const char* firmWare, char* description,
 			nullptr, nullptr, 0,
 #endif
 			firmWare, description, entities, entityCount, entityUpdate,
-			entityUpdateCount, conf, onWiFiConnected, onWiFiDisConnected);
+			entityUpdateCount, emoji, conf, onWiFiConnected, onWiFiDisConnected);
 }
 
 void EntityApplication::construct(
@@ -26,7 +26,7 @@ void EntityApplication::construct(
 		PageToDisplayAdapter* displayAdapter, DisplayPage* pages[], unsigned char pageCount,
 #endif
 		const char* firmWare, char* description, Entity* entities[],
-		int entityCount, EntityUpdate* entityUpdate[], int entityUpdateCount,
+		int entityCount, EntityUpdate* entityUpdate[], int entityUpdateCount, const char* emoji,
 		SettingsStorage* conf, std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
 
@@ -35,7 +35,7 @@ void EntityApplication::construct(
 		Serial.println(FPSTR("New SettingsStorage will be created"));
 	}
 
-	this->conf = (newConf) ? new SettingsStorage(firmWare, description) : conf;
+	this->conf = (newConf) ? new SettingsStorage(firmWare, description, emoji) : conf;
 
 	this->entityManager = new EntityManager(entities, entityCount, this->conf);
 
@@ -55,6 +55,12 @@ void EntityApplication::construct(
 			onWiFiDisConnected);
 	this->wifiServerManager = new WiFiServerManager(this->entityManager,
 			this->conf);
+}
+
+void EntityApplication::begin() {
+	initWithWiFi(nullptr);
+	updateEntities(true);
+	checkServerRegistration();
 }
 
 void EntityApplication::init(bool initSerial,
@@ -130,44 +136,17 @@ void EntityApplication::initWithoutWiFi(bool initI2C, uint8_t clockPin,
 void EntityApplication::loop() {
 	bool updated = this->entityUpdateManager->updateEntities();
 
-#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
-
-#ifdef SETTINGS_SERVER_SEND_DATA_METHOD_GET
-
-	if(this->entityManager->processChangedEntities(this->serverConnectionManager->getBuffer())) {
-		this->serverConnectionManager->triggerDataChangedDoSend();
-	}
-
-#else
-#ifndef SETTINGS_SERVER_HTTP_DATA_UPDATE_DISPATCH_DISABLED
-	if(this->entityManager->processChangedEntities()) {
-		this->serverConnectionManager->triggerDataChanged();
-	}
-#endif
-#endif
 	if (updated) {
 		this->getServerConnector()->triggerCheckConnection();
 		this->getServerConnector()->loop();
 	}
 
-#endif
-#ifndef SETTINGS_SERVER_MQTT_DISABLED
-
-#ifdef SETTINGS_SERVER_HTTP_DATA_UPDATE_DISPATCH_DISABLED
 	if (this->entityManager->processChangedEntities()) {
-
 		this->mqttManager->publishBuffer();
 	}
-#endif
 
 	this->mqttManager->loop();
 	this->wifiServerManager->loop();
-
-#else
-	this->entityManager->processChangedEntities();
-	this->wifiServerManager->loop();
-#endif
-
 }
 
 EntityManager* EntityApplication::getEntityManager() {
@@ -257,3 +236,4 @@ void EntityApplication::onServerRegistered() {
 	//Serial.println(FPSTR("OnServerRegistered"));
 	this->mqttManager->init(entityManager->getBuffer());
 }
+

@@ -5,13 +5,11 @@
  *      Author: Vitaliy_Vlasov
  */
 
-#ifndef LIBRARIES_UTILS_WIFIUTILS_H_
-#define LIBRARIES_UTILS_WIFIUTILS_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_UTILS_WIFIUTILS_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_UTILS_WIFIUTILS_H_
 
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
-
-//#include <ESP_Consts.h>
 
 class WiFiUtils {
 public:

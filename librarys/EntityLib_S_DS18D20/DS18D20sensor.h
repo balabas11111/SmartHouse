@@ -9,7 +9,7 @@
 #define LIBRARIES_ENTITYLIBSENSORS_DS18D20SENSOR_H_
 
 #include <ArduinoJson.h>
-#include <DeviceUtils.h>
+#include <utils/DeviceUtils.h>
 #include <Entity.h>
 #include <EntityUpdate.h>
 #ifndef SENSORS_MOCKED

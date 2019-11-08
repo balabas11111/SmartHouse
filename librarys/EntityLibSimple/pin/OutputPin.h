@@ -1,15 +1,15 @@
 /*
  * OutputPin.h
  *
- *  Created on: 23 мар. 2019 г.
+ *  Created on: 23 пїЅпїЅпїЅ. 2019 пїЅ.
  *      Author: Vitaliy
  */
 
-#ifndef LIBRARIES_ENTITYLIBSENSORS_OUTPUTPIN_H_
-#define LIBRARIES_ENTITYLIBSENSORS_OUTPUTPIN_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_PIN_OUTPUTPIN_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_PIN_OUTPUTPIN_H_
 
+#include <pin/Pin.h>
 #include "Arduino.h"
-#include "Comp/Pin.h"
 #include "Entity.h"
 #include "EntityUpdate.h"
 

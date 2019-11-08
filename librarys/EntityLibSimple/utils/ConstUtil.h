@@ -1,12 +1,12 @@
 /*
  * Constants container
  *
- *  Created on: 3 мар. 2019 г.
+ *  Created on: 3 пїЅпїЅпїЅ. 2019 пїЅ.
  *      Author: Vitaliy
  */
 
-#ifndef LIBRARIES_UTILS_CONSTUTIL_H_
-#define LIBRARIES_UTILS_CONSTUTIL_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_UTILS_CONSTUTIL_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_UTILS_CONSTUTIL_H_
 
 #include <Arduino.h>
 

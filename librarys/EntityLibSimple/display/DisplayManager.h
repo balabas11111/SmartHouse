@@ -12,7 +12,7 @@
 #include "ArduinoJson.h"
 #include "functional"
 #include "SettingsStorage.h"
-#include "WiFiUtils.h"
+#include "utils/WiFiUtils.h"
 #include "display/PageToDisplayAdapter.h"
 #include "display/DisplayPage.h"
 #include "EntityJsonRequestResponse.h"

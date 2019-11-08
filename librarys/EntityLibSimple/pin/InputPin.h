@@ -1,17 +1,17 @@
 /*
  * InputPin.h
  *
- *  Created on: 13 сент. 2019 г.
+ *  Created on: 13 пїЅпїЅпїЅпїЅ. 2019 пїЅ.
  *      Author: Vitaliy
  */
 
-#ifndef LIBRARIES_ENTITYLIBSIMPLESENSORS_INPUTPIN_H_
-#define LIBRARIES_ENTITYLIBSIMPLESENSORS_INPUTPIN_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_PIN_INPUTPIN_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_PIN_INPUTPIN_H_
 
+#include <pin/Pin.h>
 #include "Arduino.h"
 #include "ArduinoJson.h"
 #include <functional>
-#include "Comp/Pin.h"
 #include "Entity.h"
 #include "EntityUpdate.h"
 

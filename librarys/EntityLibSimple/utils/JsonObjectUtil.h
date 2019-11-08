@@ -5,15 +5,15 @@
  *      Author: Vitaliy
  */
 
-#ifndef LIBRARIES_DEVICELIB_UTILS_JSONOBJECTUTIL_H_
-#define LIBRARIES_DEVICELIB_UTILS_JSONOBJECTUTIL_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_UTILS_JSONOBJECTUTIL_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_UTILS_JSONOBJECTUTIL_H_
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
-#include <HashPrint.h>
+#include <utils/HashPrint.h>
 
 #include <utility>
-#include <CompareUtils.h>
+#include <utils/CompareUtils.h>
 
 const int ROOT_PATHS_TOTAL PROGMEM = 2;
 

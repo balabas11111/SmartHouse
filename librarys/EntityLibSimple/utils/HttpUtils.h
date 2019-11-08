@@ -1,12 +1,12 @@
 /*
  * HttpUtils.h
  *
- *  Created on: 5 сент. 2019 г.
+ *  Created on: 5 пїЅпїЅпїЅпїЅ. 2019 пїЅ.
  *      Author: Vitaliy
  */
 
-#ifndef LIBRARIES_UTILS_HTTPUTILS_H_
-#define LIBRARIES_UTILS_HTTPUTILS_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_UTILS_HTTPUTILS_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_UTILS_HTTPUTILS_H_
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
@@ -15,7 +15,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 #include <EntityJsonRequestResponse.h>
-#include <JsonObjectUtil.h>
+#include <utils/JsonObjectUtil.h>
 #include <WiFi/HttpConstants.h>
 
 #define EMPTY_STR " "

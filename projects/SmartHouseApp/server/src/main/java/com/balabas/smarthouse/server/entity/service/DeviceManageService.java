@@ -118,6 +118,9 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Override
 	public Device getDeviceById(Long id) {
+		if(id==null || id==0) {
+			return null;
+		}
 		for (Device device : devices) {
 			if (id.equals(device.getId())) {
 				return device;
@@ -129,6 +132,9 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Override
 	public Device getDeviceByName(String deviceName) {
+		if(deviceName == null) {
+			return null;
+		}
 		return this.devices.stream().filter(d -> deviceName.equals(d.getName())).map(d -> (Device) d).findFirst()
 				.orElse(null);
 	}

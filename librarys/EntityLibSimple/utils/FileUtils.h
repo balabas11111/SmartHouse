@@ -5,8 +5,8 @@
  *      Author: Vitaliy_Vlasov
  */
 
-#ifndef LIBRARIES_DEVICELIB_UTILS_FILEUTILS_H_
-#define LIBRARIES_DEVICELIB_UTILS_FILEUTILS_H_
+#ifndef LIBRARIES_ENTITYLIBSIMPLE_UTILS_FILEUTILS_H_
+#define LIBRARIES_ENTITYLIBSIMPLE_UTILS_FILEUTILS_H_
 
 #include <Arduino.h>
 #include <ArduinoJson.h>

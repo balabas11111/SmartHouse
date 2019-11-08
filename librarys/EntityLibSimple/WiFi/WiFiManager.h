@@ -13,11 +13,11 @@
 #include <functional>
 #include <Hash.h>
 
-#include <WiFiUtils.h>
+#include <utils/WiFiUtils.h>
 #include <SettingsStorage.h>
 
 #include <EntityJsonRequestResponse.h>
-#include <HttpUtils.h>
+#include <utils/HttpUtils.h>
 
 class WiFiManager {
 public:

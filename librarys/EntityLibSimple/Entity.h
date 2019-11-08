@@ -10,10 +10,10 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
-#include <DeviceUtils.h>
+#include <utils/DeviceUtils.h>
 #include <DeviceConstants.h>
 #include <EntityDescriptor.h>
-#include <JsonObjectUtil.h>
+#include <utils/JsonObjectUtil.h>
 #include <functional>
 
 const char MESSAGE[] PROGMEM ="Message";
