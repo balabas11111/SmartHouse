@@ -48,7 +48,7 @@ public:
 		Serial.print(FPSTR("DHT22 read(force)="));
 		Serial.println(result);
 
-		for(int i=0; i<15; i++) {
+		for(int i=0; i<3; i++) {
 			float h = dht->readHumidity();
 			float t = dht->readTemperature();
 

@@ -5,5 +5,5 @@ public interface ISoundPlayer {
 	void playAlarmStarted();
 	void playAlarmFinished();
 	
-	void playSound(String soundName);
+	void playSound(String filePath);
 }

@@ -20,7 +20,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SoundPlayer implements ISoundPlayer {
 
-	private static String SOUND_FOLDER = "sounds/";
+	//private static String SOUND_FOLDER = "sounds/";
 
 	@Getter
 	@Value("${smarthouse.server.alarm.sound.alarmstarted}")
@@ -33,22 +33,22 @@ public class SoundPlayer implements ISoundPlayer {
 	@Override
 	public void playAlarmStarted() {
 		log.info("Sound AlarmStarted");
-		playSound(SOUND_FOLDER + alarmStartedSound);
+		playSound(alarmStartedSound);
 	}
 
 	@Override
 	public void playAlarmFinished() {
 		if (alarmFinishedSound != null) {
 			log.info("Sound AlarmFinished ");
-			playSound(SOUND_FOLDER + alarmFinishedSound);
+			playSound(alarmFinishedSound);
 		}
 	}
 
 	@Override
-	public void playSound(String soundName) {
+	public void playSound(String filePath) {
 		try {
-			String url = Resources.getResource(soundName).getFile();
-			File yourFile = new File(url);
+			//String url = Resources.getResource(soundName).getFile();
+			File yourFile = new File(filePath);
 			AudioInputStream stream;
 			AudioFormat format;
 			DataLine.Info info;
@@ -60,7 +60,7 @@ public class SoundPlayer implements ISoundPlayer {
 			clip = (Clip) AudioSystem.getLine(info);
 			clip.open(stream);
 			clip.start();
-			log.info("Sound " + soundName);
+			log.info("Sound " + filePath);
 		} catch (Exception e) {
 			log.error(e);
 		}
