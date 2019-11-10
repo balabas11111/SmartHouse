@@ -64,10 +64,6 @@ public class EntityAlarmService implements IEntityAlarmService {
 	@Value("${smarthouse.server.alarm.singleAlarmMessage:true}")
 	private boolean singleAlarmMessage;
 
-	@Getter
-	@Value("${smarthouse.server.alarm.sound.enabled:true}")
-	private boolean soundEnabled;
-
 	@Autowired
 	private IMessageSender sender;
 
@@ -295,7 +291,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 			}
 
 			for (IEntityAlarm alarm : alarmsWithStarted) {
-				if (soundEnabled && alarm.isSound()) {
+				if (alarm.isSound()) {
 					soundPlayer.playAlarmStarted();
 				}
 				alarm.setAlarmStartedSent(sent);
@@ -325,7 +321,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 			}
 
 			for (IEntityAlarm alarm : alarmsWithFinished) {
-				if (soundEnabled && alarm.isSound()) {
+				if (alarm.isSound()) {
 					soundPlayer.playAlarmFinished();
 				}
 				alarm.setAlarmFinishedSent(sent);

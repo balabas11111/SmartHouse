@@ -18,27 +18,31 @@ import com.balabas.smarthouse.server.view.Action;
 import lombok.extern.log4j.Log4j2;
 
 @Service
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @Log4j2
-public class EntityFieldService implements IEntityFieldService{
-	
+public class EntityFieldService implements IEntityFieldService {
+
 	@Autowired
 	IEntityFieldValueRepository entityFieldValueRepository;
-	
+
 	@Override
 	public void saveAll(List<EntityFieldValue> values) {
-		//entityFieldValueRepository.saveAll(values);
-		
-		for(EntityFieldValue entityFieldValue : values) {
-			if(entityFieldValue.getEntityField()!=null && entityFieldValue.getEntityField().getId()!=null) {
-				entityFieldValueRepository.saveEntityFieldValue(entityFieldValue);
+		// entityFieldValueRepository.saveAll(values);
+
+		for (EntityFieldValue entityFieldValue : values) {
+			if (entityFieldValue.getEntityField() != null && entityFieldValue.getEntityField().getId() != null) {
+				try {
+					entityFieldValueRepository.saveEntityFieldValue(entityFieldValue);
+				} catch (Exception e) {
+					log.error(e);
+				}
 			} else {
-				log.error("Error save entityFieldValue id  is null name = " 
-						+ Optional.ofNullable(entityFieldValue.getEntityField().getName()).orElse("null") );
+				log.error("Error save entityFieldValue id  is null name = "
+						+ Optional.ofNullable(entityFieldValue.getEntityField().getName()).orElse("null"));
 			}
 		}
 	}
-	
+
 	@Override
 	public List<Action> getActionsForEntityField(String actionName, IEntityField entityField) {
 		return getCommandsForEntityField(entityField).stream()
@@ -63,7 +67,7 @@ public class EntityFieldService implements IEntityFieldService{
 
 		return result;
 	}
-	
+
 	@Override
 	public boolean isButton(IEntityField entityField) {
 		IEntityFieldEnabledValue enVal = entityField.getEntityFieldEnabledValueByCurrentValue();

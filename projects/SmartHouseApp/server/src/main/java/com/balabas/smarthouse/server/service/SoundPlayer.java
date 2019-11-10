@@ -1,6 +1,8 @@
 package com.balabas.smarthouse.server.service;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -11,8 +13,6 @@ import javax.sound.sampled.DataLine;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.google.common.io.Resources;
-
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
@@ -20,7 +20,25 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SoundPlayer implements ISoundPlayer {
 
-	//private static String SOUND_FOLDER = "sounds/";
+	@Getter
+	@Value("${smarthouse.server.alarm.sound.enabled:true}")
+	private boolean soundEnabled;
+
+	@Getter
+	@Value("${smarthouse.server.alarm.sound.usebeeper.start:true}")
+	private boolean useBeeperStart;
+	
+	@Getter
+	@Value("${smarthouse.server.alarm.sound.usebeeper.finish:false}")
+	private boolean useBeeperFinish;
+
+	@Getter
+	@Value("${smarthouse.server.alarm.sound.beepinterval:50}")
+	private int beepInterval;
+
+	@Getter
+	@Value("${smarthouse.server.alarm.sound.beepcount:3}")
+	private int beepCount;
 
 	@Getter
 	@Value("${smarthouse.server.alarm.sound.alarmstarted}")
@@ -32,37 +50,55 @@ public class SoundPlayer implements ISoundPlayer {
 
 	@Override
 	public void playAlarmStarted() {
-		log.info("Sound AlarmStarted");
-		playSound(alarmStartedSound);
+		if (useBeeperStart) {
+			doBeep();
+		} else {
+			log.info("Sound AlarmStarted");
+			playSound(alarmStartedSound);
+		}
 	}
 
 	@Override
 	public void playAlarmFinished() {
-		if (alarmFinishedSound != null) {
-			log.info("Sound AlarmFinished ");
-			playSound(alarmFinishedSound);
+		if (useBeeperFinish) {
+			doBeep();
+		} else {
+			if (alarmFinishedSound != null) {
+				log.info("Sound AlarmFinished ");
+				playSound(alarmFinishedSound);
+			}
 		}
 	}
 
 	@Override
 	public void playSound(String filePath) {
-		try {
-			//String url = Resources.getResource(soundName).getFile();
-			File yourFile = new File(filePath);
-			AudioInputStream stream;
-			AudioFormat format;
-			DataLine.Info info;
-			Clip clip;
+		if (soundEnabled) {
+			try {
+				File yourFile = new File(filePath);
+				AudioInputStream stream;
+				AudioFormat format;
+				DataLine.Info info;
+				Clip clip;
 
-			stream = AudioSystem.getAudioInputStream(yourFile);
-			format = stream.getFormat();
-			info = new DataLine.Info(Clip.class, format);
-			clip = (Clip) AudioSystem.getLine(info);
-			clip.open(stream);
-			clip.start();
-			log.info("Sound " + filePath);
-		} catch (Exception e) {
-			log.error(e);
+				stream = AudioSystem.getAudioInputStream(yourFile);
+				format = stream.getFormat();
+				info = new DataLine.Info(Clip.class, format);
+				clip = (Clip) AudioSystem.getLine(info);
+				clip.open(stream);
+				clip.start();
+				log.info("Sound " + filePath);
+			} catch (Exception e) {
+				log.error(e);
+			}
+		}
+	}
+
+	@Override
+	public void doBeep() {
+		if (soundEnabled) {
+			ExecutorService executorService = Executors.newSingleThreadExecutor();
+			executorService.submit(new BeepThread(beepCount, beepInterval));
+			executorService.shutdown();
 		}
 	}
 

@@ -53,6 +53,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/utils}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/PubSubClient/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.654713242" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -92,6 +94,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/utils}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/PubSubClient/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.2088298691" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -131,6 +135,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/utils}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/PubSubClient/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1632312327" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -138,6 +144,17 @@
 							<tool id="io.sloeber.tool.combine.1308103676" name="Arduino combiner" superClass="io.sloeber.tool.combine"/>
 							<tool id="io.sloeber.tool.objcopy.eep.1165357086" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep"/>
 							<tool id="io.sloeber.tool.size.185790740" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="io.sloeber.core.toolChain.release.802448581.886333542" name="/" resourcePath="libraries/EntityLibSimple/WiFi">
+						<toolChain id="io.sloeber.core.toolChain.release.1426688408" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.741113910" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1530247447"/>
+							<tool id="io.sloeber.tool.compiler.c.211145714" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.1303877337"/>
+							<tool id="io.sloeber.tool.sketch.compiler.s.1645520214" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.1840188306"/>
+							<tool id="io.sloeber.tool.ar.1156088279" name="Arduino archiver" superClass="io.sloeber.tool.ar.1792814605"/>
+							<tool id="io.sloeber.tool.combine.825495807" name="Arduino combiner" superClass="io.sloeber.tool.combine.1308103676"/>
+							<tool id="io.sloeber.tool.objcopy.eep.1660276679" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.1165357086"/>
+							<tool id="io.sloeber.tool.size.1333073039" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.185790740"/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>

@@ -281,7 +281,7 @@ public class DeviceManageService implements IDeviceManageService {
 				State newState = (ok) ? State.UPDATED : State.BAD_DATA;
 				stateChanger.stateChanged(device, newState);
 
-				if (mock || logDeviceRequests) {
+				if ((mock || logDeviceRequests) && changedValues.size()>0) {
 					log.info("Values changed = " + changedValues.size());
 				}
 				

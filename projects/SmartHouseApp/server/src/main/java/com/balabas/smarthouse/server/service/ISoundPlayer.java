@@ -6,4 +6,5 @@ public interface ISoundPlayer {
 	void playAlarmFinished();
 	
 	void playSound(String filePath);
+	void doBeep();
 }

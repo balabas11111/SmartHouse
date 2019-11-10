@@ -16,6 +16,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		 <pi4j.version>1.2</pi4j.version>
 		<junit.jupiter.version>5.5.2</junit.jupiter.version>
 		<junit.platform.version>1.5.2</junit.platform.version>
 	</properties>
@@ -43,7 +44,12 @@
 			</dependency> <dependency> <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId> 
 			<scope>runtime</scope> </dependency> <dependency> <groupId>com.h2database</groupId> 
 			<artifactId>h2</artifactId> </dependency> -->
-
+		<dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-core</artifactId>
+            <version>${pi4j.version}</version>
+        </dependency>
+        
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
