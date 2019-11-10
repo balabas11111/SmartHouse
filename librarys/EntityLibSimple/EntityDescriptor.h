@@ -79,6 +79,10 @@
 #define EDC_DESCR_LIGHT_LEVEL   "Освещенность"
 #define EDC_DESCR_STATE         "Состояние"
 
+#define EDC_DESCR_MOVEMENT      "Движение"
+#define EDC_DESCR_MOVEMENT_ON   "ДВИЖЕНИЕ"
+#define EDC_DESCR_MOVEMENT_OFF  "Нет движения"
+
 class EntityDescriptor {
 public:
 	static void appendSwgEntityField(JsonObject& swgJson, const char* key,
@@ -156,15 +160,33 @@ public:
 			const char* onEmoji = EMOJI_DIM_BUTTON, const char* offEmoji =
 					EMOJI_RADIO_BUTTON) {
 
-		appendSwgField(swgJson, name, description, EDC_CLASS_BOOLEAN,
+		appendSwgFieldBooleanOnOffWithClass(swgJson, name, description, emoji, readOnly,
 				(readOnly ? EDC_CLASS_VIEW_LABEL : EDC_CLASS_VIEW_BUTTON_BOOLEAN),
-				readOnly, emoji);
+				onKey, offKey, onDescription, offDescription, onActionDescription, offActionDescription, onEmoji, offEmoji);
 
-		appendEnabledValue(swgJson, name, onKey, onDescription,
-				onActionDescription, onEmoji);
-		appendEnabledValue(swgJson, name, offKey, offDescription,
-				offActionDescription, offEmoji);
 	}
+
+	static void appendSwgFieldBooleanOnOffWithClass(JsonObject& swgJson,
+				const char* name, const char* description = nullptr,
+				const char* emoji = nullptr,
+				bool readOnly = false, const char* viewClass = EDC_CLASS_VIEW_BUTTON, const char* onKey =
+						EDC_FIELD_BOOLEAN_VALUE_ON, const char* offKey =
+						EDC_FIELD_BOOLEAN_VALUE_OFF, const char* onDescription =
+						EDC_DESCR_ON, const char* offDescription = EDC_DESCR_OFF,
+				const char* onActionDescription = EDC_DESCR_ACTION_ON,
+				const char* offActionDescription = EDC_DESCR_ACTION_OFF,
+				const char* onEmoji = EMOJI_DIM_BUTTON, const char* offEmoji =
+						EMOJI_RADIO_BUTTON) {
+
+			appendSwgField(swgJson, name, description, EDC_CLASS_BOOLEAN,
+					viewClass,
+					readOnly, emoji);
+
+			appendEnabledValue(swgJson, name, onKey, onDescription,
+					onActionDescription, onEmoji);
+			appendEnabledValue(swgJson, name, offKey, offDescription,
+					offActionDescription, offEmoji);
+		}
 
 	static void appendSwgFieldInteger(JsonObject& swgJson, const char* name,
 			const char* description = nullptr, const char* emoji = nullptr,

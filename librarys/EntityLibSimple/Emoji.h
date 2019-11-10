@@ -14,6 +14,10 @@
 #define EMOJI_CYCLONE              "1F300"
 #define EMOJI_UMBRELLA_W_DROPLETS  "2614"
 #define EMOJI_SUN_CLOUD            "26C5"
+//PIR
+#define EMOJI_DETECTIVE            "1F575"
+#define EMOJI_POLICE_CAR_LIGHTS    "1F6A8"
+#define EMOJI_NO_PEDESTRIANTS      "1F6B7"
 //bh1750
 #define EMOJI_SUN_WITH_FACE        "1F31E"
 #define EMOJI_SUN                  "2600"

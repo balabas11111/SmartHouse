@@ -282,7 +282,12 @@ public class DeviceManageService implements IDeviceManageService {
 				stateChanger.stateChanged(device, newState);
 
 				if ((mock || logDeviceRequests) && changedValues.size()>0) {
-					log.info("Values changed = " + changedValues.size());
+					String chValsStr = "";
+					for(EntityFieldValue value: changedValues) {
+						String tmp = value.getEntityField().getName() + "=" + value.getValueStr();
+						chValsStr+=tmp;
+					}
+					log.info("Values changed = " + changedValues.size() + " device=" + device.getName() +" VALUES " + chValsStr);
 				}
 				
 				entityFieldService.saveAll(changedValues);

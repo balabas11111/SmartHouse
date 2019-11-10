@@ -52,7 +52,7 @@ public class EntityFieldService implements IEntityFieldService {
 	@Override
 	public List<IEntityFieldEnabledValue> getCommandsForEntityField(IEntityField entityField) {
 		if (!Boolean.class.equals(entityField.getClazz()) || entityField.getEnabledValues() == null
-				|| entityField.getEnabledValues().isEmpty()) {
+				|| entityField.getEnabledValues().isEmpty() || entityField.isReadOnly()) {
 			return Collections.emptyList();
 		}
 

@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.server.entity.model;
 
+import java.util.Optional;
+
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -11,9 +13,9 @@ import org.springframework.util.StringUtils;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
 @MappedSuperclass
 public class ItemAbstract implements IItemAbstract {
 
@@ -22,9 +24,13 @@ public class ItemAbstract implements IItemAbstract {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Getter @Setter
 	protected Long id = 0L;
+	@Getter @Setter
 	protected String name;
+	@Getter @Setter
 	protected String description;
+	@Setter
 	@Enumerated(EnumType.STRING)
 	protected Emoji emoji;
 
@@ -33,5 +39,10 @@ public class ItemAbstract implements IItemAbstract {
 		if (StringUtils.isEmpty(this.description)) {
 			setDescription(description);
 		}
+	}
+	
+	@Override
+	public Emoji getEmoji() {
+		return Optional.ofNullable(this.emoji).orElse(Emoji.EMPTY_EMOJI);
 	}
 }

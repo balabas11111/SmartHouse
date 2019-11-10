@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="io.sloeber.core.toolChain.release.2021900665">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="io.sloeber.core.toolChain.release.2021900665" moduleId="org.eclipse.cdt.core.settings" name="Release">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildProperties="" description="" id="io.sloeber.core.toolChain.release.2021900665" name="Release" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="io.sloeber.core.toolChain.release.2021900665.112961863" name="/" resourcePath="">
+						<toolChain id="io.sloeber.core.toolChain.release.2114339513" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="io.sloeber.targetplatform.476083273" name="Arduino Target" osList="all" superClass="io.sloeber.targetplatform"/>
+							<builder buildPath="${workspace_loc:/EntityLib_dev_PIR}/Release" id="io.sloeber.sketch.builder.644367016" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Arduino sketch builder" superClass="io.sloeber.sketch.builder"/>
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.1979268898" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
+								<option id="io.sloeber.compiler.cpp.sketch.option.incpath.876942083" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ArduinoJson}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLib_S_PIR}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLibSimple}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266HTTPClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266HTTPClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266HTTPUpdateServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266WebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266WebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266WiFi}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/FastCRC}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/Hash}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/PubSubClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/PubSubClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/Ticker}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/Wire}&quot;"/>
+								</option>
+								<inputType id="io.sloeber.compiler.cpp.sketch.input.1394203530" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
+							</tool>
+							<tool id="io.sloeber.tool.compiler.c.1579651777" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
+								<option id="io.sloeber.compiler.c.sketch.option.incpath.1541533826" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ArduinoJson}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLib_S_PIR}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLibSimple}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266HTTPClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266HTTPClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266HTTPUpdateServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266WebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266WebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266WiFi}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/FastCRC}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/Hash}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/PubSubClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/PubSubClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/Ticker}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/Wire}&quot;"/>
+								</option>
+								<inputType id="io.sloeber.compiler.c.sketch.input.2014070281" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
+							</tool>
+							<tool id="io.sloeber.tool.sketch.compiler.s.265126922" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s">
+								<option id="io.sloeber.compiler.asm.sketch.option.incpath.1588789760" name="Include Paths (-I)" superClass="io.sloeber.compiler.asm.sketch.option.incpath" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/core/variant}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ArduinoJson}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLib_S_PIR}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLibSimple}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266HTTPClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266HTTPClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266HTTPUpdateServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266WebServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266WebServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266WiFi}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/ESP8266WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/FastCRC}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/Hash}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/PubSubClient}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/PubSubClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/Ticker}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/Wire}&quot;"/>
+								</option>
+								<inputType id="io.sloeber.compiler.S.sketch.input.546276860" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
+							</tool>
+							<tool id="io.sloeber.tool.ar.1598657552" name="Arduino archiver" superClass="io.sloeber.tool.ar"/>
+							<tool id="io.sloeber.tool.combine.1376659815" name="Arduino combiner" superClass="io.sloeber.tool.combine"/>
+							<tool id="io.sloeber.tool.objcopy.eep.868440676" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep"/>
+							<tool id="io.sloeber.tool.size.408651251" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="io.sloeber.core.toolChain.release.2021900665.1077002022" name="/" resourcePath="libraries/EntityLibSimple/WiFi">
+						<toolChain id="io.sloeber.core.toolChain.release.1359236040" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.435742360" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1979268898"/>
+							<tool id="io.sloeber.tool.compiler.c.792887545" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.1579651777"/>
+							<tool id="io.sloeber.tool.sketch.compiler.s.684125615" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.265126922"/>
+							<tool id="io.sloeber.tool.ar.1697789231" name="Arduino archiver" superClass="io.sloeber.tool.ar.1598657552"/>
+							<tool id="io.sloeber.tool.combine.2137327175" name="Arduino combiner" superClass="io.sloeber.tool.combine.1376659815"/>
+							<tool id="io.sloeber.tool.objcopy.eep.1571622928" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.868440676"/>
+							<tool id="io.sloeber.tool.size.1220591061" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.408651251"/>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="libraries/ArduinoJson/scripts|libraries/ArduinoJson/fuzzing|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="EntityLib_dev_PIR.null.612107694" name="EntityLib_dev_PIR"/>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/EntityLib_dev_PIR"/>
+		</configuration>
+	</storageModule>
+</cproject>
