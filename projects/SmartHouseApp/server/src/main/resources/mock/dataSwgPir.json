@@ -1,0 +1,154 @@
+{
+	"device": {
+		"info": {
+			"deviceId": "ESP_962570",
+			"deviceFirmware": "ESP8266_PIR_DETECTOR_DEV",
+			"deviceDescr": "Система безопасности разработка",
+			"img": "1F575"
+		}
+	},
+	"sensors": {
+		"PIR": {
+			"swg": {
+				"i": 0,
+				"df": "d",
+				"f": {
+					"d": {
+						"d": "Название",
+						"c": "char*",
+						"cv": "inp"
+					},
+					"move": {
+						"d": "Движение",
+						"c": "bool",
+						"cv": "btn",
+						"ro": 1,
+						"img": "1F575",
+						"val": {
+							"true": {
+								"d": "ДВИЖЕНИЕ",
+								"ad": "ДВИЖЕНИЕ",
+								"img": "1F6A8"
+							},
+							"false": {
+								"d": "Нет движения",
+								"ad": "Нет движения",
+								"img": "1F6B7"
+							}
+						}
+					}
+				},
+				"img": "1F575"
+			},
+			"id": 0,
+			"d": "Детектор движения",
+			"move": false
+		},
+		"built In LED": {
+			"swg": {
+				"i": 1,
+				"df": "d",
+				"f": {
+					"d": {
+						"d": "Название",
+						"c": "char*",
+						"cv": "inp"
+					},
+					"on": {
+						"d": "Состояние",
+						"c": "bool",
+						"cv": "btb",
+						"val": {
+							"true": {
+								"d": "Включено",
+								"ad": "Включить",
+								"img": "1F505"
+							},
+							"false": {
+								"d": "Отключено",
+								"ad": "Отключить",
+								"img": "1F518"
+							}
+						}
+					}
+				},
+				"img": "1F4A1"
+			},
+			"id": 1,
+			"d": "Диод на плате",
+			"on": true
+		}
+	},
+	"settings": {
+		"DeviceSettings": {
+			"swg": {
+				"i": 2,
+				"df": "d",
+				"f": {
+					"d": {
+						"d": "Настройки",
+						"c": "char*",
+						"cv": "inp"
+					}
+				}
+			},
+			"id": 2,
+			"d": "Wifi Server Device settings",
+			"deviceId": "ESP_962570",
+			"deviceFirmware": "ESP8266_PIR_DETECTOR_DEV",
+			"deviceDescr": "Система безопасности разработка",
+			"ssid": "balabasKiev5",
+			"pass": "******",
+			"ssidAP": "ESP_962570",
+			"passAP": "******",
+			"isAp": false,
+			"isStatIp": false,
+			"disStIfCon": false,
+			"ip": "192,168,0,120",
+			"ipAP": "192,168,0,4",
+			"gateway": "192,168,0,1",
+			"subnet": "255,255,255,0",
+			"dns": "192,168,0,1",
+			"dns2": "192,168,0,1",
+			"smrtServAddr": "192.168.0.101",
+			"smrtServKey": "******",
+			"userLogin": "",
+			"userPass": "******",
+			"adminLogin": "admin",
+			"adminPass": "******",
+			"interval": 20,
+			"apCH": 1,
+			"apH": 0,
+			"apMC": 4
+		}
+	},
+	"services": {
+		"DeviceManager": {
+			"swg": {
+				"i": 3,
+				"df": "d",
+				"f": {
+					"d": {
+						"d": "Сервис",
+						"c": "char*",
+						"cv": "inp"
+					},
+					"restart": {
+						"c": "bool",
+						"cv": "btc",
+						"val": {
+							"true": {
+								"d": "Перезапускаем",
+								"ad": "Перезапустить",
+								"img": "1F505"
+							}
+						}
+					}
+				}
+			},
+			"id": 3,
+			"d": "ESP8266 DeviceManager",
+			"restart": false
+		}
+	}
+}
