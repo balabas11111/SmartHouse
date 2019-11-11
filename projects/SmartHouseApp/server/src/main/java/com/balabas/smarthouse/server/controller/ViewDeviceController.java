@@ -73,7 +73,7 @@ public class ViewDeviceController {
 
 		deviceService.sendDataToDevice(deviceId, entityId, action);
 
-		return "redirect:/device_" + Long.toString(deviceId);
+		return "redirect:/device?id=" + Long.toString(deviceId);
 
 	}
 
