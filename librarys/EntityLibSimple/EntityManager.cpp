@@ -287,14 +287,12 @@ void EntityManager::groupNameToParam(char* group, char* name,
 }
 
 EntityJsonRequestResponse* EntityManager::createEntityJsonRequestResponse() {
-	//DeviceUtils::printHeap();
 	return new EntityJsonRequestResponse();
 }
 
 void EntityManager::deleteEntityJsonRequestResponse(
 		EntityJsonRequestResponse* json) {
 	delete json;
-	//DeviceUtils::printHeap();
 }
 
 bool EntityManager::isEntitiesChanged(){

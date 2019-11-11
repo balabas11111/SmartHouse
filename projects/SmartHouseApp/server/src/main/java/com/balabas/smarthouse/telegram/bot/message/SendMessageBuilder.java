@@ -28,10 +28,10 @@ import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstractByDescriptionComparator;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
-import com.balabas.smarthouse.server.entity.service.AlarmMessageHolder;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.entity.service.IGroupService;
 import com.balabas.smarthouse.server.view.Action;
+import com.balabas.smarthouse.server.view.MessageHolder;
 import com.google.common.collect.Lists;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_NAME;
@@ -419,7 +419,7 @@ public class SendMessageBuilder {
 
 					builder.append(BotMessageConstants.ENTITY_ALARM_HEADER);
 
-					List<AlarmMessageHolder> alarmHolders = Lists.newArrayList();
+					List<MessageHolder> alarmHolders = Lists.newArrayList();
 
 					group.getEntities().stream()
 							.forEach(entity -> alarms.stream()
@@ -440,10 +440,10 @@ public class SendMessageBuilder {
 		return result;
 	}
 
-	public static String alarmMessageHoldersToString(List<AlarmMessageHolder> alarmHolders) {
+	public static String alarmMessageHoldersToString(List<MessageHolder> alarmHolders) {
 		StringBuilder builder = new StringBuilder();
 
-		for (AlarmMessageHolder holder : alarmHolders) {
+		for (MessageHolder holder : alarmHolders) {
 			builder.append(holder.getEmoji().toString());
 			builder.append("  <b>");
 			builder.append(holder.getName());

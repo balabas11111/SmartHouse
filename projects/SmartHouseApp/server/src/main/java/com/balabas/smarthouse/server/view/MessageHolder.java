@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.entity.service;
+package com.balabas.smarthouse.server.view;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 
 import lombok.Getter;
 
-public class AlarmMessageHolder {
+public class MessageHolder {
 
 	@Getter
 	private Emoji emoji = Emoji.WARNING;
@@ -23,11 +23,11 @@ public class AlarmMessageHolder {
 	@Getter
 	private List<String> messages = Lists.newArrayList();
 
-	public AlarmMessageHolder(String deviceName, String name, String status) {
+	public MessageHolder(String deviceName, String name, String status) {
 		this(deviceName, name, status, Emoji.WARNING);
 	}
 	
-	public AlarmMessageHolder(String deviceName, String name, String status, Emoji emoji) {
+	public MessageHolder(String deviceName, String name, String status, Emoji emoji) {
 		this.deviceName = deviceName;
 		this.name = name;
 		this.status = status;

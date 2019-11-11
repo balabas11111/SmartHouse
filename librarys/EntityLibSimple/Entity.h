@@ -94,6 +94,8 @@ public:
 		UNUSED(jsonToFile);
 	};
 
+	virtual void addMessage(JsonObject& json, const char* severity , const char* code = nullptr, char* text = nullptr);
+
 	void dispatchEventProcessFunctionIfChanged();
 
 	bool isMarkedAsChanged();

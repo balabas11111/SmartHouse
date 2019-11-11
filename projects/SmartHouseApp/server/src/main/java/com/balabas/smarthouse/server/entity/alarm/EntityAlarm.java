@@ -17,7 +17,7 @@ import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
-import com.balabas.smarthouse.server.entity.service.AlarmMessageHolder;
+import com.balabas.smarthouse.server.view.MessageHolder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
@@ -185,12 +185,12 @@ public class EntityAlarm implements IEntityAlarm {
 
 	@Override
 	@JsonIgnore
-	public AlarmMessageHolder getAlarmStartedTextHolder() {
+	public MessageHolder getAlarmStartedTextHolder() {
 		if (!isAlarmed()) {
 			return null;
 		}
 
-		AlarmMessageHolder result = new AlarmMessageHolder(entity.getDevice().getDescription(), entity.getDescription(), "", entity.getEmoji());
+		MessageHolder result = new MessageHolder(entity.getDevice().getDescription(), entity.getDescription(), "", entity.getEmoji());
 		
 		alarms.stream().filter(IAlarm::isAlarmed).forEach(a -> result.addMessage(a.getAlarmText()));
 
@@ -199,12 +199,12 @@ public class EntityAlarm implements IEntityAlarm {
 
 	@Override
 	@JsonIgnore
-	public AlarmMessageHolder getAlarmFinishedTextHolder() {
+	public MessageHolder getAlarmFinishedTextHolder() {
 		if (isAlarmed()) {
 			return null;
 		}
 
-		return new AlarmMessageHolder(entity.getDevice().getDescription(), entity.getDescription(), ALARM_FINISHED_STATUS, entity.getEmoji());
+		return new MessageHolder(entity.getDevice().getDescription(), entity.getDescription(), ALARM_FINISHED_STATUS, entity.getEmoji());
 	}
 
 	@Override

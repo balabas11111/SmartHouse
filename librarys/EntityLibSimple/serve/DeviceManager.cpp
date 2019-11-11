@@ -28,11 +28,13 @@ void DeviceManager::doPost(JsonObject& params, JsonObject& response) {
 		|| JsonObjectUtil::getObjectFieldExistsAndEquals(params, DEVICE_MANAGER_FIELD_RESTART, "1")){
 
 		triggerRestart();
+
+		addMessage(response, MESSAGE_SEVERITY_WARN, MESSAGE_CODE_DEVICE_WILL_BE_RESTARTED);
 	}
 }
 
 void DeviceManager::loop() {
-	if(this->triggeredRestart){
+	if(this->triggeredRestart && restartTime < millis()){
 		DeviceUtils::restart();
 	}
 }
@@ -50,6 +52,7 @@ void DeviceManager::triggerRestart(bool doRestart) {
 	this->triggeredRestart = doRestart;
 	if(this->triggeredRestart){
 		Serial.println(FPSTR(" Restart Triggered"));
+		restartTime = millis() + 3000;
 	}
 
 }

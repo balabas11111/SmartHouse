@@ -24,7 +24,8 @@ public class RequestDeviceValuesInterceptor implements HandlerInterceptor {
 			@Nullable Exception ex) throws Exception {
 		String deviceName = request.getParameter(DeviceController.DEVICE_NAME_PARAM);
 		
+		log.info("RequestDeviceValuesInterceptor dataChange dispatched");
 		deviceService.requestDevicesValues(deviceName);
-		log.info("RequestDeviceValuesInterceptor handled");
+		
 	}
 }

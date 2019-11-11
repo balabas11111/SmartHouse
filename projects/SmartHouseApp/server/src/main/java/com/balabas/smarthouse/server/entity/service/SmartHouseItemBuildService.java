@@ -14,6 +14,7 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ITEM_CL
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_KEYS_ARRAY;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_ITEMS;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ID;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_MESSAGE;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_CLASS;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_CLASS_VIEW;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_ENTITY_FIELDS;
@@ -91,12 +92,15 @@ import lombok.extern.log4j.Log4j2;
 public class SmartHouseItemBuildService {
 
 	private static List<String> notUpdateableEntityFields = Arrays.asList(ENTITY_FIELD_ID, ENTITY_FIELD_STATUS,
-			ENTITY_FIELD_SENSOR_ITEMS, ENTITY_FIELD_SWG, ENTITY_FIELD_ITEM_CLASS);
+			ENTITY_FIELD_SENSOR_ITEMS, ENTITY_FIELD_SWG, ENTITY_FIELD_ITEM_CLASS, ENTITY_FIELD_MESSAGE);
 
 	private static List<String> notParsedAsEntityNames = Arrays.asList(ENTITY_FIELD_DESCRIPTION, EDC_FIELD_EMOJI);
 
 	@Autowired
 	IDeviceRepository deviceRepository;
+	
+	@Autowired
+	IEntityMessageProcessor entityMessageProcessor;
 
 	private static ActionTimer buildTimer(ItemType itemType) {
 		Long updateInterval = itemType.getRefreshInterval();
@@ -132,7 +136,7 @@ public class SmartHouseItemBuildService {
 		return isOk;
 	}
 
-	private static boolean updateGroupEntityValuesFromJson(Group group, JSONObject groupJson, boolean updateGroupTimer,
+	private boolean updateGroupEntityValuesFromJson(Group group, JSONObject groupJson, boolean updateGroupTimer,
 			List<EntityFieldValue> changedValues) {
 		boolean isOk = true;
 		for (String entityName : JSONObject.getNames(groupJson)) {
@@ -164,7 +168,7 @@ public class SmartHouseItemBuildService {
 				&& !entityField.getEntity().getDescriptionField().equals(entityField.getTemplateName());
 	}
 
-	private static boolean updateEntityValuesFromJson(Entity entity, JSONObject entityJson,
+	private boolean updateEntityValuesFromJson(Entity entity, JSONObject entityJson,
 			List<EntityFieldValue> changedValues) {
 		boolean setOk = true;
 
@@ -201,12 +205,16 @@ public class SmartHouseItemBuildService {
 				} catch (Exception e) {
 					log.error("field " + entityFieldName + " : ", e);
 				}
+			} else {
+				if(ENTITY_FIELD_MESSAGE.equals(entityFieldName)) {
+					entityMessageProcessor.processMessage(entity, entityJson.getString(ENTITY_FIELD_MESSAGE));
+				}
 			}
 		}
 
 		return setOk;
 	}
-
+	
 	public static void processValueChange(IEntityField entityField, String oldValueStr,
 			List<EntityFieldValue> changedValues) {
 

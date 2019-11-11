@@ -17,8 +17,8 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.generics.BotSession;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.Severity;
-import com.balabas.smarthouse.server.entity.service.AlarmMessageHolder;
 import com.balabas.smarthouse.server.entity.service.IMessageSender;
+import com.balabas.smarthouse.server.view.MessageHolder;
 import com.balabas.smarthouse.telegram.bot.AfterBotRegistration;
 import com.balabas.smarthouse.telegram.bot.handler.SmartHouseBotHandler;
 import com.balabas.smarthouse.telegram.bot.message.BotMessageConstants;
@@ -120,7 +120,7 @@ public class BotServiceImpl implements IMessageSender, InitializingBean {
 	}
 
 	@Override
-	public boolean sendMessageToAllUsers(Severity severity, String header, List<AlarmMessageHolder> messageHolders) {
+	public boolean sendMessageToAllUsers(Severity severity, String header, List<MessageHolder> messageHolders) {
 		
 		StringBuilder builder = new StringBuilder(); 
 

@@ -32,10 +32,10 @@ import com.balabas.smarthouse.server.entity.model.descriptor.Severity;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IEntityAlarmRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldAlarmRepository;
-import com.balabas.smarthouse.server.entity.service.AlarmMessageHolder;
 import com.balabas.smarthouse.server.entity.service.IMessageSender;
 import com.balabas.smarthouse.server.service.ISoundPlayer;
 import com.balabas.smarthouse.server.view.DeviceEntityAlarmHolder;
+import com.balabas.smarthouse.server.view.MessageHolder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -277,7 +277,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 			String header = buildMessage(MSG_DEVICE_ALARM_STARTED, device) + "\n\n";
 
-			List<AlarmMessageHolder> holders = Lists.newArrayList();
+			List<MessageHolder> holders = Lists.newArrayList();
 			
 			alarmsWithStarted.forEach(alarm -> holders.add(alarm.getAlarmStartedTextHolder()));
 
@@ -307,7 +307,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 			log.debug("AlarmsFinished " + device.getName() + " total =" + alarmsWithFinished.size());
 
 			String header = buildMessage(MSG_DEVICE_ALARM_FINISHED, device) + "\n\n";
-			List<AlarmMessageHolder> holders = Lists.newArrayList();
+			List<MessageHolder> holders = Lists.newArrayList();
 
 			alarmsWithFinished.forEach(alarm -> holders.add(alarm.getAlarmFinishedTextHolder()));
 

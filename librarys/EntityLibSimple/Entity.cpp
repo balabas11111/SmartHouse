@@ -281,3 +281,18 @@ bool Entity::setKeyValueIfNotExistOrNotEqual(JsonObject& json, const char* key,	
 
 	return false;
 }
+
+void Entity::addMessage(JsonObject& json, const char* severity, const char* code, char* text) {
+	if(code!=nullptr || text!=nullptr) {
+		JsonObject& message = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(json, ENTITY_FIELD_MESSAGE);
+
+		JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(json, ENTITY_FIELD_MESSAGE).set(MESSAGE_FIELD_SEVERITY, severity);
+
+		if(code!=nullptr) {
+			JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(json, ENTITY_FIELD_MESSAGE).set(MESSAGE_FIELD_CODE, code);
+		} else {
+			JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(json, ENTITY_FIELD_MESSAGE).set(MESSAGE_FIELD_TEXT, text);
+		}
+
+	}
+}

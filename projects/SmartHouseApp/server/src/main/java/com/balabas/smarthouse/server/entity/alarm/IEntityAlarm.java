@@ -5,7 +5,7 @@ import java.util.List;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IUpdateable;
-import com.balabas.smarthouse.server.entity.service.AlarmMessageHolder;
+import com.balabas.smarthouse.server.view.MessageHolder;
 
 @SuppressWarnings("rawtypes")
 public interface IEntityAlarm extends IUpdateable {
@@ -45,8 +45,8 @@ public interface IEntityAlarm extends IUpdateable {
 	void setSendAlarmStartedMessage(boolean sendAlarmStartedMessage);
 	void setSendAlarmFinishedMessage(boolean sendAlarmFinishedMessage);
 	
-	AlarmMessageHolder getAlarmStartedTextHolder();
-	AlarmMessageHolder getAlarmFinishedTextHolder();
+	MessageHolder getAlarmStartedTextHolder();
+	MessageHolder getAlarmFinishedTextHolder();
 	
 	void setMessageInterval(Integer messageInterval);
 	Integer getMessageInterval();

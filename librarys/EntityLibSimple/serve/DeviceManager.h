@@ -58,6 +58,7 @@ protected:
 	long interval = DEVICE_MANAGER_CHECK_INTERVAL;
 private:
 	bool triggeredRestart = false;
+	unsigned long restartTime = 0;
 
 };
 

@@ -44,6 +44,16 @@ public class DeviceConstants {
 	public static final String ENTITY_FIELD_SWG = "swg";
 	public static final String ENTITY_FIELD_COUNT = "count";
 	public static final String ENTITY_FIELD_C = "c";
+	public static final String ENTITY_FIELD_MESSAGE = "msg";
+	
+	public static final String MESSAGE_FIELD_SEVERITY = "msvr";
+	public static final String MESSAGE_FIELD_CODE = "mcode";
+	public static final String MESSAGE_FIELD_TEXT = "mtext";
+	public static final String MESSAGE_CODE_DEVICE_WILL_BE_RESTARTED = "rst";
+	
+	public static final String MESSAGE_SEVERITY_INFO  = "INFO";
+	public static final String MESSAGE_SEVERITY_WARN  = "WARN";
+	public static final String MESSAGE_SEVERITY_ERROR = "ERROR";
 	
 	public static final String ENTITY_FIELD_SWG_EQ_1 = "?swg=1";
 	//Entity standard key names
