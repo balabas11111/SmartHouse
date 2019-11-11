@@ -79,6 +79,7 @@
 #define EDC_DESCR_LIGHT_LEVEL   "Освещенность"
 #define EDC_DESCR_STATE         "Состояние"
 
+#define EDC_DESCR_POSITION      "Положение"
 #define EDC_DESCR_MOVEMENT      "Движение"
 #define EDC_DESCR_MOVEMENT_ON   "ДВИЖЕНИЕ"
 #define EDC_DESCR_MOVEMENT_OFF  "Нет движения"

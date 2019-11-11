@@ -72,6 +72,16 @@
 			<location>D:/projects/!!SmartHouse/librarys/EntityLibSimple</location>
 		</link>
 		<link>
+			<name>libraries/EntityLib_S_ImpulseRelay</name>
+			<type>2</type>
+			<location>D:/projects/!!SmartHouse/librarys/EntityLib_S_ImpulseRelay</location>
+		</link>
+		<link>
+			<name>libraries/EntityLib_S_ImpulseSwitch</name>
+			<type>2</type>
+			<location>D:/projects/!!SmartHouse/librarys/EntityLib_S_ImpulseSwitch</location>
+		</link>
+		<link>
 			<name>libraries/EntityLib_S_PIR</name>
 			<type>2</type>
 			<location>D:/projects/!!SmartHouse/librarys/EntityLib_S_PIR</location>
