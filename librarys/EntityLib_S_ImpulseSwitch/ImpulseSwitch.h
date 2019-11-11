@@ -105,6 +105,7 @@ public:
 			delay(this->signalTime);
 			digitalWrite(pin, LOW);
 			Serial.println(FPSTR("...done"));
+			markEntityAsChangedIfTrue(true, true);
 		}
 	}
 
@@ -119,7 +120,6 @@ public:
 						onPos2();
 					}
 
-				markEntityAsChangedIfTrue(true, true);
 			}
 			lastValue = on;
 			stateChanged = false;
