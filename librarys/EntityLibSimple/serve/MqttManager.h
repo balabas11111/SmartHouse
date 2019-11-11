@@ -38,6 +38,8 @@ public:
 	EntityJsonRequestResponse* getBuffer();
 
 	bool publishBuffer();
+
+	bool isBufferUnsent();
 private:
 	bool bufferUnsent = false;
 	SettingsStorage* conf = nullptr;

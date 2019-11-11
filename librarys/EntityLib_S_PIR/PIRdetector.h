@@ -24,10 +24,15 @@ class PIRdetector: public Entity, public EntityUpdate {
 public:
 	PIRdetector(uint8_t pin, char* description = (char*) PIR_DESCRIPTION,
 			const char* name = PIR_NAME,
-			unsigned long delay = PIR_DEFAULT_DELAY) :
+			unsigned long delay = PIR_DEFAULT_DELAY,
+			std::function<void(void)> onMovementDetected = nullptr,
+			std::function<void(void)> onNoMovementDetected = nullptr) :
 			Entity(GROUP_SENSORS, name, description) {
 		this->pin = pin;
 		this->delay = delay;
+
+		this->onMovementDetected = onMovementDetected;
+		this->onNoMovementDetected = onNoMovementDetected;
 
 		pinMode(pin, INPUT_PULLUP);
 		attachInterrupt(digitalPinToInterrupt(pin), [this](){processMovementChange();},
@@ -107,6 +112,9 @@ private:
 	bool startTimer = false;
 
 	bool detected;
+
+	std::function<void(void)> onMovementDetected;
+	std::function<void(void)> onNoMovementDetected;
 
 };
 

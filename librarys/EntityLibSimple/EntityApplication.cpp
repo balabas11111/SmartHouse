@@ -141,8 +141,15 @@ void EntityApplication::loop() {
 		this->getServerConnector()->loop();
 	}
 
-	if (this->entityManager->processChangedEntities()) {
+	EntityJsonRequestResponse* buffer = this->mqttManager->getBuffer();
+
+	if (this->mqttManager->isBufferUnsent() || this->entityManager->processChangedEntities(buffer)) {
 		this->mqttManager->publishBuffer();
+	}
+
+	if(this->mqttManager->isBufferUnsent()) {
+		Serial.println(FPSTR("Buffer UNSENT"));
+		this->getServerConnector()->dispatchDataChanged();
 	}
 
 	this->mqttManager->loop();

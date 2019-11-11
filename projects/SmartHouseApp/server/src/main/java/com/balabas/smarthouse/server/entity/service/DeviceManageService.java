@@ -41,7 +41,9 @@ import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldEnabledValueRepository;
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.server.view.DeviceValueActionHolder;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -54,8 +56,11 @@ public class DeviceManageService implements IDeviceManageService {
 	@Value("${smarthouse.server.mock}")
 	private boolean mock;
 
-	@Value("${smarthouse.server.log.devicerequests}")
+	@Value("${smarthouse.server.log.device.requests:false}")
 	private boolean logDeviceRequests;
+	
+	@Value("${smarthouse.server.log.device.values.change:true}")
+	private boolean logDeviceValuesChange;
 
 	@Autowired
 	DeviceRequestorService deviceRequestor;
@@ -77,6 +82,9 @@ public class DeviceManageService implements IDeviceManageService {
 	
 	@Autowired
 	IEntityFieldService entityFieldService;
+	
+	@Autowired
+	IDeviceMqService deviceMqService;
 	
 	@Getter
 	private List<Device> devices = Collections.synchronizedList(new ArrayList<>());
@@ -176,7 +184,8 @@ public class DeviceManageService implements IDeviceManageService {
 	@Override
 	@Transactional
 	public boolean processRegistrationRequest(Device device) {
-
+		boolean exists = true;
+		
 		Device exDevice = getDeviceByName(device.getName());
 
 		if (exDevice == null) {
@@ -187,6 +196,8 @@ public class DeviceManageService implements IDeviceManageService {
 				exDevice.setState(State.CONSTRUCTED);
 				exDevice.setRegistrationDate(new Date());
 			}
+			
+			exists = false;
 		}
 
 		exDevice.setIp(device.getIp());
@@ -213,9 +224,9 @@ public class DeviceManageService implements IDeviceManageService {
 
 		log.debug("register process complete");
 
-		return true;
+		return exists;
 	}
-
+	
 	@Override
 	public void processDataReceivedFromEntity(Entity entity, JSONObject data) {
 		Device device = entity.getGroup().getDevice();
@@ -265,6 +276,8 @@ public class DeviceManageService implements IDeviceManageService {
 					
 					alarmService.loadAlarmsForDevice(device);
 					
+					deviceMqService.initTopicsToFromDevice(device.getName());
+					
 					log.info("Device initialized " + device.getName());
 					
 				} else {
@@ -281,13 +294,21 @@ public class DeviceManageService implements IDeviceManageService {
 				State newState = (ok) ? State.UPDATED : State.BAD_DATA;
 				stateChanger.stateChanged(device, newState);
 
-				if ((mock || logDeviceRequests) && changedValues.size()>0) {
-					String chValsStr = "";
+				if ((mock || logDeviceValuesChange) && changedValues.size()>0) {
+					
+					Map<String, String> changedValuesStrMap = Maps.newHashMap();
+					String tmp = "";
+					
 					for(EntityFieldValue value: changedValues) {
-						String tmp = value.getEntityField().getName() + "=" + value.getValueStr();
-						chValsStr+=tmp;
+						String entityName = value.getEntityField().getEntity().getName();
+						if(!changedValuesStrMap.containsKey(entityName)) {
+							changedValuesStrMap.put(entityName, new String(""));
+						}
+						changedValuesStrMap.put(entityName, changedValuesStrMap.get(entityName) + value.getEntityField().getName() + "=" + value.getValueStr() + "; ");
 					}
-					log.info("Values changed = " + changedValues.size() + " device=" + device.getName() +" VALUES " + chValsStr);
+					tmp = Joiner.on(") ").withKeyValueSeparator("(").join(changedValuesStrMap) + ")";
+					
+					log.info("Values changed = " + changedValues.size() + " device=" + device.getName() +" VALUES " + tmp);
 				}
 				
 				entityFieldService.saveAll(changedValues);
@@ -344,6 +365,16 @@ public class DeviceManageService implements IDeviceManageService {
 				.filter(group -> checkItemRequiresUpdate(group.getDevice(), group)).collect(Collectors.toList());
 	}
 
+	@Override
+	public void requestDevicesValues(String deviceName) {
+		Device device = getDeviceByName(deviceName);
+		
+		if(device!=null) {
+			requestDevicesValues(device, null);
+		}
+	}
+
+	
 	@Override
 	public void requestDevicesValues(Device device, Group group) {
 		State oldState = device.getState();
@@ -575,5 +606,4 @@ public class DeviceManageService implements IDeviceManageService {
 		return HTTP_PREFFIX + device.getIp() + DEVICE_URL_DATA;
 	}
 
-	
 }

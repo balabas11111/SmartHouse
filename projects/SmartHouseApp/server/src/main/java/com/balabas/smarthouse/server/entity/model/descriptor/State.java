@@ -15,6 +15,7 @@ public enum State {
 	BAD_DATA(Emoji.RED_CIRCLE,"Ошибка данных");
 	
 	private static final Emoji okEmoji =  Emoji.CHECK_MARK;
+	private static final String STATE_DESCRIPTION_FORMAT = "%s %s";
 	
 	Emoji emoji;
 	
@@ -43,5 +44,9 @@ public enum State {
 		}
 		
 		return description;
+	}
+	
+	public String getStateEmojiAndDescriptionFormatted() {
+		return String.format(STATE_DESCRIPTION_FORMAT, getStateEmoji(false), getStateDescription(false));
 	}
 }

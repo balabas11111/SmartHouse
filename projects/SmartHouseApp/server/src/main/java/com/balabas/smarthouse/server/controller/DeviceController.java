@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,10 +25,12 @@ import lombok.extern.log4j.Log4j2;
 
 @CrossOrigin(origins = { ControllerConstants.CROSS_ORIGIN_4200, ControllerConstants.CROSS_ORIGIN_80 })
 @RestController
-@RequestMapping(ControllerConstants.API_V1 + ControllerConstants.DEVICES_ROOT)
+@RequestMapping(ControllerConstants.DEVICES_ROOT_V1)
 @Log4j2
 public class DeviceController {
 
+	public static final String DEVICE_NAME_PARAM = "deviceId";
+	
 	@Autowired
 	private DeviceManageService deviceService;
 
@@ -46,7 +49,7 @@ public class DeviceController {
 	}
 
 	@GetMapping("/register")
-	public ResponseEntity<String> registerDevice(@RequestParam("deviceId") String name, HttpServletRequest httpRequest)
+	public ResponseEntity<String> registerDevice(@RequestParam(DEVICE_NAME_PARAM) String name, HttpServletRequest httpRequest)
 			throws UnknownHostException, DeviceOnServerAuthorizationException {
 
 		log.debug("/register");
@@ -55,22 +58,34 @@ public class DeviceController {
 		device.setName(name);
 		device.setIp(httpRequest.getRemoteAddr());
 
-		if (StringUtils.isEmpty(device.getName()) || StringUtils.isEmpty(device.getIp())) {
+		if (StringUtils.isEmpty(device.getName())) {
+			throw new IllegalArgumentException(device.getName());
+		}
+		
+		if (StringUtils.isEmpty(device.getIp())) {
 			throw new UnknownHostException(device.getName());
 		}
 
-		boolean ok = deviceService.processRegistrationRequest(device);
+		boolean exists = deviceService.processRegistrationRequest(device);
 
-		if (ok) {
-			return ResponseEntity.ok().build();
-		}
+		HttpStatus status = exists?HttpStatus.OK:HttpStatus.CREATED; 
+		
+		return ResponseEntity.status(status).build();
 
-		throw new IllegalArgumentException();
+	}
+	
+	@GetMapping("/dataChanged")
+	public ResponseEntity<String> dataChangeDispatchedOnDevice(@RequestParam(DEVICE_NAME_PARAM) String name, HttpServletRequest httpRequest)
+			throws UnknownHostException, DeviceOnServerAuthorizationException {
+
+		log.info("/dataChanged " + name);
+
+		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping("/all")
 	public ResponseEntity<List<Device>> getAllDevices(
-			@RequestParam(value = "deviceId", required = false) String deviceName,
+			@RequestParam(value = DEVICE_NAME_PARAM, required = false) String deviceName,
 			@RequestParam(value = "groupId", required = false) String groupName) {
 
 		return ResponseEntity.ok().body(deviceService.getDevices());

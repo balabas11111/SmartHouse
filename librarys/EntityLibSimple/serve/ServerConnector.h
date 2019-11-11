@@ -1,7 +1,7 @@
 /*
  * ServerConnector.h
  *
- *  Created on: 3 нояб. 2019 г.
+ *  Created on: 3 пїЅпїЅпїЅпїЅ. 2019 пїЅ.
  *      Author: Vitaliy
  */
 
@@ -21,7 +21,8 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-#define SMART_HOUSE_SERVER_URL_REGISTER                "/api/v1/devices/register?deviceId="
+#define SMART_HOUSE_SERVER_URL_REGISTER            "/api/v1/devices/register?deviceId="
+#define SMART_HOUSE_SERVER_URL_DATA_CHANGED        "/api/v1/devices/dataChanged?deviceId="
 
 class ServerConnector {
 public:
@@ -31,6 +32,8 @@ public:
 	void triggerCheckConnection();
 
 	void checkConnection();
+
+	void dispatchDataChanged();
 
 	void loop();
 
@@ -43,23 +46,21 @@ private:
 	SettingsStorage* conf;
 
 	String urlRegister;
+	String urlDataChanged;
 
 	int registrationFailures = 0;
 
 	bool deviceRegistered = false;
 	bool requestPostPoned = false;
-	bool bufferUnsent = false;
 	bool requestRuns = false;
 
-	bool triggeredRequest = false;
+	bool triggeredCheckConnectionRequest = false;
 	unsigned long nextReqTime =0;
 
 	void setRequestPostPoned(unsigned long delay);
 	void checkCancelRequestPostPoned();
 
 	std::function<void(void)> onServerRegistered;
-
-	EntityJsonRequestResponse* buffer;
 
 	uint8_t errorCount = 0;
 };

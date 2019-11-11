@@ -92,7 +92,12 @@ public class Device extends ItemAbstract implements IDevice {
 	
 	@Override
 	public boolean isInBadState() {
-		return state != null && (State.TIMED_OUT.equals(state) || State.DISCONNECTED.equals(state) || State.FAILED.equals(state));
+		return state != null && (State.TIMED_OUT.equals(state) || State.DISCONNECTED.equals(state) || State.FAILED.equals(state) || State.BAD_DATA.equals(state));
+	}
+	
+	@Override
+	public boolean isInOkState() {
+		return state != null && (State.INIT_DATA_RECEIVED.equals(state) || State.UPDATED.equals(state) || State.OK.equals(state));
 	}
 	
 

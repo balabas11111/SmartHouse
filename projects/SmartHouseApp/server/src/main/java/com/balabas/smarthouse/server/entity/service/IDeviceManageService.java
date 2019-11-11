@@ -30,6 +30,8 @@ public interface IDeviceManageService {
 	
 	void processDataReceivedFromEntity(Entity entity, JSONObject data);
 
+	void requestDevicesValues(String deviceName);
+	
 	void requestDevicesValues(Device device, Group group);
 	
 	boolean processRegistrationRequest(Device device);

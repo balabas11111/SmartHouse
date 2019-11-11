@@ -13,6 +13,8 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_STATUS;
 
 import static com.balabas.smarthouse.server.DeviceConstants.HTTP_PREFFIX;
 
+import javax.annotation.PostConstruct;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +33,12 @@ public class DeviceMqService implements IDeviceMqService {
 
 	@Value("${smarthouse.server.name}")
 	private String serverName;
+	
+	@Value("${smarthouse.server.mock}")
+	private boolean mock;
+	
+	@Value("${mosquito.mqtt.enabled}")
+	private boolean enabled;
 
 	@Autowired
 	private DeviceSecurityService securityService;
@@ -41,6 +49,11 @@ public class DeviceMqService implements IDeviceMqService {
 	@Autowired
 	private IDeviceManageService deviceService;
 
+	@PostConstruct
+	public void initService() {
+		this.enabled = !mock && enabled;
+	}
+	
 	@Override
 	public boolean onRegistrationTopicMessageReceived(String message) {
 		try {
@@ -87,6 +100,12 @@ public class DeviceMqService implements IDeviceMqService {
 	
 	@Override
 	public void initTopicsToFromDevice(String deviceId) {
+		if(!enabled) {
+			log.info("Init to/from device topics DISABLED " + deviceId);
+			return;
+		}
+		log.info("Init to/from device topics " + deviceId);
+		
 		String response = constructRegisterResponse(deviceId).toString();
 		
 		subscribeFromDeviceTopic(deviceId);

@@ -1,24 +1,27 @@
 /*
  * ServerConnector.cpp
  *
- *  Created on: 3 нояб. 2019 г.
+ *  Created on: 3 пїЅпїЅпїЅпїЅ. 2019 пїЅ.
  *      Author: Vitaliy
  */
 
 #include <serve/ServerConnector.h>
 
-ServerConnector::ServerConnector(SettingsStorage* conf, std::function<void(void)> onServerRegistered) {
+ServerConnector::ServerConnector(SettingsStorage* conf,
+		std::function<void(void)> onServerRegistered) {
 	this->conf = conf;
 	this->onServerRegistered = onServerRegistered;
-	this->buffer = new EntityJsonRequestResponse();
 
 	String baseUrl = this->conf->smartServerAddr();
 
-	if(!baseUrl.startsWith(HTTP_PREFFIX)){
+	if (!baseUrl.startsWith(HTTP_PREFFIX)) {
 		baseUrl = HTTP_PREFFIX + baseUrl;
 	}
 
-	this->urlRegister = baseUrl + SMART_HOUSE_SERVER_URL_REGISTER + conf->deviceId();
+	this->urlRegister = baseUrl + SMART_HOUSE_SERVER_URL_REGISTER
+			+ conf->deviceId();
+	this->urlDataChanged = baseUrl + SMART_HOUSE_SERVER_URL_DATA_CHANGED
+			+ conf->deviceId();
 
 	String authorization = sha1(conf->smartServerKey());
 
@@ -27,8 +30,10 @@ ServerConnector::ServerConnector(SettingsStorage* conf, std::function<void(void)
 
 	initComplete = true;
 
-	Serial.print(FPSTR("ServerConnector initialized "));
-	Serial.println(this->urlRegister);
+	Serial.print(FPSTR("ServerConnector init urlReg="));
+	Serial.print(this->urlRegister);
+	Serial.print(FPSTR(" urlDataChanged="));
+	Serial.println(this->urlDataChanged);
 }
 
 bool ServerConnector::isConnected() {
@@ -38,8 +43,6 @@ bool ServerConnector::isConnected() {
 void ServerConnector::checkConnection() {
 	requestRuns = true;
 
-
-	Serial.print(FPSTR("Register device"));
 	unsigned long start = millis();
 	HTTPClient http;
 
@@ -48,44 +51,72 @@ void ServerConnector::checkConnection() {
 	http.addHeader(HEADER_CONTENT_TYPE, CONTENT_TYPE_APPLICATION_JSON, 0, 1);
 
 	int httpCode = http.GET();
+	http.end();
 
-	if(httpCode == 200){
-		Serial.println(FPSTR("...ok"));
-		String tempServerKey = http.getString();
-		http.end();
+	if (httpCode == 200 || httpCode == 201) {
+		//Serial.println(FPSTR("Register device...ok"));
+		//String tempServerKey = http.getString();
 		this->registrationFailures = 0;
 		this->deviceRegistered = true;
 
-		if(onServerRegistered!=nullptr){
+		if (onServerRegistered != nullptr) {
 			onServerRegistered();
 		} else {
-			Serial.println("No on server register listener");
+			//Serial.println("No on server register listener");
 		}
-	}else{
-		http.end();
+	} else {http.end();
 		this->deviceRegistered = false;
 		this->registrationFailures++;
 
-		Serial.print(FPSTR("...ERROR "));
+		Serial.print(FPSTR("Register device...ERROR "));
 		Serial.println(httpCode);
 
 #ifdef SERVER_CONNECTION_REGISTRATION_FAILED_MIN_HEAP_TO_RESTART
-		if(DeviceUtils::isHeapLessThan(SERVER_CONNECTION_REGISTRATION_FAILED_MIN_HEAP_TO_RESTART)){
+		if (DeviceUtils::isHeapLessThan(
+				SERVER_CONNECTION_REGISTRATION_FAILED_MIN_HEAP_TO_RESTART)) {
 			DeviceUtils::restart();
 		}
 #endif
 
-		if(registrationFailures > SERVER_CONNECTION_NEXT_REGISTRATION_NEXT_COUNT){
-			setRequestPostPoned(SERVER_CONNECTION_REGISTRATION_FAILED_NEXT_TIMEOUT);
+		if (registrationFailures
+				> SERVER_CONNECTION_NEXT_REGISTRATION_NEXT_COUNT) {
+			setRequestPostPoned(
+					SERVER_CONNECTION_REGISTRATION_FAILED_NEXT_TIMEOUT);
 			this->registrationFailures = 0;
-		}else{
-			setRequestPostPoned(SERVER_CONNECTION_REGISTRATION_FAILED_FIRST_TIMEOUT);
+		} else {
+			setRequestPostPoned(
+					SERVER_CONNECTION_REGISTRATION_FAILED_FIRST_TIMEOUT);
 		}
+
+		DeviceUtils::printlnTimeHeap(start);
 	}
 
-	DeviceUtils::printlnTimeHeap(start);
-
 	requestRuns = false;
+}
+
+void ServerConnector::dispatchDataChanged() {
+	if(initComplete && isConnected()) {
+		requestRuns = true;
+
+		unsigned long start = millis();
+		HTTPClient http;
+
+		http.begin(urlDataChanged);
+
+		int httpCode = http.GET();
+		http.end();
+
+		if (httpCode == 200) {
+			Serial.println(FPSTR("DataChanged dispatch...ok"));
+		} else {
+			Serial.print(FPSTR("DataChanged dispatch...ERROR "));
+			Serial.println(httpCode);
+		}
+
+		DeviceUtils::printlnTimeHeap(start);
+
+		requestRuns = false;
+	}
 }
 
 void ServerConnector::setRequestPostPoned(unsigned long delay) {
@@ -97,8 +128,8 @@ void ServerConnector::setRequestPostPoned(unsigned long delay) {
 }
 
 void ServerConnector::checkCancelRequestPostPoned() {
-	if(requestPostPoned){
-		if(millis()>nextReqTime){
+	if (requestPostPoned) {
+		if (millis() > nextReqTime) {
 			Serial.println(FPSTR("Req ENABLED"));
 			requestPostPoned = false;
 		}
@@ -106,16 +137,16 @@ void ServerConnector::checkCancelRequestPostPoned() {
 }
 
 void ServerConnector::triggerCheckConnection() {
-	this->triggeredRequest = true;
+	this->triggeredCheckConnectionRequest = true;
 }
 
-bool ServerConnector::isRequestEnabled(){
+bool ServerConnector::isRequestEnabled() {
 	return initComplete && isConnected() && !requestPostPoned;
 }
 
 void ServerConnector::loop() {
 	checkCancelRequestPostPoned();
-	if(triggeredRequest && !requestRuns && isRequestEnabled() ){
-		checkConnection() ;
+	if (triggeredCheckConnectionRequest && !requestRuns && isRequestEnabled()) {
+		checkConnection();
 	}
 }

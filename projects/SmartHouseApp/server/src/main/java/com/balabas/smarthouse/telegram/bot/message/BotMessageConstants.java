@@ -100,6 +100,7 @@ public class BotMessageConstants {
 	public static final String ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE = Emoji.CROSS_MARK_RED.toString() + " только одно оповещение";
 			
 	public static final String SELECT_ENTITY_FIELD_EDIT_ALARMS = "%s Режимы тревоги %s \n\n";
+	public static final String ENTITY_ALARM_HEADER = "\n--------------------------\n" + Emoji.ERROR.toString() + "<code> Режим ТРЕВОГИ </code>\n\n";
 	
 	public static final String SPACE = " ";
 	public static final String USER = "Пользователь";

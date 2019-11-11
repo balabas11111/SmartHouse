@@ -77,6 +77,8 @@ EntityJsonRequestResponse* MqttManager::getBuffer() {
 bool MqttManager::publishBuffer() {
 	if(!this->initDone){return false;}
 
+	return sendDataRequest();
+	/*
 	if(this->registered){
 
 		if(!toDeviceTopicSubscribed){
@@ -99,6 +101,7 @@ bool MqttManager::publishBuffer() {
 			return sendRegistrationRequest();
 		#endif
 	}
+	*/
 }
 
 bool MqttManager::subscribeToDeviceTopic(){
@@ -214,7 +217,7 @@ bool MqttManager::sendDataRequest() {
 	}
 
 	if(sentResult){
-		this->bufferUnsent = true;
+		this->bufferUnsent = false;
 		this->buffer->construct();
 	}
 	Serial.print(FPSTR("SB pub="));
@@ -271,6 +274,10 @@ bool MqttManager::subscribe(char* topic, bool showLog) {
 		Serial.println(FPSTR("SUB NOT CONNECTED"));
 		return false;
 	}
+}
+
+bool MqttManager::isBufferUnsent() {
+	return this->bufferUnsent;
 }
 
 bool MqttManager::publish(char* topic, JsonObject& data, bool showLog) {

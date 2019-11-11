@@ -47,10 +47,10 @@ public class SendMessageBuilder {
 
 	@Value("${smarthouse.server.url:#{null}}")
 	private String serverUrl;
-	
+
 	@Autowired
 	private IDeviceManageService deviceService;
-	
+
 	@Autowired
 	private IGroupService groupService;
 
@@ -108,13 +108,15 @@ public class SendMessageBuilder {
 
 	public List<SendMessage> createDevicesListView(Action action, ReplyContext cont) {
 		String serverAddress = Optional.ofNullable(serverUrl).orElse("");
-		
+
 		String serverName = action.getServerName();
 		List<SendMessage> msgs = Lists.newArrayList();
 		List<Device> devices = getDevices();
 
-		cont.setText((devices.isEmpty()) ? String.format(BotMessageConstants.NO_DEVICE_MSG, Emoji.WARNING, serverAddress)
-				: String.format(BotMessageConstants.SERVER_SELECT_DEVICE_VIEW_MSG, Emoji.OUTBOX_TRAY, serverName, serverAddress));
+		cont.setText(
+				(devices.isEmpty()) ? String.format(BotMessageConstants.NO_DEVICE_MSG, Emoji.WARNING, serverAddress)
+						: String.format(BotMessageConstants.SERVER_SELECT_DEVICE_VIEW_MSG, Emoji.OUTBOX_TRAY,
+								serverName, serverAddress));
 
 		msgs.add(cont.createMsg(inlineKeyboard.getDevicesOfServerInlineKeyboardView(devices)));
 
@@ -267,9 +269,9 @@ public class SendMessageBuilder {
 				entityField.getNameDescriptionByDescriptionField()));
 
 		for (IEntityFieldAlarm entityFieldAlarm : entityAlarm.getAlarms()) {
-			if(entityField.getId().equals(entityFieldAlarm.getWatchedItem().getId())) {
+			if (entityField.getId().equals(entityFieldAlarm.getWatchedItem().getId())) {
 				buf.append(String.format(BotMessageConstants.ENTITY_FIELD_ALARM_DISPLAY_MESSAGE,
-					entityFieldAlarm.getTriggerDescription()));
+						entityFieldAlarm.getTriggerDescription()));
 			}
 		}
 
@@ -369,17 +371,18 @@ public class SendMessageBuilder {
 
 		return createHtmlMessage(context.getChatId(), text);
 	}
-	
+
+	// view device functionality
 	public List<SendMessage> createViewOfAllDevicesGroup(Action action, ReplyContext context) {
 		List<SendMessage> result = Lists.newArrayList();
 
 		List<Device> devices = deviceService.getDevicesInitialized();
-		
-		for(Device device : devices) {
+
+		for (Device device : devices) {
 			IGroup group = device.getGroup(action.getGroupName());
 			result.addAll(createViewOfDeviceGroup(device, group, context));
 		}
-		
+
 		return result;
 	}
 
@@ -393,70 +396,78 @@ public class SendMessageBuilder {
 
 		return result;
 	}
-	
+
 	private List<SendMessage> createViewOfDeviceGroup(IDevice device, IGroup group, ReplyContext context) {
 		List<SendMessage> result = Lists.newArrayList();
 
-		if (device != null && group!=null) {
+		if (device != null && group != null) {
 
 			StringBuilder builder = new StringBuilder();
 
 			itemRendererBuilder.buildDeviceGroupHeaderView(device, group, builder);
 
-			group.getEntities().stream()
-					.sorted(itemAbstractComparator).forEach(ent -> itemRendererBuilder.buildEntityView(ent, builder));
+			if (!device.isInOkState()) {
+				builder.append("\n\n");
+				builder.append(device.getState().getStateEmojiAndDescriptionFormatted());
+			} else {
+				group.getEntities().stream().sorted(itemAbstractComparator)
+						.forEach(ent -> itemRendererBuilder.buildEntityView(ent, builder));
 
-			List<IEntityAlarm> alarms = alarmService.getEntityAlarmsWithAlarmDetected(device);
+				List<IEntityAlarm> alarms = alarmService.getEntityAlarmsWithAlarmDetected(device);
 
-			if (!alarms.isEmpty()) {
+				if (!alarms.isEmpty()) {
 
-				builder.append("\n---------------------\n");
-				builder.append(Emoji.ERROR.toString());
-				builder.append("<code> Режим ТРЕВОГИ </code>\n\n");
-				
-				List<AlarmMessageHolder> alarmHolders = Lists.newArrayList();
+					builder.append(BotMessageConstants.ENTITY_ALARM_HEADER);
 
-				group.getEntities().stream().forEach(entity -> alarms.stream()
-						.filter(alarm -> entity.getName().equals(alarm.getEntity().getName()))
-						.forEach(alarm -> Optional.ofNullable(alarm.getAlarmStartedTextHolder()).ifPresent(alarmHolders::add)));
-				
-				builder.append(alarmMessageHoldersToString(alarmHolders));
-				
+					List<AlarmMessageHolder> alarmHolders = Lists.newArrayList();
+
+					group.getEntities().stream()
+							.forEach(entity -> alarms.stream()
+									.filter(alarm -> entity.getName().equals(alarm.getEntity().getName()))
+									.forEach(alarm -> Optional.ofNullable(alarm.getAlarmStartedTextHolder())
+											.ifPresent(alarmHolders::add)));
+
+					builder.append(alarmMessageHoldersToString(alarmHolders));
+
+				}
+
+				result.add(createHtmlMessage(context.getChatId(), builder.toString()));
+
+				Optional.ofNullable(buildGroupCommandInterface(device, group, context.getChatId()))
+						.ifPresent(result::add);
 			}
-
-			result.add(createHtmlMessage(context.getChatId(), builder.toString()));
-
-			Optional.ofNullable(buildGroupCommandInterface(device, group, context.getChatId())).ifPresent(result::add);
 		}
 		return result;
 	}
-	
-	public static String alarmMessageHoldersToString(List<AlarmMessageHolder> alarmHolders ) {
+
+	public static String alarmMessageHoldersToString(List<AlarmMessageHolder> alarmHolders) {
 		StringBuilder builder = new StringBuilder();
-		
-		for(AlarmMessageHolder holder : alarmHolders) {
+
+		for (AlarmMessageHolder holder : alarmHolders) {
 			builder.append(holder.getEmoji().toString());
 			builder.append("  <b>");
 			builder.append(holder.getName());
 			builder.append("</b>");
-			
-			if(!StringUtils.isEmpty(holder.getStatus())) {
+
+			if (!StringUtils.isEmpty(holder.getStatus())) {
 				builder.append(" - ");
 				builder.append(holder.getStatus());
 			}
-			
+
 			builder.append("\n\n");
-			
-			holder.getMessages().stream().forEach(message -> {builder.append(message); builder.append("\n");}); 
+
+			holder.getMessages().stream().forEach(message -> {
+				builder.append(message);
+				builder.append("\n");
+			});
 		}
-		
+
 		return builder.toString();
 	}
 
 	private SendMessage buildGroupCommandInterface(IDevice device, IGroup group, Long chatId) {
 
-		List<Action> actions = groupService.getActionsForGroup(Action.ACTION_TYPE_SEND_DATA_TO_DEVICE,
-				group);
+		List<Action> actions = groupService.getActionsForGroup(Action.ACTION_TYPE_SEND_DATA_TO_DEVICE, group);
 
 		if (actions.isEmpty()) {
 			return null;
