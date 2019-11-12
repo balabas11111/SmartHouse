@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.entity.model.Entity;
+import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.mqtt.IMessageService;
 import com.balabas.smarthouse.server.mqtt.subscribers.DataDeviceSubscribtion;
 import com.balabas.smarthouse.server.mqtt.subscribers.DataEntitySubscribtion;
@@ -33,10 +34,10 @@ public class DeviceMqService implements IDeviceMqService {
 
 	@Value("${smarthouse.server.name}")
 	private String serverName;
-	
+
 	@Value("${smarthouse.server.mock}")
 	private boolean mock;
-	
+
 	@Value("${mosquito.mqtt.enabled}")
 	private boolean enabled;
 
@@ -45,51 +46,51 @@ public class DeviceMqService implements IDeviceMqService {
 
 	@Autowired
 	private IMessageService messageService;
-	
+
 	@Autowired
 	private IDeviceManageService deviceService;
 
 	@PostConstruct
 	public void initService() {
-		this.enabled = !mock && enabled;
+		// this.enabled = !mock && enabled;
 	}
-	
+
 	@Override
 	public boolean onRegistrationTopicMessageReceived(String message) {
 		try {
 			log.info("register Device MQ " + message);
 			JSONObject requestJson = new JSONObject(message);
-			
+
 			if (requestJson.has(ENTITY_FIELD_ID) && requestJson.has(ENTITY_FIELD_IP)) {
-				
+
 				String deviceId = requestJson.getString(ENTITY_FIELD_ID);
 				String ip = requestJson.getString(ENTITY_FIELD_IP);
 
-				if(requestJson.has(ENTITY_FIELD_ROOT) && requestJson.has(ENTITY_FIELD_DATA)) {
-						JSONObject dataJson = new JSONObject();
-						
-				    	if(requestJson.has(ENTITY_FIELD_ROOT)){
-				    		String tmp = requestJson.getString(ENTITY_FIELD_ROOT);
-				    		
-				    		if(tmp!=null && !tmp.isEmpty() && !tmp.startsWith(HTTP_PREFFIX)) {
-				    			tmp = HTTP_PREFFIX + ip + tmp;
-				    			dataJson.put(DEVICE_FIELD_URL_ROOT, tmp);
-				    		}
-				    	}
-				    	if(requestJson.has(ENTITY_FIELD_DATA)){
-				    		String tmp = requestJson.getString(ENTITY_FIELD_DATA);
-				    		
-				    		if(tmp!=null && !tmp.isEmpty() && !tmp.startsWith(HTTP_PREFFIX)) {
-				    			tmp = HTTP_PREFFIX + ip + tmp;
-				    			dataJson.put(DEVICE_FIELD_URL_DATA, tmp);
-				    		}
-				    	}
-				    	
+				if (requestJson.has(ENTITY_FIELD_ROOT) && requestJson.has(ENTITY_FIELD_DATA)) {
+					JSONObject dataJson = new JSONObject();
+
+					if (requestJson.has(ENTITY_FIELD_ROOT)) {
+						String tmp = requestJson.getString(ENTITY_FIELD_ROOT);
+
+						if (tmp != null && !tmp.isEmpty() && !tmp.startsWith(HTTP_PREFFIX)) {
+							tmp = HTTP_PREFFIX + ip + tmp;
+							dataJson.put(DEVICE_FIELD_URL_ROOT, tmp);
+						}
+					}
+					if (requestJson.has(ENTITY_FIELD_DATA)) {
+						String tmp = requestJson.getString(ENTITY_FIELD_DATA);
+
+						if (tmp != null && !tmp.isEmpty() && !tmp.startsWith(HTTP_PREFFIX)) {
+							tmp = HTTP_PREFFIX + ip + tmp;
+							dataJson.put(DEVICE_FIELD_URL_DATA, tmp);
+						}
 					}
 
-					initTopicsToFromDevice(deviceId);
+				}
 
-					return true;
+				initTopicsToFromDevice(deviceId);
+
+				return true;
 			}
 
 		} catch (Throwable t) {
@@ -97,48 +98,56 @@ public class DeviceMqService implements IDeviceMqService {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void initTopicsToFromDevice(String deviceId) {
-		if(!enabled) {
+		if (!enabled) {
 			log.info("Init to/from device topics DISABLED " + deviceId);
 			return;
 		}
-		log.info("Init to/from device topics " + deviceId);
-		
-		String response = constructRegisterResponse(deviceId).toString();
-		
-		subscribeFromDeviceTopic(deviceId);
-		publishToDeviceTopic(deviceId, response);
+
+		IDevice device = deviceService.getDeviceByName(deviceId);
+
+		if (device != null) {
+			log.info("Init to/from device topics " + deviceId);
+
+			String response = constructRegisterResponse(deviceId).toString();
+
+			subscribeFromDeviceTopic(device);
+			publishToDeviceTopic(deviceId, response);
+		} else {
+			// TODO: implement device registration here
+			log.error("Unknown device subscribe request " + deviceId);
+		}
 	}
-	
+
 	@Override
-	public void subscribeFromDeviceTopic(String deviceId) {
-		String topicName = messageService.getFromDeviceTopicId(deviceId);
-		
+	public void subscribeFromDeviceTopic(IDevice device) {
+
+		String topicName = messageService.getFromDeviceTopicId(device.getName());
+
 		messageService.registerSubscriberOrResubscribeExisting(new DataDeviceSubscribtion(topicName, this));
-		
-		deviceService.getDeviceByName(deviceId).getEntities().stream()
-			.forEach(entity -> subscribeFromDeviceEntityTopic(entity));
+
+		deviceService.getDeviceByName(device.getName()).getEntities().stream()
+				.forEach(entity -> subscribeFromDeviceEntityTopic(entity));
 	}
-	
+
 	@Override
 	public boolean publishToDeviceTopic(String deviceId, String message) {
 		String topicName = messageService.getToDeviceTopicId(deviceId);
 		return messageService.publishToTopic(topicName, message);
 	}
-	
+
 	public void initTopicsToFromDeviceEntity(Entity entity) {
 		subscribeFromDeviceEntityTopic(entity);
-		
-		publishToDeviceTopic(entity.getGroup().getDevice().getName(), 
-				new JSONObject()
-				.put(ENTITY_FIELD_ID, entity.getRemoteId())
-				.put(ENTITY_FIELD_STATUS, 200).toString());
+
+		publishToDeviceTopic(entity.getGroup().getDevice().getName(),
+				new JSONObject().put(ENTITY_FIELD_ID, entity.getRemoteId()).put(ENTITY_FIELD_STATUS, 200).toString());
 	}
-	
+
 	public void subscribeFromDeviceEntityTopic(Entity entity) {
-		String topicName = messageService.getFromDeviceEntityTopicId(entity.getGroup().getDevice().getName(), entity.getName());
+		String topicName = messageService.getFromDeviceEntityTopicId(entity.getGroup().getDevice().getName(),
+				entity.getName());
 		messageService.registerSubscriberOrResubscribeExisting(new DataEntitySubscribtion(topicName, entity, this));
 	}
 
@@ -155,19 +164,18 @@ public class DeviceMqService implements IDeviceMqService {
 	public void onDeviceEntityDataReceived(Entity entity, String message) {
 		try {
 			JSONObject messageJson = new JSONObject(message);
-			
-			if(messageJson != null && !messageJson.isEmpty()) {
-				
-				JSONObject data = new JSONObject()
-						.put(entity.getGroup().getName(), 
-								new JSONObject().put(entity.getName(), messageJson));
-				
+
+			if (messageJson != null && !messageJson.isEmpty()) {
+
+				JSONObject data = new JSONObject().put(entity.getGroup().getName(),
+						new JSONObject().put(entity.getName(), messageJson));
+
 				log.debug("MQ Data received : " + data);
-				
+
 				deviceService.processDataReceivedFromEntity(entity, data);
 			}
-			
-		}catch(Exception e) {
+
+		} catch (Exception e) {
 			log.error(e);
 		}
 	}

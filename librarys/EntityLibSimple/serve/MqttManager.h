@@ -77,7 +77,7 @@ private:
 	bool sendDataRequest();
 
 	bool subscribe(char* topic, bool showLog = false);
-	bool publish(char* topic, JsonObject& data, bool showLog = false);
+	bool publish(char* topic, JsonObject& data, bool showLog = true);
 
 	bool isDataSendEnabled();
 

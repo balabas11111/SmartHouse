@@ -230,7 +230,7 @@ public class DeviceManageService implements IDeviceManageService {
 	
 	@Override
 	public void processDataReceivedFromEntity(Entity entity, JSONObject data) {
-		Device device = entity.getGroup().getDevice();
+		Device device = getDeviceById(entity.getGroup().getDevice().getId());
 
 		processDataReceivedFromDevice(device, data, false, false);
 	}
@@ -308,6 +308,7 @@ public class DeviceManageService implements IDeviceManageService {
 					}
 					tmp = Joiner.on(") ").withKeyValueSeparator("(").join(changedValuesStrMap) + ")";
 					
+					//printPirValue();
 					log.info("Values changed = " + changedValues.size() + " device=" + device.getName() +" VALUES " + tmp);
 				}
 				
@@ -324,6 +325,8 @@ public class DeviceManageService implements IDeviceManageService {
 			device = save(device);
 			log.debug("device saved");
 		}
+		
+		//printPirValue();
 	}
 
 	@Override
@@ -353,15 +356,15 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Override
 	public List<Device> getDevicesRequireUpdate() {
-		return getDevices().stream().filter(dev -> dev.isRegistered() && checkItemRequiresUpdate(dev, dev))
+		return getDevices().stream().filter(dev -> dev.isRegistered() /*&& !dev.isInitialized()*/ && checkItemRequiresUpdate(dev, dev))
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Group> getGroupsRequireUpdate() {
 		return getDevices().stream()
-				.filter(device -> device.isRegistered() && device.getGroups() != null && !device.getGroups().isEmpty())
-				.flatMap(device -> device.getGroups().stream())
+				.filter(dev -> dev.isRegistered() /*&& !dev.isInitialized()*/ && dev.getGroups() != null && !dev.getGroups().isEmpty())
+				.flatMap(dev -> dev.getGroups().stream())
 				.filter(group -> checkItemRequiresUpdate(group.getDevice(), group)).collect(Collectors.toList());
 	}
 
@@ -571,15 +574,23 @@ public class DeviceManageService implements IDeviceManageService {
 	
 	@Override
 	public List<IEntityField> getCurrentEntityFieldsForDevice(Long deviceId) {
-		Device device = getDeviceById(deviceId);
 		
-		return device.getEntities().stream()
+		return getDeviceById(deviceId).getEntities().stream()
 				.flatMap(entity -> entity.getEntityFields().stream())
 				.filter(SmartHouseItemBuildService::isFieldValueSaveAble)
 				.sorted(ItemAbstract::compareByName)
 				.collect(Collectors.toList());
+		
 	}
-	
+	/*
+	public void printPirValue() {
+		IDevice device = getDeviceByName("ESP_962570");
+		IEntity entity = device.getEntity("PIR");
+		IEntityField moveField = entity.getEntityField("move");
+		
+		System.out.println("pir="+moveField.getValueStr());
+	}
+	*/
 	@Override
 	public List<EntityFieldValue> getLastEntityFieldValuesForDevice(Long deviceId) {
 		return entityFieldService.getLastEntityFieldValuesForDevice(deviceId);
@@ -606,7 +617,7 @@ public class DeviceManageService implements IDeviceManageService {
 	
 
 	private String getDeviceUrl(Device device) {
-		if(mock) {
+		if(device.getName().startsWith("MockedDeviceId")) {
 			return HTTP_PREFFIX + device.getIp() + ControllerConstants.MOCK + "/mock_" + device.getName();
 		}
 		

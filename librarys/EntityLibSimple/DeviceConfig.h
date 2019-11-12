@@ -15,7 +15,7 @@
 #define SETTINGS_WIFI_SSSID "balabasKiev5"
 #define SETTINGS_WIFI_PASSWORD "wuWylKegayg2wu22"
 
-#define SETTINGS_SMART_SERVER_ADDRESS "192.168.0.101"
+#define SETTINGS_SMART_SERVER_ADDRESS "192.168.0.107"
 #define SETTINGS_SMART_SERVER_KEY "SomeServerKey"
 
 #define MQTT_PUBLISHER "!!SmartHouse-device"

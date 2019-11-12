@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.entity.service;
 
 import com.balabas.smarthouse.server.entity.model.Entity;
+import com.balabas.smarthouse.server.entity.model.IDevice;
 
 public interface IDeviceMqService {
 
@@ -8,7 +9,7 @@ public interface IDeviceMqService {
 
 	void initTopicsToFromDevice(String deviceId);
 	
-	void subscribeFromDeviceTopic(String deviceId);
+	void subscribeFromDeviceTopic(IDevice device);
 	
 	boolean publishToDeviceTopic(String deviceId, String message);
 

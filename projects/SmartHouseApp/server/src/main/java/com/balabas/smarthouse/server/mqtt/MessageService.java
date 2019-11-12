@@ -55,9 +55,8 @@ public class MessageService implements InitializingBean, IMessageService {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if(mock) {
-			enabled = false;
-		}
+		//this.enabled = !mock && enabled;
+		
 		if(enabled){
 			subscribers.stream().forEach(this::subscribe);
 		} else{

@@ -52,7 +52,7 @@ public class MockedDeviceService implements InitializingBean {
 
 	private int initStep = 0;
 	
-	private int devicesCount = 3;
+	private int devicesCount = 0;
 
 	@Autowired
 	private DeviceSecurityService securityService;
@@ -69,14 +69,16 @@ public class MockedDeviceService implements InitializingBean {
 		log.info("-----Server context was started MockedDevice-----");
 		reqs = ServerValuesMockUtil.getDevicesMockedRegisterRequest(devicesCount);
 
-		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(reqs.size());
-
-		reqs.stream().forEach(request -> {
-			RegisterTask task = new RegisterTask(request, this);
-			executor.execute(task);
-		});
-
-		executor.shutdown();
+		if(reqs.size()>0) {
+			ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(reqs.size());
+	
+			reqs.stream().forEach(request -> {
+				RegisterTask task = new RegisterTask(request, this);
+				executor.execute(task);
+			});
+	
+			executor.shutdown();
+		}
 		initDone = true;
 	}
 

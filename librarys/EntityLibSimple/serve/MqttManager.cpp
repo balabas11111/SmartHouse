@@ -58,12 +58,9 @@ void MqttManager::init(EntityJsonRequestResponse* buf, bool registered) {
 			Serial.print(adress.toString());
 			Serial.print(FPSTR(":"));
 			Serial.print(MQTT_PORT);
+
 		}
 		subscribeToDeviceTopic();
-
-		Serial.print(FPSTR("  serverSubscribed ="));
-		Serial.println(toDeviceTopicSubscribed);
-
 }
 
 
@@ -105,9 +102,13 @@ bool MqttManager::publishBuffer() {
 }
 
 bool MqttManager::subscribeToDeviceTopic(){
-	this->toDeviceTopicSubscribed = subscribe(toDeviceTopic, true);
-	if(this->toDeviceTopicSubscribed){
-		Serial.println(FPSTR("toDeviceTopicSubscribed"));
+	if(!this->toDeviceTopicSubscribed) {
+		this->toDeviceTopicSubscribed = subscribe(toDeviceTopic, true);
+		if(this->toDeviceTopicSubscribed){
+			Serial.print(FPSTR("ToDeviceTopic Subscribed ="));
+			Serial.println(toDeviceTopicSubscribed);
+
+		}
 	}
 	return this->toDeviceTopicSubscribed;
 }
