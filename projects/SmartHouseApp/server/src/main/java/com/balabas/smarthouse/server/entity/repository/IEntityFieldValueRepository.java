@@ -21,6 +21,15 @@ public interface IEntityFieldValueRepository extends CrudRepository<EntityFieldV
 	@Query("FROM EntityFieldValue WHERE entityField.entity.id = :id")
 	List<EntityFieldValue> getAllEntityFieldValuesForEntity(@Param("id")Long entityId);
 	
+	@Query("SELECT efv FROM EntityFieldValue efv JOIN FETCH efv.entityField WHERE efv.id in(select max(efvi.id) from EntityFieldValue efvi where efvi.entityField.id = :id)")
+	List<EntityFieldValue> getLastEntityFieldValuesForEntityField(@Param("id")Long entityFieldId);
+	
+	@Query("SELECT efv FROM EntityFieldValue efv JOIN FETCH efv.entityField WHERE efv.entityField.id = :id ORDER BY efv.date DESC")
+	List<EntityFieldValue> getEntityFieldValuesForEntityField(@Param("id")Long entityFieldId);
+	
+	@Query("SELECT efv FROM EntityFieldValue efv JOIN FETCH efv.entityField WHERE efv.entityField.id = :id AND efv.date > :afterDate ORDER BY efv.date DESC")
+	List<EntityFieldValue> getEntityFieldValuesForEntityField(@Param("id")Long entityFieldId, @Param("afterDate") Date date);
+	
 	@Query("SELECT efv FROM EntityFieldValue efv JOIN FETCH efv.entityField WHERE efv.id in(select max(efvi.id) from EntityFieldValue efvi where efvi.entityField.entity.id = :id group by efvi.entityField.id)")
 	List<EntityFieldValue> getLastEntityFieldValuesForEntity(@Param("id")Long entityId);
 	

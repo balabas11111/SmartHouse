@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.entity.service;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -76,6 +77,16 @@ public class EntityFieldService implements IEntityFieldService {
 				&& entityField.getViewClass().isButton();
 	}
 
+	@Override
+	public List<EntityFieldValue> getEntityFieldValuesForEntityField(Long entityFieldId) {
+		return entityFieldValueRepository.getEntityFieldValuesForEntityField(entityFieldId);
+	}
+	
+	@Override
+	public List<EntityFieldValue> getEntityFieldValuesForEntityField(Long entityFieldId, Date afterDate) {
+		return entityFieldValueRepository.getEntityFieldValuesForEntityField(entityFieldId, afterDate);
+	}
+	
 	@Override
 	public List<EntityFieldValue> getLastEntityFieldValuesForDevice(Long deviceId) {
 		return entityFieldValueRepository.getLastEntityFieldValuesForDevice(deviceId);

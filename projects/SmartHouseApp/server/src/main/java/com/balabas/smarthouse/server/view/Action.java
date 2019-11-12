@@ -14,6 +14,7 @@ import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 import lombok.AllArgsConstructor;
@@ -102,6 +103,9 @@ public class Action {
 	private Long targetId;
 	@Getter
 	@Setter
+	private Long targetId2;
+	@Getter
+	@Setter
 	private String serverName;
 
 	@Getter
@@ -151,6 +155,20 @@ public class Action {
 		this.description = description;
 		this.idType = idType;
 		this.targetId = targetId;
+
+		this.callbackData = buildCallBackData();
+
+		this.valid = isActionValid();
+	}
+	
+	public Action(String action, String data, String description, String idType, Long targetId, Long targetId2) {
+
+		this.action = action;
+		this.data = data;
+		this.description = description;
+		this.idType = idType;
+		this.targetId = targetId;
+		this.targetId2 = targetId2;
 
 		this.callbackData = buildCallBackData();
 
@@ -241,13 +259,14 @@ public class Action {
 	@SuppressWarnings("rawtypes")
 	public static Action fromEntityFieldEnabledValue(String actionName,
 			IEntityFieldEnabledValue entityFieldEnabledValue) {
+		EntityField entityField = entityFieldEnabledValue.getEntityField();
 		Entity entity = entityFieldEnabledValue.getEntityField().getEntity();
 
 		String description = Optional.ofNullable(entityFieldEnabledValue.getEmoji()).orElse(Emoji.EMPTY_EMOJI)
 				.toString() + entity.getDescription() + " : " + entityFieldEnabledValue.getActionDescription();
 
 		return new Action(actionName, entityFieldEnabledValue.buildDataForCallBack(), description, ID_TYPE_ENTITY,
-				entity.getId());
+				entity.getId(), entityField.getId());
 	}
 
 	public static Action fromColumnList(String... cols) {

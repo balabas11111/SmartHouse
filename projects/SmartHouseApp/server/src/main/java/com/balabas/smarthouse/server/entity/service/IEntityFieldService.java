@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.balabas.smarthouse.server.entity.model.EntityFieldValue;
@@ -23,6 +24,10 @@ public interface IEntityFieldService {
 	List<EntityFieldValue> getLastEntityFieldValuesForEntity(Long entityId);
 
 	void deleteEntityFieldValuesForDevice(Long deviceId);
+
+	List<EntityFieldValue> getEntityFieldValuesForEntityField(Long entityFieldId);
+	
+	List<EntityFieldValue> getEntityFieldValuesForEntityField(Long entityFieldId, Date afterDate);
 
 	
 }

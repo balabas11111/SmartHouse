@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.entity.model;
 
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -13,6 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.thymeleaf.util.StringUtils;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
@@ -95,6 +98,21 @@ public class Entity extends ItemAbstract implements IEntity {
 			}
 		}
 		return fields;
+	}
+	
+	@Override
+	public String getDescriptionByDescriptionField() {
+		if(StringUtils.isEmpty(descriptionField)) {
+			return Optional.ofNullable(description).orElse("");
+		}
+		
+		Optional<IEntityField> descrField = Optional.ofNullable(getEntityField(descriptionField));
+		
+		if(descrField.isPresent()) {
+			return Optional.ofNullable(descrField.get().getValueStr()).orElse(description);
+		}
+		
+		return description;
 	}
 
 }

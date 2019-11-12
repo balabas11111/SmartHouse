@@ -38,6 +38,7 @@ public interface IEntity extends IStateable, IItemAbstract {
 	
 	void addEntityField(IEntityField entityField);
 	IEntityField getEntityField(Long entityFieldId);
+	String getDescriptionByDescriptionField();
 	
 	/*
 	  void addGeneratedField(IEntityField entityField);

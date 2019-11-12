@@ -555,7 +555,6 @@ public class DeviceManageService implements IDeviceManageService {
 	@Override
 	public DeviceEntityFieldActionHolder getValueActionHolder(Long deviceId) {
 		DeviceEntityFieldActionHolder holder = new DeviceEntityFieldActionHolder();
-		//List<EntityFieldValue> values = getLastEntityFieldValuesForDevice(deviceId);
 		List<IEntityField> entityFields = getCurrentEntityFieldsForDevice(deviceId);
 
 		for(IEntityField entityField : entityFields) {

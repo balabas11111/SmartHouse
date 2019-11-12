@@ -25,7 +25,7 @@
 				<div class="row">
 					<div class="col-md-4">
 
-						<h1><a class="navbar-brand" href="index.html" data-0="line-height:90px;"
+						<h1><a class="navbar-brand" th:href="@{~/device?id={id}(id=${device.id})}" data-0="line-height:90px;"
 								data-300="line-height:50px;" th:text="${device.description}"> Hidayah
 							</a></h1>
 
@@ -101,21 +101,26 @@
 					<table id="devicesTable" class="table table-striped">
 						<tbody>
 							<tr th:each="entityField : ${holder.getEntityFields().get(entity.name)}">
-								<td th:text="${entityField.emoji}">Прошивка</td>
-								<td th:text="${entityField.getDescriptionByDescriptionField()}">Описание
-								</td>
-								<td th:text="${entityField.getValueStr()}">Адресс</td>
+								<td th:text="${entityField.emoji}">Emoji</td>
+								<!--<td th:text="${entityField.getDescriptionByDescriptionField()}">description</td>-->
+								<td><a th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityField.id})}"
+										th:text="${entityField.getDescriptionByDescriptionField()}">description</a></td>
+								<td th:text="${entityField.getValueStr()}">value</td>
 							</tr>
 							<tr th:each="entityField : ${holder.getEntityFieldsImageable().get(entity.name)}">
-								<td th:text="${entityField.emoji}">Прошивка</td>
-								<td th:text="${entityField.getDescriptionByDescriptionField()}">Описание
+								<td th:text="${entityField.emoji}">Emoji</td>
+								<!--<td th:text="${entityField.getDescriptionByDescriptionField()}">description</td>-->
+								<td><a th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityField.id})}"
+										th:text="${entityField.getDescriptionByDescriptionField()}">description</a>
 								</td>
-								<td th:text="${entityField.getEntityFieldEnabledValueByCurrentValue().getEmoji()} + ' (' + ${entityField.getEntityFieldEnabledValueByCurrentValue().getDescription()} + ')'">Адресс</td>
+								<td th:text="${entityField.getEntityFieldEnabledValueByCurrentValue().getEmoji()} + ' (' + ${entityField.getEntityFieldEnabledValueByCurrentValue().getDescription()} + ')'">value</td>
+								
 							</tr>
 							<tr th:each="entityAction : ${holder.getEntityFieldActions().get(entity.name)}">
 								<td>
 									<a th:href="@{~/executeAction_{deviceId}_{entityId}_{action}_(deviceId=${device.id},entityId=${entityAction.getTargetId()},action=${entityAction.getData()})}"
-										class="btn btn-default" th:text="${entityAction.getDescription()}">Выполнить</a>
+										class="btn btn-default" th:text="${entityAction.getDescription()}">value</a>
+									<a th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityAction.getTargetId2()})}">История</a>
 								</td>
 							</tr>
 						</tbody>
