@@ -296,6 +296,22 @@ public:
 		return CompareUtils::compareValues(obj.get<JsonVariant>(key), val);
 	}
 
+	static bool getFieldBooleanValue(JsonObject& obj,const char* key){
+		if(!obj.containsKey(key)){
+			return false;
+		}
+		if(obj.is<char*>(key) && (strcmp("1",obj[key])==0 || strcmp("true",obj[key])==0)){
+			return true;
+		}
+		if(obj.is<bool>(key)){
+			return obj.get<bool>(key);
+		}
+		if(obj.is<int>(key) && obj.get<int>(key)==1){
+			return true;
+		}
+		return false;
+	}
+
 	static unsigned int getCrc(JsonObject& obj){
 		HashPrint hashPrint;
 		obj.printTo(hashPrint);

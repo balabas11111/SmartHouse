@@ -38,7 +38,7 @@ class DeviceManager: public Entity, public EntityUpdate {
 public:
 	DeviceManager():
 		Entity((char*)GROUP_SERVICES, DEVICE_MANAGER, (char*)DEVICE_MANAGER_DESCRIPTION){
-
+		this->hasPost = true;
 	};
 	virtual ~DeviceManager(){};
 

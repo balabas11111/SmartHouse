@@ -109,7 +109,6 @@ public:
 
 	static void restart(){
 		Serial.println(FPSTR(" Restarting..."));
-		delay(50);
 		ESP.restart();
 	}
 

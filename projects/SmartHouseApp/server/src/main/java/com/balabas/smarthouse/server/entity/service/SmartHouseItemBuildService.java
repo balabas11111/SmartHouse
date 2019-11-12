@@ -209,7 +209,7 @@ public class SmartHouseItemBuildService {
 				}
 			} else {
 				if(ENTITY_FIELD_MESSAGE.equals(entityFieldName)) {
-					entityMessageProcessor.processMessage(entity, entityJson.getString(ENTITY_FIELD_MESSAGE));
+					entityMessageProcessor.processMessage(entity, entityJson.optJSONObject(ENTITY_FIELD_MESSAGE));
 				}
 			}
 		}

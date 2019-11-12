@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.thymeleaf.util.StringUtils;
 
 import com.balabas.smarthouse.server.ServerApplication;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
@@ -306,22 +307,26 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 		try {
 			boolean sendExecuted = actionService.executeDeviceAction(action);
 
-			action.setGroupName(ItemType.SENSORS.getCode());
+			if(StringUtils.isEmpty(action.getGroupName())) {
+				action.setGroupName(ItemType.SENSORS.getCode());
+			}
 
 			if (sendExecuted) {
-				String message = "";
-				if (action.getDeviceName() != null && !action.getDeviceName().isEmpty()) {
-					Device device = deviceService.getDeviceByName(action.getDeviceName());
-
-					if (device != null) {
-						message += device.getEmoji().toString() + " " + device.getDescription();
+				if(ItemType.SENSORS.getCode().equals(action.getGroupName())) {
+					String message = "";
+					if (action.getDeviceName() != null && !action.getDeviceName().isEmpty()) {
+						Device device = deviceService.getDeviceByName(action.getDeviceName());
+	
+						if (device != null) {
+							message += device.getEmoji().toString() + " " + device.getDescription();
+						}
 					}
+	
+					msgs.add(messageBuilder.createDataSentToDevice(message, context.getChatId()));
+					msgs.addAll(messageBuilder.createViewOfDeviceGroup(action, context));
+					
+					log.info("Sensors data sent to device");
 				}
-
-				msgs.add(messageBuilder.createDataSentToDevice(message, context.getChatId()));
-				msgs.addAll(messageBuilder.createViewOfDeviceGroup(action, context));
-				
-				log.info("Data sent to device");
 			} else {
 				msgs.add(messageBuilder.createDeviceDataSavedOnServer(null, context.getChatId()));
 				log.info("Device properties updated");

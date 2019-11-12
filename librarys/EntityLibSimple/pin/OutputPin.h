@@ -63,7 +63,7 @@ public:
 		uint8_t onPosted = 0;
 		//Serial.println(FPSTR("Output pin do post"));
 
-		if(params.is<char*>(ON_FIELD) && (strcmp("1",params[ON_FIELD])==0 || strcmp("true",params[ON_FIELD])==0)){
+		if(JsonObjectUtil::getFieldBooleanValue(params,ON_FIELD)){
 			onPosted = 1;
 		}
 

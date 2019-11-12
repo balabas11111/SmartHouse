@@ -220,6 +220,8 @@ public class DeviceManageService implements IDeviceManageService {
 
 			save(device).getTimer().setActionForced(true);
 
+			deviceMqService.initTopicsToFromDevice(device.getName());
+			
 			log.info("ReREgistered :" + device.getName());
 		}
 

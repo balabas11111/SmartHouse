@@ -23,12 +23,16 @@ public class EntityMessageProcessor  implements IEntityMessageProcessor{
 	private IMessageSender messageSender;
 	
 	@Override
-	public void processMessage(IEntity entity, String entityMessageText) {
-		JSONObject json = new JSONObject(entityMessageText);
+	public void processMessage(IEntity entity, JSONObject entityMessage) {
+		if(entityMessage!=null) {
 		
-		Severity severity =  Severity.getSeveritybyCode(json.optString(MESSAGE_FIELD_SEVERITY, null));
-		String code = json.optString(MESSAGE_FIELD_CODE);
-		String text = json.optString(MESSAGE_FIELD_TEXT);
+		Severity severity =  Severity.getSeveritybyCode(entityMessage.optString(MESSAGE_FIELD_SEVERITY, null));
+		String code = entityMessage.optString(MESSAGE_FIELD_CODE);
+		String text = entityMessage.optString(MESSAGE_FIELD_TEXT);
+		
+		if(StringUtils.isEmpty(code) && StringUtils.isEmpty(text)) {
+			return;
+		}
 		
 		if(!StringUtils.isEmpty(code)) {
 			switch(code) {
@@ -43,6 +47,7 @@ public class EntityMessageProcessor  implements IEntityMessageProcessor{
 		
 		
 		messageSender.sendMessageToAllUsers(severity, text);
+		}
 	}
 	
 }

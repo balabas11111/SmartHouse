@@ -154,6 +154,7 @@ void EntityApplication::loop() {
 
 	this->mqttManager->loop();
 	this->wifiServerManager->loop();
+	this->deviceManager.loop();
 }
 
 EntityManager* EntityApplication::getEntityManager() {

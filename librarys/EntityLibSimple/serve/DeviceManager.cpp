@@ -23,20 +23,23 @@ void DeviceManager::doAppendFieldsSwg(JsonObject& swgJson){
 
 void DeviceManager::doPost(JsonObject& params, JsonObject& response) {
 	UNUSED(response);
-
-	if(JsonObjectUtil::getObjectFieldExistsAndEquals(params, DEVICE_MANAGER_FIELD_RESTART, 1)
-		|| JsonObjectUtil::getObjectFieldExistsAndEquals(params, DEVICE_MANAGER_FIELD_RESTART, "1")){
-
+	//JsonObjectUtil::print(params);
+	if(JsonObjectUtil::getFieldBooleanValue(params,DEVICE_MANAGER_FIELD_RESTART)){
 		triggerRestart();
-
 		addMessage(response, MESSAGE_SEVERITY_WARN, MESSAGE_CODE_DEVICE_WILL_BE_RESTARTED);
+	} else {
+		Serial.println(FPSTR("NO restart triggered"));
 	}
 }
 
 void DeviceManager::loop() {
-	if(this->triggeredRestart && restartTime < millis()){
-		DeviceUtils::restart();
+	if(this->triggeredRestart) {
+		if(restartTime < millis()){
+			Serial.println(FPSTR("RESTART device"));
+			DeviceUtils::restart();
+		}
 	}
+
 }
 
 void DeviceManager::doUpdate() {
@@ -52,7 +55,7 @@ void DeviceManager::triggerRestart(bool doRestart) {
 	this->triggeredRestart = doRestart;
 	if(this->triggeredRestart){
 		Serial.println(FPSTR(" Restart Triggered"));
-		restartTime = millis() + 3000;
+		this->restartTime = millis() + 3000;
 	}
 
 }
