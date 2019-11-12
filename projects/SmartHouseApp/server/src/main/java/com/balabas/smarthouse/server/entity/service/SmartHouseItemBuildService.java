@@ -165,7 +165,9 @@ public class SmartHouseItemBuildService {
 	public static boolean isFieldValueSaveAble(IEntityField entityField) {
 		return entityField != null && !StringUtils.isEmpty(entityField.getName())
 				&& !notUpdateableEntityFields.contains(entityField.getName())
-				&& !entityField.getEntity().getDescriptionField().equals(entityField.getTemplateName());
+				&& !entityField.getEntity().getDescriptionField().equals(entityField.getTemplateName())
+				&& entityField.isActive()
+				&& !String.class.isAssignableFrom(entityField.getClazz());
 	}
 
 	private boolean updateEntityValuesFromJson(Entity entity, JSONObject entityJson,
@@ -223,7 +225,7 @@ public class SmartHouseItemBuildService {
 		if (entityField.isActive() 
 				&& ItemType.SENSORS.getCode().equals(entityField.getEntity().getGroup().getName())) {
 
-			if (entityField.isReadOnly() && Number.class.isAssignableFrom(entityField.getClazz())) {
+			if (Number.class.isAssignableFrom(entityField.getClazz())) {
 
 				Float value = null;
 
@@ -244,7 +246,7 @@ public class SmartHouseItemBuildService {
 				if (doSave) {
 					changedValues.add(new EntityFieldValueNumber(entityField, value));
 				}
-			} else if (!entityField.isReadOnly() && Boolean.class.isAssignableFrom(entityField.getClazz())) {
+			} else if (Boolean.class.isAssignableFrom(entityField.getClazz())) {
 
 				Boolean value = null;
 

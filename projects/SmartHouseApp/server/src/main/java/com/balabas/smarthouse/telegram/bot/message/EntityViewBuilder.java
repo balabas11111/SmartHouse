@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.telegram.bot.message;
 
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_MESSAGE;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_ITEMS;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ID;
 
@@ -57,10 +58,7 @@ public class EntityViewBuilder {
 
 	public void buildEntityBody(IEntity entity, StringBuilder builder) {
 
-		// if template is presented use template. else build by descriptor
-		if (// EntityClass.DEFAULT.equals(entity.getRenderer()) &&
-		entityValueMapToTemplate(entity.getName(), entity.getEntityFields(), /* entity.getGeneratedFields(), */ builder,
-				true, false)) {
+		if (entityValueMapToTemplate(entity.getName(), entity.getEntityFields(), builder, true, false)) {
 
 			if (entity.getGrouppedFieldsIds() != null && !entity.getGrouppedFieldsIds().isEmpty()) {
 
@@ -91,7 +89,7 @@ public class EntityViewBuilder {
 	public void buildEntityBodyViewByFieldDescriptors(IEntity entity, StringBuilder builder) {
 		Set<IEntityField> entityFields = entity.getEntityFields();
 
-		List<String> invisibleFields = Arrays.asList(ENTITY_FIELD_SENSOR_ITEMS, ENTITY_FIELD_ID,
+		List<String> invisibleFields = Arrays.asList(ENTITY_FIELD_SENSOR_ITEMS, ENTITY_FIELD_ID, ENTITY_FIELD_MESSAGE,
 				entity.getDescriptionField());
 
 		for (IEntityField ef : entityFields) {

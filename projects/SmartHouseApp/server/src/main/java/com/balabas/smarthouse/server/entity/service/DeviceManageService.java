@@ -33,6 +33,7 @@ import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IUpdateable;
+import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
@@ -40,7 +41,7 @@ import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldEnabledValueRepository;
 import com.balabas.smarthouse.server.view.Action;
-import com.balabas.smarthouse.server.view.DeviceValueActionHolder;
+import com.balabas.smarthouse.server.view.DeviceEntityFieldActionHolder;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -266,11 +267,10 @@ public class DeviceManageService implements IDeviceManageService {
 					List<EntityFieldValue> changedValues = Lists.newArrayList();
 					
 					device.getEntities().stream().flatMap(entity -> entity.getEntityFields().stream())
-					.forEach( entityField -> {
-							if(SmartHouseItemBuildService.isFieldValueSaveAble(entityField)) {
-								SmartHouseItemBuildService.processValueChange(entityField, null, changedValues);
-							}
-						});
+						.filter(SmartHouseItemBuildService::isFieldValueSaveAble)
+						.forEach( entityField -> 
+								SmartHouseItemBuildService.processValueChange(entityField, null, changedValues)
+						);
 					
 					entityFieldService.saveAll(changedValues);
 					
@@ -440,7 +440,7 @@ public class DeviceManageService implements IDeviceManageService {
 	}
 
 	@Override
-	public String sendDataToDevice(String deviceName, String groupName, String entityName, Map<String, Object> values) {
+	public String sendDataToDevice(String deviceName, String entityName, Map<String, Object> values) {
 
 		Device device = getDeviceByName(deviceName);
 
@@ -548,29 +548,37 @@ public class DeviceManageService implements IDeviceManageService {
 	public List<Entity> getEntitiesForDevice(Long deviceId) {
 		return getDeviceById(deviceId).getEntities().stream()
 				.filter( e-> ItemType.SENSORS.equals(e.getGroup().getType()))
-				.sorted((e1, e2)->e1.getName().compareTo(e2.getName()))
+				.sorted(ItemAbstract::compareByName)
 				.collect(Collectors.toList());
 	}
 	
 	@Override
-	public DeviceValueActionHolder getValueActionHolder(Long deviceId) {
-		DeviceValueActionHolder holder = new DeviceValueActionHolder();
-		List<EntityFieldValue> values = getLastEntityFieldValuesForDevice(deviceId);
+	public DeviceEntityFieldActionHolder getValueActionHolder(Long deviceId) {
+		DeviceEntityFieldActionHolder holder = new DeviceEntityFieldActionHolder();
+		//List<EntityFieldValue> values = getLastEntityFieldValuesForDevice(deviceId);
+		List<IEntityField> entityFields = getCurrentEntityFieldsForDevice(deviceId);
 
-		for(EntityFieldValue entityFieldValue : values) {
-			
-			if(entityFieldValue.getEntityField().isButton()) {
-				IEntityField entityField = entityFieldValue.getEntityField();
-				entityField.setValueWithNoCheck(entityFieldValue.getValue());
-				
+		for(IEntityField entityField : entityFields) {
+			if(entityField.isButton() && !entityField.isReadOnly()) {
 				List<Action> actions = entityFieldService.getActionsForEntityField(ACTION_TYPE_SEND_DATA_TO_DEVICE, entityField);
 				holder.addFieldAction(entityField.getEntity().getName(), actions);
 			} else {
-				holder.addFieldValue(entityFieldValue);
+				holder.addFieldValue(entityField);
 			}
 		}
 		
 		return holder;
+	}
+	
+	@Override
+	public List<IEntityField> getCurrentEntityFieldsForDevice(Long deviceId) {
+		Device device = getDeviceById(deviceId);
+		
+		return device.getEntities().stream()
+				.flatMap(entity -> entity.getEntityFields().stream())
+				.filter(SmartHouseItemBuildService::isFieldValueSaveAble)
+				.sorted(ItemAbstract::compareByName)
+				.collect(Collectors.toList());
 	}
 	
 	@Override

@@ -181,7 +181,7 @@ public class ActionService implements IActionService {
 			});
 		}
 		if (params.size() > 0) {
-			deviceService.sendDataToDevice(action.getDeviceName(), action.getGroupName(), action.getEntityName(), params);
+			deviceService.sendDataToDevice(action.getDeviceName(), action.getEntityName(), params);
 			return true;
 		}
 

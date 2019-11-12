@@ -26,6 +26,9 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	void setActive(boolean active);
 	
 	boolean isCalculated();
+	default boolean isNotCalculated() {
+		return !isCalculated();
+	}
 	void setCalculated(boolean calculated);
 	
 	String getDescriptionField();

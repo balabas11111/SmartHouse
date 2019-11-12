@@ -47,7 +47,7 @@
 
 	<div class="container">
 
-		<h4 th:text="${device.description}">Устройство сервера</h4>
+		<!--<h4 th:text="${device.description}">Устройство сервера</h4>-->
 
 		<div>
 			<table id="devicesTable" class="table table-dark table-striped">
@@ -55,9 +55,9 @@
 					<tr>
 						<th>Идентификатор</th>
 						<th>Прошивка</th>
-						<th>Описание</th>
+						<!--<th>Описание</th>-->
 						<th>Состояние</th>
-						<th>IP</th>
+						<!--<th>IP</th>-->
 						<th></th>
 					</tr>
 				</thead>
@@ -65,9 +65,9 @@
 					<tr>
 						<td th:text="${device.name}">Идентификатор</td>
 						<td th:text="${device.firmware}">Прошивка</td>
-						<td th:text="${device.description}">Описание</td>
+						<!--<td th:text="${device.description}">Описание</td>-->
 						<td th:text="${device.getStateEmoji()} + ' ' + ${device.getStateDescription()}">Состояние</td>
-						<td th:text="${device.ip}">IP</td>
+						<!--<td th:text="${device.ip}">IP</td>-->
 						<td>
 							<div class="dropdown">
 								<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
@@ -100,11 +100,17 @@
 				<div class="panel-body">
 					<table id="devicesTable" class="table table-striped">
 						<tbody>
-							<tr th:each="entityValue : ${holder.getEntityFieldValues().get(entity.name)}">
-								<td th:text="${entityValue.entityField.emoji}">Прошивка</td>
-								<td th:text="${entityValue.entityField.getDescriptionByDescriptionField()}">Описание
+							<tr th:each="entityField : ${holder.getEntityFields().get(entity.name)}">
+								<td th:text="${entityField.emoji}">Прошивка</td>
+								<td th:text="${entityField.getDescriptionByDescriptionField()}">Описание
 								</td>
-								<td th:text="${entityValue.getValueStr()}">Адресс</td>
+								<td th:text="${entityField.getValueStr()}">Адресс</td>
+							</tr>
+							<tr th:each="entityField : ${holder.getEntityFieldsImageable().get(entity.name)}">
+								<td th:text="${entityField.emoji}">Прошивка</td>
+								<td th:text="${entityField.getDescriptionByDescriptionField()}">Описание
+								</td>
+								<td th:text="${entityField.getEntityFieldEnabledValueByCurrentValue().getEmoji()} + ' (' + ${entityField.getEntityFieldEnabledValueByCurrentValue().getDescription()} + ')'">Адресс</td>
 							</tr>
 							<tr th:each="entityAction : ${holder.getEntityFieldActions().get(entity.name)}">
 								<td>

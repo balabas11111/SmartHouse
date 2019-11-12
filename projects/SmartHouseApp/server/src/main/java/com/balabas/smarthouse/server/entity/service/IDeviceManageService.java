@@ -13,7 +13,7 @@ import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
-import com.balabas.smarthouse.server.view.DeviceValueActionHolder;
+import com.balabas.smarthouse.server.view.DeviceEntityFieldActionHolder;
 
 @SuppressWarnings({ "rawtypes" })
 public interface IDeviceManageService {
@@ -39,8 +39,8 @@ public interface IDeviceManageService {
 	void requestAllDevicesDataWithUpdateRequired();
 
 	String sendDataToDevice(Long deviceId, Long entityId, String actionData);
+	String sendDataToDevice(String deviceName, String entityName, Map<String, Object> values);
 	String sendDataToDevice(IDevice device, IEntity entity, Map<String, Object> values);
-	String sendDataToDevice(String deviceName, String groupName, String entityName, Map<String, Object> values);
 
 	Device getDeviceById(Long id);
 	
@@ -68,8 +68,10 @@ public interface IDeviceManageService {
 
 	List<Entity> getEntitiesForDevice(Long deviceId);
 
-	DeviceValueActionHolder getValueActionHolder(Long deviceId);
+	DeviceEntityFieldActionHolder getValueActionHolder(Long deviceId);
 
 	void deleteDeviceById(Long deviceId);
+
+	List<IEntityField> getCurrentEntityFieldsForDevice(Long deviceId);
 
 }

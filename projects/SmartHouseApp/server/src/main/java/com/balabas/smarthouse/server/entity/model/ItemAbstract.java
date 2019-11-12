@@ -45,4 +45,8 @@ public class ItemAbstract implements IItemAbstract {
 	public Emoji getEmoji() {
 		return Optional.ofNullable(this.emoji).orElse(Emoji.EMPTY_EMOJI);
 	}
+	
+	public static int compareByName(IItemAbstract ia1, IItemAbstract ia2) {
+		return ia1.getName().compareTo(ia2.getName());
+	}
 }
