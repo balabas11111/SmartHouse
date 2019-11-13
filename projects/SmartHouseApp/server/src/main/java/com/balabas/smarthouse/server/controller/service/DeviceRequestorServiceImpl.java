@@ -29,8 +29,6 @@ import lombok.extern.log4j.Log4j2;
 @Service
 public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 
-	public static final String HEADER_SREQUEST = "SHr"; 
-	
 	@Autowired
 	HttpRequestExecutor executor;
 
@@ -47,7 +45,7 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 
 				HttpHeaders headers = new HttpHeaders();
 				headers.set(HttpHeaders.AUTHORIZATION, securityService.getServerKey());
-				headers.set(HEADER_SREQUEST, HEADER_SREQUEST);
+				headers.set(DeviceConstants.HEADER_SREQUEST, DeviceConstants.HEADER_SREQUEST);
 
 				String url = getDeviceDataUrl(device);
 
@@ -72,7 +70,7 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey());
-		headers.set(HEADER_SREQUEST, HEADER_SREQUEST);
+		headers.set(DeviceConstants.HEADER_SREQUEST, DeviceConstants.HEADER_SREQUEST);
 		headers.add(ENTITY_FIELD_SWG, "1");
 
 		return executor.executePostRequest(device.getDataUrl(), headers, json.toString()).getBody();
@@ -83,7 +81,7 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		headers.add(HttpHeaders.AUTHORIZATION, securityService.getServerKey());
-		headers.set(HEADER_SREQUEST, HEADER_SREQUEST);
+		headers.set(DeviceConstants.HEADER_SREQUEST, DeviceConstants.HEADER_SREQUEST);
 
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
 		map.add(DEVICE_FIELD_GROUP, entity.getGroup().getName());
@@ -97,6 +95,6 @@ public class DeviceRequestorServiceImpl implements DeviceRequestorService {
 	
 	private String getDeviceDataUrl(IDevice device) {
 		return //(device.isInitialized()) ? device.getDataUrl(): 
-				device.getDataUrl() + DeviceConstants.ENTITY_FIELD_SWG_EQ_1;
+				device.getDataUrl() + DeviceConstants.ENTITY_FIELD_SERVER_REQUEST_EQ_1;
 	}
 }

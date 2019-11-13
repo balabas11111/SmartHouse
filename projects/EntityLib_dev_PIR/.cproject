@@ -45,6 +45,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLib_S_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLib_S_DHT22}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLib_S_DS18D20}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/PubSubClient/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1394203530" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -76,6 +77,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLib_S_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLib_S_DHT22}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLib_S_DS18D20}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/PubSubClient/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.2014070281" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -107,6 +109,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLib_S_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLib_S_DHT22}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/EntityLib_S_DS18D20}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_dev_PIR/libraries/PubSubClient/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.546276860" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -116,8 +119,19 @@
 							<tool id="io.sloeber.tool.size.408651251" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="io.sloeber.core.toolChain.release.2021900665.1965553156" name="/" resourcePath="libraries/EntityLibSimple/WiFi">
+						<toolChain id="io.sloeber.core.toolChain.release.1354570944" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.354562745" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1979268898"/>
+							<tool id="io.sloeber.tool.compiler.c.2108902700" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.1579651777"/>
+							<tool id="io.sloeber.tool.sketch.compiler.s.1342601392" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.265126922"/>
+							<tool id="io.sloeber.tool.ar.863877568" name="Arduino archiver" superClass="io.sloeber.tool.ar.1598657552"/>
+							<tool id="io.sloeber.tool.combine.874104960" name="Arduino combiner" superClass="io.sloeber.tool.combine.1376659815"/>
+							<tool id="io.sloeber.tool.objcopy.eep.540428400" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.868440676"/>
+							<tool id="io.sloeber.tool.size.1119374560" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.408651251"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
-						<entry excluding="libraries/EntityLibSimple/WiFi|libraries/EntityLibSimple/utils|libraries/EntityLibSimple/serve|libraries/EntityLibSimple/pin|libraries/EntityLibSimple/Notifiers|libraries/EntityLibSimple/display|libraries/ArduinoJson/scripts|libraries/ArduinoJson/fuzzing|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="libraries/ArduinoJson/scripts|libraries/ArduinoJson/fuzzing|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

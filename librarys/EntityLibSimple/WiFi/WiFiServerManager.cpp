@@ -232,6 +232,10 @@ bool WiFiServerManager::authenticateRequest(const char* method){
 #endif
 }
 
+bool WiFiServerManager::isShrReceived() {
+	return this->shrReceived;
+}
+
 bool WiFiServerManager::isAuthenticatedRequest(char* login, char* password){
 	if(strcmp(login,"")!=0 && strcmp(password,"")!=0){
 		return server->authenticate(login, password);
@@ -240,9 +244,18 @@ bool WiFiServerManager::isAuthenticatedRequest(char* login, char* password){
 }
 
 void WiFiServerManager::onEntityRequest(const char* method) {
-	Serial.print(FPSTR("------ER "));
+/*
+	Serial.print(FPSTR("Headers "));
+	Serial.print(server->headers());
+	Serial.print(FPSTR(" "));
 
-	if(server->hasHeader(HEADER_SREQUEST)) {
+	for(int i=0; i < server->headers(); i++) {
+		Serial.print(server->header(i));
+		Serial.print(FPSTR("; "));
+	}
+*/
+	if(server->hasArg(HEADER_SREQUEST)) {
+		this->shrReceived = true;
 		this->lastSrequestTime = millis();
 		Serial.print(FPSTR("------SHr "));
 	} else {

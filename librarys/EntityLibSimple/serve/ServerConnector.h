@@ -37,7 +37,11 @@ public:
 
 	void loop();
 
-	bool isLastRequestFromServerTimedOut(unsigned long lastFromServerRequestTime);
+	bool isLastRequestFromServerTimedOut(bool shrReceived, unsigned long lastFromServerRequestTime);
+
+	bool isTriggeredCheckRegistrationOnServer() const {
+		return triggeredCheckRegistrationOnServer;
+	}
 
 private:
 	bool initComplete = false;

@@ -55,7 +55,11 @@ public class DeviceConstants {
 	public static final String MESSAGE_SEVERITY_WARN  = "WARN";
 	public static final String MESSAGE_SEVERITY_ERROR = "ERROR";
 	
+	public static final String HEADER_SREQUEST = "SHr"; 
+	
 	public static final String ENTITY_FIELD_SWG_EQ_1 = "?swg=1";
+	public static final String ENTITY_FIELD_SERVER_REQUEST_EQ_1 = ENTITY_FIELD_SWG_EQ_1 
+			+ "&" + HEADER_SREQUEST +"=1";
 	//Entity standard key names
 	public static final String ENTITY_FIELD_ON = "on";
 	

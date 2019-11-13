@@ -116,15 +116,15 @@
 							<tool id="io.sloeber.tool.size.1835631585" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="io.sloeber.core.toolChain.release.753488358.738445082" name="/" resourcePath="libraries/EntityLibSimple/WiFi">
-						<toolChain id="io.sloeber.core.toolChain.release.260150921" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
-							<tool id="io.sloeber.tool.sketch.compiler.cpp.1951971077" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.853569457"/>
-							<tool id="io.sloeber.tool.compiler.c.1082018772" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.1130208547"/>
-							<tool id="io.sloeber.tool.sketch.compiler.s.611600295" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.859168688"/>
-							<tool id="io.sloeber.tool.ar.708558277" name="Arduino archiver" superClass="io.sloeber.tool.ar.728567215"/>
-							<tool id="io.sloeber.tool.combine.1328809635" name="Arduino combiner" superClass="io.sloeber.tool.combine.1608403184"/>
-							<tool id="io.sloeber.tool.objcopy.eep.665910631" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.913176526"/>
-							<tool id="io.sloeber.tool.size.244199813" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.1835631585"/>
+					<folderInfo id="io.sloeber.core.toolChain.release.753488358.1654219488" name="/" resourcePath="libraries/EntityLibSimple/WiFi">
+						<toolChain id="io.sloeber.core.toolChain.release.1487506458" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.2009370462" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.853569457"/>
+							<tool id="io.sloeber.tool.compiler.c.1092270795" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.1130208547"/>
+							<tool id="io.sloeber.tool.sketch.compiler.s.878098674" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.859168688"/>
+							<tool id="io.sloeber.tool.ar.1889954757" name="Arduino archiver" superClass="io.sloeber.tool.ar.728567215"/>
+							<tool id="io.sloeber.tool.combine.1521495407" name="Arduino combiner" superClass="io.sloeber.tool.combine.1608403184"/>
+							<tool id="io.sloeber.tool.objcopy.eep.1351350131" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.913176526"/>
+							<tool id="io.sloeber.tool.size.1109215149" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.1835631585"/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>

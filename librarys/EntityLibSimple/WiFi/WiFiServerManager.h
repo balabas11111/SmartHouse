@@ -34,6 +34,11 @@ public:
 	void loop();
 
 	unsigned long getLastSrequestTime();
+	bool isShrReceived();
+
+	void setShrReceived(bool shrReceived = false) {
+		this->shrReceived = shrReceived;
+	}
 
 protected:
 	void deployDefaultUrls();
@@ -66,6 +71,7 @@ private:
 	File fsUploadFile;
 	ESP8266HTTPUpdateServer* updateServer;
 
+	bool shrReceived = false;
 	unsigned long lastSrequestTime = 0;
 };
 

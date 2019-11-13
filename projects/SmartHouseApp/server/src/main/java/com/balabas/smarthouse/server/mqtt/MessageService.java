@@ -9,9 +9,10 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Sets;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -47,8 +48,7 @@ public class MessageService implements IMessageService {
 
 	private IMqttClient mqClient;
 
-	@Autowired
-	private Set<IMqttMessageSubscribtion> subscribers;
+	private Set<IMqttMessageSubscribtion> subscribers = Sets.newConcurrentHashSet();
 
 	@Override
 	public void publish(String topic, String message) throws MqttException {

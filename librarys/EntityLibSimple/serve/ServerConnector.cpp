@@ -59,6 +59,7 @@ void ServerConnector::checkRegistrationOnServer() {
 		this->registrationFailures = 0;
 		this->deviceRegistered = true;
 		this->triggeredCheckRegistrationOnServer = false;
+		this->nextReqTime = millis() + 60000;
 
 		if (onServerRegistered != nullptr) {
 			onServerRegistered();
@@ -153,7 +154,10 @@ void ServerConnector::loop() {
 	}
 }
 
-bool ServerConnector::isLastRequestFromServerTimedOut(
+bool ServerConnector::isLastRequestFromServerTimedOut(bool shrReceived,
 		unsigned long lastFromServerRequestTime) {
-	return !this->deviceRegistered || (lastFromServerRequestTime + LAST_FROM_SERVER_REQUEST_TIMED_OUT < millis());
+	if(shrReceived) {
+		return lastFromServerRequestTime + LAST_FROM_SERVER_REQUEST_TIMED_OUT < millis();
+	}
+	return !this->deviceRegistered	&& nextReqTime < millis();
 }
