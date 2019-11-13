@@ -63,5 +63,7 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 	IEntityFieldEnabledValue getEntityFieldEnabledValueByValueStr(String value);
 
 	boolean isButton();
+
+	String getMeasure();
 	
 }

@@ -51,7 +51,7 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	@Getter	@Setter
 	protected String descriptionField;
 
-	@Getter	@Setter
+	@Setter
 	protected String measure;
 	
 	@Getter	@Setter
@@ -122,6 +122,12 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 		}
 		String result = getValue().toString();
 		return result;
+	}
+	
+	@JsonIgnore
+	@Override
+	public String getMeasure() {
+		return measure==null?"":measure;
 	}
 
 	@JsonIgnore
