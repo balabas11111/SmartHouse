@@ -96,8 +96,8 @@ public:
 	virtual void doAppendFieldsSwg(JsonObject& swgJson) override{
 		EntityDescriptor::appendSwgEntityParams(swgJson, EMOJI_SUN_CLOUD);
 
-		EntityDescriptor::appendSwgFieldFloat(swgJson, DHT22_HUMIDITY, EDC_DESCR_HUMIDITY, EMOJI_DROPLET);
-		EntityDescriptor::appendSwgFieldFloat(swgJson, DHT22_TEMPERATURE, EDC_DESCR_TEMPERATURE, EMOJI_THERMOMETER);
+		EntityDescriptor::appendSwgFieldFloat(swgJson, DHT22_HUMIDITY, EDC_DESCR_HUMIDITY, EMOJI_DROPLET, EDC_MEASURE_PERCENT);
+		EntityDescriptor::appendSwgFieldFloat(swgJson, DHT22_TEMPERATURE, EDC_DESCR_TEMPERATURE, EMOJI_THERMOMETER, EDC_MEASURE_GRAD_CELSIUS);
 	}
 
 protected:

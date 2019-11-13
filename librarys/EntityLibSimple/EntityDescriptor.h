@@ -22,6 +22,7 @@
 #define EDC_FIELD_ACTION_DESCR "ad"
 #define EDC_FIELD_DESCR_FIELD  "df"
 #define EDC_FIELD_EMOJI        "img"
+#define EDC_FIELD_MEASURE      "msr"
 
 #define EDC_READ_ONLY    "ro"
 #define EDC_TIME_TO_LIVE "ttl"
@@ -83,6 +84,11 @@
 #define EDC_DESCR_MOVEMENT      "Движение"
 #define EDC_DESCR_MOVEMENT_ON   "ДВИЖЕНИЕ"
 #define EDC_DESCR_MOVEMENT_OFF  "Нет движения"
+//measurement
+#define EDC_MEASURE_GRAD_CELSIUS  "℃"
+#define EDC_MEASURE_PERCENT       "%"
+#define EDC_MEASURE_LUX           "Лкс"
+#define EDC_MEASURE_PASCAL        "Па"
 
 class EntityDescriptor {
 public:
@@ -95,7 +101,7 @@ public:
 			const char* description = nullptr, const char* fieldClass =
 					EDC_CLASS_VIEW_LABEL, const char* fieldViewClass =
 					EDC_CLASS_VIEW_LABEL, bool readOnly = true,
-			const char* emoji = nullptr, const char* descriptionField = nullptr,
+			const char* emoji = nullptr, const char* measure = nullptr, const char* descriptionField = nullptr,
 			int id = -1) {
 
 		JsonObject& fieldsJson =
@@ -109,6 +115,9 @@ public:
 		}
 		field[EDC_CLASS] = fieldClass;
 		field[EDC_CLASS_VIEW] = fieldViewClass;
+		if(measure!=nullptr) {
+			field[EDC_FIELD_MEASURE] = measure;
+		}
 		if (descriptionField != nullptr) {
 			field[EDC_FIELD_DESCR_FIELD] = descriptionField;
 		}
@@ -190,29 +199,29 @@ public:
 		}
 
 	static void appendSwgFieldInteger(JsonObject& swgJson, const char* name,
-			const char* description = nullptr, const char* emoji = nullptr,
+			const char* description = nullptr, const char* emoji = nullptr, const char* measure = nullptr,
 			bool readOnly = true, const char* descriptionField = nullptr) {
 
 		appendSwgField(swgJson, name, description, EDC_CLASS_INTEGER,
 				(readOnly ? EDC_CLASS_VIEW_LABEL : EDC_CLASS_VIEW_INPUT),
-				readOnly, emoji, descriptionField);
+				readOnly, emoji, measure, descriptionField);
 	}
 
 	static void appendSwgFieldFloat(JsonObject& swgJson, const char* name,
-			const char* description = nullptr, const char* emoji = nullptr,
+			const char* description = nullptr, const char* emoji = nullptr, const char* measure = nullptr,
 			bool readOnly = true, const char* descriptionField = nullptr) {
 
 		appendSwgField(swgJson, name, description, EDC_CLASS_FLOAT,
 				(readOnly ? EDC_CLASS_VIEW_LABEL : EDC_CLASS_VIEW_INPUT),
-				readOnly, emoji, descriptionField);
+				readOnly, emoji, measure, descriptionField);
 	}
 
 	static void appendSwgFieldFloatNameDescrFieldOnly(JsonObject& swgJson, const char* name,
-				const char* descriptionField = nullptr) {
+				const char* descriptionField = nullptr, const char* measure = nullptr) {
 
 		appendSwgField(swgJson, name, nullptr, EDC_CLASS_FLOAT,
 				EDC_CLASS_VIEW_LABEL,
-				true, nullptr, descriptionField);
+				true, nullptr, measure, descriptionField);
 	}
 
 
@@ -222,7 +231,7 @@ public:
 
 		appendSwgField(swgJson, name, description, EDC_CLASS_STRING,
 				(readOnly ? EDC_CLASS_VIEW_LABEL : EDC_CLASS_VIEW_INPUT),
-				readOnly, emoji, descriptionField);
+				readOnly, emoji, nullptr, descriptionField);
 	}
 
 	static void appendEnabledValue(JsonObject& swgJson, const char* name,

@@ -52,6 +52,9 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	protected String descriptionField;
 
 	@Getter	@Setter
+	protected String measure;
+	
+	@Getter	@Setter
 	@Enumerated(EnumType.STRING)
 	protected EntityFieldClassView viewClass;
 

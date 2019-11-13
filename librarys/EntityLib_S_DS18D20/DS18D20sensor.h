@@ -122,7 +122,7 @@ public:
 
 		for (uint8_t i = 0; i < itemCount; i++) {
 			EntityDescriptor::appendSwgFieldString(swgJson, items[i].uidDescrKey);
-			EntityDescriptor::appendSwgFieldFloatNameDescrFieldOnly(swgJson, items[i].uidTempKey, items[i].uidDescrKey);
+			EntityDescriptor::appendSwgFieldFloatNameDescrFieldOnly(swgJson, items[i].uidTempKey, items[i].uidDescrKey, EDC_MEASURE_GRAD_CELSIUS);
 		}
 	}
 

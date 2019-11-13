@@ -24,6 +24,7 @@ import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassC
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_FIELD_EMOJI;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_FIELD_ENABLED_VALUES;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_FIELD_NAME;
+import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_FIELD_MEASURE;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_FIELD_ID;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_READ_ONLY;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EMPTY_STR;
@@ -549,6 +550,7 @@ public class SmartHouseItemBuildService {
 		boolean readOnly = booleanFromString(
 				fieldDecriptor.optString(EDC_READ_ONLY, ENTITY_FIELD_ID.equals(entityFieldName) ? TRUE : FALSE));
 		Emoji emoji = Emoji.getByCode(fieldDecriptor.optString(EDC_FIELD_EMOJI, null));
+		String measure = fieldDecriptor.optString(EDC_FIELD_MEASURE, null);
 
 		EntityField entityField = Optional.ofNullable((EntityField) entity.getEntityField(entityFieldName))
 				.orElse(createEntityFieldByClass(fieldClassType));
@@ -567,6 +569,7 @@ public class SmartHouseItemBuildService {
 		entityField.setReadOnly(readOnly);
 		entityField.setEmoji(emoji);
 		entityField.setActive(true);
+		entityField.setMeasure(measure);
 
 		try {
 			if (!(ENTITY_FIELD_DESCRIPTION.equals(entityField.getTemplateName())

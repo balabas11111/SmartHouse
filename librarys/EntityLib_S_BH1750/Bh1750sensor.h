@@ -63,7 +63,7 @@ public:
 	virtual void doAppendFieldsSwg(JsonObject& swgJson) override{
 		EntityDescriptor::appendSwgEntityParams(swgJson, EMOJI_SUN_WITH_FACE);
 
-		EntityDescriptor::appendSwgFieldFloat(swgJson, BH1750_LUX, EDC_DESCR_LIGHT_LEVEL, EMOJI_DIM_BUTTON);
+		EntityDescriptor::appendSwgFieldFloat(swgJson, BH1750_LUX, EDC_DESCR_LIGHT_LEVEL, EMOJI_DIM_BUTTON, EDC_MEASURE_LUX);
 	}
 
 protected:

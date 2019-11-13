@@ -84,7 +84,7 @@ public class MessageService implements IMessageService {
 
 			existing = subscriber;
 		} else {
-			log.debug("Subscriber updated " + message);
+			log.info("Subscriber updated " + message);
 		}
 
 		subscribe(existing);

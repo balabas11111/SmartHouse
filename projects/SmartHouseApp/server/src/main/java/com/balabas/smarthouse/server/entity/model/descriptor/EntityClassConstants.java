@@ -31,6 +31,7 @@ public class EntityClassConstants {
 	public static final String EDC_FIELD_EMOJI            = "img";
 	public static final String EDC_FIELD_DESCR_FIELD      = "df";
 	public static final String EDC_FIELD_ACTION_DESCR     = "ad";
+	public static final String EDC_FIELD_MEASURE          = "msr";
 	
 	public static final String EDC_FIELD_BOOLEAN_VALUE_ON  = "true";
 	public static final String EDC_FIELD_BOOLEAN_VALUE_OFF = "false";
