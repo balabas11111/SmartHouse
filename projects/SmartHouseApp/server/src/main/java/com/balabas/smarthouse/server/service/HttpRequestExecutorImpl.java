@@ -2,23 +2,16 @@ package com.balabas.smarthouse.server.service;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.List;
 import java.util.Map;
 
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
-import com.balabas.smarthouse.server.entity.model.Device;
-
-import lombok.extern.log4j.Log4j2;
 
 @Service
 public class HttpRequestExecutorImpl implements HttpRequestExecutor {

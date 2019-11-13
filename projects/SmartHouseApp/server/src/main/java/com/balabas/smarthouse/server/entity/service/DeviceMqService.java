@@ -1,20 +1,5 @@
 package com.balabas.smarthouse.server.entity.service;
 
-import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ID;
-import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_IP;
-import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_DATA;
-import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ROOT;
-
-import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_REGISTRATION_RESULT;
-import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_TOKEN;
-import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_URL_DATA;
-import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_URL_ROOT;
-import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_STATUS;
-
-import static com.balabas.smarthouse.server.DeviceConstants.HTTP_PREFFIX;
-
-import javax.annotation.PostConstruct;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,62 +27,10 @@ public class DeviceMqService implements IDeviceMqService {
 	private boolean enabled;
 
 	@Autowired
-	private DeviceSecurityService securityService;
-
-	@Autowired
 	private IMessageService messageService;
 
 	@Autowired
 	private IDeviceManageService deviceService;
-
-	@PostConstruct
-	public void initService() {
-		// this.enabled = !mock && enabled;
-	}
-
-	@Override
-	public boolean onRegistrationTopicMessageReceived(String message) {
-		try {
-			log.info("register Device MQ " + message);
-			JSONObject requestJson = new JSONObject(message);
-
-			if (requestJson.has(ENTITY_FIELD_ID) && requestJson.has(ENTITY_FIELD_IP)) {
-
-				String deviceId = requestJson.getString(ENTITY_FIELD_ID);
-				String ip = requestJson.getString(ENTITY_FIELD_IP);
-
-				if (requestJson.has(ENTITY_FIELD_ROOT) && requestJson.has(ENTITY_FIELD_DATA)) {
-					JSONObject dataJson = new JSONObject();
-
-					if (requestJson.has(ENTITY_FIELD_ROOT)) {
-						String tmp = requestJson.getString(ENTITY_FIELD_ROOT);
-
-						if (tmp != null && !tmp.isEmpty() && !tmp.startsWith(HTTP_PREFFIX)) {
-							tmp = HTTP_PREFFIX + ip + tmp;
-							dataJson.put(DEVICE_FIELD_URL_ROOT, tmp);
-						}
-					}
-					if (requestJson.has(ENTITY_FIELD_DATA)) {
-						String tmp = requestJson.getString(ENTITY_FIELD_DATA);
-
-						if (tmp != null && !tmp.isEmpty() && !tmp.startsWith(HTTP_PREFFIX)) {
-							tmp = HTTP_PREFFIX + ip + tmp;
-							dataJson.put(DEVICE_FIELD_URL_DATA, tmp);
-						}
-					}
-
-				}
-
-				initTopicsToFromDevice(deviceId);
-
-				return true;
-			}
-
-		} catch (Throwable t) {
-			log.error(t);
-		}
-		return false;
-	}
 
 	@Override
 	public void initTopicsToFromDevice(String deviceId) {
@@ -111,25 +44,13 @@ public class DeviceMqService implements IDeviceMqService {
 		if (device != null) {
 			log.info("Init to/from device topics " + deviceId);
 
-			String response = constructRegisterResponse(deviceId).toString();
+			String topicName = messageService.getFromDeviceTopicId(device.getName());
 
-			subscribeFromDeviceTopic(device);
-			publishToDeviceTopic(deviceId, response);
-		} else {
-			// TODO: implement device registration here
-			log.error("Unknown device subscribe request " + deviceId);
+			messageService.registerSubscriberOrResubscribeExisting(new DataDeviceSubscribtion(topicName, this));
+
+			deviceService.getDeviceByName(device.getName()).getEntities().stream()
+					.forEach(entity -> subscribeFromDeviceEntityTopic(entity));
 		}
-	}
-
-	@Override
-	public void subscribeFromDeviceTopic(IDevice device) {
-
-		String topicName = messageService.getFromDeviceTopicId(device.getName());
-
-		messageService.registerSubscriberOrResubscribeExisting(new DataDeviceSubscribtion(topicName, this));
-
-		deviceService.getDeviceByName(device.getName()).getEntities().stream()
-				.forEach(entity -> subscribeFromDeviceEntityTopic(entity));
 	}
 
 	@Override
@@ -138,27 +59,10 @@ public class DeviceMqService implements IDeviceMqService {
 		return messageService.publishToTopic(topicName, message);
 	}
 
-	public void initTopicsToFromDeviceEntity(Entity entity) {
-		subscribeFromDeviceEntityTopic(entity);
-
-		publishToDeviceTopic(entity.getGroup().getDevice().getName(),
-				new JSONObject().put(ENTITY_FIELD_ID, entity.getRemoteId()).put(ENTITY_FIELD_STATUS, 200).toString());
-	}
-
 	public void subscribeFromDeviceEntityTopic(Entity entity) {
 		String topicName = messageService.getFromDeviceEntityTopicId(entity.getGroup().getDevice().getName(),
 				entity.getName());
 		messageService.registerSubscriberOrResubscribeExisting(new DataEntitySubscribtion(topicName, entity, this));
-	}
-
-	protected JSONObject constructRegisterResponse(String deviceId) {
-		JSONObject result = new JSONObject().put(ENTITY_DEVICE_DEVICE_REGISTRATION_RESULT, new JSONObject())
-				.getJSONObject(ENTITY_DEVICE_DEVICE_REGISTRATION_RESULT);
-
-		result.put(DEVICE_FIELD_TOKEN, securityService.getServerKey());
-		result.put(ENTITY_FIELD_STATUS, "200");
-
-		return result;
 	}
 
 	public void onDeviceEntityDataReceived(Entity entity, String message) {

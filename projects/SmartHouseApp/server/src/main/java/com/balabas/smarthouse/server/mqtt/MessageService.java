@@ -9,7 +9,6 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,10 +17,8 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
-public class MessageService implements InitializingBean, IMessageService {
+public class MessageService implements IMessageService {
 
-	public static final String MQTT_TOPIC_REGISTRATION = "fromDevice/register";
-	// public static final String MQTT_TOPIC_DATA = "fromDevice/data";
 	public static final String MQTT_TO_DEVICE_TOPIC = "to/%s";
 	public static final String MQTT_FROM_DEVICE_TOPIC = "from/%s";
 
@@ -54,17 +51,6 @@ public class MessageService implements InitializingBean, IMessageService {
 	private Set<IMqttMessageSubscribtion> subscribers;
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
-		//this.enabled = !mock && enabled;
-		
-		if(enabled){
-			subscribers.stream().forEach(this::subscribe);
-		} else{
-			log.error("MQ connection disabled!");
-		}
-	}
-
-	@Override
 	public void publish(String topic, String message) throws MqttException {
 		if (!enabled) {
 			log.error("Failed publish message");
@@ -94,7 +80,7 @@ public class MessageService implements InitializingBean, IMessageService {
 		if (!subscribers.contains(subscriber) && existing == null) {
 
 			subscribers.add(subscriber);
-			log.debug("Subscriber registered " + message);
+			log.info("Subscriber registered " + message);
 
 			existing = subscriber;
 		} else {

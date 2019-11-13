@@ -1,14 +1,10 @@
 package com.balabas.smarthouse.server.service;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-
-import com.balabas.smarthouse.server.entity.model.Device;
 
 public interface HttpRequestExecutor {
 
