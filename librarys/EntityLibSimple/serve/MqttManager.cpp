@@ -11,9 +11,6 @@ MqttManager::MqttManager(SettingsStorage* conf) {
 	Serial.print(FPSTR("constructor MqttManager"));
 
 	this->conf = conf;
-	/*this->toServerTopic = strdup((String(MQTT_FROM_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
-	this->toDeviceTopic = strdup((String(MQTT_TO_DEVICE_TOPIC_TMPL) + conf->deviceId()).c_str());
-*/
 	this->toServerTopic = String(conf->deviceId()) + MQTT_SLASH_SUFFIX;
 	this->toDeviceTopic = strdup((String(MQTT_TO_DEVICE_TOPIC) + conf->deviceId()).c_str());
 	this->fromDeviceTopic = strdup((String(MQTT_FROM_DEVICE_TOPIC) + conf->deviceId()).c_str());

@@ -242,6 +242,13 @@ bool WiFiServerManager::isAuthenticatedRequest(char* login, char* password){
 void WiFiServerManager::onEntityRequest(const char* method) {
 	Serial.print(FPSTR("------ER "));
 
+	if(server->hasHeader(HEADER_SREQUEST)) {
+		this->lastSrequestTime = millis();
+		Serial.print(FPSTR("------SHr "));
+	} else {
+		Serial.print(FPSTR("------ER "));
+	}
+
 	if(!authenticateRequest(method)){
 		Serial.println(FPSTR("request authentication"));
 		return server->requestAuthentication();
@@ -280,4 +287,8 @@ void WiFiServerManager::onEntityRequest(const char* method) {
 
 void WiFiServerManager::loop() {
 	this->server->handleClient();
+}
+
+unsigned long WiFiServerManager::getLastSrequestTime() {
+	return this->lastSrequestTime;
 }

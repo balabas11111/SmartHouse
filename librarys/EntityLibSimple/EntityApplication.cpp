@@ -60,7 +60,8 @@ void EntityApplication::construct(
 void EntityApplication::begin() {
 	initWithWiFi(nullptr);
 	updateEntities(true);
-	checkServerRegistration();
+	//checkServerRegistration();
+	this->getServerConnector()->triggerCheckRegistrationOnServer();
 }
 
 void EntityApplication::init(bool initSerial,
@@ -136,10 +137,14 @@ void EntityApplication::initWithoutWiFi(bool initI2C, uint8_t clockPin,
 void EntityApplication::loop() {
 	bool updated = this->entityUpdateManager->updateEntities();
 
-	if (updated) {
-		this->getServerConnector()->triggerCheckConnection();
-		this->getServerConnector()->loop();
+	bool deviceRegistrationTimedOut =
+			this->getServerConnector()->isLastRequestFromServerTimedOut(this->wifiServerManager->getLastSrequestTime());
+
+	if (updated || deviceRegistrationTimedOut) {
+		this->getServerConnector()->triggerCheckRegistrationOnServer();
 	}
+
+	this->getServerConnector()->loop();
 
 	EntityJsonRequestResponse* buffer = this->mqttManager->getBuffer();
 
@@ -223,14 +228,7 @@ WiFiServerManager* EntityApplication::getWifiServerManager() {
 ServerConnector* EntityApplication::getServerConnector() {
 	return this->serverConnector;
 }
-
 #endif
-
-void EntityApplication::checkServerRegistration() {
-#ifndef SETTINGS_SERVER_CONNECTION_DISABLED
-	this->getServerConnector()->checkConnection();
-#endif
-}
 
 DataSelector* EntityApplication::getDataSelector() {
 	return this->defaultDataSelector;

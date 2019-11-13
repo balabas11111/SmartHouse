@@ -15,6 +15,7 @@
 #define HEADER_CONTENT_TYPE           "Content-Type"
 #define HEADER_LOCATION               "Location"
 #define HEADER_AUTHORIZATION          "Authorization"
+#define HEADER_SREQUEST               "SHr"
 
 //http Root URLs
 #define URL_ROOT  "/"

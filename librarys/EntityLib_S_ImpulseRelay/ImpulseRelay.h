@@ -71,7 +71,7 @@ public:
 	}
 
 	virtual void doAppendFieldsSwg(JsonObject& swgJson) override{
-		EntityDescriptor::appendSwgEntityParams(swgJson, EMOJI_DETECTIVE);
+		EntityDescriptor::appendSwgEntityParams(swgJson, EMOJI_BULB);
 		EntityDescriptor::appendSwgFieldBooleanOnOff(swgJson, ON_FIELD, EDC_DESCR_STATE, emoji);
 	}
 

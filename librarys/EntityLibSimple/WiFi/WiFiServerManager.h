@@ -33,6 +33,8 @@ public:
 	void begin();
 	void loop();
 
+	unsigned long getLastSrequestTime();
+
 protected:
 	void deployDefaultUrls();
 	void deployStaticFiles();
@@ -63,6 +65,8 @@ private:
 
 	File fsUploadFile;
 	ESP8266HTTPUpdateServer* updateServer;
+
+	unsigned long lastSrequestTime = 0;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_WIFI_WIFISERVERMANAGER_H_ */

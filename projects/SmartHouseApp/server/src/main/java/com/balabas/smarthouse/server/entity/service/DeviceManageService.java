@@ -579,20 +579,13 @@ public class DeviceManageService implements IDeviceManageService {
 		
 		return getDeviceById(deviceId).getEntities().stream()
 				.flatMap(entity -> entity.getEntityFields().stream())
+				.filter(IEntityField::isNotCalculated)
 				.filter(SmartHouseItemBuildService::isFieldValueSaveAble)
 				.sorted(ItemAbstract::compareByName)
 				.collect(Collectors.toList());
 		
 	}
-	/*
-	public void printPirValue() {
-		IDevice device = getDeviceByName("ESP_962570");
-		IEntity entity = device.getEntity("PIR");
-		IEntityField moveField = entity.getEntityField("move");
-		
-		System.out.println("pir="+moveField.getValueStr());
-	}
-	*/
+
 	@Override
 	public List<EntityFieldValue> getLastEntityFieldValuesForDevice(Long deviceId) {
 		return entityFieldService.getLastEntityFieldValuesForDevice(deviceId);

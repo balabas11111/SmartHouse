@@ -40,7 +40,7 @@ bool ServerConnector::isConnected() {
 	return WiFi.status() == WL_CONNECTED;
 }
 
-void ServerConnector::checkConnection() {
+void ServerConnector::checkRegistrationOnServer() {
 	requestRuns = true;
 
 	unsigned long start = millis();
@@ -54,15 +54,14 @@ void ServerConnector::checkConnection() {
 	http.end();
 
 	if (httpCode == 200 || httpCode == 201) {
-		//Serial.println(FPSTR("Register device...ok"));
-		//String tempServerKey = http.getString();
+		Serial.println(FPSTR("Registered...ok"));
+
 		this->registrationFailures = 0;
 		this->deviceRegistered = true;
+		this->triggeredCheckRegistrationOnServer = false;
 
 		if (onServerRegistered != nullptr) {
 			onServerRegistered();
-		} else {
-			//Serial.println("No on server register listener");
 		}
 	} else {http.end();
 		this->deviceRegistered = false;
@@ -136,8 +135,11 @@ void ServerConnector::checkCancelRequestPostPoned() {
 	}
 }
 
-void ServerConnector::triggerCheckConnection() {
-	this->triggeredCheckConnectionRequest = true;
+void ServerConnector::triggerCheckRegistrationOnServer() {
+	if(!this->triggeredCheckRegistrationOnServer) {
+		Serial.println(FPSTR("REGISTRATION triggered"));
+	}
+	this->triggeredCheckRegistrationOnServer = true;
 }
 
 bool ServerConnector::isRequestEnabled() {
@@ -146,7 +148,12 @@ bool ServerConnector::isRequestEnabled() {
 
 void ServerConnector::loop() {
 	checkCancelRequestPostPoned();
-	if (triggeredCheckConnectionRequest && !requestRuns && isRequestEnabled()) {
-		checkConnection();
+	if (this->triggeredCheckRegistrationOnServer && !requestRuns && isRequestEnabled()) {
+		checkRegistrationOnServer();
 	}
+}
+
+bool ServerConnector::isLastRequestFromServerTimedOut(
+		unsigned long lastFromServerRequestTime) {
+	return !this->deviceRegistered || (lastFromServerRequestTime + LAST_FROM_SERVER_REQUEST_TIMED_OUT < millis());
 }

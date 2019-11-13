@@ -24,22 +24,20 @@
 #define SMART_HOUSE_SERVER_URL_REGISTER            "/api/v1/devices/register?deviceId="
 #define SMART_HOUSE_SERVER_URL_DATA_CHANGED        "/api/v1/devices/dataChanged?deviceId="
 
+#define LAST_FROM_SERVER_REQUEST_TIMED_OUT         90000
+
 class ServerConnector {
 public:
 	ServerConnector(SettingsStorage* conf, std::function<void(void)> onServerRegistered);
 	virtual ~ServerConnector(){};
 
-	void triggerCheckConnection();
-
-	void checkConnection();
+	void triggerCheckRegistrationOnServer();
 
 	void dispatchDataChanged();
 
 	void loop();
 
-	bool isConnected();
-
-	bool isRequestEnabled();
+	bool isLastRequestFromServerTimedOut(unsigned long lastFromServerRequestTime);
 
 private:
 	bool initComplete = false;
@@ -54,11 +52,15 @@ private:
 	bool requestPostPoned = false;
 	bool requestRuns = false;
 
-	bool triggeredCheckConnectionRequest = false;
+	bool triggeredCheckRegistrationOnServer = false;
 	unsigned long nextReqTime =0;
 
+	void checkRegistrationOnServer();
 	void setRequestPostPoned(unsigned long delay);
 	void checkCancelRequestPostPoned();
+
+	bool isConnected();
+	bool isRequestEnabled();
 
 	std::function<void(void)> onServerRegistered;
 

@@ -81,8 +81,6 @@ public:
 	ServerConnector* getServerConnector();
 #endif
 
-	void checkServerRegistration();
-
 	DataSelector* getDataSelector();
 	Notifier* getDefaultNotifier();
 

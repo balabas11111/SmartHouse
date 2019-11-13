@@ -20,78 +20,9 @@ import com.balabas.smarthouse.server.entity.model.Device;
 
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Service
 public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 
-	@Override
-	public ResponseEntity<String> executeGetRequest(String url, Map<String, String> params) throws UnsupportedEncodingException {
-		RestTemplate restTemplate = new RestTemplate();
-		String execUrl = url + getParamsString(params);
-		
-		log.info("GET "+execUrl);
-		
-		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
-        SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) restTemplate
-                .getRequestFactory();
-        rf.setReadTimeout(5000);
-        rf.setConnectTimeout(5000);
-		
-		return restTemplate.getForEntity(execUrl, String.class);
-	}
-	
-	@Override
-	public ResponseEntity<Device> executeGetRequestDevice(String url, Map<String, String> params) throws UnsupportedEncodingException {
-		RestTemplate restTemplate = new RestTemplate();
-		String execUrl = url + getParamsString(params);
-		
-		log.info("GET "+execUrl);
-		
-		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
-        SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) restTemplate
-                .getRequestFactory();
-        rf.setReadTimeout(5000);
-        rf.setConnectTimeout(5000);
-		
-		return restTemplate.getForEntity(execUrl, Device.class);
-	}
-
-	@Override
-	public ResponseEntity<List<Device>> executeGetRequestDeviceList(String url, Map<String, String> params)
-			throws UnsupportedEncodingException {
-		RestTemplate restTemplate = new RestTemplate();
-		String execUrl = url + getParamsString(params);
-        
-		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
-        SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) restTemplate
-                .getRequestFactory();
-        rf.setReadTimeout(5000);
-        rf.setConnectTimeout(5000);
-		
-        return (restTemplate.exchange(
-        		execUrl,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Device>>(){}));
-	}
-
-	@Override
-	public ResponseEntity<String> executePostRequest(String url, String body) throws UnsupportedEncodingException {
-		RestTemplate restTemplate = new RestTemplate();
-		HttpHeaders headers = new HttpHeaders();
-	    headers.setContentType(MediaType.APPLICATION_JSON);
-	    
-		HttpEntity<String> request = new HttpEntity<>(body, headers);
-		
-		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
-        SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) restTemplate
-                .getRequestFactory();
-        rf.setReadTimeout(5000);
-        rf.setConnectTimeout(5000);
-        
-		return restTemplate.postForEntity(url, request, String.class);
-	}
-	
 	public static String getParamsString(Map<String, String> params) throws UnsupportedEncodingException {
 		StringBuilder result = new StringBuilder();
 
