@@ -28,6 +28,11 @@ public interface IEntityFieldService {
 	List<EntityFieldValue> getEntityFieldValuesForEntityField(Long entityFieldId);
 	
 	List<EntityFieldValue> getEntityFieldValuesForEntityField(Long entityFieldId, Date afterDate);
-
 	
+	List<EntityFieldValue> getEntityFieldValuesForEntityField(Long entityFieldId, Date afterDate, Date beforeDate);
+
+	Date selectMinEntityFieldValueDate(Long entityFieldId);
+
+	Date selectMaxEntityFieldValueDate(Long entityFieldId);
+
 }

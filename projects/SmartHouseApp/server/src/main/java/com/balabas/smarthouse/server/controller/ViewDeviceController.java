@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -73,7 +74,9 @@ public class ViewDeviceController {
 	}
 
 	@GetMapping("/entityField")
-	public String getEntityField(@RequestParam(name = "id", required = false) Long entityFieldId, Model model) {
+	public String getEntityField(@RequestParam(name = "id", required = false) Long entityFieldId,
+			@RequestParam(name = "afterDate", required = false) Long afterDate,
+			@RequestParam(name = "beforeDate", required = false) Long beforeDate, Model model) {
 
 		if (entityFieldId==null || entityFieldId==0) {
 			throw new IllegalArgumentException("Bad arguments");
@@ -88,7 +91,21 @@ public class ViewDeviceController {
 		
 		IDevice device = entityField.getEntity().getDevice();
 
-		List<EntityFieldValue> values = entityFieldService.getEntityFieldValuesForEntityField(entityField.getId());
+		List<EntityFieldValue> values = null;
+		
+		if(afterDate!=null && beforeDate!=null) {
+			Date startDate =new Date(afterDate);
+			Date endDate =new Date(beforeDate);
+			
+			values = entityFieldService.getEntityFieldValuesForEntityField(entityField.getId(), startDate, endDate);
+		} else if(afterDate!=null && beforeDate== null) {
+			Date startDate =new Date(afterDate);
+			
+			values = entityFieldService.getEntityFieldValuesForEntityField(entityField.getId(), startDate);
+		} else {
+			values = entityFieldService.getEntityFieldValuesForEntityField(entityField.getId());
+		}
+		
 		
 		JSONArray jsonData = new JSONArray();
 		
@@ -99,13 +116,15 @@ public class ViewDeviceController {
 		
 		String jsonStr = jsonData.toString();
 		
+		model.addAttribute("afterDate", afterDate);
+		model.addAttribute("beforeDate", beforeDate);
 		model.addAttribute("serverName", serverName);
 		model.addAttribute("device", device);
 		model.addAttribute("entityField", entityField);
 		model.addAttribute("values", values);
 		
 		model.addAttribute("chartDataHeader", entityField.getEmoji() + " " + entityField.getDescriptionByDescriptionField());
-		model.addAttribute("chartDataY", entityField.getName());
+		model.addAttribute("chartDataY", entityField.getName() + " " + entityField.getMeasure());
 		model.addAttribute("chartData", jsonStr);
 
 		return "entityFields/history.html";

@@ -36,6 +36,7 @@ public class DeviceConstants {
 	public static final String ENTITY_FIELD_FIELDS_ARRAY = "fa";
 	public static final String ENTITY_FIELD_KEYS_ARRAY = "ka";
 	public static final String ENTITY_FIELD_ITEM_CLASS = "ic";
+	public static final String ENTITY_FIELD_MQ = "mq";
 	
 	public static final String ENTITY_FIELD_ID = "id";
 	public static final String ENTITY_FIELD_IP = "ip";

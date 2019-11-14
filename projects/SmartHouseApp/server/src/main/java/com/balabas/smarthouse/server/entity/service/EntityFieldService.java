@@ -88,6 +88,11 @@ public class EntityFieldService implements IEntityFieldService {
 	}
 	
 	@Override
+	public List<EntityFieldValue> getEntityFieldValuesForEntityField(Long entityFieldId, Date afterDate, Date beforeDate) {
+		return entityFieldValueRepository.getEntityFieldValuesForEntityField(entityFieldId, afterDate, beforeDate);
+	}
+	
+	@Override
 	public List<EntityFieldValue> getLastEntityFieldValuesForDevice(Long deviceId) {
 		return entityFieldValueRepository.getLastEntityFieldValuesForDevice(deviceId);
 	}
@@ -100,6 +105,16 @@ public class EntityFieldService implements IEntityFieldService {
 	@Override
 	public void deleteEntityFieldValuesForDevice(Long deviceId) {
 		entityFieldValueRepository.deleteEntityFieldValuesForDevice(deviceId);
+	}
+	
+	@Override
+	public Date selectMinEntityFieldValueDate(Long entityFieldId) {
+		return entityFieldValueRepository.selectMinEntityFieldValueDate(entityFieldId);
+	}
+	
+	@Override
+	public Date selectMaxEntityFieldValueDate(Long entityFieldId) {
+		return entityFieldValueRepository.selectMaxEntityFieldValueDate(entityFieldId);
 	}
 
 }

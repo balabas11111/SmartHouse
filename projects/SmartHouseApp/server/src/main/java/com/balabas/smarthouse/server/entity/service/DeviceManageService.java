@@ -311,7 +311,7 @@ public class DeviceManageService implements IDeviceManageService {
 					tmp = Joiner.on(") ").withKeyValueSeparator("(").join(changedValuesStrMap) + ")";
 					
 					//printPirValue();
-					log.info("Values changed = " + changedValues.size() + " device=" + device.getName() +" VALUES " + tmp);
+					log.info("Values changed = " + changedValues.size() + " device=" + device.getDescription() +" VALUES " + tmp);
 				}
 				
 				entityFieldService.saveAll(changedValues);
@@ -358,7 +358,7 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Override
 	public List<Device> getDevicesRequireUpdate() {
-		return getDevices().stream().filter(dev -> dev.isRegistered() /*&& !dev.isInitialized()*/ && checkItemRequiresUpdate(dev, dev))
+		return getDevices().stream().filter(dev -> dev.isRegistered() && (!dev.isInitialized() || dev.getTimer().isActionForced())/*&& checkItemRequiresUpdate(dev, dev)*/)
 				.collect(Collectors.toList());
 	}
 
@@ -378,7 +378,6 @@ public class DeviceManageService implements IDeviceManageService {
 			requestDevicesValues(device, null);
 		}
 	}
-
 	
 	@Override
 	public void requestDevicesValues(Device device, Group group) {

@@ -51,6 +51,7 @@ void EntityManager::init() {
 			Serial.print(FPSTR("init "));
 			Serial.println(entity->getName());
 			entity->init();
+			this->hasTopicConnection = entity->isHasTopicConnection() || hasTopicConnection;
 			this->initOk++;
 		}else{
 			Serial.print(FPSTR("validation FAILED "));
@@ -161,7 +162,9 @@ bool EntityManager::executeMethodOnAll(JsonObject& params,
 	bool changed = false;
 
 	for (Entity* entity : this->entities) {
-		changed = executeMethodOnEntity(params, response, entity, method) || changed;
+		if(!entity->isNoGroupGet()) {
+			changed = executeMethodOnEntity(params, response, entity, method) || changed;
+		}
 	}
 
 	return changed;
@@ -446,4 +449,8 @@ void EntityManager::putToBuffer(const char* group, const char* name,
 
 		obj[key] = value;
 	}
+}
+
+bool EntityManager::isHasTopicConnection() {
+	return this->hasTopicConnection;
 }

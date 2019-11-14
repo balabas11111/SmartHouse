@@ -105,9 +105,9 @@ public:
 
 	void markEntityAsSaveRequiredIfTrue(bool value);
 
-	bool hasTopic(){
-		return this->hasTopicConnection;
-	}
+	bool isHasTopicConnection();
+
+	bool isNoGroupGet();
 
 protected:
 	//String constructParams = "";
@@ -116,8 +116,9 @@ protected:
 	bool saveRequired;
 
 	bool hasGet;bool hasPost;bool applicationDispatcher;
-	bool hasTopicConnection = true;
 	bool canLoad;bool canSave;
+	bool hasTopicConnection = false;
+	bool noGroupGet = false;
 
 	int id;
 	const char* group;

@@ -78,13 +78,13 @@ public class Device extends ItemAbstract implements IDevice {
 	public IEntityField getEntityField(Long entityId, Long entityFieldId) {
 		return getEntity(entityId).getEntityField(entityFieldId);
 	}
-	
+	/*
 	@Override
 	public Entity getEntityByRemoteId(int remoteId) {
 		return getGroups().stream().flatMap(group -> group.getEntities().stream())
 				.filter(e -> e.getRemoteId() == remoteId).findFirst().orElse(null);
 	}
-
+*/
 	@Override
 	public boolean isRegistered() {
 		return state != null && state.compareTo(State.REGISTERED) >= 0;

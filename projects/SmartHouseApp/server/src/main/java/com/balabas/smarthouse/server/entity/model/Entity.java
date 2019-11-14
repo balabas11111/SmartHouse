@@ -17,7 +17,6 @@ import javax.persistence.Transient;
 
 import org.thymeleaf.util.StringUtils;
 
-import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -33,9 +32,8 @@ import lombok.EqualsAndHashCode;
 @javax.persistence.Entity
 public class Entity extends ItemAbstract implements IEntity {
 
-	private int remoteId;
+	private boolean hasMq;
 	private String descriptionField;
-	private EntityClass renderer;
 
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)

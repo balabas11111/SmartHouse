@@ -81,6 +81,8 @@ public:
 
 	void putToBuffer(const char* group, const char* name, const char* key, JsonVariant value);
 
+	bool isHasTopicConnection();
+
 protected:
 	std::list<Entity*> entities;
 	int count=0;
@@ -133,6 +135,8 @@ protected:
 	SettingsStorage* conf;
 
 	EntityJsonRequestResponse* buffer;
+
+	bool hasTopicConnection = false;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_ENTITYMANAGER_H_ */

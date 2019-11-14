@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.mqtt.IMessageService;
 import com.balabas.smarthouse.server.mqtt.subscribers.DataDeviceSubscribtion;
 import com.balabas.smarthouse.server.mqtt.subscribers.DataEntitySubscribtion;
@@ -42,14 +43,25 @@ public class DeviceMqService implements IDeviceMqService {
 		IDevice device = deviceService.getDeviceByName(deviceId);
 
 		if (device != null) {
-			log.info("Init to/from device topics " + deviceId);
-
-			String topicName = messageService.getFromDeviceTopicId(device.getName());
-
-			messageService.registerSubscriberOrResubscribeExisting(new DataDeviceSubscribtion(topicName, this));
-
-			deviceService.getDeviceByName(device.getName()).getEntities().stream()
-					.forEach(entity -> subscribeFromDeviceEntityTopic(entity));
+			
+			boolean hasDeviceTopic = false;
+			for(IEntity entity : device.getEntities()) {
+				hasDeviceTopic = entity.isHasMq() || hasDeviceTopic;
+			}
+			
+			if(hasDeviceTopic) {
+				log.info("Init to/from device topics " + deviceId);
+	
+				String topicName = messageService.getFromDeviceTopicId(device.getName());
+	
+				messageService.registerSubscriberOrResubscribeExisting(new DataDeviceSubscribtion(topicName, this));
+	
+				deviceService.getDeviceByName(device.getName()).getEntities().stream()
+						.filter(IEntity::isHasMq)
+						.forEach(entity -> subscribeFromDeviceEntityTopic(entity));
+			} else {
+				log.info("Device has no topics");
+			}
 		}
 	}
 
@@ -60,9 +72,9 @@ public class DeviceMqService implements IDeviceMqService {
 	}
 
 	public void subscribeFromDeviceEntityTopic(Entity entity) {
-		String topicName = messageService.getFromDeviceEntityTopicId(entity.getGroup().getDevice().getName(),
-				entity.getName());
-		messageService.registerSubscriberOrResubscribeExisting(new DataEntitySubscribtion(topicName, entity, this));
+			String topicName = messageService.getFromDeviceEntityTopicId(entity.getGroup().getDevice().getName(),
+					entity.getName());
+			messageService.registerSubscriberOrResubscribeExisting(new DataEntitySubscribtion(topicName, entity, this));
 	}
 
 	public void onDeviceEntityDataReceived(Entity entity, String message) {

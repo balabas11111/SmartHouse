@@ -88,6 +88,8 @@ public:
 		this->_firmware = firmware;
 		this->_deviceDescr = description;
 		this->_emoji = emoji;
+
+		this->noGroupGet = true;
 	}
 	virtual ~SettingsStorage() {
 	}

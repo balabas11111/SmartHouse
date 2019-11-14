@@ -5,7 +5,9 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title th:text="'Устройство ' + ${device.description}">Устройство</title>
+	<title
+		th:text="'Устройство ' + ${device.description} + ' ' + ${entityField.getEntity().getEmoji()} + ${entityField.getEntity().getDescriptionByDescriptionField()}">
+		Устройство</title>
 
 	<!-- Bootstrap -->
 	<link href="css/bootstrap.min.css" rel="stylesheet">
@@ -16,7 +18,7 @@
 	<link rel="stylesheet" href="js/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
 	<link rel="stylesheet" type="text/css" href="css/isotope.css" media="screen" />
 	<link rel="stylesheet" href="css/style.css">
-	
+
 	<link rel="stylesheet" href="chart/Chart.css">
 </head>
 
@@ -27,8 +29,9 @@
 				<div class="row">
 					<div class="col-md-4">
 
-						<h1><a class="navbar-brand" th:href="@{~/device?id={id}(id=${entityField.getEntity().getDevice().getId()})}" data-0="line-height:90px;"
-								data-300="line-height:50px;" th:text="${entityField.getEntity().getDevice().getDescription()}"> Hidayah
+						<h1><a class="navbar-brand" th:href="@{~/device?id={id}(id=${device.getId()})}"
+								data-0="line-height:90px;" data-300="line-height:50px;"
+								th:text="${device.getDescription()}"> Hidayah
 							</a></h1>
 
 					</div>
@@ -49,36 +52,60 @@
 
 	<div class="container">
 
-		<h4 th:text="'Датчик ' + ${entityField.getEntity().getEmoji()} + ${entityField.getEntity().getDescriptionByDescriptionField()}">Устройство сервера</h4>
+		<h4
+			th:text="'Датчик ' + ${entityField.getEntity().getEmoji()} + ${entityField.getEntity().getDescriptionByDescriptionField()}">
+			Устройство сервера</h4>
 
 		<p>
 			<h4>История значений</h4>
 		</p>
 
-			<canvas id="chart1"></canvas>
-<!--
-			<table id="devicesTable" class="table table-striped">
-				<thead>
-					<tr>
-						<th>Дата</th>
-						<th>Значение</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="entityFieldValue : ${values}">
-						<td th:text="${entityFieldValue.date}">Дата</td>
-						<td th:text="${entityFieldValue.getValueStr()}">Значение</td>
-					</tr>
-				</tbody>
-			</table>
--->
+		<div class="container">
+			<div class="row">
+				<div class='col col-lg-3'>
+					<div class="form-group">
+						<div class='input-group date' id='dateAfter'>
+							<input type='text' class="form-control" />
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<div class='col col-lg-3'>
+					<div class="form-group">
+						<div class='input-group date' id='dateBefore'>
+							<input type='text' class="form-control" />
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</span>
+						</div>
+					</div>
+				</div>
+				
+				<div class='col col-lg-3'>
+					<button class="btn btn-default" onclick="onDateChange();">&#x1F4C6; Обновить</button>
+				</div>
+			</div>
+		</div>
+
+		<canvas id="chart1"></canvas>
 	</div>
 
 	<footer th:replace="templates :: footer"></footer>
 
-	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<!-- Include all compiled plugins (below), or include individual files as needed 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" />
+	<script	src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.js"></script>
+	<script	src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+	-->
+	<script src="js/jquery.min.js"></script>
+	<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css" />
+	<script	src="js/moment-with-locales.js"></script>
+	<script	src="js/bootstrap-datetimepicker.min.js"></script>
+	
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/jquery.isotope.min.js"></script>
 	<script src="js/fancybox/jquery.fancybox.pack.js"></script>
@@ -87,26 +114,76 @@
 	<script type="text/javascript">
 		new WOW().init();
 	</script>
+	<!--<script src="chart/moment.js"></script>-->
 	
-	<script src="chart/moment.js"></script>
 	<script src="chart/Chart.js"></script>
-	
-	
+
 	<script th:inline="javascript">
 		/*<![CDATA[*/
-	
+		var afterDate = /*[[${afterDate}]]*/;
+		var beforeDate = /*[[${beforeDate}]]*/;
+		var entityFieldId = /*[[${entityField.getId()}]]*/;
+
 		var chartDataHeader = /*[[${chartDataHeader}]]*/;
 		var chartDataY = /*[[${chartDataY}]]*/;
 		var chartDataStr = /*[[${chartData}]]*/;
-		
-		chartDataStr=chartDataStr.replace('"[',"'[");
-		chartDataStr=chartDataStr.replace(']"',"]'");
-		
+
+		chartDataStr = chartDataStr.replace('"[', "'[");
+		chartDataStr = chartDataStr.replace(']"', "]'");
+
 		var chartData = JSON.parse(chartDataStr);
-	
+
 		/*]]>*/
 	</script>
+
+	<script type="text/javascript">
+		
+		var redirectUrl = "/entityField?id=" + entityFieldId;
+		var startDate;
+		var endDate;
 	
+		$(function () {
+			$('#dateAfter').datetimepicker({
+				locale: 'ru'
+			});
+		});
+		$(function () {
+			$('#dateBefore').datetimepicker({
+				locale: 'ru'
+			});
+		});
+		$("#dateAfter").on("dp.change", function (e) {
+            startDate = e.date;
+        });
+        $("#dateBefore").on("dp.change", function (e) {
+            endDate = e.date;
+        });
+
+	$(function () {
+		if(afterDate!=undefined && afterDate!=null) {
+			$("#dateAfter").data("DateTimePicker").date(moment(afterDate)); 
+		}
+		if(beforeDate!=undefined && beforeDate!=null) {
+			$("#dateBefore").data("DateTimePicker").date(moment(beforeDate));
+		}
+	});
+		function onDateChange() {
+			var startDateUtc = startDate!=undefined?startDate.valueOf():undefined;
+			var endDateUtc = endDate!=undefined?endDate.valueOf():undefined;
+			var url = redirectUrl;
+			if(startDateUtc!=undefined && startDateUtc!=false && startDateUtc!=null) {
+				url += "&afterDate=";
+				url += startDateUtc;
+			}
+			if(endDateUtc!=undefined && endDateUtc!=false && endDateUtc!=null) {
+				url += "&beforeDate=";
+				url += endDateUtc;
+			}
+
+			window.location.href = url;
+		}
+	</script>
+
 	<script type="text/javascript">
 		var ctx = document.getElementById('chart1').getContext('2d');
 		ctx.canvas.width = 1000;
@@ -136,7 +213,7 @@
 						type: 'time',
 						time: {
 							tooltipFormat: 'YYYY-MM-DD  HH:mm:ss',
-		                },
+						},
 						distribution: 'linear',
 						offset: true,
 						ticks: {
@@ -165,7 +242,7 @@
 					intersect: false,
 					mode: 'index',
 					callbacks: {
-						label: function(tooltipItem, myData) {
+						label: function (tooltipItem, myData) {
 							var label = myData.datasets[tooltipItem.datasetIndex].label || '';
 							if (label) {
 								label += ': ';

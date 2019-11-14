@@ -40,6 +40,9 @@ public class MockedDeviceService implements InitializingBean {
 
 	@Value("${smarthouse.server.mock}")
 	private boolean mockActive;
+	
+	@Value("${smarthouse.server.mock.count:0}")
+	private int mockCount;
 
 	@Value("${smarthouse.server.key}")
 	private String serverKey;
@@ -52,8 +55,6 @@ public class MockedDeviceService implements InitializingBean {
 
 	private int initStep = 0;
 	
-	private int devicesCount = 0;
-
 	@Autowired
 	private DeviceSecurityService securityService;
 
@@ -67,7 +68,7 @@ public class MockedDeviceService implements InitializingBean {
 
 	public void initMocks() throws IOException {
 		log.info("-----Server context was started MockedDevice-----");
-		reqs = ServerValuesMockUtil.getDevicesMockedRegisterRequest(devicesCount);
+		reqs = ServerValuesMockUtil.getDevicesMockedRegisterRequest(mockCount);
 
 		if(reqs.size()>0) {
 			ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(reqs.size());

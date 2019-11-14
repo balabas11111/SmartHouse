@@ -172,8 +172,11 @@ void Entity::executeGet(JsonObject& params, JsonObject& response) {
 }
 
 void Entity::appendSwg(JsonObject& swgJson){
-	swgJson[EDC_FIELD_ID] = this->id;
+	//swgJson[EDC_FIELD_ID] = this->id;
 	swgJson[EDC_FIELD_DESCR_FIELD] = ENTITY_FIELD_DESCRIPTION;
+	if(hasTopicConnection) {
+		swgJson[ENTITY_FIELD_MQ] = 1;
+	}
 
 	EntityDescriptor::appendSwgFieldString(swgJson, ENTITY_FIELD_DESCRIPTION, EDC_DESCR_NAMING);
 
@@ -286,13 +289,21 @@ void Entity::addMessage(JsonObject& json, const char* severity, const char* code
 	if(code!=nullptr || text!=nullptr) {
 		JsonObject& message = JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(json, ENTITY_FIELD_MESSAGE);
 
-		JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(json, ENTITY_FIELD_MESSAGE).set(MESSAGE_FIELD_SEVERITY, severity);
+		JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(message, ENTITY_FIELD_MESSAGE).set(MESSAGE_FIELD_SEVERITY, severity);
 
 		if(code!=nullptr) {
-			JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(json, ENTITY_FIELD_MESSAGE).set(MESSAGE_FIELD_CODE, code);
+			JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(message, ENTITY_FIELD_MESSAGE).set(MESSAGE_FIELD_CODE, code);
 		} else {
-			JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(json, ENTITY_FIELD_MESSAGE).set(MESSAGE_FIELD_TEXT, text);
+			JsonObjectUtil::getObjectChildOrCreateNewNoKeyDup(message, ENTITY_FIELD_MESSAGE).set(MESSAGE_FIELD_TEXT, text);
 		}
 
 	}
+}
+
+bool Entity::isHasTopicConnection() {
+	return this->hasTopicConnection;
+}
+
+bool Entity::isNoGroupGet() {
+	return this->noGroupGet;
 }

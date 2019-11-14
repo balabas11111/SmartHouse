@@ -37,6 +37,8 @@ public:
 		pinMode(pin, INPUT_PULLUP);
 		attachInterrupt(digitalPinToInterrupt(pin), [this](){processMovementChange();},
 				CHANGE);
+
+		this->hasTopicConnection = true;
 	};
 
 	virtual ~PIRdetector() {}

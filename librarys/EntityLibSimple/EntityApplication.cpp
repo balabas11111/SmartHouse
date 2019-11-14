@@ -103,8 +103,11 @@ bool initI2C, uint8_t clockPin, uint8_t dataPin) {
 		this->wifiServerManager->begin();
 	}
 
+
 #ifndef SETTINGS_SERVER_MQTT_DISABLED
-	this->mqttManager = new MqttManager(this->conf);
+	if(this->entityManager->isHasTopicConnection()) {
+		this->mqttManager = new MqttManager(this->conf);
+	}
 #endif
 
 	this->serverConnector = new ServerConnector(this->conf, [this]() {onServerRegistered();});
@@ -163,24 +166,34 @@ void EntityApplication::loop() {
 	}
 
 	this->getServerConnector()->loop();
+
 #ifndef SETTINGS_SERVER_MQTT_DISABLED
-	EntityJsonRequestResponse* buffer = this->mqttManager->getBuffer();
+	if(this->entityManager->isHasTopicConnection()) {
+		EntityJsonRequestResponse* buffer = this->mqttManager->getBuffer();
 
-	if (this->mqttManager->isBufferUnsent() || this->entityManager->processChangedEntities(buffer)) {
-		this->mqttManager->publishBuffer();
+		if (this->mqttManager->isBufferUnsent() || this->entityManager->processChangedEntities(buffer)) {
+			this->mqttManager->publishBuffer();
+		}
+
+		if(this->mqttManager->isBufferUnsent()) {
+			Serial.println(FPSTR("Buffer UNSENT"));
+			this->getServerConnector()->dispatchDataChanged();
+		}
+
+		this->mqttManager->loop();
 	}
+#endif
 
-	if(this->mqttManager->isBufferUnsent()) {
-		Serial.println(FPSTR("Buffer UNSENT"));
-		this->getServerConnector()->dispatchDataChanged();
-	}
-
-	this->mqttManager->loop();
-#else
+#ifndef SETTINGS_SERVER_GET_DISPATCH_CHANGES_DISABLED
 	if(this->entityManager->processChangedEntities()) {
 		this->getServerConnector()->dispatchDataChanged();
 	}
 #endif
+
+#if defined(SETTINGS_SERVER_GET_DISPATCH_CHANGES_DISABLED) && defined(SETTINGS_SERVER_MQTT_DISABLED)
+		this->entityManager->processChangedEntities();
+#endif
+
 	this->wifiServerManager->loop();
 	this->deviceManager.loop();
 }
@@ -264,7 +277,9 @@ void EntityApplication::restart() {
 void EntityApplication::onServerRegistered() {
 	//Serial.println(FPSTR("OnServerRegistered"));
 #ifndef SETTINGS_SERVER_MQTT_DISABLED
-	this->mqttManager->init(entityManager->getBuffer());
+	if(this->entityManager->isHasTopicConnection()) {
+		this->mqttManager->init(entityManager->getBuffer());
+	}
 #endif
 }
 

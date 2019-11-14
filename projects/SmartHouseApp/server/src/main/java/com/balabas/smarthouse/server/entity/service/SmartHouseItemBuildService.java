@@ -15,6 +15,7 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_KEYS_AR
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_SENSOR_ITEMS;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_ID;
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_MESSAGE;
+import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_FIELD_MQ;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_CLASS;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_CLASS_VIEW;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassConstants.EDC_ENTITY_FIELDS;
@@ -50,7 +51,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.balabas.smarthouse.server.entity.model.descriptor.EntityClass;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassType;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
@@ -402,10 +402,11 @@ public class SmartHouseItemBuildService {
 		String description = entityJson.optString(ENTITY_FIELD_DESCRIPTION, null);
 		Emoji emoji = Emoji.getByCode(descriptorJson.optString(EDC_FIELD_EMOJI, null));
 		String descriptionField = descriptorJson.optString(EDC_FIELD_DESCR_FIELD, ENTITY_FIELD_DESCRIPTION);
-		int remoteId = descriptorJson.optInt(EDC_FIELD_ID, -1);
-		EntityClass renderer = EntityClass.getByKey(
+		//int remoteId = descriptorJson.optInt(EDC_FIELD_ID, -1);
+		boolean hasMq = descriptorJson.has(ENTITY_FIELD_MQ);
+		/*EntityClass renderer = EntityClass.getByKey(
 				entityJson.optString(ENTITY_FIELD_ITEM_CLASS, descriptorJson.optString(ENTITY_FIELD_ITEM_CLASS, "")));
-
+*/
 		Entity entity = Optional.ofNullable(group.getEntity(entityName)).orElse(new Entity());
 
 		entity.setName(entityName);
@@ -413,8 +414,9 @@ public class SmartHouseItemBuildService {
 		entity.setDescriptionIfEmpty(description);
 		entity.setEmoji(emoji);
 		entity.setDescriptionField(descriptionField);
-		entity.setRemoteId(remoteId);
-		entity.setRenderer(renderer);
+		//entity.setRemoteId(remoteId);
+		entity.setHasMq(hasMq);
+		//entity.setRenderer(renderer);
 
 		Set<IEntityField> entityFields = new LinkedHashSet<>();
 

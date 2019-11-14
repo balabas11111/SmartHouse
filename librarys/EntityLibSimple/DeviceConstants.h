@@ -30,7 +30,7 @@
 #define ENTITY_FIELD_DESCRIPTION "d"
 #define ENTITY_FIELD_FIELDS_ARRAY "fa"
 #define ENTITY_FIELD_SENSOR_ITEMS "si"
-#define ENTITY_FIELD_ITEM_CLASS "ic"
+//#define ENTITY_FIELD_ITEM_CLASS "ic"
 
 #define ENTITY_FIELD_DEVICE_KEY "deviceKey"
 #define ENTITY_FIELD_DATA "data"
@@ -51,10 +51,11 @@
 
 #define ENTITY_FIELD_SWG "swg"
 
-#define ENTITY_FIELD_MESSAGE "msg"
+#define ENTITY_FIELD_MESSAGE   "msg"
+#define ENTITY_FIELD_MQ        "mq"
 #define MESSAGE_FIELD_SEVERITY "msvr"
-#define MESSAGE_FIELD_CODE "mcode"
-#define MESSAGE_FIELD_TEXT "mtext"
+#define MESSAGE_FIELD_CODE     "mcode"
+#define MESSAGE_FIELD_TEXT     "mtext"
 #define MESSAGE_CODE_DEVICE_WILL_BE_RESTARTED "rst"
 
 #define MESSAGE_SEVERITY_INFO  "INFO"

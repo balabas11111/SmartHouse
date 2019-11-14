@@ -94,7 +94,6 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 			sender.sendMessageToAllUsers(Severity.WARN, message);
 		}
 		
-		log.warn(message);
 	}
 
 	private void onDeviceInitialDataReceived(IDevice device) {
@@ -108,7 +107,6 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 		device.setState(State.CONNECTED);
 		device.setInitialized(true);
 		
-		log.info(message);
 	}
 	
 	private void onDeviceBackFromDisconnect(IDevice device) {
@@ -117,7 +115,6 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 		
 		onDeviceDataUpdated(device);
 		
-		log.info(message);
 	}
 	
 	private void onDeviceDataUpdated(IDevice device){

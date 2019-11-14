@@ -30,11 +30,20 @@ public interface IEntityFieldValueRepository extends CrudRepository<EntityFieldV
 	@Query("SELECT efv FROM EntityFieldValue efv JOIN FETCH efv.entityField WHERE efv.entityField.id = :id AND efv.date > :afterDate ORDER BY efv.date DESC")
 	List<EntityFieldValue> getEntityFieldValuesForEntityField(@Param("id")Long entityFieldId, @Param("afterDate") Date date);
 	
+	@Query("SELECT efv FROM EntityFieldValue efv JOIN FETCH efv.entityField WHERE efv.entityField.id = :id AND efv.date > :afterDate AND efv.date < :beforeDate ORDER BY efv.date DESC")
+	List<EntityFieldValue> getEntityFieldValuesForEntityField(@Param("id")Long entityFieldId, @Param("afterDate") Date date, @Param("beforeDate") Date beforeDate);
+	
 	@Query("SELECT efv FROM EntityFieldValue efv JOIN FETCH efv.entityField WHERE efv.id in(select max(efvi.id) from EntityFieldValue efvi where efvi.entityField.entity.id = :id group by efvi.entityField.id)")
 	List<EntityFieldValue> getLastEntityFieldValuesForEntity(@Param("id")Long entityId);
 	
 	@Query("SELECT efv FROM EntityFieldValue efv JOIN FETCH efv.entityField WHERE efv.id in(select max(efvi.id) from EntityFieldValue efvi where efvi.entityField.entity.group.device.id = :id group by efvi.entityField.id)")
 	List<EntityFieldValue> getLastEntityFieldValuesForDevice(@Param("id")Long deviceId);
+	
+	@Query("SELECT min(efv.date) FROM EntityFieldValue efv WHERE efv.entityField.id = :id")
+	Date selectMinEntityFieldValueDate(@Param("id")Long entityFieldId);
+	
+	@Query("SELECT max(efv.date) FROM EntityFieldValue efv WHERE efv.entityField.id = :id")
+	Date selectMaxEntityFieldValueDate(@Param("id")Long entityFieldId);
 	
 	@Transactional
 	@Modifying
