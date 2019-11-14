@@ -115,6 +115,7 @@ public class ViewDeviceController {
 		}
 		
 		String jsonStr = jsonData.toString();
+		String chartYLabel = StringUtils.isEmpty(entityField.getMeasure())?entityField.getName():entityField.getMeasure();
 		
 		model.addAttribute("afterDate", afterDate);
 		model.addAttribute("beforeDate", beforeDate);
@@ -124,7 +125,7 @@ public class ViewDeviceController {
 		model.addAttribute("values", values);
 		
 		model.addAttribute("chartDataHeader", entityField.getEmoji() + " " + entityField.getDescriptionByDescriptionField());
-		model.addAttribute("chartDataY", entityField.getName() + " " + entityField.getMeasure());
+		model.addAttribute("chartDataY", chartYLabel);
 		model.addAttribute("chartData", jsonStr);
 
 		return "entityFields/history.html";
