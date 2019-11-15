@@ -28,6 +28,7 @@ import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
+import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.Severity;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IEntityAlarmRepository;
@@ -85,7 +86,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 		String scanPackage = this.getClass().getPackage().getName();
 		int i = 0;
 
-		ClassPathScanningCandidateComponentProvider provider = createComponentScanner(EntityFieldAlarm.class);
+		ClassPathScanningCandidateComponentProvider provider = createComponentScanner(EntityFieldAlarmMarker.class);
 		for (BeanDefinition beanDef : provider.findCandidateComponents(scanPackage)) {
 			try {
 				Class clazz = Class.forName(beanDef.getBeanClassName());
@@ -107,23 +108,24 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 	@Override
 	public DeviceEntityAlarmHolder getDeviceAlarmsHolder(IDevice device) {
-		return new DeviceEntityAlarmHolder(device, getEntityAlarmsWithFieldsAlarmsAttached(device),getEntityAlarmsWithAlarmDetected(device));
+		return new DeviceEntityAlarmHolder(device, getEntityAlarmsWithFieldsAlarmsAttached(device),
+				getEntityAlarmsWithAlarmDetected(device));
 	}
-	
+
 	@Override
 	public Map<String, DeviceEntityAlarmHolder> getDeviceAlarmsHoldersGroupped(List<Device> devices) {
 		Map<String, DeviceEntityAlarmHolder> result = Maps.newHashMap();
-		
-		for(IDevice device : devices) {
+
+		for (IDevice device : devices) {
 			String key = device.getName();
 			DeviceEntityAlarmHolder value = getDeviceAlarmsHolder(device);
-			
+
 			result.put(key, value);
 		}
-		
+
 		return result;
 	}
-	
+
 	@Override
 	public List<IEntityAlarm> getActiveEntityAlarms() {
 		return alarms.stream().filter(IEntityAlarm::isActive).collect(Collectors.toList());
@@ -133,13 +135,13 @@ public class EntityAlarmService implements IEntityAlarmService {
 	public List<IEntityAlarm> getAlarms(IDevice device) {
 		return getAlarmsByPredicate(a -> a.isActive() && a.getDevice().getId().equals(device.getId()));
 	}
-	
+
 	@Override
 	public List<IEntityAlarm> getEntityAlarmsWithFieldsAlarmsAttached(IDevice device) {
 		return getAlarmsByPredicate(a -> a.isActive() && a.getDevice().getId().equals(device.getId())
 				&& a.getAlarms() != null && a.getAlarms().size() > 0);
 	}
-	
+
 	@Override
 	public List<IEntityAlarm> getEntityAlarmsWithAlarmDetected(IDevice device) {
 		return getAlarmsByPredicate(a -> a.isActive() && a.isAlarmed() && a.getDevice().getId().equals(device.getId()));
@@ -147,13 +149,13 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 	@Override
 	public IEntityAlarm getAlarm(IEntity entity) {
-		return alarms.stream().filter(a -> a.getEntity().getId().equals(entity.getId())).findFirst().orElse(null);
+		return alarms.stream().filter(a -> a.getWatchedItem().getId().equals(entity.getId())).findFirst().orElse(null);
 	}
 
 	@Override
 	public IEntityAlarm getAlarmActive(IEntity entity) {
-		return alarms.stream().filter(a -> a.isActive() && a.getEntity().getId().equals(entity.getId())).findFirst()
-				.orElse(null);
+		return alarms.stream().filter(a -> a.isActive() && a.getWatchedItem().getId().equals(entity.getId()))
+				.findFirst().orElse(null);
 	}
 
 	@Override
@@ -191,7 +193,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 	@Override
 	public void registerAlarm(IEntityAlarm alarm) {
-		IEntity entity = alarm.getEntity();
+		IEntity entity = alarm.getWatchedItem();
 
 		if (entity == null) {
 			throw new IllegalArgumentException("Empty entity");
@@ -222,7 +224,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 	public void reattachAlarms(IEntityAlarm alarm, Entity entity) {
 		int messageInterval = alarm.getId() != null ? alarm.getMessageInterval() : defaultAlarmInterval;
 
-		alarm.setEntity(entity);
+		alarm.setWatchedItem(entity);
 		alarm.setLogAlarmCheck(logAlarmCheck);
 
 		if (alarm.getTimer() == null) {
@@ -237,10 +239,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 			}
 		}
 
-		// alarm.setActivated(true);
-
-		log.info("Alarm reattached d=" + alarm.getEntity().getGroup().getDevice().getName() + " e="
-				+ alarm.getEntity().getName());
+		log.info("Alarm reattached d=" + alarm.getDevice().getName() + " e=" + alarm.getWatchedItem().getName());
 
 		checkWithClear(alarm);
 	}
@@ -252,13 +251,13 @@ public class EntityAlarmService implements IEntityAlarmService {
 	}
 
 	@Override
-	public List<IEntityAlarm> getAlarmsWithAlarmNotificationRequired(IDevice device) {
-		return getAlarms(device).stream().filter(IEntityAlarm::isAlarmStarted).collect(Collectors.toList());
+	public List<IAlarmRepeatable> getAlarmsWithAlarmNotificationRequired(IDevice device) {
+		return getAlarms(device).stream().filter(IAlarmRepeatable::isAlarmStarted).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<IEntityAlarm> getAlarmsWithAlarmFinished(IDevice device) {
-		return getAlarms(device).stream().filter(IEntityAlarm::isAlarmFinished).collect(Collectors.toList());
+	public List<IAlarmRepeatable> getAlarmsWithAlarmFinished(IDevice device) {
+		return getAlarms(device).stream().filter(IAlarmRepeatable::isAlarmFinished).collect(Collectors.toList());
 	}
 
 	@Override
@@ -269,7 +268,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 	}
 
 	private void sendAlarmNotifications(IDevice device) {
-		List<IEntityAlarm> alarmsWithStarted = getAlarmsWithAlarmNotificationRequired(device);
+		List<IAlarmRepeatable> alarmsWithStarted = getAlarmsWithAlarmNotificationRequired(device);
 
 		if (!alarmsWithStarted.isEmpty()) {
 
@@ -278,7 +277,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 			String header = buildMessage(MSG_DEVICE_ALARM_STARTED, device) + "\n\n";
 
 			List<MessageHolder> holders = Lists.newArrayList();
-			
+
 			alarmsWithStarted.forEach(alarm -> holders.add(alarm.getAlarmStartedTextHolder()));
 
 			boolean sent = true;
@@ -290,7 +289,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 				sent = false;
 			}
 
-			for (IEntityAlarm alarm : alarmsWithStarted) {
+			for (IAlarmRepeatable alarm : alarmsWithStarted) {
 				if (alarm.isSound()) {
 					soundPlayer.playAlarmStarted();
 				}
@@ -301,7 +300,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 	}
 
 	private void sendAlarmFinishedNotifications(IDevice device) {
-		List<IEntityAlarm> alarmsWithFinished = getAlarmsWithAlarmFinished(device);
+		List<IAlarmRepeatable> alarmsWithFinished = getAlarmsWithAlarmFinished(device);
 
 		if (!alarmsWithFinished.isEmpty()) {
 			log.debug("AlarmsFinished " + device.getName() + " total =" + alarmsWithFinished.size());
@@ -320,7 +319,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 				sent = false;
 			}
 
-			for (IEntityAlarm alarm : alarmsWithFinished) {
+			for (IAlarmRepeatable alarm : alarmsWithFinished) {
 				if (alarm.isSound()) {
 					soundPlayer.playAlarmFinished();
 				}
@@ -384,8 +383,8 @@ public class EntityAlarmService implements IEntityAlarmService {
 		Map<Integer, Class> result = Maps.newHashMap();
 
 		for (Entry<Integer, Class> entity : this.entityFieldAllowedClasses.entrySet()) {
-			EntityFieldAlarm classNameAnnotation = AnnotationUtils.findAnnotation(entity.getValue(),
-					EntityFieldAlarm.class);
+			EntityFieldAlarmMarker classNameAnnotation = AnnotationUtils.findAnnotation(entity.getValue(),
+					EntityFieldAlarmMarker.class);
 
 			if (classNameAnnotation.target().isAssignableFrom(entityField.getClazz())) {
 				result.put(entity.getKey(), entity.getValue());
@@ -397,13 +396,14 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 	@Override
 	public List<IEntity> getEntitiesWithPossibleAlarms(IDevice device) {
-		return device.getEntities().stream().filter(this::entityHasPossibleAlarms).collect(Collectors.toList());
+		return device.getEntities().stream().filter(this::entityHasPossibleAlarms).sorted(ItemAbstract::compareByName)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<IEntityField> getEntityFieldsWithPossibleAlarms(IEntity entity) {
 		return entity.getEntityFields().stream().filter(this::entityFieldHasPossibleAlarms)
-				.collect(Collectors.toList());
+				.sorted(ItemAbstract::compareByName).collect(Collectors.toList());
 	}
 
 	private boolean entityHasPossibleAlarms(IEntity entity) {

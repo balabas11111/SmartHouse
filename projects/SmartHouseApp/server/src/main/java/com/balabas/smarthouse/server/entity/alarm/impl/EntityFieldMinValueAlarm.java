@@ -1,9 +1,10 @@
-package com.balabas.smarthouse.server.entity.alarm;
+package com.balabas.smarthouse.server.entity.alarm.impl;
 
 import java.util.function.Predicate;
 
 import javax.persistence.Entity;
 
+import com.balabas.smarthouse.server.entity.alarm.EntityFieldAlarmMarker;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 import lombok.ToString;
@@ -11,7 +12,7 @@ import lombok.ToString;
 @SuppressWarnings("rawtypes")
 @Entity
 @ToString
-@EntityFieldAlarm(target = Number.class)
+@EntityFieldAlarmMarker(target = Number.class)
 public class EntityFieldMinValueAlarm extends AlarmAbstractEntityFieldNumber {
 
 	private static String COMPARE_SEPARATOR = " меньше ";

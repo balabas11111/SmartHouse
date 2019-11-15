@@ -305,8 +305,8 @@ public class Action {
 
 	public static String callback(String actionName, IEntityAlarm entityAlarm) {
 		return (Action.fromColumnList(actionName, entityAlarm.getId().toString(),
-				entityAlarm.getEntity().getGroup().getDevice().getName(), entityAlarm.getEntity().getGroup().getName(),
-				entityAlarm.getEntity().getName())).getCallbackData();
+				entityAlarm.getWatchedItem().getDevice().getName(), entityAlarm.getWatchedItem().getGroup().getName(),
+				entityAlarm.getWatchedItem().getName())).getCallbackData();
 	}
 
 	public static String callback(String actionName, String data, String actionType, Long targetId) {

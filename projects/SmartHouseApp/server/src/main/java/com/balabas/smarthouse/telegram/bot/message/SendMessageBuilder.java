@@ -423,7 +423,7 @@ public class SendMessageBuilder {
 
 					group.getEntities().stream()
 							.forEach(entity -> alarms.stream()
-									.filter(alarm -> entity.getName().equals(alarm.getEntity().getName()))
+									.filter(alarm -> entity.getName().equals(alarm.getWatchedItem().getName()))
 									.forEach(alarm -> Optional.ofNullable(alarm.getAlarmStartedTextHolder())
 											.ifPresent(alarmHolders::add)));
 
@@ -460,6 +460,8 @@ public class SendMessageBuilder {
 				builder.append(message);
 				builder.append("\n");
 			});
+			
+			builder.append("\n");
 		}
 
 		return builder.toString();

@@ -5,13 +5,9 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Entity;
@@ -29,78 +25,36 @@ import lombok.extern.log4j.Log4j2;
 @javax.persistence.Entity
 @Log4j2
 @NoArgsConstructor
-public class EntityAlarm implements IEntityAlarm {
-
-	public static final Integer NO_MESSAGE_SEND_REPEATS = -1;
-	public static final String ALARM_FINISHED_STATUS = "показатели в норме";
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Getter
-	@Setter
-	private Long id;
+public class EntityAlarm extends AlarmRepeatable<IEntity> implements IEntityAlarm {
 
 	@Getter
 	@Setter
 	@ManyToOne(targetEntity = Entity.class, fetch = FetchType.EAGER)
 	@JoinColumn(name = "entity_id", nullable = false)
-	private IEntity entity;
-
-	@Transient
-	@Getter
-	@Setter
-	private ActionTimer timer;
-
-	@Getter
-	@Setter
-	private boolean activated;
-	
-	@Getter
-	@Setter
-	private boolean sound;
+	private IEntity watchedItem;
 
 	@Getter
 	@Setter
 	@OneToMany(targetEntity = AlarmAbstractEntityField.class, mappedBy = "entityAlarm", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private List<IEntityFieldAlarm> alarms = new LinkedList<>();
 
-	@Getter
-	@Transient
-	boolean alarmed;
-	
-	@Getter @Setter
-	@Transient
-	boolean logAlarmCheck;
-
-	// if -1 send only one message
-	@Getter
-	Integer messageInterval;
-
-	// true = alarmMessage, false = finishedMessage, null - nothing
-	@Transient
-	@Getter @Setter
-	boolean sendAlarmStartedMessage = false;
-	@Transient
-	@Getter @Setter
-	boolean sendAlarmFinishedMessage = false;
-
 	public EntityAlarm(IEntity entity) {
-		this.entity = entity;
+		this.watchedItem = entity;
 		setMessageInterval(NO_MESSAGE_SEND_REPEATS);
 	}
 	
 	public EntityAlarm(IEntity entity, int messageInterval) {
-		this.entity = entity;
+		this.watchedItem = entity;
 		this.messageInterval = messageInterval;
 	}
 	
 	@Override
 	public void putAlarm(IEntityFieldAlarm entityFieldAlarm) {
-		if(this.getEntity() == null || this.getEntity().getId() ==null
+		if(this.getWatchedItem() == null || this.getWatchedItem().getId() ==null
 				|| entityFieldAlarm == null
 				|| entityFieldAlarm.getWatchedItem() == null
 				|| entityFieldAlarm.getWatchedItem().getEntity() == null
-				|| !this.getEntity().getId().equals(entityFieldAlarm.getWatchedItem().getEntity().getId())) {
+				|| !this.getWatchedItem().getId().equals(entityFieldAlarm.getWatchedItem().getEntity().getId())) {
 			log.error("Target entity in field is different");
 			throw new IllegalArgumentException();
 		}
@@ -130,11 +84,11 @@ public class EntityAlarm implements IEntityAlarm {
 	public boolean check() {
 		if (activated) {
 			checkTimer();
-			alarmed = checkFieldsAlarms();
+			alarmed = executeAlarmChecksInternal();
 
-			if (alarmed && !timer.isActionForced()) {
+			if (alarmed && !getTimer().isActionForced()) {
 				updateAlarmState(true);
-			} else if (!alarmed && timer.isActionForced()) {
+			} else if (!alarmed && getTimer().isActionForced()) {
 				updateAlarmState(false);
 			}
 			
@@ -144,45 +98,19 @@ public class EntityAlarm implements IEntityAlarm {
 		}
 		return alarmed;
 	}
+
+	@Override
+	public IDevice getDevice() {
+		if (getWatchedItem() == null) {
+			return null;
+		}
+		return getWatchedItem().getDevice();
+	}
 	
-	@Override
-	public boolean isNotificationRepeatable() {
-		return messageInterval!=null && messageInterval.compareTo(NO_MESSAGE_SEND_REPEATS)>0;
+	protected boolean executeAlarmChecksInternal() {
+		return alarms.stream().map(IAlarm::check).reduce(Boolean::logicalOr).orElse(false);
 	}
-
-	@JsonIgnore
-	@Override
-	public boolean isAlarmStarted() {
-		// need to send alarm started message
-		return activated && timer.isForcedAndTimeToExecute() && sendAlarmStartedMessage;
-	}
-
-	@JsonIgnore
-	@Override
-	public boolean isAlarmFinished() {
-		// need to send alarm finished message
-		return activated && timer.isForcedAndTimeToExecute() && sendAlarmFinishedMessage;
-	}
-
-	@Override
-	public void setAlarmStartedSent(boolean notified) {
-		if (notified) {
-			if (messageInterval == -1) {
-				sendAlarmStartedMessage = false;
-			} else {
-				timer.update(timer.getInterval(), true);
-			}
-		}
-	}
-
-	@Override
-	public void setAlarmFinishedSent(boolean notified) {
-		if (notified) {
-			sendAlarmFinishedMessage = false;
-			timer.setActionForced(false);
-		}
-	}
-
+	
 	@Override
 	@JsonIgnore
 	public MessageHolder getAlarmStartedTextHolder() {
@@ -190,7 +118,7 @@ public class EntityAlarm implements IEntityAlarm {
 			return null;
 		}
 
-		MessageHolder result = new MessageHolder(entity.getDevice().getDescription(), entity.getDescription(), "", entity.getEmoji());
+		MessageHolder result = new MessageHolder(getDevice().getDescription(), getWatchedItem().getDescription(), "", getWatchedItem().getEmoji());
 		
 		alarms.stream().filter(IAlarm::isAlarmed).forEach(a -> result.addMessage(a.getAlarmText()));
 
@@ -204,72 +132,43 @@ public class EntityAlarm implements IEntityAlarm {
 			return null;
 		}
 
-		return new MessageHolder(entity.getDevice().getDescription(), entity.getDescription(), ALARM_FINISHED_STATUS, entity.getEmoji());
-	}
-
-	@Override
-	public boolean isActive() {
-		return activated && getDevice() != null;
-
-	}
-
-	@Override
-	public IDevice getDevice() {
-		if (getEntity() == null || getEntity().getGroup() == null) {
-			return null;
-		}
-		return getEntity().getGroup().getDevice();
-	}
-	
-	@Override
-	public void setMessageInterval(Integer messageInterval) {
-		this.messageInterval = messageInterval;
-		
-		if(this.getTimer() == null) {
-			this.timer = new ActionTimer(1000 * messageInterval);
-		} else {
-			this.timer.setMessageInterval(1000 * messageInterval);
-		}
-	}
-	
-	private boolean checkFieldsAlarms() {
-		return alarms.stream().map(IAlarm::check).reduce(Boolean::logicalOr).orElse(false);
+		return new MessageHolder(getDevice().getDescription(), getWatchedItem().getDescription(), ALARM_FINISHED_STATUS, getWatchedItem().getEmoji());
 	}
 	
 	private void updateAlarmState(boolean started) {
-		log.warn("Alarm mode "+ (started?"started":"finished") +" " + entity.getGroup().getDevice().getName() + entity.getName());
+		log.warn("Alarm mode "+ (started?"started":"finished") +" " + getDevice().getName() + getWatchedItem().getName());
 		sendAlarmStartedMessage = started;
 		sendAlarmFinishedMessage = !started;
-		timer.setNextActionTimeAsNow();
-		timer.update(0, true);
+		getTimer().setNextActionTimeAsNow();
+		getTimer().update(0, true);
 	}
 
 	private void checkTimer() {
-		if(this.timer == null) {
-			this.timer = new ActionTimer(1000 * messageInterval);
+		if(getTimer() == null) {
+			setTimer(new ActionTimer(1000 * messageInterval));
 		}
 	}
 	
 	private void logAlarmState() {
 		StringBuilder buf = new StringBuilder();
 		buf.append("Alarm check device=");
-		buf.append(this.getEntity().getDevice().getName());
+		buf.append(getDevice().getName());
 		buf.append(" entity=");
-		buf.append(this.getEntity().getName());
+		buf.append(getWatchedItem().getName());
 		buf.append(" alarmed=");
 		buf.append(alarmed);
 		buf.append("\n sound=");
-		buf.append(sound);
+		buf.append(isSound());
 		buf.append(" activated=");
 		buf.append(activated);
 		buf.append(" forced=");
-		buf.append(timer.isActionForced());
+		buf.append(getTimer().isActionForced());
 		buf.append(" sendAlarmStartedMessage=");
 		buf.append(sendAlarmStartedMessage);
 		buf.append(" sendAlarmFinishedMessage=");
 		buf.append(sendAlarmFinishedMessage);
 		buf.append("\n timeTo=");
-		buf.append(timer.isTimeToExecuteAction());
+		buf.append(getTimer().isTimeToExecuteAction());
 		
 		if(this.getAlarms()!=null) {
 			this.getAlarms().stream().forEach( efa ->{
@@ -287,6 +186,11 @@ public class EntityAlarm implements IEntityAlarm {
 		}
 		
 		log.info(buf.toString());
+	}
+
+	@Override
+	public String getAlarmText() {
+		return "AlarmText not implemented";
 	}
 
 }

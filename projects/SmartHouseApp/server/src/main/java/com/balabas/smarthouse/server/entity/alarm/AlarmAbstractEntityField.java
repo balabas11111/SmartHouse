@@ -20,7 +20,7 @@ import lombok.Setter;
 @Table(name = "entity_alarm_entity_field")
 @javax.persistence.Entity()
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class AlarmAbstractEntityField<T> extends AlarmAbstract<IEntityField, T>
+public abstract class AlarmAbstractEntityField<T> extends Alarm<IEntityField>
 		implements IEntityFieldAlarm<T> {
 
 	@Getter
@@ -34,10 +34,7 @@ public abstract class AlarmAbstractEntityField<T> extends AlarmAbstract<IEntityF
 	@ManyToOne(targetEntity = EntityAlarm.class, fetch = FetchType.EAGER)
 	@JoinColumn(name = "entity_alarm_id", nullable = false)
 	private IEntityAlarm entityAlarm;
-/*
-	@Transient
-	protected Class<T> clazz;
-*/
+
 	@Transient
 	@Getter
 	protected Predicate<Integer> predicate;
@@ -46,51 +43,41 @@ public abstract class AlarmAbstractEntityField<T> extends AlarmAbstract<IEntityF
 	@Getter
 	protected String compareSeparator;
 
-	public AlarmAbstractEntityField() {
-		/*Type genericSuperClass = getClass().getGenericSuperclass();
-
-		ParameterizedType parametrizedType = null;
-		while (parametrizedType == null) {
-			if ((genericSuperClass instanceof ParameterizedType)) {
-				parametrizedType = (ParameterizedType) genericSuperClass;
-			} else {
-				genericSuperClass = ((Class<?>) genericSuperClass).getGenericSuperclass();
-			}
-		}
-
-		clazz = (Class<T>) parametrizedType.getActualTypeArguments()[0];
-		*/
-	}
+	public AlarmAbstractEntityField() {}
 	
-	abstract protected Class getWatchedClazz();
-
+	protected abstract Class<?> getWatchedValueClazz();
+	
 	abstract protected Comparable getAlarmValue();
 
 	abstract protected Comparable getEntityFieldValue();
 
 	@Override
-	public boolean acceptsAsWatched(IEntityField entityField) {
-		return getWatchedClazz().isAssignableFrom(entityField.getClazz());
-	}
-	
-	@Override
-	public String getClassSimpleName() {
-		return this.getClass().getSimpleName();
-	}
-
-	@Override
-	protected boolean checkItemHasAlarm() {
+	protected boolean executeAlarmChecksInternal() {
 		Integer compareValue = getAlarmValue().compareTo(getEntityFieldValue());
 		return getPredicate().test(compareValue);
 	}
 
 	@Override
-	protected String getItemAlarmText() {
+	public String getAlarmText() {
+		if (!alarmed) {
+			return null;
+		}
 		return getWatchedItem().getNameDescriptionByDescriptionField() + " ="
 				+ getWatchedItem().getValueStr() + getTriggerDescription();
 	}
+	
 	@Override
 	public String getTriggerDescription() {
 		return getCompareSeparator() + getValueStr();
+	}
+	
+	@Override
+	public String getValueStr() {
+		return getValue().toString();
+	}
+	
+	@Override
+	public boolean acceptsValueAsWatched(Class<?> candidateClass) {
+		return getWatchedValueClazz().isAssignableFrom(candidateClass);
 	}
 }

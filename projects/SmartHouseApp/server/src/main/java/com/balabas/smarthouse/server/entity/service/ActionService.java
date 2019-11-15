@@ -105,17 +105,17 @@ public class ActionService implements IActionService {
 		case ID_TYPE_ENTITY_ALARM:
 			IEntityAlarm alarm = alarmService.getAlarmById(targetId);
 
-			deviceName = alarm.getEntity().getGroup().getDevice().getName();
-			groupName = alarm.getEntity().getGroup().getName();
-			entityName = alarm.getEntity().getName();
+			deviceName = alarm.getWatchedItem().getDevice().getName();
+			groupName = alarm.getWatchedItem().getGroup().getName();
+			entityName = alarm.getWatchedItem().getName();
 			break;
 		case ID_TYPE_ENTITY_ALARM_FIELD:
 			IEntityFieldAlarm alarmField = alarmService.getEntityAlarmFieldById(targetId);
 			IEntityAlarm alarmP = alarmField.getEntityAlarm();
 
-			deviceName = alarmP.getEntity().getGroup().getDevice().getName();
-			groupName = alarmP.getEntity().getGroup().getName();
-			entityName = alarmP.getEntity().getName();
+			deviceName = alarmP.getWatchedItem().getDevice().getName();
+			groupName = alarmP.getWatchedItem().getGroup().getName();
+			entityName = alarmP.getWatchedItem().getName();
 			break;
 		default:
 			throw new IllegalArgumentException("unknown id type");

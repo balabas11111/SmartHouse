@@ -3,18 +3,15 @@ package com.balabas.smarthouse.server.entity.alarm;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 
-public interface IAlarm<T extends IItemAbstract, O>{
+public interface IAlarm<T extends IItemAbstract>{
 
 	Long getId();
 	
-	boolean acceptsAsWatched(T entityField);
+	default String getClassSimpleName() {
+		return this.getClass().getSimpleName();
+	}
 	
 	boolean check();
-	
-	void setValue(O value);
-	O getValue();
-	
-	void setValueStr(String value);
 	
 	T getWatchedItem();
 	void setWatchedItem(T watchedItem);

@@ -31,9 +31,9 @@ public interface IEntityAlarmService {
 	
 	void checkAlarmsSendNotifications(IDevice device);
 
-	List<IEntityAlarm> getAlarmsWithAlarmNotificationRequired(IDevice device);
+	List<IAlarmRepeatable> getAlarmsWithAlarmNotificationRequired(IDevice device);
 
-	List<IEntityAlarm> getAlarmsWithAlarmFinished(IDevice device);
+	List<IAlarmRepeatable> getAlarmsWithAlarmFinished(IDevice device);
 
 	List<IEntityAlarm> getActiveEntityAlarms();
 

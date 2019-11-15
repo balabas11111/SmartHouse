@@ -1,10 +1,11 @@
-package com.balabas.smarthouse.server.entity.alarm;
+package com.balabas.smarthouse.server.entity.alarm.impl;
 
 import java.util.function.Predicate;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
+import com.balabas.smarthouse.server.entity.alarm.AlarmAbstractEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.util.MathUtil;
 
@@ -16,7 +17,7 @@ public abstract class AlarmAbstractEntityFieldNumber extends AlarmAbstractEntity
 	private Float number;
 	
 	@Override
-	protected Class<Number> getWatchedClazz() {
+	protected Class<Number> getWatchedValueClazz() {
 		return Number.class;
 	}
 	
@@ -29,7 +30,7 @@ public abstract class AlarmAbstractEntityFieldNumber extends AlarmAbstractEntity
 			Predicate<Integer> predicate, String compareSeparator){
 		this(predicate, compareSeparator);
 		
-		if(value == null || entityField == null || !acceptsAsWatched(entityField)) {
+		if(value == null || entityField == null || !acceptsValueAsWatched(entityField.getClass())) {
 			throw new IllegalArgumentException("Bad value for entityField check ");
 		}
 		

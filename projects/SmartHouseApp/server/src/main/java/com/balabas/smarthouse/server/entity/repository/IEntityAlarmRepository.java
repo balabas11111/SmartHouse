@@ -18,7 +18,7 @@ public interface IEntityAlarmRepository extends CrudRepository<EntityAlarm, Long
 	@Query("from EntityAlarm where id = :id")
 	EntityAlarm findAlarmById(@Param("id")Long alarmId);
 	
-	@Query("from EntityAlarm where entity.group.device.id = :id")
+	@Query("from EntityAlarm where watchedItem.group.device.id = :id")
 	List<EntityAlarm> findAlarmsForDevice(@Param("id")Long deviceId);
 	
 	@Transactional
