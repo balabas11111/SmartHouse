@@ -11,7 +11,7 @@
 #include <display/DisplayPage.h>
 
 //OutputPin rele(BUILTIN_LED,  (char*) "Диод на плате", "built In LED",  LOW, false);
-PIRdetector pir(D5, (char*) "Детектор движения");
+//PIRdetector pir(D5, (char*) "Детектор движения");
 DS18D20sensor ds18d20(D6, (char*) "Температура пол");
 Bme280sensor bme280((char*)"Микроклимат воздух");
 Bh1750sensor bh1750((char*)"Освещение");
@@ -38,10 +38,10 @@ DisplayPage ds18d20Page(&ds18d20, ds18d20Fields, ds18d20FieldsDescr, ds18d20Fiel
 
 DisplayPage* pages[] = {&bmePage, &ds18d20Page, &bh1750Page};
 
-Entity* entities[] = { &pir, &ds18d20, &bme280, &bh1750 };
-EntityUpdate* updateableEntities[] = { &pir, &ds18d20, &bme280, &bh1750};
+Entity* entities[] = { &ds18d20, &bme280, &bh1750 };
+EntityUpdate* updateableEntities[] = { &ds18d20, &bme280, &bh1750};
 
-EntityApplication app("ESP8266_PIR_DETECTOR_DEV", (char*)"Система безопасности разработка",
+EntityApplication app("ESP8266_BME280_BH1750_DS18D20_OLED", (char*)"Микроклимат Зеленая комната",
 		entities, ARRAY_SIZE(entities),
 		updateableEntities, ARRAY_SIZE(updateableEntities), "1F575",
 		oled, pages, ARRAY_SIZE(pages));

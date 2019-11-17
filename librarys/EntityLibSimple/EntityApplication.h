@@ -44,7 +44,9 @@ class EntityApplication {
 public:
 	EntityApplication(const char* firmWare, char* description, Entity* entities[], int entityCount,
 			EntityUpdate* entityUpdate[], int entityUpdateCount, const char* emoji = EMOJI_FIRE,
+#ifdef SETTINGS_DISPLAY_ENABLED
 			PageToDisplayAdapter* displayAdapter = nullptr, DisplayPage* pages[] = nullptr, unsigned char pageCount=0,
+#endif
 			SettingsStorage* conf = nullptr,
 			std::function<void(void)> onWiFiConnected = nullptr,
 			std::function<void(void)> onWiFiDisConnected = nullptr);
@@ -95,7 +97,7 @@ public:
 	void notify(char* group = nullptr, char* name = nullptr, char* param = nullptr, NotificationTarget* notifTarget = nullptr);
 
 	void onServerRegistered();
-
+#ifdef SETTINGS_DISPLAY_ENABLED
 	DisplayManager* getDisplayManager() {
 		return this->displayManager;
 	}
@@ -112,9 +114,9 @@ public:
 		this->displayManager->switchToNextPageWithInterval(interval);
 	}
 
-private:
 	unsigned long interval = 0;
-
+#endif
+private:
 
 	SettingsStorage* conf = nullptr;
 	WiFiManager* wifiManager = nullptr;

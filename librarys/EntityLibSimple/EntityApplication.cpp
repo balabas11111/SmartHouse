@@ -10,7 +10,9 @@
 EntityApplication::EntityApplication(const char* firmWare, char* description,
 		Entity* entities[], int entityCount, EntityUpdate* entityUpdate[],
 		int entityUpdateCount, const char* emoji,
+#ifdef SETTINGS_DISPLAY_ENABLED
 		PageToDisplayAdapter* displayAdapter, DisplayPage* pages[], unsigned char pageCount,
+#endif
 		SettingsStorage* conf,
 		std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
