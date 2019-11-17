@@ -236,7 +236,8 @@ bool EntityManager::executeMethodOnEntity(JsonObject& params, JsonObject& respon
 			allowed = true;
 			changed = entity->isMarkedAsChanged();
 		} else {
-			Serial.println(FPSTR("Post is not allowed"));
+			Serial.print(entity->getName());
+			Serial.println(FPSTR(" - Post is not allowed"));
 		}
 	} else {
 		JsonObjectUtil::setField(response, MESSAGE, BAD_METHOD);

@@ -14,8 +14,9 @@
 #include <ArduinoJson.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
-
+#ifdef SENSORS_MOCKED
 #include <Bme280Mock.h>
+#endif
 #include "Emoji.h"
 #include <DeviceConfig.h>
 

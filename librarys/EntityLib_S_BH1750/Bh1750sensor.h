@@ -53,6 +53,10 @@ public:
 		if(chg){
 			putToBuffer(BH1750_LUX, this->lux);
 		}
+/*
+		Serial.print(FPSTR("lux="));
+		Serial.println(l);
+		*/
 	}
 
 	virtual void doGet(JsonObject& params, JsonObject& response) override {

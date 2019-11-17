@@ -14,26 +14,34 @@ DisplayManager::DisplayManager(PageToDisplayAdapter* displayAdapter,
 	this->pageCount = pageCount;
 	this->conf = conf;
 	this->currentPage = DISPLAY_MANAGER_STATUS_PAGE_INDEX;
+
+
 }
 
 void DisplayManager::init() {
 	if (!displayAdapter->init()){
 		return;
 	}
+	displayAdapter->setPowerOn(1);
 	initDone = true;
 
 	conf->setOnDeviceStatusChanged([this](){switchToStatusPageReturnToPrevious();});
 	conf->setDeviceStatus((char*)DEVICE_STATUS_INITIALIZING);
 
-	int initDoneCount = 0;
+	int initDoneCount = 1;
 
 	for(int i = 1; i <= this->pageCount; i++){
 		if((this->pages[i-1])->init()){
 			initDoneCount++;
 		}
 	}
+	if(initDoneCount>1) {
+		setPageChangeEnabled();
+	}
 	Serial.print(FPSTR("DisplayManager pages="));
 	Serial.println(initDoneCount);
+
+
 }
 
 void DisplayManager::switchToStatusPage(bool backToPrev) {
@@ -66,7 +74,7 @@ void DisplayManager::setPageChangeEnabled(bool pageChangeEnabled) {
 }
 
 void DisplayManager::renderCurrentPage() {
-	if(!(this->pageChangeEnabled && this->initDone)){
+	if(!(this->pageChangeEnabled && this->initDone )){
 		return;
 	}
 
@@ -74,6 +82,19 @@ void DisplayManager::renderCurrentPage() {
 }
 
 void DisplayManager::loop() {
+	if(this->interval!=0) {
+		if(nextSwitchTime < millis()) {
+			switchToNextNonStatusPage();
+			nextSwitchTime = millis() + interval;
+
+			Serial.print(FPSTR("interval="));
+			Serial.print(interval);
+			Serial.print(FPSTR(" nextSwitchTime="));
+			Serial.print(nextSwitchTime);
+			Serial.print(FPSTR(" now="));
+			Serial.println(millis());
+		}
+	}
 	this->displayAdapter->loop();
 }
 

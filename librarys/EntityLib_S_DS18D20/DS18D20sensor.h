@@ -56,31 +56,37 @@ public:
 		dallasTemperature->begin();
 		itemCount = dallasTemperature->getDeviceCount();
 
-		items = new DS18D20item[itemCount];
+		if(itemCount == 0) {
+			Serial.println(FPSTR("DS18D20 will not be deployed"));
+			this->hasGet = false;
+		} else {
+			items = new DS18D20item[itemCount];
 
-		for (uint8_t i = 0; i < itemCount; i++) {
-			DS18D20item item = DS18D20item();
-			dallasTemperature->getAddress(item.uid, i);
+			for (uint8_t i = 0; i < itemCount; i++) {
+				DS18D20item item = DS18D20item();
+				dallasTemperature->getAddress(item.uid, i);
 
-			String tmp = getDeviceAddress(item.uid, i);
+				String tmp = getDeviceAddress(item.uid, i);
 
-			item.uidStr = strdup(tmp.c_str());
-			item.descr = item.uidStr;
-			tmp = i;
-			tmp += SENSOR_ITEM_TEMP_SUF;
-			item.uidTempKey = strdup(tmp.c_str());
+				item.uidStr = strdup(tmp.c_str());
+				item.descr = item.uidStr;
+				tmp = i;
+				tmp += SENSOR_ITEM_TEMP_SUF;
+				item.uidTempKey = strdup(tmp.c_str());
 
-			tmp = i;
-			tmp += SENSOR_ITEM_DESCR_SUF;
+				tmp = i;
+				tmp += SENSOR_ITEM_DESCR_SUF;
 
-			item.uidDescrKey = strdup(tmp.c_str());
+				item.uidDescrKey = strdup(tmp.c_str());
 
-			item.temp = 127;
+				item.temp = 127;
 
-			items[i] = item;
+				items[i] = item;
+			}
+			readTemperatures(false);
+			print();
+
 		}
-		readTemperatures(false);
-		print();
 	}
 
 	virtual void doUpdate() override {

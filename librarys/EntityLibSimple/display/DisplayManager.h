@@ -30,13 +30,63 @@ public:
 
 	virtual void switchToStatusPageReturnToPrevious();
 	virtual void switchToStatusPage(bool backToPrev);
-	virtual void switchToNextPage();
+	virtual void switchToNextPage() ;
+
+	virtual void switchToNextNonStatusPage(){
+		if(this->currentPage == this->pageCount) {
+			this->currentPage = 0;
+		}
+		switchToNextPage();
+		//Serial.println(FPSTR("next page"));
+	}
 
 	void setPageChangeEnabled(bool pageChangeEnabled = true);
 
 	void loop();
-protected:
+
+	void switchToPage(int page) {
+		this->currentPage = page;
+		renderCurrentPage();
+	}
+
+	void powerOff(){
+		displayAdapter->setPowerOn(0);
+		Serial.println(FPSTR("Power OFF"));
+	}
+
+	void powerOn() {
+		Serial.println(FPSTR("Power ON"));
+		displayAdapter->setPowerOn(1);
+	}
+
+	bool isPowerOn(){
+		return displayAdapter->isPowerOn();
+	}
+
+	void switchToNextPageWithInterval(unsigned long interval) {
+		this->interval = interval;
+		nextSwitchTime = millis() + interval;
+
+		switchToNextNonStatusPage();
+	}
+
+	void switchToNextPageOrTurnPowerOn() {
+		if(displayAdapter->isPowerOn()) {
+			displayAdapter->setPowerOn();
+			switchToNextNonStatusPage();
+		} else {
+			displayAdapter->setPowerOn();
+			renderCurrentPage();
+		}
+	}
+
 	virtual void renderCurrentPage();
+
+protected:
+	unsigned long interval = 0;
+	unsigned long nextSwitchTime = 0;
+
+
 	virtual void renderStatusPage();
 private:
 	PageToDisplayAdapter* displayAdapter;
@@ -48,6 +98,7 @@ private:
 
 	bool initDone = false;
 	bool pageChangeEnabled = false;
+
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_DISPLAY_DISPLAYMANAGER_H_ */

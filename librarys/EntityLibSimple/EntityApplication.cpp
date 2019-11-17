@@ -9,13 +9,15 @@
 
 EntityApplication::EntityApplication(const char* firmWare, char* description,
 		Entity* entities[], int entityCount, EntityUpdate* entityUpdate[],
-		int entityUpdateCount, const char* emoji, SettingsStorage* conf,
+		int entityUpdateCount, const char* emoji,
+		PageToDisplayAdapter* displayAdapter, DisplayPage* pages[], unsigned char pageCount,
+		SettingsStorage* conf,
 		std::function<void(void)> onWiFiConnected,
 		std::function<void(void)> onWiFiDisConnected) {
 
 	this->construct(
 #ifdef SETTINGS_DISPLAY_ENABLED
-			nullptr, nullptr, 0,
+			displayAdapter, pages, pageCount,
 #endif
 			firmWare, description, entities, entityCount, entityUpdate,
 			entityUpdateCount, emoji, conf, onWiFiConnected, onWiFiDisConnected);
@@ -57,8 +59,8 @@ void EntityApplication::construct(
 			this->conf);
 }
 
-void EntityApplication::begin() {
-	initWithWiFi(nullptr);
+void EntityApplication::begin(bool initI2C) {
+	initWithWiFi(initI2C);
 	updateEntities(true);
 	//checkServerRegistration();
 	this->getServerConnector()->triggerCheckRegistrationOnServer();
@@ -191,7 +193,16 @@ void EntityApplication::loop() {
 #endif
 
 #if defined(SETTINGS_SERVER_GET_DISPATCH_CHANGES_DISABLED) && defined(SETTINGS_SERVER_MQTT_DISABLED)
-		this->entityManager->processChangedEntities();
+		bool entitiesChanged = this->entityManager->processChangedEntities();
+		if(entitiesChanged) {
+#ifdef SETTINGS_DISPLAY_ENABLED
+	this->displayManager->renderCurrentPage();
+#endif
+		}
+#endif
+
+#ifdef SETTINGS_DISPLAY_ENABLED
+	this->displayManager->loop();
 #endif
 
 	this->wifiServerManager->loop();

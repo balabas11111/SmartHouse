@@ -12,7 +12,7 @@
 #include "ArduinoJson.h"
 
 #ifndef DISPLAY_TURN_OFF_TIME
-#define DISPLAY_TURN_OFF_TIME 15000
+#define DISPLAY_TURN_OFF_TIME 30000
 #endif
 
 class PageToDisplayAdapter {
@@ -30,6 +30,22 @@ public:
 	virtual void clear(){};
 
 	virtual void loop();
+
+protected:
+	virtual void toStartPosition() {
+		yPosition = 0;
+		//Serial.println(FPSTR("============"));
+	}
+	virtual void print(const char* str){
+		if(str!=nullptr) {
+			Serial.print(str);
+		}
+	};
+	virtual void printNextLine(){
+		Serial.println();
+	};
+
+	int yPosition = 0;
 private:
 	bool initialized = false;
 	bool powerOn = false;

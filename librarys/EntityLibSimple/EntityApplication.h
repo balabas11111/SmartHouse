@@ -44,6 +44,7 @@ class EntityApplication {
 public:
 	EntityApplication(const char* firmWare, char* description, Entity* entities[], int entityCount,
 			EntityUpdate* entityUpdate[], int entityUpdateCount, const char* emoji = EMOJI_FIRE,
+			PageToDisplayAdapter* displayAdapter = nullptr, DisplayPage* pages[] = nullptr, unsigned char pageCount=0,
 			SettingsStorage* conf = nullptr,
 			std::function<void(void)> onWiFiConnected = nullptr,
 			std::function<void(void)> onWiFiDisConnected = nullptr);
@@ -61,7 +62,7 @@ public:
 				std::function<void(void)> onWiFiDisConnected = nullptr
 				);
 
-	void begin();
+	void begin(bool initI2C = false);
 
 	void initWithWiFi(bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
 	void initWithoutWiFi(bool initI2C = false, uint8_t clockPin = SCL, uint8_t dataPin = SDA);
@@ -94,7 +95,27 @@ public:
 	void notify(char* group = nullptr, char* name = nullptr, char* param = nullptr, NotificationTarget* notifTarget = nullptr);
 
 	void onServerRegistered();
+
+	DisplayManager* getDisplayManager() {
+		return this->displayManager;
+	}
+
+	void switchToPage(int page) {
+		this->displayManager->switchToPage(page);
+	}
+
+	void switchToNextNonStatusPage() {
+		this->displayManager->switchToNextNonStatusPage();
+	}
+
+	void switchPagesWithInterval(unsigned long interval) {
+		this->displayManager->switchToNextPageWithInterval(interval);
+	}
+
 private:
+	unsigned long interval = 0;
+
+
 	SettingsStorage* conf = nullptr;
 	WiFiManager* wifiManager = nullptr;
 	WiFiServerManager* wifiServerManager = nullptr;

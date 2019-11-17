@@ -13,6 +13,19 @@ DisplayPage::DisplayPage(Entity* entity, const char* fields[], int fieldsSize,
 	this->fields = fields;
 	this->fieldsSize = fieldsSize;
 	this->header = header;
+	this->fieldsDescr = nullptr;
+	this->fieldsMeasure = nullptr;
+}
+
+DisplayPage::DisplayPage(Entity* entity, const char* fields[],
+		const char* fieldsDescr[], const char* fieldsMeasure[], int fieldsSize,
+		const char* header) {
+	this->entity = entity;
+		this->fields = fields;
+		this->fieldsSize = fieldsSize;
+		this->header = header;
+		this->fieldsDescr = fieldsDescr;
+		this->fieldsMeasure = fieldsMeasure;
 }
 
 bool DisplayPage::init() {
@@ -35,13 +48,18 @@ void DisplayPage::render(PageToDisplayAdapter* adapter) {
 
 
 		JsonObject& dataToDisplay = resp->getRoot().createNestedObject(DISPLAY_DATA);
+		//JsonObjectUtil::print(dataEntity);
 		//put needed keys
 		if(dataEntity.size()>0){
 			for(int i = 0; i < this->fieldsSize; i++){
 				const char* key = this->fields[i];
 
 				if(dataEntity.containsKey(key)){
-					dataToDisplay[key] = dataEntity[key];
+					JsonObject& dataEntityToDisplay = dataToDisplay.createNestedObject(key);
+					dataEntityToDisplay["key"] = key;
+					dataEntityToDisplay["name"] = this->fieldsDescr[i];
+					dataEntityToDisplay["val"] = dataEntity[key];
+					dataEntityToDisplay["msr"] = this->fieldsMeasure[i];
 				}
 			}
 		}
@@ -50,7 +68,9 @@ void DisplayPage::render(PageToDisplayAdapter* adapter) {
 			dataToDisplay[ERROR_KEY] = NO_DATA;
 		}
 
-		adapter->renderPage((this->header != nullptr)?this->header:entity->getName(), dataToDisplay);
+		//JsonObjectUtil::print(dataToDisplay);
+
+		adapter->renderPage((this->header != nullptr)?this->header:entity->getDescr(), dataToDisplay);
 
 	delete resp;
 
@@ -70,3 +90,4 @@ bool DisplayPage::renderKey(const char* key) {
 bool DisplayPage::isInitDone() {
 	return this->initDone;
 }
+

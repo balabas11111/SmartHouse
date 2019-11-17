@@ -24,6 +24,7 @@
 class DisplayPage {
 public:
 	DisplayPage(Entity* entity, const char* fields[], int fieldsSize, const char* header = nullptr);
+	DisplayPage(Entity* entity, const char* fields[], const char* fieldsDescr[], const char* fieldsMeasure[], int fieldsSize, const char* header = nullptr);
 	virtual ~DisplayPage(){};
 
 	virtual bool init();
@@ -37,6 +38,8 @@ private:
 
 	Entity* entity;
 	const char** fields;
+	const char** fieldsDescr;
+	const char** fieldsMeasure;
 	int fieldsSize;
 	const char* header;
 

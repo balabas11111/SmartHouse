@@ -13,7 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import lombok.extern.log4j.Log4j2;
+
 @Service
+@Log4j2
 public class HttpRequestExecutorImpl implements HttpRequestExecutor {
 
 	public static String getParamsString(Map<String, String> params) throws UnsupportedEncodingException {
@@ -78,6 +81,8 @@ public class HttpRequestExecutorImpl implements HttpRequestExecutor {
                 .getRequestFactory();
         rf.setReadTimeout(5000);
         rf.setConnectTimeout(5000);
+        
+        log.info(url + " request=" + request);
 		
 		ResponseEntity<String> result =  restTemplate.postForEntity(url, request, String.class);
 		return result;
