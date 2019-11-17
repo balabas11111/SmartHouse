@@ -96,6 +96,7 @@ void DisplayManager::loop() {
 		}
 	}
 	this->displayAdapter->loop();
+	switchToNextPageIfTriggered();
 }
 
 void DisplayManager::renderStatusPage() {

@@ -10,9 +10,9 @@
 #include <display/DisplayToOledAdapter.h>
 #include <display/DisplayPage.h>
 
-OutputPin rele(BUILTIN_LED,  (char*) "Диод на плате", "built In LED",  LOW, false);
+//OutputPin rele(BUILTIN_LED,  (char*) "Диод на плате", "built In LED",  LOW, false);
 PIRdetector pir(D5, (char*) "Детектор движения");
-DS18D20sensor ds18d20(D3, (char*) "Температура пол");
+DS18D20sensor ds18d20(D6, (char*) "Температура пол");
 Bme280sensor bme280((char*)"Микроклимат воздух");
 Bh1750sensor bh1750((char*)"Освещение");
 
@@ -38,8 +38,8 @@ DisplayPage ds18d20Page(&ds18d20, ds18d20Fields, ds18d20FieldsDescr, ds18d20Fiel
 
 DisplayPage* pages[] = {&bmePage, &ds18d20Page, &bh1750Page};
 
-Entity* entities[] = { &pir, &rele, &ds18d20, &bme280, &bh1750 };
-EntityUpdate* updateableEntities[] = { &pir, &rele, &ds18d20, &bme280, &bh1750};
+Entity* entities[] = { &pir, &ds18d20, &bme280, &bh1750 };
+EntityUpdate* updateableEntities[] = { &pir, &ds18d20, &bme280, &bh1750};
 
 EntityApplication app("ESP8266_PIR_DETECTOR_DEV", (char*)"Система безопасности разработка",
 		entities, ARRAY_SIZE(entities),
@@ -49,26 +49,17 @@ EntityApplication app("ESP8266_PIR_DETECTOR_DEV", (char*)"Система без�
 bool btnPressed = false;
 
 void setup() {
-	pinMode(D8, INPUT_PULLUP);
-	pinMode(D6, INPUT);
-	attachInterrupt(digitalPinToInterrupt(D8), interruptButton, RISING);
-	attachInterrupt(digitalPinToInterrupt(D6), interruptButton, RISING);
+	pinMode(D3, INPUT);
+	attachInterrupt(digitalPinToInterrupt(D3), interruptButton, RISING);
 
 	app.begin(true);
 	app.switchToPage(1);
-	//app.switchPagesWithInterval(15000);
 }
 
 void loop() {
 	app.loop();
-
-	if(btnPressed) {
-		app.getDisplayManager()->switchToNextPageOrTurnPowerOn();
-		btnPressed = false;
-	}
 }
 
 void interruptButton() {
-	btnPressed = true;
-	Serial.println(FPSTR("Interrupted"));
+	app.getDisplayManager()->triggerPageChange();
 }
