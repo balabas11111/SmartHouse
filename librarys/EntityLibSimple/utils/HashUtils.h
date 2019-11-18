@@ -13,7 +13,9 @@
 #include "rom/sha.h"
 #include "esp_types.h"
 
-	void encode_sha1(uint8_t * data, uint32_t size, uint8_t hash[20]) {
+class HashUtils {
+public:
+	static void encode_sha1(uint8_t * data, uint32_t size, uint8_t hash[20]) {
 
 		SHA_CTX ctx;
 
@@ -59,7 +61,7 @@
 		encode_sha1(data.c_str(), data.length(), hash);
 	}
 */
-	String encode_sha1(uint8_t* data, uint32_t size) {
+	static String encode_sha1(uint8_t* data, uint32_t size) {
 	    uint8_t hash[20];
 	    String hashStr = "";
 
@@ -84,12 +86,13 @@
 	    return encode_sha1((uint8_t*) data, size);
 	}
 */
-	String encode_sha1(const char* data, uint32_t size) {
+	static String encode_sha1(const char* data, uint32_t size) {
 	    return encode_sha1((uint8_t*) data, size);
 	}
 
-	String encode_sha1(String data) {
+	static String encode_sha1(String data) {
 	    return encode_sha1(data.c_str(), data.length());
 	}
+};
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_UTILS_HASHUTILS_H_ */

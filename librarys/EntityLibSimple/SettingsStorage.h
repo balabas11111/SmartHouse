@@ -320,7 +320,7 @@ public:
 
 	void generateAuthorization(String& tempServerKey, char* tempDevKey) {
 		Serial.println(FPSTR("generate Authorization-------------------------"));
-		String serverKeyHash = encode_sha1(smartServerKey());
+		String serverKeyHash = HashUtils::encode_sha1(smartServerKey());
 		String tempDeviceKey = tempDevKey;
 
 		Serial.print(FPSTR("tempDeviceKey="));
@@ -332,10 +332,10 @@ public:
 		Serial.print(FPSTR("unhashedDeviceToken="));
 		Serial.println(tmp);
 
-		setDeviceAuthorization(encode_sha1(tmp));
+		setDeviceAuthorization(HashUtils::encode_sha1(tmp));
 
 		String tmp2 = tempServerKey + smartServerKey() + deviceId();
-		setServerAuthorization(encode_sha1(tmp2));
+		setServerAuthorization(HashUtils::encode_sha1(tmp2));
 
 		Serial.print(FPSTR("unhashedServerToken="));
 		Serial.println(tmp2);

@@ -23,7 +23,7 @@ ServerConnector::ServerConnector(SettingsStorage* conf,
 	this->urlDataChanged = baseUrl + SMART_HOUSE_SERVER_URL_DATA_CHANGED
 			+ conf->deviceId();
 
-	String authorization = encode_sha1(conf->smartServerKey());
+	String authorization = HashUtils::encode_sha1(conf->smartServerKey());
 
 	conf->setServerAuthorization(authorization);
 	conf->setDeviceAuthorization(authorization);
