@@ -10,16 +10,23 @@
 
 #include "Arduino.h"
 #include "ArduinoJson.h"
-#include "Hash.h"
-#include "ESP8266HTTPClient.h"
+#include "utils/HashUtils.h"
+
 #include "SettingsStorage.h"
 #include "DeviceConfig.h"
 #include "DeviceConstants.h"
 #include <functional>
 #include "WiFi/HttpConstants.h"
 #include "EntityJsonRequestResponse.h"
+#ifdef ESP8266
 #include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
+#include "ESP8266HTTPClient.h"
+#endif
+
+#ifdef ESP32
+#include <WiFi.h>
+#include "HTTPClient.h"
+#endif
 
 #define SMART_HOUSE_SERVER_URL_REGISTER            "/api/v1/devices/register?deviceId="
 #define SMART_HOUSE_SERVER_URL_DATA_CHANGED        "/api/v1/devices/dataChanged?deviceId="

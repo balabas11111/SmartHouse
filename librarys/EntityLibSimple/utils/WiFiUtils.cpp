@@ -49,7 +49,7 @@ void WiFiUtils::printInitResults(int confOk, int startOk) {
 		Serial.print(startOk);
 		Serial.println(FPSTR(")"));
 }
-
+#ifdef ESP8266
 void WiFiUtils::printSoftAPModeProbeRequestReceived(const WiFiEventSoftAPModeProbeRequestReceived& evt) {
   Serial.print(FPSTR("AP WiFiEventSoftAPModeProbeRequestReceived: MAC="));
   Serial.print(WiFiUtils::macToString(evt.mac));
@@ -96,7 +96,7 @@ void WiFiUtils::printStationModeGotIP(const WiFiEventStationModeGotIP& evt){
 	Serial.print(FPSTR("onStationModeGotIP IP="));
 	Serial.println(evt.ip);
 }
-
+#endif
 bool WiFiUtils::isConnected() {
 	return WiFi.status() == WL_CONNECTED;
 }

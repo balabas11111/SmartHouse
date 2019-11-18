@@ -42,11 +42,15 @@ void MqttManager::init(EntityJsonRequestResponse* buf, bool registered) {
 
 			this->wclient = new WiFiClient();
 			Serial.print(FPSTR(" wifiClient "));
+#ifdef ESP8266
 			this->client = new PubSubClient(adress, MQTT_PORT,
 						[this](char* topic, uint8_t* payload,
 								unsigned int length){ callback(topic, payload, length);},
 								*this->wclient);
-
+#endif
+#ifdef ESP32
+			this->client = new PubSubClient(adress, MQTT_PORT, *this->wclient);
+#endif
 			this->initDone = true;
 			this->registered = registered;
 

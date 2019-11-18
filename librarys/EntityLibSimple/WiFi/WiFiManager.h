@@ -9,9 +9,14 @@
 #define LIBRARIES_ENTITYLIBSIMPLE_WIFI_WIFIMANAGER_H_
 
 #include <Arduino.h>
+#ifdef ESP8266
 #include <ESP8266WiFi.h>
+#endif
+#ifdef ESP32
+#include <WiFi.h>
+#endif
 #include <functional>
-#include <Hash.h>
+#include <utils/HashUtils.h>
 
 #include <utils/WiFiUtils.h>
 #include <SettingsStorage.h>
@@ -42,15 +47,20 @@ protected:
 	void registerApEvents();
 	void registerStaEvents();
 
+	void onStationModeDisconnected();
+	void onStationModeGotIP(String ip);
+
+#ifdef ESP8266
 	void onStationModeDisconnected(const WiFiEventStationModeDisconnected& evt);
 	void onStationModeGotIP(const WiFiEventStationModeGotIP& evt);
+#endif
 
 private:
 	SettingsStorage* conf;
 
 	wl_status_t oldWiFistatus;
 	bool reconnected=false;
-
+#ifdef ESP8266
 	WiFiEventHandler wiFiEventSoftAPModeProbeRequestReceivedHandler;
 	WiFiEventHandler onSoftAPModeStationConnectedHandler;
 	WiFiEventHandler onSoftAPModeStationDisconnectedHandler;
@@ -59,7 +69,7 @@ private:
 	WiFiEventHandler onStationModeDHCPTimeoutHandler;
 	WiFiEventHandler onStationModeDisconnectedHandler;
 	WiFiEventHandler onStationModeGotIPHandler;
-
+#endif
 	std::function<void(void)> onWiFiConnected;
 	std::function<void(void)> onWiFiDisConnected;
 };

@@ -19,43 +19,11 @@
 							<builder buildPath="${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED}/Release" id="io.sloeber.sketch.builder.2102249394" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Arduino sketch builder" superClass="io.sloeber.sketch.builder"/>
 							<tool id="io.sloeber.tool.sketch.compiler.cpp.1301356097" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
 								<option id="io.sloeber.compiler.cpp.sketch.option.incpath.162827147" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/core/variant}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Adafruit_BME280}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Adafruit_Sensor}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ArduinoJson}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ArduinoJson/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/BH1750}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/EntityLib_S_BH1750}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/EntityLib_S_BME280}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/EntityLib_S_DS18D20}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/EntityLibSimple}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266HTTPClient}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266HTTPClient/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266HTTPUpdateServer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266WebServer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266WebServer/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266WiFi}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266WiFi/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/FastCRC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Hash}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Hash/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/iarduino_OLED_txt}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/iarduino_OLED_txt/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/OneWire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/PubSubClient}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/PubSubClient/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/SPI}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Ticker}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Wire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/DallasTemperature}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Adafruit_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ArduinoJson}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/BH1750}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/DallasTemperature}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/EntityLib_S_BH1750}&quot;"/>
@@ -72,57 +40,26 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ESP8266WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/FastCRC}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Hash}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Hash/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/iarduino_OLED_txt}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/iarduino_OLED_txt/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/PubSubClient}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/PubSubClient/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/SPI}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Ticker}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Wire}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ArduinoOTA}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/HTTPUpdateServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/HTTPUpdateServer/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.237786300" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
 							<tool id="io.sloeber.tool.compiler.c.864651636" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c">
 								<option id="io.sloeber.compiler.c.sketch.option.incpath.1056084872" name="Include Paths (-I)" superClass="io.sloeber.compiler.c.sketch.option.incpath" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/core/variant}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Adafruit_BME280}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Adafruit_Sensor}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ArduinoJson}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ArduinoJson/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/BH1750}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/EntityLib_S_BH1750}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/EntityLib_S_BME280}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/EntityLib_S_DS18D20}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/EntityLibSimple}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266HTTPClient}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266HTTPClient/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266HTTPUpdateServer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266WebServer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266WebServer/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266WiFi}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266WiFi/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/FastCRC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Hash}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Hash/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/iarduino_OLED_txt}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/iarduino_OLED_txt/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/OneWire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/PubSubClient}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/PubSubClient/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/SPI}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Ticker}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Wire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/DallasTemperature}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Adafruit_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ArduinoJson}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/BH1750}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/DallasTemperature}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/EntityLib_S_BH1750}&quot;"/>
@@ -139,57 +76,26 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ESP8266WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/FastCRC}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Hash}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Hash/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/iarduino_OLED_txt}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/iarduino_OLED_txt/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/PubSubClient}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/PubSubClient/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/SPI}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Ticker}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Wire}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ArduinoOTA}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/HTTPUpdateServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/HTTPUpdateServer/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1842534031" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
 							<tool id="io.sloeber.tool.sketch.compiler.s.1800161918" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s">
 								<option id="io.sloeber.compiler.asm.sketch.option.incpath.1956027916" name="Include Paths (-I)" superClass="io.sloeber.compiler.asm.sketch.option.incpath" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/core/core}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/core/variant}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Adafruit_BME280}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Adafruit_Sensor}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ArduinoJson}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ArduinoJson/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/BH1750}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/EntityLib_S_BH1750}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/EntityLib_S_BME280}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/EntityLib_S_DS18D20}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/EntityLibSimple}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266HTTPClient}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266HTTPClient/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266HTTPUpdateServer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266WebServer}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266WebServer/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266WiFi}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/ESP8266WiFi/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/FastCRC}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Hash}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Hash/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/iarduino_OLED_txt}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/iarduino_OLED_txt/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/OneWire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/PubSubClient}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/PubSubClient/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/SPI}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Ticker}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/Wire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20_OLED/libraries/DallasTemperature}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Adafruit_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Adafruit_Sensor}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ArduinoJson}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/BH1750}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/DallasTemperature}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/EntityLib_S_BH1750}&quot;"/>
@@ -206,15 +112,16 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ESP8266WiFi/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/FastCRC}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Hash}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Hash/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/iarduino_OLED_txt}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/iarduino_OLED_txt/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/OneWire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/PubSubClient}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/PubSubClient/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/SPI}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Ticker}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Wire}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ArduinoJson/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/ArduinoOTA}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/Hash/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/HTTPUpdateServer}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_BH1750_DS18D20/libraries/HTTPUpdateServer/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.547849260" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -224,19 +131,8 @@
 							<tool id="io.sloeber.tool.size.1106176697" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="io.sloeber.core.toolChain.release.1825007943.1693467665" name="/" resourcePath="libraries/EntityLibSimple/WiFi">
-						<toolChain id="io.sloeber.core.toolChain.release.69989031" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
-							<tool id="io.sloeber.tool.sketch.compiler.cpp.2123385915" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1301356097"/>
-							<tool id="io.sloeber.tool.compiler.c.1862172611" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.864651636"/>
-							<tool id="io.sloeber.tool.sketch.compiler.s.1685925906" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.1800161918"/>
-							<tool id="io.sloeber.tool.ar.1093798634" name="Arduino archiver" superClass="io.sloeber.tool.ar.1475619953"/>
-							<tool id="io.sloeber.tool.combine.1009145170" name="Arduino combiner" superClass="io.sloeber.tool.combine.308287399"/>
-							<tool id="io.sloeber.tool.objcopy.eep.1849102427" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.571285193"/>
-							<tool id="io.sloeber.tool.size.2043002418" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.1106176697"/>
-						</toolChain>
-					</folderInfo>
 					<sourceEntries>
-						<entry excluding="libraries/ArduinoJson/scripts|libraries/ArduinoJson/fuzzing|libraries/Adafruit_BME280/.github|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="libraries/OneWire/util|libraries/EntityLibSimple/WiFi|libraries/EntityLibSimple/utils|libraries/EntityLibSimple/serve|libraries/EntityLibSimple/pin|libraries/EntityLibSimple/Notifiers|libraries/EntityLibSimple/display|libraries/ArduinoJson/scripts|libraries/ArduinoJson/fuzzing|libraries/Adafruit_BME280/.github|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

@@ -11,9 +11,17 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
+#ifdef ESP8266
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
+#endif
+#ifdef ESP32
+#include <WiFi.h>
+#include <WebServer.h>
+#include <HTTPClient.h>
+#endif
+
 #include <EntityJsonRequestResponse.h>
 #include <utils/JsonObjectUtil.h>
 #include <WiFi/HttpConstants.h>

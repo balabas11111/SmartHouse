@@ -9,8 +9,13 @@
 #include <ArduinoJson.h>
 
 WiFiServerManager::WiFiServerManager(EntityManager* manager, SettingsStorage* conf, int port) {
+#ifdef ESP8266
 	this->server = new ESP8266WebServer(port);
 	this->updateServer = new ESP8266HTTPUpdateServer(true);
+#endif
+#ifdef ESP32
+	this->server = new WebServer(80);
+#endif
 	this->manager = manager;
 	this->conf = conf;
 }

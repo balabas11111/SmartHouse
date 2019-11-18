@@ -4,11 +4,7 @@
  *  Created on: Feb 8, 2019
  *      Author: Vitaliy_Vlasov
  */
-
-#include "HashPrint.h"
 #include "FileUtils.h"
-#include "JsonObjectUtil.h"
-#include <ArduinoJson.h>
 
 FileUtils::FileUtils(){}
 
@@ -202,7 +198,7 @@ void FileUtils::dir(const char* path){
 	Serial.println(fs_info.usedBytes);
 #endif
 #ifdef ESP32
-			listDir(SPIFFS, "/", 10);
+			listDir(SPIFFS, path, 10);
 #endif
 	Serial.println(FPSTR("---------------------------------------"));
 }
@@ -290,13 +286,20 @@ void FileUtils::dirFiles(JsonObject& json) {
 	JsonArray& arrNames=json.createNestedArray("files");
 	JsonArray& arrSize=json.createNestedArray("size");
 
+#ifdef ESP32
+	File dir = SPIFFS.open("/");
+
+	listDir(SPIFFS, "/", 10, &arrNames, &arrSize);
+#else
 	int count=0;
+
 		Dir dir = SPIFFS.openDir("/");
 		while (dir.next()) {
 			arrNames.add(dir.fileName());
 			arrSize.add(dir.fileSize());
 		  count++;
 		}
+#endif
 }
 
 JsonObject& FileUtils::loadJsonFromFile(const char* fileName, DynamicJsonBuffer* buf, JsonObject& obj) {
@@ -341,7 +344,7 @@ bool FileUtils::saveJsonToFileIfDiff(const char* fileName, JsonObject& json) {
 }
 
 #ifdef ESP32
-void EspSettingsBox::listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
+void FileUtils::listDir(fs::FS &fs, const char * dirname, uint8_t levels, JsonArray* arrNames, JsonArray* arrSize) {
 		  Serial.print(FPSTR("Listing directory: "));
 		  Serial.println(dirname);
 
@@ -361,13 +364,19 @@ void EspSettingsBox::listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
 		      Serial.print(FPSTR("  DIR : "));
 		      Serial.println(file.name());
 		      if (levels) {
-		        listDir(fs, file.name(), levels - 1);
+		        listDir(fs, file.name(), levels - 1, arrNames, arrSize);
+		      }
+		      if(arrNames !=nullptr) {
+		    	  arrNames->add(file.name());
 		      }
 		    } else {
 		      Serial.print(FPSTR("  FILE: "));
 		      Serial.print(file.name());
 		      Serial.print(FPSTR("  SIZE: "));
 		      Serial.println(file.size());
+		      if(arrSize) {
+				  arrSize->add(file.size());
+			  }
 		    }
 		    file = root.openNextFile();
 		  }

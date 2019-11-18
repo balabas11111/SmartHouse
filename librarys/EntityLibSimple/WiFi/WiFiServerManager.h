@@ -15,12 +15,19 @@
 #include <utils/FileUtils.h>
 #include <SettingsStorage.h>
 #include <DeviceConstants.h>
+#ifdef ESP8266
 #include <ESP8266WebServer.h>
+#include <ESP8266HTTPUpdateServer.h>
+#endif
+#ifdef ESP32
+#include <WiFi.h>
+#include <WebServer.h>
+#include <ESP32HTTPUpdateServer.h>
+#endif
 #include <EntityManager.h>
 #include <EntityJsonRequestResponse.h>
 #include <WiFi/HttpConstants.h>
 #include <functional>
-#include <ESP8266HTTPUpdateServer.h>
 
 
 class WiFiServerManager {
@@ -64,12 +71,18 @@ protected:
 	bool isAuthenticatedRequest(char* login, char* password);
 
 private:
+#ifdef ESP8266
 	ESP8266WebServer* server;
+	ESP8266HTTPUpdateServer* updateServer;
+#endif
+#ifdef ESP32
+	WebServer* server;
+	ESP32HTTPUpdateServer* updateServer;
+#endif
 	EntityManager* manager;
 	SettingsStorage* conf;
 
 	File fsUploadFile;
-	ESP8266HTTPUpdateServer* updateServer;
 
 	bool shrReceived = false;
 	unsigned long lastSrequestTime = 0;

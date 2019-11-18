@@ -15,8 +15,12 @@
 #include "functional"
 #include "SettingsStorage.h"
 #include "EntityJsonRequestResponse.h"
-
+#ifdef ESP8266
 #include "ESP8266WiFi.h"
+#endif
+#ifdef ESP32
+#include "WiFi.h"
+#endif
 #include "PubSubClient.h"
 #include "utils/DeviceUtils.h"
 
@@ -45,7 +49,7 @@ private:
 	SettingsStorage* conf = nullptr;
 	EntityJsonRequestResponse* buffer = nullptr;
 
-	WiFiClient* wclient = nullptr;
+	Client* wclient = nullptr;
 	PubSubClient* client = nullptr;
 
 	boolean initDone = false;

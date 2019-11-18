@@ -140,17 +140,6 @@
 							<tool id="io.sloeber.tool.size.408651251" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="io.sloeber.core.toolChain.release.2021900665.1774672705" name="/" resourcePath="libraries/EntityLibSimple/WiFi">
-						<toolChain id="io.sloeber.core.toolChain.release.1904879576" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
-							<tool id="io.sloeber.tool.sketch.compiler.cpp.2087943845" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1979268898"/>
-							<tool id="io.sloeber.tool.compiler.c.1576142055" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.1579651777"/>
-							<tool id="io.sloeber.tool.sketch.compiler.s.791263359" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.265126922"/>
-							<tool id="io.sloeber.tool.ar.863996973" name="Arduino archiver" superClass="io.sloeber.tool.ar.1598657552"/>
-							<tool id="io.sloeber.tool.combine.1952360266" name="Arduino combiner" superClass="io.sloeber.tool.combine.1376659815"/>
-							<tool id="io.sloeber.tool.objcopy.eep.138106478" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.868440676"/>
-							<tool id="io.sloeber.tool.size.998787192" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.408651251"/>
-						</toolChain>
-					</folderInfo>
 					<sourceEntries>
 						<entry excluding="libraries/Adafruit_BME280/.github|libraries/ArduinoJson/scripts|libraries/ArduinoJson/fuzzing|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>

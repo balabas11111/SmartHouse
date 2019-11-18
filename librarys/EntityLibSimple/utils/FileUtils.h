@@ -8,9 +8,15 @@
 #ifndef LIBRARIES_ENTITYLIBSIMPLE_UTILS_FILEUTILS_H_
 #define LIBRARIES_ENTITYLIBSIMPLE_UTILS_FILEUTILS_H_
 
-#include <Arduino.h>
-#include <ArduinoJson.h>
-#include <FS.h>
+#include "Arduino.h"
+#include "ArduinoJson.h"
+#include "FS.h"
+#ifdef ESP32
+#include "SPIFFS.h"
+#endif
+
+#include "HashPrint.h"
+#include "JsonObjectUtil.h"
 
 #define FILE_MODE_READ "r"
 #define FILE_MODE_WRITE "w"
@@ -54,6 +60,10 @@ public:
 	static int saveFile(const char* fileName,uint8_t *data, size_t len);
 
 	static void dirFiles(JsonObject& json);
+
+#ifdef ESP32
+	static void listDir(fs::FS &fs, const char * dirname, uint8_t levels, JsonArray* arrNames = nullptr, JsonArray* arrSize = nullptr);
+#endif
 };
 
 #endif /* LIBRARIES_DEVICELIB_UTILS_FILEUTILS_H_ */

@@ -73,7 +73,7 @@
 #include <IPAddress.h>
 #include <sstream>
 #include <utils/DeviceUtils.h>
-#include "Hash.h"
+#include "utils/HashUtils.h"
 #include <DeviceConfig.h>
 #include <DeviceConstants.h>
 #include <EntityDescriptor.h>
@@ -95,7 +95,12 @@ public:
 	}
 
 	void initDeviceId(){
+#ifdef ESP8266
 		String devIdTmp="ESP_"+String(ESP.getChipId());
+#endif
+#ifdef ESP32
+		String devIdTmp="ESP_"+String(ESP.getChipRevision());
+#endif
 		this->_devId=strdup(devIdTmp.c_str());
 
 		this->_ssidAp = strdup(deviceId());
@@ -315,7 +320,7 @@ public:
 
 	void generateAuthorization(String& tempServerKey, char* tempDevKey) {
 		Serial.println(FPSTR("generate Authorization-------------------------"));
-		String serverKeyHash = sha1(smartServerKey());
+		String serverKeyHash = encode_sha1(smartServerKey());
 		String tempDeviceKey = tempDevKey;
 
 		Serial.print(FPSTR("tempDeviceKey="));
@@ -327,10 +332,10 @@ public:
 		Serial.print(FPSTR("unhashedDeviceToken="));
 		Serial.println(tmp);
 
-		setDeviceAuthorization(sha1(tmp));
+		setDeviceAuthorization(encode_sha1(tmp));
 
 		String tmp2 = tempServerKey + smartServerKey() + deviceId();
-		setServerAuthorization(sha1(tmp2));
+		setServerAuthorization(encode_sha1(tmp2));
 
 		Serial.print(FPSTR("unhashedServerToken="));
 		Serial.println(tmp2);

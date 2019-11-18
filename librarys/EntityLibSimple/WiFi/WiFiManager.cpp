@@ -138,7 +138,7 @@ void WiFiManager::waitForConnect() {
 
 void WiFiManager::registerApEvents() {
 	reconnected = false;
-
+#ifdef ESP8266
 	wiFiEventSoftAPModeProbeRequestReceivedHandler =
 			WiFi.onSoftAPModeProbeRequestReceived(
 					[this](const WiFiEventSoftAPModeProbeRequestReceived& evt) {WiFiUtils::printSoftAPModeProbeRequestReceived(evt);});
@@ -148,16 +148,18 @@ void WiFiManager::registerApEvents() {
 	onSoftAPModeStationDisconnectedHandler =
 			WiFi.onSoftAPModeStationDisconnected(
 					[this](const WiFiEventSoftAPModeStationDisconnected& evt) {WiFiUtils::printSoftAPModeStationDisconnected(evt);});
-
+#endif
 	Serial.println(FPSTR("WiFi registered Ap events"));
 }
 
 void WiFiManager::registerStaEvents() {
 	reconnected = false;
 
+#ifdef ESP8266
 	stationModeConnectedHandler =
 			WiFi.onStationModeConnected(
 					[this](const WiFiEventStationModeConnected& evt) {WiFiUtils::printStationModeConnected(evt);});
+
 	onStationModeDHCPTimeoutHandler = WiFi.onStationModeDHCPTimeout(
 			[this]() {WiFiUtils::printStationModeDHCPTimeout();});
 
@@ -167,24 +169,67 @@ void WiFiManager::registerStaEvents() {
 	onStationModeGotIPHandler =
 			WiFi.onStationModeGotIP(
 					[this](const WiFiEventStationModeGotIP& evt) {onStationModeGotIP(evt);});
+#endif
+#ifdef ESP32
+	WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info){
+			Serial.print("WiFi connected. sssid: ");
 
+			system_event_sta_connected_t eventinfo = info.connected;
+
+			for(int i=0; i < eventinfo.ssid_len; i++){
+				Serial.print(eventinfo.ssid[i]);
+			}
+
+			Serial.println();
+		}, WiFiEvent_t::SYSTEM_EVENT_STA_CONNECTED);
+
+	WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info){
+			Serial.print("WiFi lost ip");
+
+		}, WiFiEvent_t::SYSTEM_EVENT_STA_LOST_IP);
+
+	WiFi.onEvent([this](WiFiEvent_t event, WiFiEventInfo_t info){
+	        Serial.print("WiFi lost connection. Reason: ");
+	        Serial.println(info.disconnected.reason);
+
+	        onStationModeDisconnected();
+	    }, WiFiEvent_t::SYSTEM_EVENT_STA_DISCONNECTED);
+
+	WiFi.onEvent([this](WiFiEvent_t event, WiFiEventInfo_t info){
+		String ip = String(info.got_ip.ip_info.ip.addr);
+		Serial.print("WiFi got ip ");
+		Serial.println(ip);
+
+		onStationModeGotIP(ip);
+	}, WiFiEvent_t::SYSTEM_EVENT_STA_GOT_IP);
+#endif
 	Serial.println(FPSTR("WiFi register Sta events"));
 }
 
+#ifdef ESP8266
 void WiFiManager::onStationModeDisconnected(
 		const WiFiEventStationModeDisconnected& evt) {
 	WiFiUtils::printStationModeDisconnected(evt);
+	onStationModeDisconnected();
+}
+
+void WiFiManager::onStationModeGotIP(const WiFiEventStationModeGotIP& evt) {
+	WiFiUtils::printStationModeGotIP(evt);
+	onStationModeGotIP(evt.ip.toString())
+}
+#endif
+
+void WiFiManager::onStationModeDisconnected() {
 	if (onWiFiDisConnected != nullptr) {
 		onWiFiDisConnected();
 	}
 	//conf->setCurrentIp(EMPTY_STR);
 	conf->setDeviceStatus((char*)DEVICE_STATUS_DISCONNECTED);
 }
-
-void WiFiManager::onStationModeGotIP(const WiFiEventStationModeGotIP& evt) {
+void WiFiManager::onStationModeGotIP(String ip) {
 	reconnected = true;
-	WiFiUtils::printStationModeGotIP(evt);
-	conf->setCurrentIp(strdup(evt.ip.toString().c_str()));
+
+	conf->setCurrentIp(strdup(ip.c_str()));
 
 	if (onWiFiConnected != nullptr) {
 		onWiFiConnected();
