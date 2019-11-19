@@ -18,21 +18,15 @@ public:
 	DisplayToOledAdapter(){};
 	virtual ~DisplayToOledAdapter(){};
 
-	virtual void setPowerOn(bool powerOn = true) {
-		PageToDisplayAdapter::setPowerOn(powerOn);
-	}
-
-	virtual bool init() override{
+	virtual bool initHardware() override{
 		Serial.println("DisplayToOledAdapter");
 		myOLED = new iarduino_OLED_txt(0x78);
-		myOLED->begin();                                    // Инициируем работу с дисплеем.
-		myOLED->setFont(SmallFontRus);                      // Указываем шрифт который требуется использовать для вывода цифр и текста.
+		myOLED->begin();
+		myOLED->setFont(SmallFontRus);
 		myOLED->setCoding(TXT_UTF8);
 
 		myOLED->print("Hello !!SmartHouse", 3,3);
 
-		setPowerOn(true);
-		Serial.println("DisplayToOledAdapter - done");
 		return true;
 	};
 
@@ -40,20 +34,15 @@ public:
 		myOLED->clrScr();
 	};
 
-	virtual void toStartPosition() override{
-		//Serial.println(FPSTR("============"));
-		yPosition = 0;
-	}
-
 	virtual void print(const char* str) override{
 		if(str!=nullptr) {
-			//Serial.print(str);
 			myOLED->print(str, 0, yPosition);
 		}
 	};
-	virtual void printNextLine() override{
+	virtual void printNextLine(){
 		yPosition ++;
 	};
+
 private:
 	iarduino_OLED_txt* myOLED = nullptr;
 };

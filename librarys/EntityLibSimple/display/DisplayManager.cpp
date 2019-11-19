@@ -19,10 +19,6 @@ DisplayManager::DisplayManager(PageToDisplayAdapter* displayAdapter,
 }
 
 void DisplayManager::init() {
-	if (!displayAdapter->init()){
-		return;
-	}
-	displayAdapter->setPowerOn(1);
 	initDone = true;
 
 	conf->setOnDeviceStatusChanged([this](){switchToStatusPageReturnToPrevious();});
@@ -31,7 +27,7 @@ void DisplayManager::init() {
 	int initDoneCount = 1;
 
 	for(int i = 1; i <= this->pageCount; i++){
-		if((this->pages[i-1])->init()){
+		if((this->pages[i-1])->init(this->displayAdapter)){
 			initDoneCount++;
 		}
 	}
@@ -78,7 +74,11 @@ void DisplayManager::renderCurrentPage() {
 		return;
 	}
 
-	this->pages[this->currentPage-1]->render(this->displayAdapter);
+	getCurrentPage()->render();
+}
+
+DisplayPage* DisplayManager::getCurrentPage() {
+	return this->pages[this->currentPage-1];
 }
 
 void DisplayManager::loop() {
@@ -121,3 +121,4 @@ void DisplayManager::renderStatusPage() {
 void DisplayManager::switchToStatusPageReturnToPrevious() {
 	switchToStatusPage(true);
 }
+

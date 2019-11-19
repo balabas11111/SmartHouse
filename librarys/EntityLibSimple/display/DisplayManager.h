@@ -49,20 +49,6 @@ public:
 		renderCurrentPage();
 	}
 
-	void powerOff(){
-		displayAdapter->setPowerOn(0);
-		Serial.println(FPSTR("Power OFF"));
-	}
-
-	void powerOn() {
-		Serial.println(FPSTR("Power ON"));
-		displayAdapter->setPowerOn(1);
-	}
-
-	bool isPowerOn(){
-		return displayAdapter->isPowerOn();
-	}
-
 	void switchToNextPageWithInterval(unsigned long interval) {
 		this->interval = interval;
 		nextSwitchTime = millis() + interval;
@@ -83,16 +69,18 @@ public:
 	}
 
 	void switchToNextPageOrTurnPowerOn() {
-		if(displayAdapter->isPowerOn()) {
-			displayAdapter->setPowerOn();
+		if(getCurrentPage()->getAdapter()->isPowerOn()) {
 			switchToNextNonStatusPage();
 		} else {
-			displayAdapter->setPowerOn();
 			renderCurrentPage();
 		}
+
+		getCurrentPage()->getAdapter()->setPowerOn();
 	}
 
 	virtual void renderCurrentPage();
+
+	DisplayPage* getCurrentPage();
 
 protected:
 	unsigned long interval = 0;

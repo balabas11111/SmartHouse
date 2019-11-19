@@ -10,6 +10,7 @@
 
 #include <Arduino.h>
 
+#ifdef ESP32
 #include "rom/sha.h"
 #include "esp_types.h"
 
@@ -94,5 +95,6 @@ public:
 	    return encode_sha1(data.c_str(), data.length());
 	}
 };
+#endif
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_UTILS_HASHUTILS_H_ */

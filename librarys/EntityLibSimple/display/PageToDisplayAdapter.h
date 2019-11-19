@@ -15,12 +15,17 @@
 #define DISPLAY_TURN_OFF_TIME 30000
 #endif
 
+#define COL_KEY     "k"
+#define COL_NAME    "n"
+#define COL_VALUE   "v"
+#define COL_MEASURE "m"
+
 class PageToDisplayAdapter {
 public:
 	PageToDisplayAdapter(){};
 	virtual ~PageToDisplayAdapter(){};
 
-	virtual bool init(){return true;};
+	virtual bool init();
 
 	virtual void renderPage(const char* header, JsonVariant pageData);
 
@@ -31,10 +36,11 @@ public:
 
 	virtual void loop();
 
+	bool isInitialized();
+
 protected:
 	virtual void toStartPosition() {
 		yPosition = 0;
-		//Serial.println(FPSTR("============"));
 	}
 	virtual void print(const char* str){
 		if(str!=nullptr) {
@@ -42,12 +48,25 @@ protected:
 		}
 	};
 	virtual void printNextLine(){
+		yPosition ++;
 		Serial.println();
 	};
 
+	virtual bool initHardware(){
+		return true;
+	}
+
+	virtual void turnOnHardware(){
+
+	}
+	virtual void turnOffHardware(){
+		this->clear();
+	}
+
+	bool initialized = false;
 	int yPosition = 0;
 private:
-	bool initialized = false;
+
 	bool powerOn = false;
 
 	unsigned long turnOnTime=0;

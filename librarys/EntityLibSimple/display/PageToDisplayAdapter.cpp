@@ -8,12 +8,14 @@
 #include <display/PageToDisplayAdapter.h>
 
 void PageToDisplayAdapter::renderPage(const char* header, JsonVariant pageData) {
+	if(!this->isInitialized()) {
+		Serial.println(FPSTR("DISPLAY not initialized"));
+		return;
+	}
+
 	if(this->isPowerOn()) {
 		this->clear();
-/*
-		Serial.print(FPSTR("Display ="));
-		Serial.println(header);
-*/
+
 		toStartPosition();
 		print(header);
 		printNextLine();
@@ -21,24 +23,28 @@ void PageToDisplayAdapter::renderPage(const char* header, JsonVariant pageData) 
 
 		if (pageData.is<JsonObject>()){
 			for( const auto& kv : pageData.as<JsonObject>() ) {
-				/*Serial.print(kv.key);
-				Serial.print(FPSTR("="));
-*/
-				String line = "";
 				JsonObject& obj = kv.value;
 
-				line += obj["name"].asString();
-
-				if(obj["val"].is<char*>()) {
-					line += obj["val"].as<char*>();
-				}else if(obj["val"].is<float>()){
-					line += obj["val"].as<float>();
-				}else if(obj["val"].is<int>()){
-					line += obj["val"].as<int>();
+				if(obj.containsKey(COL_NAME)) {
+					print(obj[COL_NAME].as<char*>());
+					printNextLine();
 				}
-				line += obj["msr"].asString();
 
-				//Serial.println(line);
+				String line = "     ";
+
+				if(obj.containsKey(COL_VALUE)) {
+					if(obj[COL_VALUE].is<char*>()) {
+						line += obj[COL_VALUE].as<char*>();
+					}else if(obj[COL_VALUE].is<float>()){
+						line += obj[COL_VALUE].as<float>();
+					}else if(obj[COL_VALUE].is<int>()){
+						line += obj[COL_VALUE].as<int>();
+					}
+				}
+
+				if(obj.containsKey(COL_MEASURE)) {
+					line += obj[COL_MEASURE].as<char*>();
+				}
 
 				print(line.c_str());
 				printNextLine();
@@ -60,8 +66,9 @@ void PageToDisplayAdapter::setPowerOn(bool powerOn) {
 	this->powerOn = powerOn;
 	if(powerOn){
 		this->turnOnTime = millis();
+		turnOnHardware();
 	} else {
-		this->clear();
+		turnOffHardware();
 	}
 	Serial.print(FPSTR("setPower "));
 	Serial.println(powerOn);
@@ -82,4 +89,23 @@ void PageToDisplayAdapter::loop() {
 		*/
 
 	}
+}
+
+bool PageToDisplayAdapter::isInitialized() {
+	return this->initialized;
+}
+
+bool PageToDisplayAdapter::init() {
+	if(isInitialized()) {
+		//Serial.println("Already initialized");
+		return true;
+	}
+
+	this->initialized = initHardware();
+
+	if(this->isInitialized()) {
+		setPowerOn(true);
+	}
+
+	return isInitialized();
 }

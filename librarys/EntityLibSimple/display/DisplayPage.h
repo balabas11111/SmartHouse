@@ -27,14 +27,20 @@ public:
 	DisplayPage(Entity* entity, const char* fields[], const char* fieldsDescr[], const char* fieldsMeasure[], int fieldsSize, const char* header = nullptr);
 	virtual ~DisplayPage(){};
 
-	virtual bool init();
+	virtual bool init(PageToDisplayAdapter* adapter);
 
-	virtual void render(PageToDisplayAdapter* adapter);
+	virtual void render();
 
-	bool isInitDone();
+	bool isInitialized();
 
+	PageToDisplayAdapter* getAdapter();
+
+protected:
+	PageToDisplayAdapter* adapter = nullptr;
 private:
 	bool renderKey(const char* key);
+	JsonObject& putDataToJson(JsonObject& parent, const char* key, const char* name, const char* measure = nullptr);
+	void setAndInitDisplayAdapter(PageToDisplayAdapter* adapter);
 
 	Entity* entity;
 	const char** fields;
@@ -43,7 +49,7 @@ private:
 	int fieldsSize;
 	const char* header;
 
-	bool initDone = false;
+	bool initialized = false;
 };
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_DISPLAY_DISPLAYPAGE_H_ */
