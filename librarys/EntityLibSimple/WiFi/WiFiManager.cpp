@@ -215,7 +215,7 @@ void WiFiManager::onStationModeDisconnected(
 
 void WiFiManager::onStationModeGotIP(const WiFiEventStationModeGotIP& evt) {
 	WiFiUtils::printStationModeGotIP(evt);
-	onStationModeGotIP(evt.ip.toString())
+	onStationModeGotIP(evt.ip.toString());
 }
 #endif
 

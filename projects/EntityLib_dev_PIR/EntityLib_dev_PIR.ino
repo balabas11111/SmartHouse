@@ -53,7 +53,7 @@ void setup() {
 	attachInterrupt(digitalPinToInterrupt(D3), interruptButton, RISING);
 
 	app.begin(true);
-	app.switchToPage(1);
+	app.getDisplayManager()->switchToPage(1);
 }
 
 void loop() {

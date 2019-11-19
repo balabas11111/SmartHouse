@@ -99,7 +99,7 @@ public:
 		String devIdTmp="ESP_"+String(ESP.getChipId());
 #endif
 #ifdef ESP32
-		String devIdTmp="ESP_"+String(ESP.getChipRevision());
+		String devIdTmp="ESP_"+String(ESP.getEfuseMac());
 #endif
 		this->_devId=strdup(devIdTmp.c_str());
 

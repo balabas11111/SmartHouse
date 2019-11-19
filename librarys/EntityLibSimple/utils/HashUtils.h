@@ -10,40 +10,28 @@
 
 #include <Arduino.h>
 
+#ifdef ESP8266
+#include "Hash.h"
+#endif
 #ifdef ESP32
 #include "rom/sha.h"
 #include "esp_types.h"
+#endif
 
 class HashUtils {
 public:
 	static void encode_sha1(uint8_t * data, uint32_t size, uint8_t hash[20]) {
 
+#ifdef ESP8266
+		sha1(data, size, hash);
+#endif
+#ifdef ESP32
 		SHA_CTX ctx;
-
-	#ifdef DEBUG_SHA1
-	    os_printf("DATA:");
-	    for(uint16_t i = 0; i < size; i++) {
-	        os_printf("%02X", data[i]);
-	    }
-	    os_printf("\n");
-	    os_printf("DATA:");
-	    for(uint16_t i = 0; i < size; i++) {
-	        os_printf("%c", data[i]);
-	    }
-	    os_printf("\n");
-	#endif
 
 	    ets_sha_init(&ctx);
 	    ets_sha_update(&ctx, SHA1, data, size);
 	    ets_sha_finish(&ctx, SHA1, hash);
-
-	#ifdef DEBUG_SHA1
-	    os_printf("SHA1:");
-	    for(uint16_t i = 0; i < 20; i++) {
-	        os_printf("%02X", hash[i]);
-	    }
-	    os_printf("\n\n");
-	#endif
+#endif
 	}
 /*
 	void encode_sha1(char * data, uint32_t size, uint8_t hash[20]) {
@@ -95,6 +83,6 @@ public:
 	    return encode_sha1(data.c_str(), data.length());
 	}
 };
-#endif
+
 
 #endif /* LIBRARIES_ENTITYLIBSIMPLE_UTILS_HASHUTILS_H_ */

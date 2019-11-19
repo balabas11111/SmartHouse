@@ -102,14 +102,6 @@ public:
 		return this->displayManager;
 	}
 
-	void switchToPage(int page) {
-		this->displayManager->switchToPage(page);
-	}
-
-	void switchToNextNonStatusPage() {
-		this->displayManager->switchToNextNonStatusPage();
-	}
-
 	void switchPagesWithInterval(unsigned long interval) {
 		this->displayManager->switchToNextPageWithInterval(interval);
 	}
