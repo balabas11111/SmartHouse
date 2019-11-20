@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.thymeleaf.util.StringUtils;
 
 import com.balabas.smarthouse.server.entity.model.Device;
-import com.balabas.smarthouse.server.entity.model.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.Group;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.service.DeviceManageService;
 import com.balabas.smarthouse.server.exception.DeviceOnServerAuthorizationException;
 

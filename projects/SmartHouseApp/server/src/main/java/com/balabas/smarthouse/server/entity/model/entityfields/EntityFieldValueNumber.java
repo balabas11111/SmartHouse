@@ -1,10 +1,8 @@
-package com.balabas.smarthouse.server.entity.model;
+package com.balabas.smarthouse.server.entity.model.entityfields;
 
 import java.util.Date;
 
 import javax.persistence.Entity;
-
-import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

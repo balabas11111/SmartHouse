@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title th:text="${pageHeader}">Устройство</title>
+
+<!-- Bootstrap -->
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/font-awesome.min.css" />
+<link rel="stylesheet" href="css/font-awesome.css" />
+<link href="css/default.css" rel="stylesheet" />
+<link rel="stylesheet" href="css/animate.css" />
+<link rel="stylesheet" href="js/fancybox/jquery.fancybox.css"
+	type="text/css" media="screen" />
+<link rel="stylesheet" type="text/css" href="css/isotope.css"
+	media="screen" />
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css" />
+
+<link rel="stylesheet" href="chart/Chart.css">
+</head>
+
+<body>
+	<header>
+		<div class="main-menu">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-4">
+
+						<h1>
+							<a class="navbar-brand" href="viewCharts"
+								data-0="line-height:90px;" data-300="line-height:50px;"
+								th:text="${pageHeader}"> Hidayah </a>
+						</h1>
+					</div>
+
+					<div th:replace="templates :: mainMenu"></div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<div class="container">
+		<h4 th:text="${pageHeader}"></h4>
+
+		<form action="#" th:action="@{/saveView}" th:object="${viewChart}"
+			method="post">
+			<input type="hidden" th:field="*{id}">
+			<table>
+				<tr>
+					<td>Название</td>
+					<td><input type="text" th:field="*{name}"></td>
+				</tr>
+				<tr>
+					<td>Ось Y</td>
+					<td><input type="text" th:field="*{description}"></td>
+				</tr>
+			</table>
+
+			<table>
+				<thead>
+					<tr>
+						<th></th>
+						<th>Устройство</th>
+						<th>Датчик</th>
+						<th>Значение</th>
+						<th>Величина</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="entityField : ${viewChart.entityFields}">
+						<td><input type="checkbox" name="fields"
+							th:value="${entityField.id}" /></td>
+						<td><label
+							th:text="${entityField.getEntity().getDevice().getDescription()}"></label>
+						</td>
+						<td><label
+							th:text="${entityField.getEntity().getEmoji()} + ${entityField.getEntity().getDescriptionByDescriptionField()}"></label>
+						</td>
+						<td><label
+							th:text="${entityField.getEmoji()} + ${entityField.getDescriptionByDescriptionField()}"></label>
+						</td>
+						<td><label th:text="${entityField.measure}"></label></td>
+					</tr>
+					<!--  
+	                <th:block th:each="entityField : ${viewChart.entityFields}">
+	             	   <input type="checkbox" name="entityFields" th:value="${entityField.id}"/>
+	               	   <label th:text="${entityField.getEntity().getDevice().getDescription()} + '' + ${entityField.getEntity().getEmoji()} + ${entityField.getEntity().getDescriptionByDescriptionField()}"></label>
+	               </th:block>
+	               -->
+				</tbody>
+			</table>
+
+			<input type="submit" class="btn btn-default" value="Сохранить" />
+
+		</form>
+	</div>
+
+	<footer th:replace="templates :: footer"></footer>
+
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/jquery.isotope.min.js"></script>
+	<script src="js/fancybox/jquery.fancybox.pack.js"></script>
+	<script src="js/wow.min.js"></script>
+	<script src="js/functions.js"></script>
+	<script type="text/javascript">
+		new WOW().init();
+	</script>
+
+</body>
+
+</html>

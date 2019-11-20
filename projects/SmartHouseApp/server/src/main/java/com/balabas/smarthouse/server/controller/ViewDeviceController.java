@@ -1,26 +1,39 @@
 package com.balabas.smarthouse.server.controller;
 
+import java.awt.Color;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.Device;
-import com.balabas.smarthouse.server.entity.model.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.entity.service.IEntityFieldService;
+import com.balabas.smarthouse.server.entity.service.IViewChartEntityFieldsService;
+import com.balabas.smarthouse.server.view.chart.ChartDataSeries;
+import com.balabas.smarthouse.server.view.chart.ViewChartEntityFields;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Controller
 @SuppressWarnings("rawtypes")
@@ -34,9 +47,12 @@ public class ViewDeviceController {
 
 	@Autowired
 	private IEntityAlarmService alarmService;
-	
+
 	@Autowired
 	private IEntityFieldService entityFieldService;
+
+	@Autowired
+	private IViewChartEntityFieldsService viewChartsService;
 
 	@GetMapping("/")
 	public String getRoot(Model model) {
@@ -76,57 +92,33 @@ public class ViewDeviceController {
 	@GetMapping("/entityField")
 	public String getEntityField(@RequestParam(name = "id", required = false) Long entityFieldId,
 			@RequestParam(name = "afterDate", required = false) Long afterDate,
-			@RequestParam(name = "beforeDate", required = false) Long beforeDate, Model model) {
+			@RequestParam(name = "beforeDate", required = false) Long beforeDate, Model model) throws IOException {
 
-		if (entityFieldId==null || entityFieldId==0) {
+		if (entityFieldId == null || entityFieldId == 0) {
 			throw new IllegalArgumentException("Bad arguments");
 		}
 
 		IEntityField entityField = deviceService.getDevices().stream().flatMap(device -> device.getEntities().stream())
-				.flatMap( entity -> entity.getEntityFields().stream()).filter(ef -> ef.getId().equals(entityFieldId)).findFirst().orElse(null);
-		
-		if (entityField==null) {
-			throw new IllegalArgumentException("Bad arguments");
-		}
-		
+				.flatMap(entity -> entity.getEntityFields().stream()).filter(ef -> ef.getId().equals(entityFieldId))
+				.findFirst().orElse(null);
+
+		ChartDataSeries series = getSeriesforEntityField(entityField, afterDate, beforeDate, 10);
+
+		List<ChartDataSeries> charts = Arrays.asList(series);
+
+		String chartData = (new ObjectMapper()).writeValueAsString(charts);
+		String chartYLabel = StringUtils.isEmpty(entityField.getMeasure()) ? entityField.getName()
+				: entityField.getMeasure();
 		IDevice device = entityField.getEntity().getDevice();
 
-		List<EntityFieldValue> values = null;
-		
-		if(afterDate!=null && beforeDate!=null) {
-			Date startDate =new Date(afterDate);
-			Date endDate =new Date(beforeDate);
-			
-			values = entityFieldService.getEntityFieldValuesForEntityField(entityField.getId(), startDate, endDate);
-		} else if(afterDate!=null && beforeDate== null) {
-			Date startDate =new Date(afterDate);
-			
-			values = entityFieldService.getEntityFieldValuesForEntityField(entityField.getId(), startDate);
-		} else {
-			values = entityFieldService.getEntityFieldValuesForEntityField(entityField.getId());
-		}
-		
-		
-		JSONArray jsonData = new JSONArray();
-		
-		for(EntityFieldValue value: values) {
-			JSONObject obj = new JSONObject().put("t", value.getDate().getTime()).put("y", value.getValue());
-			jsonData.put(obj);
-		}
-		
-		String jsonStr = jsonData.toString();
-		String chartYLabel = StringUtils.isEmpty(entityField.getMeasure())?entityField.getName():entityField.getMeasure();
-		
 		model.addAttribute("afterDate", afterDate);
 		model.addAttribute("beforeDate", beforeDate);
 		model.addAttribute("serverName", serverName);
 		model.addAttribute("device", device);
 		model.addAttribute("entityField", entityField);
-		model.addAttribute("values", values);
-		
-		model.addAttribute("chartDataHeader", entityField.getEmoji() + " " + entityField.getDescriptionByDescriptionField());
+
 		model.addAttribute("chartDataY", chartYLabel);
-		model.addAttribute("chartData", jsonStr);
+		model.addAttribute("chartData", chartData);
 
 		return "entityFields/history.html";
 	}
@@ -146,6 +138,130 @@ public class ViewDeviceController {
 
 		return "redirect:/device?id=" + Long.toString(deviceId);
 
+	}
+
+	@GetMapping("/viewCharts")
+	public String getViewCharts(Model model) {
+
+		Iterable<ViewChartEntityFields> viewCharts = viewChartsService.getAll();
+
+		model.addAttribute("serverName", serverName);
+		model.addAttribute("viewCharts", viewCharts);
+
+		return "entityFields/viewCharts.html";
+	}
+
+	@GetMapping("/editView")
+	public String editViewCharts(@RequestParam(name = "id", required = false) Long id, Model model) {
+
+		boolean isNew = id == null || id == 0;
+
+		ViewChartEntityFields viewChart = viewChartsService.getChartsById(id);
+
+		if (isNew) {
+			viewChart = new ViewChartEntityFields();
+
+			Set<IEntityField> allFields = deviceService.getDevices().stream()
+					.flatMap(device -> device.getEntities().stream())
+					.flatMap(entity -> entity.getEntityFields().stream())
+					.filter(entityField -> entityField.isReadOnly() || entityField.isButton())
+					.collect(Collectors.toSet());
+
+			viewChart.setEntityFields(allFields);
+		}
+
+		String pageHeader = isNew ? "Новый график" : viewChart.getName() + " " + viewChart.getDescription();
+
+		model.addAttribute("serverName", serverName);
+		model.addAttribute("pageHeader", pageHeader);
+		model.addAttribute("viewChart", viewChart);
+
+		return "entityFields/editView.html";
+	}
+
+	@PostMapping(value = "/saveView")
+	public String addSave(@ModelAttribute("viewChart") ViewChartEntityFields viewChart,
+			@RequestParam(value = "fields", required = false) long[] entityFieldIds, Model model) {
+
+		if(entityFieldIds!=null) {
+			Set<IEntityField> entityFields = Sets.newHashSet();
+			
+			for(long entityFieldId: entityFieldIds) {
+				Optional<IEntityField> entityField = entityFieldService.getEntityFieldById(entityFieldId);
+				entityField.ifPresent(entityFields::add);
+			}
+			
+			viewChart.setEntityFields(entityFields);
+		}
+		
+		viewChart = viewChartsService.save(viewChart);
+
+		return "redirect:/editView?id=" + viewChart.getId();
+	}
+
+	@GetMapping("/historyGroupped")
+	public String getViewCharts(@RequestParam(name = "id", required = false) Long viewChartId,
+			@RequestParam(name = "afterDate", required = false) Long afterDate,
+			@RequestParam(name = "beforeDate", required = false) Long beforeDate, Model model) throws IOException {
+
+		if (viewChartId == null || viewChartId == 0) {
+			throw new IllegalArgumentException("Bad arguments");
+		}
+
+		ViewChartEntityFields viewCharts = viewChartsService.getChartsById(viewChartId);
+		List<ChartDataSeries> charts = Lists.newArrayList();
+
+		int colorId = 0;
+
+		for (IEntityField entityField : viewCharts.getEntityFields()) {
+			charts.add(getSeriesforEntityField(entityField, afterDate, beforeDate, colorId));
+			colorId++;
+		}
+
+		String chartData = (new ObjectMapper()).writeValueAsString(charts);
+		String chartYLabel = viewCharts.getDescription();
+		String chartHeader = viewCharts.getName();
+
+		model.addAttribute("afterDate", afterDate);
+		model.addAttribute("beforeDate", beforeDate);
+		model.addAttribute("serverName", serverName);
+
+		model.addAttribute("chartHeader", chartHeader);
+		model.addAttribute("chartDataY", chartYLabel);
+		model.addAttribute("chartData", chartData);
+
+		return "entityFields/historyGroupped.html";
+	}
+
+	private ChartDataSeries getSeriesforEntityField(IEntityField entityField, Long afterDate, Long beforeDate,
+			int colorId) {
+		if (entityField == null) {
+			throw new IllegalArgumentException("Bad arguments");
+		}
+
+		List<EntityFieldValue> values = null;
+
+		if (afterDate != null && beforeDate != null) {
+			Date startDate = new Date(afterDate);
+			Date endDate = new Date(beforeDate);
+
+			values = entityFieldService.getEntityFieldValuesForEntityField(entityField.getId(), startDate, endDate);
+		} else if (afterDate != null && beforeDate == null) {
+			Date startDate = new Date(afterDate);
+
+			values = entityFieldService.getEntityFieldValuesForEntityField(entityField.getId(), startDate);
+		} else {
+			values = entityFieldService.getEntityFieldValuesForEntityField(entityField.getId());
+		}
+
+		String chartDataHeader = entityField.getEmoji() + " " + entityField.getDescriptionByDescriptionField();
+
+		Color color = ChartDataSeries.getColorByIndex(colorId);
+
+		ChartDataSeries series = new ChartDataSeries(chartDataHeader, color);
+		values.stream().forEach(series::addDataPoint);
+
+		return series;
 	}
 
 	@GetMapping("/alarms")

@@ -23,12 +23,14 @@ import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabl
 import com.balabas.smarthouse.server.exception.BadValueException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 @SuppressWarnings("rawtypes")
 @ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = "entity")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @javax.persistence.Entity
 public abstract class EntityField<T> extends ItemAbstract implements IEntityField<T> {

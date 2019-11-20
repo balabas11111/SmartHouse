@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Bootstrap 1 Template</title>
+	<title th:text="${chartHeader}">Устройство</title>
 
 	<!-- Bootstrap -->
 	<link href="css/bootstrap.min.css" rel="stylesheet">
@@ -16,7 +16,9 @@
 	<link rel="stylesheet" href="js/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
 	<link rel="stylesheet" type="text/css" href="css/isotope.css" media="screen" />
 	<link rel="stylesheet" href="css/style.css">
-	
+	<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css" />
+
+	<link rel="stylesheet" href="chart/Chart.css">
 </head>
 
 <body>
@@ -25,10 +27,13 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-md-4">
-						<h1><a class="navbar-brand" href="index.html" data-0="line-height:90px;"
-								data-300="line-height:50px;"> Hidayah
+
+						<h1><a class="navbar-brand" th:href="@{~/device?id={id}(id=${device.getId()})}"
+								data-0="line-height:90px;" data-300="line-height:50px;"
+								th:text="${chartHeader}"> Hidayah
 							</a></h1>
 					</div>
+
 					<div th:replace="templates :: mainMenu"></div>
 				</div>
 			</div>
@@ -36,14 +41,24 @@
 	</header>
 
 	<div class="container">
-		<h1>Настройки</h1>
 
+		<h4 th:text="${chartHeader}">Устройство сервера</h4>
+
+		<p>
+			<h4>История значений</h4>
+		</p>
+
+		<div th:replace="templates :: dateSelector"></div>
+
+		<canvas id="chart1"></canvas>
 	</div>
-	
+
 	<footer th:replace="templates :: footer"></footer>
 
 	<script src="js/jquery.min.js"></script>
-	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script	src="js/moment-with-locales.js"></script>
+	<script	src="js/bootstrap-datetimepicker.min.js"></script>
+	
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/jquery.isotope.min.js"></script>
 	<script src="js/fancybox/jquery.fancybox.pack.js"></script>
@@ -52,6 +67,25 @@
 	<script type="text/javascript">
 		new WOW().init();
 	</script>
+	
+	<script src="chart/Chart.js"></script>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		var afterDate = /*[[${afterDate}]]*/;
+		var beforeDate = /*[[${beforeDate}]]*/;
+		var currentId = /*[[${entityField.getId()}]]*/;
+
+		var chartDataY = /*[[${chartDataY}]]*/;
+		var chartDataStr = /*[[${chartData}]]*/;
+		
+		var redirectPreffix = "/historyGroupped?id=";
+
+		/*]]>*/
+	</script>
+
+	<script src="chart/defaultChartPageRedirect.js"></script>
+	<script src="chart/defaultChartBuilder.js"></script>
 
 </body>
 

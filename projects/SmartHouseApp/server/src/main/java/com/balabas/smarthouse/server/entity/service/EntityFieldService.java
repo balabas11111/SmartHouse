@@ -10,9 +10,10 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.balabas.smarthouse.server.entity.model.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldValueRepository;
 import com.balabas.smarthouse.server.view.Action;
 
@@ -23,6 +24,9 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class EntityFieldService implements IEntityFieldService {
 
+	@Autowired
+	IEntityFieldRepository entityFieldRepository;
+	
 	@Autowired
 	IEntityFieldValueRepository entityFieldValueRepository;
 
@@ -115,6 +119,12 @@ public class EntityFieldService implements IEntityFieldService {
 	@Override
 	public Date selectMaxEntityFieldValueDate(Long entityFieldId) {
 		return entityFieldValueRepository.selectMaxEntityFieldValueDate(entityFieldId);
+	}
+
+	@Override
+	public Optional<IEntityField> getEntityFieldById(Long entityFieldId) {
+		IEntityField result =entityFieldRepository.getEntityFieldbyId(entityFieldId);
+		return Optional.ofNullable(result);
 	}
 
 }

@@ -11,9 +11,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.balabas.smarthouse.server.entity.model.EntityFieldValue;
-import com.balabas.smarthouse.server.entity.model.EntityFieldValueBoolean;
-import com.balabas.smarthouse.server.entity.model.EntityFieldValueNumber;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueBoolean;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
 
 @Repository
 public interface IEntityFieldValueRepository extends CrudRepository<EntityFieldValue, Long>  {

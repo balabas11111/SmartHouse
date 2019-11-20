@@ -1,18 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Bootstrap 1 Template</title>
-
+	<title th:text="'Устройства сервера ' + ${serverName}">Устройства сервера</title>
 	<!-- Bootstrap -->
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="css/font-awesome.min.css" />
 	<link rel="stylesheet" href="css/font-awesome.css" />
-	<link href="css/default.css" rel="stylesheet" />
-	<link rel="stylesheet" href="css/animate.css" />
 	<link rel="stylesheet" href="js/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
 	<link rel="stylesheet" type="text/css" href="css/isotope.css" media="screen" />
 	<link rel="stylesheet" href="css/style.css">
@@ -25,8 +22,8 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-md-4">
-						<h1><a class="navbar-brand" href="index.html" data-0="line-height:90px;"
-								data-300="line-height:50px;"> Hidayah
+						<h1><a class="navbar-brand" href="index" data-0="line-height:90px;" data-300="line-height:50px;"
+								th:text="${serverName}"> Hidayah
 							</a></h1>
 					</div>
 					<div th:replace="templates :: mainMenu"></div>
@@ -35,11 +32,41 @@
 		</div>
 	</header>
 
-	<div class="container">
-		<h1>Настройки</h1>
+	<div id="main-content">
+
+		<div class="container">
+			<h1>Графики</h1>
+			<div>
+			
+				<a th:href="@{~/editView?id=0}"
+									class="btn btn-default">&#x1F4DD;Новый</a>
+			
+				<table id="devicesTable" class="table table-dark table-striped">
+					<thead>
+						<tr>
+							<th>Название</th>
+							<th>Описание</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="viewChart : ${viewCharts}">
+							<td th:text="${viewChart.name}">Название</td>
+							<td th:text="${viewChart.description}">Описание</td>
+							<td>
+								<a th:href="@{~/historyGroupped?id={id}(id=${viewChart.id})}"
+									class="btn btn-default">&#x1F4DD;Просмотр</a>
+								<a th:href="@{~/editView?id={id}(id=${viewChart.id})}"
+									class="btn btn-default">&#x1F4DD;Редактировать</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
 
 	</div>
-	
+	<!-- end column content -->
 	<footer th:replace="templates :: footer"></footer>
 
 	<script src="js/jquery.min.js"></script>

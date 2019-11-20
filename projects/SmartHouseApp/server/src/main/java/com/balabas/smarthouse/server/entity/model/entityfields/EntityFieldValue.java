@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.entity.model;
+package com.balabas.smarthouse.server.entity.model.entityfields;
 
 import java.util.Date;
 
@@ -11,8 +11,6 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
-import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;

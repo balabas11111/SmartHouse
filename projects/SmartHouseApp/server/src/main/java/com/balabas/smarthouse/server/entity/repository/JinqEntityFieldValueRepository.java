@@ -8,7 +8,7 @@ import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.balabas.smarthouse.server.entity.model.EntityFieldValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 
 @Repository
 public class JinqEntityFieldValueRepository {

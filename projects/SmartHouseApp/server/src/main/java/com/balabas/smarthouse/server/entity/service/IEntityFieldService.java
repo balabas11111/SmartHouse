@@ -2,9 +2,10 @@ package com.balabas.smarthouse.server.entity.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
-import com.balabas.smarthouse.server.entity.model.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.view.Action;
 
@@ -34,5 +35,7 @@ public interface IEntityFieldService {
 	Date selectMinEntityFieldValueDate(Long entityFieldId);
 
 	Date selectMaxEntityFieldValueDate(Long entityFieldId);
+
+	Optional<IEntityField> getEntityFieldById(Long entityFieldId);
 
 }

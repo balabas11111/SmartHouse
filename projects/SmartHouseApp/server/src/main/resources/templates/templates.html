@@ -3,6 +3,17 @@
 
 <body>
 
+	<div class="col-md-8" id="mainMenu" th:fragment="mainMenu">
+		<div class="dropdown">
+			<ul class="nav nav-pills">
+				<li><a href="index">Устройства</a></li>
+				<!--  <li><a href="alarms">Опасности</a></li>-->
+				<li><a href="viewCharts">Графики</a></li>
+				<!--<li><a href="settings">Настройки</a></li>-->
+			</ul>
+		</div>
+	</div>
+
 	<footer id="footer" th:fragment="footer">
 		<section id="footer" class="section footer">
 			<div class="container">
@@ -36,6 +47,36 @@
 		</section>
 		<a href="#" class="scrollup"><i class="fa fa-chevron-up"> </i></a>
 	</footer>
+
+	<div class="container" id=dateSelector th:fragment="dateSelector">
+			<div class="row">
+				<div class='col col-lg-3'>
+					<div class="form-group">
+						<div class='input-group date' id='dateAfter'>
+							<input type='text' class="form-control" />
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<div class='col col-lg-3'>
+					<div class="form-group">
+						<div class='input-group date' id='dateBefore'>
+							<input type='text' class="form-control" />
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</span>
+						</div>
+					</div>
+				</div>
+				
+				<div class='col col-lg-3'>
+					<button class="btn btn-default" onclick="onDateChange();">&#x1F4C6; Обновить</button>
+				</div>
+			</div>
+		</div>
 
 </body>
 
