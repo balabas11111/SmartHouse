@@ -1,0 +1,1 @@
+delete FROM entity_field_value WHERE value_flt = -127;

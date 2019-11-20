@@ -27,4 +27,9 @@ public class ViewChartsService implements IViewChartEntityFieldsService {
 		return viewChartsRepository.save(viewChart);
 	}
 
+	@Override
+	public void delete(Long id) {
+		viewChartsRepository.deleteById(id);
+	}
+
 }

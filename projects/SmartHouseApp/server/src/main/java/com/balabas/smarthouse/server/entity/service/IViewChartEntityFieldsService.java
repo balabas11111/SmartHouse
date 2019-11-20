@@ -8,4 +8,5 @@ public interface IViewChartEntityFieldsService {
 	ViewChartEntityFields getChartsById(Long id);
 	
 	ViewChartEntityFields save(ViewChartEntityFields viewChart);
+	void delete(Long id);
 }

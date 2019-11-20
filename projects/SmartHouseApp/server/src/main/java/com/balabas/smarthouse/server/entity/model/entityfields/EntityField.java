@@ -30,7 +30,7 @@ import lombok.ToString;
 
 @SuppressWarnings("rawtypes")
 @ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true, exclude = "entity")
+@EqualsAndHashCode(callSuper = true, exclude = {"entity", "enabledValues"})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @javax.persistence.Entity
 public abstract class EntityField<T> extends ItemAbstract implements IEntityField<T> {

@@ -31,7 +31,7 @@
 					<div class="col-md-4">
 
 						<h1>
-							<a class="navbar-brand" href="viewCharts"
+							<a class="navbar-brand" href="listChart"
 								data-0="line-height:90px;" data-300="line-height:50px;"
 								th:text="${pageHeader}"> Hidayah </a>
 						</h1>
@@ -49,7 +49,7 @@
 		<form action="#" th:action="@{/saveView}" th:object="${viewChart}"
 			method="post">
 			<input type="hidden" th:field="*{id}">
-			<table>
+			<table class="table table-dark table-striped">
 				<tr>
 					<td>Название</td>
 					<td><input type="text" th:field="*{name}"></td>
@@ -60,7 +60,7 @@
 				</tr>
 			</table>
 
-			<table>
+			<table class="table table-dark table-striped">
 				<thead>
 					<tr>
 						<th></th>
@@ -94,7 +94,7 @@
 				</tbody>
 			</table>
 
-			<input type="submit" class="btn btn-default" value="Сохранить" />
+			<input type="submit" class="btn btn-default" value="&#x1F4BE; Сохранить" />
 
 		</form>
 	</div>

@@ -18,11 +18,13 @@ import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassVie
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @SuppressWarnings("rawtypes")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@EqualsAndHashCode(exclude = {"entityField"})
 @javax.persistence.Entity
 public abstract class EntityFieldEnabledValue<T> implements IEntityFieldEnabledValue<T> {
 

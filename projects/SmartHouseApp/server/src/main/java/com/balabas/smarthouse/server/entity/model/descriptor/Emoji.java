@@ -49,6 +49,7 @@ public enum Emoji {
 	PHONE_ON('\uD83D','\uDCF1',"1F4F1"),
 	PHONE_OFF('\uD83D','\uDCF4',"1F4F4"),
 	PHONE_WITH_ARROW('\uD83D','\uDCF2',"1F4F2"),
+	PLUS('\u2795',null,"2795"),
 	POLICE_CAR_LIGHTS('\uD83D','\uDEA8',"1F6A8"),
 	RADIO_BUTTON('\uD83D','\uDD18',"1F518"),
 	RED_CIRCLE('\u2B55',null,"2B55"),

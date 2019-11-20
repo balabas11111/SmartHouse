@@ -27,8 +27,6 @@ public class Group extends ItemAbstract implements IGroup {
 	@Enumerated(EnumType.STRING)
 	private ItemType type;
 	
-	//private String deviceName;
-
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="device_id", nullable=false)

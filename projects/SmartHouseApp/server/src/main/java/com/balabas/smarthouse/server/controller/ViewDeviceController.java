@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -23,7 +24,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
-import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
+import com.balabas.smarthouse.server.entity.model.ItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
@@ -140,7 +142,7 @@ public class ViewDeviceController {
 
 	}
 
-	@GetMapping("/viewCharts")
+	@GetMapping("/listChart")
 	public String getViewCharts(Model model) {
 
 		Iterable<ViewChartEntityFields> viewCharts = viewChartsService.getAll();
@@ -148,11 +150,11 @@ public class ViewDeviceController {
 		model.addAttribute("serverName", serverName);
 		model.addAttribute("viewCharts", viewCharts);
 
-		return "entityFields/viewCharts.html";
+		return "entityFields/listChart.html";
 	}
 
-	@GetMapping("/editView")
-	public String editViewCharts(@RequestParam(name = "id", required = false) Long id, Model model) {
+	@GetMapping("/editChart")
+	public String editChartCharts(@RequestParam(name = "id", required = false) Long id, Model model) {
 
 		boolean isNew = id == null || id == 0;
 
@@ -161,11 +163,13 @@ public class ViewDeviceController {
 		if (isNew) {
 			viewChart = new ViewChartEntityFields();
 
-			Set<IEntityField> allFields = deviceService.getDevices().stream()
+			Set<IEntityField> allFields = deviceService.getDevices().stream().sorted(ItemAbstract::compareByName)
 					.flatMap(device -> device.getEntities().stream())
 					.flatMap(entity -> entity.getEntityFields().stream())
-					.filter(entityField -> entityField.isReadOnly() || entityField.isButton())
-					.collect(Collectors.toSet());
+					.filter(entityField -> ItemType.SENSORS.equals(entityField.getEntity().getItemType())
+							&& !String.class.equals(entityField.getClazz())
+							&& (!StringUtils.isEmpty(entityField.getMeasure()) || entityField.isButton()))
+					.collect(Collectors.toCollection(LinkedHashSet::new));
 
 			viewChart.setEntityFields(allFields);
 		}
@@ -176,30 +180,30 @@ public class ViewDeviceController {
 		model.addAttribute("pageHeader", pageHeader);
 		model.addAttribute("viewChart", viewChart);
 
-		return "entityFields/editView.html";
+		return "entityFields/editChart.html";
 	}
 
 	@PostMapping(value = "/saveView")
 	public String addSave(@ModelAttribute("viewChart") ViewChartEntityFields viewChart,
 			@RequestParam(value = "fields", required = false) long[] entityFieldIds, Model model) {
 
-		if(entityFieldIds!=null) {
+		if (entityFieldIds != null) {
 			Set<IEntityField> entityFields = Sets.newHashSet();
-			
-			for(long entityFieldId: entityFieldIds) {
+
+			for (long entityFieldId : entityFieldIds) {
 				Optional<IEntityField> entityField = entityFieldService.getEntityFieldById(entityFieldId);
 				entityField.ifPresent(entityFields::add);
 			}
-			
+
 			viewChart.setEntityFields(entityFields);
 		}
-		
+
 		viewChart = viewChartsService.save(viewChart);
 
-		return "redirect:/editView?id=" + viewChart.getId();
+		return "redirect:/editChart?id=" + viewChart.getId();
 	}
 
-	@GetMapping("/historyGroupped")
+	@GetMapping("/viewChart")
 	public String getViewCharts(@RequestParam(name = "id", required = false) Long viewChartId,
 			@RequestParam(name = "afterDate", required = false) Long afterDate,
 			@RequestParam(name = "beforeDate", required = false) Long beforeDate, Model model) throws IOException {
@@ -213,7 +217,11 @@ public class ViewDeviceController {
 
 		int colorId = 0;
 
-		for (IEntityField entityField : viewCharts.getEntityFields()) {
+		List<IEntityField> entityFields = viewCharts.getEntityFields().stream()
+				.sorted((ef1, ef2) -> ef1.getEntity().getName().compareTo(ef2.getEntity().getName()))
+				.collect(Collectors.toList());
+
+		for (IEntityField entityField : entityFields) {
 			charts.add(getSeriesforEntityField(entityField, afterDate, beforeDate, colorId));
 			colorId++;
 		}
@@ -221,6 +229,9 @@ public class ViewDeviceController {
 		String chartData = (new ObjectMapper()).writeValueAsString(charts);
 		String chartYLabel = viewCharts.getDescription();
 		String chartHeader = viewCharts.getName();
+		String chartId = viewCharts.getId().toString();
+
+		model.addAttribute("chartData", chartData);
 
 		model.addAttribute("afterDate", afterDate);
 		model.addAttribute("beforeDate", beforeDate);
@@ -228,9 +239,16 @@ public class ViewDeviceController {
 
 		model.addAttribute("chartHeader", chartHeader);
 		model.addAttribute("chartDataY", chartYLabel);
-		model.addAttribute("chartData", chartData);
+		model.addAttribute("chartId", chartId);
 
-		return "entityFields/historyGroupped.html";
+		return "entityFields/viewChart.html";
+	}
+
+	@GetMapping("/deleteViewChart_{viewChartId}")
+	public String deleteViewChart(@PathVariable(name = "viewChartId") Long id, Model model) {
+		viewChartsService.delete(id);
+
+		return "redirect:/listChart";
 	}
 
 	private ChartDataSeries getSeriesforEntityField(IEntityField entityField, Long afterDate, Long beforeDate,
@@ -254,7 +272,9 @@ public class ViewDeviceController {
 			values = entityFieldService.getEntityFieldValuesForEntityField(entityField.getId());
 		}
 
-		String chartDataHeader = entityField.getEmoji() + " " + entityField.getDescriptionByDescriptionField();
+		String chartDataHeader = entityField.getEntity().getDevice().getDescription() + " : "
+				+ entityField.getEntity().getDescriptionByDescriptionField() + " : " + entityField.getEmoji() + " "
+				+ entityField.getDescriptionByDescriptionField();
 
 		Color color = ChartDataSeries.getColorByIndex(colorId);
 

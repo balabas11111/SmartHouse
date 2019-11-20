@@ -17,6 +17,7 @@ import javax.persistence.Transient;
 
 import org.thymeleaf.util.StringUtils;
 
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -27,7 +28,7 @@ import lombok.EqualsAndHashCode;
 
 @SuppressWarnings("rawtypes")
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = "entityFields")
+@EqualsAndHashCode(callSuper = true, exclude = {"entityFields", "grouppedFieldsIds", "grouppedFieldsNames"})
 @Table(name="entities")
 @javax.persistence.Entity
 public class Entity extends ItemAbstract implements IEntity {
@@ -61,6 +62,14 @@ public class Entity extends ItemAbstract implements IEntity {
 			return null;
 		}
 		return getGroup().getDevice(); 
+	}
+	
+	@Override
+	public ItemType getItemType() {
+		if(getGroup() == null) {
+			return null;
+		}
+		return getGroup().getType();
 	}
 	
 	@Override

@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title th:text="${chartHeader}">Устройство</title>
+	<title th:text="'&#x1F4CA;' + ${chartHeader}">Устройство</title>
 
 	<!-- Bootstrap -->
 	<link href="css/bootstrap.min.css" rel="stylesheet">
@@ -28,9 +28,9 @@
 				<div class="row">
 					<div class="col-md-4">
 
-						<h1><a class="navbar-brand" th:href="@{~/device?id={id}(id=${device.getId()})}"
+						<h1><a class="navbar-brand" href="listChart"
 								data-0="line-height:90px;" data-300="line-height:50px;"
-								th:text="${chartHeader}"> Hidayah
+								th:text="'График : ' + ${chartHeader}"> Hidayah
 							</a></h1>
 					</div>
 
@@ -42,11 +42,9 @@
 
 	<div class="container">
 
-		<h4 th:text="${chartHeader}">Устройство сервера</h4>
+		<h3 th:text="${chartHeader}"></h3>
 
-		<p>
-			<h4>История значений</h4>
-		</p>
+		<p><h4>История значений</h4></p>
 
 		<div th:replace="templates :: dateSelector"></div>
 
@@ -74,12 +72,12 @@
 		/*<![CDATA[*/
 		var afterDate = /*[[${afterDate}]]*/;
 		var beforeDate = /*[[${beforeDate}]]*/;
-		var currentId = /*[[${entityField.getId()}]]*/;
+		var currentId = /*[[${chartId}]]*/;
 
 		var chartDataY = /*[[${chartDataY}]]*/;
 		var chartDataStr = /*[[${chartData}]]*/;
 		
-		var redirectPreffix = "/historyGroupped?id=";
+		var redirectPreffix = "/viewChart?id=";
 
 		/*]]>*/
 	</script>
