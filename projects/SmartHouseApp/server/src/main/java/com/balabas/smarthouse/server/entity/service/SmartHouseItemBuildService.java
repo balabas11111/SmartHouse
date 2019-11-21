@@ -78,6 +78,7 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueN
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.util.MathUtil;
+import com.balabas.smarthouse.server.entity.behaviour.IEntityBehaviourService;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
@@ -102,6 +103,9 @@ public class SmartHouseItemBuildService {
 	
 	@Autowired
 	IEntityMessageProcessor entityMessageProcessor;
+	
+	@Autowired
+	IEntityBehaviourService entityBehaviourService;
 
 	private static ActionTimer buildTimer(ItemType itemType) {
 		Long updateInterval = itemType.getRefreshInterval();
@@ -414,9 +418,10 @@ public class SmartHouseItemBuildService {
 		entity.setDescriptionIfEmpty(description);
 		entity.setEmoji(emoji);
 		entity.setDescriptionField(descriptionField);
-		//entity.setRemoteId(remoteId);
 		entity.setHasMq(hasMq);
 		//entity.setRenderer(renderer);
+		
+		entityBehaviourService.cacheEntityBehaviourIfFound(entity);
 
 		Set<IEntityField> entityFields = new LinkedHashSet<>();
 

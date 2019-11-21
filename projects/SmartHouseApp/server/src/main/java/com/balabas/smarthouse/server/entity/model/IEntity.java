@@ -38,8 +38,6 @@ public interface IEntity extends IStateable, IItemAbstract {
 	
 	boolean isHasMq();
 	void setHasMq(boolean hasMq);
-	/*
-	  void addGeneratedField(IEntityField entityField);
-	  Set<IEntityField> getGeneratedFields();
-	 */
+	
+	String getEntityKey();
 }
