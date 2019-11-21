@@ -60,7 +60,7 @@ public class DeviceMqService implements IDeviceMqService {
 						.filter(IEntity::isHasMq)
 						.forEach(entity -> subscribeFromDeviceEntityTopic(entity));
 			} else {
-				log.info("Device has no topics");
+				log.info(device.getName() + " - no topics");
 			}
 		}
 	}

@@ -40,6 +40,7 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldEnabledValueRepository;
+import com.balabas.smarthouse.server.entity.repository.IEntityFieldIncorrectValueRepository;
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.server.view.DeviceEntityFieldActionHolder;
 import com.google.common.base.Joiner;
@@ -82,10 +83,15 @@ public class DeviceManageService implements IDeviceManageService {
 	IEntityFieldEnabledValueRepository entityFieldEnabledValueRepository;
 	
 	@Autowired
+	IEntityFieldIncorrectValueRepository entityFieldIncorrectValueRepository;
+	
+	@Autowired
 	IEntityFieldService entityFieldService;
 	
 	@Autowired
 	IDeviceMqService deviceMqService;
+	
+	boolean isNotFirstIteration = false;
 	
 	@Getter
 	private List<Device> devices = Collections.synchronizedList(new ArrayList<>());
@@ -332,6 +338,36 @@ public class DeviceManageService implements IDeviceManageService {
 	}
 
 	@Override
+	@Scheduled(fixedRate = 120000)
+	public void requestAllNotRegisteredDevice() {
+		
+		try {
+		
+			if(isNotFirstIteration) {
+				List<Device> notRegisteredDevices = getNotRegisteredDevices();
+				
+				if(notRegisteredDevices!=null && notRegisteredDevices.size()>0) {
+				
+				log.warn("Try to init not registered devices count = " + notRegisteredDevices.size());	
+					
+				notRegisteredDevices.forEach(device -> {
+					try {
+						requestDevicesValues(device, null);
+					}catch(Exception e) {
+						log.error("FAILED request notRegistered devices");
+					}
+				});
+				
+				}
+			} else {
+				isNotFirstIteration = true;
+			}
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}
+	
+	@Override
 	@Scheduled(fixedRate = 5000)
 	public void requestAllDevicesDataWithUpdateRequired() {
 		if (!getDevices().isEmpty()) {
@@ -356,6 +392,11 @@ public class DeviceManageService implements IDeviceManageService {
 		}
 	}
 
+	@Override
+	public List<Device> getNotRegisteredDevices() {
+		return getDevices().stream().filter(dev -> !dev.isRegistered()).collect(Collectors.toList());
+	}
+	
 	@Override
 	public List<Device> getDevicesRequireUpdate() {
 		return getDevices().stream().filter(dev -> dev.isRegistered() && (!dev.isInitialized() || dev.getTimer().isActionForced())/*&& checkItemRequiresUpdate(dev, dev)*/)
@@ -538,7 +579,7 @@ public class DeviceManageService implements IDeviceManageService {
 
 		alarmService.reattachAlarms(device);
 
-		log.info("saved " + device.getName());
+		log.debug("saved " + device.getName());
 
 		return device;
 	}
@@ -603,6 +644,7 @@ public class DeviceManageService implements IDeviceManageService {
 		
 		entityFieldService.deleteEntityFieldValuesForDevice(deviceId);
 		entityFieldEnabledValueRepository.deleteEntityFieldEnabledValuesForDevice(deviceId);
+		entityFieldIncorrectValueRepository.deleteEntityFieldIncorrectValue(deviceId);
 		
 		alarmService.deleteAlarmsByDeviceId(deviceId);
 		

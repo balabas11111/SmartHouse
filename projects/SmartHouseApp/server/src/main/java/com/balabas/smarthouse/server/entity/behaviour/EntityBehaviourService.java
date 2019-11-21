@@ -32,7 +32,7 @@ public class EntityBehaviourService implements IEntityBehaviourService {
 		
 		behaviour.ifPresent( b -> putBehaviourToCache(entity, b));
 		
-		return behaviour.orElseGet(null);
+		return behaviour.orElse(null);
 	}
 	
 	private void putBehaviourToCache(IEntity entity, IEntityBehaviour behaviour) {
@@ -41,6 +41,18 @@ public class EntityBehaviourService implements IEntityBehaviourService {
 		if(!cache.containsKey(key) && behaviour!=null) {
 			cache.put(key, behaviour);
 		}
+	}
+
+	@Override
+	public boolean isValueCorrect(IEntity entity, String value) {
+		IEntityBehaviour behaviour = getEntityBehaviour(entity);
+		
+		if(behaviour == null) {
+			return true;
+		} else {
+			return behaviour.isValueCorrect(value);
+		}
+		
 	}
 	
 }

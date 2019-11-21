@@ -36,6 +36,7 @@ import static com.balabas.smarthouse.server.entity.model.descriptor.EntityClassC
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +78,7 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueB
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
+import com.balabas.smarthouse.server.entity.repository.IEntityFieldIncorrectValueRepository;
 import com.balabas.smarthouse.server.util.MathUtil;
 import com.balabas.smarthouse.server.entity.behaviour.IEntityBehaviourService;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
@@ -106,6 +108,9 @@ public class SmartHouseItemBuildService {
 	
 	@Autowired
 	IEntityBehaviourService entityBehaviourService;
+	
+	@Autowired
+	IEntityFieldIncorrectValueRepository entityFieldIncorrectValueRepository;
 
 	private static ActionTimer buildTimer(ItemType itemType) {
 		Long updateInterval = itemType.getRefreshInterval();
@@ -195,13 +200,22 @@ public class SmartHouseItemBuildService {
 					if (entityField != null) {
 						if (!entity.getDescriptionField().equals(entityField.getTemplateName())) {
 
-							String oldValue = entityField.getValueStr();
-
-							setOk = setEntityFieldValueWithNoCheck(entityField, valStr, setOk);
-
-							if (setOk) {
-								processValueChange(entityField, oldValue, changedValues);
+							if (entityBehaviourService.isValueCorrect(entity, valStr)) {
+								String oldValue = entityField.getValueStr();
+	
+								setOk = setEntityFieldValueWithNoCheck(entityField, valStr, setOk);
+	
+								if (setOk) {
+									processValueChange(entityField, oldValue, changedValues);
+								}
+							} else {
+								
+								if(entityField !=null) {
+									entityFieldIncorrectValueRepository.insertEntityFieldIncorrectValue(entityField.getId(), valStr, new Date());
+								} 
+								log.error(entity.getEntityKey() + " " +entityField.getName() + " INCORRECT value " +valStr);
 							}
+							
 						} else {
 							setOk = true;
 						}

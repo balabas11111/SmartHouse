@@ -10,4 +10,6 @@ public interface IEntityBehaviour {
 	boolean isTarget(IEntity entity);
 	
 	boolean isValueCorrect(IEntityFieldValue value);
+	
+	boolean isValueCorrect(String value);
 }

@@ -6,4 +6,6 @@ public interface IEntityBehaviourService {
 
 	IEntityBehaviour getEntityBehaviour(IEntity entity);
 	IEntityBehaviour cacheEntityBehaviourIfFound(IEntity entity);
+	
+	boolean isValueCorrect(IEntity entity, String value);
 }

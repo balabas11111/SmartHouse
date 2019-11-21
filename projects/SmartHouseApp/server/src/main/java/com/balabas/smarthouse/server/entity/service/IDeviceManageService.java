@@ -74,4 +74,8 @@ public interface IDeviceManageService {
 
 	List<IEntityField> getCurrentEntityFieldsForDevice(Long deviceId);
 
+	List<Device> getNotRegisteredDevices();
+
+	void requestAllNotRegisteredDevice();
+
 }
