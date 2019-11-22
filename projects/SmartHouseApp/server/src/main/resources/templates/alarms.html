@@ -24,7 +24,7 @@
 				<div class="row">
 					<div class="col-md-4">
 
-						<h1><a class="navbar-brand" href="index.html" data-0="line-height:90px;"
+						<h1><a class="navbar-brand" href="index" data-0="line-height:90px;"
 								data-300="line-height:50px;" th:text="${serverName}">
 								Hidayah
 							</a></h1>
@@ -66,7 +66,7 @@
 									class="alert alert-danger">
 
 									<strong
-										th:text="${entityAlarm.getEntity().getEmoji().toString()} + ' ' + ${entityAlarm.getEntity().getDescription()}">EntityName</strong><br>
+										th:text="${entityAlarm.getWatchedItem().getEmoji().toString()} + ' ' + ${entityAlarm.getWatchedItem().getDescription()}">EntityName</strong><br>
 									<div th:each="message : ${entityAlarm.getAlarmStartedTextHolder().getMessages()}">
 										<label th:text="${message}">message</label><br>
 									</div>
@@ -74,18 +74,7 @@
 							</td>
 
 							<td>
-								<a th:href="@{~/alarm?id={id}(id=${device.id})}"
-									class="btn btn-default">&#x1F4DD;Настроить</a>
-									
-								<ul class="dropdown-menu">
-									<li><a th:href="@{http://{addr}/info(addr=${device.ip})}"
-											class="btn">&#x2139; Информация</a></li>
-									<li><a th:href="@{http://{addr}/data(addr=${device.ip})}"
-											class="btn">&#x1F4DA; Данные</a></li>
-									<li><a th:href="@{http://{addr}/update(addr=${device.ip})}"
-											class="btn">&#x1F4F2; Прошивка</a></li>
-								</ul>	
-									
+								<a th:href="@{~/alarmEdit?id={id}(id=${device.id})}" class="btn btn-default">&#x1F4DD;Настроить</a>
 							</td>
 						</tr>
 					</tbody>

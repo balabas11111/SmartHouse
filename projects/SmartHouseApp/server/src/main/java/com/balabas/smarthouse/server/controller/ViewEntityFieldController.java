@@ -45,6 +45,9 @@ import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_
 import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_CHART_DATA_Y;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_CHART_DATA;
 
+import static com.balabas.smarthouse.server.controller.ControllerConstants.URL_REDIRECT_ENTITY_FIELD_FORMAT;
+import static com.balabas.smarthouse.server.controller.ControllerConstants.URL_REDIRECT_VIEW_CHART_FORMAT;
+
 import static com.balabas.smarthouse.server.controller.ControllerConstants.MSG_NEW_CHART_PREFFIX;
 
 @Controller
@@ -70,6 +73,11 @@ public class ViewEntityFieldController {
 
 		if (entityFieldId == null || entityFieldId == 0) {
 			throw new IllegalArgumentException("Bad arguments");
+		}
+		
+		if(afterDate == null && beforeDate == null) {
+			afterDate = (new Date()).getTime() - 24*60*60*1000;
+			return String.format(URL_REDIRECT_ENTITY_FIELD_FORMAT, entityFieldId, afterDate);
 		}
 
 		IEntityField entityField = deviceService.getDevices().stream().flatMap(device -> device.getEntities().stream())
@@ -172,6 +180,11 @@ public class ViewEntityFieldController {
 
 		if (viewChartId == null || viewChartId == 0) {
 			throw new IllegalArgumentException("Bad arguments");
+		}
+		
+		if(afterDate == null && beforeDate == null) {
+			afterDate = (new Date()).getTime() - 24*60*60*1000;
+			return String.format(URL_REDIRECT_VIEW_CHART_FORMAT, viewChartId, afterDate);
 		}
 
 		ViewChartEntityFields viewCharts = viewChartsService.getChartsById(viewChartId);

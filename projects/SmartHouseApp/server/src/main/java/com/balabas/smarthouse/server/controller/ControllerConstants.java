@@ -27,6 +27,19 @@ public class ControllerConstants {
 	public static final String ATTR_CHART_DATA_Y  = "chartDataY";
 	public static final String ATTR_CHART_DATA    = "chartData";
 	
+	//urls
+	public static final String URL_REDIRECT_PREFFIX   = "redirect:";
+	
+	//urls view chart data
+	public static final String URL_ENTITY_FIELD_CHART = "/entityField";
+	public static final String URL_LIST_ALL_CHARTS    = "/listChart";
+	public static final String URL_EDIT_CHART         = "/editChart";
+	public static final String URL_SAVE_CHART         = "/saveView";
+	public static final String URL_VIEW_CHART         = "/viewChart";
+	
+	public static final String URL_REDIRECT_ENTITY_FIELD_FORMAT = "redirect:/entityField?id=%d&afterDate=%d";
+	public static final String URL_REDIRECT_VIEW_CHART_FORMAT = "redirect:/viewChart?id=%d&afterDate=%d";
+	
 	//messages
 	public static final String MSG_NEW_CHART_PREFFIX = "Новый график";
 }

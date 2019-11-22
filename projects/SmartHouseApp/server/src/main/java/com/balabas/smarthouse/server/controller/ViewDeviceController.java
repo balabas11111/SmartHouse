@@ -79,17 +79,6 @@ public class ViewDeviceController {
 
 	}
 
-	@GetMapping("/alarms")
-	public String getDevicesAlarms(Model model) {
-		model.addAttribute("serverName", serverName);
-		List<Device> devices = deviceService.getDevices();
-
-		model.addAttribute("devices", devices);
-		model.addAttribute("alarms", alarmService.getDeviceAlarmsHoldersGroupped(devices));
-
-		return "alarms.html";
-	}
-
 	@GetMapping("/settings")
 	public String getDevicesSettings(Model model) {
 		model.addAttribute("serverName", serverName);
