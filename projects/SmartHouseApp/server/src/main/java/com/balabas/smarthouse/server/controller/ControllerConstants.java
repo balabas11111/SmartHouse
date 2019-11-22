@@ -18,4 +18,15 @@ public class ControllerConstants {
 	
 	public static final String TEMPLATE_DEVICES_VIEW = "devices/list.html";
 	public static final String TEMPLATE_DEVICE_VIEW = "devices/edit.html";
+	
+	//attributes
+	public static final String ATTR_ID            = "id";
+	public static final String ATTR_SERVER_NAME   = "serverName";
+	public static final String ATTR_DATE_BEFORE   = "beforeDate";
+	public static final String ATTR_DATE_AFTER    = "afterDate";
+	public static final String ATTR_CHART_DATA_Y  = "chartDataY";
+	public static final String ATTR_CHART_DATA    = "chartData";
+	
+	//messages
+	public static final String MSG_NEW_CHART_PREFFIX = "Новый график";
 }

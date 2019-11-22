@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
 <meta charset="utf-8">
@@ -71,9 +71,9 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="entityField : ${viewChart.entityFields}">
+					<tr th:each="entityField : ${allFields}">
 						<td><input type="checkbox" name="fields"
-							th:value="${entityField.id}" /></td>
+							th:value="${entityField.id}" th:checked="${currentFields.containsKey(entityField.id)}" /></td>
 						<td><label
 							th:text="${entityField.getEntity().getDevice().getDescription()}"></label>
 						</td>
