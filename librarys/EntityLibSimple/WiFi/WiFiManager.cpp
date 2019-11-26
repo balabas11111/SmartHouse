@@ -45,6 +45,9 @@ bool WiFiManager::begin(bool resetToAp) {
 	waitForConnect();
 	WiFiUtils::printWiFiDetails();
 
+	Serial.println(FPSTR("WiFi manager begin complete"));
+	Serial.println(FPSTR("---------------------------"));
+
 	return res;
 }
 

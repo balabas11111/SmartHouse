@@ -99,7 +99,16 @@ public:
 		String devIdTmp="ESP_"+String(ESP.getChipId());
 #endif
 #ifdef ESP32
-		String devIdTmp="ESP_"+String(ESP.getEfuseMac());
+		uint64_t mac = ESP.getEfuseMac();
+		uint32_t low = mac % 0xFFFFFFFF;
+		uint32_t high = (mac>> 32) % 0xFFFFFFFF;
+
+		Serial.print(FPSTR("MAC low ="));
+		Serial.print(low);
+		Serial.print(FPSTR(" high ="));
+		Serial.print(high);
+
+		String devIdTmp="ESP_" + String(low) + String(high);
 #endif
 		this->_devId=strdup(devIdTmp.c_str());
 

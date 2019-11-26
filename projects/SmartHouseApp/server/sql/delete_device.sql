@@ -1,4 +1,12 @@
-SET @deviceId=3;
+SET @deviceId=43;
+
+DELETE FROM entity_field_incorrect_value 
+WHERE entity_field_id in
+	(SELECT ef.id AS id from entity_field ef 
+	JOIN entities e ON ef.entity_id = e.id
+	JOIN groups g ON g.id = e.group_id
+	JOIN devices d ON d.id = g.device_id
+	WHERE d.id = @deviceId);
 
 DELETE FROM entity_field_value 
 WHERE entity_field_id in

@@ -42,11 +42,6 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp320/variants/d32</locationURI>
 		</link>
 		<link>
-			<name>libraries/Adafruit_BME280</name>
-			<type>2</type>
-			<location>D:/projects/!!SmartHouse/librarys/Adafruit_BME280</location>
-		</link>
-		<link>
 			<name>libraries/Adafruit_Sensor</name>
 			<type>2</type>
 			<location>D:/projects/!!SmartHouse/librarys/Adafruit_Sensor</location>
@@ -54,17 +49,17 @@
 		<link>
 			<name>libraries/ArduinoJson</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/ArduinoJson</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/ArduinoJson/5.12.0</locationURI>
 		</link>
 		<link>
-			<name>libraries/ArduinoOTA</name>
+			<name>libraries/DHT_sensor_library</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp320/libraries/ArduinoOTA</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DHT_sensor_library/1.2.2</locationURI>
 		</link>
 		<link>
 			<name>libraries/DallasTemperature</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DallasTemperature</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/DallasTemperature/3.7.6</locationURI>
 		</link>
 		<link>
 			<name>libraries/ESPmDNS</name>
@@ -72,19 +67,29 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp320/libraries/ESPmDNS</locationURI>
 		</link>
 		<link>
+			<name>libraries/EntityLibMock</name>
+			<type>2</type>
+			<location>D:/projects/!!SmartHouse/librarys/EntityLibMock</location>
+		</link>
+		<link>
 			<name>libraries/EntityLibSimple</name>
 			<type>2</type>
 			<location>D:/projects/!!SmartHouse/librarys/EntityLibSimple</location>
 		</link>
 		<link>
-			<name>libraries/EntityLib_S_BME280</name>
-			<type>2</type>
-			<location>D:/projects/!!SmartHouse/librarys/EntityLib_S_BME280</location>
-		</link>
-		<link>
 			<name>libraries/EntityLib_S_DS18D20</name>
 			<type>2</type>
 			<location>D:/projects/!!SmartHouse/librarys/EntityLib_S_DS18D20</location>
+		</link>
+		<link>
+			<name>libraries/EntityLib_S_ImpulseRelay</name>
+			<type>2</type>
+			<location>D:/projects/!!SmartHouse/librarys/EntityLib_S_ImpulseRelay</location>
+		</link>
+		<link>
+			<name>libraries/EntityLib_S_MAX6675</name>
+			<type>2</type>
+			<location>D:/projects/!!SmartHouse/librarys/EntityLib_S_MAX6675</location>
 		</link>
 		<link>
 			<name>libraries/FS</name>
@@ -97,11 +102,6 @@
 			<location>D:/projects/!!SmartHouse/librarys/FastCRC</location>
 		</link>
 		<link>
-			<name>libraries/FreeRTOS</name>
-			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/FreeRTOS</locationURI>
-		</link>
-		<link>
 			<name>libraries/HTTPClient</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/esp320/libraries/HTTPClient</locationURI>
@@ -112,14 +112,19 @@
 			<location>D:/projects/!!SmartHouse/librarys/HTTPUpdateServer</location>
 		</link>
 		<link>
+			<name>libraries/MAX6675_library</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/MAX6675_library/1.0.0</locationURI>
+		</link>
+		<link>
 			<name>libraries/OneWire</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/OneWire/2.3.3</locationURI>
 		</link>
 		<link>
 			<name>libraries/PubSubClient</name>
 			<type>2</type>
-			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/PubSubClient</locationURI>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/PubSubClient/2.6.0</locationURI>
 		</link>
 		<link>
 			<name>libraries/SPI</name>

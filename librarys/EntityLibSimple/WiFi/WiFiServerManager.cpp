@@ -15,12 +15,14 @@ WiFiServerManager::WiFiServerManager(EntityManager* manager, SettingsStorage* co
 #endif
 #ifdef ESP32
 	this->server = new WebServer(80);
+	this->updateServer = new ESP32HTTPUpdateServer(true);
 #endif
 	this->manager = manager;
 	this->conf = conf;
 }
 
 void WiFiServerManager::begin() {
+	Serial.println(FPSTR("WiFiServerManager begin"));
 	this->server->begin();
 	this->updateServer->setup(this->server, conf->adminLogin(), conf->adminPassword());
 
