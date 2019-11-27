@@ -14,6 +14,7 @@ void PageToDisplayAdapter::renderPage(const char* header, JsonVariant pageData) 
 	}
 
 	if(this->isPowerOn()) {
+		//Serial.println(FPSTR("renderPage"));
 		this->clear();
 
 		toStartPosition();

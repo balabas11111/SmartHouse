@@ -8,8 +8,10 @@
 #include <EntityUpdate.h>
 
 void EntityUpdate::init(long interv, unsigned long initTime){
-	this->interval = interv * 1000;
-	this->lastUpdate = initTime;
+	if(this->interval>-1) {
+		this->interval = interv * 1000;
+		this->lastUpdate = initTime;
+	}
 	/*Serial.print(FPSTR("EntityUpdate interval="));
 	Serial.println(this->interval);
 	*/

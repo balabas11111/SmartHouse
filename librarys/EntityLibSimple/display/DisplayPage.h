@@ -36,16 +36,22 @@ public:
 	PageToDisplayAdapter* getAdapter();
 
 protected:
+	virtual void construct(Entity* entity, const char* fields[],
+			const char* fieldsDescr[], const char* fieldsMeasure[], int fieldsSize,
+			const char* header);
+	virtual void fillData(JsonObject& from, JsonObject& to);
+	virtual JsonObject& putDataToJson(JsonObject& parent, const char* key, const char* name, const char* measure = nullptr);
 	PageToDisplayAdapter* adapter = nullptr;
-private:
-	bool renderKey(const char* key);
-	JsonObject& putDataToJson(JsonObject& parent, const char* key, const char* name, const char* measure = nullptr);
-	void setAndInitDisplayAdapter(PageToDisplayAdapter* adapter);
 
-	Entity* entity;
 	const char** fields;
 	const char** fieldsDescr;
 	const char** fieldsMeasure;
+private:
+	bool renderKey(const char* key);
+	void setAndInitDisplayAdapter(PageToDisplayAdapter* adapter);
+
+	Entity* entity;
+
 	int fieldsSize;
 	const char* header;
 

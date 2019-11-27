@@ -61,7 +61,12 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_S_MAX6675}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/MAX6675_library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLibMock}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_S_AnalogSensor}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/BeeperB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/Adafruit_NeoPixel}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_S_WS2811}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_D_TM1637}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/TM1637}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1137111944" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -109,7 +114,12 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_S_MAX6675}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/MAX6675_library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLibMock}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_S_AnalogSensor}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/BeeperB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/Adafruit_NeoPixel}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_S_WS2811}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_D_TM1637}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/TM1637}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.612557546" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -157,7 +167,12 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_S_MAX6675}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/MAX6675_library}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLibMock}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_S_AnalogSensor}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/BeeperB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/Adafruit_NeoPixel}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_S_WS2811}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_D_TM1637}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/TM1637}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1605097927" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -167,15 +182,15 @@
 							<tool id="io.sloeber.tool.size.956450675" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="io.sloeber.core.toolChain.release.742103367.1374811241" name="/" resourcePath="libraries/EntityLibSimple/WiFi">
-						<toolChain id="io.sloeber.core.toolChain.release.1932679962" name="Arduino Toolchain (Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
-							<tool id="io.sloeber.tool.sketch.compiler.cpp.1035931930" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1441802127"/>
-							<tool id="io.sloeber.tool.compiler.c.508135439" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.1971356708"/>
-							<tool id="io.sloeber.tool.sketch.compiler.s.1319930909" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.1218393781"/>
-							<tool id="io.sloeber.tool.ar.1766190251" name="Arduino archiver" superClass="io.sloeber.tool.ar.56933330"/>
-							<tool id="io.sloeber.tool.combine.2010118631" name="Arduino combiner" superClass="io.sloeber.tool.combine.1288815596"/>
-							<tool id="io.sloeber.tool.objcopy.eep.781102286" name="Arduino tool Create eeprom" superClass="io.sloeber.tool.objcopy.eep.90383790"/>
-							<tool id="io.sloeber.tool.size.303584112" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.956450675"/>
+					<folderInfo id="io.sloeber.core.toolChain.release.742103367.34882188" name="/" resourcePath="libraries/EntityLibSimple/WiFi">
+						<toolChain id="io.sloeber.core.toolChain.release.472067829" name="Arduino Toolchain (Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.737278473" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1441802127"/>
+							<tool id="io.sloeber.tool.compiler.c.1748098490" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.1971356708"/>
+							<tool id="io.sloeber.tool.sketch.compiler.s.1536813707" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.1218393781"/>
+							<tool id="io.sloeber.tool.ar.1568254590" name="Arduino archiver" superClass="io.sloeber.tool.ar.56933330"/>
+							<tool id="io.sloeber.tool.combine.1502508412" name="Arduino combiner" superClass="io.sloeber.tool.combine.1288815596"/>
+							<tool id="io.sloeber.tool.objcopy.eep.575533001" name="Arduino tool Create eeprom" superClass="io.sloeber.tool.objcopy.eep.90383790"/>
+							<tool id="io.sloeber.tool.size.381969463" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.956450675"/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>

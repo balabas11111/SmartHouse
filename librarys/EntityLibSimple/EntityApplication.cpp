@@ -93,12 +93,13 @@ bool initI2C, uint8_t clockPin, uint8_t dataPin) {
 
 	DeviceUtils::printHeap();
 	DeviceUtils::printMillis();
-#ifdef SETTINGS_DISPLAY_ENABLED
-	this->displayManager->init();
-#endif
 
 	this->entityManager->init();
 	this->entityUpdateManager->init(this->conf->refreshInterval());
+
+#ifdef SETTINGS_DISPLAY_ENABLED
+	this->displayManager->init();
+#endif
 
 	if (initWiFi) {
 		this->wifiManager->begin();

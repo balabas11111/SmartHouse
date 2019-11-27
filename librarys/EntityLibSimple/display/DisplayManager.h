@@ -34,8 +34,10 @@ public:
 
 	virtual void switchToNextNonStatusPage(){
 		if(this->currentPage == this->pageCount) {
+			Serial.println(FPSTR("max page reached"));
 			this->currentPage = 0;
 		}
+		turnPowerOn();
 		switchToNextPage();
 		//Serial.println(FPSTR("next page"));
 	}
@@ -45,6 +47,9 @@ public:
 	void loop();
 
 	void switchToPage(int page) {
+		Serial.print(FPSTR("switchToPage ="));
+		Serial.println(page);
+
 		this->currentPage = page;
 		renderCurrentPage();
 	}
@@ -69,18 +74,32 @@ public:
 	}
 
 	void switchToNextPageOrTurnPowerOn() {
-		if(getCurrentPage()->getAdapter()->isPowerOn()) {
-			switchToNextNonStatusPage();
-		} else {
-			renderCurrentPage();
-		}
+		Serial.println(FPSTR("switchToNextPageOrTurnPowerOn"));
+		PageToDisplayAdapter* adapter = getCurrentPage()->getAdapter();
 
-		getCurrentPage()->getAdapter()->setPowerOn();
+		if(adapter!=nullptr) {
+			if(adapter->isPowerOn()) {
+				switchToNextNonStatusPage();
+			} else {
+				turnPowerOn();
+				renderCurrentPage();
+			}
+		}
 	}
 
 	virtual void renderCurrentPage();
 
 	DisplayPage* getCurrentPage();
+
+	void turnPowerOn() {
+		DisplayPage* page = getCurrentPage();
+		if(page != nullptr) {
+			PageToDisplayAdapter* adapter = page->getAdapter();
+			if(adapter!=nullptr) {
+				adapter->setPowerOn();
+			}
+		}
+	}
 
 protected:
 	unsigned long interval = 0;

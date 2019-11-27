@@ -170,6 +170,37 @@ public:
 		itemsToJson(jsonToFile, false);
 	}
 
+	bool isAnyTempValueGreaterThan(int value) {
+		bool result = false;
+
+		for (int i = 0; i<itemCount; i++) {
+			if(items[i].temp >= value && items[i].temp!=85){
+				result = true;
+			}
+		}
+
+		return result;
+	}
+
+	bool isAnyTempValueLessThan(int value) {
+		bool result = false;
+
+		for (int i = 0; i<itemCount; i++) {
+			if(items[i].temp <= value){
+				result = true;
+			}
+		}
+
+		return result;
+	}
+
+	float getTemperatureByIndex(uint8_t index) {
+		if(index>itemCount-1) {
+			return -127;
+		}
+		return items[index].temp;
+	}
+
 protected:
 	int itemCount = 0;
 

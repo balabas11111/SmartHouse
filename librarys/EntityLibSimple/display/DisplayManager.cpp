@@ -58,7 +58,9 @@ void DisplayManager::switchToNextPage() {
 
 		if(this->currentPage == this->pageCount){
 			switchToStatusPage(false);
+			this->currentPage =0;
 		} else {
+			Serial.println(FPSTR("page incremented"));
 			this->currentPage++;
 			renderCurrentPage();
 		}
@@ -73,12 +75,27 @@ void DisplayManager::renderCurrentPage() {
 	if(!(this->pageChangeEnabled && this->initDone )){
 		return;
 	}
+	DisplayPage* page = getCurrentPage();
 
-	getCurrentPage()->render();
+	if(page!=nullptr) {
+		Serial.print(FPSTR("Page->render() "));
+		Serial.println(this->currentPage);
+		page->render();
+	} else{
+		Serial.println(FPSTR("ERROR NO PAGE"));
+	}
 }
 
 DisplayPage* DisplayManager::getCurrentPage() {
-	return this->pages[this->currentPage-1];
+	int index = this->currentPage-1;
+	if(index<0){
+		 //this->currentPage = 1;
+		 index = 0;
+	}
+	/*Serial.print(FPSTR("getCurrentPage()"));
+	Serial.println(this->currentPage);
+	*/
+	return this->pages[index];
 }
 
 void DisplayManager::loop() {

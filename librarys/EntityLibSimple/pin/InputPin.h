@@ -22,19 +22,26 @@
 
 class InputPin: public Pin, public Entity, public EntityUpdate {
 public:
-	InputPin(uint8_t pin, char* descr = INPUT_PIN_DESCRIPTION,
+	InputPin(uint8_t pin,
+			const char* name = INPUT_PIN_NAME,
+			std::function<void(void)> interruptProcessFunction = nullptr):
+			Pin(pin, INPUT_PULLUP), Entity(GROUP_SENSORS, name, (char*)INPUT_PIN_DESCRIPTION, nullptr) {
+
+		construct(CHANGE, interruptProcessFunction, false);
+	}
+
+	InputPin(uint8_t pin, char* descr = (char*)INPUT_PIN_DESCRIPTION,
 			const char* name = INPUT_PIN_NAME, int interruptMode = CHANGE,
 			int pinMode = INPUT_PULLUP,
 			std::function<void(void)> interruptProcessFunction = nullptr,
-			std::function<void(void)> onSetChangedEventFunction = nullptr) :
+			std::function<void(void)> onSetChangedEventFunction = nullptr,
+			bool hasGetMeth = false):
 			Pin(pin, pinMode), Entity(GROUP_SENSORS, name, descr,
 					onSetChangedEventFunction) {
 
-		this->interruptMode = interruptMode;
-		this->lastState = getValue();
-		this->interruptProcessFunction = interruptProcessFunction;
-
+		construct(interruptMode, interruptProcessFunction, hasGetMeth);
 	}
+
 	virtual ~InputPin() {}
 
 	virtual bool preValidate() override {
@@ -48,6 +55,7 @@ public:
 	virtual void init() override {
 		this->attachPinInterrupt([this]() {processInterrupt();},
 				this->interruptMode);
+		Serial.println(FPSTR("Interrupt attached"));
 	}
 
 	virtual void doUpdate() override {
@@ -56,9 +64,9 @@ public:
 	virtual void loop() override {
 		if (interrupted) {
 
-			Serial.print(this->getName());
+			/*Serial.print(this->getName());
 			Serial.println(FPSTR("Interrupted "));
-
+*/
 			checkLastState();
 			this->interrupted = false;
 
@@ -97,7 +105,16 @@ protected:
 
 	std::function<void(void)> interruptProcessFunction;
 
+	void construct(int interruptMode, std::function<void(void)> interruptProcessFunction, bool hasGetMeth) {
+		this->interruptMode = interruptMode;
+		this->lastState = getValue();
+		this->interruptProcessFunction = interruptProcessFunction;
+		this->hasGet = hasGetMeth;
+		this->interval = -1;
+	}
+
 	void processInterrupt() {
+		Serial.println(FPSTR("Process interrupt"));
 		this->interrupted = checkLastState();
 	}
 

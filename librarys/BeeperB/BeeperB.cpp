@@ -45,11 +45,22 @@ const int defaultBeep=500;
 		}
 	}
 	void BeeperB::playGenerator(){
+		/*Serial.print(FPSTR("playGenerator pin="));
+		Serial.print(_pin);
+		Serial.print(FPSTR(" flag="));
+		Serial.println(_PLAY_FLAG);
+*/
 		digitalWrite(_pin, _PLAY_FLAG);
 	}
 	void BeeperB::noPlayGenerator(){
+		/*Serial.print(FPSTR("noPlayGenerator pin="));
+		Serial.print(_pin);
+		Serial.print(FPSTR(" flag="));
+		Serial.println(_NO_PLAY_FLAG);
+*/
 		digitalWrite(_pin, _NO_PLAY_FLAG);
 	}
+	/*
 	void BeeperB::play(unsigned int frequency, unsigned long duration){
 		if(useWriteMethodInsteadPlay){
 
@@ -62,7 +73,7 @@ const int defaultBeep=500;
 			noPlayGenerator();
 		}
 	}
-
+*/
 	void BeeperB::doBeep(unsigned long duration){
 		if(duration==0){
 			duration=defaultBeep;
@@ -74,9 +85,9 @@ const int defaultBeep=500;
 			duration=defaultBeepDelay+1;
 		}
 
-	    play(2500, del);
+		playGenerator(true);
 	    delay(duration);
-	    noPlay();
+	    playGenerator(false);
 	}
 
 

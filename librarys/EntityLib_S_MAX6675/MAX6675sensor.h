@@ -5,8 +5,8 @@
  *      Author: Vitaliy_Vlasov
  */
 
-#ifndef LIBRARIES_ENTITYLIBSENSORS_DHT22SENSOR_H_
-#define LIBRARIES_ENTITYLIBSENSORS_DHT22SENSOR_H_
+#ifndef LIBRARIES_ENTITYLIBSENSORS_MAX6675SENSOR_H_
+#define LIBRARIES_ENTITYLIBSENSORS_MAX6675SENSOR_H_
 
 #include <Entity.h>
 #include <EntityUpdate.h>
@@ -53,6 +53,9 @@ public:
 				this->temp = t;
 				break;
 			}
+
+			Serial.print(FPSTR("  thermocouple->readCelsius()="));
+			Serial.println(t);
 		}
 #endif
 	}
@@ -84,6 +87,18 @@ public:
 		EntityDescriptor::appendSwgEntityParams(swgJson, EMOJI_CANDLE);
 
 		EntityDescriptor::appendSwgFieldFloat(swgJson, MAX6675_TEMPERATURE, EDC_DESCR_TEMPERATURE, EMOJI_FIRE, EDC_MEASURE_GRAD_CELSIUS);
+	}
+
+	bool isTempValueGreaterThan(int value) {
+		return temp >= value;
+	}
+
+	bool isTempValueLessThan(int value) {
+		return temp <= value;
+	}
+
+	double getTemperature() {
+		return temp;
 	}
 
 protected:
