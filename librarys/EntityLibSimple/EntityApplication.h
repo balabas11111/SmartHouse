@@ -25,7 +25,6 @@
 #include <utils/I2C_utils.h>
 #include <functional>
 
-#include <Ticker.h>
 #include <Notifiers/Notifier.h>
 #include <Notifiers/DataSelector.h>
 #include <Notifiers/DataSelectorEntityManager.h>
@@ -88,10 +87,6 @@ public:
 	Notifier* getDefaultNotifier();
 
 	void restart();
-
-	void registerTicker(void (*callback)(void));
-	void registerTicker(uint32_t milliseconds, void (*callback)(void));
-
 	void updateEntities(bool force = false);
 
 	void notify(char* group = nullptr, char* name = nullptr, char* param = nullptr, NotificationTarget* notifTarget = nullptr);
@@ -102,11 +97,6 @@ public:
 		return this->displayManager;
 	}
 
-	void switchPagesWithInterval(unsigned long interval) {
-		this->displayManager->switchToNextPageWithInterval(interval);
-	}
-
-	unsigned long interval = 0;
 #endif
 private:
 

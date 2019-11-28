@@ -220,26 +220,6 @@ SettingsStorage* EntityApplication::getConf() {
 	return this->conf;
 }
 
-void EntityApplication::registerTicker(void (*callback)(void)) {
-
-	uint32_t tickInterval = 30000;
-
-	if (this->conf != nullptr && this->conf->refreshInterval() > 0) {
-		tickInterval = conf->refreshInterval() * 1000;
-	}
-
-	registerTicker(tickInterval, callback);
-}
-
-void EntityApplication::registerTicker(uint32_t milliseconds,
-		void (*callback)(void)) {
-	Serial.print(FPSTR("register ticker interval = "));
-	Serial.print(milliseconds);
-	Ticker* ticker = new Ticker();
-	ticker->attach_ms(milliseconds, callback);
-	Serial.println(FPSTR(" done"));
-}
-
 void EntityApplication::updateEntities(bool force) {
 	Serial.println(FPSTR("Entity update triggered by app"));
 	this->entityUpdateManager->updateEntities(force);

@@ -17,7 +17,6 @@
 
 #include "WS2811Led.h"
 #include "serve/Alarmer.h"
-#include "TM1637Display.h"
 
 #define NAME_PUMP_GREB "Насос гребенка"
 #define NAME_PUMP_KOSV "Насос косвенник"
@@ -27,8 +26,6 @@ BeeperB beeper(GPIO_NUM_13);
 BeeperSerial beeperSerial(&beeper);
 
 WS2811Led strip(GPIO_NUM_12, 1);
-
-TM1637Display tm1637(GPIO_NUM_2, GPIO_NUM_4);
 
 Alarmer alarmer(&beeperSerial, [](){return checkForAlarm();}, &strip);
 
@@ -49,7 +46,7 @@ InputPin button(GPIO_NUM_14, (char*) "button", []() {onButtonPressed();});
 
 Entity* entities[] = { &ds18d20, &ds18d20_2, &pump1, &pump2, &pump3, &heater, &mq2 };
 EntityUpdate* updateableEntities[] = { &ds18d20, &ds18d20_2, &pump1, &pump2,
-		&pump3, &heater, &mq2, &button, &beeperSerial, &alarmer, &tm1637 };
+		&pump3, &heater, &mq2, &button, &beeperSerial, &alarmer };
 
 PageToDisplayAdapter* oled = new DisplayToOledAdapter();
 
@@ -108,9 +105,6 @@ void loop() {
 void onButtonPressed() {
 	if(!button.isOn()) {
 		app.getDisplayManager()->switchToNextPageOrTurnPowerOn();
-
-		int value = ds18d20.getTemperatureByIndex(0);
-		tm1637.displayData(value);
 	}
 }
 

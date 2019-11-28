@@ -99,21 +99,7 @@ DisplayPage* DisplayManager::getCurrentPage() {
 }
 
 void DisplayManager::loop() {
-	if(this->interval!=0) {
-		if(nextSwitchTime < millis()) {
-			switchToNextNonStatusPage();
-			nextSwitchTime = millis() + interval;
-
-			Serial.print(FPSTR("interval="));
-			Serial.print(interval);
-			Serial.print(FPSTR(" nextSwitchTime="));
-			Serial.print(nextSwitchTime);
-			Serial.print(FPSTR(" now="));
-			Serial.println(millis());
-		}
-	}
 	this->displayAdapter->loop();
-	switchToNextPageIfTriggered();
 }
 
 void DisplayManager::renderStatusPage() {

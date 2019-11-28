@@ -39,7 +39,6 @@ public:
 		}
 		turnPowerOn();
 		switchToNextPage();
-		//Serial.println(FPSTR("next page"));
 	}
 
 	void setPageChangeEnabled(bool pageChangeEnabled = true);
@@ -52,25 +51,6 @@ public:
 
 		this->currentPage = page;
 		renderCurrentPage();
-	}
-
-	void switchToNextPageWithInterval(unsigned long interval) {
-		this->interval = interval;
-		nextSwitchTime = millis() + interval;
-
-		switchToNextNonStatusPage();
-	}
-
-	void switchToNextPageIfTriggered() {
-		if(triggeredPageChange) {
-			switchToNextPageOrTurnPowerOn();
-			triggeredPageChange = false;
-		}
-	}
-
-	void triggerPageChange() {
-		triggeredPageChange = true;
-		Serial.println(FPSTR("Triggered page change"));
 	}
 
 	void switchToNextPageOrTurnPowerOn() {
@@ -102,14 +82,8 @@ public:
 	}
 
 protected:
-	unsigned long interval = 0;
-	unsigned long nextSwitchTime = 0;
-
-
 	virtual void renderStatusPage();
 private:
-	bool triggeredPageChange = false;
-
 	PageToDisplayAdapter* displayAdapter;
 	DisplayPage** pages;
 	unsigned char pageCount = 0;

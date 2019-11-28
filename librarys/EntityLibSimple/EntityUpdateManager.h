@@ -11,10 +11,7 @@
 #include <Arduino.h>
 #include <list>
 #include <iterator>
-#include <Ticker.h>
 #include <EntityUpdate.h>
-
-
 
 class EntityUpdateManager {
 public:
