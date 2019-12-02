@@ -1,7 +1,5 @@
 package com.balabas.smarthouse.server.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -11,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 
@@ -23,9 +20,6 @@ public class ViewDeviceController {
 
 	@Autowired
 	private IDeviceManageService deviceService;
-
-	@Autowired
-	private IEntityAlarmService alarmService;
 
 	@GetMapping("/")
 	public String getRoot(Model model) {
