@@ -30,18 +30,13 @@ WS2811Led strip(GPIO_NUM_12, 1);
 Alarmer alarmer(&beeperSerial, [](){return checkForAlarm();}, &strip);
 
 DS18D20sensor ds18d20(GPIO_NUM_19, (char*) "Температура бак");
-DS18D20sensor ds18d20_2(GPIO_NUM_16, (char*) "Температура гребенка",
-		"ds18d20_2");
-ImpulseRelay pump1(GPIO_NUM_32, GPIO_NUM_33, (char*) NAME_PUMP_GREB, "pump1",
-		"1F321");
-ImpulseRelay pump2(GPIO_NUM_27, GPIO_NUM_35, (char*) NAME_PUMP_KOSV, "pump2",
-		"1F321");
-ImpulseRelay pump3(GPIO_NUM_25, GPIO_NUM_26, (char*) NAME_PUMP_HEATER, "pump3",
-		"1F321");
-MAX6675sensor heater(GPIO_NUM_5, GPIO_NUM_18, GPIO_NUM_23,
-		(char*) "Температура дымоход");
+DS18D20sensor ds18d20_2(GPIO_NUM_16, (char*) "Температура гребенка", "ds18d20_2");
+ImpulseRelay pump1(GPIO_NUM_25, GPIO_NUM_33, (char*) NAME_PUMP_GREB, "pump1", "1F321");
+ImpulseRelay pump2(GPIO_NUM_26, GPIO_NUM_34, (char*) NAME_PUMP_KOSV, "pump2", "1F321");
+ImpulseRelay pump3(GPIO_NUM_27, GPIO_NUM_35, (char*) NAME_PUMP_HEATER, "pump3", "1F321");
+MAX6675sensor heater(GPIO_NUM_5, GPIO_NUM_18, GPIO_NUM_23, (char*) "Температура дымоход");
 
-AnalogSensorPin mq2(GPIO_NUM_34, (char*) "Загазованость", "mq2", "Уровень ");
+AnalogSensorPin mq2(GPIO_NUM_32, (char*) "Загазованость", "mq2", "Уровень ");
 InputPin button(GPIO_NUM_14, (char*) "button", []() {onButtonPressed();});
 
 Entity* entities[] = { &ds18d20, &ds18d20_2, &pump1, &pump2, &pump3, &heater, &mq2 };
@@ -55,7 +50,7 @@ const char* ds18d20FieldsDescr[] = { "Верх ", "Сред ", "Низ " };
 const char* ds18d20FieldsDescrMeasure[] = { " C", " C", " C" };
 
 DisplayPage ds18d20Page(&ds18d20, ds18d20Fields, ds18d20FieldsDescr,
-		ds18d20FieldsDescrMeasure, ARRAY_SIZE(ds18d20Fields), "Т-ра бак");
+		ds18d20FieldsDescrMeasure, ARRAY_SIZE(ds18d20Fields), "Бак");
 
 const char* ds18d20_2Fields[] = { "0:t", "1:t" };
 const char* ds18d20_2FieldsDescr[] = { "Верх ", "Низ " };
@@ -63,14 +58,14 @@ const char* ds18d20_2FieldsDescrMeasure[] = { " C", " C" };
 
 DisplayPage ds18d20_2Page(&ds18d20_2, ds18d20_2Fields, ds18d20_2FieldsDescr,
 		ds18d20_2FieldsDescrMeasure, ARRAY_SIZE(ds18d20_2Fields),
-		"Т-ра гребенка");
+		"Гребенка");
 
 const char* heaterFields[] = { "t" };
 const char* heaterFieldsDescr[] = { "т-ра " };
 const char* heaterFieldsDescrMeasure[] = { " C" };
 
 DisplayPage heaterPage(&heater, heaterFields, heaterFieldsDescr,
-		heaterFieldsDescrMeasure, ARRAY_SIZE(heaterFields), "Т-ра дымоход");
+		heaterFieldsDescrMeasure, ARRAY_SIZE(heaterFields), "Дымоход");
 
 const char* pumpFields[] = { "on" };
 const char* pumpFieldsDescr[] = { "ВЫКЛ ", "вкл " };
@@ -87,7 +82,7 @@ DisplayPageBoolean pump3Page(&pump3, pumpFields, pumpFieldsDescr,
 DisplayPage* pages[] = { &ds18d20Page, &ds18d20_2Page, &heaterPage, &pump1Page,
 		&pump2Page, &pump3Page };
 
-EntityApplication app("ESP32_DS18D20x2", (char*) "Lolin32 test", entities,
+EntityApplication app("ESP32_DS18D20x2_MAX6675_MQ2_ImpulseRelay_OLED", (char*) "Lolin32 test", entities,
 		ARRAY_SIZE(entities), updateableEntities,
 		ARRAY_SIZE(updateableEntities), "1F321", oled, pages,
 		ARRAY_SIZE(pages));

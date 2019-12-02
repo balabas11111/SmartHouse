@@ -38,10 +38,11 @@ public:
 		this->onTurnedOff = onTurnedOff;
 
 		pinMode(signalPin, INPUT_PULLUP);
+		/*
 		attachInterrupt(digitalPinToInterrupt(signalPin),
 				[this]() {onStateChanged();},
 				CHANGE);
-
+*/
 		pinMode(pin, OUTPUT);
 		lastValue = isOn();
 	}
@@ -56,6 +57,10 @@ public:
 	virtual void doGet(JsonObject& params, JsonObject& response) override {
 		UNUSED(params);
 		response[ON_FIELD] = isOn();
+		/*response["digit"] = digitalRead(this->signalPin);
+		response["analog"] = analogRead(this->signalPin);
+		response["signalPin"] = this->signalPin;
+		*/
 	}
 
 	virtual void doPost(JsonObject& params, JsonObject& response) override {
@@ -84,7 +89,16 @@ public:
 	}
 
 	bool isOn() {
-		return digitalRead(signalPin) == onLevel;
+		int digitval = digitalRead(signalPin);
+		uint16_t val = analogRead(signalPin);
+		Serial.print(FPSTR("name="));
+		Serial.print(this->name);
+		Serial.print(FPSTR(" v="));
+		Serial.print(val);
+		Serial.print(FPSTR(" digitval="));
+		Serial.println(digitval);
+		return (val>650) == onLevel;
+
 	}
 
 	void setOn(bool on) {
