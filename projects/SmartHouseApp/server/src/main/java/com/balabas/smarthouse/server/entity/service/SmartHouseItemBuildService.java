@@ -81,7 +81,6 @@ import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldIncorrectValueRepository;
 import com.balabas.smarthouse.server.util.MathUtil;
 import com.balabas.smarthouse.server.entity.behaviour.IEntityBehaviourService;
-import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.EntityStatus;
@@ -107,22 +106,13 @@ public class SmartHouseItemBuildService {
 	IEntityMessageProcessor entityMessageProcessor;
 	
 	@Autowired
+	IActionTimerService actionTimerService; 
+	
+	@Autowired
 	IEntityBehaviourService entityBehaviourService;
 	
 	@Autowired
 	IEntityFieldIncorrectValueRepository entityFieldIncorrectValueRepository;
-
-	private static ActionTimer buildTimer(ItemType itemType) {
-		Long updateInterval = itemType.getRefreshInterval();
-
-		if (updateInterval > 0) {
-			ActionTimer updateTimer = new ActionTimer(updateInterval);
-			updateTimer.setActionForced(true);
-			return updateTimer;
-		}
-
-		return null;
-	}
 
 	public boolean updateDeviceEntityValuesFromJson(Device device, JSONObject deviceJson, boolean updateDeviceTimer,
 			boolean updateGroupTimer, List<EntityFieldValue> changedValues) {
@@ -141,7 +131,7 @@ public class SmartHouseItemBuildService {
 			}
 		}
 		if (isOk && updateDeviceTimer) {
-			device.getTimer().setActionSuccess();
+			actionTimerService.setActionSuccess(device);
 		}
 		return isOk;
 	}
@@ -167,7 +157,7 @@ public class SmartHouseItemBuildService {
 			}
 		}
 		if (isOk && updateGroupTimer) {
-			group.getTimer().setActionSuccess();
+			actionTimerService.setActionSuccess(group);
 		}
 		return isOk;
 	}
@@ -377,7 +367,6 @@ public class SmartHouseItemBuildService {
 					group.setDescriptionIfEmpty(description);
 					group.setName(groupName);
 					group.setType(type);
-					group.setTimer(buildTimer(type));
 
 					groups.add(group);
 				}

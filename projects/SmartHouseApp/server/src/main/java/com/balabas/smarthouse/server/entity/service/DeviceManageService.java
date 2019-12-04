@@ -31,7 +31,6 @@ import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
-import com.balabas.smarthouse.server.entity.model.IUpdateable;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
@@ -63,7 +62,10 @@ public class DeviceManageService implements IDeviceManageService {
 	
 	@Value("${smarthouse.server.log.device.values.change:true}")
 	private boolean logDeviceValuesChange;
-
+	
+	@Autowired
+	IActionTimerService actionTimerService;
+	
 	@Autowired
 	DeviceRequestorService deviceRequestor;
 
@@ -216,7 +218,8 @@ public class DeviceManageService implements IDeviceManageService {
 			// register device
 			stateChanger.stateChanged(device, State.REGISTERED);
 
-			save(device).getTimer().setActionForced(true);
+			save(device);
+			actionTimerService.setActionForced(device);
 
 			log.info("Registered :" + device.getName());
 		}
@@ -224,7 +227,8 @@ public class DeviceManageService implements IDeviceManageService {
 		if(device.isInBadState()) {
 			stateChanger.stateChanged(device, State.REREGISTERED);
 
-			save(device).getTimer().setActionForced(true);
+			save(device);
+			actionTimerService.setActionForced(device);
 
 			deviceMqService.initTopicsToFromDevice(device.getName());
 			
@@ -399,7 +403,7 @@ public class DeviceManageService implements IDeviceManageService {
 	
 	@Override
 	public List<Device> getDevicesRequireUpdate() {
-		return getDevices().stream().filter(dev -> dev.isRegistered() && (!dev.isInitialized() || dev.getTimer().isActionForced())/*&& checkItemRequiresUpdate(dev, dev)*/)
+		return getDevices().stream().filter(dev -> dev.isRegistered() && (!dev.isInitialized() || actionTimerService.getActionTimer(dev).isActionForced())/*&& checkItemRequiresUpdate(dev, dev)*/)
 				.collect(Collectors.toList());
 	}
 
@@ -408,7 +412,7 @@ public class DeviceManageService implements IDeviceManageService {
 		return getDevices().stream()
 				.filter(dev -> dev.isRegistered() /*&& !dev.isInitialized()*/ && dev.getGroups() != null && !dev.getGroups().isEmpty())
 				.flatMap(dev -> dev.getGroups().stream())
-				.filter(group -> checkItemRequiresUpdate(group.getDevice(), group)).collect(Collectors.toList());
+				.filter(group -> checkItemRequiresUpdate(group.getDevice(), actionTimerService.getActionTimer(group))).collect(Collectors.toList());
 	}
 
 	@Override
@@ -446,7 +450,7 @@ public class DeviceManageService implements IDeviceManageService {
 			processDataReceivedFromDevice(device, result, !groupRequest, groupRequest);
 
 		} catch (Exception e) {
-			device.getTimer().update(60000, false);
+			actionTimerService.getActionTimer(device).update(60000, false);
 
 			if (logDR || !State.DISCONNECTED.equals(oldState)) {
 				log.error("Error request device values", e.getMessage());
@@ -456,12 +460,11 @@ public class DeviceManageService implements IDeviceManageService {
 		}
 	}
 
-	protected boolean checkItemRequiresUpdate(Device target, IUpdateable source) {
-		boolean waits = source.getTimer().isActionForced();
-		boolean dataTooOld = source.getTimer().isTimeToExecuteAction();
+	protected boolean checkItemRequiresUpdate(IDevice target, ActionTimer timer) {
+		boolean waits = timer.isActionForced();
+		boolean dataTooOld = timer.isTimeToExecuteAction();
 
 		if (dataTooOld && !target.getState().equals(State.TIMED_OUT) && !target.getState().equals(State.DISCONNECTED)) {
-
 			stateChanger.stateChanged(target, State.TIMED_OUT);
 		}
 
@@ -516,18 +519,12 @@ public class DeviceManageService implements IDeviceManageService {
 	public Device save(Device device) {
 
 		boolean initialized = device.isInitialized();
-		ActionTimer timer = device.getTimer();
-		Map<String, ActionTimer> groupTimers = new HashMap<>();
 		// Map<String, Set<IEntityField>> generatedFields = new HashMap<>();
 		Map<String, Object> fieldValues = new HashMap<>();
 
 		if (device.getGroups() != null) {
 
 			for (Group group : device.getGroups()) {
-				if (group.getTimer() == null) {
-
-				}
-				groupTimers.put(group.getName(), group.getTimer());
 
 				if (group.getEntities() != null && !group.getEntities().isEmpty()) {
 					for (Entity entity : group.getEntities()) {
@@ -555,11 +552,9 @@ public class DeviceManageService implements IDeviceManageService {
 		}
 
 		device.setInitialized(initialized);
-		device.setTimer(timer);
 
 		if (device.getGroups() != null) {
 			for (Group group : device.getGroups()) {
-				group.setTimer(groupTimers.get(group.getName()));
 
 				if (group.getEntities() != null && !group.getEntities().isEmpty()) {
 					for (Entity entity : group.getEntities()) {
