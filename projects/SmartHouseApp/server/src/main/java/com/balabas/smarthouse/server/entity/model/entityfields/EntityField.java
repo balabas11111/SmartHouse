@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.model.entityfields;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import org.thymeleaf.util.StringUtils;
 
@@ -73,12 +75,16 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	
 	protected abstract T fromString(String value);
 
+	@Transient
+	@Getter	@Setter
+	private Date lastDate;
+	
 	@Override
 	public void setName(String name) {
 		super.setName(name);
 
 		if (name != null && !name.isEmpty() && name.contains(":")) {
-			String tmplName = name.substring(name.indexOf(":") + ":".length());
+			String tmplName = name.substring(name.lastIndexOf(":") + ":".length());
 			setTemplateName(tmplName);
 		} else {
 			setTemplateName(name);

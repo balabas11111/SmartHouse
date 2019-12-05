@@ -1,7 +1,7 @@
 package com.balabas.smarthouse.server.entity.control;
 
 import java.util.List;
-import static com.balabas.smarthouse.server.entity.control.PredicatePreffix.OR;
+//import static com.balabas.smarthouse.server.entity.control.PredicatePreffix.OR;
 
 public interface IPredicateChain extends IAbstractPredicate {
 

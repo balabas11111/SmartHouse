@@ -49,6 +49,7 @@ import java.util.stream.IntStream;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -99,6 +100,12 @@ public class SmartHouseItemBuildService {
 
 	private static List<String> notParsedAsEntityNames = Arrays.asList(ENTITY_FIELD_DESCRIPTION, EDC_FIELD_EMOJI);
 
+	@Value("${smarthouse.server.fields.data.changed.if.diff:0.001}")
+	private Float minDiff;
+	
+	@Value("${smarthouse.server.fields.data.save.unchanged.if.older.sec:600}")
+	private Long saveDataIfOlderSec;
+	
 	@Autowired
 	IDeviceRepository deviceRepository;
 	
@@ -226,14 +233,17 @@ public class SmartHouseItemBuildService {
 		return setOk;
 	}
 	
-	public static void processValueChange(IEntityField entityField, String oldValueStr,
+	public void processValueChange(IEntityField entityField, String oldValueStr,
 			List<EntityFieldValue> changedValues) {
 
 		boolean doSave = false;
+		boolean dataIsTooOld = entityField.getLastDate()==null || (new Date()).getTime() - entityField.getLastDate().getTime() > saveDataIfOlderSec;
 
 		if (entityField.isActive() 
 				&& ItemType.SENSORS.getCode().equals(entityField.getEntity().getGroup().getName())) {
 
+			entityField.setLastDate(new Date());
+			
 			if (Number.class.isAssignableFrom(entityField.getClazz())) {
 
 				Float value = null;
@@ -247,9 +257,7 @@ public class SmartHouseItemBuildService {
 					value = Float.valueOf(newValueStr);
 					Float oldValue = MathUtil.precise(Float.valueOf(oldValueStr));
 
-					if (Math.abs(oldValue - value) > 0.001) {
-						doSave = true;
-					}
+					doSave = Math.abs(oldValue - value) > minDiff || dataIsTooOld;
 				}
 
 				if (doSave) {
@@ -268,9 +276,7 @@ public class SmartHouseItemBuildService {
 					value = Boolean.valueOf(newValueStr);
 					Boolean oldValue = Boolean.valueOf(oldValueStr);
 
-					if (!value.equals(oldValue)) {
-						doSave = true;
-					}
+					doSave = !value.equals(oldValue) || dataIsTooOld;
 				}
 
 				if (doSave) {
@@ -580,6 +586,7 @@ public class SmartHouseItemBuildService {
 		entityField.setEmoji(emoji);
 		entityField.setActive(true);
 		entityField.setMeasure(measure);
+		entityField.setLastDate(new Date());
 
 		try {
 			if (!(ENTITY_FIELD_DESCRIPTION.equals(entityField.getTemplateName())

@@ -21,6 +21,12 @@ public class EntityFieldValueBoolean extends EntityFieldValue implements IEntity
 		this.date = new Date();
 	}
 	
+	public EntityFieldValueBoolean(IEntityField entityField) {
+		this.entityField = entityField;
+		this.valueBool = (Boolean) entityField.getValue();
+		this.date = new Date();
+	}
+	
 	@Override
 	public String getValueStr() {
 		return valueBool.toString();

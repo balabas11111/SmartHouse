@@ -21,6 +21,12 @@ public class EntityFieldValueNumber extends EntityFieldValue implements IEntityF
 		this.date = new Date();
 	}
 	
+	public EntityFieldValueNumber(IEntityField entityField) {
+		this.entityField = entityField;
+		this.valueFlt = ((Number)entityField.getValue()).floatValue();
+		this.date = new Date();
+	}
+	
 	@Override
 	public String getValueStr() {
 		return valueFlt.toString();
