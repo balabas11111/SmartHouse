@@ -2,7 +2,7 @@ package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Set;
 
-public interface IGroup extends IItemTypeable, IUpdateable, IItemAbstract {
+public interface IGroup extends IItemTypeable, IItemAbstract {
 
 	Device getDevice();
 	void setDevice(Device device);

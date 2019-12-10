@@ -13,7 +13,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -42,12 +41,13 @@ public class Device extends ItemAbstract implements IDevice {
 
 	@Transient
 	private boolean initialized;
-
+/*
 	@Transient
 	private ActionTimer timer;
-
+*/
+	
 	public Device() {
-		this.timer = new ActionTimer(ItemType.DEVICE.getRefreshInterval());
+		//this.timer = new ActionTimer(ItemType.DEVICE.getRefreshInterval());
 	}
 
 	@Override

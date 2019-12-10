@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.model.entityfields;
 
+import java.util.Date;
 import java.util.Set;
 
 import com.balabas.smarthouse.server.entity.model.Entity;
@@ -53,6 +54,9 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 
 	void setValueWithNoCheckStr(String value);
 	void setValueWithNoCheck(T value);
+	
+	Date getLastDate();
+	void setLastDate(Date lastDate);
 	
 	IEntityFieldEnabledValue getEntityFieldEnabledValueByCurrentValue();
 	

@@ -5,7 +5,8 @@ public enum ItemType {
 	SENSORS(1000 * 60 * 1, "Датчики", Emoji.JAPANESE_SYMBOL_FOR_BEGINNER, "sensors"),
 	SETTINGS(1000 * 60 * 5, "Настройки", Emoji.HAMMER_AND_WRENCH, "settings"),
 	SERVICES(1000 * 60 * 2, "Сервисы", Emoji.BRIEFCASE, "services"),
-	CUSTOM(-1, "", Emoji.BRIEFCASE, "custom");
+	CUSTOM(-1, "", Emoji.BRIEFCASE, "custom"),
+	ENTITY(-1, "", Emoji.BRIEFCASE, "entity");
 
 	long refreshInterval;
 	String description;

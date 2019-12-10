@@ -5,7 +5,7 @@ import java.util.Set;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 @SuppressWarnings("rawtypes")
-public interface IDevice extends IStateable, IUpdateable, IItemAbstract {
+public interface IDevice extends IStateable, IItemAbstract {
 
 	String getFirmware();
 	void setFirmware(String firmware);

@@ -79,7 +79,7 @@ public abstract class AlarmRepeatable<T extends IItemAbstract> extends Alarm<T> 
 			if (messageInterval == -1) {
 				sendAlarmStartedMessage = false;
 			} else {
-				getTimer().update(getTimer().getInterval(), true);
+				getTimer().update(true);
 			}
 		}
 	}

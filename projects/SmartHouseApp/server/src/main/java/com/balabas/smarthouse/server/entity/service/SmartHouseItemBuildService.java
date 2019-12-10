@@ -49,6 +49,7 @@ import java.util.stream.IntStream;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -81,7 +82,6 @@ import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldIncorrectValueRepository;
 import com.balabas.smarthouse.server.util.MathUtil;
 import com.balabas.smarthouse.server.entity.behaviour.IEntityBehaviourService;
-import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.EntityStatus;
@@ -100,6 +100,12 @@ public class SmartHouseItemBuildService {
 
 	private static List<String> notParsedAsEntityNames = Arrays.asList(ENTITY_FIELD_DESCRIPTION, EDC_FIELD_EMOJI);
 
+	@Value("${smarthouse.server.fields.data.changed.if.diff:0.001}")
+	private Float minDiff;
+	
+	@Value("${smarthouse.server.fields.data.save.unchanged.if.older.sec:600}")
+	private Long saveDataIfOlderSec;
+	
 	@Autowired
 	IDeviceRepository deviceRepository;
 	
@@ -107,22 +113,13 @@ public class SmartHouseItemBuildService {
 	IEntityMessageProcessor entityMessageProcessor;
 	
 	@Autowired
+	IActionTimerService actionTimerService; 
+	
+	@Autowired
 	IEntityBehaviourService entityBehaviourService;
 	
 	@Autowired
 	IEntityFieldIncorrectValueRepository entityFieldIncorrectValueRepository;
-
-	private static ActionTimer buildTimer(ItemType itemType) {
-		Long updateInterval = itemType.getRefreshInterval();
-
-		if (updateInterval > 0) {
-			ActionTimer updateTimer = new ActionTimer(updateInterval);
-			updateTimer.setActionForced(true);
-			return updateTimer;
-		}
-
-		return null;
-	}
 
 	public boolean updateDeviceEntityValuesFromJson(Device device, JSONObject deviceJson, boolean updateDeviceTimer,
 			boolean updateGroupTimer, List<EntityFieldValue> changedValues) {
@@ -141,7 +138,7 @@ public class SmartHouseItemBuildService {
 			}
 		}
 		if (isOk && updateDeviceTimer) {
-			device.getTimer().setActionSuccess();
+			actionTimerService.setActionSuccess(device);
 		}
 		return isOk;
 	}
@@ -167,7 +164,7 @@ public class SmartHouseItemBuildService {
 			}
 		}
 		if (isOk && updateGroupTimer) {
-			group.getTimer().setActionSuccess();
+			actionTimerService.setActionSuccess(group);
 		}
 		return isOk;
 	}
@@ -236,14 +233,17 @@ public class SmartHouseItemBuildService {
 		return setOk;
 	}
 	
-	public static void processValueChange(IEntityField entityField, String oldValueStr,
+	public void processValueChange(IEntityField entityField, String oldValueStr,
 			List<EntityFieldValue> changedValues) {
 
 		boolean doSave = false;
+		boolean dataIsTooOld = entityField.getLastDate()==null || (new Date()).getTime() - entityField.getLastDate().getTime() > saveDataIfOlderSec;
 
 		if (entityField.isActive() 
 				&& ItemType.SENSORS.getCode().equals(entityField.getEntity().getGroup().getName())) {
 
+			entityField.setLastDate(new Date());
+			
 			if (Number.class.isAssignableFrom(entityField.getClazz())) {
 
 				Float value = null;
@@ -257,9 +257,7 @@ public class SmartHouseItemBuildService {
 					value = Float.valueOf(newValueStr);
 					Float oldValue = MathUtil.precise(Float.valueOf(oldValueStr));
 
-					if (Math.abs(oldValue - value) > 0.001) {
-						doSave = true;
-					}
+					doSave = Math.abs(oldValue - value) > minDiff || dataIsTooOld;
 				}
 
 				if (doSave) {
@@ -278,9 +276,7 @@ public class SmartHouseItemBuildService {
 					value = Boolean.valueOf(newValueStr);
 					Boolean oldValue = Boolean.valueOf(oldValueStr);
 
-					if (!value.equals(oldValue)) {
-						doSave = true;
-					}
+					doSave = !value.equals(oldValue) || dataIsTooOld;
 				}
 
 				if (doSave) {
@@ -377,7 +373,6 @@ public class SmartHouseItemBuildService {
 					group.setDescriptionIfEmpty(description);
 					group.setName(groupName);
 					group.setType(type);
-					group.setTimer(buildTimer(type));
 
 					groups.add(group);
 				}
@@ -591,6 +586,7 @@ public class SmartHouseItemBuildService {
 		entityField.setEmoji(emoji);
 		entityField.setActive(true);
 		entityField.setMeasure(measure);
+		entityField.setLastDate(new Date());
 
 		try {
 			if (!(ENTITY_FIELD_DESCRIPTION.equals(entityField.getTemplateName())

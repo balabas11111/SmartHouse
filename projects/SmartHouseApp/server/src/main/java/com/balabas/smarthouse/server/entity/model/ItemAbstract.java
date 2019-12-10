@@ -36,7 +36,7 @@ public class ItemAbstract implements IItemAbstract {
 
 	@Override
 	public void setDescriptionIfEmpty(String description) {
-		if (StringUtils.isEmpty(this.description)) {
+		if (StringUtils.isEmpty(getDescription())) {
 			setDescription(description);
 		}
 	}

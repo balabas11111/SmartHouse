@@ -446,12 +446,6 @@ public class EntityAlarmService implements IEntityAlarmService {
 		save(entityAlarm);
 
 		if (activated) {
-			/*
-			 * entityAlarm.setSendAlarmStartedMessage(false);
-			 * entityAlarm.setSendAlarmFinishedMessage(false);
-			 * 
-			 * entityAlarm.getTimer().setActionForced(false);
-			 */
 			entityAlarm.check();
 		}
 	}
