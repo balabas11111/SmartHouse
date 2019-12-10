@@ -99,7 +99,7 @@ void loop() {
 
 void onButtonPressed() {
 	if(!button.isOn()) {
-		app.getDisplayManager()->switchToNextPageOrTurnPowerOn();
+		//app.getDisplayManager()->switchToNextPageOrTurnPowerOn();
 	}
 }
 

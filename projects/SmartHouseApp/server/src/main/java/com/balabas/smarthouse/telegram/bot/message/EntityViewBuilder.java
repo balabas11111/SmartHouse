@@ -110,6 +110,7 @@ public class EntityViewBuilder {
 					builder.append(")");
 
 				} else {
+					builder.append("  ");
 					builder.append(ef.getValueStr());
 				}
 				builder.append("; ");

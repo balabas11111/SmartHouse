@@ -109,6 +109,8 @@ public:
 
 	bool isNoGroupGet();
 
+	virtual void setValue(const char* key, const char* value) {}
+
 protected:
 	//String constructParams = "";
 	bool forceChanged;

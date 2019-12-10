@@ -1,4 +1,4 @@
-SET @deviceId=43;
+SET @deviceId=48;
 
 DELETE FROM entity_field_incorrect_value 
 WHERE entity_field_id in

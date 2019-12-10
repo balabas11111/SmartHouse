@@ -67,6 +67,10 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_S_WS2811}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_D_TM1637}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/TM1637}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/RF24}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/RF24/utility}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/RF24Mesh}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/RF24Network}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1137111944" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -120,6 +124,10 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_S_WS2811}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_D_TM1637}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/TM1637}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/RF24}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/RF24/utility}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/RF24Mesh}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/RF24Network}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.612557546" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -173,6 +181,10 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_S_WS2811}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/EntityLib_D_TM1637}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/TM1637}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/RF24}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/RF24/utility}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/RF24Mesh}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP32_dev/libraries/RF24Network}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1605097927" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -182,19 +194,8 @@
 							<tool id="io.sloeber.tool.size.956450675" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="io.sloeber.core.toolChain.release.742103367.34882188" name="/" resourcePath="libraries/EntityLibSimple/WiFi">
-						<toolChain id="io.sloeber.core.toolChain.release.472067829" name="Arduino Toolchain (Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
-							<tool id="io.sloeber.tool.sketch.compiler.cpp.737278473" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1441802127"/>
-							<tool id="io.sloeber.tool.compiler.c.1748098490" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.1971356708"/>
-							<tool id="io.sloeber.tool.sketch.compiler.s.1536813707" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.1218393781"/>
-							<tool id="io.sloeber.tool.ar.1568254590" name="Arduino archiver" superClass="io.sloeber.tool.ar.56933330"/>
-							<tool id="io.sloeber.tool.combine.1502508412" name="Arduino combiner" superClass="io.sloeber.tool.combine.1288815596"/>
-							<tool id="io.sloeber.tool.objcopy.eep.575533001" name="Arduino tool Create eeprom" superClass="io.sloeber.tool.objcopy.eep.90383790"/>
-							<tool id="io.sloeber.tool.size.381969463" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.956450675"/>
-						</toolChain>
-					</folderInfo>
 					<sourceEntries>
-						<entry excluding="libraries/Wire/sr|libraries/OneWire/util|libraries/Adafruit_BME280/.github|libraries/ArduinoJson/scripts|libraries/ArduinoJson/fuzzing|libraries/FreeRTOS/10.1.1-1|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="libraries/RF24Network/RPi|libraries/RF24Network/examples_RPi|libraries/RF24Mesh/examples_RPi|libraries/RF24/pyRF24|libraries/RF24/examples_linux|libraries/Wire/sr|libraries/OneWire/util|libraries/Adafruit_BME280/.github|libraries/ArduinoJson/scripts|libraries/ArduinoJson/fuzzing|libraries/FreeRTOS/10.1.1-1|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
