@@ -21,6 +21,11 @@ public abstract class AlarmAbstractEntityFieldNumber extends AlarmAbstractEntity
 		return Number.class;
 	}
 	
+	public AlarmAbstractEntityFieldNumber(){
+		this.predicate = null;
+		this.compareSeparator = null;
+	}
+	
 	public AlarmAbstractEntityFieldNumber(Predicate<Integer> predicate, String compareSeparator){
 		this.predicate = predicate;
 		this.compareSeparator = compareSeparator;

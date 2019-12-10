@@ -233,7 +233,7 @@ public class SendMessageBuilder {
 
 	public SendMessage getAlarmToBeSavedMessage(Action action, ReplyContext context) {
 
-		IEntityFieldAlarm entityFieldAlarm = alarmService.getEntityAlarmFieldById(action.getTargetId());
+		IEntityFieldAlarm entityFieldAlarm = alarmService.getEntityAlarmFieldById(action.getTargetId()).get(0);
 
 		IEntityField entityField = entityFieldAlarm.getWatchedItem();
 

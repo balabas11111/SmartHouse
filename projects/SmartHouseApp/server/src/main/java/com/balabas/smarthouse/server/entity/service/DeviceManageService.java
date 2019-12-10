@@ -546,7 +546,7 @@ public class DeviceManageService implements IDeviceManageService {
 					}
 				}
 			}
-			
+			log.info("Saved before post =" + changedValues.size());
 			entityFieldService.saveAll(changedValues);
 
 		}

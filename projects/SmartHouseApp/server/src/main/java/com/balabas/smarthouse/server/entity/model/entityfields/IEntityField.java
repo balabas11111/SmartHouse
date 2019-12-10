@@ -70,4 +70,6 @@ public interface IEntityField<T extends Object> extends IItemAbstract {
 
 	String getMeasure();
 	
+	String getFullName();
+	
 }

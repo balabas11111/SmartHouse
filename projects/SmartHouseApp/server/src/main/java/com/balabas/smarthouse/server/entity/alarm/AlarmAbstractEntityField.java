@@ -53,8 +53,12 @@ public abstract class AlarmAbstractEntityField<T> extends Alarm<IEntityField>
 
 	@Override
 	protected boolean executeAlarmChecksInternal() {
-		Integer compareValue = getAlarmValue().compareTo(getEntityFieldValue());
+		Integer compareValue = getCompareResult();
 		return getPredicate().test(compareValue);
+	}
+	
+	protected Integer getCompareResult() {
+		return getAlarmValue().compareTo(getEntityFieldValue());
 	}
 
 	@Override

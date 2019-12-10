@@ -53,7 +53,9 @@ public interface IEntityAlarmService {
 
 	List<IEntityField> getEntityFieldsWithPossibleAlarms(IEntity entity);
 
-	IEntityFieldAlarm getEntityAlarmFieldById(Long entityFieldId);
+	List<IEntityFieldAlarm> getEntityAlarmFieldById(Long entityFieldId);
+	
+	IEntityFieldAlarm getEntityAlarmFieldById(Long entityFieldId, Class<?> entityFieldAlarmClass);
 
 	void changeEntityAlarmActivation(Long entityAlarmId);
 
@@ -83,5 +85,13 @@ public interface IEntityAlarmService {
 	
 	DeviceEntityAlarmHolder getDeviceAlarmsHolder(IDevice device);
 	Map<String, DeviceEntityAlarmHolder> getDeviceAlarmsHoldersGroupped(List<Device> device);
+	
+	void createNewEntityFieldAlarmOrUpdateValue(IEntityField entityField,
+			String receivedValue) throws InstantiationException, IllegalAccessException;
+	
+	//void createNewEntityFieldAlarmInEntityAlarm(IEntityAlarm entityAlarm, IEntityFieldAlarm entityFieldAlarm, IEntityField entityField, String value);
+	
+	void createNewEntityFieldAlarmInEntityAlarm(IEntityAlarm entityAlarm, Class<?> entityFieldAlarmClass,
+			IEntityField entityField, String value) throws InstantiationException, IllegalAccessException;
 
 }

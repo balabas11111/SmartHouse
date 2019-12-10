@@ -202,4 +202,9 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 		return description;
 	}
 	
+	@Override
+	public String getFullName() {
+		return getEntity().getDevice().getName()+" "+getEntity().getName()+" "+getName();
+	}
+	
 }

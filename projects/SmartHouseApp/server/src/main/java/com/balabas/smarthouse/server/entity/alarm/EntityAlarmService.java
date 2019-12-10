@@ -23,6 +23,7 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.DeviceConstants;
+import com.balabas.smarthouse.server.entity.alarm.impl.EntityFieldDs18d20DisconnectedAlarm;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
@@ -431,9 +432,10 @@ public class EntityAlarmService implements IEntityAlarmService {
 	}
 
 	@Override
-	public IEntityFieldAlarm getEntityAlarmFieldById(Long targetId) {
-		return alarms.stream().flatMap(a -> a.getAlarms().stream()).filter(efa -> efa.getId().equals(targetId))
-				.findFirst().orElse(null);
+	public List<IEntityFieldAlarm> getEntityAlarmFieldById(Long targetId) {
+		return alarms.stream().flatMap(
+				a -> a.getAlarms().stream()).filter(efa -> efa.getId().equals(targetId))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -486,14 +488,17 @@ public class EntityAlarmService implements IEntityAlarmService {
 	@Override
 	@Transactional
 	public void removeEntityFieldAlarm(Long entityFieldAlarmId) {
-		IEntityFieldAlarm entityFieldAlarm = getEntityAlarmFieldById(entityFieldAlarmId);
-		IEntityAlarm entityAlarm = entityFieldAlarm.getEntityAlarm();
-
-		alarmFieldRepository.deleteNativeById(entityFieldAlarmId);
-		// alarmFieldRepository.deleteById(entityFieldAlarmId);
-
-		load(entityAlarm.getId());
-		log.info("Entity field alarm deleted id=" + entityFieldAlarmId);
+		List<IEntityFieldAlarm> entityFieldAlarms = getEntityAlarmFieldById(entityFieldAlarmId);
+		
+		for(IEntityFieldAlarm entityFieldAlarm : entityFieldAlarms) {
+			IEntityAlarm entityAlarm = entityFieldAlarm.getEntityAlarm();
+	
+			alarmFieldRepository.deleteNativeById(entityFieldAlarmId);
+			// alarmFieldRepository.deleteById(entityFieldAlarmId);
+	
+			load(entityAlarm.getId());
+			log.info("Entity field alarm deleted id=" + entityFieldAlarmId);
+		}
 	}
 
 	@Override
@@ -501,6 +506,16 @@ public class EntityAlarmService implements IEntityAlarmService {
 		return entityFieldAllowedClasses.getOrDefault(alarmClassIndex, null);
 	}
 
+	@Override
+	public void createNewEntityFieldAlarmInEntityAlarm(IEntityAlarm entityAlarm, Class<?> entityFieldAlarmClass, IEntityField entityField, String value) throws InstantiationException, IllegalAccessException {
+		IEntityFieldAlarm entityFieldAlarm = (IEntityFieldAlarm) entityFieldAlarmClass.newInstance();
+	
+		entityFieldAlarm.setValueStr(value);
+		entityAlarm.putAlarm(entityFieldAlarm);
+
+		save(entityAlarm);
+	}
+	
 	@Override
 	public void createNewEntityFieldAlarmInEntityAlarm(String newAlarmClassIndex, String value,
 			IEntityField entityField) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
@@ -520,12 +535,14 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 	@Override
 	public void updateAlarmValueOfEntityAlarm(String val, Long entityFieldAlarmId) {
-		IEntityFieldAlarm entityFieldAlarm = getEntityAlarmFieldById(entityFieldAlarmId);
+		List<IEntityFieldAlarm> entityFieldAlarms = getEntityAlarmFieldById(entityFieldAlarmId);
 
-		entityFieldAlarm.setValueStr(val);
-		IEntityAlarm entityAlarm = entityFieldAlarm.getEntityAlarm();
-
-		save(entityAlarm);
+		for(IEntityFieldAlarm entityFieldAlarm : entityFieldAlarms) {
+			entityFieldAlarm.setValueStr(val);
+			IEntityAlarm entityAlarm = entityFieldAlarm.getEntityAlarm();
+	
+			save(entityAlarm);
+		}
 	}
 
 	@Override
@@ -538,6 +555,42 @@ public class EntityAlarmService implements IEntityAlarmService {
 	public void deleteAlarmsByDeviceId(Long deviceId) {
 		alarmFieldRepository.deleteEntityFieldAlarmByDeviceId(deviceId);
 		alarmRepository.deleteEntityAlarmsByDeviceId(deviceId);
+	}
+
+	@Override
+	public IEntityFieldAlarm getEntityAlarmFieldById(Long entityFieldId, Class<?> entityFieldAlarmClass) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void createNewEntityFieldAlarmOrUpdateValue(IEntityField entityField,
+			String receivedValue) throws InstantiationException, IllegalAccessException {
+		
+		IEntityAlarm entityAlarm = getAlarm(entityField.getEntity());
+		
+		if(entityAlarm == null) {
+			log.info("New EntityAlarmCreated");
+			createNewEntityAlarm(entityField.getEntity());
+			entityAlarm = getAlarm(entityField.getEntity());
+		}
+		
+		IEntityFieldAlarm entityFieldAlarm = getEntityAlarmFieldById(entityField.getId(), EntityFieldDs18d20DisconnectedAlarm.class); 
+		
+		try {
+			Integer.valueOf(receivedValue);
+		} catch(Exception e) {
+			receivedValue = "-127";
+			log.error("Failed to parse value " + receivedValue);
+		}
+		
+		if(entityFieldAlarm!=null) {
+			log.info("Update entityFieldAlarmValue " + entityField.getFullName());
+			entityFieldAlarm.setValueStr(receivedValue);
+		} else {
+			createNewEntityFieldAlarmInEntityAlarm(entityAlarm, EntityFieldDs18d20DisconnectedAlarm.class, entityField, receivedValue);
+		}
+		
 	}
 
 }

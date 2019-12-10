@@ -8,15 +8,23 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.IEntity;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
+@SuppressWarnings("rawtypes")
 @Service
 public class EntityBehaviourService implements IEntityBehaviourService {
 	
 	@Autowired
 	private Set<IEntityBehaviour> behaviours;
 	
+	@Autowired
+	private IEntityAlarmService alarmService;
+	
 	private Map<String, IEntityBehaviour> cache = new HashMap<>();
+	
+	
 	
 	@Override
 	public IEntityBehaviour getEntityBehaviour(IEntity entity) {
@@ -53,6 +61,18 @@ public class EntityBehaviourService implements IEntityBehaviourService {
 			return behaviour.isValueCorrect(value);
 		}
 		
+	}
+
+	@Override
+	public boolean processReceivedValueForAlarm(IEntityField entityField, String receivedValue) {
+		IEntityBehaviour behaviour = getEntityBehaviour(entityField.getEntity());
+		
+		if(behaviour == null) {
+			return false;
+		} else {
+			behaviour.processReceivedValueForAlarm(alarmService, entityField, receivedValue);
+			return true;
+		}
 	}
 	
 }

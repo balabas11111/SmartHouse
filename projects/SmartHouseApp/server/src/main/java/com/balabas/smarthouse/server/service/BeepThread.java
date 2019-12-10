@@ -28,7 +28,7 @@ public class BeepThread implements Runnable {
 		try {
 		gpio = GpioFactory.getInstance();
 		
-		pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "MyLED", PinState.LOW);
+		pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_18, "MyLED", PinState.LOW);
 		pin.setShutdownOptions(true, PinState.LOW);
 		
 		for (int i = 0; i < beepCount; i++) {

@@ -32,6 +32,7 @@ import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView.EDC_CLASS_VIEW_INPUT;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView.EDC_CLASS_VIEW_LABEL;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.transaction.Transactional;
@@ -110,8 +111,8 @@ public class ActionService implements IActionService {
 			entityName = alarm.getWatchedItem().getName();
 			break;
 		case ID_TYPE_ENTITY_ALARM_FIELD:
-			IEntityFieldAlarm alarmField = alarmService.getEntityAlarmFieldById(targetId);
-			IEntityAlarm alarmP = alarmField.getEntityAlarm();
+			List<IEntityFieldAlarm> alarmFields = alarmService.getEntityAlarmFieldById(targetId);
+			IEntityAlarm alarmP = alarmFields.get(0).getEntityAlarm();
 
 			deviceName = alarmP.getWatchedItem().getDevice().getName();
 			groupName = alarmP.getWatchedItem().getGroup().getName();
