@@ -25,36 +25,33 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ArduinoJson}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Hash}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/SPI}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266HTTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266HTTPClient/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/FastCRC}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Ticker}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/base64}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/core/variant}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Adafruit_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Adafruit_Sensor}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/BH1750}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/DallasTemperature}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_BH1750}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_DHT22}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_DS18D20}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLibMock}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLibSensors}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLibSimple}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLibSimpleSensors}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266HTTPUpdateServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/OneWire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/utils}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/PubSubClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/BeeperB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_WS2811}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/iarduino_OLED_txt}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/iarduino_OLED_txt/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/RF24}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/RF24/utility}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Adafruit_NeoPixel}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.654713242" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -66,36 +63,33 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ArduinoJson}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Hash}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/SPI}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266HTTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266HTTPClient/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/FastCRC}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Ticker}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/base64}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/core/variant}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Adafruit_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Adafruit_Sensor}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/BH1750}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/DallasTemperature}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_BH1750}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_DHT22}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_DS18D20}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLibMock}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLibSensors}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLibSimple}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLibSimpleSensors}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266HTTPUpdateServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/OneWire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/utils}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/PubSubClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/BeeperB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_WS2811}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/iarduino_OLED_txt}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/iarduino_OLED_txt/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/RF24}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/RF24/utility}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Adafruit_NeoPixel}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.2088298691" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -107,36 +101,33 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ArduinoJson}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ArduinoJson/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Hash}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/SPI}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266HTTPClient}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266HTTPClient/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/FastCRC}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Ticker}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/base64}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/DHT_sensor_library}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/core/core}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/core/variant}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Adafruit_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Adafruit_Sensor}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/BH1750}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/DallasTemperature}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_BH1750}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_BME280}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_DHT22}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_DS18D20}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLibMock}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLibSensors}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLibSimple}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLibSimpleSensors}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266HTTPUpdateServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266HTTPUpdateServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266WebServer}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/ESP8266WebServer/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/OneWire}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/utils}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Hash/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/PubSubClient/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/BeeperB}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/EntityLib_S_WS2811}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/iarduino_OLED_txt}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/iarduino_OLED_txt/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/RF24}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/RF24/utility}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_DHT22_DS18D20/libraries/Adafruit_NeoPixel}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1632312327" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -146,19 +137,19 @@
 							<tool id="io.sloeber.tool.size.185790740" name="Arduino tool Print Size" superClass="io.sloeber.tool.size"/>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="io.sloeber.core.toolChain.release.802448581.2056703121" name="/" resourcePath="libraries/EntityLibSimple/WiFi">
-						<toolChain id="io.sloeber.core.toolChain.release.2021210234" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
-							<tool id="io.sloeber.tool.sketch.compiler.cpp.358319936" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1530247447"/>
-							<tool id="io.sloeber.tool.compiler.c.1435816569" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.1303877337"/>
-							<tool id="io.sloeber.tool.sketch.compiler.s.1660334396" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.1840188306"/>
-							<tool id="io.sloeber.tool.ar.410081473" name="Arduino archiver" superClass="io.sloeber.tool.ar.1792814605"/>
-							<tool id="io.sloeber.tool.combine.2065780091" name="Arduino combiner" superClass="io.sloeber.tool.combine.1308103676"/>
-							<tool id="io.sloeber.tool.objcopy.eep.274599226" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.1165357086"/>
-							<tool id="io.sloeber.tool.size.661240348" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.185790740"/>
+					<folderInfo id="io.sloeber.core.toolChain.release.802448581.89940919" name="/" resourcePath="libraries/EntityLibSimple/WiFi">
+						<toolChain id="io.sloeber.core.toolChain.release.151565673" name="Arduino Toolchain( Sloeber edition)" superClass="io.sloeber.core.toolChain.release" unusedChildren="">
+							<tool id="io.sloeber.tool.sketch.compiler.cpp.1031594275" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp.1530247447"/>
+							<tool id="io.sloeber.tool.compiler.c.1545242478" name="Arduino C Compiler" superClass="io.sloeber.tool.compiler.c.1303877337"/>
+							<tool id="io.sloeber.tool.sketch.compiler.s.340851852" name="Arduino Assembler" superClass="io.sloeber.tool.sketch.compiler.s.1840188306"/>
+							<tool id="io.sloeber.tool.ar.208368933" name="Arduino archiver" superClass="io.sloeber.tool.ar.1792814605"/>
+							<tool id="io.sloeber.tool.combine.2033036125" name="Arduino combiner" superClass="io.sloeber.tool.combine.1308103676"/>
+							<tool id="io.sloeber.tool.objcopy.eep.894529345" name="Arduino tool objcopy command" superClass="io.sloeber.tool.objcopy.eep.1165357086"/>
+							<tool id="io.sloeber.tool.size.228956595" name="Arduino tool Print Size" superClass="io.sloeber.tool.size.185790740"/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="libraries/ArduinoJson/scripts|libraries/?*/**/test*/**|libraries/?*/**/?xamples/**|libraries/Adafruit_BME280/.github|libraries/?*/**/?xtras/**|libraries/EntityLibSimpleSensors/Bh1750sensor.h|libraries/OneWire/util|libraries/base64/1.1.1|libraries/?*/**/third-party/**|libraries/?*/utility/*/*|libraries/EntityLibSimpleSensors/Bme280sensor.h|libraries/ArduinoJson/fuzzing|libraries/**/._*|libraries/Hash/sha1" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="libraries/RF24Network/RPi|libraries/RF24Network/examples_RPi|libraries/RF24Mesh/examples_RPi|libraries/RF24/pyRF24|libraries/RF24/examples_linux|libraries/ArduinoJson/scripts|libraries/?*/**/test*/**|libraries/?*/**/?xamples/**|libraries/Adafruit_BME280/.github|libraries/?*/**/?xtras/**|libraries/EntityLibSimpleSensors/Bh1750sensor.h|libraries/OneWire/util|libraries/base64/1.1.1|libraries/?*/**/third-party/**|libraries/?*/utility/*/*|libraries/EntityLibSimpleSensors/Bme280sensor.h|libraries/ArduinoJson/fuzzing|libraries/**/._*|libraries/Hash/sha1" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
