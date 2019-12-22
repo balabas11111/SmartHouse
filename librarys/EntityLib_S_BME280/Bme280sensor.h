@@ -41,7 +41,9 @@ public:
 #else
 		bme= new Bme280Mock();
 #endif
-		bme->begin();
+		bool status = bme->begin();
+		Serial.print(FPSTR("Bme init = "));
+		Serial.println(status);
 	}
 
 	virtual void doUpdate() override{
