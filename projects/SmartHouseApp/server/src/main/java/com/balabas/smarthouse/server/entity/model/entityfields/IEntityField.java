@@ -10,7 +10,7 @@ import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabl
 import com.balabas.smarthouse.server.exception.BadValueException;
 
 @SuppressWarnings("rawtypes")
-public interface IEntityField<T extends Object> extends IItemAbstract {
+public interface IEntityField<T> extends IItemAbstract {
 
 	Class getClazz();
 	
