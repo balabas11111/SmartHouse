@@ -11,6 +11,11 @@ public abstract class AlarmOfDevice extends AlarmV2 {
 	protected Device device;
 	
 	@Override
+	public Class<?> getItemClass() {
+		return Device.class;
+	}
+	
+	@Override
 	public IItemAbstract getItem() {
 		return device;
 	}

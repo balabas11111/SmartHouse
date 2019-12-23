@@ -4,10 +4,11 @@ import javax.persistence.MappedSuperclass;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 @MappedSuperclass
 @SuppressWarnings("rawtypes")
-public abstract class AlarmOfEntityFieldNumber extends AlarmV2 {
+public abstract class AlarmOfEntityFieldNumber extends AlarmOfEntityField {
 	
 	protected EntityField entityField;
 	
@@ -21,11 +22,17 @@ public abstract class AlarmOfEntityFieldNumber extends AlarmV2 {
 		this.entityField = (EntityField) item;		
 	}
 	
-	@Override
-	public boolean accepts(IItemAbstract item) {
-		EntityField field = (EntityField) item;
-				
-		return super.accepts(item) && Number.class.isAssignableFrom(field.getClazz()); 
+	protected Float getValueAsFloat() {
+		return Float.valueOf(getValue());
+	}
+	
+	protected Float getEntityFieldValueFloat(IItemAbstract item) {
+		IEntityField entityField = (IEntityField) item;
+		return getEntityFieldValueFloat(entityField);
+	}
+	
+	protected Float getEntityFieldValueFloat(IEntityField entityField) {
+		return ((Number) entityField.getValue()).floatValue();
 	}
 	
 }

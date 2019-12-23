@@ -5,12 +5,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AlarmMarker {
 	
-	Class<?> target() default IEntityField.class;
+	Class<?> target() default EntityField.class;
+	
+	Class<?> detail() default Number.class;
 
 }

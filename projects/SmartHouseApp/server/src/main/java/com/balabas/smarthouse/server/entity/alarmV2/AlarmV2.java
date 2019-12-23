@@ -1,7 +1,10 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
 import java.lang.annotation.Annotation;
+import java.security.InvalidParameterException;
 
+import javax.naming.directory.InvalidAttributesException;
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -11,6 +14,7 @@ import javax.persistence.Transient;
 import org.springframework.util.StringUtils;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +23,7 @@ import lombok.Setter;
 public abstract class AlarmV2 implements IAlarmV2 {
 
 	public static final Integer NO_MESSAGE_SEND_REPEATS = -1;
+	public static final String ALARM_FINISHED_STATUS = "показатели в норме";
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,55 +48,49 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@Getter @Setter
 	boolean alarmFinishedSendExpected = false;
 	
+	public abstract Class<?> getItemClass();
+	
+	public abstract IItemAbstract getItem();
+	public abstract void setItem(IItemAbstract item);
+	
+	public abstract void check(IItemAbstract item);
+	
+	
+	
 	@Override
 	public Long getItemId() {
 		return getItem()!=null?getItem().getId():null;
-	}
-
-	@Override
-	public Class<?> getItemClass() {
-		Annotation annotations[] = this.getClass().getAnnotations();
-		
-		for(Annotation ann : annotations) {
-			if(AlarmMarker.class.isAssignableFrom(ann.getClass())) {
-				AlarmMarker marker = (AlarmMarker) ann;
-				return marker.target();
-			}
-		}
-		
-		throw new IllegalAccessError("No AlarmMarker specified");	
-	}
-	
-	@Override
-	public boolean accepts(IItemAbstract item) {
-		try {
-			return getItemClass().isAssignableFrom(item.getClass());
-		}catch(Exception e) {
-			e.printStackTrace();
-			return false;
-		}
 	}
 	
 	public boolean isValueValid(String value) {
 		return !StringUtils.isEmpty(value);
 	}
 
-	public abstract IItemAbstract getItem();
-	public abstract void setItem(IItemAbstract item);
+	@Override
+	public void check() {
+		check(getItem());
+	}
 	
-	public abstract void check();
+	public static boolean accepts(Class<?> alarmClass, IItemAbstract item) {
+		AlarmMarker marker = getAlarmMarker(alarmClass);
+		if(IEntityField.class.isAssignableFrom(item.getClass())) {
+			IEntityField entityField = (IEntityField) item;
+			return marker.target().isAssignableFrom(item.getClass()) && marker.detail().isAssignableFrom(entityField.getClazz());
+		}
+		
+		return marker.target().isAssignableFrom(item.getClass());
+	}
 	
-	public static boolean accepts(Class<?> acceptor, IItemAbstract item) {
-		Annotation annotations[] = acceptor.getAnnotations();
+	public static AlarmMarker getAlarmMarker(Class<?> alarmClass) {
+		Annotation annotations[] = alarmClass.getAnnotations();
 		
 		for(Annotation ann : annotations) {
 			if(AlarmMarker.class.isAssignableFrom(ann.getClass())) {
-				AlarmMarker marker = (AlarmMarker) ann;
-				return marker.target().isAssignableFrom(item.getClass());
+				return (AlarmMarker) ann;
 			}
 		}
 		
-		return false;
+		throw new InvalidParameterException();
 	}
 
 }

@@ -34,9 +34,10 @@ public class MessageHolder {
 		this.emoji = emoji;
 	}
 	
-	public void addMessage(String message) {
+	public MessageHolder addMessage(String message) {
 		if(!StringUtils.isEmpty(message)) {
 			this.messages.add(message);
 		}
+		return this;
 	}
 }

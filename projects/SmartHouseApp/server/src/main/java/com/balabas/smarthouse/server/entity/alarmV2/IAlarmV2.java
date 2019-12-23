@@ -2,6 +2,7 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 
 import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.view.MessageHolder;
 
 public interface IAlarmV2 extends IIdentifiable {
 
@@ -17,11 +18,11 @@ public interface IAlarmV2 extends IIdentifiable {
 	String getValue();
 	void setValue(String value);
 	
-	boolean accepts(IItemAbstract item);
-	
 	boolean isAlarmed();
 	
 	void check();
+	
+	void check(IItemAbstract item);
 	
 	void setMessageInterval(Integer messageInterval);
 	Integer getMessageInterval();
@@ -29,8 +30,8 @@ public interface IAlarmV2 extends IIdentifiable {
 	
 	boolean isAlarmStartedSendExpected();
 	boolean isAlarmFinishedSendExpected();
-	/*
-	MessageHolder getAlarmStartedTextHolder();
-	MessageHolder getAlarmFinishedTextHolder();
-	*/
+	
+	MessageHolder getAlarmStartedTextHolder(IItemAbstract item);
+	MessageHolder getAlarmFinishedTextHolder(IItemAbstract item);
+	
 }

@@ -11,6 +11,11 @@ public abstract class AlarmOfEntity extends AlarmV2 {
 	protected Entity entity;
 	
 	@Override
+	public Class<?> getItemClass() {
+		return Entity.class;
+	}
+	
+	@Override
 	public IItemAbstract getItem() {
 		return entity;
 	}
