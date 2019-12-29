@@ -52,10 +52,17 @@ public class ItemTextHelper {
 		return (groupName == null || !groupNameMap.containsKey(groupName)) ? groupName : groupNameMap.get(groupName);
 	}
 
+	public static String getMetricsButton() {
+		return String.format(BotMessageConstants.VIEW_METRICS_BUTTON, Emoji.BAR_CHART);
+	}
+	public static String getDevicesListButton() {
+		return String.format(BotMessageConstants.VIEW_DEVICES_LIST_BUTTON, Emoji.BOOKMARK_TABS);
+	}
+	/*
 	public static String getRefreshDeviceListButton() {
 		return String.format(BotMessageConstants.VIEW_DEVICES_BUTTON, Emoji.BOOKMARK_TABS);
 	}
-
+*/
 	public static String getSetupButton() {
 		return String.format(BotMessageConstants.SETUP_BUTTON, Emoji.HAMMER_AND_WRENCH);
 	}

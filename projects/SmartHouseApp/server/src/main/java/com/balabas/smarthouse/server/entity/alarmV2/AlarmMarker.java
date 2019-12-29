@@ -14,5 +14,4 @@ public @interface AlarmMarker {
 	Class<?> target() default EntityField.class;
 	
 	Class<?> detail() default Number.class;
-
 }

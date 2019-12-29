@@ -12,6 +12,7 @@ import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.view.MessageHolder;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -61,6 +62,12 @@ public abstract class AlarmAbstractEntityField<T> extends Alarm<IEntityField>
 		return getAlarmValue().compareTo(getEntityFieldValue());
 	}
 
+
+	@Override
+	public MessageHolder getAlarmStartedTextHolder() {
+		return new MessageHolder(watchedItem.getEntity().getDevice().getName(), watchedItem.getName(), "");
+	}
+	
 	@Override
 	public String getAlarmText() {
 		if (!alarmed) {

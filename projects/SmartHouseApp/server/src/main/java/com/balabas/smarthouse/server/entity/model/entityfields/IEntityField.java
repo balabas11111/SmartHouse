@@ -17,6 +17,11 @@ public interface IEntityField<T> extends IItemAbstract {
 	T getValue();
 	void setValueWithCheck(T value) throws BadValueException;
 	
+	String getValueTmp();
+	void setValueTmp(String valueTmp);
+	
+	Integer getValueTmpAsInteger();
+	
 	String getTemplateName();
 	void setTemplateName(String templateName);
 	
@@ -36,7 +41,6 @@ public interface IEntityField<T> extends IItemAbstract {
 	void setDescriptionField(String descriptionField);
 	
 	String getNameDescriptionByDescriptionField();
-	String getDescriptionByDescriptionField();
 	
 	Entity getEntity();
 	void setEntity(Entity entity);
@@ -47,6 +51,7 @@ public interface IEntityField<T> extends IItemAbstract {
 	EntityFieldClassView getViewClass();
 	void setViewClass(EntityFieldClassView viewClass);
 	
+	String getValueMeasureStr();
 	String getValueStr();
 	void setValueStr(String value) throws BadValueException;
 

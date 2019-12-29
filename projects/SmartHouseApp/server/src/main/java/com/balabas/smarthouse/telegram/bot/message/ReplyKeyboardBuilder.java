@@ -24,7 +24,8 @@ public class ReplyKeyboardBuilder {
 		
 		List<KeyboardRow> keyboard = new ArrayList<>();
         
-		keyboard.add(getRefreshDevicesListViewKeyboard());
+		keyboard.add(getMetricsListViewKeyboard());
+		keyboard.add(getDevicesListViewKeyboard());
 		keyboard.add(getRefreshDevicesListEditReplyKeyboard());
         
         replyKeyboardMarkup.setKeyboard(keyboard);
@@ -32,8 +33,12 @@ public class ReplyKeyboardBuilder {
         return replyKeyboardMarkup;
 	}
 	
-	public KeyboardRow getRefreshDevicesListViewKeyboard() {
-		return getKeyboardRow(ItemTextHelper.getRefreshDeviceListButton());
+	public KeyboardRow getMetricsListViewKeyboard() {
+		return getKeyboardRow(ItemTextHelper.getMetricsButton());
+	}
+	
+	public KeyboardRow getDevicesListViewKeyboard() {
+		return getKeyboardRow(ItemTextHelper.getDevicesListButton());
 	}
 	
 	public KeyboardRow getRefreshDevicesListEditReplyKeyboard() {

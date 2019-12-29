@@ -10,7 +10,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.balabas.smarthouse.server.entity.alarm.AlarmAbstractEntityField;
 import com.balabas.smarthouse.server.entity.alarm.EntityAlarm;
+import com.balabas.smarthouse.server.entity.alarm.IEntityFieldAlarm;
 
 @Repository
 public interface IEntityAlarmRepository extends CrudRepository<EntityAlarm, Long> {
@@ -30,4 +32,7 @@ public interface IEntityAlarmRepository extends CrudRepository<EntityAlarm, Long
 			"	JOIN devices d ON d.id = g.device_id" + 
 			"	WHERE d.id = :id)", nativeQuery = true)
 	void deleteEntityAlarmsByDeviceId(@Param("id") Long deviceId);
+
+	@Query("from AlarmAbstractEntityField where watchedItem.id = :id")
+	List<AlarmAbstractEntityField> findAlarmsForEntityField(@Param("id")Long entityFieldId);
 }

@@ -79,6 +79,10 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	@Getter	@Setter
 	private Date lastDate;
 	
+	@Transient
+	@Getter @Setter
+	private String valueTmp;
+	
 	@Override
 	public void setName(String name) {
 		super.setName(name);
@@ -110,6 +114,17 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	@Override
 	public void setValueStr(String value) throws BadValueException {
 		setValueWithCheck(fromString(value));
+	}
+	
+	@Override
+	public Integer getValueTmpAsInteger() {
+		Integer result = 0;
+		
+		try {
+			result = Integer.valueOf(getValueTmp());	
+		}catch(Exception e) {}
+		
+		return result;
 	}
 	
 	@Override
@@ -203,8 +218,25 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	}
 	
 	@Override
+	public String getEmojiDescriptionByDescriptionFieldWithParent() {
+		return getEntity().getEmojiDescriptionByDescriptionField() + " " + getEmojiDescriptionByDescriptionField() ;
+	}
+	
+	@Override
 	public String getFullName() {
 		return getEntity().getDevice().getName()+" "+getEntity().getName()+" "+getName();
 	}
+	
+	@Override
+	public String getItemClassId() {
+		return super.getItemClassId() + this.getClazz().getSimpleName();
+	}
+	
+	@Override
+	public String getValueMeasureStr() {
+		return getValueStr() + " " + getMeasure();
+	}
+	
+	
 	
 }

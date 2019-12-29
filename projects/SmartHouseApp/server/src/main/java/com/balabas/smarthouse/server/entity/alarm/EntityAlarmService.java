@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,6 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.DeviceConstants;
-import com.balabas.smarthouse.server.entity.alarm.impl.EntityFieldDs18d20DisconnectedAlarm;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
@@ -511,6 +511,7 @@ public class EntityAlarmService implements IEntityAlarmService {
 		IEntityFieldAlarm entityFieldAlarm = (IEntityFieldAlarm) entityFieldAlarmClass.newInstance();
 	
 		entityFieldAlarm.setValueStr(value);
+		entityFieldAlarm.setWatchedItem(entityField);
 		entityAlarm.putAlarm(entityFieldAlarm);
 
 		save(entityAlarm);
@@ -559,13 +560,13 @@ public class EntityAlarmService implements IEntityAlarmService {
 
 	@Override
 	public IEntityFieldAlarm getEntityAlarmFieldById(Long entityFieldId, Class<?> entityFieldAlarmClass) {
-		// TODO Auto-generated method stub
-		return null;
+		List<AlarmAbstractEntityField> alarms = alarmRepository.findAlarmsForEntityField(entityFieldId);
+		return alarms.stream().filter(alarm -> entityFieldAlarmClass.isAssignableFrom(alarm.getClass())).findFirst().orElse(null);
 	}
 
 	@Override
-	public void createNewEntityFieldAlarmOrUpdateValue(IEntityField entityField,
-			String receivedValue) throws InstantiationException, IllegalAccessException {
+	public void createNewEntityFieldAlarmOrUpdateValueTmp(IEntityField entityField,
+			String receivedValue, Class<?> entityFieldClass) throws InstantiationException, IllegalAccessException {
 		
 		IEntityAlarm entityAlarm = getAlarm(entityField.getEntity());
 		
@@ -575,22 +576,29 @@ public class EntityAlarmService implements IEntityAlarmService {
 			entityAlarm = getAlarm(entityField.getEntity());
 		}
 		
-		IEntityFieldAlarm entityFieldAlarm = getEntityAlarmFieldById(entityField.getId(), EntityFieldDs18d20DisconnectedAlarm.class); 
-		
-		try {
-			Integer.valueOf(receivedValue);
-		} catch(Exception e) {
-			receivedValue = "-127";
-			log.error("Failed to parse value " + receivedValue);
-		}
+		IEntityFieldAlarm entityFieldAlarm = getEntityAlarmFieldById(entityField.getId(), entityFieldClass); 
 		
 		if(entityFieldAlarm!=null) {
-			log.info("Update entityFieldAlarmValue " + entityField.getFullName());
-			entityFieldAlarm.setValueStr(receivedValue);
+			log.debug("Update entityFieldAlarmValue " + entityField.getFullName());
+			entityField.setValueTmp(receivedValue);
 		} else {
-			createNewEntityFieldAlarmInEntityAlarm(entityAlarm, EntityFieldDs18d20DisconnectedAlarm.class, entityField, receivedValue);
+			createNewEntityFieldAlarmInEntityAlarm(entityAlarm, entityFieldClass, entityField, receivedValue);
 		}
 		
+	}
+
+	@Override
+	public List<IEntityFieldAlarm> getEntityAlarmsWithAlarmDetected(Set<IEntityField> entityFields) {
+		List<IEntityFieldAlarm> result = Lists.newArrayList();
+		
+		for(IEntityField entityField : entityFields) {
+			List<IEntityFieldAlarm> list = getEntityAlarmFieldById(entityField.getId());
+			
+			result.addAll(list
+					.stream().filter(alarm -> alarm.isAlarmed()).collect(Collectors.toList()));
+		}
+		
+		return result;
 	}
 
 }

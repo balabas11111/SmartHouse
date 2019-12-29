@@ -213,6 +213,10 @@ public class SmartHouseItemBuildService {
 								log.error(entity.getDevice().getName() +" " + entity.getName() + " " +entityField.getName() + " INCORRECT value " +valStr);
 							}
 							
+							if(entityField !=null) {
+								entityField.setValueTmp(valStr);
+							}
+							
 							entityBehaviourService.processReceivedValueForAlarm(entityField, valStr);
 							
 						} else {

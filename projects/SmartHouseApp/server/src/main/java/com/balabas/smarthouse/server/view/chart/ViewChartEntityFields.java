@@ -19,7 +19,7 @@ import lombok.Setter;
 @Entity
 @EqualsAndHashCode(callSuper = true, exclude = "entityFields")
 @SuppressWarnings("rawtypes")
-public class ViewChartEntityFields extends ItemAbstract {
+public class ViewChartEntityFields extends ItemAbstract implements IMetrics {
 
 	@Getter @Setter
 	@ManyToMany(targetEntity = EntityField.class, fetch = FetchType.EAGER)

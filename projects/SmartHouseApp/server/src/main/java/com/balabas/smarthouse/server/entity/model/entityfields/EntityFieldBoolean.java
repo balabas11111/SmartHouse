@@ -45,4 +45,9 @@ public class EntityFieldBoolean extends EntityField<Boolean> implements IEntityF
 		this.valueB = value;
 	}
 
+	@Override
+	public String getValueMeasureStr() {
+		return getValue().booleanValue()? "Включено": "Отключено";
+	}
+
 }

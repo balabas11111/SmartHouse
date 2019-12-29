@@ -3,8 +3,6 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 import java.lang.annotation.Annotation;
 import java.security.InvalidParameterException;
 
-import javax.naming.directory.InvalidAttributesException;
-import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -71,6 +69,7 @@ public abstract class AlarmV2 implements IAlarmV2 {
 		check(getItem());
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public static boolean accepts(Class<?> alarmClass, IItemAbstract item) {
 		AlarmMarker marker = getAlarmMarker(alarmClass);
 		if(IEntityField.class.isAssignableFrom(item.getClass())) {

@@ -3,6 +3,7 @@ package com.balabas.smarthouse.server.entity.alarm;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
@@ -86,12 +87,14 @@ public interface IEntityAlarmService {
 	DeviceEntityAlarmHolder getDeviceAlarmsHolder(IDevice device);
 	Map<String, DeviceEntityAlarmHolder> getDeviceAlarmsHoldersGroupped(List<Device> device);
 	
-	void createNewEntityFieldAlarmOrUpdateValue(IEntityField entityField,
-			String receivedValue) throws InstantiationException, IllegalAccessException;
+	void createNewEntityFieldAlarmOrUpdateValueTmp(IEntityField entityField,
+			String receivedValue, Class<?> entityFieldClass) throws InstantiationException, IllegalAccessException;
 	
 	//void createNewEntityFieldAlarmInEntityAlarm(IEntityAlarm entityAlarm, IEntityFieldAlarm entityFieldAlarm, IEntityField entityField, String value);
 	
 	void createNewEntityFieldAlarmInEntityAlarm(IEntityAlarm entityAlarm, Class<?> entityFieldAlarmClass,
 			IEntityField entityField, String value) throws InstantiationException, IllegalAccessException;
+	
+	List<IEntityFieldAlarm> getEntityAlarmsWithAlarmDetected(Set<IEntityField> entityFields);
 
 }

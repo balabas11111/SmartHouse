@@ -131,7 +131,7 @@ public class ViewEntityFieldController {
 				.flatMap(entity -> entity.getEntityFields().stream())
 				.filter(entityField -> ItemType.SENSORS.equals(entityField.getEntity().getItemType())
 						&& !String.class.equals(entityField.getClazz())
-						&& (!StringUtils.isEmpty(entityField.getMeasure()) || entityField.isButton()))
+						&& (!StringUtils.isEmpty(entityField.getMeasure()) || entityField.isButton() || Float.class.isAssignableFrom(entityField.getClazz())))
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 		
 		if (isNew) {
@@ -187,6 +187,8 @@ public class ViewEntityFieldController {
 			return String.format(URL_REDIRECT_VIEW_CHART_FORMAT, viewChartId, afterDate);
 		}
 
+		Map<String, List<IEntityField>> map = viewChartsService.getAllAsMap(viewChartId);
+		
 		ViewChartEntityFields viewCharts = viewChartsService.getChartsById(viewChartId);
 		List<ChartDataSeries> charts = Lists.newArrayList();
 
@@ -215,6 +217,8 @@ public class ViewEntityFieldController {
 		
 		model.addAttribute(ATTR_CHART_DATA_Y, chartYLabel);
 		model.addAttribute(ATTR_CHART_DATA, chartData);
+		
+		model.addAttribute("Metrics", map);
 
 		return "entityFields/viewChart.html";
 	}

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.util.Strings;
@@ -30,9 +31,13 @@ import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.entity.service.IGroupService;
+import com.balabas.smarthouse.server.entity.service.IViewChartEntityFieldsService;
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.server.view.MessageHolder;
+import com.balabas.smarthouse.server.view.chart.IMetrics;
+import com.balabas.smarthouse.server.view.chart.ViewChartEntityFields;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_NAME;
 import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_CLASS;
@@ -47,9 +52,15 @@ public class SendMessageBuilder {
 
 	@Value("${smarthouse.server.url:#{null}}")
 	private String serverUrl;
+	
+	@Value("${smarthouse.server.name:#{null}}")
+	private String serverName;
 
 	@Autowired
 	private IDeviceManageService deviceService;
+	
+	@Autowired
+	private IViewChartEntityFieldsService viewChartsService;
 
 	@Autowired
 	private IGroupService groupService;
@@ -105,23 +116,105 @@ public class SendMessageBuilder {
 		return deviceService.getDevicesInitialized().stream().sorted(itemAbstractComparator)
 				.collect(Collectors.toList());
 	}
-
-	public List<SendMessage> createDevicesListView(Action action, ReplyContext cont) {
+	
+	public List<ViewChartEntityFields> getViewCharts() {
+		return viewChartsService.getAllAsList();
+	}
+	
+	public IMetrics getViewChartsAttached(Long id) {
+		IMetrics metrics = viewChartsService.getById(id);
+		
+		Set<IEntityField> entityFields = metrics.getEntityFields();
+		Set<IEntityField> entityFieldsResults = Sets.newLinkedHashSet();
+		
+		for(IEntityField entityField : entityFields) {
+			IEntityField entityFieldResult = deviceService.getEntityFieldById(entityField.getId());
+			entityFieldsResults.add(entityFieldResult);
+		}
+		
+		metrics.setEntityFields(entityFieldsResults);
+		
+		return metrics;
+	}
+	
+	public String getServerMainText(int size) {
 		String serverAddress = Optional.ofNullable(serverUrl).orElse("");
+		
+		return (size == 0) ? String.format(BotMessageConstants.NO_DEVICE_MSG, Emoji.WARNING, serverAddress)
+				: String.format(BotMessageConstants.SERVER_SELECT_DEVICE_VIEW_MSG, Emoji.OUTBOX_TRAY,
+						Optional.ofNullable(serverName).orElse(""), 
+						serverAddress);
+	}
 
-		String serverName = action.getServerName();
-		List<SendMessage> msgs = Lists.newArrayList();
+	public List<SendMessage> createViewOfMainCommands(Action action, ReplyContext cont) {
+				List<SendMessage> msgs = Lists.newArrayList();
 		List<Device> devices = getDevices();
-
-		cont.setText(
-				(devices.isEmpty()) ? String.format(BotMessageConstants.NO_DEVICE_MSG, Emoji.WARNING, serverAddress)
-						: String.format(BotMessageConstants.SERVER_SELECT_DEVICE_VIEW_MSG, Emoji.OUTBOX_TRAY,
-								serverName, serverAddress));
-
-		msgs.add(cont.createMsg(inlineKeyboard.getDevicesOfServerInlineKeyboardView(devices)));
-
+		cont.setText(getServerMainText(devices.size()));
+		msgs.add(cont.createMsg(inlineKeyboard.getInlineKeyboardViewOfMainCommands(devices)));
 		return msgs;
 	}
+	
+	public List<SendMessage> createViewOfDevices(Action action, ReplyContext cont) {
+		List<SendMessage> msgs = Lists.newArrayList();
+		List<Device> devices = getDevices();
+		cont.setText(getServerMainText(devices.size()));
+		msgs.add(cont.createMsg(inlineKeyboard.getInlineKeyboardViewOfDevices(devices)));
+		return msgs;
+	}
+	
+	public List<SendMessage> createViewOfMetrics(Action action, ReplyContext cont) {
+		List<SendMessage> msgs = Lists.newArrayList();
+		List<ViewChartEntityFields> metrics = getViewCharts();
+		cont.setText(getServerMainText(metrics.size()));
+		msgs.add(cont.createMsg(inlineKeyboard.getInlineKeyboardViewOfMetrics(metrics)));
+		return msgs;
+	}
+	
+	public List<SendMessage> createViewOfEntityMetrics(Action action, ReplyContext context) {
+		Long id = Long.valueOf(action.getData());
+		IMetrics metrics = getViewChartsAttached(id);
+		
+		List<SendMessage> result = Lists.newArrayList();
+
+		StringBuilder builder = new StringBuilder();
+		
+		if (metrics != null) {
+
+			itemRendererBuilder.buildEntityView(metrics, builder);
+
+				List<IEntityFieldAlarm> alarms = alarmService.getEntityAlarmsWithAlarmDetected(metrics.getEntityFields());
+
+				if (!alarms.isEmpty()) {
+
+					builder.append(BotMessageConstants.ENTITY_ALARM_HEADER);
+
+					List<MessageHolder> alarmHolders = Lists.newArrayList();
+
+					metrics.getEntityFields().stream()
+						.map(entityField -> entityField.getEntity())
+						.collect(Collectors.toList())
+						.stream()
+							.forEach(entity -> alarms.stream()
+									.filter(alarm -> entity.getName().equals(alarm.getWatchedItem().getName()))
+									.forEach(alarm -> Optional.ofNullable(alarm.getAlarmStartedTextHolder())
+											.ifPresent(alarmHolders::add)));
+
+					builder.append(alarmMessageHoldersToString(alarmHolders));
+
+				}
+
+				//result.add(createHtmlMessage(context.getChatId(), builder.toString()));
+
+				/*Optional.ofNullable(buildGroupCommandInterface(device, group, context.getChatId()))
+						.ifPresent(result::add);
+						*/
+			}
+		
+			context.setText(builder.toString());
+			result.add(context.createMsg(inlineKeyboard.getInlineKeyboardViewOfMetrics(metrics)));
+			return result;
+		}
+		
 
 	public List<SendMessage> createSetupMenu(Action action, ReplyContext context) {
 		List<SendMessage> msgs = Lists.newArrayList();

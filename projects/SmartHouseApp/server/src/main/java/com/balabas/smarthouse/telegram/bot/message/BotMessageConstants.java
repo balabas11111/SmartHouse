@@ -28,6 +28,8 @@ public class BotMessageConstants {
 	public static final String BUTTON = "%s %s";
 	
 	public static final String VIEW_DEVICES_BUTTON = "%s Просмотр показателей";
+	public static final String VIEW_METRICS_BUTTON = "%s Метрики";
+	public static final String VIEW_DEVICES_LIST_BUTTON = "%s Устройства";
 	public static final String SETUP_BUTTON = "%s Настройки";
 	
 	public static final String RESTART_APPLICATION_BUTTON = "%s Перезапустить сервер";
@@ -64,7 +66,8 @@ public class BotMessageConstants {
 	        "%s Устройство \n"+
 	        "<b>: %s </b>\n"+
 	        ": %s ";
-	public static final String SELECT_ALL_DEVICES = " Все устройства";
+	public static final String SELECT_ALL_METRICS = " Метрики";
+	public static final String SELECT_ALL_DEVICES = " Устройства";
 	public static final String SELECT_SETUP_ACTION = "%s Выберите группу настроек";
 	public static final String SELECT_DEVICE_TO_EDIT_ALARMS = "%s Выберите устройство для просмотра режима тревоги";
 	public static final String SELECT_ENTITY_TO_EDIT_ALARMS = "%s Выберите датчик для просмотра режима тревоги. устройство %s";

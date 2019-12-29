@@ -22,9 +22,11 @@ import org.springframework.stereotype.Component;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
+import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.view.chart.IMetrics;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
@@ -50,6 +52,70 @@ public class EntityViewBuilder {
 	public void buildEntityView(IEntity entity, StringBuilder builder) {
 		buildEntityHeader(entity, builder);
 		buildEntityBody(entity, builder);
+	}
+
+	public void buildEntityView(IMetrics metrics, StringBuilder builder) {
+		buildEntityHeader(metrics, builder);
+		buildEntityBody(metrics.getEntityFieldsAsMap(), builder);
+	}
+
+	private void buildEntityHeader(IMetrics metric, StringBuilder builder) {
+		buildEntityBodyAbstract(Emoji.BAR_CHART, metric, builder, metric.getName(), null, true, false);
+	}
+
+	private void buildEntityBody(Map<String, List<IEntityField>> map, StringBuilder builder) {
+		boolean first =true;
+		
+		for(String key : map.keySet()) {
+			List<IEntityField> list = map.get(key); 
+			if(!first) {
+				builder.append("\n");
+			}
+			builder.append(key);
+			builder.append(" ---> ");
+			
+			if(list.size()<2) {
+				builder.append(" ");
+			} else {
+				builder.append(" \n");
+			}
+			
+			for(IEntityField field : list) {
+				buildEntityBody(field, builder);
+			}
+			
+			builder.append("\n");
+			first = false;
+		}
+	}
+	
+	private void buildEntityBody(IEntityField entityField, StringBuilder builder) {
+		buildEntityBodyAbstract(Emoji.EMPTY_EMOJI, entityField, builder,
+				"      ", entityField.getValueMeasureStr()+"; ", false,
+				false);
+	}
+
+	private void buildEntityBodyAbstract(Emoji emojiDefault, IItemAbstract item, StringBuilder builder, String value1,
+			String value2, boolean addHorLine, boolean addNextLine) {
+		builder.append("<b>");
+		builder.append(item.getEmojiOrDefault(emojiDefault));
+		if (value1 != null) {
+			builder.append(" ");
+			builder.append(value1);
+		}
+		builder.append(" ");
+		builder.append(item.getDescriptionByDescriptionField());
+		builder.append("</b>");
+		if (value2 != null) {
+			builder.append(" ");
+			builder.append(value2);
+		}
+		if (addHorLine) {
+			builder.append(" \n----------------------- \n");
+		}
+		if (addNextLine) {
+			builder.append(" \n");
+		}
 	}
 
 	public void buildEntityHeader(IEntity entity, StringBuilder builder) {

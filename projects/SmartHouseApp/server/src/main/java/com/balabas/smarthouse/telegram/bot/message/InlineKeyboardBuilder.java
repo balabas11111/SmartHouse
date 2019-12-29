@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.telegram.bot.message;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import com.balabas.smarthouse.server.DeviceConstants;
@@ -24,14 +26,16 @@ import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IEntityFieldService;
 import com.balabas.smarthouse.server.view.Action;
+import com.balabas.smarthouse.server.view.chart.IMetrics;
+import com.balabas.smarthouse.server.view.chart.ViewChartEntityFields;
 import com.google.common.collect.Lists;
 
 import lombok.Getter;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_RESTART_APPLICATION;
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_DEVICE_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_GROUPS_OF_DEVICE;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_DEVICES;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_METRICS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_OF_DEVICE;
@@ -49,6 +53,7 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_ALARM_OF_ENTITY_C
 import static com.balabas.smarthouse.server.view.Action.ACTION_ALARM_OF_ENTITY_CHANGE_SOUND;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARM_INTERVAL_OF_ENTITY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_METRIC;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_DELETE_ENTITY_FIELD_ALARM;
 import static com.balabas.smarthouse.server.view.Action.ACTION_EDIT_ENTITY_FIELD_ALARM;
@@ -70,6 +75,7 @@ import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.EN
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_ENABLE_SOUND_MESSAGE;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_DISABLE_SOUND_MESSAGE;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.SELECT_ALL_DEVICES;
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.SELECT_ALL_METRICS;;
 
 @Component
 @SuppressWarnings("rawtypes")
@@ -88,7 +94,7 @@ public class InlineKeyboardBuilder {
 	
 	public static List<InlineKeyboardButton> createInlineKeyboardButtonRow(String text, String callbackData) {
 		List<InlineKeyboardButton> row = Lists.newArrayList();
-		InlineKeyboardButton btn = new InlineKeyboardButton().setText(text).setCallbackData(callbackData);
+		InlineKeyboardButton btn = createInlineKeyboardButton(text, callbackData);
 		row.add(btn);
 		return row;
 	}
@@ -99,8 +105,10 @@ public class InlineKeyboardBuilder {
 
 	public void addRefreshButtonToKeyboard(List<List<InlineKeyboardButton>> rowsInline) {
 		List<InlineKeyboardButton> row = new ArrayList<>();
-		row.add(createInlineKeyboardButton(ItemTextHelper.getRefreshDeviceListButton(),
-				Action.callback(ACTION_TYPE_VIEW_DEVICE_LIST)));
+		row.add(createInlineKeyboardButton(ItemTextHelper.getMetricsButton(),
+				Action.callback(ACTION_TYPE_VIEW_ALL_METRICS)));
+		row.add(createInlineKeyboardButton(ItemTextHelper.getDevicesListButton(),
+				Action.callback(ACTION_TYPE_VIEW_ALL_DEVICES)));
 		rowsInline.add(row);
 	}
 
@@ -108,37 +116,98 @@ public class InlineKeyboardBuilder {
 		InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
-		List<InlineKeyboardButton> row = new ArrayList<>();
-		row.add(createInlineKeyboardButton(ItemTextHelper.getRefreshDeviceListButton(),
-				Action.callback(ACTION_TYPE_VIEW_DEVICE_LIST)));
-		rowsInline.add(row);
-
+		addRefreshButtonToKeyboard(rowsInline);
 		markup.setKeyboard(rowsInline);
 		return markup;
 	}
-
-	public InlineKeyboardMarkup getDevicesOfServerInlineKeyboardView(List<Device> devices) {
+	
+	public InlineKeyboardMarkup wrapButtonList(List<List<InlineKeyboardButton>> rowsInline) {
 		InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+		markup.setKeyboard(rowsInline);
+
+		return markup;
+	}
+
+	public InlineKeyboardMarkup getInlineKeyboardViewOfMainCommands(List<Device> devices) {
+		return wrapButtonList(getButtonsListOfMainCommands(devices));
+	}
+	
+	public InlineKeyboardMarkup getInlineKeyboardViewOfDevices(List<Device> devices) {
+		return wrapButtonList(getButtonsListOfDevices(devices));
+	}
+	
+	public ReplyKeyboard getInlineKeyboardViewOfMetrics(List<ViewChartEntityFields> metrics) {
+		return wrapButtonList(getButtonsListOfMetrics(metrics));
+	}
+
+	public List<List<InlineKeyboardButton>> getButtonsListOfMainCommands(List<Device> devices) {
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
 		if(devices.size()>0) {
-			String text = buttons.getDeviceButton(Emoji.PAGER, SELECT_ALL_DEVICES);
-			String callback = Action.callback(ACTION_TYPE_VIEW_ALL_DEVICES, "", "", GROUP_SENSORS);
+			String text = buttons.getDeviceButton(Emoji.BAR_CHART, SELECT_ALL_METRICS);
+			String callback = Action.callback(ACTION_TYPE_VIEW_ALL_METRICS, "", "", GROUP_SENSORS);
 			
-			rowsInline.add(createInlineKeyboardButtonRow(text, callback));
+			List<InlineKeyboardButton> keyb = createInlineKeyboardButtonRow(text, callback);
+			
+			text = buttons.getDeviceButton(Emoji.PAGER, SELECT_ALL_DEVICES);
+			callback = Action.callback(ACTION_TYPE_VIEW_ALL_DEVICES, "", "", GROUP_SENSORS);
+			
+			keyb.add(createInlineKeyboardButton(text, callback));
+			
+			rowsInline.add(keyb);
 		}
+		
+		return rowsInline;
+	}
+	
+	public List<List<InlineKeyboardButton>> getButtonsListOfMetrics(List<ViewChartEntityFields> metrics) {
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		
+		List<InlineKeyboardButton> keyb = Lists.newArrayList();
+		
+		for (IMetrics metric : metrics) {
+
+			String text = buttons.getDeviceButton(new ActionContext(metric));
+			String callback = Action.callback(ACTION_TYPE_VIEW_ENTITIES_OF_METRIC, Long.toString(metric.getId()), metric.getName(), GROUP_SENSORS);
+
+			keyb.add(createInlineKeyboardButton(text, callback));
+			
+			if( keyb.size()>=2) {
+				rowsInline.add(keyb);
+				keyb = Lists.newArrayList();
+			}
+		}
+		
+		if(keyb!=null && keyb.size()==1) {
+			rowsInline.add(keyb);
+		}
+		
+		return rowsInline;
+	}
+	
+	public List<List<InlineKeyboardButton>> getButtonsListOfDevices(List<Device> devices) {
+		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+		
+		List<InlineKeyboardButton> keyb = Lists.newArrayList();
 		
 		for (IDevice device : devices) {
 
 			String text = buttons.getDeviceButton(new ActionContext(device));
 			String callback = Action.callback(ACTION_TYPE_VIEW_ENTITIES_OF_GROUP, "", device.getName(), GROUP_SENSORS);
 
-			rowsInline.add(createInlineKeyboardButtonRow(text, callback));
+			keyb.add(createInlineKeyboardButton(text, callback));
+			
+			if( keyb.size()>=2) {
+				rowsInline.add(keyb);
+				keyb = Lists.newArrayList();
+			}
 		}
-
-		markup.setKeyboard(rowsInline);
-
-		return markup;
+		
+		if(keyb!=null && keyb.size()==1) {
+			rowsInline.add(keyb);
+		}
+		
+		return rowsInline;
 	}
 
 	public InlineKeyboardMarkup getSetupMenuKeyboard() {
@@ -358,10 +427,15 @@ public class InlineKeyboardBuilder {
 	}
 
 	public InlineKeyboardMarkup getFieldsOfEntityInlineKeyboard(IEntity entity) {
+		return getFieldsOfEntityInlineKeyboard(entity.getEntityFields());
+	}
+	
+	public InlineKeyboardMarkup getFieldsOfEntityInlineKeyboard(Collection<IEntityField> fields) {
+
 		InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-
-		entity.getEntityFields().stream().sorted((ef1, ef2) -> ef1.getName().compareToIgnoreCase(ef2.getName()))
+		
+		fields.stream().sorted((ef1, ef2) -> ef1.getName().compareToIgnoreCase(ef2.getName()))
 				.forEach(entityField -> {
 
 					List<Action> actions = entityFieldService.getActionsForEntityField(ACTION_TYPE_SEND_DATA_TO_DEVICE_EDIT_FIELDS,
@@ -381,7 +455,7 @@ public class InlineKeyboardBuilder {
 
 						String data = Action.createActionDataFieldByFieldValue(entityField.getName());
 
-						String callback = Action.callback(ACTION_TYPE_EDIT_ENTITITY_FIELD, data, entity);
+						String callback = Action.callback(ACTION_TYPE_EDIT_ENTITITY_FIELD, data, entityField.getEntity());
 
 						rowsInline.add(createInlineKeyboardButtonRow(text, callback));
 					}
@@ -435,6 +509,10 @@ public class InlineKeyboardBuilder {
 		markup.setKeyboard(rowsInline);
 
 		return markup;
+	}
+
+	public InlineKeyboardMarkup getInlineKeyboardViewOfMetrics(IMetrics metrics) {
+		return getFieldsOfEntityInlineKeyboard(metrics.getEntityFields()); 
 	}
 
 }

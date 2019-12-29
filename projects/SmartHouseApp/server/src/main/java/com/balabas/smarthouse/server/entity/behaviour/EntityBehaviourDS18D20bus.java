@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
+import com.balabas.smarthouse.server.entity.alarm.impl.EntityFieldDs18d20DisconnectedAlarm;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityType;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -67,7 +68,7 @@ public class EntityBehaviourDS18D20bus implements IEntityBehaviour {
 			String receivedValue) {
 		
 		try {
-			alarmService.createNewEntityFieldAlarmOrUpdateValue(entityField,receivedValue);
+			alarmService.createNewEntityFieldAlarmOrUpdateValueTmp(entityField,receivedValue,EntityFieldDs18d20DisconnectedAlarm.class);
 		}catch(Exception e) {
 			e.printStackTrace();
 			log.error("Error auto create alarm class");

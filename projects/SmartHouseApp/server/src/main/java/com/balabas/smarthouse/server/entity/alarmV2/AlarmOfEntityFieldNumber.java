@@ -10,8 +10,6 @@ import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 @SuppressWarnings("rawtypes")
 public abstract class AlarmOfEntityFieldNumber extends AlarmOfEntityField {
 	
-	protected EntityField entityField;
-	
 	@Override
 	public IItemAbstract getItem() {
 		return entityField;
@@ -24,6 +22,10 @@ public abstract class AlarmOfEntityFieldNumber extends AlarmOfEntityField {
 	
 	protected Float getValueAsFloat() {
 		return Float.valueOf(getValue());
+	}
+	
+	protected Integer getValueTmpAsInteger(IEntityField entityField) {
+		return Integer.valueOf(entityField.getValueTmpAsInteger());
 	}
 	
 	protected Float getEntityFieldValueFloat(IItemAbstract item) {

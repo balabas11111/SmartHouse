@@ -3,6 +3,7 @@ package com.balabas.smarthouse.server.entity.alarm.impl;
 import javax.persistence.Entity;
 
 import com.balabas.smarthouse.server.entity.alarm.EntityFieldAlarmMarker;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 import lombok.ToString;
 
@@ -13,8 +14,11 @@ public class EntityFieldDs18d20DisconnectedAlarm extends AlarmAbstractEntityFiel
 
 	@Override
 	protected boolean executeAlarmChecksInternal() {
-		return getValue()!=null && (getValue().intValue() == -127 || getValue().intValue() == 85);
+		IEntityField entityField = getWatchedItem();
+		Integer intValue = entityField.getValueTmpAsInteger();
+		return intValue!=null && (intValue == -127 || intValue == 85);
 	}
+	
 
 	@Override
 	public String getAlarmText() {

@@ -31,7 +31,8 @@ public class Action {
 
 	public static final String ACTION_TYPE_UNKNOWN                  = "NUL";
 	public static final String ACTION_TYPE_RESTART_APPLICATION      = "rea";
-	public static final String ACTION_TYPE_VIEW_DEVICE_LIST         = "vdl";
+	public static final String ACTION_TYPE_VIEW_MAIN_COMMANDS       = "vmc";
+	public static final String ACTION_TYPE_VIEW_ALL_DEVICE_VALUE_LIST = "vdl";
 	public static final String ACTION_TYPE_VIEW_HELP                = "vhp";
 	public static final String ACTION_TYPE_SETUP                    = "ats";
 	public static final String ACTION_TYPE_EDIT_ALARMS              = "aea";
@@ -39,8 +40,10 @@ public class Action {
 	public static final String ACTION_TYPE_EDIT_DEVICE_SELECT_LIST  = "eds";
 	public static final String ACTION_TYPE_VIEW_GROUPS_OF_DEVICE    = "vgd";
 	public static final String ACTION_TYPE_VIEW_ALL_DEVICES         = "vad";
+	public static final String ACTION_TYPE_VIEW_ALL_METRICS         = "vam";
 	public static final String ACTION_TYPE_VIEW_ENTITIES_OF_GROUP   = "veg";
 	public static final String ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE  = "eeg";
+	public static final String ACTION_TYPE_VIEW_ENTITIES_OF_METRIC  = "vem";
 
 	public static final String ACTION_TYPE_EDIT_ALARMS_OF_DEVICE         = "ead";
 	public static final String ACTION_TYPE_EDIT_ALARMS_OF_ENTITY         = "eae";
@@ -81,7 +84,7 @@ public class Action {
 	public static final String ID_TYPE_ENTITY_ALARM = "_eal";
 	public static final String ID_TYPE_ENTITY_ALARM_FIELD = "_eaf";
 
-	public static final String validActions[] = { ACTION_TYPE_VIEW_DEVICE_LIST, ACTION_TYPE_EDIT_DEVICE_SELECT_LIST,
+	public static final String validActions[] = { ACTION_TYPE_VIEW_MAIN_COMMANDS, ACTION_TYPE_VIEW_ALL_DEVICE_VALUE_LIST, ACTION_TYPE_EDIT_DEVICE_SELECT_LIST,
 			ACTION_TYPE_VIEW_GROUPS_OF_DEVICE, ACTION_TYPE_VIEW_ENTITIES_OF_GROUP, ACTION_TYPE_VIEW_ENTITITY };
 	@Getter
 	private String action;

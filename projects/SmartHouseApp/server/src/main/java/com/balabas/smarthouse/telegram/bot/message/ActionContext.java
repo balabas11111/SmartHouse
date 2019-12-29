@@ -8,6 +8,7 @@ import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.view.chart.IMetrics;
 
 import lombok.Getter;
 
@@ -51,5 +52,10 @@ public class ActionContext {
 		
 		this.emoji = Optional.ofNullable(entityField.getEmoji()).orElse(Emoji.EMPTY_EMOJI);
 		this.description = "(" + entityField.getName() + ") " + description;
+	}
+	
+	public ActionContext(IMetrics metric) {
+		this.emoji = Optional.ofNullable(metric.getEmoji()).orElse(Emoji.BAR_CHART);
+		this.description = metric.getName() + " " + metric.getDescription();
 	}
 }

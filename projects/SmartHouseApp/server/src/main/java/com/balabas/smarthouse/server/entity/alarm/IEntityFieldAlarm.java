@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.entity.alarm;
 
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.view.MessageHolder;
 
 @SuppressWarnings("rawtypes")
 public interface IEntityFieldAlarm<T> extends IAlarm<IEntityField> {
@@ -22,4 +23,6 @@ public interface IEntityFieldAlarm<T> extends IAlarm<IEntityField> {
 	
 	void setValueStr(String value);
 	String getValueStr();
+
+	MessageHolder getAlarmStartedTextHolder();
 }

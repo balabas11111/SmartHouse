@@ -121,7 +121,7 @@ public class Entity extends ItemAbstract implements IEntity {
 		
 		return description;
 	}
-
+	
 	@Override
 	public String getEntityKey() {
 		return getDevice().getName() + getName();

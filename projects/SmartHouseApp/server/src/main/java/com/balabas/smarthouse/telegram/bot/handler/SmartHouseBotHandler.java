@@ -32,7 +32,8 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE_EDIT_FIELDS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SAVE_DEVICE_PROPERTY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_DEVICES;
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_DEVICE_LIST;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_MAIN_COMMANDS;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_DEVICE_VALUE_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_SELECT_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY;
@@ -62,7 +63,10 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARM_INTERVAL_OF_ENTITY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_DESCRIPTION;
 
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_METRICS;
+
 import static com.balabas.smarthouse.server.view.Action.ACTION_DATA_FIELD_CLASS;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_METRIC;
 
 @Log4j2
 @Component
@@ -150,11 +154,20 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 				msgs.add(messageBuilder.createServerWillBeRestartedMsg(context));
 				ServerApplication.restart();
 				break;
-			case ACTION_TYPE_VIEW_ALL_DEVICES:
-				msgs.addAll(messageBuilder.createViewOfAllDevicesGroup(action, context));
+			case ACTION_TYPE_VIEW_MAIN_COMMANDS:
+				msgs.addAll(messageBuilder.createViewOfMainCommands(action, context));
 				break;
-			case ACTION_TYPE_VIEW_DEVICE_LIST:
-				msgs.addAll(messageBuilder.createDevicesListView(action, context));
+			case ACTION_TYPE_VIEW_ALL_DEVICES:
+				msgs.addAll(messageBuilder.createViewOfDevices(action, context));
+				break;
+			case ACTION_TYPE_VIEW_ALL_METRICS:
+				msgs.addAll(messageBuilder.createViewOfMetrics(action, context));
+				break;
+			case ACTION_TYPE_VIEW_ENTITIES_OF_METRIC:
+				msgs.addAll(messageBuilder.createViewOfEntityMetrics(action, context));
+				break;
+			case ACTION_TYPE_VIEW_ALL_DEVICE_VALUE_LIST:
+				msgs.addAll(messageBuilder.createViewOfAllDevicesGroup(action, context));
 				break;
 			case ACTION_TYPE_SETUP:
 				msgs.addAll(messageBuilder.createSetupMenu(action, context));

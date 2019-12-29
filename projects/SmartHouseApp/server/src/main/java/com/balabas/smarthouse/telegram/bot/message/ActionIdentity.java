@@ -1,11 +1,14 @@
 package com.balabas.smarthouse.telegram.bot.message;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_UNKNOWN;
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_DEVICE_LIST;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_DEVICE_VALUE_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SETUP;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_SELECT_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_HELP;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_MAIN_COMMANDS;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_METRICS;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_DEVICES;
 
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_HOME;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_ROOT;
@@ -18,12 +21,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.balabas.smarthouse.server.view.Action;
+import com.google.common.collect.Lists;
 
 public class ActionIdentity {
 
 	public static List<ActionIdentity> identities = Arrays.asList(
-			new ActionIdentity(Arrays.asList(ItemTextHelper.getRefreshDeviceListButton()),
-					Arrays.asList(COMMAND_HOME, COMMAND_ROOT), ACTION_TYPE_VIEW_DEVICE_LIST),
+			new ActionIdentity(Arrays.asList(ItemTextHelper.getMetricsButton()),
+					Arrays.asList(COMMAND_HOME, COMMAND_ROOT), ACTION_TYPE_VIEW_ALL_METRICS),
+			new ActionIdentity(Arrays.asList(ItemTextHelper.getDevicesListButton()),
+					Lists.newArrayList(), ACTION_TYPE_VIEW_ALL_DEVICES),
 			new ActionIdentity(Arrays.asList(ItemTextHelper.getSetupButton()), 
 					Arrays.asList(COMMAND_SETUP), ACTION_TYPE_SETUP),
 			new ActionIdentity(null, 

@@ -42,11 +42,45 @@ public class ItemAbstract implements IItemAbstract {
 	}
 	
 	@Override
+	public String getItemClassId() {
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append(this.getClass().getSimpleName());
+				
+		return builder.toString();
+	}
+	
+	@Override
 	public Emoji getEmoji() {
-		return Optional.ofNullable(this.emoji).orElse(Emoji.EMPTY_EMOJI);
+		return getEmojiOrDefault(Emoji.EMPTY_EMOJI);
 	}
 	
 	public static int compareByName(IItemAbstract ia1, IItemAbstract ia2) {
 		return ia1.getName().compareTo(ia2.getName());
+	}
+
+	@Override
+	public Emoji getEmojiOrDefault(Emoji defaultEmoji) {
+		Optional<Emoji> em = Optional.ofNullable(this.emoji);
+		
+		if(!em.isPresent() || (em.isPresent() && Emoji.EMPTY_EMOJI.equals(em.get()))) {
+			return defaultEmoji;
+		}
+		return em.get();
+	}
+	
+	@Override
+	public String getDescriptionByDescriptionField() {
+		return getDescription();
+	}
+	
+	@Override
+	public String getEmojiDescriptionByDescriptionField() {
+		return getEmoji() + " " + getDescriptionByDescriptionField();
+	}
+	
+	@Override
+	public String getEmojiDescriptionByDescriptionFieldWithParent() {
+		return getEmojiDescriptionByDescriptionField();
 	}
 }
