@@ -2,6 +2,7 @@ package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Optional;
 
+import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -33,6 +34,11 @@ public class ItemAbstract implements IItemAbstract {
 	@Setter
 	@Enumerated(EnumType.STRING)
 	protected Emoji emoji;
+	@Getter @Setter
+	@Column(columnDefinition = "boolean default false")
+	protected Boolean virtualized;
+	
+	
 
 	@Override
 	public void setDescriptionIfEmpty(String description) {
@@ -82,5 +88,15 @@ public class ItemAbstract implements IItemAbstract {
 	@Override
 	public String getEmojiDescriptionByDescriptionFieldWithParent() {
 		return getEmojiDescriptionByDescriptionField();
+	}
+
+	@Override
+	public boolean isVirtualized() {
+		return Boolean.TRUE.equals(virtualized);
+	}
+	
+	@Override
+	public void setVirtualized(boolean value) {
+		virtualized = value;
 	}
 }

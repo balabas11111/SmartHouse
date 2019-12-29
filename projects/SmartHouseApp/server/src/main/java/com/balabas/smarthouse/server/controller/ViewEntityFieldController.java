@@ -123,7 +123,7 @@ public class ViewEntityFieldController {
 
 		boolean isNew = id == null || id == 0;
 
-		IMetrics viewChart = viewChartsService.getChartsById(id);
+		IMetrics viewChart = viewChartsService.getMetricsById(id);
 
 		Map<Long,Long> currentChartSeriesIds = new HashMap<>();
 		
@@ -190,7 +190,7 @@ public class ViewEntityFieldController {
 
 		Map<String, List<IEntityField>> map = viewChartsService.getAllAsMap(viewChartId);
 		
-		IMetrics metrics = viewChartsService.getChartsById(viewChartId);
+		IMetrics metrics = viewChartsService.getMetricsById(viewChartId);
 		List<ChartDataSeries> charts = Lists.newArrayList();
 
 		int colorId = 0;

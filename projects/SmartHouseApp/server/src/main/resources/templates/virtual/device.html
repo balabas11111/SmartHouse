@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title th:text="${pageHeader}">Устройство</title>
+
+<!-- Bootstrap -->
+<link href="../css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../css/font-awesome.min.css" />
+<link rel="stylesheet" href="../css/font-awesome.css" />
+<link href="../css/default.css" rel="stylesheet" />
+<link rel="stylesheet" href="../css/animate.css" />
+<link rel="stylesheet" href="../js/fancybox/jquery.fancybox.css"
+	type="text/css" media="screen" />
+<link rel="stylesheet" type="text/css" href="../css/isotope.css"
+	media="screen" />
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/bootstrap-datetimepicker.min.css" />
+
+</head>
+
+<body>
+	<header>
+		<div class="main-menu">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-4">
+
+						<h1><a class="navbar-brand" href="listChart" data-0="line-height:90px;" data-300="line-height:50px;">Графики</a></h1>
+					</div>
+
+					<div th:replace="templates :: mainMenu"></div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<div class="container">
+		<h4 th:text="${pageHeader}"></h4>
+
+		<form action="#" th:action="@{/virtual/saveDevice}" th:object="${device}"
+			method="post">
+			<input type="hidden" th:field="*{id}">
+			<table class="table table-dark table-striped">
+				<tr>
+					<td>Название</td>
+					<td><input type="text" th:field="*{name}"></td>
+				</tr>
+				<tr>
+					<td>Описание</td>
+					<td><input type="text" th:field="*{description}"></td>
+				</tr>
+			</table>
+
+			<table class="table table-dark table-striped">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Наименование</th>
+						<th>Описание</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="group : ${groups}">
+						<td><input type="checkbox" name="groups"
+							th:value="${group.id}" th:checked="${groupIds.containsKey(group.id)}" /></td>
+						<td><label
+							th:text="${group.name}"></label>
+						</td>
+						<td><label
+							th:text="${group.description}"></label>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div>
+				<input type="submit" class="btn btn-default" value="&#x1F4BE; Сохранить" />
+				<a th:href="@{~/virtual/saveDevice?id={id}(id=${device.id})}"	class="btn btn-default">&#x1F441;Просмотр</a>
+			</div>
+
+		</form>
+	</div>
+
+	<footer th:replace="templates :: footer"></footer>
+
+	<script src="../js/jquery.min.js"></script>
+	<script src="../js/bootstrap.min.js"></script>
+	<script src="../js/jquery.isotope.min.js"></script>
+	<script src="../js/fancybox/jquery.fancybox.pack.js"></script>
+	<script src="../js/wow.min.js"></script>
+	<script src="../js/functions.js"></script>
+	<script type="text/javascript">
+		new WOW().init();
+	</script>
+
+</body>
+
+</html>

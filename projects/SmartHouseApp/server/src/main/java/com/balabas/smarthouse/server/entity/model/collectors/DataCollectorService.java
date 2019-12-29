@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.model.collectors;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +24,7 @@ public class DataCollectorService implements IDataCollectorService {
 	@Autowired
 	private IDeviceManageService deviceService;
 	
-	List<IDataCollector> collectors;
+	List<IDataCollector> collectors = new ArrayList();
 	
 	@Override
 	public void apply(IEntityField entityField) {

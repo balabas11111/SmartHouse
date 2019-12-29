@@ -13,7 +13,7 @@ public interface IViewChartEntityFieldsService {
 	Iterable<ViewChartEntityFields> getAll();
 	List<ViewChartEntityFields> getAllAsList();
 	
-	IMetrics getChartsById(Long id);
+	IMetrics getMetricsById(Long id);
 	
 	ViewChartEntityFields save(ViewChartEntityFields viewChart);
 	void delete(Long id);

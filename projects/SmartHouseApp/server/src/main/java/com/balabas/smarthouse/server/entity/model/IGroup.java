@@ -12,4 +12,5 @@ public interface IGroup extends IItemTypeable, IItemAbstract {
 	
 	Entity getEntity(String entityName);
 	
+	void setDeviceId(Long id);
 }

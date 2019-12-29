@@ -23,7 +23,7 @@ public class DataCollector extends ItemAbstract implements IDataCollector {
 
 	@Getter
 	@Setter
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER, targetEntity = EntityField.class)
     @JoinColumn(name="entity_id", nullable=false)
 	private IEntityField entityField;
 

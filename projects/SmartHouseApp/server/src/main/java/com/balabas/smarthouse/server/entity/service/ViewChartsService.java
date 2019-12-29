@@ -24,11 +24,12 @@ public class ViewChartsService implements IViewChartEntityFieldsService {
 	@Autowired
 	private IDeviceManageService deviceService;
 
+	@SuppressWarnings("rawtypes")
 	@Override
-	public IMetrics getChartsById(Long id) {
+	public IMetrics getMetricsById(Long id) {
 		IMetrics metrics = viewChartsRepository.findById(id).orElse(null);
 		
-		Set<IEntityField> fields = new LinkedHashSet();
+		Set<IEntityField> fields = new LinkedHashSet<IEntityField>();
 		for(IEntityField field : metrics.getEntityFields()) {
 			IEntityField fieldNew = deviceService.getEntityFieldById(field.getId());
 			fields.add(fieldNew);
@@ -67,7 +68,7 @@ public class ViewChartsService implements IViewChartEntityFieldsService {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Map<String, List<IEntityField>> getAllAsMap(Long viewChartId) {
-		IMetrics metrics = getChartsById(viewChartId);
+		IMetrics metrics = getMetricsById(viewChartId);
 		return metrics.getEntityFieldsAsMap();
 	}
 

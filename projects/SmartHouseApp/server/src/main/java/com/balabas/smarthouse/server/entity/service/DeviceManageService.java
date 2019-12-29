@@ -113,7 +113,12 @@ public class DeviceManageService implements IDeviceManageService {
 	public void afterPropertiesSet() throws Exception {
 
 		deviceRepository.findAll().forEach(d -> {
-			d.setState(State.CONSTRUCTED);
+			State state = State.CONSTRUCTED;
+			
+			if(d.isVirtualized()) {
+				state = State.CONNECTED;
+			} 
+			d.setState(state);
 			save(d);
 		});
 
@@ -407,12 +412,13 @@ public class DeviceManageService implements IDeviceManageService {
 
 			List<Group> groupsRu = getGroupsRequireUpdate();
 
-			devicesRu.forEach(device -> {
-				deviceIds.put(device.getName(), null);
-				stateChanger.stateChanged(device, State.TIMED_OUT);
-				requestDevicesValues(device, null);
+			devicesRu.stream().filter(device -> !device.isVirtualized())
+				.forEach(device -> {
+					deviceIds.put(device.getName(), null);
+					stateChanger.stateChanged(device, State.TIMED_OUT);
+					requestDevicesValues(device, null);
 			});
-			groupsRu.stream().filter(group -> !deviceIds.containsKey(group.getDevice().getName())).forEach(group -> {
+			groupsRu.stream().filter(group -> !group.getDevice().isVirtualized() && !deviceIds.containsKey(group.getDevice().getName())).forEach(group -> {
 				stateChanger.stateChanged(group.getDevice(), State.TIMED_OUT);
 				requestDevicesValues(group.getDevice(), group);
 			});
@@ -435,7 +441,7 @@ public class DeviceManageService implements IDeviceManageService {
 	@Override
 	public List<Group> getGroupsRequireUpdate() {
 		return getDevices().stream()
-				.filter(dev -> dev.isRegistered() /* && !dev.isInitialized() */ && dev.getGroups() != null
+				.filter(dev -> dev.isRegistered() && !dev.isVirtualized() /* && !dev.isInitialized() */ && dev.getGroups() != null
 						&& !dev.getGroups().isEmpty())
 				.flatMap(dev -> dev.getGroups().stream())
 				.filter(group -> checkItemRequiresUpdate(group.getDevice(), actionTimerService.getActionTimer(group)))
@@ -488,6 +494,9 @@ public class DeviceManageService implements IDeviceManageService {
 	}
 
 	protected boolean checkItemRequiresUpdate(IDevice target, ActionTimer timer) {
+		if(target.isVirtualized()) {
+			return false;
+		}
 		boolean waits = timer.isActionForced();
 		boolean dataTooOld = timer.isTimeToExecuteAction();
 
@@ -530,21 +539,23 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Override
 	public String sendDataToDevice(IDevice device, IEntity entity, Map<String, Object> values) {
-
-		try {
-			preprocessSendDataToDevice(device, entity, values);
-			String result = deviceRequestor.executePostDataOnDeviceEntity(device, entity, values);
-			processDataReceivedFromDevice((Device) device, result, false, false);
-			
-			if(requestDataAfterSendToDevice) {
-				actionTimerService.setActionForced(device);
+		if(!device.isVirtualized()) {
+			try {
+				preprocessSendDataToDevice(device, entity, values);
+				String result = deviceRequestor.executePostDataOnDeviceEntity(device, entity, values);
+				processDataReceivedFromDevice((Device) device, result, false, false);
+				
+				if(requestDataAfterSendToDevice) {
+					actionTimerService.setActionForced(device);
+				}
+				
+				return result;
+			} catch (Exception e) {
+				log.error(e);
+				throw e;
 			}
-			
-			return result;
-		} catch (Exception e) {
-			log.error(e);
-			throw e;
 		}
+		return "";
 	}
 
 	private void preprocessSendDataToDevice(IDevice device, IEntity entity, Map<String, Object> values) {
@@ -704,6 +715,30 @@ public class DeviceManageService implements IDeviceManageService {
 		}
 
 		return HTTP_PREFFIX + device.getIp() + DEVICE_URL_DATA;
+	}
+
+	@Override
+	public void setDeviceAndSave(IDevice device) {
+		Device deviceToSave = (Device) device;
+		
+		int pos =0;
+		boolean found = false;
+		
+		for(IDevice dev : devices) {
+			if(dev.getId().equals(deviceToSave.getId())) {
+				found=true;
+				break;
+			}
+			pos++;
+		}
+		
+		if(found) {
+			devices.set(pos, deviceToSave);
+		} else {
+			devices.add(deviceToSave);
+		}
+		
+		save(deviceToSave);
 	}
 
 }

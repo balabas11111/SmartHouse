@@ -31,4 +31,6 @@ public interface IItemAbstract extends IIdentifiable, INameable{
 	String getEmojiDescriptionByDescriptionField();
 	String getEmojiDescriptionByDescriptionFieldWithParent();
 	
+	boolean isVirtualized();
+	void setVirtualized(boolean value);
 }

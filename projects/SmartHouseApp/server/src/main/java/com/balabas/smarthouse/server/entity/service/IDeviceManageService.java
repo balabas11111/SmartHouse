@@ -82,4 +82,6 @@ public interface IDeviceManageService {
 
 	void saveEntityFieldValues(List<IEntityField> fields);
 
+	void setDeviceAndSave(IDevice device);
+
 }
