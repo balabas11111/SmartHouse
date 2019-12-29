@@ -46,35 +46,37 @@
 		<div th:replace="templates :: dateSelector"></div>
 
 		<div id="sensorsContent" style="display: flex; flex-wrap: wrap;">
-			<div th:each="entityName : ${Metrics.getEntityFieldsAsMap().keySet()}" class="panel panel-default"
+			<div th:each="entityName : ${Metrics.keySet()}" class="panel panel-default"
 				style="width: 400px; float: left; min-width: 300px; margin: 5px;">
 				<div th:text="${entityName}" class="panel-heading">Entity Heading</div>
 				<div class="panel-body">
 					<table id="devicesTable" class="table table-striped">
 						<tbody>
-							<tr th:each="entityField : ${holder.getEntityFields().get(entity.name)}">
+							<tr th:each="entityField : ${Metrics.get(entityName)}">
 								<td th:text="${entityField.emoji}">Emoji</td>
 								<!--<td th:text="${entityField.getDescriptionByDescriptionField()}">description</td>-->
 								<td><a th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityField.id})}"
 										th:text="${entityField.getDescriptionByDescriptionField()}">description</a></td>
 								<td th:text="${entityField.getValueStr()}">value</td>
+								<td th:text="${entityField.getMeasure()}">measure</td>
 							</tr>
-							<tr th:each="entityField : ${holder.getEntityFieldsImageable().get(entity.name)}">
+							<!--
+							<tr th:each="entityField : ${Metrics.get(entityName)}">
 								<td th:text="${entityField.emoji}">Emoji</td>
-								<!--<td th:text="${entityField.getDescriptionByDescriptionField()}">description</td>-->
 								<td><a th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityField.id})}"
 										th:text="${entityField.getDescriptionByDescriptionField()}">description</a>
 								</td>
 								<td th:text="${entityField.getEntityFieldEnabledValueByCurrentValue().getEmoji()} + ' (' + ${entityField.getEntityFieldEnabledValueByCurrentValue().getDescription()} + ')'">value</td>
 								
 							</tr>
-							<tr th:each="entityAction : ${holder.getEntityFieldActions().get(entity.name)}">
+							<tr th:each="entityAction : ${Metrics.get(entityName)}">
 								<td>
 									<a th:href="@{~/executeAction_{deviceId}_{entityId}_{action}_(deviceId=${device.id},entityId=${entityAction.getTargetId()},action=${entityAction.getData()})}"
 										class="btn btn-default" th:text="${entityAction.getDescription()}">value</a>
 									<a th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityAction.getTargetId2()})}">История</a>
 								</td>
 							</tr>
+							-->
 						</tbody>
 					</table>
 

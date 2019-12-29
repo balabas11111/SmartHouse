@@ -266,6 +266,23 @@ public class DeviceManageService implements IDeviceManageService {
 			stateChanger.stateChanged(device, State.BAD_DATA);
 		}
 	}
+	
+	@Override
+	public IEntityFieldService getEntityFieldService() {
+		return entityFieldService;
+	}
+	
+	@Override
+	public void saveEntityFieldValues(List<IEntityField> fields) {
+		List<EntityFieldValue> changedValues = Lists.newArrayList();
+
+		fields.stream()
+				.filter(SmartHouseItemBuildService::isFieldValueSaveAble)
+				.forEach(entityField -> itemBuildService.processValueChange(entityField, null,
+						changedValues));
+
+		entityFieldService.saveAll(changedValues);
+	}
 
 	@Override
 	@Transactional

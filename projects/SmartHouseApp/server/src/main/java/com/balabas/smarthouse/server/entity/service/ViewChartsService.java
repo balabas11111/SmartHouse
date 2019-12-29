@@ -1,7 +1,9 @@
 package com.balabas.smarthouse.server.entity.service;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -23,8 +25,17 @@ public class ViewChartsService implements IViewChartEntityFieldsService {
 	private IDeviceManageService deviceService;
 
 	@Override
-	public ViewChartEntityFields getChartsById(Long id) {
-		return viewChartsRepository.findById(id).orElse(null);
+	public IMetrics getChartsById(Long id) {
+		IMetrics metrics = viewChartsRepository.findById(id).orElse(null);
+		
+		Set<IEntityField> fields = new LinkedHashSet();
+		for(IEntityField field : metrics.getEntityFields()) {
+			IEntityField fieldNew = deviceService.getEntityFieldById(field.getId());
+			fields.add(fieldNew);
+		}
+		metrics.setEntityFields(fields);
+		
+		return metrics;
 	}
 
 	@Override

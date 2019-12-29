@@ -86,6 +86,7 @@ import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.EntityStatus;
 import com.balabas.smarthouse.server.entity.model.Group;
+import com.balabas.smarthouse.server.entity.model.collectors.IDataCollectorService;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 
 import lombok.extern.log4j.Log4j2;
@@ -108,6 +109,9 @@ public class SmartHouseItemBuildService {
 	
 	@Autowired
 	IDeviceRepository deviceRepository;
+	
+	@Autowired
+	IDataCollectorService dataCollectorService;
 	
 	@Autowired
 	IEntityMessageProcessor entityMessageProcessor;
@@ -291,6 +295,8 @@ public class SmartHouseItemBuildService {
 			}
 
 		}
+		
+		changedValues.stream().map(value-> value.getEntityField()).forEach(ef -> dataCollectorService.apply(ef));
 	}
 
 	private static boolean setEntityFieldValueWithNoCheck(IEntityField entityField, String value, boolean setOk) {
@@ -303,7 +309,7 @@ public class SmartHouseItemBuildService {
 		}
 	}
 
-	private static void createEntityFieldValue(Entity entity, JSONObject entityJson, String entityFieldName) {
+	private void createEntityFieldValue(Entity entity, JSONObject entityJson, String entityFieldName) {
 		log.warn("New field " + entityFieldName + " entity = " + entity.getName() + " device = "
 				+ entity.getGroup().getDevice().getName());
 		try {
@@ -479,7 +485,7 @@ public class SmartHouseItemBuildService {
 		}
 	}
 
-	private static EntityField processGrouppedValues(Entity entity, JSONObject entityJson) {
+	private EntityField processGrouppedValues(Entity entity, JSONObject entityJson) {
 		JSONObject sensorItemsJson = entityJson.getJSONObject(ENTITY_FIELD_SENSOR_ITEMS);
 
 		log.debug("sensorItemsJson : " + sensorItemsJson);
@@ -537,6 +543,8 @@ public class SmartHouseItemBuildService {
 				countField.setActive(true);
 				countField.setCalculated(true);
 
+				dataCollectorService.apply(countField);
+				
 				// entity.addGeneratedField(countField);
 				return (EntityField) countField;
 			} catch (IllegalArgumentException e) {
@@ -550,7 +558,7 @@ public class SmartHouseItemBuildService {
 
 	}
 
-	private static EntityField buildEntityFieldFromJson(Entity entity, JSONObject entityJson, String fieldName) {
+	private EntityField buildEntityFieldFromJson(Entity entity, JSONObject entityJson, String fieldName) {
 		JSONObject descriptorJson = entityJson.optJSONObject(ENTITY_FIELD_SWG);
 		JSONObject allFieldsDecriptor = descriptorJson.optJSONObject(EDC_ENTITY_FIELDS);
 
@@ -594,6 +602,8 @@ public class SmartHouseItemBuildService {
 		entityField.setMeasure(measure);
 		entityField.setLastDate(new Date());
 
+		dataCollectorService.apply(entityField);
+		
 		try {
 			if (!(ENTITY_FIELD_DESCRIPTION.equals(entityField.getTemplateName())
 					&& !StringUtils.isEmpty(entityField.getValueStr())

@@ -78,4 +78,8 @@ public interface IDeviceManageService {
 
 	void requestAllNotRegisteredDevice();
 
+	IEntityFieldService getEntityFieldService();
+
+	void saveEntityFieldValues(List<IEntityField> fields);
+
 }

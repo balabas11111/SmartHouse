@@ -33,6 +33,7 @@ import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.entity.service.IEntityFieldService;
 import com.balabas.smarthouse.server.entity.service.IViewChartEntityFieldsService;
 import com.balabas.smarthouse.server.view.chart.ChartDataSeries;
+import com.balabas.smarthouse.server.view.chart.IMetrics;
 import com.balabas.smarthouse.server.view.chart.ViewChartEntityFields;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
@@ -122,7 +123,7 @@ public class ViewEntityFieldController {
 
 		boolean isNew = id == null || id == 0;
 
-		ViewChartEntityFields viewChart = viewChartsService.getChartsById(id);
+		IMetrics viewChart = viewChartsService.getChartsById(id);
 
 		Map<Long,Long> currentChartSeriesIds = new HashMap<>();
 		
@@ -189,12 +190,12 @@ public class ViewEntityFieldController {
 
 		Map<String, List<IEntityField>> map = viewChartsService.getAllAsMap(viewChartId);
 		
-		ViewChartEntityFields viewCharts = viewChartsService.getChartsById(viewChartId);
+		IMetrics metrics = viewChartsService.getChartsById(viewChartId);
 		List<ChartDataSeries> charts = Lists.newArrayList();
 
 		int colorId = 0;
 
-		List<IEntityField> entityFields = viewCharts.getEntityFields().stream()
+		List<IEntityField> entityFields = metrics.getEntityFields().stream()
 				.sorted((ef1, ef2) -> ef1.getEntity().getName().compareTo(ef2.getEntity().getName()))
 				.collect(Collectors.toList());
 
@@ -204,9 +205,9 @@ public class ViewEntityFieldController {
 		}
 
 		String chartData = (new ObjectMapper()).writeValueAsString(charts);
-		String chartYLabel = viewCharts.getDescription();
-		String chartHeader = viewCharts.getName();
-		String chartId = viewCharts.getId().toString();
+		String chartYLabel = metrics.getDescription();
+		String chartHeader = metrics.getName();
+		String chartId = metrics.getId().toString();
 
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
 		model.addAttribute(ATTR_DATE_AFTER, afterDate);
