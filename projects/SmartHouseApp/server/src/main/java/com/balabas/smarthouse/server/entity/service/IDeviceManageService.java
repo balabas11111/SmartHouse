@@ -10,6 +10,7 @@ import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
+import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -57,6 +58,12 @@ public interface IDeviceManageService {
 	Device save(Device device);
 	
 	IDevice save(IDevice device);
+	
+	IGroup save(IGroup group);
+
+	IEntity save(IEntity entity);
+
+	IEntityField save(IEntityField entityField);	
 
 	List<Device> getDevicesRequireUpdate();
 
@@ -83,5 +90,5 @@ public interface IDeviceManageService {
 	IEntityFieldService getEntityFieldService();
 
 	void saveEntityFieldValues(List<IEntityField> fields);
-
+	
 }

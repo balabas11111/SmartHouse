@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -25,16 +26,19 @@ import org.springframework.transaction.annotation.Transactional;
 import com.balabas.smarthouse.server.controller.ControllerConstants;
 import com.balabas.smarthouse.server.controller.service.DeviceRequestorService;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
+import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2Service;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
+import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
@@ -42,6 +46,9 @@ import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldEnabledValueRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldIncorrectValueRepository;
+import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
+import com.balabas.smarthouse.server.entity.repository.IEntityRepository;
+import com.balabas.smarthouse.server.entity.repository.IGroupRepository;
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.server.view.DeviceEntityFieldActionHolder;
 import com.google.common.base.Joiner;
@@ -84,9 +91,21 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Autowired
 	IEntityAlarmService alarmService;
+	
+	@Autowired
+	IAlarmV2Service alarmV2Service;
 
 	@Autowired
 	IDeviceRepository deviceRepository;
+	
+	@Autowired
+	IGroupRepository groupRepository;
+	
+	@Autowired
+	IEntityRepository entityRepository;
+	
+	@Autowired
+	IEntityFieldRepository entityFieldRepository;
 
 	@Autowired
 	IEntityFieldEnabledValueRepository entityFieldEnabledValueRepository;
@@ -590,24 +609,11 @@ public class DeviceManageService implements IDeviceManageService {
 	public Device save(Device device) {
 
 		boolean initialized = device.isInitialized();
-		// Map<String, Set<IEntityField>> generatedFields = new HashMap<>();
 		Map<String, Object> fieldValues = new HashMap<>();
 
 		if (device.getGroups() != null) {
-
 			for (Group group : device.getGroups()) {
-
-				if (group.getEntities() != null && !group.getEntities().isEmpty()) {
-					for (Entity entity : group.getEntities()) {
-						if (entity.getEntityFields() != null && !entity.getEntityFields().isEmpty()) {
-							for (IEntityField entityField : entity.getEntityFields()) {
-								String key = group.getName() + entity.getName() + entityField.getName();
-
-								fieldValues.put(key, entityField.getValue());
-							}
-						}
-					}
-				}
+				putFieldValuesToMap(group, fieldValues);
 			}
 		}
 
@@ -619,6 +625,7 @@ public class DeviceManageService implements IDeviceManageService {
 		if (index > -1) {
 			devices.set(index, device);
 		} else {
+			log.info("added Device ");
 			devices.add(device);
 		}
 
@@ -626,28 +633,115 @@ public class DeviceManageService implements IDeviceManageService {
 
 		if (device.getGroups() != null) {
 			for (Group group : device.getGroups()) {
-
-				if (group.getEntities() != null && !group.getEntities().isEmpty()) {
-					for (Entity entity : group.getEntities()) {
-						if (entity.getEntityFields() != null && !entity.getEntityFields().isEmpty()) {
-							for (IEntityField entityField : entity.getEntityFields()) {
-								String keyEntityField = group.getName() + entity.getName() + entityField.getName();
-
-								if (entityField.getValueObj() == null && fieldValues.containsKey(keyEntityField)) {
-									entityField.setValueWithNoCheck(fieldValues.get(keyEntityField));
-								}
-							}
-						}
-					}
-				}
+				putFieldValuesFromMap(group, fieldValues);
 			}
 		}
 
 		alarmService.reattachAlarms(device);
+		alarmV2Service.reattachAlarms(device);
 
-		log.debug("saved " + device.getName());
+		log.debug("saved Device" + device.getName());
 
 		return device;
+	}
+	
+	@Override
+	public IGroup save(IGroup group) {
+		Map<String, Object> fieldValues = new HashMap<>();
+
+		putFieldValuesToMap(group, fieldValues);
+
+		Long id = groupRepository.save((Group)group).getId();
+		group = groupRepository.findById(id).orElse(null);
+
+		Group exists = getGroupById(id);
+		
+		if (exists != null) {
+			Device realDevice = getDeviceById(exists.getDevice().getId());
+			Set<Group> groups = realDevice.getGroups();
+			
+			groups.remove(exists);
+			groups.add((Group) group);
+			
+		} else if(group.getDevice()!=null && group.getDevice().getId() != null) {
+			log.info("added Group");
+			Device realDevice = getDeviceById(group.getDevice().getId());
+			realDevice.getGroups().add((Group) group);
+		}
+
+		putFieldValuesFromMap(group, fieldValues);
+
+		alarmV2Service.reattachAlarms(group);
+
+		log.debug("saved Group" + group.getName());
+
+		return group;
+	}
+
+	@Override
+	public IEntity save(IEntity entity) {
+		Map<String, Object> fieldValues = new HashMap<>();
+
+		putFieldValuesToMap(entity, fieldValues);
+
+		Long id = entityRepository.save((Entity)entity).getId();
+		entity = entityRepository.findById(id).orElse(null);
+
+		Entity exists = getEntityById(id);
+		
+		if (exists != null) {
+			Group realGroup = getGroupById(exists.getGroup().getId());
+			Set<Entity> entities = realGroup.getEntities();
+			
+			entities.remove(exists);
+			entities.add((Entity) entity);
+			
+		} else if(entity.getGroup()!=null && entity.getGroup().getId() != null) {
+			log.info("added Entity");
+			Group realGroup = getGroupById(entity.getGroup().getId());
+			realGroup.getEntities().add((Entity) entity);
+		}
+
+		putFieldValuesFromMap(entity, fieldValues);
+
+		alarmV2Service.reattachAlarms(entity);
+
+		log.debug("saved Entity" + entity.getName());
+
+		return entity;
+	}
+
+	@Override
+	public IEntityField save(IEntityField entityField) {
+		Map<String, Object> fieldValues = new HashMap<>();
+
+		putFieldValuesToMap(entityField, fieldValues);
+
+		Long id = entityFieldRepository.save((EntityField)entityField).getId();
+		entityField = entityFieldRepository.findById(id).orElse(null);
+
+		IEntityField exists = getEntityFieldById(id);
+		
+		if (exists != null) {
+			Entity realEntity = getEntityById(exists.getEntity().getId());
+			Set<IEntityField> entityFields = realEntity.getEntityFields();
+			
+			entityFields.remove(exists);
+			entityFields.add((EntityField) entityField);
+			
+		} else if(entityField.getEntity()!=null && entityField.getEntity().getId() != null) {
+			log.info("added Entityfield");
+			Entity realEntity = getEntityById(entityField.getEntity().getId());
+			realEntity.getEntityFields().add(entityField);
+		}
+
+		putFieldValuesFromMap(entityField, fieldValues);
+
+		alarmV2Service.reattachAlarms(entityField);
+
+		log.debug("saved EntityField" + entityField.getName());
+
+		return entityField;
 	}
 
 	@Override
@@ -721,5 +815,51 @@ public class DeviceManageService implements IDeviceManageService {
 
 		return HTTP_PREFFIX + device.getIp() + DEVICE_URL_DATA;
 	}
+	
+	private void putFieldValuesToMap(IGroup group, Map<String, Object> fieldValues) {
+		if (group.getEntities() != null && !group.getEntities().isEmpty()) {
+			for (Entity entity : group.getEntities()) {
+				putFieldValuesToMap(entity, fieldValues);
+			}
+		}
+	}
+	
+	private void putFieldValuesToMap(IEntity entity, Map<String, Object> fieldValues) {
+		if (entity.getEntityFields() != null && !entity.getEntityFields().isEmpty()) {
+			for (IEntityField entityField : entity.getEntityFields()) {
+				putFieldValuesToMap(entityField, fieldValues);
+			}
+		}
+	}
+	
+	private void putFieldValuesToMap(IEntityField entityField, Map<String, Object> fieldValues) {
+		String key = entityField.getEntity().getGroup().getName() + entityField.getEntity().getName() + entityField.getName();
+		fieldValues.put(key, entityField.getValue());
+	}
+	
+	private void putFieldValuesFromMap(IGroup group, Map<String, Object> fieldValues) {
+		if (group.getEntities() != null && !group.getEntities().isEmpty()) {
+			for (Entity entity : group.getEntities()) {
+				putFieldValuesFromMap(entity, fieldValues);
+			}
+		}
+	}
+	
+	private void putFieldValuesFromMap(IEntity entity, Map<String, Object> fieldValues) {
+		if (entity.getEntityFields() != null && !entity.getEntityFields().isEmpty()) {
+			for (IEntityField entityField : entity.getEntityFields()) {
+				putFieldValuesFromMap(entityField, fieldValues);
+			}
+		}
+	}
+	
+	private void putFieldValuesFromMap(IEntityField entityField, Map<String, Object> fieldValues) {
+		String key = entityField.getEntity().getGroup().getName() + entityField.getEntity().getName() + entityField.getName();
+
+		if (entityField.getValueObj() == null && fieldValues.containsKey(key)) {
+			entityField.setValueWithNoCheck(fieldValues.get(key));
+		}
+	}
+
 
 }

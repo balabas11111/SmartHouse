@@ -131,20 +131,20 @@ public class VirtualEntityService implements IVirtualEntityService {
 
 	@Override
 	public void save(IGroup group) {
-		// TODO Auto-generated method stub
-		
+		group.setVirtualized(true);
+		deviceService.save(group);
 	}
 
 	@Override
 	public void save(IEntity entity) {
-		// TODO Auto-generated method stub
-		
+		entity.setVirtualized(true);
+		deviceService.save(entity);
 	}
 
 	@Override
 	public void save(IEntityField entityField) {
-		// TODO Auto-generated method stub
-		
+		entityField.setVirtualized(true);
+		deviceService.save(entityField);
 	}
 	
 }

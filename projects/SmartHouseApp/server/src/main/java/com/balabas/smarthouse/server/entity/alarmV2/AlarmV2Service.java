@@ -38,4 +38,10 @@ public class AlarmV2Service implements IAlarmV2Service {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public boolean reattachAlarms(IItemAbstract item) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

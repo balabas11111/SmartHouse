@@ -41,7 +41,7 @@
 	<div class="container">
 		<h4 th:text="${pageHeader}"></h4>
 
-		<form action="#" th:action="@{/virtual/saveGroup}" th:object="${group}"
+		<form action="#" th:action="@{/virtual/saveEntityField}" th:object="${entityField}"
 			method="post">
 			<input type="hidden" th:field="*{id}">
 			<table class="table table-dark table-striped">
@@ -55,7 +55,7 @@
 				</tr>
 			</table>
 
-			<h4>Виртуальные устройства</h4>
+			<h4>Виртуальные Датчики</h4>
 
 			<table class="table table-dark table-striped">
 				<thead>
@@ -66,33 +66,9 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="device : ${allDevices}">
-						<td><input type="checkbox" name="devices"
-							th:value="${device.id}" th:checked="${device.id.equals(deviceId)}" /></td>
-						<td><label
-							th:text="${device.name}"></label>
-						</td>
-						<td><label
-							th:text="${device.description}"></label>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-
-			<h4>Виртуальные датчики</h4>
-
-			<table class="table table-dark table-striped">
-				<thead>
-					<tr>
-						<th></th>
-						<th>Наименование</th>
-						<th>Описание</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="entity : ${entities}">
+					<tr th:each="entity : ${allEntities}">
 						<td><input type="checkbox" name="entities"
-							th:value="${entity.id}" th:checked="${selectedEntities.containsKey(entity.id)}" /></td>
+							th:value="${entity.id}" th:checked="${entity.id.equals(entityId)}" /></td>
 						<td><label
 							th:text="${entity.name}"></label>
 						</td>
@@ -105,7 +81,7 @@
 
 			<div>
 				<input type="submit" class="btn btn-default" value="&#x1F4BE; Сохранить" />
-				<a th:href="@{~/virtual/saveGroup?id={id}(id=${group.id})}"	class="btn btn-default">&#x1F441;Просмотр</a>
+				<a th:href="@{~/virtual/saveEntityField?id={id}(id=${entityField.id})}"	class="btn btn-default">&#x1F441;Просмотр</a>
 			</div>
 
 		</form>
