@@ -69,7 +69,7 @@
 				<tbody>
 					<tr th:each="device : ${devices}">
 						<td><input type="checkbox" name="devices"
-							th:value="${device.id}" th:checked="${devicesIds.containsKey(device.id)}" /></td>
+							th:value="${device.id}" th:checked="${device.id.equals(deviceId)}" /></td>
 						<td><label
 							th:text="${device.name}"></label>
 						</td>
@@ -91,9 +91,9 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="entity : ${all}">
+					<tr th:each="entity : ${entities}">
 						<td><input type="checkbox" name="entities"
-							th:value="${entity.id}" th:checked="${ids.containsKey(entity.id)}" /></td>
+							th:value="${entity.id}" th:checked="${selectedEntities.containsKey(entity.id)}" /></td>
 						<td><label
 							th:text="${entity.name}"></label>
 						</td>

@@ -21,6 +21,19 @@ import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 @SuppressWarnings("rawtypes")
 public class VirtualEntityService implements IVirtualEntityService {
 
+	public static final String VIRTUAL_DEVICE_NAME = "VirtualDevice";
+	public static final String VIRTUAL_DEVICE_DESCR = "Виртуальное устройство";
+	public static final String VIRTUAL_DEVICE_FIRMWARE = "VirtualDevice";
+	
+	public static final String VIRTUAL_GROUP_NAME = "sensors";
+	public static final String VIRTUAL_GROUP_DESCR = "Виртуальные датчики";
+	
+	public static final String VIRTUAL_ENTITY_NAME = "entity";
+	public static final String VIRTUAL_ENTITY_DESCR = "Виртуальный датчик";
+	
+	public static final String VIRTUAL_ENTITY_FIELD_NAME = "entityField";
+	public static final String VIRTUAL_ENTITY_FIELD_DESCR = "Виртуальный показатель";
+	
 	@Autowired
 	private IDeviceManageService deviceService;
 
@@ -68,8 +81,9 @@ public class VirtualEntityService implements IVirtualEntityService {
 	}
 
 	@Override
-	public IDevice createDevice(String name, String description) {
+	public IDevice createDevice(String name, String description, String firmware) {
 		IDevice item = new Device();
+		item.setFirmware(firmware);
 		setNameDescription(name, description, item);
 		
 		return item;
@@ -110,27 +124,27 @@ public class VirtualEntityService implements IVirtualEntityService {
 	}
 
 	@Override
-	public void saveDevice(IDevice device) {
+	public void save(IDevice device) {
 		device.setVirtualized(true);
-		deviceService.setDeviceAndSave(device);
-	}
-	
-	
-/*
-	@Override
-	public void saveGroup(IGroup group) {
-		deviceService.setGroupAndSave(group);
+		deviceService.save(device);
 	}
 
 	@Override
-	public void saveEntity(IEntity entity) {
-		deviceService.setEntityAndSave(entity);		
+	public void save(IGroup group) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void saveEntityField(IEntityField entityField) {
-		deviceService.setEntityFieldAndSave(entityField);
+	public void save(IEntity entity) {
+		// TODO Auto-generated method stub
+		
 	}
-	*/
+
+	@Override
+	public void save(IEntityField entityField) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

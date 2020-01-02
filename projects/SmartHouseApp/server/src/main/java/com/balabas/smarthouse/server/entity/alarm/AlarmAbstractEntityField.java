@@ -21,8 +21,7 @@ import lombok.Setter;
 @Table(name = "entity_alarm_entity_field")
 @javax.persistence.Entity()
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class AlarmAbstractEntityField<T> extends Alarm<IEntityField>
-		implements IEntityFieldAlarm<T> {
+public abstract class AlarmAbstractEntityField<T> extends Alarm<IEntityField> implements IEntityFieldAlarm<T> {
 
 	@Getter
 	@Setter
@@ -41,13 +40,13 @@ public abstract class AlarmAbstractEntityField<T> extends Alarm<IEntityField>
 	protected Predicate<Integer> predicate;
 
 	@Transient
-	@Getter
 	protected String compareSeparator;
 
-	public AlarmAbstractEntityField() {}
-	
+	public AlarmAbstractEntityField() {
+	}
+
 	protected abstract Class<?> getWatchedValueClazz();
-	
+
 	abstract protected Comparable getAlarmValue();
 
 	abstract protected Comparable getEntityFieldValue();
@@ -57,38 +56,42 @@ public abstract class AlarmAbstractEntityField<T> extends Alarm<IEntityField>
 		Integer compareValue = getCompareResult();
 		return getPredicate().test(compareValue);
 	}
-	
+
 	protected Integer getCompareResult() {
 		return getAlarmValue().compareTo(getEntityFieldValue());
 	}
-
 
 	@Override
 	public MessageHolder getAlarmStartedTextHolder() {
 		return new MessageHolder(watchedItem.getEntity().getDevice().getName(), watchedItem.getName(), "");
 	}
-	
+
 	@Override
 	public String getAlarmText() {
 		if (!alarmed) {
 			return null;
 		}
-		return getWatchedItem().getNameDescriptionByDescriptionField() + " ="
-				+ getWatchedItem().getValueStr() + getTriggerDescription();
+		return getWatchedItem().getNameDescriptionByDescriptionField() + " =" + getWatchedItem().getValueStr()
+				+ getTriggerDescription();
 	}
-	
+
 	@Override
 	public String getTriggerDescription() {
 		return getCompareSeparator() + getValueStr();
 	}
-	
+
 	@Override
 	public String getValueStr() {
 		return getValue().toString();
 	}
-	
+
 	@Override
 	public boolean acceptsValueAsWatched(Class<?> candidateClass) {
 		return getWatchedValueClazz().isAssignableFrom(candidateClass);
+	}
+
+	@Override
+	public String getCompareSeparator() {
+		return compareSeparator != null ? compareSeparator : "";
 	}
 }

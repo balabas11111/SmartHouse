@@ -55,6 +55,8 @@ public interface IDeviceManageService {
 	IEntityFieldEnabledValue getEntityFieldEnabledValueById(Long id);
 
 	Device save(Device device);
+	
+	IDevice save(IDevice device);
 
 	List<Device> getDevicesRequireUpdate();
 
@@ -81,7 +83,5 @@ public interface IDeviceManageService {
 	IEntityFieldService getEntityFieldService();
 
 	void saveEntityFieldValues(List<IEntityField> fields);
-
-	void setDeviceAndSave(IDevice device);
 
 }

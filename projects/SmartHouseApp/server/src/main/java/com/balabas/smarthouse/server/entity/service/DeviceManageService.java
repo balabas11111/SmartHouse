@@ -580,6 +580,11 @@ public class DeviceManageService implements IDeviceManageService {
 		}
 	}
 
+	@Override
+	public IDevice save(IDevice device) {
+		return save((Device) device);
+	}
+	
 	@Transactional
 	@Override
 	public Device save(Device device) {
@@ -715,30 +720,6 @@ public class DeviceManageService implements IDeviceManageService {
 		}
 
 		return HTTP_PREFFIX + device.getIp() + DEVICE_URL_DATA;
-	}
-
-	@Override
-	public void setDeviceAndSave(IDevice device) {
-		Device deviceToSave = (Device) device;
-		
-		int pos =0;
-		boolean found = false;
-		
-		for(IDevice dev : devices) {
-			if(dev.getId().equals(deviceToSave.getId())) {
-				found=true;
-				break;
-			}
-			pos++;
-		}
-		
-		if(found) {
-			devices.set(pos, deviceToSave);
-		} else {
-			devices.add(deviceToSave);
-		}
-		
-		save(deviceToSave);
 	}
 
 }

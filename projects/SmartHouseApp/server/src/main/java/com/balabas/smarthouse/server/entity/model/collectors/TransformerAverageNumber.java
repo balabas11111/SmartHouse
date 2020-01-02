@@ -17,6 +17,7 @@ public class TransformerAverageNumber implements IDataTransformer {
 		return this.getClass().getSimpleName();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public IEntityField transform(IEntityField field, Collection<IEntityField> entityFields) {
 		Float total = 0F;

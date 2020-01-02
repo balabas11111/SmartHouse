@@ -24,7 +24,7 @@ public class DataCollectorService implements IDataCollectorService {
 	@Autowired
 	private IDeviceManageService deviceService;
 	
-	List<IDataCollector> collectors = new ArrayList();
+	List<IDataCollector> collectors = new ArrayList<IDataCollector>();
 	
 	@Override
 	public void apply(IEntityField entityField) {

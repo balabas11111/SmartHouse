@@ -22,7 +22,7 @@ public interface IVirtualEntityService {
 	
 	IGroup getGroupById(Long id);
 	
-	IDevice createDevice(String name, String description);
+	IDevice createDevice(String name, String description, String firmware);
 	
 	IDevice getDeviceById(Long id);
 	
@@ -34,12 +34,11 @@ public interface IVirtualEntityService {
 	
 	List<IEntityField> getEntityFields();
 	
-	void saveDevice(IDevice device);
-	/*
-	void saveGroup(IGroup group);
+	void save(IDevice device);
 	
-	void saveEntity(IEntity entity);
+	void save(IGroup group);
 	
-	void saveEntityField(IEntityField entityField);
-	*/
+	void save(IEntity entity);
+	
+	void save(IEntityField entityField);
 }
