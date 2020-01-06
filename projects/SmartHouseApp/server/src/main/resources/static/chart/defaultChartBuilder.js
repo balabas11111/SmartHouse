@@ -11,6 +11,9 @@ var ctx = document.getElementById('chart1').getContext('2d');
 				animation: {
 					duration: 0
 				},
+				legend: {
+					position: legendPosition,
+				},
 				scales: {
 					xAxes: [{
 						type: 'time',

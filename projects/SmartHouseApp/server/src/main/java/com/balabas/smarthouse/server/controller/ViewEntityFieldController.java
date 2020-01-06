@@ -57,6 +57,9 @@ public class ViewEntityFieldController {
 
 	@Value("${smarthouse.server.name:#{null}}")
 	private String serverName;
+	
+	@Value("${smarthouse.server.chart.legendPosition:top}")
+	private String legendPosition;
 
 	@Autowired
 	private IDeviceManageService deviceService;
@@ -100,7 +103,8 @@ public class ViewEntityFieldController {
 		
 		model.addAttribute("device", device);
 		model.addAttribute("entityField", entityField);
-
+		
+		model.addAttribute("legendPosition", legendPosition);
 		model.addAttribute(ATTR_CHART_DATA_Y, chartYLabel);
 		model.addAttribute(ATTR_CHART_DATA, chartData);
 
@@ -216,6 +220,7 @@ public class ViewEntityFieldController {
 		model.addAttribute("chartHeader", chartHeader);
 		model.addAttribute("chartId", chartId);
 		
+		model.addAttribute("legendPosition", legendPosition);
 		model.addAttribute(ATTR_CHART_DATA_Y, chartYLabel);
 		model.addAttribute(ATTR_CHART_DATA, chartData);
 		
