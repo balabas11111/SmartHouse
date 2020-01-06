@@ -38,4 +38,6 @@ public interface IEntityFieldService {
 
 	Optional<IEntityField> getEntityFieldById(Long entityFieldId);
 
+	void deleteEntityFieldsForDevice(Long deviceId);
+
 }

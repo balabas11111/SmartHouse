@@ -8,5 +8,7 @@ import com.balabas.smarthouse.server.view.Action;
 public interface IGroupService {
 
 	List<Action> getActionsForGroup(String actionName, IGroup group);
+
+	void deleteGroupsForDevice(Long deviceId);
 	
 }

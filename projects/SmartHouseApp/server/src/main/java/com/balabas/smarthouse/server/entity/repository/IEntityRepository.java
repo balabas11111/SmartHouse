@@ -33,4 +33,5 @@ public interface IEntityRepository extends CrudRepository<Entity, Long> {
 	@Modifying
 	@Query(value = "DELETE Entity WHERE group.device.id = :id")
 	void deleteEntityByDeviceId(@Param("id") Long deviceId);
+
 }

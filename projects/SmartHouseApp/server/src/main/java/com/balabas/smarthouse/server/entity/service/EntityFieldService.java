@@ -112,6 +112,11 @@ public class EntityFieldService implements IEntityFieldService {
 	}
 	
 	@Override
+	public void deleteEntityFieldsForDevice(Long deviceId) {
+		entityFieldRepository.deleteEntityFieldsByDeviceId(deviceId);
+	}
+	
+	@Override
 	public Date selectMinEntityFieldValueDate(Long entityFieldId) {
 		return entityFieldValueRepository.selectMinEntityFieldValueDate(entityFieldId);
 	}

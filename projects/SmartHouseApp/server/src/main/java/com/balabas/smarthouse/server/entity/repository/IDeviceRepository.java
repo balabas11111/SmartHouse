@@ -18,6 +18,11 @@ public interface IDeviceRepository extends CrudRepository<Device, Long> {
 	@Transactional
 	@Modifying
 	@Query("update Device d set d.state = :state where d.id = :id")
-	void updateDeviceState(@Param("id")Long deviceId, @Param("state")State state); 
+	void updateDeviceState(@Param("id")Long deviceId, @Param("state")State state);
+
+	@Transactional
+	@Modifying
+	@Query(value = "DELETE Device WHERE id = :id")
+	void deleteByDeviceId(@Param("id")Long deviceId); 
 	
 }

@@ -12,4 +12,6 @@ public interface IEntityService {
 	List<Action> getActionsForEntity(String actionName, IEntity entity);
 	
 	List<IEntityFieldEnabledValue> getEnabledEntityFieldWithCommandsForEntity(IEntity entity);
+
+	void deleteEntitiesForDevice(Long deviceId);
 }

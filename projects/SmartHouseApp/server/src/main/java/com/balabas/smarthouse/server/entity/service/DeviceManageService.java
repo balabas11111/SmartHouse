@@ -114,6 +114,12 @@ public class DeviceManageService implements IDeviceManageService {
 	IEntityFieldIncorrectValueRepository entityFieldIncorrectValueRepository;
 
 	@Autowired
+	IGroupService groupService;
+	
+	@Autowired
+	IEntityService entityService;
+	
+	@Autowired
 	IEntityFieldService entityFieldService;
 
 	@Autowired
@@ -805,7 +811,10 @@ public class DeviceManageService implements IDeviceManageService {
 
 		alarmService.deleteAlarmsByDeviceId(deviceId);
 
-		deviceRepository.deleteById(deviceId);
+		entityFieldService.deleteEntityFieldsForDevice(deviceId);
+		entityService.deleteEntitiesForDevice(deviceId);
+		groupService.deleteGroupsForDevice(deviceId);
+		deviceRepository.deleteByDeviceId(deviceId);
 	}
 
 	private String getDeviceUrl(Device device) {
