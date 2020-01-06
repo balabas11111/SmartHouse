@@ -21,10 +21,17 @@
 				<li><a th:href="${baseUrl} + '/index'">Устройства</a></li>
 				<li><a th:href="${baseUrl} + '/alarms'">Опасности</a></li>
 				<li><a th:href="${baseUrl} + '/listChart'">Метрики</a></li>
-				<li><a href="${baseUrl} + '/virtual/devices'">Виртуалки</a></li>
+				<li><a th:href="${baseUrl} + '/virtual/devices'">Виртуалки</a></li>
 				<!--<li><a href="settings">Настройки</a></li>-->
 			</ul>
 		</div>
+	</div>
+	
+	<div id="link-content-virtual" th:fragment="link-content-virtual">
+		<a th:href="@{~/virtual/devices}" class="btn">Устройства</a>
+		<a th:href="@{~/virtual/groups}" class="btn">Группы</a>
+		<a th:href="@{~/virtual/entities}" class="btn">Датчики</a>
+		<a th:href="@{~/virtual/entityFields}" class="btn">Показатели</a>
 	</div>
 
 	<footer id="footer" th:fragment="footer">

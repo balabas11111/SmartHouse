@@ -3,9 +3,9 @@ package com.balabas.smarthouse.server.controller;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.thymeleaf.util.StringUtils;
 
-public class BaseController {
+import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 
-	public static final String BASE_URL_PROPERTY = "baseUrl";
+public class BaseController {
 
 	private String baseUrl;
 
@@ -15,5 +15,9 @@ public class BaseController {
 		}
 		
 		return baseUrl;
+	}
+	
+	protected String getPageHeader(String preffix, IItemAbstract item) {
+		return preffix + " " + item.getDescriptionByDescriptionField();
 	}
 }

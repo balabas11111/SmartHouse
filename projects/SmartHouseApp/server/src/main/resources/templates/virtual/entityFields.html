@@ -31,11 +31,14 @@
 			</div>
 		</div>
 	</header>
+	
+	<div th:replace="templates :: link-content-virtual"></div>
+	
 	<!-- column content -->
 	<div id="main-content">
 
 		<div class="container">
-			<h1>Группы сервера</h1>
+			<h1>Виртуальные показатели</h1>
 			
 			<a th:href="@{~/virtual/editEntityField?id=0}" class="btn btn-success">Новый</a>
 			

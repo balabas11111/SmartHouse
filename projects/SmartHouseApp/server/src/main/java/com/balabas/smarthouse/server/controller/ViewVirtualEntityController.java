@@ -43,6 +43,9 @@ import static com.balabas.smarthouse.server.entity.model.collectors.VirtualEntit
 import static com.balabas.smarthouse.server.entity.model.collectors.VirtualEntityService.VIRTUAL_ENTITY_FIELD_NAME;
 import static com.balabas.smarthouse.server.entity.model.collectors.VirtualEntityService.VIRTUAL_ENTITY_FIELD_DESCR;
 
+import static com.balabas.smarthouse.server.controller.ControllerConstants.PROP_BASE_URL;
+import static com.balabas.smarthouse.server.controller.ControllerConstants.PROP_PAGE_HEADER;
+
 @Controller
 @RequestMapping(value = "/virtual")
 @SuppressWarnings("rawtypes")
@@ -60,7 +63,7 @@ public class ViewVirtualEntityController extends BaseController{
 		List<IDevice> devices = entityService.getDevices();
 
 		model.addAttribute("devices", devices);
-		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
+		model.addAttribute(PROP_BASE_URL, getBaseUrl());
 		return "virtual/devices.html";
 	}
 
@@ -68,7 +71,9 @@ public class ViewVirtualEntityController extends BaseController{
 	public String editVirtualDevice(@RequestParam(name = "id", required = true) Long id, Model model) {
 
 		IDevice dev = entityService.getDeviceById(id);
+		String preffix = ControllerConstants.MSG_EDIT_DEVICE;		
 		if (dev == null) {
+			preffix = ControllerConstants.MSG_EDIT_DEVICE;
 			dev = entityService.createDevice(getVirtualName(VIRTUAL_DEVICE_NAME), VIRTUAL_DEVICE_DESCR, VIRTUAL_DEVICE_FIRMWARE);
 		}
 
@@ -79,7 +84,8 @@ public class ViewVirtualEntityController extends BaseController{
 		model.addAttribute("device", dev);
 		model.addAttribute("groups", allGroups);
 		model.addAttribute("groupIds", groupIds);
-		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
+		model.addAttribute(PROP_PAGE_HEADER, getPageHeader(preffix, dev));
+		model.addAttribute(PROP_BASE_URL, getBaseUrl());
 
 		return "virtual/device.html";
 	}
@@ -123,7 +129,7 @@ public class ViewVirtualEntityController extends BaseController{
 		List<IGroup> groups = entityService.getGroups();
 
 		model.addAttribute("groups", groups);
-		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
+		model.addAttribute(PROP_BASE_URL, getBaseUrl());
 		
 		return "virtual/groups.html";
 	}
@@ -132,8 +138,9 @@ public class ViewVirtualEntityController extends BaseController{
 	public String editVirtualGroup(@RequestParam(name = "id", required = true) Long id, Model model) {
 
 		IGroup group = entityService.getGroupById(id);
-
+		String preffix = ControllerConstants.MSG_EDIT_GROUP;
 		if (group == null) {
+			preffix = ControllerConstants.MSG_NEW_GROUP;
 			group = entityService.createGroup(getVirtualName(VIRTUAL_GROUP_NAME), VIRTUAL_GROUP_DESCR);
 		}
 
@@ -151,7 +158,8 @@ public class ViewVirtualEntityController extends BaseController{
 
 		model.addAttribute("allDevices", devices);
 		model.addAttribute("deviceId", deviceId);
-		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
+		model.addAttribute(PROP_PAGE_HEADER, getPageHeader(preffix, group));
+		model.addAttribute(PROP_BASE_URL, getBaseUrl());
 
 		return "virtual/group.html";
 	}
@@ -202,7 +210,7 @@ public class ViewVirtualEntityController extends BaseController{
 		List<IEntity> entities = entityService.getEntities();
 
 		model.addAttribute("entities", entities);
-		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
+		model.addAttribute(PROP_BASE_URL, getBaseUrl());
 		return "virtual/entities.html";
 	}
 
@@ -210,8 +218,9 @@ public class ViewVirtualEntityController extends BaseController{
 	public String editVirtualEntities(@RequestParam(name = "id", required = true) Long id, Model model) {
 
 		IEntity entity = entityService.getEntityById(id);
-
+		String preffix = ControllerConstants.MSG_EDIT_ENTITY;
 		if (entity == null) {
+			preffix = ControllerConstants.MSG_NEW_ENTITY;
 			entity = entityService.createEntity(getVirtualName(VIRTUAL_ENTITY_NAME), VIRTUAL_ENTITY_DESCR);
 		}
 
@@ -229,7 +238,8 @@ public class ViewVirtualEntityController extends BaseController{
 
 		model.addAttribute("allGroups", groups);
 		model.addAttribute("groupId", groupId);
-		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
+		model.addAttribute(PROP_PAGE_HEADER, getPageHeader(preffix, entity));
+		model.addAttribute(PROP_BASE_URL, getBaseUrl());
 
 		return "virtual/entity.html";
 	}
@@ -280,7 +290,7 @@ public class ViewVirtualEntityController extends BaseController{
 		List<IEntityField> entityFields = entityService.getEntityFields();
 
 		model.addAttribute("entityFields", entityFields);
-		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
+		model.addAttribute(PROP_BASE_URL, getBaseUrl());
 		
 		return "virtual/entityFields.html";
 	}
@@ -289,8 +299,9 @@ public class ViewVirtualEntityController extends BaseController{
 	public String editVirtualEntityFields(@RequestParam(name = "id", required = true) Long id, Model model) {
 
 		IEntityField entityField = entityService.getEntityFieldById(id);
-
+		String preffix = ControllerConstants.MSG_EDIT_ENTITY_FIELD;
 		if (entityField == null) {
+			preffix = ControllerConstants.MSG_NEW_ENTITY_FIELD;
 			entityField = entityService.createEntityFieldFloat(getVirtualName(VIRTUAL_ENTITY_FIELD_NAME), VIRTUAL_ENTITY_FIELD_DESCR);
 		}
 
@@ -302,7 +313,8 @@ public class ViewVirtualEntityController extends BaseController{
 
 		model.addAttribute("allEntities", entities);
 		model.addAttribute("entityId", entityId);
-		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
+		model.addAttribute(PROP_PAGE_HEADER, getPageHeader(preffix, entityField));
+		model.addAttribute(PROP_BASE_URL, getBaseUrl());
 
 		return "virtual/entityField.html";
 	}

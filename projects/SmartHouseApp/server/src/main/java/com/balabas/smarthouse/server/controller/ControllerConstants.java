@@ -42,4 +42,17 @@ public class ControllerConstants {
 	
 	//messages
 	public static final String MSG_NEW_CHART_PREFFIX = "Новый график";
+	
+	public static final String MSG_NEW_DEVICE        = "Новое устройство";
+	public static final String MSG_EDIT_DEVICE       = "Редактрирование устройства";
+	public static final String MSG_NEW_GROUP         = "Новая группа";
+	public static final String MSG_EDIT_GROUP        = "Редактрирование группы";
+	public static final String MSG_NEW_ENTITY        = "Новый датчик";
+	public static final String MSG_EDIT_ENTITY       = "Редактрирование датчика";
+	public static final String MSG_NEW_ENTITY_FIELD  = "Новый показатель";
+	public static final String MSG_EDIT_ENTITY_FIELD = "Редактрирование показателя";
+	
+	//model properties
+	public static final String PROP_PAGE_HEADER      = "pageHeader";
+	public static final String PROP_BASE_URL         = "baseUrl";
 }
