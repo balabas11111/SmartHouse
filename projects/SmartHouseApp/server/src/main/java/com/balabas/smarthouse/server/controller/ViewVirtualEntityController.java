@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.controller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +26,7 @@ import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.collectors.IVirtualEntityService;
+import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
@@ -44,7 +46,7 @@ import static com.balabas.smarthouse.server.entity.model.collectors.VirtualEntit
 @Controller
 @RequestMapping(value = "/virtual")
 @SuppressWarnings("rawtypes")
-public class ViewVirtualEntityController {
+public class ViewVirtualEntityController extends BaseController{
 
 	@Value("${smarthouse.server.name:#{null}}")
 	private String serverName;
@@ -58,6 +60,7 @@ public class ViewVirtualEntityController {
 		List<IDevice> devices = entityService.getDevices();
 
 		model.addAttribute("devices", devices);
+		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
 		return "virtual/devices.html";
 	}
 
@@ -66,7 +69,7 @@ public class ViewVirtualEntityController {
 
 		IDevice dev = entityService.getDeviceById(id);
 		if (dev == null) {
-			dev = entityService.createDevice(VIRTUAL_DEVICE_NAME, VIRTUAL_DEVICE_DESCR, VIRTUAL_DEVICE_FIRMWARE);
+			dev = entityService.createDevice(getVirtualName(VIRTUAL_DEVICE_NAME), VIRTUAL_DEVICE_DESCR, VIRTUAL_DEVICE_FIRMWARE);
 		}
 
 		List<IGroup> allGroups = entityService.getGroups();
@@ -76,6 +79,7 @@ public class ViewVirtualEntityController {
 		model.addAttribute("device", dev);
 		model.addAttribute("groups", allGroups);
 		model.addAttribute("groupIds", groupIds);
+		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
 
 		return "virtual/device.html";
 	}
@@ -96,6 +100,7 @@ public class ViewVirtualEntityController {
 		if (device.getId() == null || device.getId().equals(0L)) {
 			groups.stream().forEach(group -> group.setDevice(device));
 			device.setGroups(groups);
+			device.setState(State.CONNECTED);
 			entityService.save(device);
 		} else {
 			Device dev = (Device) entityService.getDeviceById(device.getId());
@@ -104,6 +109,7 @@ public class ViewVirtualEntityController {
 			dev.setDescription(device.getDescription());
 			groups.stream().forEach(group -> group.setDevice(dev));
 			dev.setGroups(groups);
+			dev.setState(State.CONNECTED);
 
 			entityService.save(dev);
 		}
@@ -117,6 +123,8 @@ public class ViewVirtualEntityController {
 		List<IGroup> groups = entityService.getGroups();
 
 		model.addAttribute("groups", groups);
+		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
+		
 		return "virtual/groups.html";
 	}
 
@@ -126,7 +134,7 @@ public class ViewVirtualEntityController {
 		IGroup group = entityService.getGroupById(id);
 
 		if (group == null) {
-			group = entityService.createGroup(VIRTUAL_GROUP_NAME, VIRTUAL_GROUP_DESCR);
+			group = entityService.createGroup(getVirtualName(VIRTUAL_GROUP_NAME), VIRTUAL_GROUP_DESCR);
 		}
 
 		Long deviceId = getItemId(group.getDevice());
@@ -143,6 +151,7 @@ public class ViewVirtualEntityController {
 
 		model.addAttribute("allDevices", devices);
 		model.addAttribute("deviceId", deviceId);
+		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
 
 		return "virtual/group.html";
 	}
@@ -193,6 +202,7 @@ public class ViewVirtualEntityController {
 		List<IEntity> entities = entityService.getEntities();
 
 		model.addAttribute("entities", entities);
+		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
 		return "virtual/entities.html";
 	}
 
@@ -202,7 +212,7 @@ public class ViewVirtualEntityController {
 		IEntity entity = entityService.getEntityById(id);
 
 		if (entity == null) {
-			entity = entityService.createEntity(VIRTUAL_ENTITY_NAME, VIRTUAL_ENTITY_DESCR);
+			entity = entityService.createEntity(getVirtualName(VIRTUAL_ENTITY_NAME), VIRTUAL_ENTITY_DESCR);
 		}
 
 		Long groupId = getItemId(entity.getGroup());
@@ -219,6 +229,7 @@ public class ViewVirtualEntityController {
 
 		model.addAttribute("allGroups", groups);
 		model.addAttribute("groupId", groupId);
+		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
 
 		return "virtual/entity.html";
 	}
@@ -269,6 +280,8 @@ public class ViewVirtualEntityController {
 		List<IEntityField> entityFields = entityService.getEntityFields();
 
 		model.addAttribute("entityFields", entityFields);
+		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
+		
 		return "virtual/entityFields.html";
 	}
 
@@ -278,7 +291,7 @@ public class ViewVirtualEntityController {
 		IEntityField entityField = entityService.getEntityFieldById(id);
 
 		if (entityField == null) {
-			entityField = entityService.createEntityFieldFloat(VIRTUAL_ENTITY_FIELD_NAME, VIRTUAL_ENTITY_FIELD_DESCR);
+			entityField = entityService.createEntityFieldFloat(getVirtualName(VIRTUAL_ENTITY_FIELD_NAME), VIRTUAL_ENTITY_FIELD_DESCR);
 		}
 
 		Long entityId = getItemId(entityField.getEntity());
@@ -289,6 +302,7 @@ public class ViewVirtualEntityController {
 
 		model.addAttribute("allEntities", entities);
 		model.addAttribute("entityId", entityId);
+		model.addAttribute(BASE_URL_PROPERTY, getBaseUrl());
 
 		return "virtual/entityField.html";
 	}
@@ -340,5 +354,9 @@ public class ViewVirtualEntityController {
 			result = ids[0];
 		}
 		return result;
+	}
+	
+	private String getVirtualName(String baseName) {
+		return baseName + (new Date()).getTime();
 	}
 }
