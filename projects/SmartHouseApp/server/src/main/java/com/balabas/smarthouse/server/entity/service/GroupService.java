@@ -34,5 +34,15 @@ public class GroupService implements IGroupService {
 	public void deleteGroupsForDevice(Long deviceId) {
 		groupRepository.deleteGroupByDeviceId(deviceId);
 	}
+
+	@Override
+	public List<IGroup> loadVirtualized() {
+		return groupRepository.loadVirtualized();
+	}
+
+	@Override
+	public IGroup loadGroupById(Long id) {
+		return groupRepository.loadGroupById(id);
+	}
 	
 }

@@ -17,7 +17,7 @@ public interface IEntityFieldIncorrectValueRepository extends CrudRepository<Ent
 
 	@Transactional
 	@Modifying
-	@Query(value = "DELETE EntityFieldIncorrectValue where entityField.entity.group.device.id = :id")
+	@Query(value = "DELETE FROM EntityFieldIncorrectValue efiv where efiv.entityField.id IN(SELECT ef.id FROM EntityField ef where ef.entity.group.device.id = :id ) ")
 	void deleteEntityFieldIncorrectValue(@Param("id") Long deviceId);
 
 	@Query("FROM EntityFieldIncorrectValue WHERE id = :id")

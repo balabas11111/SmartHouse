@@ -11,4 +11,7 @@ public interface IGroupService {
 
 	void deleteGroupsForDevice(Long deviceId);
 	
+	List<IGroup> loadVirtualized();
+
+	IGroup loadGroupById(Long id);
 }

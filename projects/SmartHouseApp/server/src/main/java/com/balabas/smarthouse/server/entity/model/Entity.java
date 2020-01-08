@@ -126,5 +126,13 @@ public class Entity extends ItemAbstract implements IEntity {
 	public String getEntityKey() {
 		return getDevice().getName() + getName();
 	}
+	
+	@Override
+	public void setParent(IItemAbstract parent) {
+		if(parent!=null && !Group.class.isAssignableFrom(parent.getClass())) {
+			throw new IllegalArgumentException("IEntity expected");
+		}
+		setGroup((Group) parent);
+	}
 
 }

@@ -28,7 +28,7 @@ public class Group extends ItemAbstract implements IGroup {
 	
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="device_id", nullable=false)
+    @JoinColumn(name="device_id", nullable=true)
 	Device device;
 
 	@OneToMany(mappedBy="group", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -42,4 +42,11 @@ public class Group extends ItemAbstract implements IGroup {
 		return getEntities().stream().filter( e -> e.getName().equals(entityName)).findFirst().orElse(null);
 	}
 	
+	@Override
+	public void setParent(IItemAbstract parent) {
+		if(parent!=null && !Device.class.isAssignableFrom(parent.getClass())) {
+			throw new IllegalArgumentException("IEntity expected");
+		}
+		setDevice((Device) parent);
+	}
 }

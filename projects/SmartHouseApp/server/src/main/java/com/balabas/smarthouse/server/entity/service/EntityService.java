@@ -46,4 +46,14 @@ public class EntityService implements IEntityService {
 		entityRepository.deleteEntityByDeviceId(deviceId);
 	}
 
+	@Override
+	public List<IEntity> loadVirtualized() {
+		return entityRepository.loadVirtualized();
+	}
+
+	@Override
+	public IEntity loadEntityById(Long id) {
+		return entityRepository.loadEntityById(id);
+	}
+
 }

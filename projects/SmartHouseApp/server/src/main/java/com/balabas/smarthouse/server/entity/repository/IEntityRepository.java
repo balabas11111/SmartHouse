@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.server.entity.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.Modifying;
@@ -9,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.balabas.smarthouse.server.entity.model.Entity;
+import com.balabas.smarthouse.server.entity.model.IEntity;
 
 @Repository
 public interface IEntityRepository extends CrudRepository<Entity, Long> {
@@ -31,7 +34,13 @@ public interface IEntityRepository extends CrudRepository<Entity, Long> {
 	
 	@Transactional
 	@Modifying
-	@Query(value = "DELETE Entity WHERE group.device.id = :id")
+	@Query(value = "DELETE FROM Entity e where e.group.id IN(SELECT g.id FROM Group g where g.device.id = :id ) ")
 	void deleteEntityByDeviceId(@Param("id") Long deviceId);
+
+	@Query("FROM Entity where virtualized = true")
+	List<IEntity> loadVirtualized();
+
+	@Query("FROM Entity where id = :id")
+	IEntity loadEntityById(@Param("id") Long id);
 
 }

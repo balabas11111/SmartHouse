@@ -122,5 +122,5 @@ public class Device extends ItemAbstract implements IDevice {
 	public String getStateDescription() {
 		return getState().getStateDescription(false);
 	}
-
+	
 }

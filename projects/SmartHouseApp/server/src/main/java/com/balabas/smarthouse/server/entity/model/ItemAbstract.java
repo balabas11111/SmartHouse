@@ -37,8 +37,6 @@ public class ItemAbstract implements IItemAbstract {
 	@Getter @Setter
 	@Column(columnDefinition = "boolean default false")
 	protected Boolean virtualized;
-	
-	
 
 	@Override
 	public void setDescriptionIfEmpty(String description) {
@@ -94,9 +92,13 @@ public class ItemAbstract implements IItemAbstract {
 	public boolean isVirtualized() {
 		return Boolean.TRUE.equals(virtualized);
 	}
-	
+
 	@Override
-	public void setVirtualized(boolean value) {
-		virtualized = value;
+	public void setParent(IItemAbstract parent) {}
+	
+	
+	public static boolean existsAndIsNotNew(IItemAbstract item) {
+		return item!=null && item.getId()!=null && item.getId()!=0L;
 	}
+	
 }

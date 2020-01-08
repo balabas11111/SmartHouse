@@ -14,4 +14,8 @@ public interface IEntityService {
 	List<IEntityFieldEnabledValue> getEnabledEntityFieldWithCommandsForEntity(IEntity entity);
 
 	void deleteEntitiesForDevice(Long deviceId);
+
+	List<IEntity> loadVirtualized();
+
+	IEntity loadEntityById(Long id);
 }

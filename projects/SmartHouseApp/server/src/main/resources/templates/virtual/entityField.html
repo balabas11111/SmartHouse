@@ -55,33 +55,12 @@
 				</tr>
 			</table>
 
-			<h4>Виртуальные устройства</h4>
-
-			<table class="table table-dark table-striped">
-				<thead>
-					<tr>
-						<th></th>
-						<th>Наименование</th>
-						<th>Описание</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="entity : ${allEntities}">
-						<td><input type="checkbox" name="entities"
-							th:value="${entity.id}" th:checked="${entity.id.equals(entityId)}" /></td>
-						<td><label
-							th:text="${entity.name}"></label>
-						</td>
-						<td><label
-							th:text="${entity.description}"></label>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+			<h4>Показатель принадлежит датчику</h4>
+			<table th:replace="templates :: ItemAbstractTableParent(items=${allEntities}, chbxName='entities', parentId=${entityId})"></table>
 
 			<div>
 				<input type="submit" class="btn btn-default" value="&#x1F4BE; Сохранить" />
-				<a th:href="@{~/virtual/saveEntityField?id={id}(id=${entityField.id})}"	class="btn btn-default">&#x1F441;Просмотр</a>
+				<a th:href="@{~/virtual/entityFields}" class="btn btn-default">&#x274C;Отмена</a>
 			</div>
 
 		</form>

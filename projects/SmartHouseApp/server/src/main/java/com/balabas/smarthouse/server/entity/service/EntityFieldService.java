@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.repository.IEntityFieldEnabledValueRepository;
+import com.balabas.smarthouse.server.entity.repository.IEntityFieldIncorrectValueRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldValueRepository;
 import com.balabas.smarthouse.server.view.Action;
@@ -29,6 +31,12 @@ public class EntityFieldService implements IEntityFieldService {
 	
 	@Autowired
 	IEntityFieldValueRepository entityFieldValueRepository;
+
+	@Autowired
+	IEntityFieldEnabledValueRepository entityFieldEnabledValueRepository;
+
+	@Autowired
+	IEntityFieldIncorrectValueRepository entityFieldIncorrectValueRepository;
 
 	@Override
 	public void saveAll(List<EntityFieldValue> values) {
@@ -113,6 +121,9 @@ public class EntityFieldService implements IEntityFieldService {
 	
 	@Override
 	public void deleteEntityFieldsForDevice(Long deviceId) {
+		deleteEntityFieldValuesForDevice(deviceId);
+		entityFieldEnabledValueRepository.deleteEntityFieldEnabledValuesForDevice(deviceId);
+		entityFieldIncorrectValueRepository.deleteEntityFieldIncorrectValue(deviceId);
 		entityFieldRepository.deleteEntityFieldsByDeviceId(deviceId);
 	}
 	
@@ -128,7 +139,7 @@ public class EntityFieldService implements IEntityFieldService {
 
 	@Override
 	public Optional<IEntityField> getEntityFieldById(Long entityFieldId) {
-		IEntityField result =entityFieldRepository.getEntityFieldbyId(entityFieldId);
+		IEntityField result = entityFieldRepository.getEntityFieldbyId(entityFieldId);
 		return Optional.ofNullable(result);
 	}
 

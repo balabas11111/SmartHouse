@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.controller;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,8 +49,8 @@ import static com.balabas.smarthouse.server.controller.ControllerConstants.PROP_
 
 @Controller
 @RequestMapping(value = "/virtual")
-@SuppressWarnings("rawtypes")
-public class ViewVirtualEntityController extends BaseController{
+@SuppressWarnings({"rawtypes", "unchecked"})
+public class ViewVirtualEntityController extends BaseController {
 
 	@Value("${smarthouse.server.name:#{null}}")
 	private String serverName;
@@ -71,10 +72,11 @@ public class ViewVirtualEntityController extends BaseController{
 	public String editVirtualDevice(@RequestParam(name = "id", required = true) Long id, Model model) {
 
 		IDevice dev = entityService.getDeviceById(id);
-		String preffix = ControllerConstants.MSG_EDIT_DEVICE;		
+		String preffix = ControllerConstants.MSG_EDIT_DEVICE;
 		if (dev == null) {
 			preffix = ControllerConstants.MSG_EDIT_DEVICE;
-			dev = entityService.createDevice(getVirtualName(VIRTUAL_DEVICE_NAME), VIRTUAL_DEVICE_DESCR, VIRTUAL_DEVICE_FIRMWARE);
+			dev = entityService.createDevice(getVirtualName(VIRTUAL_DEVICE_NAME), VIRTUAL_DEVICE_DESCR,
+					VIRTUAL_DEVICE_FIRMWARE);
 		}
 
 		List<IGroup> allGroups = entityService.getGroups();
@@ -92,29 +94,32 @@ public class ViewVirtualEntityController extends BaseController{
 
 	@PostMapping(value = "/saveDevice")
 	public String saveVirtualDevice(@ModelAttribute("device") Device device,
-			@RequestParam(value = "groups", required = false) long[] entityFieldIds, Model model) {
+			@RequestParam(value = "groups", required = false) long[] groupIds, Model model) {
 
-		Set<Group> groups = new HashSet<Group>();
+		Map<Long, Group> groups = new HashMap<Long, Group>();
 
-		if (entityFieldIds != null) {
-			for (long id : entityFieldIds) {
+		if (groupIds != null) {
+			for (long id : groupIds) {
 				Group group = (Group) entityService.getGroupById(id);
-				groups.add(group);
+				if(group!=null) {
+					groups.put(id, group);
+				}
 			}
 		}
 
 		if (device.getId() == null || device.getId().equals(0L)) {
-			groups.stream().forEach(group -> group.setDevice(device));
-			device.setGroups(groups);
+			groups.values().stream().forEach(group -> group.setDevice(device));
+			device.setGroups(new HashSet(groups.values()));
 			device.setState(State.CONNECTED);
 			entityService.save(device);
 		} else {
 			Device dev = (Device) entityService.getDeviceById(device.getId());
+			Set<Group> groupSet = new HashSet(addUnexisting(groups, dev.getGroups()).values());
 
-			dev.setName(device.getName());
-			dev.setDescription(device.getDescription());
-			groups.stream().forEach(group -> group.setDevice(dev));
-			dev.setGroups(groups);
+			setSameNameDescription(dev, device);
+			setParentOrNull(groupIds, groupSet, dev, null);
+
+			dev.setGroups(groupSet);
 			dev.setState(State.CONNECTED);
 
 			entityService.save(dev);
@@ -130,7 +135,7 @@ public class ViewVirtualEntityController extends BaseController{
 
 		model.addAttribute("groups", groups);
 		model.addAttribute(PROP_BASE_URL, getBaseUrl());
-		
+
 		return "virtual/groups.html";
 	}
 
@@ -141,7 +146,7 @@ public class ViewVirtualEntityController extends BaseController{
 		String preffix = ControllerConstants.MSG_EDIT_GROUP;
 		if (group == null) {
 			preffix = ControllerConstants.MSG_NEW_GROUP;
-			group = entityService.createGroup(getVirtualName(VIRTUAL_GROUP_NAME), VIRTUAL_GROUP_DESCR);
+			group = entityService.createGroup(VIRTUAL_GROUP_NAME, VIRTUAL_GROUP_DESCR);
 		}
 
 		Long deviceId = getItemId(group.getDevice());
@@ -169,15 +174,17 @@ public class ViewVirtualEntityController extends BaseController{
 			@RequestParam(value = "entities", required = false) long[] entityIds,
 			@RequestParam(value = "devices", required = false) long[] devicesIds, Model model) {
 
-		Set<Entity> entities = new HashSet<Entity>();
+		Map<Long, Entity> entities = new HashMap<Long, Entity>();
 
 		if (entityIds != null) {
 			for (long id : entityIds) {
 				Entity entity = (Entity) entityService.getEntityById(id);
-				entities.add(entity);
+				if(entity!=null) {
+					entities.put(id, entity);
+				}
 			}
 		}
-
+		
 		Long deviceId = getFirstIdOrNull(devicesIds);
 
 		IDevice iDevice = entityService.getDeviceById(deviceId);
@@ -185,19 +192,17 @@ public class ViewVirtualEntityController extends BaseController{
 
 		if (group.getId() == null || group.getId().equals(0L)) {
 			group.setDevice(device);
-			entities.stream().forEach(entity -> entity.setGroup(group));
-			group.setEntities(entities);
+			entities.values().stream().forEach(entity -> entity.setGroup(group));
+			group.setEntities(new HashSet(entities.values()));
 			entityService.save(group);
 		} else {
 			Group gr = (Group) entityService.getGroupById(group.getId());
+			Set<Entity> entitiesSet = new HashSet(addUnexisting(entities, gr.getEntities()).values());
+			setSameNameDescription(gr, group);
+			setParentOrNull(entityIds, entitiesSet, gr, device);
 
-			gr.setName(group.getName());
-			gr.setDescription(group.getDescription());
-			gr.setDevice(device);
+			gr.setEntities(entitiesSet);
 
-			entities.stream().forEach(entity -> entity.setGroup(gr));
-			gr.setEntities(entities);
-			
 			entityService.save(gr);
 		}
 
@@ -249,12 +254,14 @@ public class ViewVirtualEntityController extends BaseController{
 			@RequestParam(value = "entityFields", required = false) long[] entityFieldIds,
 			@RequestParam(value = "groups", required = false) long[] groupIds, Model model) {
 
-		Set<IEntityField> entityFields = new HashSet<IEntityField>();
+		Map<Long, IEntityField> entityFields = new HashMap<Long, IEntityField>();
 
 		if (entityFieldIds != null) {
 			for (long id : entityFieldIds) {
 				EntityField ef = (EntityField) entityService.getEntityFieldById(id);
-				entityFields.add(ef);
+				if(ef!=null) {
+					entityFields.put(id, ef);
+				}
 			}
 		}
 
@@ -265,25 +272,25 @@ public class ViewVirtualEntityController extends BaseController{
 
 		if (entity.getId() == null || entity.getId().equals(0L)) {
 			entity.setGroup(group);
-			entityFields.stream().forEach(ef -> ef.setEntity(entity));
-			entity.setEntityFields(entityFields);
-			
+			entityFields.values().stream().forEach(ef -> ef.setEntity(entity));
+			entity.setEntityFields(new HashSet(entityFields.values()));
+
 			entityService.save(entity);
 		} else {
 			Entity ent = (Entity) entityService.getEntityById(entity.getId());
 
-			ent.setName(entity.getName());
-			ent.setDescription(entity.getDescription());
+			Set<IEntityField> entityfieldsSet = new HashSet(addUnexisting(entityFields, ent.getEntityFields()).values());
 			
-			entityFields.stream().forEach(ef -> ef.setEntity(ent));
-			ent.setEntityFields(entityFields);
-			
+			setSameNameDescription(ent, entity);
+			setParentOrNull(entityFieldIds, entityfieldsSet, ent, group);
+
+			ent.setEntityFields(entityfieldsSet);
 			entityService.save(ent);
 		}
 
 		return "redirect:/virtual/entities";
 	}
-	
+
 	@GetMapping("/entityFields")
 	public String getVirtualEntityFields(Model model) throws IOException {
 
@@ -291,7 +298,7 @@ public class ViewVirtualEntityController extends BaseController{
 
 		model.addAttribute("entityFields", entityFields);
 		model.addAttribute(PROP_BASE_URL, getBaseUrl());
-		
+
 		return "virtual/entityFields.html";
 	}
 
@@ -302,7 +309,8 @@ public class ViewVirtualEntityController extends BaseController{
 		String preffix = ControllerConstants.MSG_EDIT_ENTITY_FIELD;
 		if (entityField == null) {
 			preffix = ControllerConstants.MSG_NEW_ENTITY_FIELD;
-			entityField = entityService.createEntityFieldFloat(getVirtualName(VIRTUAL_ENTITY_FIELD_NAME), VIRTUAL_ENTITY_FIELD_DESCR);
+			entityField = entityService.createEntityFieldFloat(getVirtualName(VIRTUAL_ENTITY_FIELD_NAME),
+					VIRTUAL_ENTITY_FIELD_DESCR);
 		}
 
 		Long entityId = getItemId(entityField.getEntity());
@@ -330,36 +338,83 @@ public class ViewVirtualEntityController extends BaseController{
 
 		if (entityField.getId() == null || entityField.getId().equals(0L)) {
 			entityField.setEntity(entity);
-			
+
 			entityService.save(entityField);
 		} else {
-			EntityField ent = (EntityField) entityService.getEntityFieldById(entityField.getId());
+			EntityField ef = (EntityField) entityService.getEntityFieldById(entityField.getId());
 
-			ent.setName(entityField.getName());
-			ent.setDescription(entityField.getDescription());
-			
-			ent.setEntity(entity);
-			
-			entityService.save(ent);
+			setSameNameDescription(ef, entityField);
+
+			ef.setEntity(entity);
+
+			entityService.save(ef);
 		}
 
 		return "redirect:/virtual/entityFields";
 	}
-	
+
+	private void setSameNameDescription(IItemAbstract target, IItemAbstract source) {
+		target.setName(source.getName());
+		target.setDescription(source.getDescription());
+	}
+
+	private void setParentOrNull(long[] expected, Set<? extends IItemAbstract> children, IItemAbstract parent,
+			IItemAbstract parentOfParent) {
+		Map<Long, Long> toBeRemovedMap = getChildrenToBeRemovedMap(expected, children);
+
+		parent.setParent(parentOfParent);
+
+		children.stream().forEach(child -> {
+			if (toBeRemovedMap.containsKey(child.getId())) {
+				child.setParent(null);
+			} else {
+				child.setParent(parent);
+			}
+		});
+	}
+
+	private <T extends IItemAbstract> Map<Long, T> addUnexisting(Map<Long, T> current, Collection<T> proposal) {
+
+		proposal.stream().filter(a -> a!=null && !current.containsKey(a.getId())).forEach(a -> current.put(a.getId(), a));
+
+		return current;
+	}
+
+	private Map<Long, Long> getChildrenToBeRemovedMap(long[] expected, Set<? extends IItemAbstract> actual) {
+		Map<Long, Long> idsExpected = getEntitiesMap(expected);
+		Map<Long, Long> result = new HashMap<Long, Long>();
+
+		actual.stream().filter(a -> !idsExpected.containsKey(a.getId())).forEach(a -> result.put(a.getId(), a.getId()));
+
+		return result;
+	}
+
+	private Map<Long, Long> getEntitiesMap(long[] items) {
+		Map<Long, Long> ids = new HashMap<Long, Long>();
+
+		if (items != null) {
+			for (Long id : items) {
+				ids.put(id, id);
+			}
+		}
+
+		return ids;
+	}
+
 	private Map<Long, Long> getEntitiesMap(Set<? extends IItemAbstract> items) {
 		Map<Long, Long> ids = new HashMap<Long, Long>();
 
 		if (items != null) {
 			items.stream().forEach(e -> ids.put(e.getId(), e.getId()));
 		}
-		
+
 		return ids;
 	}
-	
+
 	private <T extends IItemAbstract> Long getItemId(T item) {
 		return item != null ? item.getId() : null;
 	}
-	
+
 	private Long getFirstIdOrNull(long[] ids) {
 		Long result = null;
 		if (ids != null && ids.length > 0) {
@@ -367,7 +422,7 @@ public class ViewVirtualEntityController extends BaseController{
 		}
 		return result;
 	}
-	
+
 	private String getVirtualName(String baseName) {
 		return baseName + (new Date()).getTime();
 	}

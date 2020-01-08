@@ -44,8 +44,6 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueB
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
-import com.balabas.smarthouse.server.entity.repository.IEntityFieldEnabledValueRepository;
-import com.balabas.smarthouse.server.entity.repository.IEntityFieldIncorrectValueRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityRepository;
 import com.balabas.smarthouse.server.entity.repository.IGroupRepository;
@@ -91,34 +89,28 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Autowired
 	IEntityAlarmService alarmService;
-	
+
 	@Autowired
 	IAlarmV2Service alarmV2Service;
 
 	@Autowired
 	IDeviceRepository deviceRepository;
-	
+
 	@Autowired
 	IGroupRepository groupRepository;
-	
+
 	@Autowired
 	IEntityRepository entityRepository;
-	
+
 	@Autowired
 	IEntityFieldRepository entityFieldRepository;
 
 	@Autowired
-	IEntityFieldEnabledValueRepository entityFieldEnabledValueRepository;
-
-	@Autowired
-	IEntityFieldIncorrectValueRepository entityFieldIncorrectValueRepository;
-
-	@Autowired
 	IGroupService groupService;
-	
+
 	@Autowired
 	IEntityService entityService;
-	
+
 	@Autowired
 	IEntityFieldService entityFieldService;
 
@@ -139,10 +131,10 @@ public class DeviceManageService implements IDeviceManageService {
 
 		deviceRepository.findAll().forEach(d -> {
 			State state = State.CONSTRUCTED;
-			
-			if(d.isVirtualized()) {
+
+			if (d.isVirtualized()) {
 				state = State.CONNECTED;
-			} 
+			}
 			d.setState(state);
 			save(d);
 		});
@@ -296,20 +288,18 @@ public class DeviceManageService implements IDeviceManageService {
 			stateChanger.stateChanged(device, State.BAD_DATA);
 		}
 	}
-	
+
 	@Override
 	public IEntityFieldService getEntityFieldService() {
 		return entityFieldService;
 	}
-	
+
 	@Override
 	public void saveEntityFieldValues(List<IEntityField> fields) {
 		List<EntityFieldValue> changedValues = Lists.newArrayList();
 
-		fields.stream()
-				.filter(SmartHouseItemBuildService::isFieldValueSaveAble)
-				.forEach(entityField -> itemBuildService.processValueChange(entityField, null,
-						changedValues));
+		fields.stream().filter(SmartHouseItemBuildService::isFieldValueSaveAble)
+				.forEach(entityField -> itemBuildService.processValueChange(entityField, null, changedValues));
 
 		entityFieldService.saveAll(changedValues);
 	}
@@ -437,16 +427,17 @@ public class DeviceManageService implements IDeviceManageService {
 
 			List<Group> groupsRu = getGroupsRequireUpdate();
 
-			devicesRu.stream().filter(device -> !device.isVirtualized())
-				.forEach(device -> {
-					deviceIds.put(device.getName(), null);
-					stateChanger.stateChanged(device, State.TIMED_OUT);
-					requestDevicesValues(device, null);
+			devicesRu.stream().filter(device -> !device.isVirtualized()).forEach(device -> {
+				deviceIds.put(device.getName(), null);
+				stateChanger.stateChanged(device, State.TIMED_OUT);
+				requestDevicesValues(device, null);
 			});
-			groupsRu.stream().filter(group -> !group.getDevice().isVirtualized() && !deviceIds.containsKey(group.getDevice().getName())).forEach(group -> {
-				stateChanger.stateChanged(group.getDevice(), State.TIMED_OUT);
-				requestDevicesValues(group.getDevice(), group);
-			});
+			groupsRu.stream().filter(
+					group -> !group.getDevice().isVirtualized() && !deviceIds.containsKey(group.getDevice().getName()))
+					.forEach(group -> {
+						stateChanger.stateChanged(group.getDevice(), State.TIMED_OUT);
+						requestDevicesValues(group.getDevice(), group);
+					});
 		}
 	}
 
@@ -466,8 +457,8 @@ public class DeviceManageService implements IDeviceManageService {
 	@Override
 	public List<Group> getGroupsRequireUpdate() {
 		return getDevices().stream()
-				.filter(dev -> dev.isRegistered() && !dev.isVirtualized() /* && !dev.isInitialized() */ && dev.getGroups() != null
-						&& !dev.getGroups().isEmpty())
+				.filter(dev -> dev.isRegistered() && !dev.isVirtualized() /* && !dev.isInitialized() */
+						&& dev.getGroups() != null && !dev.getGroups().isEmpty())
 				.flatMap(dev -> dev.getGroups().stream())
 				.filter(group -> checkItemRequiresUpdate(group.getDevice(), actionTimerService.getActionTimer(group)))
 				.collect(Collectors.toList());
@@ -519,7 +510,7 @@ public class DeviceManageService implements IDeviceManageService {
 	}
 
 	protected boolean checkItemRequiresUpdate(IDevice target, ActionTimer timer) {
-		if(target.isVirtualized()) {
+		if (target.isVirtualized()) {
 			return false;
 		}
 		boolean waits = timer.isActionForced();
@@ -564,16 +555,16 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Override
 	public String sendDataToDevice(IDevice device, IEntity entity, Map<String, Object> values) {
-		if(!device.isVirtualized()) {
+		if (!device.isVirtualized()) {
 			try {
 				preprocessSendDataToDevice(device, entity, values);
 				String result = deviceRequestor.executePostDataOnDeviceEntity(device, entity, values);
 				processDataReceivedFromDevice((Device) device, result, false, false);
-				
-				if(requestDataAfterSendToDevice) {
+
+				if (requestDataAfterSendToDevice) {
 					actionTimerService.setActionForced(device);
 				}
-				
+
 				return result;
 			} catch (Exception e) {
 				log.error(e);
@@ -585,9 +576,9 @@ public class DeviceManageService implements IDeviceManageService {
 
 	private void preprocessSendDataToDevice(IDevice device, IEntity entity, Map<String, Object> values) {
 		if (saveDataBeforeSendToDevice) {
-			
+
 			List<EntityFieldValue> changedValues = new ArrayList<>();
-			
+
 			for (String entityFieldName : values.keySet()) {
 				IEntityField entityField = entity.getEntityField(entityFieldName);
 
@@ -609,7 +600,7 @@ public class DeviceManageService implements IDeviceManageService {
 	public IDevice save(IDevice device) {
 		return save((Device) device);
 	}
-	
+
 	@Transactional
 	@Override
 	public Device save(Device device) {
@@ -650,26 +641,43 @@ public class DeviceManageService implements IDeviceManageService {
 
 		return device;
 	}
-	
+
 	@Override
 	public IGroup save(IGroup group) {
 		Map<String, Object> fieldValues = new HashMap<>();
+		Long oldDeviceId = null;
+		Group oldGroup = null;
+
+		if (ItemAbstract.existsAndIsNotNew(group)) {
+			oldGroup = getGroupById(group.getId());
+			if(oldGroup!=null && ItemAbstract.existsAndIsNotNew(oldGroup.getDevice())) {
+				oldDeviceId = oldGroup.getDevice().getId();
+			}
+		}
 
 		putFieldValuesToMap(group, fieldValues);
 
-		Long id = groupRepository.save((Group)group).getId();
+		Long id = groupRepository.save((Group) group).getId();
 		group = groupRepository.findById(id).orElse(null);
 
 		Group exists = getGroupById(id);
-		
+
 		if (exists != null) {
-			Device realDevice = getDeviceById(exists.getDevice().getId());
-			Set<Group> groups = realDevice.getGroups();
-			
-			groups.remove(exists);
-			groups.add((Group) group);
-			
-		} else if(group.getDevice()!=null && group.getDevice().getId() != null) {
+			if (oldDeviceId != null) {
+				Device oldDevice = getDeviceById(oldDeviceId);
+				if (oldDevice != null && oldDevice.getGroups() != null && oldGroup != null) {
+					oldDevice.getGroups().remove(oldGroup);
+				}
+			}
+
+			if (exists.getDevice() != null && exists.getDevice().getId() != null) {
+				Device newDevice = getDeviceById(exists.getDevice().getId());
+				if (newDevice.getGroups() != null) {
+					newDevice.getGroups().add((Group) group);
+				}
+			}
+
+		} else if (group.getDevice() != null && group.getDevice().getId() != null) {
 			log.info("added Group");
 			Device realDevice = getDeviceById(group.getDevice().getId());
 			realDevice.getGroups().add((Group) group);
@@ -690,19 +698,19 @@ public class DeviceManageService implements IDeviceManageService {
 
 		putFieldValuesToMap(entity, fieldValues);
 
-		Long id = entityRepository.save((Entity)entity).getId();
+		Long id = entityRepository.save((Entity) entity).getId();
 		entity = entityRepository.findById(id).orElse(null);
 
 		Entity exists = getEntityById(id);
-		
+
 		if (exists != null) {
 			Group realGroup = getGroupById(exists.getGroup().getId());
 			Set<Entity> entities = realGroup.getEntities();
-			
+
 			entities.remove(exists);
 			entities.add((Entity) entity);
-			
-		} else if(entity.getGroup()!=null && entity.getGroup().getId() != null) {
+
+		} else if (entity.getGroup() != null && entity.getGroup().getId() != null) {
 			log.info("added Entity");
 			Group realGroup = getGroupById(entity.getGroup().getId());
 			realGroup.getEntities().add((Entity) entity);
@@ -723,19 +731,19 @@ public class DeviceManageService implements IDeviceManageService {
 
 		putFieldValuesToMap(entityField, fieldValues);
 
-		Long id = entityFieldRepository.save((EntityField)entityField).getId();
+		Long id = entityFieldRepository.save((EntityField) entityField).getId();
 		entityField = entityFieldRepository.findById(id).orElse(null);
 
 		IEntityField exists = getEntityFieldById(id);
-		
+
 		if (exists != null) {
 			Entity realEntity = getEntityById(exists.getEntity().getId());
 			Set<IEntityField> entityFields = realEntity.getEntityFields();
-			
+
 			entityFields.remove(exists);
 			entityFields.add((EntityField) entityField);
-			
-		} else if(entityField.getEntity()!=null && entityField.getEntity().getId() != null) {
+
+		} else if (entityField.getEntity() != null && entityField.getEntity().getId() != null) {
 			log.info("added Entityfield");
 			Entity realEntity = getEntityById(entityField.getEntity().getId());
 			realEntity.getEntityFields().add(entityField);
@@ -805,10 +813,6 @@ public class DeviceManageService implements IDeviceManageService {
 		int index = getDeviceIndex(deviceId);
 		devices.remove(index);
 
-		entityFieldService.deleteEntityFieldValuesForDevice(deviceId);
-		entityFieldEnabledValueRepository.deleteEntityFieldEnabledValuesForDevice(deviceId);
-		entityFieldIncorrectValueRepository.deleteEntityFieldIncorrectValue(deviceId);
-
 		alarmService.deleteAlarmsByDeviceId(deviceId);
 
 		entityFieldService.deleteEntityFieldsForDevice(deviceId);
@@ -824,7 +828,7 @@ public class DeviceManageService implements IDeviceManageService {
 
 		return HTTP_PREFFIX + device.getIp() + DEVICE_URL_DATA;
 	}
-	
+
 	private void putFieldValuesToMap(IGroup group, Map<String, Object> fieldValues) {
 		if (group.getEntities() != null && !group.getEntities().isEmpty()) {
 			for (Entity entity : group.getEntities()) {
@@ -832,7 +836,7 @@ public class DeviceManageService implements IDeviceManageService {
 			}
 		}
 	}
-	
+
 	private void putFieldValuesToMap(IEntity entity, Map<String, Object> fieldValues) {
 		if (entity.getEntityFields() != null && !entity.getEntityFields().isEmpty()) {
 			for (IEntityField entityField : entity.getEntityFields()) {
@@ -840,12 +844,13 @@ public class DeviceManageService implements IDeviceManageService {
 			}
 		}
 	}
-	
+
 	private void putFieldValuesToMap(IEntityField entityField, Map<String, Object> fieldValues) {
-		String key = entityField.getEntity().getGroup().getName() + entityField.getEntity().getName() + entityField.getName();
+		String key = entityField.getEntity().getGroup().getName() + entityField.getEntity().getName()
+				+ entityField.getName();
 		fieldValues.put(key, entityField.getValue());
 	}
-	
+
 	private void putFieldValuesFromMap(IGroup group, Map<String, Object> fieldValues) {
 		if (group.getEntities() != null && !group.getEntities().isEmpty()) {
 			for (Entity entity : group.getEntities()) {
@@ -853,7 +858,7 @@ public class DeviceManageService implements IDeviceManageService {
 			}
 		}
 	}
-	
+
 	private void putFieldValuesFromMap(IEntity entity, Map<String, Object> fieldValues) {
 		if (entity.getEntityFields() != null && !entity.getEntityFields().isEmpty()) {
 			for (IEntityField entityField : entity.getEntityFields()) {
@@ -861,14 +866,14 @@ public class DeviceManageService implements IDeviceManageService {
 			}
 		}
 	}
-	
+
 	private void putFieldValuesFromMap(IEntityField entityField, Map<String, Object> fieldValues) {
-		String key = entityField.getEntity().getGroup().getName() + entityField.getEntity().getName() + entityField.getName();
+		String key = entityField.getEntity().getGroup().getName() + entityField.getEntity().getName()
+				+ entityField.getName();
 
 		if (entityField.getValueObj() == null && fieldValues.containsKey(key)) {
 			entityField.setValueWithNoCheck(fieldValues.get(key));
 		}
 	}
-
 
 }

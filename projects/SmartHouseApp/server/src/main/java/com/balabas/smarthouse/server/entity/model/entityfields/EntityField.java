@@ -18,6 +18,7 @@ import javax.persistence.Transient;
 import org.thymeleaf.util.StringUtils;
 
 import com.balabas.smarthouse.server.entity.model.Entity;
+import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValue;
@@ -237,6 +238,12 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 		return getValueStr() + " " + getMeasure();
 	}
 	
-	
+	@Override
+	public void setParent(IItemAbstract parent) {
+		if(parent!=null && !Entity.class.isAssignableFrom(parent.getClass())) {
+			throw new IllegalArgumentException("IEntity expected");
+		}
+		setEntity((Entity) parent);
+	}
 	
 }

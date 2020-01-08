@@ -47,13 +47,7 @@ public interface IEntityFieldValueRepository extends CrudRepository<EntityFieldV
 	
 	@Transactional
 	@Modifying
-	@Query( value = "DELETE FROM entity_field_value" + 
-			" WHERE entity_field_id in" + 
-			"	(SELECT ef.id AS id from entity_field ef" + 
-			"	JOIN entities e ON ef.entity_id = e.id" + 
-			"	JOIN groups g ON g.id = e.group_id" + 
-			"	JOIN devices d ON d.id = g.device_id" + 
-			"	WHERE d.id = :id)", nativeQuery = true)
+	@Query(value = "DELETE FROM EntityFieldValue efv where efv.entityField.id IN(SELECT ef.id FROM EntityField ef where ef.entity.group.device.id = :id ) ")
 	void deleteEntityFieldValuesForDevice(@Param("id")Long deviceId);
 	
 	@Transactional

@@ -41,12 +41,16 @@
 
 		<div class="container">
 			<h1>Устройства сервера</h1>
+			
+			<a th:href="@{~/virtual/devices}"
+									class="btn btn-default">&#x1F4DD;Виртуальные устройства</a>
+									
 			<div>
 				<table id="devicesTable" class="table table-dark table-striped">
 					<thead>
 						<tr>
 							<th>Id</th>
-							<th>Идентификатор</th>
+							<th>Имя</th>
 							<th>Прошивка</th>
 							<th>Описание</th>
 							<th>Состояние</th>
@@ -57,18 +61,25 @@
 					<tbody>
 						<tr th:each="device : ${devices}">
 							<td th:text="${device.id}">Id</td>
-							<td th:text="${device.name}">Идентификатор</td>
+							<td th:text="${device.name}">Имя</td>
 							<td th:text="${device.firmware}">Прошивка</td>
 							<td th:text="${device.description}">Описание</td>
 							<td th:text="${device.getStateEmoji()} + ' ' + ${device.getStateDescription()}">Состояние
 							</td>
 							<td th:text="${device.ip}">IP</td>
 							<td>
-								<a th:href="@{~/device?id={id}(id=${device.id})}"
-									class="btn btn-default">&#x1F4DD;Просмотр</a>
-								<button type="button" class="btn btn-danger" data-toggle="modal"
-									th:attr="data-target='#deleteModal' + ${device.id}">&#x274C;Удалить</button>
-
+								<div class="dropdown">
+								<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+									&#x2699; Админ
+									<span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu">
+									<li><a th:href="@{~/device?id={id}(id=${device.id})}"
+									class="btn btn-default">&#x1F4DD;Просмотр</a></li>
+									<li><button type="button" class="btn btn-danger" data-toggle="modal"
+									th:attr="data-target='#deleteModal' + ${device.id}">&#x274C;Удалить</button></li>
+								</ul>
+							</div>
 
 								<div class="modal fade" th:id="'deleteModal' + ${device.id}">
 									<div class="modal-dialog">

@@ -16,7 +16,7 @@ public interface IEntityFieldRepository extends CrudRepository<EntityField, Long
 
 	@Transactional
 	@Modifying
-	@Query(value = "DELETE EntityField where entity.group.device.id = :id")
+	@Query(value = "DELETE FROM EntityField ef where ef.entity.id IN(SELECT e.id FROM Entity e WHERE e.group.device.id = :id)")
 	void deleteEntityFieldsByDeviceId(@Param("id") Long deviceId);
 	
 	@Query("FROM EntityField WHERE id = :id")
