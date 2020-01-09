@@ -670,7 +670,7 @@ public class DeviceManageService implements IDeviceManageService {
 				}
 			}
 
-			if (exists.getDevice() != null && exists.getDevice().getId() != null) {
+			if (ItemAbstract.existsAndIsNotNew(exists.getDevice())) {
 				Device newDevice = getDeviceById(exists.getDevice().getId());
 				if (newDevice.getGroups() != null) {
 					newDevice.getGroups().add((Group) group);
@@ -695,6 +695,15 @@ public class DeviceManageService implements IDeviceManageService {
 	@Override
 	public IEntity save(IEntity entity) {
 		Map<String, Object> fieldValues = new HashMap<>();
+		Long oldGroupId = null;
+		IEntity oldEntity = null;
+
+		if (ItemAbstract.existsAndIsNotNew(entity)) {
+			oldEntity = getEntityById(entity.getId());
+			if(oldEntity!=null && ItemAbstract.existsAndIsNotNew(oldEntity.getGroup())) {
+				oldGroupId = oldEntity.getGroup().getId();
+			}
+		}
 
 		putFieldValuesToMap(entity, fieldValues);
 
@@ -704,12 +713,20 @@ public class DeviceManageService implements IDeviceManageService {
 		Entity exists = getEntityById(id);
 
 		if (exists != null) {
-			Group realGroup = getGroupById(exists.getGroup().getId());
-			Set<Entity> entities = realGroup.getEntities();
+			if (oldGroupId != null) {
+				Group oldGroup = getGroupById(oldGroupId);
+				if (oldGroup != null && oldGroup.getEntities() != null && oldEntity != null) {
+					oldGroup.getEntities().remove(oldEntity);
+				}
+			}
 
-			entities.remove(exists);
-			entities.add((Entity) entity);
-
+			if (ItemAbstract.existsAndIsNotNew(exists.getGroup())) {
+				Group newGroup = getGroupById(exists.getGroup().getId());
+				if (newGroup.getEntities() != null) {
+					newGroup.getEntities().add((Entity) entity);
+				}
+			}
+			
 		} else if (entity.getGroup() != null && entity.getGroup().getId() != null) {
 			log.info("added Entity");
 			Group realGroup = getGroupById(entity.getGroup().getId());
@@ -728,7 +745,16 @@ public class DeviceManageService implements IDeviceManageService {
 	@Override
 	public IEntityField save(IEntityField entityField) {
 		Map<String, Object> fieldValues = new HashMap<>();
+		
+		Long oldEntityId = null;
+		IEntityField oldEntityField = null;
 
+		if (ItemAbstract.existsAndIsNotNew(entityField)) {
+			oldEntityField = getEntityFieldById(entityField.getId());
+			if(oldEntityField!=null && ItemAbstract.existsAndIsNotNew(oldEntityField.getEntity())) {
+				oldEntityId = oldEntityField.getEntity().getId();
+			}
+		}
 		putFieldValuesToMap(entityField, fieldValues);
 
 		Long id = entityFieldRepository.save((EntityField) entityField).getId();
@@ -737,11 +763,19 @@ public class DeviceManageService implements IDeviceManageService {
 		IEntityField exists = getEntityFieldById(id);
 
 		if (exists != null) {
-			Entity realEntity = getEntityById(exists.getEntity().getId());
-			Set<IEntityField> entityFields = realEntity.getEntityFields();
+			if (oldEntityId != null) {
+				IEntity oldEntity = getEntityById(oldEntityId);
+				if (oldEntity != null && oldEntity.getEntityFields() != null && oldEntityField != null) {
+					oldEntity.getEntityFields().remove(oldEntityField);
+				}
+			}
 
-			entityFields.remove(exists);
-			entityFields.add((EntityField) entityField);
+			if (ItemAbstract.existsAndIsNotNew(exists.getEntity())) {
+				IEntity newEntity = getEntityById(exists.getEntity().getId());
+				if (newEntity.getEntityFields() != null) {
+					newEntity.getEntityFields().add(entityField);
+				}
+			}
 
 		} else if (entityField.getEntity() != null && entityField.getEntity().getId() != null) {
 			log.info("added Entityfield");
