@@ -6,11 +6,8 @@ import org.springframework.util.StringUtils;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 
-public interface IItemAbstract extends IIdentifiable, INameable{
+public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionable{
 
-	String getDescription();
-	void setDescription(String description);
-	
 	String getDescriptionByDescriptionField();
 	
 	Emoji getEmoji();
@@ -21,6 +18,12 @@ public interface IItemAbstract extends IIdentifiable, INameable{
 	String getItemClassId();
 	default String getItemId() {
 		return getItemClassId() + Long.toString(Optional.ofNullable(getId()).orElse(0L)) + getName();
+	}
+	
+	default void setNameDescriptionEmoji(IItemAbstract source) {
+		setName(source.getName());
+		setDescription(source.getDescription());
+		setEmoji(source.getEmoji());
 	}
 	
 	default void setDescriptionIfEmpty(String description) {

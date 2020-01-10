@@ -1,7 +1,10 @@
 package com.balabas.smarthouse.server.entity.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
 
 import org.json.JSONObject;
 
@@ -11,6 +14,7 @@ import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
+import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -90,5 +94,27 @@ public interface IDeviceManageService {
 	IEntityFieldService getEntityFieldService();
 
 	void saveEntityFieldValues(List<IEntityField> fields);
+
+	Set<IGroup> getGroups();
 	
+	Set<IEntity> getEntities();
+	
+	Set<IEntityField> getEntityFields();
+	
+	Set<IEntityField> getEntityFields(Predicate<? super IEntityField> filter);
+	
+	default <T extends IItemAbstract> int getItemIndexById(Collection<T> list, Long id) {
+		int result = -1;
+		if (id != null) {
+			for (T item : list) {
+				result++;
+				if (id.equals(item.getId())) {
+					return result;
+				}
+			}
+		}
+
+		return result;
+	}
+
 }

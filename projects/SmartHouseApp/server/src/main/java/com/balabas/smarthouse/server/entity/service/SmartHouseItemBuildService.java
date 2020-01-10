@@ -78,6 +78,7 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.model.virtual.ICalculatedEntityFieldService;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldIncorrectValueRepository;
 import com.balabas.smarthouse.server.util.MathUtil;
@@ -86,7 +87,6 @@ import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.EntityStatus;
 import com.balabas.smarthouse.server.entity.model.Group;
-import com.balabas.smarthouse.server.entity.model.collectors.IDataCollectorService;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 
 import lombok.extern.log4j.Log4j2;
@@ -111,7 +111,7 @@ public class SmartHouseItemBuildService {
 	IDeviceRepository deviceRepository;
 	
 	@Autowired
-	IDataCollectorService dataCollectorService;
+	ICalculatedEntityFieldService dataCollectorService;
 	
 	@Autowired
 	IEntityMessageProcessor entityMessageProcessor;

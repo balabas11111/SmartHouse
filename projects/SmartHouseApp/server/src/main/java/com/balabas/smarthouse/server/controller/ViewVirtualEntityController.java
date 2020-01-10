@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,30 +27,31 @@ import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
-import com.balabas.smarthouse.server.entity.model.collectors.IVirtualEntityService;
+import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
-
-import static com.balabas.smarthouse.server.entity.model.collectors.VirtualEntityService.VIRTUAL_DEVICE_NAME;
-import static com.balabas.smarthouse.server.entity.model.collectors.VirtualEntityService.VIRTUAL_DEVICE_DESCR;
-import static com.balabas.smarthouse.server.entity.model.collectors.VirtualEntityService.VIRTUAL_DEVICE_FIRMWARE;
-
-import static com.balabas.smarthouse.server.entity.model.collectors.VirtualEntityService.VIRTUAL_GROUP_NAME;
-import static com.balabas.smarthouse.server.entity.model.collectors.VirtualEntityService.VIRTUAL_GROUP_DESCR;
-
-import static com.balabas.smarthouse.server.entity.model.collectors.VirtualEntityService.VIRTUAL_ENTITY_NAME;
-import static com.balabas.smarthouse.server.entity.model.collectors.VirtualEntityService.VIRTUAL_ENTITY_DESCR;
-
-import static com.balabas.smarthouse.server.entity.model.collectors.VirtualEntityService.VIRTUAL_ENTITY_FIELD_NAME;
-import static com.balabas.smarthouse.server.entity.model.collectors.VirtualEntityService.VIRTUAL_ENTITY_FIELD_DESCR;
+import com.balabas.smarthouse.server.entity.model.virtual.CalculatedEntityField;
+import com.balabas.smarthouse.server.entity.model.virtual.ICalculatedEntityField;
+import com.balabas.smarthouse.server.entity.model.virtual.ICalculatedEntityFieldCalculator;
+import com.balabas.smarthouse.server.entity.model.virtual.ICalculatedEntityFieldService;
+import com.balabas.smarthouse.server.entity.model.virtual.IVirtualEntityService;
 
 import static com.balabas.smarthouse.server.controller.ControllerConstants.PROP_BASE_URL;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.PROP_PAGE_HEADER;
+import static com.balabas.smarthouse.server.entity.model.virtual.VirtualEntityService.VIRTUAL_DEVICE_DESCR;
+import static com.balabas.smarthouse.server.entity.model.virtual.VirtualEntityService.VIRTUAL_DEVICE_FIRMWARE;
+import static com.balabas.smarthouse.server.entity.model.virtual.VirtualEntityService.VIRTUAL_DEVICE_NAME;
+import static com.balabas.smarthouse.server.entity.model.virtual.VirtualEntityService.VIRTUAL_ENTITY_DESCR;
+import static com.balabas.smarthouse.server.entity.model.virtual.VirtualEntityService.VIRTUAL_ENTITY_FIELD_DESCR;
+import static com.balabas.smarthouse.server.entity.model.virtual.VirtualEntityService.VIRTUAL_ENTITY_FIELD_NAME;
+import static com.balabas.smarthouse.server.entity.model.virtual.VirtualEntityService.VIRTUAL_ENTITY_NAME;
+import static com.balabas.smarthouse.server.entity.model.virtual.VirtualEntityService.VIRTUAL_GROUP_DESCR;
+import static com.balabas.smarthouse.server.entity.model.virtual.VirtualEntityService.VIRTUAL_GROUP_NAME;
 
 @Controller
 @RequestMapping(value = "/virtual")
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ViewVirtualEntityController extends BaseController {
 
 	@Value("${smarthouse.server.name:#{null}}")
@@ -57,6 +59,10 @@ public class ViewVirtualEntityController extends BaseController {
 
 	@Autowired
 	private IVirtualEntityService entityService;
+	
+	@Autowired
+	private ICalculatedEntityFieldService calculatedEntityFieldService;
+	
 
 	@GetMapping("/devices")
 	public String getVirtualDevices(Model model) throws IOException {
@@ -101,13 +107,13 @@ public class ViewVirtualEntityController extends BaseController {
 		if (groupIds != null) {
 			for (long id : groupIds) {
 				Group group = (Group) entityService.getGroupById(id);
-				if(group!=null) {
+				if (group != null) {
 					groups.put(id, group);
 				}
 			}
 		}
 
-		if (device.getId() == null || device.getId().equals(0L)) {
+		if (ItemAbstract.isNew(device)) {
 			groups.values().stream().forEach(group -> group.setDevice(device));
 			device.setGroups(new HashSet(groups.values()));
 			device.setState(State.CONNECTED);
@@ -116,7 +122,7 @@ public class ViewVirtualEntityController extends BaseController {
 			Device dev = (Device) entityService.getDeviceById(device.getId());
 			Set<Group> groupSet = new HashSet(addUnexisting(groups, dev.getGroups()).values());
 
-			setSameNameDescription(dev, device);
+			dev.setNameDescriptionEmoji(device);
 			setParentOrNull(groupIds, groupSet, dev, null);
 
 			dev.setGroups(groupSet);
@@ -179,18 +185,18 @@ public class ViewVirtualEntityController extends BaseController {
 		if (entityIds != null) {
 			for (long id : entityIds) {
 				Entity entity = (Entity) entityService.getEntityById(id);
-				if(entity!=null) {
+				if (entity != null) {
 					entities.put(id, entity);
 				}
 			}
 		}
-		
+
 		Long deviceId = getFirstIdOrNull(devicesIds);
 
 		IDevice iDevice = entityService.getDeviceById(deviceId);
 		Device device = (iDevice == null) ? null : (Device) iDevice;
 
-		if (group.getId() == null || group.getId().equals(0L)) {
+		if (ItemAbstract.isNew(group)) {
 			group.setDevice(device);
 			entities.values().stream().forEach(entity -> entity.setGroup(group));
 			group.setEntities(new HashSet(entities.values()));
@@ -198,7 +204,7 @@ public class ViewVirtualEntityController extends BaseController {
 		} else {
 			Group gr = (Group) entityService.getGroupById(group.getId());
 			Set<Entity> entitiesSet = new HashSet(addUnexisting(entities, gr.getEntities()).values());
-			setSameNameDescription(gr, group);
+			gr.setNameDescriptionEmoji(group);
 			setParentOrNull(entityIds, entitiesSet, gr, device);
 
 			gr.setEntities(entitiesSet);
@@ -259,7 +265,7 @@ public class ViewVirtualEntityController extends BaseController {
 		if (entityFieldIds != null) {
 			for (long id : entityFieldIds) {
 				EntityField ef = (EntityField) entityService.getEntityFieldById(id);
-				if(ef!=null) {
+				if (ef != null) {
 					entityFields.put(id, ef);
 				}
 			}
@@ -270,7 +276,7 @@ public class ViewVirtualEntityController extends BaseController {
 		IGroup iGroup = entityService.getGroupById(groupId);
 		Group group = (iGroup == null) ? null : (Group) iGroup;
 
-		if (entity.getId() == null || entity.getId().equals(0L)) {
+		if (ItemAbstract.isNew(entity)) {
 			entity.setGroup(group);
 			entityFields.values().stream().forEach(ef -> ef.setEntity(entity));
 			entity.setEntityFields(new HashSet(entityFields.values()));
@@ -279,9 +285,10 @@ public class ViewVirtualEntityController extends BaseController {
 		} else {
 			Entity ent = (Entity) entityService.getEntityById(entity.getId());
 
-			Set<IEntityField> entityfieldsSet = new HashSet(addUnexisting(entityFields, ent.getEntityFields()).values());
-			
-			setSameNameDescription(ent, entity);
+			Set<IEntityField> entityfieldsSet = new HashSet(
+					addUnexisting(entityFields, ent.getEntityFields()).values());
+
+			ent.setNameDescriptionEmoji(entity);
 			setParentOrNull(entityFieldIds, entityfieldsSet, ent, group);
 
 			ent.setEntityFields(entityfieldsSet);
@@ -336,14 +343,13 @@ public class ViewVirtualEntityController extends BaseController {
 		IEntity iEntity = entityService.getEntityById(entityId);
 		Entity entity = (iEntity == null) ? null : (Entity) iEntity;
 
-		if (entityField.getId() == null || entityField.getId().equals(0L)) {
+		if (ItemAbstract.isNew(entityField)) {
 			entityField.setEntity(entity);
 
 			entityService.save(entityField);
 		} else {
 			EntityField ef = (EntityField) entityService.getEntityFieldById(entityField.getId());
-
-			setSameNameDescription(ef, entityField);
+			ef.setNameDescriptionEmoji(entityField);
 
 			ef.setEntity(entity);
 
@@ -353,9 +359,80 @@ public class ViewVirtualEntityController extends BaseController {
 		return "redirect:/virtual/entityFields";
 	}
 
-	private void setSameNameDescription(IItemAbstract target, IItemAbstract source) {
-		target.setName(source.getName());
-		target.setDescription(source.getDescription());
+	@GetMapping("/calculatedEntityFields")
+	public String getCalculatedEntityFields(Model model) {
+
+		model.addAttribute("fields", calculatedEntityFieldService.getCalculatedEntityFields());
+		
+		return "virtual/calculatedEntityFields.html";
+	}
+
+	@GetMapping("/calculatedEntityField")
+	public String getCalculatedEntityField(@RequestParam(name = "id", required = true) Long id, Model model) {
+		
+		ICalculatedEntityField calculatedField = Optional.ofNullable(calculatedEntityFieldService.getCalculatedEntityField(id))
+				.orElse(calculatedEntityFieldService.createNewCalculatedEntityField(getVirtualName(VIRTUAL_ENTITY_FIELD_NAME), VIRTUAL_ENTITY_FIELD_DESCR));
+		
+		Set<IEntityField> targetFields = calculatedEntityFieldService.getAllTargetFields();
+		Set<IEntityField> sourceFields = calculatedEntityFieldService.getAllSourceFields();
+		
+		Map<Long, Long> selectedSourceFields = getEntitiesMap(calculatedField.getSourceEntityFields()); 
+		
+		model.addAttribute("field", calculatedField);
+		model.addAttribute("targetFields", targetFields);
+		
+		model.addAttribute("sourceFields", sourceFields);
+		model.addAttribute("selectedSourceFields", selectedSourceFields);
+		
+		model.addAttribute("calculators", calculatedEntityFieldService.getCalculators());
+		
+		return "virtual/calculatedEntityField.html";
+	}
+	
+	@PostMapping(value = "/calculatedEntityField")
+	public String saveCalculatedEntityField(@ModelAttribute("field") CalculatedEntityField calcEntityField,
+			@RequestParam(value = "calculators", required = false) String[] calculators,
+			@RequestParam(value = "targetFields", required = false) long[] targetFieldIds,
+			@RequestParam(value = "sourceFields", required = false) long[] sourceFieldIds, 
+			Model model) {
+		
+		String calculatorName = getFirstIdOrNull(calculators);
+		Long targetFieldId = getFirstIdOrNull(targetFieldIds);
+		
+		Map<Long, IEntityField> sourceEntityFields = new HashMap<Long, IEntityField>();
+
+		if (sourceFieldIds != null) {
+			for (long id : sourceFieldIds) {
+				IEntityField ef = entityService.getEntityFieldById(id);
+				if (ef != null) {
+					sourceEntityFields.put(id, ef);
+				}
+			}
+		}
+
+		ICalculatedEntityFieldCalculator calculator = calculatedEntityFieldService.getCalculator(calculatorName);
+		IEntityField targetfield = entityService.getEntityFieldById(targetFieldId);
+		
+		if (ItemAbstract.isNew(calcEntityField)) {
+			calcEntityField.setCalculator(calculator);
+			calcEntityField.setTargetEntityField(targetfield);
+			calcEntityField.setSourceEntityFields(new HashSet(sourceEntityFields.values()));
+
+			calculatedEntityFieldService.save(calcEntityField);
+		} else {
+			ICalculatedEntityField ent = calculatedEntityFieldService.getCalculatedEntityFieldById(calcEntityField.getId());
+
+			ent.setNameDescriptionEmoji(calcEntityField);
+			
+			ent.setCalculator(calculator);
+			ent.setTargetEntityField(targetfield);
+			ent.setSourceEntityFields(new HashSet(sourceEntityFields.values()));
+			
+			calculatedEntityFieldService.save(ent);
+		}
+		
+		
+		return "redirect:/virtual/calculatedEntityFields";
 	}
 
 	private void setParentOrNull(long[] expected, Set<? extends IItemAbstract> children, IItemAbstract parent,
@@ -375,7 +452,8 @@ public class ViewVirtualEntityController extends BaseController {
 
 	private <T extends IItemAbstract> Map<Long, T> addUnexisting(Map<Long, T> current, Collection<T> proposal) {
 
-		proposal.stream().filter(a -> a!=null && !current.containsKey(a.getId())).forEach(a -> current.put(a.getId(), a));
+		proposal.stream().filter(a -> a != null && !current.containsKey(a.getId()))
+				.forEach(a -> current.put(a.getId(), a));
 
 		return current;
 	}
@@ -417,6 +495,14 @@ public class ViewVirtualEntityController extends BaseController {
 
 	private Long getFirstIdOrNull(long[] ids) {
 		Long result = null;
+		if (ids != null && ids.length > 0) {
+			result = ids[0];
+		}
+		return result;
+	}
+	
+	private <T> T getFirstIdOrNull(T[] ids) {
+		T result = null;
 		if (ids != null && ids.length > 0) {
 			result = ids[0];
 		}

@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.entity.model.collectors;
+package com.balabas.smarthouse.server.entity.model.virtual;
 
 import java.util.Collection;
 
@@ -8,22 +8,27 @@ import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.exception.BadValueException;
 
 @Component
-@DataTransformer
+@CalculatedEntityFieldCalculator
 @SuppressWarnings("rawtypes")
-public class TransformerAverageNumber implements IDataTransformer {
+public class CalculatorAverageNumber implements ICalculatedEntityFieldCalculator {
 
 	@Override
 	public String getName() {
 		return this.getClass().getSimpleName();
 	}
+	
+	@Override
+	public String getDescription() {
+		return "Среднее значение полей поставщиков";
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public IEntityField transform(IEntityField field, Collection<IEntityField> entityFields) {
+	public IEntityField calculate(IEntityField targetEntityField, Collection<IEntityField> sourceEntityFields) {
 		Float total = 0F;
 		int count = 0;
 		
-		for(IEntityField f : entityFields) {
+		for(IEntityField f : sourceEntityFields) {
 			try {
 				Number val = (Number) f.getValue();
 				total = total + val.floatValue();
@@ -34,10 +39,10 @@ public class TransformerAverageNumber implements IDataTransformer {
 		total = total / count;
 		
 		try {
-			field.setValueWithCheck(total);
+			targetEntityField.setValueWithCheck(total);
 		} catch (BadValueException e) {}
 		
-		return field;
+		return targetEntityField;
 	}
 
 }

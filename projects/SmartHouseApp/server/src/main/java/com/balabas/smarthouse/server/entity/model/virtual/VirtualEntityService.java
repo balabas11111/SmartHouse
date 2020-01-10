@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.entity.model.collectors;
+package com.balabas.smarthouse.server.entity.model.virtual;
 
 import java.util.List;
 import java.util.Optional;

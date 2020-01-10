@@ -25,16 +25,20 @@ public class ItemAbstract implements IItemAbstract {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Getter @Setter
+	@Getter
+	@Setter
 	protected Long id = 0L;
-	@Getter @Setter
+	@Getter
+	@Setter
 	protected String name;
-	@Getter @Setter
+	@Getter
+	@Setter
 	protected String description;
 	@Setter
 	@Enumerated(EnumType.STRING)
 	protected Emoji emoji;
-	@Getter @Setter
+	@Getter
+	@Setter
 	@Column(columnDefinition = "boolean default false")
 	protected Boolean virtualized;
 
@@ -44,21 +48,21 @@ public class ItemAbstract implements IItemAbstract {
 			setDescription(description);
 		}
 	}
-	
+
 	@Override
 	public String getItemClassId() {
 		StringBuilder builder = new StringBuilder();
-		
+
 		builder.append(this.getClass().getSimpleName());
-				
+
 		return builder.toString();
 	}
-	
+
 	@Override
 	public Emoji getEmoji() {
 		return getEmojiOrDefault(Emoji.EMPTY_EMOJI);
 	}
-	
+
 	public static int compareByName(IItemAbstract ia1, IItemAbstract ia2) {
 		return ia1.getName().compareTo(ia2.getName());
 	}
@@ -66,23 +70,23 @@ public class ItemAbstract implements IItemAbstract {
 	@Override
 	public Emoji getEmojiOrDefault(Emoji defaultEmoji) {
 		Optional<Emoji> em = Optional.ofNullable(this.emoji);
-		
-		if(!em.isPresent() || (em.isPresent() && Emoji.EMPTY_EMOJI.equals(em.get()))) {
+
+		if (!em.isPresent() || (em.isPresent() && Emoji.EMPTY_EMOJI.equals(em.get()))) {
 			return defaultEmoji;
 		}
 		return em.get();
 	}
-	
+
 	@Override
 	public String getDescriptionByDescriptionField() {
 		return getDescription();
 	}
-	
+
 	@Override
 	public String getEmojiDescriptionByDescriptionField() {
 		return getEmoji() + " " + getDescriptionByDescriptionField();
 	}
-	
+
 	@Override
 	public String getEmojiDescriptionByDescriptionFieldWithParent() {
 		return getEmojiDescriptionByDescriptionField();
@@ -94,11 +98,15 @@ public class ItemAbstract implements IItemAbstract {
 	}
 
 	@Override
-	public void setParent(IItemAbstract parent) {}
-	
-	
+	public void setParent(IItemAbstract parent) {
+	}
+
 	public static boolean existsAndIsNotNew(IItemAbstract item) {
-		return item!=null && item.getId()!=null && item.getId()!=0L;
+		return item != null && !isNew(item);
+	}
+
+	public static boolean isNew(IItemAbstract item) {
+		return item.getId() == null || item.getId().equals(0L);
 	}
 	
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -206,7 +207,8 @@ public class DeviceManageService implements IDeviceManageService {
 				.flatMap(ef -> ef.getEnabledValues().stream())
 				.filter(e -> id.equals(((IEntityFieldEnabledValue) e).getId())).findFirst().orElse(null);
 	}
-
+	
+/*
 	private int getDeviceIndex(Long id) {
 		if (id != null) {
 			for (int i = 0; i < devices.size(); i++) {
@@ -218,7 +220,7 @@ public class DeviceManageService implements IDeviceManageService {
 
 		return -1;
 	}
-
+*/
 	@Override
 	@Transactional
 	public boolean processRegistrationRequest(Device device) {
@@ -617,7 +619,7 @@ public class DeviceManageService implements IDeviceManageService {
 		Long id = deviceRepository.save(device).getId();
 		device = deviceRepository.findById(id).orElse(null);
 
-		int index = getDeviceIndex(id);
+		int index = getItemIndexById(devices, id);
 
 		if (index > -1) {
 			devices.set(index, device);
@@ -844,7 +846,7 @@ public class DeviceManageService implements IDeviceManageService {
 	@Transactional
 	@Override
 	public void deleteDeviceById(Long deviceId) {
-		int index = getDeviceIndex(deviceId);
+		int index = getItemIndexById(devices, deviceId);
 		devices.remove(index);
 
 		alarmService.deleteAlarmsByDeviceId(deviceId);
@@ -908,6 +910,31 @@ public class DeviceManageService implements IDeviceManageService {
 		if (entityField.getValueObj() == null && fieldValues.containsKey(key)) {
 			entityField.setValueWithNoCheck(fieldValues.get(key));
 		}
+	}
+	
+	@Override
+	public Set<IGroup> getGroups() {
+		return getDevices().stream()
+			.flatMap( d -> d.getGroups().stream())
+			.collect(Collectors.toSet());
+	}
+
+	@Override
+	public Set<IEntity> getEntities() {
+		return getGroups().stream()
+				.flatMap( g -> g.getEntities().stream())
+				.collect(Collectors.toSet());
+	}
+	@Override
+	public Set<IEntityField> getEntityFields() {
+		return getEntities().stream()
+			.flatMap(e -> e.getEntityFields().stream())
+			.collect(Collectors.toSet());
+	}
+
+	@Override
+	public Set<IEntityField> getEntityFields(Predicate<? super IEntityField> filter) {
+		return getEntityFields().stream().filter(filter).collect(Collectors.toSet());
 	}
 
 }

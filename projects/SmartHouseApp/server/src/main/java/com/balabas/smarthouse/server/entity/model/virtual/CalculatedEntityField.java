@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.entity.model.collectors;
+package com.balabas.smarthouse.server.entity.model.virtual;
 
 import java.util.Set;
 
@@ -19,47 +19,54 @@ import lombok.Setter;
 
 @Entity
 @SuppressWarnings("rawtypes")
-public class DataCollector extends ItemAbstract implements IDataCollector {
+public class CalculatedEntityField extends ItemAbstract implements ICalculatedEntityField {
 
 	@Getter
 	@Setter
 	@ManyToOne(fetch = FetchType.EAGER, targetEntity = EntityField.class)
-    @JoinColumn(name="entity_id", nullable=false)
-	private IEntityField entityField;
+	@JoinColumn(name = "entity_id", nullable = false, unique = true)
+	private IEntityField targetEntityField;
 
 	@Getter
 	@Setter
 	@OneToMany(targetEntity = EntityField.class, fetch = FetchType.EAGER)
-	private Set<IEntityField> entityFields;
+	private Set<IEntityField> sourceEntityFields;
 
 	@Getter
 	@Setter
-	private String transformerName;
-	
+	private String calculatorName;
+
 	@Transient
 	@Getter
-	@Setter
-	private IDataTransformer transformer;
+	private ICalculatedEntityFieldCalculator calculator;
+
+	@Override
+	public void setCalculator(ICalculatedEntityFieldCalculator calculator) {
+		if (calculator != null) {
+			this.calculatorName = calculator.getName();
+			this.calculator = calculator;
+		}
+	}
 
 	@Override
 	public boolean isImpacted(IEntityField field) {
-		IEntityField res = entityFields.stream().filter(f -> field.getId().equals(f.getId())).findFirst().orElse(null);
-		return res!=null;
+		IEntityField res = sourceEntityFields.stream().filter(f -> field.getId().equals(f.getId())).findFirst().orElse(null);
+		return res != null;
 	}
 
 	@Override
 	public void apply(IEntityField field) throws BadValueException {
 		boolean applied = false;
-		
-		for(IEntityField f : entityFields) {
-			if(f.getId().equals(field.getId())) {
+
+		for (IEntityField f : sourceEntityFields) {
+			if (f.getId().equals(field.getId())) {
 				f.setValueStr(field.getValueStr());
 				applied = true;
 			}
 		}
-		
-		if(applied && getTransformer()!=null) {
-			getTransformer().transform(getEntityField(), getEntityFields());
+
+		if (applied && getCalculator() != null) {
+			getCalculator().calculate(getTargetEntityField(), getSourceEntityFields());
 		}
 	}
 
