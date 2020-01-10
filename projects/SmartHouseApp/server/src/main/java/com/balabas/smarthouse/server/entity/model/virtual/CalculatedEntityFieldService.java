@@ -121,6 +121,8 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 		result.setName(name);
 		result.setDescription(description);
 		
+		result.setCalculator(entityFieldCalculatorService.getDefaultCalculator());
+		
 		return result;
 	}
 

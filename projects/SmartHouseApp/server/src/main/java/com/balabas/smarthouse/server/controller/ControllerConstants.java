@@ -51,6 +51,8 @@ public class ControllerConstants {
 	public static final String MSG_EDIT_ENTITY       = "Редактрирование датчика";
 	public static final String MSG_NEW_ENTITY_FIELD  = "Новый показатель";
 	public static final String MSG_EDIT_ENTITY_FIELD = "Редактрирование показателя";
+	public static final String MSG_NEW_CALC_ENTITY_FIELD  = "Новый вычисляемый показатель";
+	public static final String MSG_EDIT_CALC_ENTITY_FIELD = "Редактрирование вычисляемого показателя";
 	
 	//model properties
 	public static final String PROP_PAGE_HEADER      = "pageHeader";

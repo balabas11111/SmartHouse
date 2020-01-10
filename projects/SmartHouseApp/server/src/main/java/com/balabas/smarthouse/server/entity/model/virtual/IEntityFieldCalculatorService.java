@@ -8,4 +8,6 @@ public interface IEntityFieldCalculatorService {
 	
 	Set<ICalculatedEntityFieldCalculator> getCalculators();
 
+	ICalculatedEntityFieldCalculator getDefaultCalculator();
+
 }

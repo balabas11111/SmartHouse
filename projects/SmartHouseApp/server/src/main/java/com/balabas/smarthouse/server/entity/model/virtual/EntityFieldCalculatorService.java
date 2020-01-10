@@ -13,6 +13,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class EntityFieldCalculatorService implements IEntityFieldCalculatorService{
 
+	private static final String defaultCalculatorName = "CalculatorAverageNumber";
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Map<String, ICalculatedEntityFieldCalculator> calculators = new HashMap();
 
@@ -37,6 +39,11 @@ public class EntityFieldCalculatorService implements IEntityFieldCalculatorServi
 	@Override
 	public Set<ICalculatedEntityFieldCalculator> getCalculators() {
 		return calcSet;
+	}
+
+	@Override
+	public ICalculatedEntityFieldCalculator getDefaultCalculator() {
+		return getCalculator(defaultCalculatorName);
 	}
 	
 }

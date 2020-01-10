@@ -9,9 +9,11 @@ import lombok.ToString;
 
 @Entity
 @ToString
+@SuppressWarnings("rawtypes")
 @EntityFieldAlarmMarker(target = Number.class)
 public class EntityFieldDs18d20DisconnectedAlarm extends AlarmAbstractEntityFieldNumber {
 
+	
 	@Override
 	protected boolean executeAlarmChecksInternal() {
 		IEntityField entityField = getWatchedItem();

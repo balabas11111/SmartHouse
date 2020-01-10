@@ -33,6 +33,26 @@
 		<a th:href="@{~/virtual/calculatedEntityFields}" class="btn">Вычисляемые показатели</a>
 	</div>
 
+	<table class="table table-dark table-striped" th:fragment="ItemAbstractListTable(items, editName)">
+		<thead>
+			<tr>
+				<th>Идентификатор</th>
+				<th>Описание</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="item : ${items}">
+				<td th:text="${item.name}">Идентификатор</td>
+				<td th:text="${item.description}">Описание</td>
+				<td>
+					<a th:href="@{~/{editName}?id={id}(id=${item.id})}"
+						class="btn btn-default">&#x1F4DD;Редактировать</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
 	<table class="table table-dark table-striped" th:fragment="ItemAbstractTable(items, chbxName, checkedItemMap)">
 		<thead>
 			<tr>

@@ -367,11 +367,14 @@ public class ViewVirtualEntityController extends BaseController {
 		return "virtual/calculatedEntityFields.html";
 	}
 
-	@GetMapping("/calculatedEntityField")
+	@GetMapping("/editCalculatedEntityField")
 	public String getCalculatedEntityField(@RequestParam(name = "id", required = true) Long id, Model model) {
 		
 		ICalculatedEntityField calculatedField = Optional.ofNullable(calculatedEntityFieldService.getCalculatedEntityField(id))
 				.orElse(calculatedEntityFieldService.createNewCalculatedEntityField(getVirtualName(VIRTUAL_ENTITY_FIELD_NAME), VIRTUAL_ENTITY_FIELD_DESCR));
+		
+		String preffix = ItemAbstract.isNew(calculatedField)?
+			preffix = ControllerConstants.MSG_NEW_CALC_ENTITY_FIELD:ControllerConstants.MSG_EDIT_CALC_ENTITY_FIELD;
 		
 		Set<IEntityField> targetFields = calculatedEntityFieldService.getAllTargetFields();
 		Set<IEntityField> sourceFields = calculatedEntityFieldService.getAllSourceFields();
@@ -379,17 +382,19 @@ public class ViewVirtualEntityController extends BaseController {
 		Map<Long, Long> selectedSourceFields = getEntitiesMap(calculatedField.getSourceEntityFields()); 
 		
 		model.addAttribute("field", calculatedField);
+		model.addAttribute("targetFieldId", calculatedField.getTargetEntityField()!=null?calculatedField.getTargetEntityField():null);
 		model.addAttribute("targetFields", targetFields);
 		
 		model.addAttribute("sourceFields", sourceFields);
 		model.addAttribute("selectedSourceFields", selectedSourceFields);
 		
 		model.addAttribute("calculators", calculatedEntityFieldService.getCalculators());
+		model.addAttribute(PROP_PAGE_HEADER, getPageHeader(preffix, calculatedField));
 		
 		return "virtual/calculatedEntityField.html";
 	}
 	
-	@PostMapping(value = "/calculatedEntityField")
+	@PostMapping(value = "/saveCalculatedEntityField")
 	public String saveCalculatedEntityField(@ModelAttribute("field") CalculatedEntityField calcEntityField,
 			@RequestParam(value = "calculators", required = false) String[] calculators,
 			@RequestParam(value = "targetFields", required = false) long[] targetFieldIds,
