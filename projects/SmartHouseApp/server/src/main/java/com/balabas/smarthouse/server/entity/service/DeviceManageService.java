@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.balabas.smarthouse.server.controller.ControllerConstants;
-import com.balabas.smarthouse.server.controller.service.DeviceRequestorService;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2Service;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
@@ -37,9 +36,11 @@ import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
+import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
@@ -48,9 +49,11 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueN
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.virtual.ICalculatedEntityFieldService;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
+import com.balabas.smarthouse.server.entity.repository.IEntityFieldEnabledValueRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityRepository;
 import com.balabas.smarthouse.server.entity.repository.IGroupRepository;
+import com.balabas.smarthouse.server.service.DeviceRequestorService;
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.server.view.DeviceEntityFieldActionHolder;
 import com.google.common.base.Joiner;
@@ -108,6 +111,9 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Autowired
 	IEntityFieldRepository entityFieldRepository;
+	
+	@Autowired
+	IEntityFieldEnabledValueRepository entityFieldEnabledValueRepository;
 
 	@Autowired
 	IGroupService groupService;
@@ -679,9 +685,9 @@ public class DeviceManageService implements IDeviceManageService {
 		Long oldDeviceId = null;
 		Group oldGroup = null;
 
-		if (ItemAbstract.existsAndIsNotNew(group)) {
+		if (IIdentifiable.existsAndIsNotNew(group)) {
 			oldGroup = getGroupById(group.getId());
-			if(oldGroup!=null && ItemAbstract.existsAndIsNotNew(oldGroup.getDevice())) {
+			if(oldGroup!=null && IIdentifiable.existsAndIsNotNew(oldGroup.getDevice())) {
 				oldDeviceId = oldGroup.getDevice().getId();
 			}
 		}
@@ -701,7 +707,7 @@ public class DeviceManageService implements IDeviceManageService {
 				}
 			}
 
-			if (ItemAbstract.existsAndIsNotNew(exists.getDevice())) {
+			if (IIdentifiable.existsAndIsNotNew(exists.getDevice())) {
 				Device newDevice = getDeviceById(exists.getDevice().getId());
 				if (newDevice.getGroups() != null) {
 					newDevice.getGroups().add((Group) group);
@@ -729,9 +735,9 @@ public class DeviceManageService implements IDeviceManageService {
 		Long oldGroupId = null;
 		IEntity oldEntity = null;
 
-		if (ItemAbstract.existsAndIsNotNew(entity)) {
+		if (IIdentifiable.existsAndIsNotNew(entity)) {
 			oldEntity = getEntityById(entity.getId());
-			if(oldEntity!=null && ItemAbstract.existsAndIsNotNew(oldEntity.getGroup())) {
+			if(oldEntity!=null && IIdentifiable.existsAndIsNotNew(oldEntity.getGroup())) {
 				oldGroupId = oldEntity.getGroup().getId();
 			}
 		}
@@ -751,7 +757,7 @@ public class DeviceManageService implements IDeviceManageService {
 				}
 			}
 
-			if (ItemAbstract.existsAndIsNotNew(exists.getGroup())) {
+			if (IIdentifiable.existsAndIsNotNew(exists.getGroup())) {
 				Group newGroup = getGroupById(exists.getGroup().getId());
 				if (newGroup.getEntities() != null) {
 					newGroup.getEntities().add((Entity) entity);
@@ -780,9 +786,9 @@ public class DeviceManageService implements IDeviceManageService {
 		Long oldEntityId = null;
 		IEntityField oldEntityField = null;
 
-		if (ItemAbstract.existsAndIsNotNew(entityField)) {
+		if (IIdentifiable.existsAndIsNotNew(entityField)) {
 			oldEntityField = getEntityFieldById(entityField.getId());
-			if(oldEntityField!=null && ItemAbstract.existsAndIsNotNew(oldEntityField.getEntity())) {
+			if(oldEntityField!=null && IIdentifiable.existsAndIsNotNew(oldEntityField.getEntity())) {
 				oldEntityId = oldEntityField.getEntity().getId();
 			}
 		}
@@ -801,7 +807,7 @@ public class DeviceManageService implements IDeviceManageService {
 				}
 			}
 
-			if (ItemAbstract.existsAndIsNotNew(exists.getEntity())) {
+			if (IIdentifiable.existsAndIsNotNew(exists.getEntity())) {
 				IEntity newEntity = getEntityById(exists.getEntity().getId());
 				if (newEntity.getEntityFields() != null) {
 					newEntity.getEntityFields().add(entityField);
@@ -828,6 +834,55 @@ public class DeviceManageService implements IDeviceManageService {
 		log.debug("saved EntityField" + entityField.getName());
 
 		return entityField;
+	}
+	
+	@Override
+	public IEntityFieldEnabledValue save(IEntityFieldEnabledValue entityFieldEnabledValue) {
+		Long oldEntityFieldId = null;
+		IEntityFieldEnabledValue oldEntityFieldEnabledValue = null;
+
+		if (IIdentifiable.existsAndIsNotNew(entityFieldEnabledValue)) {
+			oldEntityFieldEnabledValue = getEntityFieldEnabledValueById(entityFieldEnabledValue.getId());
+			if(oldEntityFieldEnabledValue!=null && IIdentifiable.existsAndIsNotNew(entityFieldEnabledValue.getEntityField())) {
+				oldEntityFieldId = entityFieldEnabledValue.getEntityField().getId();
+			}
+		}
+		
+		Long id = entityFieldEnabledValueRepository.save((EntityFieldEnabledValue) entityFieldEnabledValue).getId();
+		entityFieldEnabledValue = entityFieldEnabledValueRepository.findById(id).orElse(null);
+
+		IEntityFieldEnabledValue exists = getEntityFieldEnabledValueById(id);
+
+		if (exists != null) {
+			if (oldEntityFieldId != null) {
+				IEntityField oldEntityField = getEntityFieldById(oldEntityFieldId);
+				if (oldEntityField != null && oldEntityField.getEntityFieldEnabledValues() != null && oldEntityFieldEnabledValue != null) {
+					oldEntityField.getEntityFieldEnabledValues().remove(oldEntityField);
+				}
+			}
+
+			if (IIdentifiable.existsAndIsNotNew(exists.getEntityField())) {
+				IEntityField newEntity = getEntityFieldById(exists.getEntityField().getId());
+				if (newEntity.getEntityFieldEnabledValues() != null) {
+					newEntity.getEntityFieldEnabledValues().add(entityFieldEnabledValue);
+				}
+			}
+
+		} else if (entityFieldEnabledValue.getEntityField() != null && entityFieldEnabledValue.getEntityField().getId() != null) {
+			log.info("added Entityfield");
+			Long entityFieldId = entityFieldEnabledValue.getEntityField().getId();
+			IEntityField realEntityField = getEntityFieldById(entityFieldId);
+			
+			if(realEntityField!=null) {
+				realEntityField.getEntityFieldEnabledValues().add(entityFieldEnabledValue);
+			} else {
+				log.error("Real entityField with id =" + entityFieldId);
+			}
+			
+		}
+		log.debug("saved EntityFieldEnabledValue" + entityFieldEnabledValue);
+
+		return entityFieldEnabledValue;
 	}
 
 	@Override
@@ -995,4 +1050,22 @@ public class DeviceManageService implements IDeviceManageService {
 	public Set<IEntityField> getCurrentEntityFields(Predicate<IEntityField> pred) {
 		return getCurrentEntityFields().stream().filter(pred).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
+
+	@Override
+	public void deleteEntityFieldEnabledValue(Long id) {
+		IEntityFieldEnabledValue enabledValue = getEntityFieldEnabledValueById(id);
+		
+		entityFieldEnabledValueRepository.deleteById(id);
+		
+		if(enabledValue!=null) {
+			Set<IEntityFieldEnabledValue> allValues = enabledValue.getEntityField().getEntityFieldEnabledValues();
+			
+			boolean result = allValues.remove(enabledValue);
+			
+			if(!result) {
+				log.error("Failed to remove enabled Value id = " + id);
+			}
+		}
+	}
+
 }

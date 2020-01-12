@@ -1,11 +1,12 @@
 package com.balabas.smarthouse.server.entity.model.enabledvalue;
 
+import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 
 @SuppressWarnings("rawtypes")
-public interface IEntityFieldEnabledValue<T> {
+public interface IEntityFieldEnabledValue<T> extends IIdentifiable {
 
 	Long getId();
 	

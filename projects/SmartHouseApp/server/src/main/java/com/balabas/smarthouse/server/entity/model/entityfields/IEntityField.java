@@ -92,5 +92,8 @@ public interface IEntityField<T> extends IItemAbstract {
 		
 		return result;
 	}
-	
+
+	Set<IEntityFieldEnabledValue> getEntityFieldEnabledValues();
+
+	String getValueStrByEntityFieldEnabledValueDescription();
 }

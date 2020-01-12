@@ -3,7 +3,6 @@ package com.balabas.smarthouse.server.entity.model.entityfields;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import com.balabas.smarthouse.server.util.MathUtil;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity

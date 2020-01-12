@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,10 +27,11 @@ import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
+import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
-import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValueFloat;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldFloat;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -60,7 +62,7 @@ public class ViewVirtualEntityController extends BaseController {
 	private String serverName;
 
 	@Autowired
-	private IVirtualEntityService entityService;
+	private IVirtualEntityService virtualEntityService;
 	
 	@Autowired
 	private ICalculatedEntityFieldService calculatedEntityFieldService;
@@ -69,7 +71,7 @@ public class ViewVirtualEntityController extends BaseController {
 	@GetMapping("/devices")
 	public String getVirtualDevices(Model model) throws IOException {
 
-		List<IDevice> devices = entityService.getDevices();
+		List<IDevice> devices = virtualEntityService.getDevices();
 
 		model.addAttribute("devices", devices);
 		model.addAttribute(PROP_BASE_URL, getBaseUrl());
@@ -79,15 +81,15 @@ public class ViewVirtualEntityController extends BaseController {
 	@GetMapping(value = "/editDevice")
 	public String editVirtualDevice(@RequestParam(name = "id", required = true) Long id, Model model) {
 
-		IDevice dev = entityService.getDeviceById(id);
+		IDevice dev = virtualEntityService.getDeviceById(id);
 		String preffix = ControllerConstants.MSG_EDIT_DEVICE;
 		if (dev == null) {
 			preffix = ControllerConstants.MSG_EDIT_DEVICE;
-			dev = entityService.createDevice(getVirtualName(VIRTUAL_DEVICE_NAME), VIRTUAL_DEVICE_DESCR,
+			dev = virtualEntityService.createDevice(getVirtualName(VIRTUAL_DEVICE_NAME), VIRTUAL_DEVICE_DESCR,
 					VIRTUAL_DEVICE_FIRMWARE);
 		}
 
-		List<IGroup> allGroups = entityService.getGroups();
+		List<IGroup> allGroups = virtualEntityService.getGroups();
 
 		Map<Long, Long> groupIds = getEntitiesMap(dev.getGroups());
 
@@ -110,19 +112,19 @@ public class ViewVirtualEntityController extends BaseController {
 
 		if (groupIds != null) {
 			for (long id : groupIds) {
-				Group group = (Group) entityService.getGroupById(id);
+				Group group = (Group) virtualEntityService.getGroupById(id);
 				if (group != null) {
 					groups.put(id, group);
 				}
 			}
 		}
 
-		if (ItemAbstract.isNew(device)) {
+		if (IIdentifiable.isNew(device)) {
 			groups.values().stream().forEach(group -> group.setDevice(device));
 			
 			processDeviceSave(device, new HashSet(groups.values()), emojiCode);
 		} else {
-			Device dev = (Device) entityService.getDeviceById(device.getId());
+			Device dev = (Device) virtualEntityService.getDeviceById(device.getId());
 			Set<Group> groupSet = new HashSet(addUnexisting(groups, dev.getGroups()).values());
 
 			dev.setNameDescriptionEmoji(device);
@@ -138,13 +140,13 @@ public class ViewVirtualEntityController extends BaseController {
 		device.setGroups(groups);
 		device.setState(State.CONNECTED);
 		device.setEmoji(Emoji.getByCode(emojiCode));
-		entityService.save(device);
+		virtualEntityService.save(device);
 	}
 
 	@GetMapping("/groups")
 	public String getVirtualGroups(Model model) throws IOException {
 
-		List<IGroup> groups = entityService.getGroups();
+		List<IGroup> groups = virtualEntityService.getGroups();
 
 		model.addAttribute("groups", groups);
 		model.addAttribute(PROP_BASE_URL, getBaseUrl());
@@ -155,20 +157,20 @@ public class ViewVirtualEntityController extends BaseController {
 	@GetMapping(value = "/editGroup")
 	public String editVirtualGroup(@RequestParam(name = "id", required = true) Long id, Model model) {
 
-		IGroup group = entityService.getGroupById(id);
+		IGroup group = virtualEntityService.getGroupById(id);
 		String preffix = ControllerConstants.MSG_EDIT_GROUP;
 		if (group == null) {
 			preffix = ControllerConstants.MSG_NEW_GROUP;
-			group = entityService.createGroup(VIRTUAL_GROUP_NAME, VIRTUAL_GROUP_DESCR);
+			group = virtualEntityService.createGroup(VIRTUAL_GROUP_NAME, VIRTUAL_GROUP_DESCR);
 		}
 
 		Long deviceId = getItemId(group.getDevice());
 
-		List<IEntity> allEntities = entityService.getEntities();
+		List<IEntity> allEntities = virtualEntityService.getEntities();
 
 		Map<Long, Long> ids = getEntitiesMap(group.getEntities());
 
-		List<IDevice> devices = entityService.getDevices();
+		List<IDevice> devices = virtualEntityService.getDevices();
 
 		addEmojisToModel(model, group);
 		model.addAttribute("group", group);
@@ -193,7 +195,7 @@ public class ViewVirtualEntityController extends BaseController {
 
 		if (entityIds != null) {
 			for (long id : entityIds) {
-				Entity entity = (Entity) entityService.getEntityById(id);
+				Entity entity = (Entity) virtualEntityService.getEntityById(id);
 				if (entity != null) {
 					entities.put(id, entity);
 				}
@@ -202,16 +204,16 @@ public class ViewVirtualEntityController extends BaseController {
 
 		Long deviceId = getFirstIdOrNull(devicesIds);
 
-		IDevice iDevice = entityService.getDeviceById(deviceId);
+		IDevice iDevice = virtualEntityService.getDeviceById(deviceId);
 		Device device = (iDevice == null) ? null : (Device) iDevice;
 
-		if (ItemAbstract.isNew(group)) {
+		if (IIdentifiable.isNew(group)) {
 			group.setDevice(device);
 			entities.values().stream().forEach(entity -> entity.setGroup(group));
 			
 			processGroupSave(group, new HashSet(entities.values()), emojiCode);
 		} else {
-			Group gr = (Group) entityService.getGroupById(group.getId());
+			Group gr = (Group) virtualEntityService.getGroupById(group.getId());
 			Set<Entity> entitiesSet = new HashSet(addUnexisting(entities, gr.getEntities()).values());
 			gr.setNameDescriptionEmoji(group);
 			setParentOrNull(entityIds, entitiesSet, gr, device);
@@ -225,13 +227,13 @@ public class ViewVirtualEntityController extends BaseController {
 	private void processGroupSave(IGroup group, Set<Entity> entities, String emojiCode) {
 		group.setEntities(entities);
 		group.setEmoji(Emoji.getByCode(emojiCode));
-		entityService.save(group);
+		virtualEntityService.save(group);
 	}
 
 	@GetMapping("/entities")
 	public String getVirtualEntities(Model model) throws IOException {
 
-		List<IEntity> entities = entityService.getEntities();
+		List<IEntity> entities = virtualEntityService.getEntities();
 
 		model.addAttribute("entities", entities);
 		model.addAttribute(PROP_BASE_URL, getBaseUrl());
@@ -241,20 +243,20 @@ public class ViewVirtualEntityController extends BaseController {
 	@GetMapping(value = "/editEntity")
 	public String editVirtualEntities(@RequestParam(name = "id", required = true) Long id, Model model) {
 
-		IEntity entity = entityService.getEntityById(id);
+		IEntity entity = virtualEntityService.getEntityById(id);
 		String preffix = ControllerConstants.MSG_EDIT_ENTITY;
 		if (entity == null) {
 			preffix = ControllerConstants.MSG_NEW_ENTITY;
-			entity = entityService.createEntity(getVirtualName(VIRTUAL_ENTITY_NAME), VIRTUAL_ENTITY_DESCR);
+			entity = virtualEntityService.createEntity(getVirtualName(VIRTUAL_ENTITY_NAME), VIRTUAL_ENTITY_DESCR);
 		}
 
 		Long groupId = getItemId(entity.getGroup());
 
-		List<IEntityField> allEntityFields = entityService.getEntityFields();
+		List<IEntityField> allEntityFields = virtualEntityService.getEntityFields();
 
 		Map<Long, Long> ids = getEntitiesMap(entity.getEntityFields());
 
-		List<IGroup> groups = entityService.getGroups();
+		List<IGroup> groups = virtualEntityService.getGroups();
 		
 		addEmojisToModel(model, entity);
 		model.addAttribute("entity", entity);
@@ -279,7 +281,7 @@ public class ViewVirtualEntityController extends BaseController {
 
 		if (entityFieldIds != null) {
 			for (long id : entityFieldIds) {
-				EntityField ef = (EntityField) entityService.getEntityFieldById(id);
+				EntityField ef = (EntityField) virtualEntityService.getEntityFieldById(id);
 				if (ef != null) {
 					entityFields.put(id, ef);
 				}
@@ -288,16 +290,16 @@ public class ViewVirtualEntityController extends BaseController {
 
 		Long groupId = getFirstIdOrNull(groupIds);
 
-		IGroup iGroup = entityService.getGroupById(groupId);
+		IGroup iGroup = virtualEntityService.getGroupById(groupId);
 		Group group = (iGroup == null) ? null : (Group) iGroup;
 
-		if (ItemAbstract.isNew(entity)) {
+		if (IIdentifiable.isNew(entity)) {
 			entity.setGroup(group);
 			entityFields.values().stream().forEach(ef -> ef.setEntity(entity));
 			
 			processEntitySave(entity, new HashSet(entityFields.values()), emojiCode);
 		} else {
-			Entity ent = (Entity) entityService.getEntityById(entity.getId());
+			Entity ent = (Entity) virtualEntityService.getEntityById(entity.getId());
 
 			Set<IEntityField> entityfieldsSet = new HashSet(
 					addUnexisting(entityFields, ent.getEntityFields()).values());
@@ -313,19 +315,19 @@ public class ViewVirtualEntityController extends BaseController {
 	}
 	private void addEmojisToModel(Model model, IItemAbstract item) {
 		model.addAttribute("emojis", Emoji.getAllEmojis());
-		model.addAttribute("emoji", item.getEmoji()!=null?item.getEmoji().getCode():Emoji.EMPTY_EMOJI.getCode());
+		model.addAttribute("emoji", item!=null && item.getEmoji()!=null?item.getEmoji().getCode():Emoji.EMPTY_EMOJI.getCode());
 	}
 	
 	private void processEntitySave(IEntity entity, Set<IEntityField> entityfieldsSet, String emojiCode) {
 		entity.setEntityFields(entityfieldsSet);
 		entity.setEmoji(Emoji.getByCode(emojiCode));
-		entityService.save(entity);
+		virtualEntityService.save(entity);
 	}
 
 	@GetMapping("/entityFields")
 	public String getVirtualEntityFields(Model model) throws IOException {
 
-		List<IEntityField> entityFields = entityService.getEntityFields();
+		List<IEntityField> entityFields = virtualEntityService.getEntityFields();
 
 		model.addAttribute("entityFields", entityFields);
 		model.addAttribute(PROP_BASE_URL, getBaseUrl());
@@ -336,17 +338,17 @@ public class ViewVirtualEntityController extends BaseController {
 	@GetMapping(value = "/editEntityField")
 	public String editVirtualEntityFields(@RequestParam(name = "id", required = true) Long id, Model model) {
 
-		IEntityField entityField = entityService.getEntityFieldById(id);
+		IEntityField entityField = virtualEntityService.getEntityFieldById(id);
 		String preffix = ControllerConstants.MSG_EDIT_ENTITY_FIELD;
 		if (entityField == null) {
 			preffix = ControllerConstants.MSG_NEW_ENTITY_FIELD;
-			entityField = entityService.createEntityFieldFloat(getVirtualName(VIRTUAL_ENTITY_FIELD_NAME),
+			entityField = virtualEntityService.createEntityFieldFloat(getVirtualName(VIRTUAL_ENTITY_FIELD_NAME),
 					VIRTUAL_ENTITY_FIELD_DESCR);
 		}
 
 		Long entityId = getItemId(entityField.getEntity());
 
-		List<IEntity> entities = entityService.getEntities();
+		List<IEntity> entities = virtualEntityService.getEntities();
 
 		addEmojisToModel(model, entityField);
 		model.addAttribute("entityField", entityField);
@@ -366,13 +368,13 @@ public class ViewVirtualEntityController extends BaseController {
 
 		Long entityId = getFirstIdOrNull(entityIds);
 
-		IEntity iEntity = entityService.getEntityById(entityId);
+		IEntity iEntity = virtualEntityService.getEntityById(entityId);
 		Entity entity = (iEntity == null) ? null : (Entity) iEntity;
 
-		if (ItemAbstract.isNew(entityField)) {
+		if (IIdentifiable.isNew(entityField)) {
 			processEntityFieldSave(entityField, entity, emojiCode);
 		} else {
-			EntityField ef = (EntityField) entityService.getEntityFieldById(entityField.getId());
+			EntityField ef = (EntityField) virtualEntityService.getEntityFieldById(entityField.getId());
 			ef.setNameDescriptionEmoji(entityField);
 			ef.setMeasure(entityField.getMeasure());
 
@@ -385,7 +387,7 @@ public class ViewVirtualEntityController extends BaseController {
 	private void processEntityFieldSave(IEntityField entityField, Entity entity, String emojiCode) {
 		entityField.setEntity(entity);
 		entityField.setEmoji(Emoji.getByCode(emojiCode));
-		entityService.save(entityField);
+		virtualEntityService.save(entityField);
 	}
 
 	@GetMapping("/calculatedEntityFields")
@@ -402,7 +404,7 @@ public class ViewVirtualEntityController extends BaseController {
 		ICalculatedEntityField calculatedField = Optional.ofNullable(calculatedEntityFieldService.getCalculatedEntityField(id))
 				.orElse(calculatedEntityFieldService.createNewCalculatedEntityField(getVirtualName(VIRTUAL_ENTITY_FIELD_NAME), VIRTUAL_ENTITY_FIELD_DESCR));
 		
-		String preffix = ItemAbstract.isNew(calculatedField)?
+		String preffix = IIdentifiable.isNew(calculatedField)?
 			preffix = ControllerConstants.MSG_NEW_CALC_ENTITY_FIELD:ControllerConstants.MSG_EDIT_CALC_ENTITY_FIELD;
 		
 		Set<IEntityField> targetFields = calculatedEntityFieldService.getAllTargetFields();
@@ -437,7 +439,7 @@ public class ViewVirtualEntityController extends BaseController {
 
 		if (sourceFieldIds != null) {
 			for (long id : sourceFieldIds) {
-				IEntityField ef = entityService.getEntityFieldById(id);
+				IEntityField ef = virtualEntityService.getEntityFieldById(id);
 				if (ef != null) {
 					sourceEntityFields.put(id, ef);
 				}
@@ -445,9 +447,9 @@ public class ViewVirtualEntityController extends BaseController {
 		}
 
 		ICalculatedEntityFieldCalculator calculator = calculatedEntityFieldService.getCalculator(calculatorName);
-		IEntityField targetfield = entityService.getEntityFieldById(targetFieldId);
+		IEntityField targetfield = virtualEntityService.getEntityFieldById(targetFieldId);
 		
-		if (ItemAbstract.isNew(calcEntityField)) {
+		if (IIdentifiable.isNew(calcEntityField)) {
 			calcEntityField.setCalculator(calculator);
 			calcEntityField.setTargetEntityField(targetfield);
 			calcEntityField.setSourceEntityFields(new HashSet(sourceEntityFields.values()));
@@ -468,6 +470,47 @@ public class ViewVirtualEntityController extends BaseController {
 		
 		
 		return "redirect:/virtual/calculatedEntityFields";
+	}
+	
+
+	@GetMapping("/editEntityFieldEnabledValues")
+	public String getEntityFieldEnabledValues(@RequestParam(name = "id", required = true) Long id, Model model) {
+		
+		IEntityField entityField = virtualEntityService.getEntityFieldById(id);
+		EntityFieldEnabledValueFloat entityFieldEnabledValue = new EntityFieldEnabledValueFloat(); 
+		model.addAttribute("entityField", entityField);
+		model.addAttribute("entityFieldEnabledValue", entityFieldEnabledValue);
+		addEmojisToModel(model, null);
+		model.addAttribute("emojiCode", Emoji.EMPTY_EMOJI.getCode());
+		
+		model.addAttribute(PROP_PAGE_HEADER, getPageHeader(ControllerConstants.MSG_EDIT_ENTITY_FIELD_ENABLED_VALUE, entityField));
+		
+		return "virtual/entityFieldEnabledValue.html";
+	}
+	
+	@GetMapping("/deleteEntityFieldEnabledValue_{id}_{entityFieldId}")
+	public String deleteEntityFieldEnabledValue(@PathVariable(name = "id", required = true) Long id, 
+			@PathVariable(name = "entityFieldId", required = true) Long entityFieldId, Model model) {
+		virtualEntityService.deleteEntityFieldEnabledValue(id);
+		
+		return "redirect:/virtual/editEntityFieldEnabledValues?id=" + entityFieldId.toString();
+	}
+	
+	@PostMapping(value = "/addEntityFieldEnabledValue")
+	public String addEntityFieldEnabledValue(
+			@ModelAttribute("field") EntityFieldEnabledValueFloat enabledValue,
+			@RequestParam(value = "emojiCode", required = false) String emoji,
+			@RequestParam(value = "entityFieldId", required = true) Long entityFieldId,
+			Model model) {
+		
+		IEntityField entityField = virtualEntityService.getEntityFieldById(entityFieldId);
+		
+		enabledValue.setEntityField((EntityField)entityField);
+		enabledValue.setEmoji(Emoji.getByCode(emoji));
+		
+		virtualEntityService.save(enabledValue);
+		
+		return "redirect:/virtual/editEntityFieldEnabledValues?id=" + entityFieldId.toString();
 	}
 
 	private void setParentOrNull(long[] expected, Set<? extends IItemAbstract> children, IItemAbstract parent,

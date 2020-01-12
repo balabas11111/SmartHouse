@@ -18,7 +18,6 @@ import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.ICalculatedEntityFieldRepository;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.exception.BadValueException;
-import com.google.common.collect.Lists;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;

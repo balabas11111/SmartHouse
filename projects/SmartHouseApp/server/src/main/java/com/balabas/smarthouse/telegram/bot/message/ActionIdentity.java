@@ -1,12 +1,10 @@
 package com.balabas.smarthouse.telegram.bot.message;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_UNKNOWN;
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_DEVICE_VALUE_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SETUP;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_SELECT_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_HELP;
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_MAIN_COMMANDS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_METRICS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_DEVICES;
 

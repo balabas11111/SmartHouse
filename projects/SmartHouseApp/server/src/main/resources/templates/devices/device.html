@@ -98,7 +98,7 @@
 								<!--<td th:text="${entityField.getDescriptionByDescriptionField()}">description</td>-->
 								<td><a th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityField.id})}"
 										th:text="${entityField.getDescriptionByDescriptionField()}">description</a></td>
-								<td th:text="${entityField.getValueStr()}">value</td>
+								<td th:text="${entityField.getValueStrByEntityFieldEnabledValueDescription()}">value</td>
 								<td th:text="${entityField.getMeasure()}">measure</td>
 							</tr>
 							<tr th:each="entityField : ${holder.getEntityFieldsImageable().get(entity.name)}">

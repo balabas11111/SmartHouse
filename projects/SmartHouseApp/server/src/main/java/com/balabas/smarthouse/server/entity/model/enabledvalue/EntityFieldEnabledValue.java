@@ -30,6 +30,7 @@ public abstract class EntityFieldEnabledValue<T> implements IEntityFieldEnabledV
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Setter
 	@Getter
 	Long id;
 	

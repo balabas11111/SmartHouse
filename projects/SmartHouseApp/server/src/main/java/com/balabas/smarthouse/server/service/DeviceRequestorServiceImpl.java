@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.controller.service;
+package com.balabas.smarthouse.server.service;
 
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_GROUP;
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_FIELD_ENTITY_NAME;
@@ -21,7 +21,6 @@ import com.balabas.smarthouse.server.DeviceConstants;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.service.DeviceSecurityService;
-import com.balabas.smarthouse.server.service.HttpRequestExecutor;
 
 import lombok.extern.log4j.Log4j2;
 

@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.controller.service;
+package com.balabas.smarthouse.server.service;
 
 import com.balabas.smarthouse.server.model.request.DeviceRequest;
 import com.balabas.smarthouse.server.model.request.DeviceRequestResult;

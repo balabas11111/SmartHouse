@@ -1,10 +1,12 @@
 package com.balabas.smarthouse.server.entity.model.virtual;
 
 import java.util.List;
+import java.util.Set;
 
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 @SuppressWarnings("rawtypes")
@@ -34,6 +36,8 @@ public interface IVirtualEntityService {
 	
 	List<IEntityField> getEntityFields();
 	
+	Set<IEntityFieldEnabledValue> getEntityFieldEnabledValues(Long entityFieldId);
+	
 	void save(IDevice device);
 	
 	void save(IGroup group);
@@ -41,4 +45,8 @@ public interface IVirtualEntityService {
 	void save(IEntity entity);
 	
 	void save(IEntityField entityField);
+	
+	void save(IEntityFieldEnabledValue entityFieldEnabledValue);
+
+	void deleteEntityFieldEnabledValue(Long id);
 }

@@ -106,12 +106,4 @@ public class ItemAbstract implements IItemAbstract {
 	public void setParent(IItemAbstract parent) {
 	}
 
-	public static boolean existsAndIsNotNew(IItemAbstract item) {
-		return item != null && !isNew(item);
-	}
-
-	public static boolean isNew(IItemAbstract item) {
-		return item.getId() == null || item.getId().equals(0L);
-	}
-	
 }

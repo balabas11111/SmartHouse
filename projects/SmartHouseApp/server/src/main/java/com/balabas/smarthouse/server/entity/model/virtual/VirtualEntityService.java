@@ -1,7 +1,9 @@
 package com.balabas.smarthouse.server.entity.model.virtual;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldFloat;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
@@ -160,6 +163,28 @@ public class VirtualEntityService implements IVirtualEntityService {
 	public void save(IEntityField entityField) {
 		entityField.setVirtualized(true);
 		deviceService.save(entityField);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Set<IEntityFieldEnabledValue> getEntityFieldEnabledValues(Long entityFieldId) {
+		IEntityField field = deviceService.getEntityFieldById(entityFieldId);
+		
+		if(field == null || field.getEntityFieldEnabledValues() == null) {
+			return Collections.emptySet();
+		}
+		
+		return field.getEntityFieldEnabledValues();
+	}
+
+	@Override
+	public void save(IEntityFieldEnabledValue entityFieldEnabledValue) {
+		deviceService.save(entityFieldEnabledValue);
+	}
+
+	@Override
+	public void deleteEntityFieldEnabledValue(Long id) {
+		deviceService.deleteEntityFieldEnabledValue(id);
 	}
 
 }

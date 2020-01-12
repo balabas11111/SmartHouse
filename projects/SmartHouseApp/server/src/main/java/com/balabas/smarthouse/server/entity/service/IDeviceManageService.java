@@ -68,6 +68,8 @@ public interface IDeviceManageService {
 	IEntity save(IEntity entity);
 
 	IEntityField save(IEntityField entityField);	
+	
+	IEntityFieldEnabledValue save(IEntityFieldEnabledValue entityFieldEnabledValue);
 
 	List<Device> getDevicesRequireUpdate();
 
@@ -130,5 +132,7 @@ public interface IDeviceManageService {
 	Set<IEntityField> getCurrentEntityFields();
 	
 	Set<IEntityField> getCurrentEntityFields(Predicate<IEntityField> pred);
+
+	void deleteEntityFieldEnabledValue(Long id);
 
 }

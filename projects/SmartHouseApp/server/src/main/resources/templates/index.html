@@ -49,15 +49,11 @@
 			
 			<div class="tab-content">
 			  <div id="panelVirtualDevices" class="tab-pane fade in active">
-			    <h3>Виртуальные устройства</h3>
 			    <p>
-					<a th:href="@{~/virtual/devices}"
-									class="btn btn-default">&#x1F4DD;Редактирование</a>
-					<table th:replace="devices/templates :: ItemAbstractListTable(devices=${virtualDevices})"></table>
+					<table th:replace="devices/templates :: VirtualDeviceListTable(devices=${virtualDevices})"></table>
 				</p>
 			  </div>
 			  <div id="panelDevices" class="tab-pane fade">
-			    <h3>Физические устройства</h3>
 			    <p>
 					<table th:replace="devices/templates :: ItemAbstractListTable(devices=${realDevices})"></table>
 				</p>

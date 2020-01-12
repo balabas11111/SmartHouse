@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.model.entityfields;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
@@ -244,6 +245,32 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 			throw new IllegalArgumentException("IEntity expected");
 		}
 		setEntity((Entity) parent);
+	}
+	
+	@Override
+	public Set<IEntityFieldEnabledValue> getEntityFieldEnabledValues() {
+		if(this.getEnabledValues() == null) {
+			return Collections.emptySet();
+		}
+		return this.getEnabledValues();
+	}
+	
+	@Override
+	public String getValueStrByEntityFieldEnabledValueDescription() {
+		IEntityFieldEnabledValue enVal = getEntityFieldEnabledValueByCurrentValue();
+		String result = null;
+		
+		if(enVal != null) {
+			if (Float.class.isAssignableFrom(enVal.getValue().getClass())) {
+				result = enVal.getEmoji() + " " + enVal.getDescription();
+			} else {
+				result = enVal.getDescription();
+			}
+		} else {
+			result = getValueStr();
+		}
+		
+		return result;
 	}
 	
 }

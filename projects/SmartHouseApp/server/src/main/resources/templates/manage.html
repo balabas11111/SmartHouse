@@ -35,14 +35,19 @@
 	<div id="main-content">
 
 		<div class="container">
-			<h1>Управление сервером</h1>
+			<h3>Управление сервером</h3>
 		</div>
 
 	<form th:action="@{/restartServer}" method="post">
 		<input type="submit" class="btn btn-default" value="Перезапустить" />
 
 	</form>		
-					
+	
+	<div class="container">
+		<h3>Управление виртуальными устройствами</h3>
+	</div>
+	<a th:href="@{~/virtual/devices}"
+									class="btn btn-default">&#x1F4DD;Редактирование</a>				
 			
 	</div>
 	<!-- end column content -->

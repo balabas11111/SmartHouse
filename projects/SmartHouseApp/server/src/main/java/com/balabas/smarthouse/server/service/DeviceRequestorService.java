@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.controller.service;
+package com.balabas.smarthouse.server.service;
 
 import java.util.Map;
 
