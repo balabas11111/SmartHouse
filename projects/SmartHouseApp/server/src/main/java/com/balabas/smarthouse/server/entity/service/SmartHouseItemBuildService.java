@@ -78,10 +78,10 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
-import com.balabas.smarthouse.server.entity.model.virtual.ICalculatedEntityFieldService;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldIncorrectValueRepository;
 import com.balabas.smarthouse.server.util.MathUtil;
+import com.balabas.smarthouse.server.DeviceConstants;
 import com.balabas.smarthouse.server.entity.behaviour.IEntityBehaviourService;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
@@ -109,9 +109,6 @@ public class SmartHouseItemBuildService {
 	
 	@Autowired
 	IDeviceRepository deviceRepository;
-	
-	@Autowired
-	ICalculatedEntityFieldService dataCollectorService;
 	
 	@Autowired
 	IEntityMessageProcessor entityMessageProcessor;
@@ -172,13 +169,34 @@ public class SmartHouseItemBuildService {
 		}
 		return isOk;
 	}
+	
+	public static boolean isFieldCurrent(IEntityField ef) {
+		return ef!=null && DeviceConstants.GROUP_SENSORS.equals(ef.getEntity().getGroup().getName()) &&
+				ef.isNotCalculated() && isFieldValueSaveAble(ef) && ef.getMeasure()!=null;
+	}
 
 	public static boolean isFieldValueSaveAble(IEntityField entityField) {
 		return entityField != null && !StringUtils.isEmpty(entityField.getName())
 				&& !notUpdateableEntityFields.contains(entityField.getName())
-				&& !entityField.getEntity().getDescriptionField().equals(entityField.getTemplateName())
+				&& !equalStr(entityField.getEntity().getDescriptionField(), entityField.getTemplateName())
 				&& entityField.isActive()
 				&& !String.class.isAssignableFrom(entityField.getClazz());
+	}
+	
+	public static boolean equalStr(String str1, String str2) {
+		if(str1 == null && str2 == null) {
+			return true;
+		}
+		
+		if(str1!=null) {
+			return str1.equals(str2);
+		}
+		
+		if(str2 != null) {
+			return str2.equals(str1);
+		}
+		
+		return false;
 	}
 
 	private boolean updateEntityValuesFromJson(Entity entity, JSONObject entityJson,
@@ -238,6 +256,7 @@ public class SmartHouseItemBuildService {
 					entityMessageProcessor.processMessage(entity, entityJson.optJSONObject(ENTITY_FIELD_MESSAGE));
 				}
 			}
+			
 		}
 
 		return setOk;
@@ -296,7 +315,6 @@ public class SmartHouseItemBuildService {
 
 		}
 		
-		changedValues.stream().map(value-> value.getEntityField()).forEach(ef -> dataCollectorService.apply(ef));
 	}
 
 	private static boolean setEntityFieldValueWithNoCheck(IEntityField entityField, String value, boolean setOk) {
@@ -543,7 +561,7 @@ public class SmartHouseItemBuildService {
 				countField.setActive(true);
 				countField.setCalculated(true);
 
-				dataCollectorService.apply(countField);
+				//dispatchEntityFieldValueChange(countField);
 				
 				// entity.addGeneratedField(countField);
 				return (EntityField) countField;
@@ -602,13 +620,14 @@ public class SmartHouseItemBuildService {
 		entityField.setMeasure(measure);
 		entityField.setLastDate(new Date());
 
-		dataCollectorService.apply(entityField);
+		boolean changed = false;
 		
 		try {
 			if (!(ENTITY_FIELD_DESCRIPTION.equals(entityField.getTemplateName())
 					&& !StringUtils.isEmpty(entityField.getValueStr())
 					&& EntityFieldString.class.equals(entityField.getClass()))) {
-				entityField.setValueWithNoCheckStr(value);
+				
+				changed = entityField.setValueWithNoCheckStr(value);
 			}
 
 		} catch (IllegalArgumentException e) {
@@ -619,6 +638,10 @@ public class SmartHouseItemBuildService {
 				fieldClassType, entityField);
 		entityField.setEnabledValues(enabledValues);
 
+		if(changed) {
+			//dispatchEntityFieldValueChange(entityField);
+		}
+		
 		return entityField;
 	}
 

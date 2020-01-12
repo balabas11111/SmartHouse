@@ -53,6 +53,7 @@
 					<td>Описание</td>
 					<td><input type="text" th:field="*{description}"></td>
 				</tr>
+				<tr th:replace="devices/templates :: EmojiRow(emojis=${emojis}, emojiCode=${emoji})"></tr>
 			</table>
 
 			<h4>Группа принадлежит устройству</h4>

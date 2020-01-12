@@ -16,8 +16,15 @@ public class EntityFieldString extends EntityField<String> implements IEntityFie
 	private String valueSt;
 	
 	@Override
-	public void setValue(String value) {
-		this.valueSt = value;
+	public boolean setValue(String value) {
+		boolean equals = equalsAsValue(this.valueSt, value);
+
+		if(!equals) {
+			this.valueSt = value;
+		}
+		
+		return !equals;	
+
 	}
 	
 	@Override

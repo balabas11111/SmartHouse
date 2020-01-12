@@ -21,10 +21,15 @@ public class CalculatorAverageNumber implements ICalculatedEntityFieldCalculator
 	public String getDescription() {
 		return "Среднее значение полей поставщиков";
 	}
+	
+	@Override
+	public String getParameterDescription() {
+		return "";
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public IEntityField calculate(IEntityField targetEntityField, Collection<IEntityField> sourceEntityFields) {
+	public IEntityField calculate(IEntityField targetEntityField, Collection<IEntityField> sourceEntityFields, String parameter) {
 		Float total = 0F;
 		int count = 0;
 		

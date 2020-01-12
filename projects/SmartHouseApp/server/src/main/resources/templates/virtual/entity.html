@@ -53,6 +53,7 @@
 					<td>Описание</td>
 					<td><input type="text" th:field="*{description}"></td>
 				</tr>
+				<tr th:replace="devices/templates :: EmojiRow(emojis=${emojis}, emojiCode=${emoji})"></tr>
 			</table>
 
 			<h4>Датчик принадлежит группе</h4>
@@ -61,7 +62,7 @@
 
 			<h4>Виртуальные показатели датчика</h4>
 
-			<table th:replace="templates :: ItemAbstractTable(items=${entityFields}, chbxName='entityFields', checkedItemMap=${selectedEntityFields})"></table>
+			<table th:replace="templates :: ItemAbstractTable(items=${entityFields}, chbxName='entityFieldsIds', checkedItemMap=${selectedEntityFields})"></table>
 
 			<div>
 				<input type="submit" class="btn btn-default" value="&#x1F4BE; Сохранить" />

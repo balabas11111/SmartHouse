@@ -1,14 +1,15 @@
 package com.balabas.smarthouse.server.entity.model.virtual;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 @SuppressWarnings("rawtypes")
-public interface ICalculatedEntityFieldService {
+public interface ICalculatedEntityFieldService extends IEntityFieldValueChangeDispatcher {
 	
-	void apply(IEntityField sourceEntityField);
+	void dispatchEntityFieldValueChange(IEntityField sourceEntityField, Map<Long, IEntityField> uniqueChangedTargets);
 	
 	List<ICalculatedEntityField> getCalculatedEntityFieldsBySourceField(IEntityField sourceEntityField);
 

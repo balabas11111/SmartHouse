@@ -53,6 +53,11 @@
 					<td>Описание</td>
 					<td><input type="text" th:field="*{description}"></td>
 				</tr>
+				<tr>
+					<td>Величина</td>
+					<td><input type="text" th:field="*{measure}"></td>
+				</tr>
+				<tr th:replace="devices/templates :: EmojiRow(emojis=${emojis}, emojiCode=${emoji})"></tr>
 			</table>
 
 			<h4>Показатель принадлежит датчику</h4>

@@ -3,6 +3,7 @@ package com.balabas.smarthouse.server.entity.model.entityfields;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import com.balabas.smarthouse.server.util.MathUtil;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 @Entity
@@ -41,8 +42,14 @@ public class EntityFieldBoolean extends EntityField<Boolean> implements IEntityF
 	}
 
 	@Override
-	public void setValue(Boolean value) {
-		this.valueB = value;
+	public boolean setValue(Boolean value) {
+		boolean equals = equalsAsValue(this.valueB, value);
+
+		if(!equals) {
+			this.valueB = value;
+		}
+		
+		return !equals;
 	}
 
 	@Override

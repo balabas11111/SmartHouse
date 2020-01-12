@@ -23,7 +23,6 @@ public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionabl
 	default void setNameDescriptionEmoji(IItemAbstract source) {
 		setName(source.getName());
 		setDescription(source.getDescription());
-		setEmoji(source.getEmoji());
 	}
 	
 	default void setDescriptionIfEmpty(String description) {
@@ -31,6 +30,22 @@ public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionabl
 			setDescription(description);
 		}
 	}
+	default boolean equalsAsValue(Object val1, Object val2) {
+		boolean result = false;
+		
+		if(val1 == null && val2 == null) {
+			return true;
+		}
+		if(val1!=null) {
+			return val1.equals(val2);
+		}
+		if(val2!=null) {
+			return val2.equals(val1);
+		}
+		
+		return result;
+	}
+	
 	String getEmojiDescriptionByDescriptionField();
 	String getEmojiDescriptionByDescriptionFieldWithParent();
 	

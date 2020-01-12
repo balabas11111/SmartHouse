@@ -28,8 +28,14 @@ public class EntityFieldInteger extends EntityField<Integer> implements IEntityF
 	}
 
 	@Override
-	public void setValue(Integer value) {
-		this.valueI = value;
+	public boolean setValue(Integer value) {
+		boolean equals = equalsAsValue(this.valueI, value);
+
+		if(!equals) {
+			this.valueI = value;
+		}
+		
+		return !equals;
 	}
 
 }

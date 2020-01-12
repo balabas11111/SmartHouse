@@ -3,11 +3,15 @@ package com.balabas.smarthouse.server.entity.model.virtual;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -36,56 +40,57 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 	@Getter
 	List<ICalculatedEntityField> calculatedEntityFields = new ArrayList<ICalculatedEntityField>();
 
+	@PostConstruct
+	@Transactional
+	public void afterPropertiesSet() throws Exception {
+
+		calculatedEntityFieldRepository.findAll().forEach(d -> {
+			calculatedEntityFields.add(d);
+		});
+
+		log.info("---Loaded persisted calculatedEntityField---");
+	}
+	
 	@Override
-	public void apply(IEntityField sourceEntityField) {
+	public void dispatchEntityFieldValueChange(IEntityField sourceEntityField, Map<Long, IEntityField> uniqueChangedTargets) {
 		List<ICalculatedEntityField> calcFields = getCalculatedEntityFieldsBySourceField(sourceEntityField);
 
-		List<IEntityField> changedFields = Lists.newArrayList();
+		//List<IEntityField> changedFields = Lists.newArrayList();
 
-		for (ICalculatedEntityField cef : calcFields) {
-			if (cef.getCalculator() == null) {
-				cef.setCalculator(entityFieldCalculatorService.getCalculator(cef.getCalculatorName()));
-			}
-			IEntityField targetField = deviceService.getEntityFieldById(cef.getTargetEntityField().getId());
-
-			cef.setTargetEntityField(targetField);
-
-			Set<IEntityField> fields = new LinkedHashSet<IEntityField>();
-			for (IEntityField f : cef.getSourceEntityFields()) {
-				fields.add(deviceService.getEntityFieldById(f.getId()));
-
-			}
-
-			cef.setSourceEntityFields(fields);
-
-			try {
-				Object valueOld = sourceEntityField.getValue();
-				cef.apply(sourceEntityField);
-
-				boolean changed = false;
-
-				if (valueOld != null && valueOld.equals(sourceEntityField.getValue())) {
-					changed = false;
-				} else if (sourceEntityField.getValue() != null) {
-					changed = sourceEntityField.getValue().equals(valueOld);
-				} else if (valueOld != null) {
-					changed = valueOld.equals(sourceEntityField.getValue());
+		if(calcFields.size()>0) {
+			//log.info("Total calcFields " + calcFields.size());
+		
+			for (ICalculatedEntityField cef : calcFields) {
+				
+				if (cef.getCalculator() == null) {
+					cef.setCalculator(entityFieldCalculatorService.getCalculator(cef.getCalculatorName()));
 				}
-
-				if (changed) {
+				IEntityField targetField = deviceService.getEntityFieldById(cef.getTargetEntityField().getId());
+	
+				cef.setTargetEntityField(targetField);
+	
+				Set<IEntityField> fields = new LinkedHashSet<IEntityField>();
+				for (IEntityField f : cef.getSourceEntityFields()) {
+					fields.add(deviceService.getEntityFieldById(f.getId()));
+				}
+	
+				cef.setSourceEntityFields(fields);
+	
+				try {
+					cef.apply(sourceEntityField);
+	
 					IEntityField resultField = deviceService.getEntityFieldById(targetField.getId());
 					if (resultField != targetField) {
 						resultField.setValueStr(targetField.getValueStr());
 					}
-					changedFields.add(resultField);
+					uniqueChangedTargets.put(resultField.getId(), resultField);
+					//changedFields.add(resultField);
+	
+				} catch (BadValueException e) {
+					e.printStackTrace();
 				}
-
-			} catch (BadValueException e) {
-				e.printStackTrace();
 			}
 		}
-		log.info("total calculatedFields changed =" + changedFields.size());
-		deviceService.saveEntityFieldValues(changedFields);
 	}
 
 	@Override
@@ -106,7 +111,7 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 
 	@Override
 	public Set<IEntityField> getAllSourceFields() {
-		return deviceService.getEntityFields(ef -> !ef.isVirtualized());
+		return deviceService.getCurrentEntityFields(ef -> !ef.isVirtualized());
 	}
 	
 	@Override

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.balabas.smarthouse.server.controller.ControllerConstants;
 import com.balabas.smarthouse.server.controller.service.DeviceRequestorService;
@@ -44,6 +46,7 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.model.virtual.ICalculatedEntityFieldService;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityRepository;
@@ -117,6 +120,9 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Autowired
 	IDeviceMqService deviceMqService;
+	
+	@Autowired
+	ICalculatedEntityFieldService calculatedFieldsService;
 
 	boolean isNotFirstIteration = false;
 
@@ -135,6 +141,8 @@ public class DeviceManageService implements IDeviceManageService {
 
 			if (d.isVirtualized()) {
 				state = State.CONNECTED;
+				
+				d.getEntityFields().stream().forEach(ef -> ef.setActive(true));
 			}
 			d.setState(state);
 			save(d);
@@ -329,8 +337,8 @@ public class DeviceManageService implements IDeviceManageService {
 							.forEach(entityField -> itemBuildService.processValueChange(entityField, null,
 									changedValues));
 
-					entityFieldService.saveAll(changedValues);
-
+					processChangedEntityFieldValuesList(changedValues, device, null);
+					
 					alarmService.loadAlarmsForDevice(device);
 
 					deviceMqService.initTopicsToFromDevice(device.getName());
@@ -351,10 +359,11 @@ public class DeviceManageService implements IDeviceManageService {
 				State newState = (ok) ? State.UPDATED : State.BAD_DATA;
 				stateChanger.stateChanged(device, newState);
 
+				String msg = "";
+				
 				if ((mock || logDeviceValuesChange) && changedValues.size() > 0) {
 
 					Map<String, String> changedValuesStrMap = Maps.newHashMap();
-					String tmp = "";
 
 					for (EntityFieldValue value : changedValues) {
 						String entityName = value.getEntityField().getEntity().getName();
@@ -364,13 +373,10 @@ public class DeviceManageService implements IDeviceManageService {
 						changedValuesStrMap.put(entityName, changedValuesStrMap.get(entityName)
 								+ value.getEntityField().getName() + "=" + value.getValueStr() + "; ");
 					}
-					tmp = Joiner.on(") ").withKeyValueSeparator("(").join(changedValuesStrMap) + ")";
-
-					log.info("Values changed = " + changedValues.size() + " device=" + device.getDescription()
-							+ " VALUES " + tmp);
+					msg = Joiner.on(") ").withKeyValueSeparator("(").join(changedValuesStrMap) + ")";
 				}
-
-				entityFieldService.saveAll(changedValues);
+				
+				processChangedEntityFieldValuesList(changedValues, device, msg);
 
 				doSave = false;
 			}
@@ -384,6 +390,29 @@ public class DeviceManageService implements IDeviceManageService {
 			log.debug("device saved");
 		}
 
+	}
+	
+	private void processChangedEntityFieldValuesList(List<EntityFieldValue> changedValues, IDevice device, String tmp) {
+		String msg = "Values changed = " + changedValues.size() + " device=" + device.getDescription();
+		
+		if(!StringUtils.isEmpty(msg)) {
+			msg += " VALUES " + tmp;
+		}
+		
+		log.info(msg);
+
+		Map<Long, IEntityField> changedTargets = new HashMap<Long, IEntityField>();
+		
+		changedValues.stream().map(value-> value.getEntityField()).forEach(ef -> 
+					calculatedFieldsService.dispatchEntityFieldValueChange(ef, changedTargets));
+		
+		if(changedTargets.size()>0) {
+			log.info("total changedCalculatedFields " + changedTargets.size());
+			
+			saveEntityFieldValues(new ArrayList(changedTargets.values()));
+		}
+		
+		entityFieldService.saveAll(changedValues);
 	}
 
 	@Override
@@ -781,8 +810,15 @@ public class DeviceManageService implements IDeviceManageService {
 
 		} else if (entityField.getEntity() != null && entityField.getEntity().getId() != null) {
 			log.info("added Entityfield");
-			Entity realEntity = getEntityById(entityField.getEntity().getId());
-			realEntity.getEntityFields().add(entityField);
+			Long entityId = entityField.getEntity().getId();
+			Entity realEntity = getEntityById(entityId);
+			
+			if(realEntity!=null) {
+				realEntity.getEntityFields().add(entityField);
+			} else {
+				log.error("Real entity with id =" + entityId);
+			}
+			
 		}
 
 		putFieldValuesFromMap(entityField, fieldValues);
@@ -801,7 +837,8 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Override
 	public List<Entity> getEntitiesForDevice(Long deviceId) {
-		return getDeviceById(deviceId).getEntities().stream()
+		Set<Entity> entities = getDeviceById(deviceId).getEntities(); 
+		return entities.stream()
 				.filter(e -> ItemType.SENSORS.equals(e.getGroup().getType())).sorted(ItemAbstract::compareByName)
 				.collect(Collectors.toList());
 	}
@@ -823,14 +860,12 @@ public class DeviceManageService implements IDeviceManageService {
 
 		return holder;
 	}
-
+	
 	@Override
 	public List<IEntityField> getCurrentEntityFieldsForDevice(Long deviceId) {
-
 		return getDeviceById(deviceId).getEntities().stream().flatMap(entity -> entity.getEntityFields().stream())
-				.filter(IEntityField::isNotCalculated).filter(SmartHouseItemBuildService::isFieldValueSaveAble)
+				.filter(SmartHouseItemBuildService::isFieldCurrent)
 				.sorted(ItemAbstract::compareByName).collect(Collectors.toList());
-
 	}
 
 	@Override
@@ -929,12 +964,35 @@ public class DeviceManageService implements IDeviceManageService {
 	public Set<IEntityField> getEntityFields() {
 		return getEntities().stream()
 			.flatMap(e -> e.getEntityFields().stream())
-			.collect(Collectors.toSet());
+			.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	@Override
 	public Set<IEntityField> getEntityFields(Predicate<? super IEntityField> filter) {
-		return getEntityFields().stream().filter(filter).collect(Collectors.toSet());
+		return getEntityFields().stream().filter(filter).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
+	@Override
+	public Set<IDevice> getDevicesNotVirtualized() {
+		Predicate<IDevice> pred = d -> !d.isVirtualized();
+		return getDevices(pred);
+	}
+
+	@Override
+	public Set<IDevice> getDevices(Predicate<IDevice> pred) {
+		return getDevices().stream().filter(pred).collect(Collectors.toCollection(LinkedHashSet::new));
+	}
+
+	@Override
+	public Set<IEntityField> getCurrentEntityFields() {
+		return getEntities().stream().flatMap(entity -> entity.getEntityFields().stream())
+				.filter(SmartHouseItemBuildService::isFieldCurrent)
+				.sorted(IEntityField::compareByIdChain)
+				.collect(Collectors.toCollection(LinkedHashSet::new));
+	}
+
+	@Override
+	public Set<IEntityField> getCurrentEntityFields(Predicate<IEntityField> pred) {
+		return getCurrentEntityFields().stream().filter(pred).collect(Collectors.toCollection(LinkedHashSet::new));
+	}
 }

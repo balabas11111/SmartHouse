@@ -14,6 +14,7 @@ import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldFloat;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
@@ -66,7 +67,12 @@ public class VirtualEntityService implements IVirtualEntityService {
 
 	@Override
 	public IEntityField getEntityFieldById(Long id) {
-		return Optional.ofNullable((IEntityField)deviceService.getEntityFieldById(id)).orElse(entityFieldService.getEntityFieldById(id).orElseGet(null));
+		IEntityField result = deviceService.getEntityFieldById(id);
+		
+		if(result == null) {
+			result = entityFieldService.getEntityFieldById(id).orElse(null); 
+		}
+		return result;
 	}
 
 	@Override
@@ -137,6 +143,9 @@ public class VirtualEntityService implements IVirtualEntityService {
 
 	@Override
 	public void save(IGroup group) {
+		if(group.getType()==null) {
+			group.setType(ItemType.SENSORS);
+		}
 		group.setVirtualized(true);
 		deviceService.save(group);
 	}

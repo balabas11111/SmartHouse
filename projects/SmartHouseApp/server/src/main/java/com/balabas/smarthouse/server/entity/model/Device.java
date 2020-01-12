@@ -1,6 +1,8 @@
 package com.balabas.smarthouse.server.entity.model;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -78,6 +80,11 @@ public class Device extends ItemAbstract implements IDevice {
 	@Override
 	public IEntityField getEntityField(Long entityId, Long entityFieldId) {
 		return getEntity(entityId).getEntityField(entityFieldId);
+	}
+	@Override
+	public Set<IEntityField> getEntityFields() {
+		 return getGroups().stream().flatMap(group -> group.getEntities().stream())
+				 .flatMap(e -> e.getEntityFields().stream()).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 	/*
 	@Override

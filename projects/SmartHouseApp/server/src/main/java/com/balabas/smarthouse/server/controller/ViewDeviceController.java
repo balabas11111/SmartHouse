@@ -7,10 +7,13 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.balabas.smarthouse.server.entity.model.Device;
+import com.balabas.smarthouse.server.entity.model.virtual.IVirtualEntityService;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
+import com.balabas.smarthouse.server.service.IServerManageService;
 
 @Controller
 public class ViewDeviceController {
@@ -20,16 +23,29 @@ public class ViewDeviceController {
 
 	@Autowired
 	private IDeviceManageService deviceService;
+	
+	@Autowired
+	private IVirtualEntityService virtualDeviceService;
+	
+	@Autowired
+	private IServerManageService serverManageService;
 
 	@GetMapping("/")
 	public String getRoot(Model model) {
 		return "redirect:/index";
 	}
+	
+	@GetMapping("/manage")
+	public String getManagePage(Model model) {
+		return "manage.html";
+	}
 
 	@GetMapping("/index")
 	public String getDevicesIndex(Model model) {
 		model.addAttribute("serverName", serverName);
-		model.addAttribute("devices", deviceService.getDevices());
+		model.addAttribute("realDevices", deviceService.getDevicesNotVirtualized());
+		model.addAttribute("virtualDevices", virtualDeviceService.getDevices());
+		
 		return "index.html";
 	}
 
@@ -78,5 +94,11 @@ public class ViewDeviceController {
 		model.addAttribute("serverName", serverName);
 		return "settings.html";
 	}
-
+	
+	@PostMapping("/restartServer") 
+	public String restartServer(Model model){
+		serverManageService.restartServer(5);
+		return "redirect:/manage";
+	}
+	
 }

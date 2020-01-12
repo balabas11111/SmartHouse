@@ -105,16 +105,30 @@ public interface IDeviceManageService {
 	
 	default <T extends IItemAbstract> int getItemIndexById(Collection<T> list, Long id) {
 		int result = -1;
+		boolean found = false;
 		if (id != null) {
 			for (T item : list) {
 				result++;
 				if (id.equals(item.getId())) {
+					found = true;
 					return result;
 				}
 			}
 		}
 
+		if(!found) {
+			result = -1;
+		}
+		
 		return result;
 	}
+
+	Set<IDevice> getDevicesNotVirtualized();
+
+	Set<IDevice> getDevices(Predicate<IDevice> pred);
+
+	Set<IEntityField> getCurrentEntityFields();
+	
+	Set<IEntityField> getCurrentEntityFields(Predicate<IEntityField> pred);
 
 }

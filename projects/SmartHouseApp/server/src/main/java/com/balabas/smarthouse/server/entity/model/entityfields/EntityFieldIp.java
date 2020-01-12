@@ -39,8 +39,8 @@ public class EntityFieldIp extends EntityField<InetAddress> implements IEntityFi
 	}
 	
 	@Override
-	public void setValueWithNoCheck(InetAddress value) {
-		setValue(value);
+	public boolean setValueWithNoCheck(InetAddress value) {
+		return setValue(value);
 	}
 	
 	@Override
@@ -74,8 +74,14 @@ public class EntityFieldIp extends EntityField<InetAddress> implements IEntityFi
 	}
 
 	@Override
-	public void setValue(InetAddress value) {
-		this.valueAddr = value;
+	public boolean setValue(InetAddress value) {
+		boolean equals = equalsAsValue(this.valueAddr, value);
+
+		if(!equals) {
+			this.valueAddr = value;
+		}
+		
+		return !equals;
 	}
 
 }

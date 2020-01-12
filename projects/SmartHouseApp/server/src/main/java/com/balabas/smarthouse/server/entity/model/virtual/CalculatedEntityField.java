@@ -35,6 +35,10 @@ public class CalculatedEntityField extends ItemAbstract implements ICalculatedEn
 	@Getter
 	@Setter
 	private String calculatorName;
+	
+	@Getter
+	@Setter
+	private String parameter;
 
 	@Transient
 	@Getter
@@ -66,7 +70,7 @@ public class CalculatedEntityField extends ItemAbstract implements ICalculatedEn
 		}
 
 		if (applied && getCalculator() != null) {
-			getCalculator().calculate(getTargetEntityField(), getSourceEntityFields());
+			getCalculator().calculate(getTargetEntityField(), getSourceEntityFields(), parameter);
 		}
 	}
 

@@ -47,6 +47,7 @@
 					<thead>
 						<tr>
 							<th>Идентификатор</th>
+							<th>Датчик</th>
 							<th>Описание</th>
 							<th></th>
 						</tr>
@@ -54,7 +55,8 @@
 					<tbody>
 						<tr th:each="item : ${entityFields}">
 							<td th:text="${item.name}">Идентификатор</td>
-							<td th:text="${item.description}">Описание</td>
+							<td th:text="${item.getEntity().getEmojiDescriptionByDescriptionField()}">Датчик</td>
+							<td th:text="${item.getEmojiDescriptionByDescriptionField()}">Описание</td>
 							<td>
 								<a th:href="@{~/virtual/editEntityField?id={id}(id=${item.id})}"
 									class="btn btn-default">&#x1F4DD;Редактировать</a>

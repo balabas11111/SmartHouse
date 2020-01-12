@@ -57,8 +57,8 @@ public interface IEntityField<T> extends IItemAbstract {
 
 	Object getValueObj();
 
-	void setValueWithNoCheckStr(String value);
-	void setValueWithNoCheck(T value);
+	boolean setValueWithNoCheckStr(String value);
+	boolean setValueWithNoCheck(T value);
 	
 	Date getLastDate();
 	void setLastDate(Date lastDate);
@@ -76,5 +76,21 @@ public interface IEntityField<T> extends IItemAbstract {
 	String getMeasure();
 	
 	String getFullName();
+	
+	public static int compareByIdChain(IEntityField ia1, IEntityField ia2) {
+		int result = -1;
+		
+		result = ia1.getEntity().getDevice().getId().compareTo(ia2.getEntity().getDevice().getId());
+		
+		if(result == 0) {
+			result = ia1.getEntity().getId().compareTo(ia2.getEntity().getId());
+		}
+		
+		if(result == 0) {
+			result = ia1.getEntity().getId().compareTo(ia2.getEntity().getId());
+		}
+		
+		return result;
+	}
 	
 }

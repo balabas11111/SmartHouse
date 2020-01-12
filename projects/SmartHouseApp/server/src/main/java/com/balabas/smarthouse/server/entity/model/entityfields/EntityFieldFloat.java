@@ -20,7 +20,12 @@ public class EntityFieldFloat extends EntityField<Float> implements IEntityField
 
 	@Override
 	protected Float fromString(String value) {
+		try {
 		return MathUtil.precise(Float.valueOf(value));
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			throw e;
+		}
 	}
 
 	@Override
@@ -29,8 +34,14 @@ public class EntityFieldFloat extends EntityField<Float> implements IEntityField
 	}
 
 	@Override
-	public void setValue(Float value) {
-		this.valueF = MathUtil.precise(value);
+	public boolean setValue(Float value) {
+		boolean equals = equalsAsValue(this.valueF, value);
+
+		if(!equals) {
+			this.valueF = MathUtil.precise(value);
+		}
+		
+		return !equals;
 	}
 
 }

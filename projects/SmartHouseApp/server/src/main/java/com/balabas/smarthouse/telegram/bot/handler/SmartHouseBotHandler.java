@@ -11,7 +11,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.thymeleaf.util.StringUtils;
 
-import com.balabas.smarthouse.server.ServerApplication;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IEntity;
@@ -19,6 +18,7 @@ import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IActionService;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
+import com.balabas.smarthouse.server.service.IServerManageService;
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.telegram.bot.AfterBotRegistration;
 import com.balabas.smarthouse.telegram.bot.message.ActionIdentity;
@@ -80,7 +80,10 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 	
 	@Autowired
 	IEntityAlarmService alarmService;
-
+	
+	@Autowired
+	IServerManageService serverManageService;
+	
 	@Autowired
 	CurrentEditActionService currentEditActions;
 
@@ -152,7 +155,7 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 			switch (action.getAction()) {
 			case ACTION_TYPE_RESTART_APPLICATION:
 				msgs.add(messageBuilder.createServerWillBeRestartedMsg(context));
-				ServerApplication.restart();
+				serverManageService.restartServer(5);
 				break;
 			case ACTION_TYPE_VIEW_MAIN_COMMANDS:
 				msgs.addAll(messageBuilder.createViewOfMainCommands(action, context));

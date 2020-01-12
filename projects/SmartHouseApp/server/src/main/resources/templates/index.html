@@ -42,8 +42,29 @@
 		<div class="container">
 			<h1>Устройства сервера</h1>
 			
-			<a th:href="@{~/virtual/devices}"
-									class="btn btn-default">&#x1F4DD;Виртуальные устройства</a>
+			<ul class="nav nav-tabs">
+			  <li class="active"><a data-toggle="tab" href="#panelVirtualDevices">Виртуальные устройства</a></li>
+			  <li><a data-toggle="tab" href="#panelDevices">Физические устройства</a></li>
+			</ul>
+			
+			<div class="tab-content">
+			  <div id="panelVirtualDevices" class="tab-pane fade in active">
+			    <h3>Виртуальные устройства</h3>
+			    <p>
+					<a th:href="@{~/virtual/devices}"
+									class="btn btn-default">&#x1F4DD;Редактирование</a>
+					<table th:replace="devices/templates :: ItemAbstractListTable(devices=${virtualDevices})"></table>
+				</p>
+			  </div>
+			  <div id="panelDevices" class="tab-pane fade">
+			    <h3>Физические устройства</h3>
+			    <p>
+					<table th:replace="devices/templates :: ItemAbstractListTable(devices=${realDevices})"></table>
+				</p>
+			  </div>
+			</div>
+			
+			<!--
 									
 			<div>
 				<table id="devicesTable" class="table table-dark table-striped">
@@ -85,7 +106,6 @@
 									<div class="modal-dialog">
 										<div class="modal-content">
 
-											<!-- Modal Header -->
 											<div class="modal-header">
 												<button type="button" class="close"
 													data-dismiss="modal">&times;</button>
@@ -94,7 +114,6 @@
 													Действительно удалить ?</h4>
 											</div>
 
-											<!-- Modal footer -->
 											<div class="modal-footer">
 											    <a th:href="@{~/deleteDevice_{id}(id=${device.id})}"
 													class="btn btn-success">Удалить</a>
@@ -111,7 +130,7 @@
 				</table>
 			</div>
 		</div>
-
+	-->
 	</div>
 	<!-- end column content -->
 	<footer th:replace="templates :: footer"></footer>

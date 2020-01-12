@@ -8,6 +8,6 @@ public interface IItemTypeable {
 	
 	ItemType getType();
 
-	//void setType(ItemType itemType);
+	void setType(ItemType itemType);
 
 }

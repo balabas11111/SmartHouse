@@ -53,6 +53,10 @@
 					<td>Описание</td>
 					<td><input type="text" th:field="*{description}"></td>
 				</tr>
+				<tr>
+					<td>Параметр вычислителя</td>
+					<td><input type="text" th:field="*{parameter}"></td>
+				</tr>
 			</table>
 
 			<h4>Вычислитель значения</h4>
@@ -63,6 +67,7 @@
 						<th></th>
 						<th>Наименование</th>
 						<th>Описание</th>
+						<th>Описание Параметра</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -75,17 +80,20 @@
 						<td><label
 							th:text="${item.description}"></label>
 						</td>
+						<td><label
+							th:text="${item.getParameterDescription()}"></label>
+						</td>
 					</tr>
 				</tbody>
 			</table>
 			
 			<h4>Вычисляемое поле (Цель)</h4>
 			
-			<table th:replace="templates :: ItemAbstractTableParent(items=${targetFields}, chbxName='targetFields', parentId=${targetFieldId})"></table>
+			<table th:replace="templates :: IEntityFieldTableParent(items=${targetFields}, chbxName='targetFields', parentId=${targetFieldId})"></table>
 
 			<h4>Поля - значения (Источник)</h4>
 
-			<table th:replace="templates :: ItemAbstractTable(items=${sourceFields}, chbxName='sourceFields', checkedItemMap=${selectedSourceFields})"></table>
+			<table th:replace="devices/templates :: EntityFieldsAbstractTable(items=${sourceFields}, chbxName='sourceFields', checkedItemMap=${selectedSourceFields})"></table>
 
 			<div>
 				<input type="submit" class="btn btn-default" value="&#x1F4BE; Сохранить" />

@@ -38,12 +38,12 @@
 	<div id="main-content">
 
 		<div class="container">
-			<h1>Вычисляемые показатели</h1>
+			<h1>Вычислители показателей</h1>
 			
 			<a th:href="@{~/virtual/editCalculatedEntityField?id=0}" class="btn btn-success">Новый</a>
 			
 			<div>
-				<table th:replace="templates :: ItemAbstractListTable(items=${fields}, editName='virtual/editCalculatedEntityField')"></table>
+				<table th:replace="templates :: ICalculatedEntityFieldListTable(items=${fields}, editName='virtual/editCalculatedEntityField')"></table>
 			</div>
 		</div>
 

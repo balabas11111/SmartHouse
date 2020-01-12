@@ -28,8 +28,14 @@ public class EntityFieldLong extends EntityField<Long> implements IEntityField<L
 	}
 
 	@Override
-	public void setValue(Long value) {
-		this.valueL = value;
+	public boolean setValue(Long value) {
+		boolean equals = equalsAsValue(this.valueL, value);
+
+		if(!equals) {
+			this.valueL = value;
+		}
+		
+		return !equals;		
 	}
 
 }

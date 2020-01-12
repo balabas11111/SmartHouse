@@ -56,7 +56,7 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td th:text="${device.name}">Идентификатор</td>
+						<td th:text="${device.getEmojiDescriptionByDescriptionField()}">Идентификатор</td>
 						<td th:text="${device.firmware}">Прошивка</td>
 						<!--<td th:text="${device.description}">Описание</td>-->
 						<td th:text="${device.getStateEmoji()} + ' ' + ${device.getStateDescription()}">Состояние</td>
@@ -89,7 +89,7 @@
 		<div id="sensorsContent" style="display: flex; flex-wrap: wrap;">
 			<div th:each="entity : ${sensors}" class="panel panel-default"
 				style="width: 400px; float: left; min-width: 300px; margin: 5px;">
-				<div th:text="${entity.emoji} + ' ' + ${entity.description}" class="panel-heading">Entity Heading</div>
+				<div th:text="${entity.getEmojiDescriptionByDescriptionField()}" class="panel-heading">Entity Heading</div>
 				<div class="panel-body">
 					<table id="devicesTable" class="table table-striped">
 						<tbody>
@@ -99,6 +99,7 @@
 								<td><a th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityField.id})}"
 										th:text="${entityField.getDescriptionByDescriptionField()}">description</a></td>
 								<td th:text="${entityField.getValueStr()}">value</td>
+								<td th:text="${entityField.getMeasure()}">measure</td>
 							</tr>
 							<tr th:each="entityField : ${holder.getEntityFieldsImageable().get(entity.name)}">
 								<td th:text="${entityField.emoji}">Emoji</td>

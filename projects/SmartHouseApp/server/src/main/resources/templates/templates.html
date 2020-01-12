@@ -9,6 +9,7 @@
 				<li><a href="index">Устройства</a></li>
 				<li><a href="alarms">Опасности</a></li>
 				<li><a href="listChart">Метрики</a></li>
+				<li><a href="manage">Управление</a></li>
 			</ul>
 		</div>
 	</div>
@@ -19,8 +20,7 @@
 				<li><a th:href="${baseUrl} + '/index'">Устройства</a></li>
 				<li><a th:href="${baseUrl} + '/alarms'">Опасности</a></li>
 				<li><a th:href="${baseUrl} + '/listChart'">Метрики</a></li>
-				<!--<li><a th:href="${baseUrl} + '/virtual/devices'">Виртуалки</a></li>
-				<li><a href="settings">Настройки</a></li>-->
+				<li><a th:href="${baseUrl} + '/manage'">Управление</a></li>
 			</ul>
 		</div>
 	</div>
@@ -30,8 +30,32 @@
 		<a th:href="@{~/virtual/groups}" class="btn">Группы</a>
 		<a th:href="@{~/virtual/entities}" class="btn">Датчики</a>
 		<a th:href="@{~/virtual/entityFields}" class="btn">Показатели</a>
-		<a th:href="@{~/virtual/calculatedEntityFields}" class="btn">Вычисляемые показатели</a>
+		<a th:href="@{~/virtual/calculatedEntityFields}" class="btn">Вычислители показателей</a>
 	</div>
+	
+	<table class="table table-dark table-striped" th:fragment="ICalculatedEntityFieldListTable(items, editName)">
+		<thead>
+			<tr>
+				<th>Идентификатор</th>
+				<th>Датчик</th>
+				<th>Показание</th>
+				<th>Описание</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="item : ${items}">
+				<td th:text="${item.name}">Идентификатор</td>
+				<td th:text="${item.getTargetEntityField().getEntity().getEmojiDescriptionByDescriptionField()}">Датчик</td>
+				<td th:text="${item.getTargetEntityField().getEmojiDescriptionByDescriptionField()}">Показание</td>
+				<td th:text="${item.description}">Описание</td>
+				<td>
+					<a th:href="@{~/{url}?id={id}(id=${item.id}, url=${editName})}"
+						class="btn btn-default">&#x1F4DD;Редактировать</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
 
 	<table class="table table-dark table-striped" th:fragment="ItemAbstractListTable(items, editName)">
 		<thead>
@@ -46,7 +70,7 @@
 				<td th:text="${item.name}">Идентификатор</td>
 				<td th:text="${item.description}">Описание</td>
 				<td>
-					<a th:href="@{~/{editName}?id={id}(id=${item.id})}"
+					<a th:href="@{~/{url}?id={id}(id=${item.id}, url=${editName})}"
 						class="btn btn-default">&#x1F4DD;Редактировать</a>
 				</td>
 			</tr>
@@ -67,6 +91,32 @@
 					th:value="${item.id}" th:checked="${checkedItemMap.containsKey(item.id)}" /></td>
 				<td><label
 					th:text="${item.name}"></label>
+				</td>
+				<td><label
+					th:text="${item.description}"></label>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<table class="table table-dark table-striped" th:fragment="IEntityFieldTableParent(items, chbxName, parentId)">
+		<thead>
+			<tr>
+				<th></th>
+				<th>Наименование</th>
+				<th>Датчик</th>
+				<th>Описание</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="item : ${items}">
+				<td><input type="checkbox" th:name="${chbxName}"
+					th:value="${item.id}" th:checked="${item.id.equals(parentId)}" /></td>
+				<td><label
+					th:text="${item.name}"></label>
+				</td>
+				<td><label
+					th:text="${item.entity.getEmojiDescriptionByDescriptionField()}"></label>
 				</td>
 				<td><label
 					th:text="${item.description}"></label>

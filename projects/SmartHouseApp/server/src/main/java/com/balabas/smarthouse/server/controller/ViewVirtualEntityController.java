@@ -28,8 +28,10 @@ import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldFloat;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.virtual.CalculatedEntityField;
 import com.balabas.smarthouse.server.entity.model.virtual.ICalculatedEntityField;
@@ -89,6 +91,7 @@ public class ViewVirtualEntityController extends BaseController {
 
 		Map<Long, Long> groupIds = getEntitiesMap(dev.getGroups());
 
+		addEmojisToModel(model, dev);
 		model.addAttribute("device", dev);
 		model.addAttribute("groups", allGroups);
 		model.addAttribute("groupIds", groupIds);
@@ -100,6 +103,7 @@ public class ViewVirtualEntityController extends BaseController {
 
 	@PostMapping(value = "/saveDevice")
 	public String saveVirtualDevice(@ModelAttribute("device") Device device,
+			@RequestParam(value = "emojiCode", required = false) String emojiCode,
 			@RequestParam(value = "groups", required = false) long[] groupIds, Model model) {
 
 		Map<Long, Group> groups = new HashMap<Long, Group>();
@@ -115,9 +119,8 @@ public class ViewVirtualEntityController extends BaseController {
 
 		if (ItemAbstract.isNew(device)) {
 			groups.values().stream().forEach(group -> group.setDevice(device));
-			device.setGroups(new HashSet(groups.values()));
-			device.setState(State.CONNECTED);
-			entityService.save(device);
+			
+			processDeviceSave(device, new HashSet(groups.values()), emojiCode);
 		} else {
 			Device dev = (Device) entityService.getDeviceById(device.getId());
 			Set<Group> groupSet = new HashSet(addUnexisting(groups, dev.getGroups()).values());
@@ -125,13 +128,17 @@ public class ViewVirtualEntityController extends BaseController {
 			dev.setNameDescriptionEmoji(device);
 			setParentOrNull(groupIds, groupSet, dev, null);
 
-			dev.setGroups(groupSet);
-			dev.setState(State.CONNECTED);
-
-			entityService.save(dev);
+			processDeviceSave(device, new HashSet(groups.values()), emojiCode);
 		}
 
 		return "redirect:/virtual/devices";
+	}
+	
+	private void processDeviceSave(IDevice device, Set<Group> groups, String emojiCode) {
+		device.setGroups(groups);
+		device.setState(State.CONNECTED);
+		device.setEmoji(Emoji.getByCode(emojiCode));
+		entityService.save(device);
 	}
 
 	@GetMapping("/groups")
@@ -163,6 +170,7 @@ public class ViewVirtualEntityController extends BaseController {
 
 		List<IDevice> devices = entityService.getDevices();
 
+		addEmojisToModel(model, group);
 		model.addAttribute("group", group);
 		model.addAttribute("entities", allEntities);
 		model.addAttribute("selectedEntities", ids);
@@ -177,6 +185,7 @@ public class ViewVirtualEntityController extends BaseController {
 
 	@PostMapping(value = "/saveGroup")
 	public String saveVirtualGroup(@ModelAttribute("group") Group group,
+			@RequestParam(value = "emojiCode", required = false) String emojiCode,
 			@RequestParam(value = "entities", required = false) long[] entityIds,
 			@RequestParam(value = "devices", required = false) long[] devicesIds, Model model) {
 
@@ -199,20 +208,24 @@ public class ViewVirtualEntityController extends BaseController {
 		if (ItemAbstract.isNew(group)) {
 			group.setDevice(device);
 			entities.values().stream().forEach(entity -> entity.setGroup(group));
-			group.setEntities(new HashSet(entities.values()));
-			entityService.save(group);
+			
+			processGroupSave(group, new HashSet(entities.values()), emojiCode);
 		} else {
 			Group gr = (Group) entityService.getGroupById(group.getId());
 			Set<Entity> entitiesSet = new HashSet(addUnexisting(entities, gr.getEntities()).values());
 			gr.setNameDescriptionEmoji(group);
 			setParentOrNull(entityIds, entitiesSet, gr, device);
 
-			gr.setEntities(entitiesSet);
-
-			entityService.save(gr);
+			processGroupSave(gr, entitiesSet, emojiCode);
 		}
 
 		return "redirect:/virtual/groups";
+	}
+	
+	private void processGroupSave(IGroup group, Set<Entity> entities, String emojiCode) {
+		group.setEntities(entities);
+		group.setEmoji(Emoji.getByCode(emojiCode));
+		entityService.save(group);
 	}
 
 	@GetMapping("/entities")
@@ -242,7 +255,8 @@ public class ViewVirtualEntityController extends BaseController {
 		Map<Long, Long> ids = getEntitiesMap(entity.getEntityFields());
 
 		List<IGroup> groups = entityService.getGroups();
-
+		
+		addEmojisToModel(model, entity);
 		model.addAttribute("entity", entity);
 		model.addAttribute("entityFields", allEntityFields);
 		model.addAttribute("selectedEntityFields", ids);
@@ -257,7 +271,8 @@ public class ViewVirtualEntityController extends BaseController {
 
 	@PostMapping(value = "/saveEntity")
 	public String saveVirtualEntities(@ModelAttribute("entity") Entity entity,
-			@RequestParam(value = "entityFields", required = false) long[] entityFieldIds,
+			@RequestParam(value = "emojiCode", required = false) String emojiCode,
+			@RequestParam(value = "entityFieldsIds", required = false) long[] entityFieldIds,
 			@RequestParam(value = "groups", required = false) long[] groupIds, Model model) {
 
 		Map<Long, IEntityField> entityFields = new HashMap<Long, IEntityField>();
@@ -279,9 +294,8 @@ public class ViewVirtualEntityController extends BaseController {
 		if (ItemAbstract.isNew(entity)) {
 			entity.setGroup(group);
 			entityFields.values().stream().forEach(ef -> ef.setEntity(entity));
-			entity.setEntityFields(new HashSet(entityFields.values()));
-
-			entityService.save(entity);
+			
+			processEntitySave(entity, new HashSet(entityFields.values()), emojiCode);
 		} else {
 			Entity ent = (Entity) entityService.getEntityById(entity.getId());
 
@@ -289,13 +303,23 @@ public class ViewVirtualEntityController extends BaseController {
 					addUnexisting(entityFields, ent.getEntityFields()).values());
 
 			ent.setNameDescriptionEmoji(entity);
+			
 			setParentOrNull(entityFieldIds, entityfieldsSet, ent, group);
 
-			ent.setEntityFields(entityfieldsSet);
-			entityService.save(ent);
+			processEntitySave(ent, entityfieldsSet, emojiCode);
 		}
 
 		return "redirect:/virtual/entities";
+	}
+	private void addEmojisToModel(Model model, IItemAbstract item) {
+		model.addAttribute("emojis", Emoji.getAllEmojis());
+		model.addAttribute("emoji", item.getEmoji()!=null?item.getEmoji().getCode():Emoji.EMPTY_EMOJI.getCode());
+	}
+	
+	private void processEntitySave(IEntity entity, Set<IEntityField> entityfieldsSet, String emojiCode) {
+		entity.setEntityFields(entityfieldsSet);
+		entity.setEmoji(Emoji.getByCode(emojiCode));
+		entityService.save(entity);
 	}
 
 	@GetMapping("/entityFields")
@@ -324,6 +348,7 @@ public class ViewVirtualEntityController extends BaseController {
 
 		List<IEntity> entities = entityService.getEntities();
 
+		addEmojisToModel(model, entityField);
 		model.addAttribute("entityField", entityField);
 
 		model.addAttribute("allEntities", entities);
@@ -335,7 +360,8 @@ public class ViewVirtualEntityController extends BaseController {
 	}
 
 	@PostMapping(value = "/saveEntityField")
-	public String saveVirtualEntityField(@ModelAttribute("entityField") EntityField entityField,
+	public String saveVirtualEntityField(@ModelAttribute("entityField") EntityFieldFloat entityField,
+			@RequestParam(value = "emojiCode", required = false) String emojiCode,
 			@RequestParam(value = "entities", required = false) long[] entityIds, Model model) {
 
 		Long entityId = getFirstIdOrNull(entityIds);
@@ -344,19 +370,22 @@ public class ViewVirtualEntityController extends BaseController {
 		Entity entity = (iEntity == null) ? null : (Entity) iEntity;
 
 		if (ItemAbstract.isNew(entityField)) {
-			entityField.setEntity(entity);
-
-			entityService.save(entityField);
+			processEntityFieldSave(entityField, entity, emojiCode);
 		} else {
 			EntityField ef = (EntityField) entityService.getEntityFieldById(entityField.getId());
 			ef.setNameDescriptionEmoji(entityField);
+			ef.setMeasure(entityField.getMeasure());
 
-			ef.setEntity(entity);
-
-			entityService.save(ef);
+			processEntityFieldSave(ef, entity, emojiCode);
 		}
 
 		return "redirect:/virtual/entityFields";
+	}
+	
+	private void processEntityFieldSave(IEntityField entityField, Entity entity, String emojiCode) {
+		entityField.setEntity(entity);
+		entityField.setEmoji(Emoji.getByCode(emojiCode));
+		entityService.save(entityField);
 	}
 
 	@GetMapping("/calculatedEntityFields")
@@ -382,7 +411,7 @@ public class ViewVirtualEntityController extends BaseController {
 		Map<Long, Long> selectedSourceFields = getEntitiesMap(calculatedField.getSourceEntityFields()); 
 		
 		model.addAttribute("field", calculatedField);
-		model.addAttribute("targetFieldId", calculatedField.getTargetEntityField()!=null?calculatedField.getTargetEntityField():null);
+		model.addAttribute("targetFieldId", calculatedField.getTargetEntityField()!=null?calculatedField.getTargetEntityField().getId():null);
 		model.addAttribute("targetFields", targetFields);
 		
 		model.addAttribute("sourceFields", sourceFields);
@@ -427,6 +456,7 @@ public class ViewVirtualEntityController extends BaseController {
 		} else {
 			ICalculatedEntityField ent = calculatedEntityFieldService.getCalculatedEntityFieldById(calcEntityField.getId());
 
+			ent.setParameter(calcEntityField.getParameter());
 			ent.setNameDescriptionEmoji(calcEntityField);
 			
 			ent.setCalculator(calculator);

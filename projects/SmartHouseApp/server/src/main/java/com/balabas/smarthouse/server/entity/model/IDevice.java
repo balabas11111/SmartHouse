@@ -32,5 +32,6 @@ public interface IDevice extends IStateable, IItemAbstract {
 	//Entity getEntityByRemoteId(int remoteId);
 	IEntityField getEntityField(Long entityId, Long entityFieldId);
 	boolean isInOkState();
+	Set<IEntityField> getEntityFields();
 	
 }

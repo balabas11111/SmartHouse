@@ -58,7 +58,7 @@
 					<tbody>
 						<tr th:each="device : ${devices}">
 							<td th:text="${device.name}">Идентификатор</td>
-							<td th:text="${device.description}">Описание</td>
+							<td th:text="${device.getEmojiDescriptionByDescriptionField()}">Описание</td>
 							<td>
 								<a th:href="@{~/virtual/editDevice?id={id}(id=${device.id})}"
 									class="btn btn-default">&#x1F4DD;Редактировать</a>

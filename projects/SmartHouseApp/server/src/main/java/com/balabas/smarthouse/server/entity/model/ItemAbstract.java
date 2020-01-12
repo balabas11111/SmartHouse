@@ -79,7 +79,12 @@ public class ItemAbstract implements IItemAbstract {
 
 	@Override
 	public String getDescriptionByDescriptionField() {
-		return getDescription();
+		String result = getDescription();
+		
+		if(StringUtils.isEmpty(result)) {
+			result = getName();
+		}
+		return result;
 	}
 
 	@Override

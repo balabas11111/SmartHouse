@@ -72,7 +72,7 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 
 	public abstract Class getClazz();
 
-	public abstract void setValue(T value);
+	public abstract boolean setValue(T value);
 	
 	protected abstract T fromString(String value);
 
@@ -129,13 +129,13 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	}
 	
 	@Override
-	public void setValueWithNoCheck(T value) {
-		setValue(value);
+	public boolean setValueWithNoCheck(T value) {
+		return setValue(value);
 	}
 	
 	@Override
-	public void setValueWithNoCheckStr(String value) {
-		setValueWithNoCheck(fromString(value));
+	public boolean setValueWithNoCheckStr(String value) {
+		return setValueWithNoCheck(fromString(value));
 	}
 
 	@JsonIgnore

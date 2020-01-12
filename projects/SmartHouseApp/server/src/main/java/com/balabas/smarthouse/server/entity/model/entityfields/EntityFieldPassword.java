@@ -28,8 +28,14 @@ public class EntityFieldPassword extends EntityField<String> implements IEntityF
 	}
 
 	@Override
-	public void setValue(String value) {
-		this.valueP = value;
+	public boolean setValue(String value) {
+		boolean equals = equalsAsValue(this.valueP, value);
+
+		if(!equals) {
+			this.valueP = value;
+		}
+		
+		return !equals;	
 	}
 	
 	
