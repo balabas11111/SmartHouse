@@ -7,9 +7,12 @@ import org.springframework.stereotype.Component;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.exception.BadValueException;
 
+import lombok.extern.log4j.Log4j2;
+
 @Component
 @CalculatedEntityFieldCalculator
 @SuppressWarnings("rawtypes")
+@Log4j2
 public class CalculatorAverageNumber implements ICalculatedEntityFieldCalculator {
 
 	@Override
@@ -35,10 +38,16 @@ public class CalculatorAverageNumber implements ICalculatedEntityFieldCalculator
 		
 		for(IEntityField f : sourceEntityFields) {
 			try {
-				Number val = (Number) f.getValue();
-				total = total + val.floatValue();
-				count++;
-			}catch(Exception e) {}
+				Float val = getFieldValue(f, parameter);
+				
+				if(val!=null) {
+					total = total + val.floatValue();
+					count++;
+				}
+				
+			}catch(Exception e) {
+				log.error(e.getMessage(), e);
+			}
 		}
 		
 		total = total / count;
@@ -48,6 +57,14 @@ public class CalculatorAverageNumber implements ICalculatedEntityFieldCalculator
 		} catch (BadValueException e) {}
 		
 		return targetEntityField;
+	}
+	
+	protected Float getFieldValue(IEntityField sourceField, String parameter) {
+		Number val = (Number) sourceField.getValue();
+		if(val==null) {
+			return null;
+		}
+		return val.floatValue();
 	}
 
 }

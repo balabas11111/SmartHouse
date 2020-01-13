@@ -5,12 +5,9 @@ import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
@@ -33,9 +30,6 @@ public class CalculatedEntityField extends ItemAbstract implements ICalculatedEn
 	@Getter
 	@Setter
 	@ManyToMany(targetEntity = EntityField.class, fetch = FetchType.EAGER)
-	@JoinTable(
-	        uniqueConstraints = @UniqueConstraint(columnNames={"calculated_entity_field_id","source_entity_fields_id"})
-	    )
 	private Set<IEntityField> sourceEntityFields;
 
 	@Getter

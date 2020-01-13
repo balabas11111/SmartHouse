@@ -11,6 +11,13 @@ public interface ICalculatedEntityFieldCalculator extends INameable, IDescriptio
 
 	IEntityField calculate(IEntityField targetEntityField, Collection<IEntityField> sourceEntityFields, String parameter);
 
+	default String getName() {
+		return this.getClass().getSimpleName();
+	}
 	default void setName(String name) {	}
+	
+	default String getParameterDescription() {
+		return "";
+	}
 	default void setDescription(String description) {	}
 }
