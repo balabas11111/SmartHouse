@@ -232,7 +232,7 @@ public class SmartHouseItemBuildService {
 								if(entityField !=null) {
 									entityFieldIncorrectValueRepository.insertEntityFieldIncorrectValue(entityField.getId(), valStr, new Date());
 								} 
-								log.error(entity.getDevice().getName() +" " + entity.getName() + " " +entityField.getName() + " INCORRECT value " +valStr);
+								log.error(entity.getDevice().getName() +" " + entity.getName() + " " +entityField.getName() + " " +entityField.getDescription() + " INCORRECT value " +valStr);
 							}
 							
 							if(entityField !=null) {
