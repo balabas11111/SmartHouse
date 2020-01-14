@@ -60,6 +60,9 @@ public class ViewEntityFieldController {
 	
 	@Value("${smarthouse.server.chart.legendPosition:top}")
 	private String legendPosition;
+	
+	@Value("${smarthouse.server.chart.default.start.hrs:12}")
+	private Integer defaulrStartHrs;
 
 	@Autowired
 	private IDeviceManageService deviceService;
@@ -80,7 +83,7 @@ public class ViewEntityFieldController {
 		}
 		
 		if(afterDate == null && beforeDate == null) {
-			afterDate = (new Date()).getTime() - 24*60*60*1000;
+			afterDate = (new Date()).getTime() - defaulrStartHrs*60*60*1000;
 			return String.format(URL_REDIRECT_ENTITY_FIELD_FORMAT, entityFieldId, afterDate);
 		}
 
