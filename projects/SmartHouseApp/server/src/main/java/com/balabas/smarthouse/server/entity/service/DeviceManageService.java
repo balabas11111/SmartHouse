@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.balabas.smarthouse.server.controller.ControllerConstants;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
@@ -76,6 +75,9 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Value("${smarthouse.server.log.device.values.change:true}")
 	private boolean logDeviceValuesChange;
+	
+	@Value("${smarthouse.server.log.device.calculatedValues.change:true}")
+	private boolean logDeviceCalculatedValuesChange;
 
 	@Value("${smarthouse.server.fields.data.save.before.post:true}")
 	private boolean saveDataBeforeSendToDevice;
@@ -147,7 +149,7 @@ public class DeviceManageService implements IDeviceManageService {
 
 			if (d.isVirtualized()) {
 				d.setInitialized(true);
-				state = State.CONNECTED;
+				state = State.OK;
 				
 				d.getEntityFields().stream().forEach(ef -> ef.setActive(true));
 			}
@@ -344,7 +346,7 @@ public class DeviceManageService implements IDeviceManageService {
 							.forEach(entityField -> itemBuildService.processValueChange(entityField, null,
 									changedValues));
 
-					processChangedEntityFieldValuesList(changedValues, device, null);
+					processChangedEntityFieldValuesList(changedValues, device);
 					
 					alarmService.loadAlarmsForDevice(device);
 
@@ -365,25 +367,8 @@ public class DeviceManageService implements IDeviceManageService {
 
 				State newState = (ok) ? State.UPDATED : State.BAD_DATA;
 				stateChanger.stateChanged(device, newState);
-
-				String msg = "";
 				
-				if ((mock || logDeviceValuesChange) && changedValues.size() > 0) {
-
-					Map<String, String> changedValuesStrMap = Maps.newHashMap();
-
-					for (EntityFieldValue value : changedValues) {
-						String entityName = value.getEntityField().getEntity().getName();
-						if (!changedValuesStrMap.containsKey(entityName)) {
-							changedValuesStrMap.put(entityName, new String(""));
-						}
-						changedValuesStrMap.put(entityName, changedValuesStrMap.get(entityName)
-								+ value.getEntityField().getName() + "=" + value.getValueStr() + "; ");
-					}
-					msg = Joiner.on(") ").withKeyValueSeparator("(").join(changedValuesStrMap) + ")";
-				}
-				
-				processChangedEntityFieldValuesList(changedValues, device, msg);
+				processChangedEntityFieldValuesList(changedValues, device);
 
 				doSave = false;
 			}
@@ -399,22 +384,41 @@ public class DeviceManageService implements IDeviceManageService {
 
 	}
 	
-	private void processChangedEntityFieldValuesList(List<EntityFieldValue> changedValues, IDevice device, String tmp) {
-		String msg = "Values changed = " + changedValues.size() + " device=" + device.getDescription();
-		
-		if(!StringUtils.isEmpty(msg)) {
-			msg += " VALUES " + tmp;
+	private void processChangedEntityFieldValuesList(List<EntityFieldValue> changedValues, IDevice device) {
+		if ((mock || logDeviceValuesChange) && changedValues.size() > 0) {
+			StringBuilder msg = new StringBuilder();
+
+			Map<String, String> changedValuesStrMap = Maps.newHashMap();
+
+			for (EntityFieldValue value : changedValues) {
+				String entityName = value.getEntityField().getEntity().getName();
+				if (!changedValuesStrMap.containsKey(entityName)) {
+					changedValuesStrMap.put(entityName, new String(""));
+				}
+				changedValuesStrMap.put(entityName, changedValuesStrMap.get(entityName)
+						+ value.getEntityField().getName() + "=" + value.getValueStr() + "; ");
+			}
+			String tmp = Joiner.on(") ").withKeyValueSeparator("(").join(changedValuesStrMap) + ")";
+			msg.append("Values changed = ");
+			msg.append(changedValues.size());
+			msg.append(" device = ");
+			msg.append(device.getDescription());
+			
+			msg.append(" VALUES ");
+			msg.append(tmp);
+			
+			log.info(msg);
 		}
 		
-		log.info(msg);
-
 		Map<Long, IEntityField> changedTargets = new HashMap<Long, IEntityField>();
 		
 		changedValues.stream().map(value-> value.getEntityField()).forEach(ef -> 
 					calculatedFieldsService.dispatchEntityFieldValueChange(ef, changedTargets));
 		
 		if(changedTargets.size()>0) {
-			log.info("total changedCalculatedFields " + changedTargets.size());
+			if(logDeviceCalculatedValuesChange) {
+				log.info("total changedCalculatedFields " + changedTargets.size());
+			}
 			
 			saveEntityFieldValues(new ArrayList(changedTargets.values()));
 		}

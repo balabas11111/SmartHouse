@@ -177,9 +177,14 @@ public class EntityViewBuilder {
 
 				} else {
 					builder.append("  ");
-					builder.append(ef.getValueStr());
+					builder.append(ef.getValueStrByEntityFieldEnabledValueDescription());
+					builder.append("  ");
+					builder.append(ef.getMeasure());
 				}
 				builder.append("; ");
+				if(ef.isVirtualized()) {
+					builder.append("\n");
+				}
 			}
 		}
 		builder.append("\n");

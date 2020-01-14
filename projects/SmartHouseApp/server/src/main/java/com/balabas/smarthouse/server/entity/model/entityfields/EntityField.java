@@ -152,7 +152,7 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	@JsonIgnore
 	@Override
 	public String getMeasure() {
-		return measure==null?"":measure;
+		return StringUtils.isEmpty(measure)?"":measure;
 	}
 
 	@JsonIgnore
