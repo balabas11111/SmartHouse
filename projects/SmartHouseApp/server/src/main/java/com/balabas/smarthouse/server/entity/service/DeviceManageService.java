@@ -146,6 +146,7 @@ public class DeviceManageService implements IDeviceManageService {
 			State state = State.CONSTRUCTED;
 
 			if (d.isVirtualized()) {
+				d.setInitialized(true);
 				state = State.CONNECTED;
 				
 				d.getEntityFields().stream().forEach(ef -> ef.setActive(true));
