@@ -34,7 +34,7 @@ import com.balabas.smarthouse.server.entity.service.IEntityFieldService;
 import com.balabas.smarthouse.server.entity.service.IViewChartEntityFieldsService;
 import com.balabas.smarthouse.server.view.chart.ChartDataSeries;
 import com.balabas.smarthouse.server.view.chart.IMetrics;
-import com.balabas.smarthouse.server.view.chart.ViewChartEntityFields;
+import com.balabas.smarthouse.server.view.chart.Metric;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -117,7 +117,7 @@ public class ViewEntityFieldController {
 	@GetMapping("/listChart")
 	public String getViewCharts(Model model) {
 
-		Iterable<ViewChartEntityFields> viewCharts = viewChartsService.getAll();
+		Iterable<Metric> viewCharts = viewChartsService.getAll();
 
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
 		model.addAttribute("viewCharts", viewCharts);
@@ -130,7 +130,7 @@ public class ViewEntityFieldController {
 
 		boolean isNew = id == null || id == 0;
 
-		IMetrics viewChart = viewChartsService.getMetricsById(id);
+		IMetrics metric = null;
 
 		Map<Long,Long> currentChartSeriesIds = new HashMap<>();
 		
@@ -143,17 +143,20 @@ public class ViewEntityFieldController {
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 		
 		if (isNew) {
-			viewChart = new ViewChartEntityFields();
-			viewChart.setEntityFields(new HashSet<>());
+			metric = new Metric();
+			metric.setId(0L);
+			metric.setEntityFields(new HashSet<>());
+		} else {
+			metric = viewChartsService.getMetricsById(id);
 		}
 		
-		viewChart.getEntityFields().stream().forEach( ef ->	currentChartSeriesIds.put(ef.getId(), ef.getId()));
+		metric.getEntityFields().stream().forEach( ef ->	currentChartSeriesIds.put(ef.getId(), ef.getId()));
 
-		String pageHeader = isNew ? MSG_NEW_CHART_PREFFIX: viewChart.getName() + " " + viewChart.getDescription();
+		String pageHeader = isNew ? MSG_NEW_CHART_PREFFIX: metric.getName() + " " + metric.getDescription();
 		
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
 		model.addAttribute("pageHeader", pageHeader);
-		model.addAttribute("viewChart", viewChart);
+		model.addAttribute("metric", metric);
 		model.addAttribute("allFields", allFields);
 		model.addAttribute("currentFields", currentChartSeriesIds);
 
@@ -161,7 +164,7 @@ public class ViewEntityFieldController {
 	}
 
 	@PostMapping(value = "/saveView")
-	public String addSave(@ModelAttribute("viewChart") ViewChartEntityFields viewChart,
+	public String addSave(@ModelAttribute("metric") Metric metric,
 			@RequestParam(value = "fields", required = false) long[] entityFieldIds, Model model) {
 
 		if (entityFieldIds != null) {
@@ -172,10 +175,10 @@ public class ViewEntityFieldController {
 				entityField.ifPresent(entityFields::add);
 			}
 
-			viewChart.setEntityFields(entityFields);
+			metric.setEntityFields(entityFields);
 		}
 
-		viewChart = viewChartsService.save(viewChart);
+		metric = viewChartsService.save(metric);
 
 		//return "redirect:/editChart?id=" + viewChart.getId();
 		return "redirect:/listChart";

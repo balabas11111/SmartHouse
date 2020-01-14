@@ -35,7 +35,7 @@ import com.balabas.smarthouse.server.entity.service.IViewChartEntityFieldsServic
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.server.view.MessageHolder;
 import com.balabas.smarthouse.server.view.chart.IMetrics;
-import com.balabas.smarthouse.server.view.chart.ViewChartEntityFields;
+import com.balabas.smarthouse.server.view.chart.Metric;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -117,7 +117,7 @@ public class SendMessageBuilder {
 				.collect(Collectors.toList());
 	}
 	
-	public List<ViewChartEntityFields> getViewCharts() {
+	public List<Metric> getViewCharts() {
 		return viewChartsService.getAllAsList();
 	}
 	
@@ -164,7 +164,7 @@ public class SendMessageBuilder {
 	
 	public List<SendMessage> createViewOfMetrics(Action action, ReplyContext cont) {
 		List<SendMessage> msgs = Lists.newArrayList();
-		List<ViewChartEntityFields> metrics = getViewCharts();
+		List<Metric> metrics = getViewCharts();
 		cont.setText(getServerMainText(metrics.size()));
 		msgs.add(cont.createMsg(inlineKeyboard.getInlineKeyboardViewOfMetrics(metrics)));
 		return msgs;

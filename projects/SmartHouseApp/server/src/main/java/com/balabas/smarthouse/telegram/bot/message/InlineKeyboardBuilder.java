@@ -27,7 +27,7 @@ import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IEntityFieldService;
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.server.view.chart.IMetrics;
-import com.balabas.smarthouse.server.view.chart.ViewChartEntityFields;
+import com.balabas.smarthouse.server.view.chart.Metric;
 import com.google.common.collect.Lists;
 
 import lombok.Getter;
@@ -136,7 +136,7 @@ public class InlineKeyboardBuilder {
 		return wrapButtonList(getButtonsListOfDevices(devices));
 	}
 	
-	public ReplyKeyboard getInlineKeyboardViewOfMetrics(List<ViewChartEntityFields> metrics) {
+	public ReplyKeyboard getInlineKeyboardViewOfMetrics(List<Metric> metrics) {
 		return wrapButtonList(getButtonsListOfMetrics(metrics));
 	}
 
@@ -160,7 +160,7 @@ public class InlineKeyboardBuilder {
 		return rowsInline;
 	}
 	
-	public List<List<InlineKeyboardButton>> getButtonsListOfMetrics(List<ViewChartEntityFields> metrics) {
+	public List<List<InlineKeyboardButton>> getButtonsListOfMetrics(List<Metric> metrics) {
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 		
 		List<InlineKeyboardButton> keyb = Lists.newArrayList();

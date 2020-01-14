@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IViewChartEntityFieldsRepository;
 import com.balabas.smarthouse.server.view.chart.IMetrics;
-import com.balabas.smarthouse.server.view.chart.ViewChartEntityFields;
+import com.balabas.smarthouse.server.view.chart.Metric;
 
 @Service
 public class ViewChartsService implements IViewChartEntityFieldsService {
@@ -40,12 +40,12 @@ public class ViewChartsService implements IViewChartEntityFieldsService {
 	}
 
 	@Override
-	public Iterable<ViewChartEntityFields> getAll() {
+	public Iterable<Metric> getAll() {
 		return viewChartsRepository.findAll();
 	}
 
 	@Override
-	public ViewChartEntityFields save(ViewChartEntityFields viewChart) {
+	public Metric save(Metric viewChart) {
 		return viewChartsRepository.save(viewChart);
 	}
 
@@ -55,7 +55,7 @@ public class ViewChartsService implements IViewChartEntityFieldsService {
 	}
 
 	@Override
-	public List<ViewChartEntityFields> getAllAsList() {
+	public List<Metric> getAllAsList() {
 		return StreamSupport.stream(
 				getAll().spliterator(), false).collect(Collectors.toList());
 	}

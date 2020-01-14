@@ -14,6 +14,15 @@ import com.google.common.collect.Maps;
 @SuppressWarnings("rawtypes")
 public interface IMetrics extends IItemAbstract {
 
+	Boolean getEntityFieldView();
+	void setEntityFieldView(Boolean entityFieldView);
+	
+	Boolean getEntityView();
+	void setEntityView(Boolean entityGrouppedView);
+	
+	Boolean getChartView();
+	void setChartView(Boolean chartView);
+	
 	Set<IEntityField> getEntityFields();
 	void setEntityFields(Set<IEntityField> entityFields);
 	

@@ -5,17 +5,17 @@ import java.util.Map;
 
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.view.chart.IMetrics;
-import com.balabas.smarthouse.server.view.chart.ViewChartEntityFields;
+import com.balabas.smarthouse.server.view.chart.Metric;
 
 @SuppressWarnings("rawtypes")
 public interface IViewChartEntityFieldsService {
 
-	Iterable<ViewChartEntityFields> getAll();
-	List<ViewChartEntityFields> getAllAsList();
+	Iterable<Metric> getAll();
+	List<Metric> getAllAsList();
 	
 	IMetrics getMetricsById(Long id);
 	
-	ViewChartEntityFields save(ViewChartEntityFields viewChart);
+	Metric save(Metric viewChart);
 	void delete(Long id);
 	IMetrics getById(Long id);
 	Map<String, List<IEntityField>> getAllAsMap(Long viewChartId);

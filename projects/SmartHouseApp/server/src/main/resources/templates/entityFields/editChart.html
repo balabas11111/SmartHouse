@@ -42,7 +42,7 @@
 	<div class="container">
 		<h4 th:text="${pageHeader}"></h4>
 
-		<form action="#" th:action="@{/saveView}" th:object="${viewChart}"
+		<form action="#" th:action="@{/saveView}" th:object="${metric}"
 			method="post">
 			<input type="hidden" th:field="*{id}">
 			<table class="table table-dark table-striped">
@@ -53,6 +53,18 @@
 				<tr>
 					<td>Ось Y</td>
 					<td><input type="text" th:field="*{description}"></td>
+				</tr>
+				<tr>
+					<td>Показатель - виджет</td>
+					<td><input type="checkbox" th:field="*{entityFieldView}"/></td>
+				</tr>
+				<tr>
+					<td>Датчик - виджет</td>
+					<td><input type="checkbox" th:field="*{entityView}"/></td>
+				</tr>
+				<tr>
+					<td>График история - виджет</td>
+					<td><input type="checkbox" th:field="*{chartView}"/></td>
 				</tr>
 			</table>
 
@@ -92,7 +104,7 @@
 
 			<div>
 				<input type="submit" class="btn btn-default" value="&#x1F4BE; Сохранить" />
-				<a th:href="@{~/viewChart?id={id}(id=${viewChart.id})}"	class="btn btn-default">&#x1F441;Просмотр</a>
+				<a th:href="@{~/viewChart?id={id}(id=${metric.id})}"	class="btn btn-default">&#x1F441;Просмотр</a>
 			</div>
 
 		</form>
