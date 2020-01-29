@@ -23,6 +23,9 @@ public interface IMetrics extends IItemAbstract {
 	Boolean getChartView();
 	void setChartView(Boolean chartView);
 	
+	String getLegendPosition();
+	void setLegendPosition(String legendPosition);
+	
 	Set<IEntityField> getEntityFields();
 	void setEntityFields(Set<IEntityField> entityFields);
 	

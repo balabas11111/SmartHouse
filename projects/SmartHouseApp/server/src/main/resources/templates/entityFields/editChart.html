@@ -66,6 +66,14 @@
 					<td>График история - виджет</td>
 					<td><input type="checkbox" th:field="*{chartView}"/></td>
 				</tr>
+				<tr>
+					<td>Расположение легенды</td>
+					<td>
+						<select class="mdb-select md-form" th:field="*{legendPosition}">
+				  			<option  th:each="lp : ${allLegendPositions}" th:selected="${lp.equals(currentLegendPosition)}" th:value="${lp}" th:text="${lp}">Option 1</option>
+						</select>
+					</td>
+				</tr>
 			</table>
 
 			<table class="table table-dark table-striped">

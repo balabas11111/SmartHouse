@@ -63,12 +63,12 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	public boolean isValueValid(String value) {
 		return !StringUtils.isEmpty(value);
 	}
-
+/*
 	@Override
 	public void check() {
 		check(getItem());
 	}
-	
+	*/
 	@SuppressWarnings("rawtypes")
 	public static boolean accepts(Class<?> alarmClass, IItemAbstract item) {
 		AlarmMarker marker = getAlarmMarker(alarmClass);

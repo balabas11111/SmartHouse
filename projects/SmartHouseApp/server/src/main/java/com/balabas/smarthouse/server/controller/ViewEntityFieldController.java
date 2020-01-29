@@ -157,6 +157,8 @@ public class ViewEntityFieldController {
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
 		model.addAttribute("pageHeader", pageHeader);
 		model.addAttribute("metric", metric);
+		model.addAttribute("currentLegendPosition", metric.getLegendPosition());
+		model.addAttribute("allLegendPositions", Metric.LEGEND_POSITION);
 		model.addAttribute("allFields", allFields);
 		model.addAttribute("currentFields", currentChartSeriesIds);
 

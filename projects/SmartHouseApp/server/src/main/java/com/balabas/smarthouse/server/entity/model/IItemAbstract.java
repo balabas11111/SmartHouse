@@ -16,8 +16,13 @@ public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionabl
 	void setEmoji(Emoji emoji);
 	
 	String getItemClassId();
-	default String getItemId() {
-		return getItemClassId() + Long.toString(Optional.ofNullable(getId()).orElse(0L)) + getName();
+	
+	default String getItemUid() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(getItemClassId());
+		builder.append(Long.toString(Optional.ofNullable(getId()).orElse(0L)));
+		builder.append(getName());
+		return builder.toString();
 	}
 	
 	default void setNameDescriptionEmoji(IItemAbstract source) {

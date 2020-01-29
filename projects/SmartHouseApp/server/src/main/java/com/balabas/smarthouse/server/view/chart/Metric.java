@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.view.chart;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -11,6 +12,7 @@ import javax.persistence.ManyToMany;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.google.common.collect.Lists;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -21,6 +23,8 @@ import lombok.Setter;
 @SuppressWarnings("rawtypes")
 public class Metric extends ItemAbstract implements IMetrics {
 
+	public static final List<String> LEGEND_POSITION = Lists.newArrayList("top", "right", "left");
+	
 	@Getter @Setter
 	private Boolean entityFieldView;
 	
@@ -29,6 +33,9 @@ public class Metric extends ItemAbstract implements IMetrics {
 	
 	@Getter @Setter
 	private Boolean chartView;
+	
+	@Getter @Setter
+	private String legendPosition;
 	
 	@Getter @Setter
 	@ManyToMany(targetEntity = EntityField.class, fetch = FetchType.EAGER)

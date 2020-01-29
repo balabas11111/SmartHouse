@@ -20,8 +20,6 @@ public interface IAlarmV2 extends IIdentifiable {
 	
 	boolean isAlarmed();
 	
-	void check();
-	
 	void check(IItemAbstract item);
 	
 	void setMessageInterval(Integer messageInterval);
