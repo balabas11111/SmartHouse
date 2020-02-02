@@ -22,5 +22,10 @@ public class AlarmStateChangeEvent implements IAlarmStateChangeEvent {
 		this.alarm = alarm;
 		this.changeAction = changeAction;
 	}
+
+	@Override
+	public boolean isSameStateAction() {
+		return alarm.isSameStateAction();
+	}
 	
 }

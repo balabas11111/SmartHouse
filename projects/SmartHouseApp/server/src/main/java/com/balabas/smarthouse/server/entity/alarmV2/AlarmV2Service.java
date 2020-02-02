@@ -54,6 +54,26 @@ public class AlarmV2Service implements IAlarmV2Service {
 	}
 	
 	@Override
+	public void checkForAlarmsWithParent(List<EntityFieldValue> changedValues) {
+		Map<Long, IItemAbstract> entityFieldsChanged = new HashMap<>();
+		Map<Long, IItemAbstract> entitiesChanged = new HashMap<>();
+		Map<Long, IItemAbstract> groupsChanged = new HashMap<>();
+		Map<Long, IItemAbstract> devicesChanged = new HashMap<>();
+		
+		for(IEntityFieldValue value : changedValues) {
+			putById(entityFieldsChanged, value.getEntityField());
+			putById(entitiesChanged, value.getEntityField().getEntity());
+			putById(groupsChanged, value.getEntityField().getEntity().getGroup());
+			putById(devicesChanged, value.getEntityField().getEntity().getGroup().getDevice());
+		}
+		
+		checkForAlarmsExecutePostActions(devicesChanged.values());
+		checkForAlarmsExecutePostActions(groupsChanged.values());
+		checkForAlarmsExecutePostActions(entitiesChanged.values());
+		checkForAlarmsExecutePostActions(entityFieldsChanged.values());
+	}
+	
+	@Override
 	public List<IAlarmStateChangeEvent> checkForAlarmsExecutePostActions(Collection<IItemAbstract> items) {
 		List<IAlarmStateChangeEvent> list = new ArrayList<>();
 		
@@ -143,28 +163,8 @@ public class AlarmV2Service implements IAlarmV2Service {
 		
 		return -1;
 	}
-
-	@Override
-	public void checkForAlarmsWithParent(List<EntityFieldValue> changedValues) {
-		Map<Long, IItemAbstract> entityFieldsChanged = new HashMap<>();
-		Map<Long, IItemAbstract> entitiesChanged = new HashMap<>();
-		Map<Long, IItemAbstract> groupsChanged = new HashMap<>();
-		Map<Long, IItemAbstract> devicesChanged = new HashMap<>();
-		
-		for(IEntityFieldValue value : changedValues) {
-			putById(entityFieldsChanged, value.getEntityField());
-			putById(entitiesChanged, value.getEntityField().getEntity());
-			putById(groupsChanged, value.getEntityField().getEntity().getGroup());
-			putById(devicesChanged, value.getEntityField().getEntity().getGroup().getDevice());
-		}
-		
-		checkForAlarmsExecutePostActions(devicesChanged.values());
-		checkForAlarmsExecutePostActions(groupsChanged.values());
-		checkForAlarmsExecutePostActions(entitiesChanged.values());
-		checkForAlarmsExecutePostActions(entityFieldsChanged.values());
-	}
 	
-	public void putById(Map<Long, IItemAbstract> map, IItemAbstract item) {
+	private void putById(Map<Long, IItemAbstract> map, IItemAbstract item) {
 		map.put(item.getId(), item);
 	}
 	

@@ -40,6 +40,10 @@ public interface IAlarmV2 extends IIdentifiable {
 
 	default boolean check() {
 		return check(getItem());
-	};
+	}
+
+	default boolean isSameStateAction() {
+		return getAlarmState().equals(getPreviousAlarmState());
+	}
 	
 }

@@ -17,6 +17,7 @@ import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.google.common.collect.Lists;
 
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -27,6 +28,7 @@ public class Alarmv2TypeProvider implements IAlarmv2TypeProvider {
 	
 	Map<String, IAlarmStateChangeEventProcessor> stateChangeProcessors = new HashMap<String, IAlarmStateChangeEventProcessor>();
 	
+	@Getter
 	@Autowired(required = false)
 	Set<IAlarmStateChangeEventProcessor> stateChangedProcessors;
 	

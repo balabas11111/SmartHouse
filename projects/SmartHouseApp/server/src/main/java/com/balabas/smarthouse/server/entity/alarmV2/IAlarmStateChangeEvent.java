@@ -10,5 +10,5 @@ public interface IAlarmStateChangeEvent {
 	
 	IAlarmStateChangeAction getChangeAction();
 	
-	
+	boolean isSameStateAction();
 }
