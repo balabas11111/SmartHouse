@@ -1,8 +1,9 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
+import java.util.Set;
+
 import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
-import com.balabas.smarthouse.server.view.MessageHolder;
 
 public interface IAlarmV2 extends IIdentifiable {
 
@@ -13,23 +14,32 @@ public interface IAlarmV2 extends IIdentifiable {
 	IItemAbstract getItem();
 	void setItem(IItemAbstract item);
 	
+	AlarmState getAlarmState();
+	void setAlarmState(AlarmState alarmState);
+	
+	AlarmState getPreviousAlarmState();
+	void setPreviousAlarmState(AlarmState previousAlarmState);
+	
 	boolean isValueValid(String value);
 	
 	String getValue();
 	void setValue(String value);
 	
-	boolean isAlarmed();
+	boolean isInBadState();
+	boolean isRepeatable();
 	
-	void check(IItemAbstract item);
+	boolean check(IItemAbstract item);
 	
 	void setMessageInterval(Integer messageInterval);
 	Integer getMessageInterval();
 	
+	Set<IAlarmStateChangeAction> getActions();
+	void setActions(Set<IAlarmStateChangeAction> actions);
 	
-	boolean isAlarmStartedSendExpected();
-	boolean isAlarmFinishedSendExpected();
-	
-	MessageHolder getAlarmStartedTextHolder(IItemAbstract item);
-	MessageHolder getAlarmFinishedTextHolder(IItemAbstract item);
+	IAlarmStateChangeAction getCurrentAction();
+
+	default boolean check() {
+		return check(getItem());
+	};
 	
 }

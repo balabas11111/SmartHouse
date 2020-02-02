@@ -56,6 +56,8 @@ public interface IDeviceManageService {
 	Entity getEntityById(Long id);
 
 	IEntityField getEntityFieldById(Long id);
+	
+	IItemAbstract getAsItemAbstract(IItemAbstract item);
 
 	IEntityFieldEnabledValue getEntityFieldEnabledValueById(Long id);
 

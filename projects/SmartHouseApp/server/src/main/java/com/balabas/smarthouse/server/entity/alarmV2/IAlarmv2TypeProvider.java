@@ -7,4 +7,6 @@ import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 public interface IAlarmv2TypeProvider {
 
 	List<Class<?>> getEnabledAlarms(IItemAbstract item);
+	
+	IAlarmStateChangeEventProcessor getAlarmStateChangedEventProcessor(IAlarmStateChangeEvent event);
 }

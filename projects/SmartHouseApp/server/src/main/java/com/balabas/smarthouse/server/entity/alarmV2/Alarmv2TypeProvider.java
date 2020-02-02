@@ -3,9 +3,11 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
@@ -22,6 +24,11 @@ import lombok.extern.log4j.Log4j2;
 public class Alarmv2TypeProvider implements IAlarmv2TypeProvider {
 
 	Map<String, List<Class<?>>> alarmTypes = new HashMap<>();
+	
+	Map<String, IAlarmStateChangeEventProcessor> stateChangeProcessors = new HashMap<String, IAlarmStateChangeEventProcessor>();
+	
+	@Autowired(required = false)
+	Set<IAlarmStateChangeEventProcessor> stateChangedProcessors;
 	
 	@Override
 	public List<Class<?>> getEnabledAlarms(IItemAbstract item) {
@@ -54,6 +61,11 @@ public class Alarmv2TypeProvider implements IAlarmv2TypeProvider {
 		}
 
 		log.info("total classes cached as allowed for entityField AlarmV2 =" + (i - 1));
+		
+		if(stateChangedProcessors!=null && stateChangedProcessors.size()>0) {
+			stateChangedProcessors.stream().forEach(processor -> stateChangeProcessors.put(processor.getName(), processor));
+		
+		}
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -87,6 +99,11 @@ public class Alarmv2TypeProvider implements IAlarmv2TypeProvider {
 		}
 		
 		return result;
+	}
+
+	@Override
+	public IAlarmStateChangeEventProcessor getAlarmStateChangedEventProcessor(IAlarmStateChangeEvent event) {
+		return stateChangeProcessors.getOrDefault(event.getChangeAction().getTargetBeanName(), null);
 	}
 
 }

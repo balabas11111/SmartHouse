@@ -36,6 +36,7 @@ import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.IIdentifiable;
+import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
@@ -424,6 +425,7 @@ public class DeviceManageService implements IDeviceManageService {
 		}
 		
 		entityFieldService.saveAll(changedValues);
+		alarmV2Service.checkForAlarmsWithParent(changedValues);
 	}
 
 	@Override
@@ -675,9 +677,8 @@ public class DeviceManageService implements IDeviceManageService {
 				putFieldValuesFromMap(group, fieldValues);
 			}
 		}
-
+		
 		alarmService.reattachAlarms(device);
-		alarmV2Service.reattachAlarms(device);
 
 		log.debug("saved Device" + device.getName());
 
@@ -727,8 +728,6 @@ public class DeviceManageService implements IDeviceManageService {
 
 		putFieldValuesFromMap(group, fieldValues);
 
-		alarmV2Service.reattachAlarms(group);
-
 		log.debug("saved Group" + group.getName());
 
 		return group;
@@ -776,8 +775,6 @@ public class DeviceManageService implements IDeviceManageService {
 		}
 
 		putFieldValuesFromMap(entity, fieldValues);
-
-		alarmV2Service.reattachAlarms(entity);
 
 		log.debug("saved Entity" + entity.getName());
 
@@ -833,8 +830,6 @@ public class DeviceManageService implements IDeviceManageService {
 		}
 
 		putFieldValuesFromMap(entityField, fieldValues);
-
-		alarmV2Service.reattachAlarms(entityField);
 
 		log.debug("saved EntityField" + entityField.getName());
 
@@ -1071,6 +1066,26 @@ public class DeviceManageService implements IDeviceManageService {
 				log.error("Failed to remove enabled Value id = " + id);
 			}
 		}
+	}
+
+	@Override
+	public IItemAbstract getAsItemAbstract(IItemAbstract item) {
+		IItemAbstract result = null;
+		
+		if(IEntityField.class.isAssignableFrom(item.getClass())) {
+			return getEntityFieldById(item.getId());
+		}
+		if(IEntity.class.isAssignableFrom(item.getClass())) {
+			return getEntityById(item.getId());
+		}
+		if(IGroup.class.isAssignableFrom(item.getClass())) {
+			return getGroupById(item.getId());
+		}
+		if(IDevice.class.isAssignableFrom(item.getClass())) {
+			return getDeviceById(item.getId());
+		}
+		
+		return result;
 	}
 
 }

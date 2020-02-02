@@ -2,10 +2,14 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 
 import java.lang.annotation.Annotation;
 import java.security.InvalidParameterException;
+import java.util.Optional;
+import java.util.Set;
 
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
@@ -34,9 +38,18 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@Getter @Setter
 	private Integer messageInterval = NO_MESSAGE_SEND_REPEATS;
 	
-	@Transient 
 	@Getter
-	boolean alarmed;
+	@Setter
+	@ManyToMany(targetEntity = AlarmStateChangeAction.class, fetch = FetchType.EAGER)
+	private Set<IAlarmStateChangeAction> actions;
+	
+	@Setter
+	@Transient
+	private AlarmState alarmState;
+	
+	@Setter
+	@Transient
+	private AlarmState previousAlarmState;
 	
 	@Transient
 	@Getter @Setter
@@ -51,24 +64,38 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	public abstract IItemAbstract getItem();
 	public abstract void setItem(IItemAbstract item);
 	
-	public abstract void check(IItemAbstract item);
-	
-	
+	public abstract boolean check(IItemAbstract item);
 	
 	@Override
 	public Long getItemId() {
 		return getItem()!=null?getItem().getId():null;
 	}
 	
+	@Override
+	public AlarmState getAlarmState() {
+		return Optional.ofNullable(this.alarmState).orElse(AlarmState.NO_DATA);
+	}
+	
+	@Override
+	public 	AlarmState getPreviousAlarmState() {
+		return Optional.ofNullable(this.previousAlarmState).orElse(AlarmState.NO_DATA);
+	}
+	
+	@Override
+	public boolean isInBadState() {
+		return this.getAlarmState().badState;
+	}
+	
+	@Override
+	public boolean isRepeatable() {
+		return !NO_MESSAGE_SEND_REPEATS.equals(messageInterval) && messageInterval > 0;
+	}
+	
+	@Override
 	public boolean isValueValid(String value) {
 		return !StringUtils.isEmpty(value);
 	}
-/*
-	@Override
-	public void check() {
-		check(getItem());
-	}
-	*/
+
 	@SuppressWarnings("rawtypes")
 	public static boolean accepts(Class<?> alarmClass, IItemAbstract item) {
 		AlarmMarker marker = getAlarmMarker(alarmClass);
@@ -78,6 +105,32 @@ public abstract class AlarmV2 implements IAlarmV2 {
 		}
 		
 		return marker.target().isAssignableFrom(item.getClass());
+	}
+	
+	@Override
+	public IAlarmStateChangeAction getCurrentAction() {
+		IAlarmStateChangeAction result = null;
+		
+		for(IAlarmStateChangeAction action : getActions()) {
+			if(action.accepts(getPreviousAlarmState(), getAlarmState())) {
+				result = action;
+				break;
+			}
+		}
+		
+		if(result != null) {
+			boolean stateChanged = !getPreviousAlarmState().equals(getAlarmState()); 
+			if( stateChanged) {
+				if(result.isDispatchIfSameState()) {
+					return result;
+				}
+			} else {
+				return result;
+			}
+			
+		}
+		
+		return null;
 	}
 	
 	public static AlarmMarker getAlarmMarker(Class<?> alarmClass) {
@@ -90,6 +143,23 @@ public abstract class AlarmV2 implements IAlarmV2 {
 		}
 		
 		throw new InvalidParameterException();
+	}
+	
+	protected boolean setAlarmStateByState(AlarmState alarmState) {
+		AlarmState state1 = getAlarmState();
+		
+		this.setPreviousAlarmState(getAlarmState());
+		this.setAlarmState(Optional.ofNullable(alarmState).orElse(AlarmState.NO_DATA));
+		
+		return state1.equals(getAlarmState());
+	}
+	
+	protected boolean setAlarmStateByBooleanFlag(boolean alarmed) {
+		if(alarmed) {
+			return setAlarmStateByState(AlarmState.ALARM);
+		} else {
+			return setAlarmStateByState(AlarmState.OK);
+		}
 	}
 
 }
