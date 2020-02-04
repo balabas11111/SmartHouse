@@ -18,7 +18,7 @@ public abstract class AlarmOfEntityField extends AlarmV2 {
 	protected EntityField entityField;
 	
 	@Override
-	public Class<?> getItemClass() {
+	public Class<?> getTargetItemClass() {
 		return EntityField.class;
 	}
 	

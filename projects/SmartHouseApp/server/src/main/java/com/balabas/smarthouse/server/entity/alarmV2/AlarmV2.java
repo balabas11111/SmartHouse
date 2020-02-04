@@ -59,7 +59,7 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@Getter @Setter
 	boolean alarmFinishedSendExpected = false;
 	
-	public abstract Class<?> getItemClass();
+	public abstract Class<?> getTargetItemClass();
 	
 	public abstract IItemAbstract getItem();
 	public abstract void setItem(IItemAbstract item);
@@ -133,6 +133,16 @@ public abstract class AlarmV2 implements IAlarmV2 {
 		return null;
 	}
 	
+	@Override
+	public String getAlarmDescriptionByState() {
+		IAlarmStateChangeAction action = getCurrentAction();
+		if(action!=null) {
+			return action.getAlarmDescription(getItem());
+		} else {
+			return getAlarmDescriptionDefault();
+		}
+	}
+	
 	public static AlarmMarker getAlarmMarker(Class<?> alarmClass) {
 		Annotation annotations[] = alarmClass.getAnnotations();
 		
@@ -143,6 +153,13 @@ public abstract class AlarmV2 implements IAlarmV2 {
 		}
 		
 		throw new InvalidParameterException();
+	}
+	
+	protected String getAlarmDescriptionDefault() {
+		StringBuilder builder = new StringBuilder();
+		
+		
+		return builder.toString();
 	}
 	
 	protected boolean setAlarmStateByState(AlarmState alarmState) {

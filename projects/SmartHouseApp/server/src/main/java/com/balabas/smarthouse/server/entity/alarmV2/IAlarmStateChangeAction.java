@@ -6,6 +6,8 @@ public interface IAlarmStateChangeAction extends IItemAbstract{
 
 	boolean accepts(AlarmState oldState, AlarmState newState);
 	
+	String getAlarmDescription(IItemAbstract item);
+	
 	String getStringFormatted();
 	void setStringFormatted(String stringFormatted);
 	

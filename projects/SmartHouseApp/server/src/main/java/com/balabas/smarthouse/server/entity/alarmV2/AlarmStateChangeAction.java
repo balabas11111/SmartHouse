@@ -39,7 +39,7 @@ public class AlarmStateChangeAction extends ItemAbstract implements IAlarmStateC
 	@Getter 
 	final private String hint = "getDescriptionByDescriptionField;getDescription;getName;getValueStr;getValueTmp";
 	
-	public String getDescription(IItemAbstract item) {
+	public String getAlarmDescription(IItemAbstract item) {
 		if(!StringUtils.isEmpty(this.stringParametersFormatted)) {
 			String[] methodNames = stringParametersFormatted.split(";");
 			

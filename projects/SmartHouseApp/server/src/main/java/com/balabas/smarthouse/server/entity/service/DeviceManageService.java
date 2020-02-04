@@ -425,7 +425,7 @@ public class DeviceManageService implements IDeviceManageService {
 		}
 		
 		entityFieldService.saveAll(changedValues);
-		alarmV2Service.checkForAlarmsWithParent(changedValues);
+		alarmV2Service.checkForAlarmsWithParentExecutePostActions(changedValues);
 	}
 
 	@Override

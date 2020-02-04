@@ -9,7 +9,7 @@ public interface IAlarmV2 extends IIdentifiable {
 
 	Long getItemId();
 	
-	Class<?> getItemClass();
+	Class<?> getTargetItemClass();
 	
 	IItemAbstract getItem();
 	void setItem(IItemAbstract item);
@@ -38,6 +38,8 @@ public interface IAlarmV2 extends IIdentifiable {
 	
 	IAlarmStateChangeAction getCurrentAction();
 
+	String getAlarmDescriptionByState();
+	
 	default boolean check() {
 		return check(getItem());
 	}

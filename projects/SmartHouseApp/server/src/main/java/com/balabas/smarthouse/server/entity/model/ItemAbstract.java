@@ -63,10 +63,6 @@ public class ItemAbstract implements IItemAbstract {
 		return getEmojiOrDefault(Emoji.EMPTY_EMOJI);
 	}
 
-	public static int compareByName(IItemAbstract ia1, IItemAbstract ia2) {
-		return ia1.getName().compareTo(ia2.getName());
-	}
-
 	@Override
 	public Emoji getEmojiOrDefault(Emoji defaultEmoji) {
 		Optional<Emoji> em = Optional.ofNullable(this.emoji);
@@ -104,6 +100,14 @@ public class ItemAbstract implements IItemAbstract {
 
 	@Override
 	public void setParent(IItemAbstract parent) {
+	}
+	
+	public static int compareByName(IItemAbstract ia1, IItemAbstract ia2) {
+		return ia1.getName().compareTo(ia2.getName());
+	}
+	
+	public static int compareByDescriptionField(IItemAbstract ia1, IItemAbstract ia2) {
+		return ia1.getDescriptionByDescriptionField().compareTo(ia2.getDescriptionByDescriptionField());
 	}
 
 }
