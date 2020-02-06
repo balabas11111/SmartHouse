@@ -17,13 +17,13 @@ public class ViewAlarmController {
 	@Autowired
 	private IAlarmV2Service alarmService;
 
-	@GetMapping("/alarms")
+	@GetMapping("/alarmsList")
 	public String getAllAlarms(Model model) {
 		model.addAttribute("serverName", serverName);
 
 		model.addAttribute("alarms", alarmService.getAlarmsGrouppedByItemClassName());
 
-		return "alarms.html";
+		return "alarmsList.html";
 	}
 
 	
