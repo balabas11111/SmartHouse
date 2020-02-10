@@ -50,28 +50,28 @@
 			    <p>
 					<a th:href="@{~/editAlarm?id=0&itemType=Device}" class="btn btn-success">Новый</a>
 					
-						
+					<table th:replace="alarms/templates :: AlarmsList(alarms=${alarms.get('Device')})"></table>	
 				</p>
 			  </div>
 			  <div id="panelAlarmGroup" class="tab-pane fade">
 			    <p>
 					<a th:href="@{~/editAlarm?id=0&itemType=Group}" class="btn btn-success">Новый</a>
 					
-					
+					<table th:replace="alarms/templates :: AlarmsList(alarms=${alarms.get('Group')})"></table>
 				</p>
 			  </div>
 			  <div id="panelAlarmEntity" class="tab-pane fade">
 			    <p>
 					<a th:href="@{~/editAlarm?id=0&itemType=Entity}" class="btn btn-success">Новый</a>
 					
-					
+					<table th:replace="alarms/templates :: AlarmsList(alarms=${alarms.get('Entity')})"></table>
 				</p>
 			  </div>
 			  <div id="panelAlarmEntityField" class="tab-pane fade">
 			    <p>
 					<a th:href="@{~/editAlarm?id=0&itemType=EntityField}" class="btn btn-success">Новый</a>
 					
-					
+					<table th:replace="alarms/templates :: AlarmsList(alarms=${alarms.get('EntityField')})"></table>
 				</p>
 			  </div>
 			</div>

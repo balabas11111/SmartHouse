@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.balabas.smarthouse.server.entity.model.descriptor.AbstractItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -48,5 +49,10 @@ public class Group extends ItemAbstract implements IGroup {
 			throw new IllegalArgumentException("IEntity expected");
 		}
 		setDevice((Device) parent);
+	}
+	
+	@Override
+	public AbstractItemType getItemAbstractType() {
+		return AbstractItemType.GROUP;
 	}
 }

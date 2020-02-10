@@ -20,8 +20,12 @@ public abstract class AlarmOfEntityFieldNumber extends AlarmOfEntityField {
 		this.entityField = (EntityField) item;		
 	}
 	
-	protected Float getValueAsFloat() {
-		return Float.valueOf(getValue());
+	protected Float getParameterAsFloat() {
+		return Float.valueOf(getParameter());
+	}
+	
+	protected Float getValueTmpAsFloat(IEntityField entityField) {
+		return entityField.getValueTmpAsFloat();
 	}
 	
 	protected Integer getValueTmpAsInteger(IEntityField entityField) {
@@ -35,6 +39,15 @@ public abstract class AlarmOfEntityFieldNumber extends AlarmOfEntityField {
 	
 	protected Float getEntityFieldValueFloat(IEntityField entityField) {
 		return ((Number) entityField.getValue()).floatValue();
+	}
+	
+	protected boolean isValidFloat(String value) {
+		try {
+			Float.valueOf(value);
+		} catch(Exception e) {
+			return false;
+		}
+		return true;
 	}
 	
 }

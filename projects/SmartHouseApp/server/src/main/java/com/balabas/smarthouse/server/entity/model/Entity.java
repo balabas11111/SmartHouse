@@ -17,6 +17,7 @@ import javax.persistence.Transient;
 
 import org.thymeleaf.util.StringUtils;
 
+import com.balabas.smarthouse.server.entity.model.descriptor.AbstractItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
@@ -133,6 +134,11 @@ public class Entity extends ItemAbstract implements IEntity {
 			throw new IllegalArgumentException("IEntity expected");
 		}
 		setGroup((Group) parent);
+	}
+	
+	@Override
+	public AbstractItemType getItemAbstractType() {
+		return AbstractItemType.ENTITY;
 	}
 
 }

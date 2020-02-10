@@ -1,12 +1,25 @@
 package com.balabas.smarthouse.server.controller;
 
+import static com.balabas.smarthouse.server.controller.ControllerConstants.PROP_BASE_URL;
+import static com.balabas.smarthouse.server.controller.ControllerConstants.PROP_PAGE_HEADER;
+import static com.balabas.smarthouse.server.entity.model.virtual.VirtualEntityService.VIRTUAL_DEVICE_DESCR;
+import static com.balabas.smarthouse.server.entity.model.virtual.VirtualEntityService.VIRTUAL_DEVICE_FIRMWARE;
+import static com.balabas.smarthouse.server.entity.model.virtual.VirtualEntityService.VIRTUAL_DEVICE_NAME;
+
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2Service;
+import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.IGroup;
 
 @Controller
 public class ViewAlarmController {
@@ -23,9 +36,21 @@ public class ViewAlarmController {
 
 		model.addAttribute("alarms", alarmService.getAlarmsGrouppedByItemClassName());
 
-		return "alarmsList.html";
+		return "alarms/alarmsList.html";
 	}
 
+	@GetMapping(value = "/editAlarm")
+	public String editAlarm(@RequestParam(name = "id", required = true) Long id, Model model) {
+		IAlarmV2 alarm = alarmService.getAlarm(id);
+		
+		return "alarms/editAlarm.html";
+	}
 	
+	@GetMapping("/deleteAlarm_{id}")
+	public String deleteEntityFieldEnabledValue(@PathVariable(name = "id", required = true) Long id, Model model) {
+		alarmService.deleteAlarm(id);
+		
+		return "redirect:/alarmsList";
+	}
 
 }

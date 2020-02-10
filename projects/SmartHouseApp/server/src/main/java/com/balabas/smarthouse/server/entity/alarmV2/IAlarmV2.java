@@ -2,10 +2,11 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 
 import java.util.Set;
 
+import com.balabas.smarthouse.server.entity.model.IDescriptionable;
 import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 
-public interface IAlarmV2 extends IIdentifiable {
+public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 
 	Long getItemId();
 	
@@ -20,10 +21,8 @@ public interface IAlarmV2 extends IIdentifiable {
 	AlarmState getPreviousAlarmState();
 	void setPreviousAlarmState(AlarmState previousAlarmState);
 	
-	boolean isValueValid(String value);
-	
-	String getValue();
-	void setValue(String value);
+	String getParameter();
+	void setParameter(String value);
 	
 	boolean isInBadState();
 	boolean isRepeatable();
@@ -40,6 +39,13 @@ public interface IAlarmV2 extends IIdentifiable {
 
 	String getAlarmDescriptionByState();
 	
+	String getTypeDescription();
+	
+	
+	default boolean isParameterValid(String value) {
+		return true;
+	}
+	
 	default boolean check() {
 		return check(getItem());
 	}
@@ -47,5 +53,5 @@ public interface IAlarmV2 extends IIdentifiable {
 	default boolean isSameStateAction() {
 		return getAlarmState().equals(getPreviousAlarmState());
 	}
-	
+
 }

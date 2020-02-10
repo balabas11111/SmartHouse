@@ -20,6 +20,7 @@ public interface IEntityField<T> extends IItemAbstract {
 	String getValueTmp();
 	void setValueTmp(String valueTmp);
 	
+	Float getValueTmpAsFloat();
 	Integer getValueTmpAsInteger();
 	
 	String getTemplateName();

@@ -40,4 +40,5 @@ public interface IEntity extends IStateable, IItemAbstract {
 	void setHasMq(boolean hasMq);
 	
 	String getEntityKey();
+	
 }

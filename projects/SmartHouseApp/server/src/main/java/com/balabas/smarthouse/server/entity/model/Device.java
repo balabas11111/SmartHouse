@@ -14,6 +14,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.balabas.smarthouse.server.entity.model.descriptor.AbstractItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -127,6 +128,11 @@ public class Device extends ItemAbstract implements IDevice {
 	@Override
 	public String getStateDescription() {
 		return getState().getStateDescription(false);
+	}
+	
+	@Override
+	public AbstractItemType getItemAbstractType() {
+		return AbstractItemType.DEVICE;
 	}
 	
 }

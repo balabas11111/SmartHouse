@@ -13,8 +13,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
-import org.springframework.util.StringUtils;
-
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
@@ -33,7 +31,10 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	private Long id;
 	
 	@Getter @Setter
-	private String value;
+	private String description;
+	
+	@Getter @Setter
+	private String parameter;
 	
 	@Getter @Setter
 	private Integer messageInterval = NO_MESSAGE_SEND_REPEATS;
@@ -50,15 +51,7 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@Setter
 	@Transient
 	private AlarmState previousAlarmState;
-	
-	@Transient
-	@Getter @Setter
-	boolean alarmStartedSendExpected = false;
-	
-	@Transient
-	@Getter @Setter
-	boolean alarmFinishedSendExpected = false;
-	
+
 	public abstract Class<?> getTargetItemClass();
 	
 	public abstract IItemAbstract getItem();
@@ -89,11 +82,6 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@Override
 	public boolean isRepeatable() {
 		return !NO_MESSAGE_SEND_REPEATS.equals(messageInterval) && messageInterval > 0;
-	}
-	
-	@Override
-	public boolean isValueValid(String value) {
-		return !StringUtils.isEmpty(value);
 	}
 
 	@SuppressWarnings("rawtypes")

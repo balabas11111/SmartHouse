@@ -21,6 +21,7 @@ import org.thymeleaf.util.StringUtils;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.AbstractItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
@@ -116,6 +117,17 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	@Override
 	public void setValueStr(String value) throws BadValueException {
 		setValueWithCheck(fromString(value));
+	}
+	
+	@Override
+	public Float getValueTmpAsFloat() {
+		Float result = 0F;
+		
+		try {
+			result = Float.valueOf(getValueTmp());	
+		}catch(Exception e) {}
+		
+		return result;
 	}
 	
 	@Override
@@ -271,6 +283,12 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 		}
 		
 		return result;
+	}
+	
+	
+	@Override
+	public AbstractItemType getItemAbstractType() {
+		return AbstractItemType.ENTITY_FIELD;
 	}
 	
 }

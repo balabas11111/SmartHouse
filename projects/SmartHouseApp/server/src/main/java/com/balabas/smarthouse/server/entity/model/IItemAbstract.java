@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.util.StringUtils;
 
+import com.balabas.smarthouse.server.entity.model.descriptor.AbstractItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 
 public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionable{
@@ -16,6 +17,18 @@ public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionabl
 	void setEmoji(Emoji emoji);
 	
 	String getItemClassId();
+	
+	String getEmojiDescriptionByDescriptionField();
+	String getEmojiDescriptionByDescriptionFieldWithParent();
+	
+	boolean isVirtualized();
+	void setVirtualized(Boolean value);
+	
+	void setParent(IItemAbstract parent);
+	
+	default AbstractItemType getItemAbstractType() {
+		return AbstractItemType.UNKNOWN;
+	}
 	
 	default String getItemUid() {
 		StringBuilder builder = new StringBuilder();
@@ -50,13 +63,5 @@ public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionabl
 		
 		return result;
 	}
-	
-	String getEmojiDescriptionByDescriptionField();
-	String getEmojiDescriptionByDescriptionFieldWithParent();
-	
-	boolean isVirtualized();
-	void setVirtualized(Boolean value);
-	
-	void setParent(IItemAbstract parent);
 	
 }
