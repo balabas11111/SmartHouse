@@ -26,6 +26,7 @@ public class ControllerConstants {
 	public static final String ATTR_DATE_AFTER    = "afterDate";
 	public static final String ATTR_CHART_DATA_Y  = "chartDataY";
 	public static final String ATTR_CHART_DATA    = "chartData";
+	public static final String ATTR_PAGE_REFRESH_INTERVAL = "refreshTimeout";
 	
 	//urls
 	public static final String URL_REDIRECT_PREFFIX   = "redirect:";

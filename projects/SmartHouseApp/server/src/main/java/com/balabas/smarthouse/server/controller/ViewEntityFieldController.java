@@ -45,6 +45,7 @@ import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_
 import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_SERVER_NAME;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_CHART_DATA_Y;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_CHART_DATA;
+import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_PAGE_REFRESH_INTERVAL;
 
 import static com.balabas.smarthouse.server.controller.ControllerConstants.URL_REDIRECT_ENTITY_FIELD_FORMAT;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.URL_REDIRECT_VIEW_CHART_FORMAT;
@@ -61,8 +62,11 @@ public class ViewEntityFieldController {
 	@Value("${smarthouse.server.chart.legendPosition:top}")
 	private String legendPosition;
 	
-	@Value("${smarthouse.server.chart.default.start.hrs:12}")
+	@Value("${smarthouse.server.view.page.chart.default.start.hr:4}")
 	private Integer defaulrStartHrs;
+	
+	@Value("${smarthouse.server.view.page.chart.refresh.interval.sec:60}")
+	private Long chartViewRefreshInterval;
 
 	@Autowired
 	private IDeviceManageService deviceService;
@@ -83,7 +87,7 @@ public class ViewEntityFieldController {
 		}
 		
 		if(afterDate == null && beforeDate == null) {
-			afterDate = (new Date()).getTime() - defaulrStartHrs*60*60*1000;
+			afterDate = getDefaultStartDate();
 			return String.format(URL_REDIRECT_ENTITY_FIELD_FORMAT, entityFieldId, afterDate);
 		}
 
@@ -100,6 +104,10 @@ public class ViewEntityFieldController {
 				: entityField.getMeasure();
 		IDevice device = entityField.getEntity().getDevice();
 
+		if (chartViewRefreshInterval != null && chartViewRefreshInterval > 0) {
+			model.addAttribute(ATTR_PAGE_REFRESH_INTERVAL, chartViewRefreshInterval);
+		}
+		
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
 		model.addAttribute(ATTR_DATE_AFTER, afterDate);
 		model.addAttribute(ATTR_DATE_BEFORE, beforeDate);
@@ -196,7 +204,7 @@ public class ViewEntityFieldController {
 		}
 		
 		if(afterDate == null && beforeDate == null) {
-			afterDate = (new Date()).getTime() - 24*60*60*1000;
+			afterDate = getDefaultStartDate();
 			return String.format(URL_REDIRECT_VIEW_CHART_FORMAT, viewChartId, afterDate);
 		}
 
@@ -221,6 +229,10 @@ public class ViewEntityFieldController {
 		String chartHeader = metrics.getName();
 		String chartId = metrics.getId().toString();
 
+		if (chartViewRefreshInterval != null && chartViewRefreshInterval > 0) {
+			model.addAttribute(ATTR_PAGE_REFRESH_INTERVAL, chartViewRefreshInterval);
+		}
+		
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
 		model.addAttribute(ATTR_DATE_AFTER, afterDate);
 		model.addAttribute(ATTR_DATE_BEFORE, beforeDate);
@@ -275,6 +287,10 @@ public class ViewEntityFieldController {
 		values.stream().forEach(series::addDataPoint);
 
 		return series;
+	}
+	
+	private long getDefaultStartDate() {
+		return (new Date()).getTime() - 24*60*60*1000;
 	}
 
 }

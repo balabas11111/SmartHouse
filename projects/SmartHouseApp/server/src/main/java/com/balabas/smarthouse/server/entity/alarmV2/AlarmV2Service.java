@@ -53,8 +53,10 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Override
 	public void deleteAlarm(IAlarmV2 alarm) {
-		alarmRepository.deleteById(alarm.getId());
-		removeAlarmFromCache(alarm);
+		if(alarm!=null) {
+			alarmRepository.deleteById(alarm.getId());
+			removeAlarmFromCache(alarm);
+		}
 	}
 
 	@Override
@@ -199,6 +201,10 @@ public class AlarmV2Service implements IAlarmV2Service {
 		return getAlarmsGrouppedBy(alarm -> alarm.getAlarmState());
 	}
 
+	public Optional<IAlarmV2> getAlarmByFilter(Predicate<? super IAlarmV2> predicate) {
+		return getAllAlarms().stream().filter(predicate).findFirst();
+	}
+	
 	public List<IAlarmV2> getAlarmsByFilter(Predicate<? super IAlarmV2> predicate) {
 		return getAllAlarms().stream().filter(predicate).sorted(AlarmV2Service::compareByItemDescriptionField)
 				.collect(Collectors.toList());
@@ -229,6 +235,16 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	public static int compareByItemDescriptionField(IAlarmV2 a1, IAlarmV2 a2) {
 		return ItemAbstract.compareByDescriptionField(a1.getItem(), a2.getItem());
+	}
+
+	@Override
+	public IAlarmV2 getAlarm(Long id) {
+		return getAlarmByFilter(alarm -> id.equals(alarm.getId())).orElse(null);
+	}
+
+	@Override
+	public void deleteAlarm(Long id) {
+		deleteAlarm(getAlarm(id));
 	}
 
 }

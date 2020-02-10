@@ -29,4 +29,8 @@ public interface IAlarmV2Service {
 	List<IAlarmV2> getAlarmsByAlarmState(AlarmState alarmState);
 	
 	Map<AlarmState, List<IAlarmV2>> getAlarmsGrouppedByAlarmState();
+
+	IAlarmV2 getAlarm(Long id);
+
+	void deleteAlarm(Long id);
 }

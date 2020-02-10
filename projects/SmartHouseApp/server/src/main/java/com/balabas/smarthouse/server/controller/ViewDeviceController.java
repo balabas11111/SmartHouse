@@ -20,6 +20,9 @@ public class ViewDeviceController {
 
 	@Value("${smarthouse.server.name:#{null}}")
 	private String serverName;
+	
+	@Value("${smarthouse.server.view.page.device.refresh.interval.sec:60}")
+	private Long deviceViewRefreshInterval;
 
 	@Autowired
 	private IDeviceManageService deviceService;
@@ -64,7 +67,11 @@ public class ViewDeviceController {
 			throw new IllegalArgumentException("Not found");
 		}
 
-		model.addAttribute("serverName", serverName);
+		if (deviceViewRefreshInterval != null && deviceViewRefreshInterval > 0) {
+			model.addAttribute(ControllerConstants.ATTR_PAGE_REFRESH_INTERVAL, deviceViewRefreshInterval);
+		}
+		
+		model.addAttribute(ControllerConstants.ATTR_SERVER_NAME, serverName);
 		model.addAttribute("device", device);
 		model.addAttribute("sensors", deviceService.getEntitiesForDevice(device.getId()));
 		model.addAttribute("holder", deviceService.getValueActionHolder(device.getId()));
