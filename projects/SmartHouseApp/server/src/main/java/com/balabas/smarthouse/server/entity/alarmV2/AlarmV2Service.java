@@ -24,9 +24,9 @@ import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 @Service
 public class AlarmV2Service implements IAlarmV2Service {
 
-	@Autowired
+	/*@Autowired
 	IAlarmV2Repository alarmRepository;
-
+*/
 	@Autowired
 	IAlarmv2TypeProvider alarmTypeProvider;
 
@@ -42,19 +42,19 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@PostConstruct
 	public void loadAlarms() {
-		alarmRepository.findAll().forEach(this::putAlarmToCache);
+		//alarmRepository.findAll().forEach(this::putAlarmToCache);
 	}
 
 	@Override
 	public void saveAlarm(IAlarmV2 alarm) {
-		alarmRepository.save((AlarmV2) alarm);
+		//alarmRepository.save((AlarmV2) alarm);
 		putAlarmToCache(alarm);
 	}
 
 	@Override
 	public void deleteAlarm(IAlarmV2 alarm) {
 		if(alarm!=null) {
-			alarmRepository.deleteById(alarm.getId());
+			//alarmRepository.deleteById(alarm.getId());
 			removeAlarmFromCache(alarm);
 		}
 	}

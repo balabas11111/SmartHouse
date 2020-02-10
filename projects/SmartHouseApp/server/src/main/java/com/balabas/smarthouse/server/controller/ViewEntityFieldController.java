@@ -46,10 +46,10 @@ import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_
 import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_CHART_DATA_Y;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_CHART_DATA;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_PAGE_REFRESH_INTERVAL;
-
+/*
 import static com.balabas.smarthouse.server.controller.ControllerConstants.URL_REDIRECT_ENTITY_FIELD_FORMAT;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.URL_REDIRECT_VIEW_CHART_FORMAT;
-
+*/
 import static com.balabas.smarthouse.server.controller.ControllerConstants.MSG_NEW_CHART_PREFFIX;
 
 @Controller
@@ -63,7 +63,7 @@ public class ViewEntityFieldController {
 	private String legendPosition;
 	
 	@Value("${smarthouse.server.view.page.chart.default.start.hr:4}")
-	private Integer defaulrStartHrs;
+	private Integer defaultStartHrs;
 	
 	@Value("${smarthouse.server.view.page.chart.refresh.interval.sec:60}")
 	private Long chartViewRefreshInterval;
@@ -88,7 +88,7 @@ public class ViewEntityFieldController {
 		
 		if(afterDate == null && beforeDate == null) {
 			afterDate = getDefaultStartDate();
-			return String.format(URL_REDIRECT_ENTITY_FIELD_FORMAT, entityFieldId, afterDate);
+			//return String.format(URL_REDIRECT_ENTITY_FIELD_FORMAT, entityFieldId, afterDate);
 		}
 
 		IEntityField entityField = deviceService.getDevices().stream().flatMap(device -> device.getEntities().stream())
@@ -205,7 +205,7 @@ public class ViewEntityFieldController {
 		
 		if(afterDate == null && beforeDate == null) {
 			afterDate = getDefaultStartDate();
-			return String.format(URL_REDIRECT_VIEW_CHART_FORMAT, viewChartId, afterDate);
+			//return String.format(URL_REDIRECT_VIEW_CHART_FORMAT, viewChartId, afterDate);
 		}
 
 		Map<String, List<IEntityField>> map = viewChartsService.getAllAsMap(viewChartId);
@@ -290,7 +290,7 @@ public class ViewEntityFieldController {
 	}
 	
 	private long getDefaultStartDate() {
-		return (new Date()).getTime() - 24*60*60*1000;
+		return (new Date()).getTime() - defaultStartHrs*60*60*1000;
 	}
 
 }
