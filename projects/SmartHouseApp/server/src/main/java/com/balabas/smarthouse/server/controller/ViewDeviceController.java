@@ -14,6 +14,7 @@ import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.virtual.IVirtualEntityService;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.service.IServerManageService;
+import com.balabas.smarthouse.server.util.DateTimeUtil;
 
 @Controller
 public class ViewDeviceController {
@@ -72,6 +73,7 @@ public class ViewDeviceController {
 		}
 		
 		model.addAttribute(ControllerConstants.ATTR_SERVER_NAME, serverName);
+		model.addAttribute("dateTime", DateTimeUtil.getDateTimeStr());
 		model.addAttribute("device", device);
 		model.addAttribute("sensors", deviceService.getEntitiesForDevice(device.getId()));
 		model.addAttribute("holder", deviceService.getValueActionHolder(device.getId()));

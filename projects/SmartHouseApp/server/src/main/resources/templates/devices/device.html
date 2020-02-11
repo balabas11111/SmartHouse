@@ -48,21 +48,19 @@
 				<thead>
 					<tr>
 						<th>Идентификатор</th>
-						<th>Прошивка</th>
-						<!--<th>Описание</th>-->
+						<th th:if="${!device.isVirtualized()}">Прошивка</th>
 						<th>Состояние</th>
-						<!--<th>IP</th>-->
-						<th></th>
+						<th  th:if="${!device.isVirtualized()}"></th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td th:text="${device.getEmojiDescriptionByDescriptionField()}">Идентификатор</td>
-						<td th:text="${device.firmware}">Прошивка</td>
+						<td  th:if="${!device.isVirtualized()}" th:text="${device.firmware}">Прошивка</td>
 						<!--<td th:text="${device.description}">Описание</td>-->
 						<td th:text="${device.getStateEmoji()} + ' ' + ${device.getStateDescription()}">Состояние</td>
 						<!--<td th:text="${device.ip}">IP</td>-->
-						<td>
+						<td th:if="${!device.isVirtualized()}">
 							<div class="dropdown">
 								<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
 									&#x2699; Админ
@@ -84,7 +82,7 @@
 		</div>
 
 		<p>
-			<h4>Показания датчиков</h4>
+			<h4 th:text="'Показания датчиков ' + ${dateTime}"></h4>
 		</p>
 
 		<div id="sensorsContent" style="display: flex; flex-wrap: wrap;">
