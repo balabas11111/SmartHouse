@@ -14,7 +14,7 @@ public interface IAlarmV2Service {
 	List<IAlarmStateChangeEvent> checkForAlarmsExecutePostActions(Collection<IItemAbstract> items);
 	List<IAlarmStateChangeEvent> checkForAlarmsExecutePostActions(IItemAbstract item);
 	
-	List<Class<?>> getEnabledAlarms(IItemAbstract item);
+	List<AlarmV2Checker> getEnabledAlarmCheckers(IItemAbstract item);
 	
 	void saveAlarm(IAlarmV2 alarm);
 	

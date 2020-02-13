@@ -1,7 +1,5 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
-import java.lang.annotation.Annotation;
-import java.security.InvalidParameterException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -14,7 +12,6 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
-import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +28,9 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	private Long id;
 	
 	@Getter @Setter
+	private Long itemId;
+	
+	@Getter @Setter
 	private String description;
 	
 	@Getter @Setter
@@ -44,6 +44,14 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@ManyToMany(targetEntity = AlarmStateChangeAction.class, fetch = FetchType.EAGER)
 	private Set<IAlarmStateChangeAction> actions;
 	
+	@Transient
+	@Getter @Setter
+	private AlarmV2Checker checker;
+	
+	@Transient
+	@Getter @Setter
+	private IItemAbstract item;
+	
 	@Setter
 	@Transient
 	private AlarmState alarmState;
@@ -52,16 +60,10 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@Transient
 	private AlarmState previousAlarmState;
 
-	public abstract Class<?> getTargetItemClass();
-	
-	public abstract IItemAbstract getItem();
-	public abstract void setItem(IItemAbstract item);
-	
-	public abstract boolean check(IItemAbstract item);
-	
 	@Override
-	public Long getItemId() {
-		return getItem()!=null?getItem().getId():null;
+	public boolean check(IItemAbstract item) {
+		this.item = item;
+		return checker.check(this);
 	}
 	
 	@Override
@@ -82,17 +84,6 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@Override
 	public boolean isRepeatable() {
 		return !NO_MESSAGE_SEND_REPEATS.equals(messageInterval) && messageInterval > 0;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static boolean accepts(Class<?> alarmClass, IItemAbstract item) {
-		AlarmMarker marker = getAlarmMarker(alarmClass);
-		if(IEntityField.class.isAssignableFrom(item.getClass())) {
-			IEntityField entityField = (IEntityField) item;
-			return marker.target().isAssignableFrom(item.getClass()) && marker.detail().isAssignableFrom(entityField.getClazz());
-		}
-		
-		return marker.target().isAssignableFrom(item.getClass());
 	}
 	
 	@Override
@@ -131,26 +122,8 @@ public abstract class AlarmV2 implements IAlarmV2 {
 		}
 	}
 	
-	public static AlarmMarker getAlarmMarker(Class<?> alarmClass) {
-		Annotation annotations[] = alarmClass.getAnnotations();
-		
-		for(Annotation ann : annotations) {
-			if(AlarmMarker.class.isAssignableFrom(ann.getClass())) {
-				return (AlarmMarker) ann;
-			}
-		}
-		
-		throw new InvalidParameterException();
-	}
-	
-	protected String getAlarmDescriptionDefault() {
-		StringBuilder builder = new StringBuilder();
-		
-		
-		return builder.toString();
-	}
-	
-	protected boolean setAlarmStateByState(AlarmState alarmState) {
+	@Override
+	public boolean setAlarmStateByState(AlarmState alarmState) {
 		AlarmState state1 = getAlarmState();
 		
 		this.setPreviousAlarmState(getAlarmState());
@@ -159,12 +132,20 @@ public abstract class AlarmV2 implements IAlarmV2 {
 		return state1.equals(getAlarmState());
 	}
 	
-	protected boolean setAlarmStateByBooleanFlag(boolean alarmed) {
+	@Override
+	public boolean setAlarmStateByBooleanFlag(boolean alarmed) {
 		if(alarmed) {
 			return setAlarmStateByState(AlarmState.ALARM);
 		} else {
 			return setAlarmStateByState(AlarmState.OK);
 		}
+	}
+	
+	protected String getAlarmDescriptionDefault() {
+		StringBuilder builder = new StringBuilder();
+		
+		
+		return builder.toString();
 	}
 
 }

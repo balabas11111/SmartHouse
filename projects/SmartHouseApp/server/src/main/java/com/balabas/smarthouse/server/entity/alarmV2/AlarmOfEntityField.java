@@ -1,15 +1,15 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
+import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.view.MessageHolder;
 
-@MappedSuperclass
+@Entity
 @SuppressWarnings("rawtypes")
 public abstract class AlarmOfEntityField extends AlarmV2 {
 	

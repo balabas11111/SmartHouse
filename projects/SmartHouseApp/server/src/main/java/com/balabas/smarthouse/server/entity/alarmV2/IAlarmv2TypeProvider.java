@@ -1,15 +1,19 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 
 public interface IAlarmv2TypeProvider {
 
-	List<Class<?>> getEnabledAlarms(IItemAbstract item);
+	List<AlarmV2Checker> getEnabledAlarms(IItemAbstract item);
 	
 	IAlarmStateChangeEventProcessor getAlarmStateChangedEventProcessor(IAlarmStateChangeEvent event);
 	
-	Set<IAlarmStateChangeEventProcessor> getStateChangedProcessors();
+	AlarmV2Checker getAlarmV2checker(String name);
+	
+	Map<String, AlarmV2Checker> getAlarmv2Checkers();
+	
+	Map<String, IAlarmStateChangeEventProcessor> getStateChangedProcessors();
 }
