@@ -8,7 +8,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class DateTimeUtil {
 
-	public static final String DATE_TIME_PATTERN = "hh:mm:ss dd-L-yyyy";
+	public static final String DATE_TIME_PATTERN = "HH:mm:ss dd-L-yyyy";
 	
 	public static String getDateTimeStr() {
 		return getDateTimeStr(LocalDateTime.now(), DATE_TIME_PATTERN);
