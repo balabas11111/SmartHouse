@@ -24,7 +24,7 @@ public class ReporterPdfPhoneNumber extends ReporterPdf<PhoneNumber> implements 
 		super.entityToReportIdentifiable(table, entity);
 
 		addCell(table, entity.getNumber(), Element.ALIGN_MIDDLE, Element.ALIGN_RIGHT, -1, 5);
-    	addCell(table, entity.getCompany().getName().toString(), Element.ALIGN_MIDDLE, Element.ALIGN_RIGHT, -1, 5);
+    	addCell(table, entity.getCompany().getName(), Element.ALIGN_MIDDLE, Element.ALIGN_RIGHT, -1, 5);
     }
 
 	@Override
