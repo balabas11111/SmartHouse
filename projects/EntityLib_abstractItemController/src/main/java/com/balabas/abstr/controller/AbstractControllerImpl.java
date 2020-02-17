@@ -85,6 +85,7 @@ public class AbstractControllerImpl<T extends ItemAbstract> implements AbstractC
         return getListRedirectUrl();
     }
     
+    /*TODO: add new method which accepts only request with header Accept=application/pdf*/
 	@GetMapping(value = "/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<InputStreamResource> pdf() {
         return getReport(pdfReporter, getService().list());
