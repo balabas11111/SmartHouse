@@ -1,27 +1,21 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
-import javax.persistence.MappedSuperclass;
-
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
-import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
-@MappedSuperclass
 @SuppressWarnings("rawtypes")
-public abstract class AlarmOfEntityFieldNumber extends AlarmOfEntityField {
-	
-	@Override
-	public IItemAbstract getItem() {
-		return entityField;
-	}
+public class AlarmV2CheckerAbstractEntityFieldNumber {
 
-	@Override
-	public void setItem(IItemAbstract item) {
-		this.entityField = (EntityField) item;		
+	public Class<?> getItemClass() {
+		return IEntityField.class;
 	}
 	
-	protected Float getParameterAsFloat() {
-		return Float.valueOf(getParameter());
+	public boolean isParameterValid(String value) {
+		return isValidFloat(value);
+	}
+	
+	protected Float getAsFloat(String parameter) {
+		return Float.valueOf(parameter);
 	}
 	
 	protected Float getValueTmpAsFloat(IEntityField entityField) {
@@ -43,11 +37,10 @@ public abstract class AlarmOfEntityFieldNumber extends AlarmOfEntityField {
 	
 	protected boolean isValidFloat(String value) {
 		try {
-			Float.valueOf(value);
+			getAsFloat(value);
 		} catch(Exception e) {
 			return false;
 		}
 		return true;
 	}
-	
 }

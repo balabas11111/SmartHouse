@@ -9,6 +9,7 @@ import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 
 	Long getItemId();
+	void setItemId(Long itemId);
 	
 	Class<?> getTargetItemClass();
 	
@@ -27,6 +28,9 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	boolean isInBadState();
 	boolean isRepeatable();
 	
+	AlarmV2Checker getChecker();
+	void setChecker(AlarmV2Checker checker);
+	
 	boolean check(IItemAbstract item);
 	
 	void setMessageInterval(Integer messageInterval);
@@ -39,9 +43,6 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 
 	String getAlarmDescriptionByState();
 	
-	String getTypeDescription();
-	
-	
 	default boolean isParameterValid(String value) {
 		return true;
 	}
@@ -53,5 +54,9 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	default boolean isSameStateAction() {
 		return getAlarmState().equals(getPreviousAlarmState());
 	}
+
+	boolean setAlarmStateByState(AlarmState alarmState);
+
+	boolean setAlarmStateByBooleanFlag(boolean alarmed);
 
 }

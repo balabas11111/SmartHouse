@@ -1,12 +1,12 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Entity;
 
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 
-@MappedSuperclass
-public abstract class AlarmOfDevice extends AlarmV2 {
+@Entity
+public class AlarmOfDevice extends AlarmV2 {
 
 	protected Device device;
 	

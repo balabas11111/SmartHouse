@@ -15,18 +15,28 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.balabas.smarthouse.server.entity.model.Device;
+import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 
 @Service
 public class AlarmV2Service implements IAlarmV2Service {
 
-	/*@Autowired
-	IAlarmV2Repository alarmRepository;
-*/
+	@Autowired
+	IAlarmV2RepositoryDevice alarmRepositoryDevice;
+	
+	@Autowired
+	IAlarmV2RepositoryEntity alarmRepositoryEntity;
+	
+	@Autowired
+	IAlarmV2RepositoryEntityField alarmRepositoryEntityField;
+
 	@Autowired
 	IAlarmv2TypeProvider alarmTypeProvider;
 
@@ -36,25 +46,27 @@ public class AlarmV2Service implements IAlarmV2Service {
 	Map<String, List<IAlarmV2>> alarmMap = new HashMap<String, List<IAlarmV2>>();
 
 	@Override
-	public List<Class<?>> getEnabledAlarms(IItemAbstract item) {
+	public List<AlarmV2Checker> getEnabledAlarmCheckers(IItemAbstract item) {
 		return alarmTypeProvider.getEnabledAlarms(item);
 	}
 
 	@PostConstruct
 	public void loadAlarms() {
-		//alarmRepository.findAll().forEach(this::putAlarmToCache);
+		alarmRepositoryDevice.findAll().forEach(this::putAlarmToCache);
+		alarmRepositoryEntity.findAll().forEach(this::putAlarmToCache);
+		alarmRepositoryEntityField.findAll().forEach(this::putAlarmToCache);
 	}
 
 	@Override
 	public void saveAlarm(IAlarmV2 alarm) {
-		//alarmRepository.save((AlarmV2) alarm);
+		getRepository(alarm).save(alarm);
 		putAlarmToCache(alarm);
 	}
 
 	@Override
 	public void deleteAlarm(IAlarmV2 alarm) {
 		if(alarm!=null) {
-			//alarmRepository.deleteById(alarm.getId());
+			getRepository(alarm).deleteById(alarm.getId());
 			removeAlarmFromCache(alarm);
 		}
 	}
@@ -96,6 +108,20 @@ public class AlarmV2Service implements IAlarmV2Service {
 		events.forEach(this::processEvent);
 
 		return events;
+	}
+	
+	private IAlarmV2Repository getRepository(IAlarmV2 alarm) {
+		if(IDevice.class.isAssignableFrom(alarm.getTargetItemClass())) {
+			return alarmRepositoryDevice;
+		}
+		if(IEntity.class.isAssignableFrom(alarm.getTargetItemClass())) {
+			return alarmRepositoryEntity;
+		}
+		if(IEntityField.class.isAssignableFrom(alarm.getTargetItemClass())) {
+			return alarmRepositoryEntityField;
+		}
+		
+		return null;
 	}
 
 	private Optional<IAlarmStateChangeEvent> checkForAlarm(IAlarmV2 alarm) {
