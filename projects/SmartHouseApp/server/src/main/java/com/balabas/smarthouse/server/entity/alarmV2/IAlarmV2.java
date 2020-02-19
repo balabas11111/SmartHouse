@@ -9,7 +9,7 @@ import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 
 	Long getItemId();
-	void setItemId(Long itemId);
+	//void setItemId(Long itemId);
 	
 	Class<?> getTargetItemClass();
 	

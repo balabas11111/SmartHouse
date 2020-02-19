@@ -3,6 +3,7 @@ package com.balabas.smarthouse.server.entity.alarm.impl;
 import java.util.function.Predicate;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.MappedSuperclass;
 
 import com.balabas.smarthouse.server.entity.alarm.AlarmAbstractEntityField;
@@ -11,6 +12,7 @@ import com.balabas.smarthouse.server.util.MathUtil;
 
 @SuppressWarnings( {"rawtypes"})
 @MappedSuperclass
+@DiscriminatorColumn(length=100)
 public abstract class AlarmAbstractEntityFieldNumber extends AlarmAbstractEntityField<Number> {
 
 	@Column(precision = 6, scale = 2)

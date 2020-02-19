@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -9,13 +10,17 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.view.MessageHolder;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
 @SuppressWarnings("rawtypes")
-public abstract class AlarmOfEntityField extends AlarmV2 {
+public class AlarmOfEntityField extends AlarmV2 {
 	
-	@ManyToOne
-    @JoinColumn(name="entity_field_id", nullable = true)
-	protected EntityField entityField;
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="entity_field_id", nullable=false)
+	@Getter @Setter
+	private EntityField entityField;
 	
 	@Override
 	public Class<?> getTargetItemClass() {
@@ -44,5 +49,5 @@ public abstract class AlarmOfEntityField extends AlarmV2 {
 		
 		return holder;
 	}
-	
+
 }

@@ -554,7 +554,7 @@ public class DeviceManageService implements IDeviceManageService {
 	}
 
 	protected boolean checkItemRequiresUpdate(IDevice target, ActionTimer timer) {
-		if (target.isVirtualized()) {
+		if (target.isVirtualized() || timer == null) {
 			return false;
 		}
 		boolean waits = timer.isActionForced();

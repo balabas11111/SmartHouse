@@ -1,0 +1,1 @@
+SELECT CONCAT('drop ', TABLE_NAME, ';') FROM information_schema.tables WHERE TABLE_SCHEMA = 'smarthouse_db';

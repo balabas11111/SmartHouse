@@ -1,12 +1,22 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @javax.persistence.Entity
 public class AlarmOfEntity extends AlarmV2 {
 
-	protected Entity entity;
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="entity_id", nullable=false)
+	@Getter @Setter
+	private Entity entity;
 	
 	@Override
 	public Class<?> getTargetItemClass() {

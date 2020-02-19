@@ -88,21 +88,22 @@
 			<version>1.8.29</version>
 		</dependency>
 
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>2.6.1</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
+<!--    <dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.6.1</version>
-			<scope>compile</scope>
+			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
-
-
+        <dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>3.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-data-rest</artifactId>
+			<version>3.0.0-SNAPSHOT</version>
+		</dependency>
+-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -306,6 +307,11 @@
 			<id>spring-milestones</id>
 			<name>Spring Milestones</name>
 			<url>https://repo.spring.io/milestone</url>
+		</repository>
+		<repository>
+			<id>jcenter-snapshots</id>
+			<name>jcenter</name>
+			<url>http://oss.jfrog.org/artifactory/oss-snapshot-local/</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>

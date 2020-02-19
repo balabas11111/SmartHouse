@@ -26,10 +26,10 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Getter @Setter
 	private Long id;
-	
+	/*
 	@Getter @Setter
 	private Long itemId;
-	
+	*/
 	@Getter @Setter
 	private String description;
 	
@@ -48,10 +48,6 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@Getter @Setter
 	private AlarmV2Checker checker;
 	
-	@Transient
-	@Getter @Setter
-	private IItemAbstract item;
-	
 	@Setter
 	@Transient
 	private AlarmState alarmState;
@@ -62,7 +58,7 @@ public abstract class AlarmV2 implements IAlarmV2 {
 
 	@Override
 	public boolean check(IItemAbstract item) {
-		this.item = item;
+		setItem(item);
 		return checker.check(this);
 	}
 	
@@ -140,6 +136,19 @@ public abstract class AlarmV2 implements IAlarmV2 {
 			return setAlarmStateByState(AlarmState.OK);
 		}
 	}
+	
+	@Override
+	public Long getItemId() {
+		IItemAbstract ia = getItem(); 
+		return ia != null?ia.getId():null;
+	}
+/*
+	@Override
+	public void setItemId(Long itemId) {
+		// TODO Auto-generated method stub
+		
+	}
+	*/
 	
 	protected String getAlarmDescriptionDefault() {
 		StringBuilder builder = new StringBuilder();
