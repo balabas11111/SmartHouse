@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
@@ -18,11 +19,10 @@ public class AlarmOfDevice extends AlarmV2 {
     @JoinColumn(name="device_id", nullable=false)
 	@Getter @Setter
 	private Device device;
-	
-	@Override
-	public Class<?> getTargetItemClass() {
-		return Device.class;
-	}
+
+	@Getter
+	@Transient
+	private final Class<?> targetItemClass = Device.class; 
 	
 	@Override
 	public IItemAbstract getItem() {

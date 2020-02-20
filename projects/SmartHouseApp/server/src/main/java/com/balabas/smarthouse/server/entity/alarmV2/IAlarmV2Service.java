@@ -3,8 +3,10 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 
 public interface IAlarmV2Service {
@@ -33,4 +35,10 @@ public interface IAlarmV2Service {
 	IAlarmV2 getAlarm(Long id);
 
 	void deleteAlarm(Long id);
+
+	List<AlarmV2Checker> getCheckersByTargetItemClass(Class<?> targetItemClass);
+
+	IAlarmV2 newAlarm(ItemType itemType);
+
+	Set<IItemAbstract> getEnabledAlarmTargets(IAlarmV2 alarm);
 }

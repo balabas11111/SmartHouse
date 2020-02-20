@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
@@ -29,10 +31,10 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Autowired
 	IAlarmV2RepositoryDevice alarmRepositoryDevice;
-	
+
 	@Autowired
 	IAlarmV2RepositoryEntity alarmRepositoryEntity;
-	
+
 	@Autowired
 	IAlarmV2RepositoryEntityField alarmRepositoryEntityField;
 
@@ -64,7 +66,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Override
 	public void deleteAlarm(IAlarmV2 alarm) {
-		if(alarm!=null) {
+		if (alarm != null) {
 			getRepository(alarm).deleteById(alarm.getId());
 			removeAlarmFromCache(alarm);
 		}
@@ -108,20 +110,6 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 		return events;
 	}
-	
-	private IAlarmV2Repository getRepository(IAlarmV2 alarm) {
-		if(IDevice.class.isAssignableFrom(alarm.getTargetItemClass())) {
-			return alarmRepositoryDevice;
-		}
-		if(IEntity.class.isAssignableFrom(alarm.getTargetItemClass())) {
-			return alarmRepositoryEntity;
-		}
-		if(IEntityField.class.isAssignableFrom(alarm.getTargetItemClass())) {
-			return alarmRepositoryEntityField;
-		}
-		
-		return null;
-	}
 
 	private Optional<IAlarmStateChangeEvent> checkForAlarm(IAlarmV2 alarm) {
 		alarm.check();
@@ -158,6 +146,8 @@ public class AlarmV2Service implements IAlarmV2Service {
 		} else {
 			alarms.add(alarm);
 		}
+
+		alarms.stream().forEach(alarmTypeProvider::setAlarmCheckerByName);
 	}
 
 	private void removeAlarmFromCache(IAlarmV2 alarm) {
@@ -229,7 +219,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 	public Optional<IAlarmV2> getAlarmByFilter(Predicate<? super IAlarmV2> predicate) {
 		return getAllAlarms().stream().filter(predicate).findFirst();
 	}
-	
+
 	public List<IAlarmV2> getAlarmsByFilter(Predicate<? super IAlarmV2> predicate) {
 		return getAllAlarms().stream().filter(predicate).sorted(AlarmV2Service::compareByItemDescriptionField)
 				.collect(Collectors.toList());
@@ -270,6 +260,57 @@ public class AlarmV2Service implements IAlarmV2Service {
 	@Override
 	public void deleteAlarm(Long id) {
 		deleteAlarm(getAlarm(id));
+	}
+
+	@Override
+	public List<AlarmV2Checker> getCheckersByTargetItemClass(Class<?> targetItemClass) {
+		return alarmTypeProvider.getCheckersByTargetItemClass(targetItemClass);
+	}
+
+	@Override
+	public IAlarmV2 newAlarm(ItemType itemType) {
+		if (ItemType.DEVICE.equals(itemType)) {
+			return new AlarmOfDevice();
+		}
+		if (ItemType.ENTITY.equals(itemType)) {
+			return new AlarmOfEntity();
+		}
+		if (ItemType.ENTITY_FIELD.equals(itemType)) {
+			return new AlarmOfEntityField();
+		}
+
+		return null;
+	}
+
+	@Override
+	public Set<IItemAbstract> getEnabledAlarmTargets(IAlarmV2 alarm) {
+		Set<IItemAbstract> result = null;
+
+		if (IDevice.class.isAssignableFrom(alarm.getTargetItemClass())) {
+			result = deviceService.getDevices().stream().collect(Collectors.toSet());
+		}
+		if (IEntity.class.isAssignableFrom(alarm.getTargetItemClass())) {
+			result = deviceService.getEntities().stream().collect(Collectors.toSet());
+		}
+		if (IEntityField.class.isAssignableFrom(alarm.getTargetItemClass())) {
+			result = deviceService.getEntityFields().stream().collect(Collectors.toSet());
+		}
+
+		return result;
+	}
+
+	private IAlarmV2Repository getRepository(IAlarmV2 alarm) {
+		if (IDevice.class.isAssignableFrom(alarm.getTargetItemClass())) {
+			return alarmRepositoryDevice;
+		}
+		if (IEntity.class.isAssignableFrom(alarm.getTargetItemClass())) {
+			return alarmRepositoryEntity;
+		}
+		if (IEntityField.class.isAssignableFrom(alarm.getTargetItemClass())) {
+			return alarmRepositoryEntityField;
+		}
+
+		return null;
 	}
 
 }

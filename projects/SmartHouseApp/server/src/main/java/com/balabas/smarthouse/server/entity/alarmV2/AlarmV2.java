@@ -31,6 +31,9 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	private Long itemId;
 	*/
 	@Getter @Setter
+	private String checkerName;
+	
+	@Getter @Setter
 	private String description;
 	
 	@Getter @Setter

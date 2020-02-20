@@ -7,7 +7,13 @@ public interface AlarmV2Checker {
 	Class<?> getItemClass();
 	
 	default boolean isCorrectTarget(IItemAbstract item) {
-		return getItemClass().isAssignableFrom(item.getClass());
+		return isCorrectTarget(item.getClass());
+	}
+	
+	default boolean isCorrectTarget(Class<?> clazz) {
+		Class<?> targetClazz = getItemClass();
+		boolean res = targetClazz.isAssignableFrom(clazz);
+		return res;
 	}
 	
 	boolean check(IAlarmV2 alarm);

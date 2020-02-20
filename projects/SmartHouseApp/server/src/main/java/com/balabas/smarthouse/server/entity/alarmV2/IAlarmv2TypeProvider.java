@@ -16,4 +16,8 @@ public interface IAlarmv2TypeProvider {
 	Map<String, AlarmV2Checker> getAlarmv2Checkers();
 	
 	Map<String, IAlarmStateChangeEventProcessor> getStateChangedProcessors();
+	
+	void setAlarmCheckerByName(IAlarmV2 alarm);
+
+	List<AlarmV2Checker> getCheckersByTargetItemClass(Class<?> targetItemClass);
 }

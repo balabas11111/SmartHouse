@@ -8,7 +8,7 @@ public enum ItemType {
 	CUSTOM(-1, "", Emoji.BRIEFCASE, "custom"),
 	GROUP(-1, "Группа", Emoji.BRIEFCASE, "group"),
 	ENTITY(-1, "Датчик", Emoji.BRIEFCASE, "entity"),
-	ENTITY_FIELD(-1, "Показатель", Emoji.BRIEFCASE, "entity_field"),;
+	ENTITY_FIELD(-1, "Показатель", Emoji.BRIEFCASE, "EntityField"),;
 
 	long refreshInterval;
 	String description;

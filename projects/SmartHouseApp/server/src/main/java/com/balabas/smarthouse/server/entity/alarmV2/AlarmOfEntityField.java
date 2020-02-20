@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
@@ -22,10 +23,9 @@ public class AlarmOfEntityField extends AlarmV2 {
 	@Getter @Setter
 	private EntityField entityField;
 	
-	@Override
-	public Class<?> getTargetItemClass() {
-		return EntityField.class;
-	}
+	@Getter
+	@Transient
+	private final Class<?> targetItemClass = EntityField.class;
 	
 	@Override
 	public IItemAbstract getItem() {

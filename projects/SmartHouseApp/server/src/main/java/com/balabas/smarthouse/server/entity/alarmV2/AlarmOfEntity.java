@@ -3,6 +3,7 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
@@ -18,10 +19,9 @@ public class AlarmOfEntity extends AlarmV2 {
 	@Getter @Setter
 	private Entity entity;
 	
-	@Override
-	public Class<?> getTargetItemClass() {
-		return Entity.class;
-	}
+	@Getter
+	@Transient
+	private final Class<?> targetItemClass = Entity.class;
 	
 	@Override
 	public IItemAbstract getItem() {

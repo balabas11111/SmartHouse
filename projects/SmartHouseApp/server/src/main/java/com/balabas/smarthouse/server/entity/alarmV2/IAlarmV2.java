@@ -23,7 +23,7 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	void setPreviousAlarmState(AlarmState previousAlarmState);
 	
 	String getParameter();
-	void setParameter(String value);
+	void setParameter(String parameter);
 	
 	boolean isInBadState();
 	boolean isRepeatable();
@@ -42,6 +42,9 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	IAlarmStateChangeAction getCurrentAction();
 
 	String getAlarmDescriptionByState();
+	
+	String getCheckerName();
+	void setCheckerName(String checkerName);
 	
 	default boolean isParameterValid(String value) {
 		return true;
