@@ -43,26 +43,51 @@
 	<div class="container">
 		<h4 th:text="${pageHeader}"></h4>
 
-		<form action="#" th:action="@{/saveAlarm}" th:object="${alarm}"
+		<form action="#" th:action="@{/save{path}Alarm(path=${alarm.targetItemClass.getSimpleName()})}" th:object="${alarm}"
 			method="post">
 			<input type="hidden" th:field="*{id}">
 			<table class="table table-dark table-striped">
 				<tr>
-					<td>Цель</td>
-					<td><input type="text" th:text="${alarm.targetItemClass.getSimpleName()}"></td>
+					<td>itemClass</td>
+					<td><input type="text" th:text="${alarm.targetItemClass.getSimpleName()}"></input></td>
 				</tr>
 				<tr>
-					<td>Описание</td>
+					<td>description</td>
 					<td><input type="text" th:field="*{description}"></td>
 				</tr>
 				<tr>
-					<td>Параметр</td>
+					<td>paramater</td>
 					<td><input type="text" th:field="*{parameter}"></td>
 				</tr>
 				<tr>
-					<td>Итервал оповещения</td>
+					<td>Message interval</td>
 					<td><input type="number" th:field="*{messageInterval}"></td>
 				</tr>
+				
+				<tr>
+					<td>Checker</td>
+					<td>
+						<select th:field="*{checkerName}">
+								<option th:each="checker : ${checkers}"
+									th:value="${checker.getName()}"
+									th:utext="${checker.getName()}"
+									th:selected="${checker.getName().equals(currentCheckerName)}"/>
+						</select>
+					</td>
+				</tr>
+				
+				<tr>
+					<td>target</td>
+					<td>
+						<select th:name="itemId">
+								<option th:each="target : ${targets}"
+									th:value="${target.getId()}"
+									th:utext="${target.getName()}"
+									th:selected="${target.getId().equals(alarm.getItemId())}"/>
+						</select>
+					</td>
+				</tr>
+				
 				
 			</table>
 

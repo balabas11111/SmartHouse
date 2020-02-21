@@ -41,4 +41,10 @@ public interface IAlarmV2Service {
 	IAlarmV2 newAlarm(ItemType itemType);
 
 	Set<IItemAbstract> getEnabledAlarmTargets(IAlarmV2 alarm);
+	
+	IItemAbstract getEnabledAlarmTarget(Long itemId, Class<?> itemClass);
+	
+	void createOrUpdateAlarm(IAlarmV2 alarm, Long itemId);
+
+	IAlarmV2Repository getRepository(IAlarmV2 alarm);
 }

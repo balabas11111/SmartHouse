@@ -6,6 +6,10 @@ public interface AlarmV2Checker {
 
 	Class<?> getItemClass();
 	
+	default String getName() {
+		return this.getClass().getSimpleName();
+	}
+	
 	default boolean isCorrectTarget(IItemAbstract item) {
 		return isCorrectTarget(item.getClass());
 	}

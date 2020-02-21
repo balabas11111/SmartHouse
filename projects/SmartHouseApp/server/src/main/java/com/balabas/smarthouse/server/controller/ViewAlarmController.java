@@ -10,9 +10,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.balabas.smarthouse.server.entity.alarmV2.AlarmOfDevice;
+import com.balabas.smarthouse.server.entity.alarmV2.AlarmOfEntity;
+import com.balabas.smarthouse.server.entity.alarmV2.AlarmOfEntityField;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Checker;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2Service;
@@ -48,16 +53,41 @@ public class ViewAlarmController {
 		
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
 		model.addAttribute("alarm", alarm);
+		model.addAttribute("currentCheckerName", alarm.getCheckerName());
 		model.addAttribute("checkers", checkers);
 		model.addAttribute("targets", alarmService.getEnabledAlarmTargets(alarm));
 		
 		return "alarms/editAlarm.html";
 	}
 	
+	
+	@PostMapping(value = "/saveDeviceAlarm")
+	public String saveDeviceAlarm(@ModelAttribute("alarm") AlarmOfDevice alarm,
+			@RequestParam(value = "itemId", required = true) Long itemId, Model model) {
+		return saveAlarm(alarm, itemId);
+	}
+	
+	@PostMapping(value = "/saveEntityAlarm")
+	public String saveEntityAlarm(@ModelAttribute("alarm") AlarmOfEntity alarm,
+			@RequestParam(value = "itemId", required = true) Long itemId, Model model) {
+		return saveAlarm(alarm, itemId);
+	}
+	
+	@PostMapping(value = "/saveEntityFieldAlarm")
+	public String saveEntityFieldAlarm(@ModelAttribute("alarm") AlarmOfEntityField alarm,
+			@RequestParam(value = "itemId", required = true) Long itemId, Model model) {
+		return saveAlarm(alarm, itemId);
+	}
+	
 	@GetMapping("/deleteAlarm_{id}")
 	public String deleteEntityFieldEnabledValue(@PathVariable(name = "id", required = true) Long id, Model model) {
 		alarmService.deleteAlarm(id);
 		
+		return "redirect:/alarmsList";
+	}
+	
+	private String saveAlarm(IAlarmV2 alarm, Long itemId) {
+		alarmService.createOrUpdateAlarm(alarm, itemId);
 		return "redirect:/alarmsList";
 	}
 

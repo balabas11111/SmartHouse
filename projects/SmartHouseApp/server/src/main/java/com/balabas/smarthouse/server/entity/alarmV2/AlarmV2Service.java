@@ -26,6 +26,9 @@ import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 @Service
 public class AlarmV2Service implements IAlarmV2Service {
 
@@ -268,6 +271,21 @@ public class AlarmV2Service implements IAlarmV2Service {
 	}
 
 	@Override
+	public IAlarmV2Repository getRepository(IAlarmV2 alarm) {
+		if (IDevice.class.isAssignableFrom(alarm.getTargetItemClass())) {
+			return alarmRepositoryDevice;
+		}
+		if (IEntity.class.isAssignableFrom(alarm.getTargetItemClass())) {
+			return alarmRepositoryEntity;
+		}
+		if (IEntityField.class.isAssignableFrom(alarm.getTargetItemClass())) {
+			return alarmRepositoryEntityField;
+		}
+
+		return null;
+	}
+
+	@Override
 	public IAlarmV2 newAlarm(ItemType itemType) {
 		if (ItemType.DEVICE.equals(itemType)) {
 			return new AlarmOfDevice();
@@ -298,19 +316,29 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 		return result;
 	}
-
-	private IAlarmV2Repository getRepository(IAlarmV2 alarm) {
-		if (IDevice.class.isAssignableFrom(alarm.getTargetItemClass())) {
-			return alarmRepositoryDevice;
+	
+	@Override
+	public IItemAbstract getEnabledAlarmTarget(Long itemId, Class<?> itemClass) {
+		if (IDevice.class.isAssignableFrom(itemClass)) {
+			return deviceService.getDeviceById(itemId);
 		}
-		if (IEntity.class.isAssignableFrom(alarm.getTargetItemClass())) {
-			return alarmRepositoryEntity;
+		if (IEntity.class.isAssignableFrom(itemClass)) {
+			return deviceService.getEntityById(itemId);
 		}
-		if (IEntityField.class.isAssignableFrom(alarm.getTargetItemClass())) {
-			return alarmRepositoryEntityField;
+		if (IEntityField.class.isAssignableFrom(itemClass)) {
+			return deviceService.getEntityFieldById(itemId);
 		}
-
+		
 		return null;
+	}
+
+	@Override
+	public void createOrUpdateAlarm(IAlarmV2 alarm, Long itemId) {
+		IItemAbstract item = getEnabledAlarmTarget(itemId, alarm.getTargetItemClass());
+		alarm.setItem(item);
+		
+		saveAlarm(alarm);
+		log.debug("Alarm saved " + alarm);
 	}
 
 }
