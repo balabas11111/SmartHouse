@@ -26,8 +26,8 @@ public class AlarmStateChangeAction extends ItemAbstract implements IAlarmStateC
 	private AlarmState newState;
 	
 	@Getter @Setter
-	@Column(name = "interval", nullable = true)
-	private Long interval = -1l;
+	@Column(name = "interva", nullable = true)
+	private Integer interval = -1;
 	
 	@Override
 	public AlarmState getOldState() {

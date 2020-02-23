@@ -7,8 +7,8 @@ public interface IAlarmStateChangeAction extends IItemAbstract{
 	AlarmState getNewState();
 	AlarmState getOldState();
 	
-	Long getInterval();
-	void setInterval(Long interval);
+	Integer getInterval();
+	void setInterval(Integer interval);
 	
 	boolean accepts(AlarmState oldState, AlarmState newState);
 	

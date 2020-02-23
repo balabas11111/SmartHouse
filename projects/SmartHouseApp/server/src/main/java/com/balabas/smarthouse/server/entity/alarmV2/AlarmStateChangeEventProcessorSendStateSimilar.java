@@ -14,6 +14,7 @@ public class AlarmStateChangeEventProcessorSendStateSimilar extends AlarmStateCh
 	
 	@Override
 	public void processEvent(IItemEvent event) {
+		String actionResult = event.getChangeAction().executeAction(event.getItem());
 		log.info("processEvent AlarmStateChangeEventProcessorSendStateChanged " + event);
 	}
 

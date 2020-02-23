@@ -167,7 +167,7 @@
 								<option th:each="processor : ${alarmStateChangedEventProcessors}"
 									th:value="${processor.getName()}"
 									th:utext="${processor.getName()}"
-									th:selected="${processor.getName().equals(alarmEvent.targetBeanName)}"/>
+									th:selected="${processor.getName().equalsIgnoreCase(alarmEvent.targetBeanName)}"/>
 						</select>
 					</td>
 				</tr>
