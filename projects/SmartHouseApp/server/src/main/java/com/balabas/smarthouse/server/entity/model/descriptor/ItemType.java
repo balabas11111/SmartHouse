@@ -39,6 +39,9 @@ public enum ItemType {
 	}
 
 	public static ItemType getItemTypeByName(String name) {
+		if(name == null) {
+			return null;
+		}
 		for (ItemType gt : ItemType.values()) {
 			if (gt.name().equalsIgnoreCase(name)) {
 				return gt;

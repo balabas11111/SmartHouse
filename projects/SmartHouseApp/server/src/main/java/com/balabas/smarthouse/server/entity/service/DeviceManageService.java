@@ -54,6 +54,7 @@ import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityRepository;
 import com.balabas.smarthouse.server.entity.repository.IGroupRepository;
 import com.balabas.smarthouse.server.service.DeviceRequestorService;
+import com.balabas.smarthouse.server.util.DateTimeUtil;
 import com.balabas.smarthouse.server.view.Action;
 import com.balabas.smarthouse.server.view.DeviceEntityFieldActionHolder;
 import com.google.common.base.Joiner;
@@ -382,7 +383,8 @@ public class DeviceManageService implements IDeviceManageService {
 			device = save(device);
 			log.debug("device saved");
 		}
-
+		
+		device.setLastUpdated(DateTimeUtil.now());
 	}
 	
 	private void processChangedEntityFieldValuesList(List<EntityFieldValue> changedValues, IDevice device) {

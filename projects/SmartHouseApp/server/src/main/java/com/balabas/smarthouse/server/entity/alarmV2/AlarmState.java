@@ -1,5 +1,8 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 
 public enum AlarmState {
@@ -21,11 +24,27 @@ public enum AlarmState {
 		this.badState = bad;
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
 	public String getDescription() {
 		return description;
 	}
 	
 	public String getEmojiDescription() {
 		return emoji.toString() + " " +getDescription();
+	}
+	
+	public String getFullString() {
+		return emoji.toString() + " " + name + " " + getDescription();
+	}
+	
+	public static List<AlarmState> getList() {
+		return Arrays.asList(AlarmState.values());
+	}
+
+	public static AlarmState getByName(String stateName) {
+		return getList().stream().filter(a -> a.name.equals(stateName)).findFirst().orElse(NO_DATA);
 	}
 }

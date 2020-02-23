@@ -13,7 +13,7 @@ public class AlarmStateChangeEventProcessorSendStateSimilar extends AlarmStateCh
 	}
 	
 	@Override
-	public void processEvent(IAlarmStateChangeEvent event) {
+	public void processEvent(IItemEvent event) {
 		log.info("processEvent AlarmStateChangeEventProcessorSendStateChanged " + event);
 	}
 

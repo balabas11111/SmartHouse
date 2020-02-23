@@ -49,7 +49,15 @@
 			<table class="table table-dark table-striped">
 				<tr>
 					<td>itemClass</td>
-					<td><input type="text" th:text="${alarm.targetItemClass.getSimpleName()}"></input></td>
+					<td th:text="${alarm.targetItemClass.getSimpleName()}"></td>
+				</tr>
+				<tr>
+					<td>oldState</td>
+					<td th:text="${alarm.getPreviousAlarmState()}"></td>
+				</tr>
+				<tr>
+					<td>newState</td>
+					<td th:text="${alarm.getAlarmState()}"></td>
 				</tr>
 				<tr>
 					<td>description</td>
@@ -91,13 +99,105 @@
 				
 			</table>
 
-			<h4>Виртуальные группы устройства</h4>
+			<h4>Event actions</h4>
+			
+			<div th:if="${alarm.actions.size()>0}">
+				<table class="table table-dark table-striped">
+					<thead>
+						<tr>
+							<th>State1</th>
+							<th>State2</th>
+							<th>stringFormatted</th>
+							<th>stringParametersFormatted</th>
+							<th>bean</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="actionItem : ${alarm.getActionsList()}">
+							<td th:text="${actionItem.getOldState()}"></td>
+							<td th:text="${actionItem.getNewState()}"></td>
+							<td th:text="${actionItem.stringFormatted}"></td>
+							<td th:text="${actionItem.stringParametersFormatted}"></td>
+							<td th:text="${actionItem.targetBeanName}"></td>
+							
+							<td>
+								<a th:href="@{~/deleteAction?id={id}&alarmId={alarmId}(id=${actionItem.id}, alarmId=${alarm.id})}"
+									class="btn btn-default">delete</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 
 			<div>
 				<input type="submit" class="btn btn-default" value="&#x1F4BE; Сохранить" />
 				<a th:href="@{~/alarmsList}" class="btn btn-default">&#x274C;Отмена</a>
 			</div>
 
+		</form>
+		
+		<form th:if="${!alarm.isNew()}" action="#" th:action="@{/saveAlarmEvent}" th:object="${alarmEvent}"
+			method="post">
+			<input type="hidden" name="alarmId" th:value="${alarm.id}">0</input>
+			<input type="hidden" th:field="*{id}">
+			<table class="table table-dark table-striped">
+				<tr>
+					<td>oldState</td>
+					<td>
+						<select name="oldStateName">
+								<option th:each="state : ${alarmStates}"
+									th:value="${state.getName()}"
+									th:utext="${state.getName()}"
+									th:selected="${state.equals(alarmEvent.oldState)}"/>
+						</select>
+					</td>
+					<td>newState</td>
+					<td>
+						<select name="newStateName">
+								<option th:each="state : ${alarmStates}"
+									th:value="${state.getName()}"
+									th:utext="${state.getName()}"
+									th:selected="${state.equals(alarmEvent.newState)}"/>
+						</select>
+					</td>
+					<td>bean</td>
+					<td>
+						<select th:field="*{targetBeanName}">
+								<option th:each="processor : ${alarmStateChangedEventProcessors}"
+									th:value="${processor.getName()}"
+									th:utext="${processor.getName()}"
+									th:selected="${processor.getName().equals(alarmEvent.targetBeanName)}"/>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>stringFormatted</td>
+					<td>
+						<input type="text" th:field="*{stringFormatted}">
+					</td>
+					<td>stringFormatted</td>
+					<td>
+						<input type="text" th:field="*{stringParametersFormatted}">
+					</td>
+				</tr>
+				<tr>
+					<td>hint</td>
+					<td th:text="*{hint}">
+					</td>
+					<td>dispatchIfSameState</td>
+					<td>
+						<input type="checkbox" th:field="*{dispatchIfSameState}">
+					</td>
+					<td>interval</td>
+					<td>
+						<input type="number" th:field="*{interval}">
+					</td>
+				</tr>
+			</table>
+			<div>
+				<input type="submit" class="btn btn-default" value="&#x1F4BE; Сохранить" />
+			</div>
 		</form>
 	</div>
 

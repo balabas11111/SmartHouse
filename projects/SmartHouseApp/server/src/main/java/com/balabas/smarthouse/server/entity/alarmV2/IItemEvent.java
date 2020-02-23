@@ -2,13 +2,13 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 
 import java.util.Date;
 
-public interface IAlarmStateChangeEvent {
+import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+
+public interface IItemEvent {
 
 	Date getDate();
 	
-	IAlarmV2 getAlarm();
+	IItemAbstract getItem();
 	
 	IAlarmStateChangeAction getChangeAction();
-	
-	boolean isSameStateAction();
 }

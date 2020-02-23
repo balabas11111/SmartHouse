@@ -3,7 +3,9 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import org.springframework.util.StringUtils;
@@ -17,11 +19,25 @@ import lombok.Setter;
 @Entity
 public class AlarmStateChangeAction extends ItemAbstract implements IAlarmStateChangeAction {
 
-	@Getter @Setter
+	@Setter
 	private AlarmState oldState;
 	
-	@Getter @Setter
+	@Setter
 	private AlarmState newState;
+	
+	@Getter @Setter
+	@Column(name = "interval", nullable = true)
+	private Long interval = -1l;
+	
+	@Override
+	public AlarmState getOldState() {
+		return Optional.ofNullable(oldState).orElse(AlarmState.NO_DATA);
+	}
+	
+	@Override
+	public AlarmState getNewState() {
+		return Optional.ofNullable(newState).orElse(AlarmState.NO_DATA);
+	}
 	
 	@Getter @Setter
 	private String stringFormatted;
@@ -39,7 +55,13 @@ public class AlarmStateChangeAction extends ItemAbstract implements IAlarmStateC
 	@Getter 
 	final private String hint = "getDescriptionByDescriptionField;getDescription;getName;getValueStr;getValueTmp";
 	
+	@Override
 	public String getAlarmDescription(IItemAbstract item) {
+		return executeAction(item);
+	}
+	
+	@Override
+	public String executeAction(IItemAbstract item) {
 		if(!StringUtils.isEmpty(this.stringParametersFormatted)) {
 			String[] methodNames = stringParametersFormatted.split(";");
 			

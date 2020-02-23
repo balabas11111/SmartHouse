@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
+import java.util.List;
 import java.util.Set;
 
 import com.balabas.smarthouse.server.entity.model.IDescriptionable;
@@ -39,9 +40,22 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	Set<IAlarmStateChangeAction> getActions();
 	void setActions(Set<IAlarmStateChangeAction> actions);
 	
-	IAlarmStateChangeAction getCurrentAction();
+	List<IAlarmStateChangeAction> getCurrentActions();
 
-	String getAlarmDescriptionByState();
+	static String getAlarmDescriptionByState(IAlarmStateChangeAction action, IItemAbstract item) {
+		if(action!=null) {
+			return action.getAlarmDescription(item);
+		} else {
+			return getAlarmDescriptionDefault();
+		}
+	}
+	
+	static String getAlarmDescriptionDefault() {
+		StringBuilder builder = new StringBuilder();
+		
+		
+		return builder.toString();
+	}
 	
 	String getCheckerName();
 	void setCheckerName(String checkerName);
@@ -61,5 +75,7 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	boolean setAlarmStateByState(AlarmState alarmState);
 
 	boolean setAlarmStateByBooleanFlag(boolean alarmed);
+
+	List<IAlarmStateChangeAction> getActionsList();
 
 }

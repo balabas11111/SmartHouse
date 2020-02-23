@@ -13,8 +13,8 @@ public interface IAlarmV2Service {
 
 	void checkForAlarmsWithParentExecutePostActions(List<EntityFieldValue> changedValues);
 	
-	List<IAlarmStateChangeEvent> checkForAlarmsExecutePostActions(Collection<IItemAbstract> items);
-	List<IAlarmStateChangeEvent> checkForAlarmsExecutePostActions(IItemAbstract item);
+	List<IItemEvent> checkForAlarmsExecutePostActions(Collection<IItemAbstract> items);
+	List<IItemEvent> checkForAlarmsExecutePostActions(IItemAbstract item);
 	
 	List<AlarmV2Checker> getEnabledAlarmCheckers(IItemAbstract item);
 	
@@ -32,7 +32,7 @@ public interface IAlarmV2Service {
 	
 	Map<AlarmState, List<IAlarmV2>> getAlarmsGrouppedByAlarmState();
 
-	IAlarmV2 getAlarm(Long id);
+	IAlarmV2 getAlarmOrDefault(Long id, IAlarmV2 def);
 
 	void deleteAlarm(Long id);
 
@@ -47,4 +47,13 @@ public interface IAlarmV2Service {
 	void createOrUpdateAlarm(IAlarmV2 alarm, Long itemId);
 
 	IAlarmV2Repository getRepository(IAlarmV2 alarm);
+
+	Set<IAlarmStateChangeEventProcessor> getAlarmStateChangedEventProcessors(IAlarmV2 alarm);
+
+	void addAlarmStateChangeActionToAlarm(Long alarmId, AlarmStateChangeAction action);
+
+	void deleteAlarmStateChangeActionFromAlarm(Long alarmId, Long actionId);
+
+	IAlarmV2 getAlarm(Long id, ItemType it);
+
 }

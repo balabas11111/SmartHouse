@@ -2,6 +2,7 @@ package com.balabas.smarthouse.server.util;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import lombok.experimental.UtilityClass;
 
@@ -17,5 +18,9 @@ public class DateTimeUtil {
 	public static String getDateTimeStr(LocalDateTime date, String pattern) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
 		return date.format(formatter);
+	}
+	
+	public static long now() {
+		return (new Date()).getTime();
 	}
 }

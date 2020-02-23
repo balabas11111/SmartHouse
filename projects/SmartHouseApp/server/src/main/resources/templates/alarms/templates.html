@@ -15,7 +15,7 @@
 		</thead>
 		<tbody>
 			<tr th:each="alarm : ${alarms}">
-			    <td th:text="${alarm.getTypeDescription()}"></td>
+			    <td th:text="${alarm.description}"></td>
 				<td>
 					<a th:href="@{~/editAlarm?id={id}(id=${alarm.id})}" th:text="${alarm.getDescription()}"
 						class="btn btn-default" >&#x1F4DD;Просмотр</a> 

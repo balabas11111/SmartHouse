@@ -3,6 +3,7 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -96,8 +97,8 @@ public class AlarmV2Service implements IAlarmV2Service {
 	}
 
 	@Override
-	public List<IAlarmStateChangeEvent> checkForAlarmsExecutePostActions(Collection<IItemAbstract> items) {
-		List<IAlarmStateChangeEvent> list = new ArrayList<>();
+	public List<IItemEvent> checkForAlarmsExecutePostActions(Collection<IItemAbstract> items) {
+		List<IItemEvent> list = new ArrayList<>();
 
 		items.forEach(item -> list.addAll(checkForAlarmsExecutePostActions(item)));
 
@@ -105,21 +106,31 @@ public class AlarmV2Service implements IAlarmV2Service {
 	}
 
 	@Override
-	public List<IAlarmStateChangeEvent> checkForAlarmsExecutePostActions(IItemAbstract item) {
-		List<IAlarmStateChangeEvent> events = new ArrayList<IAlarmStateChangeEvent>();
+	public List<IItemEvent> checkForAlarmsExecutePostActions(IItemAbstract item) {
+		List<IItemEvent> events = new ArrayList<IItemEvent>();
 
-		getAlarmsByItemUid(item).forEach(alarm -> checkForAlarm(alarm).ifPresent(events::add));
+		getAlarmsByItemUid(item).forEach(alarm -> {
+			String checkerName = alarm.getCheckerName();
+			AlarmV2Checker checker = alarmTypeProvider.getAlarmV2checker(checkerName);
+			if(checker == null) {
+				log.error("checker is null");
+			}
+			
+			alarm.setChecker(checker);
+			alarm.setItem(item);
+			events.addAll(checkForAlarm(alarm));
+		});
 		events.forEach(this::processEvent);
 
 		return events;
 	}
 
-	private Optional<IAlarmStateChangeEvent> checkForAlarm(IAlarmV2 alarm) {
+	private List<IItemEvent> checkForAlarm(IAlarmV2 alarm) {
 		alarm.check();
-		return Optional.ofNullable(buildEvent(alarm));
+		return buildEvent(alarm);
 	}
 
-	private void processEvent(IAlarmStateChangeEvent event) {
+	private void processEvent(IItemEvent event) {
 		IAlarmStateChangeEventProcessor processor = alarmTypeProvider.getAlarmStateChangedEventProcessor(event);
 
 		if (processor != null && processor.isTarget(event)) {
@@ -127,16 +138,15 @@ public class AlarmV2Service implements IAlarmV2Service {
 		}
 	}
 
-	private IAlarmStateChangeEvent buildEvent(IAlarmV2 alarm) {
+	private List<IItemEvent> buildEvent(IAlarmV2 alarm) {
 
-		IAlarmStateChangeAction action = alarm.getCurrentAction();
+		List<IItemEvent> events = new ArrayList<IItemEvent>();
+		List<IAlarmStateChangeAction> action = alarm.getCurrentActions();
 
-		if (action != null) {
-			IAlarmStateChangeEvent result = new AlarmStateChangeEvent(alarm, action);
-
-			return result;
-		}
-		return null;
+		action.stream().forEach( a -> {
+			events.add(new ItemChangeEvent(alarm.getItem(), a));
+		});
+		return events;
 	}
 
 	private void putAlarmToCache(IAlarmV2 alarm) {
@@ -256,13 +266,13 @@ public class AlarmV2Service implements IAlarmV2Service {
 	}
 
 	@Override
-	public IAlarmV2 getAlarm(Long id) {
-		return getAlarmByFilter(alarm -> id.equals(alarm.getId())).orElse(null);
+	public IAlarmV2 getAlarmOrDefault(Long id, IAlarmV2 def) {
+		return getAlarmByFilter(alarm -> id.equals(alarm.getId())).orElse(def);
 	}
 
 	@Override
 	public void deleteAlarm(Long id) {
-		deleteAlarm(getAlarm(id));
+		deleteAlarm(getAlarmOrDefault(id, null));
 	}
 
 	@Override
@@ -339,6 +349,50 @@ public class AlarmV2Service implements IAlarmV2Service {
 		
 		saveAlarm(alarm);
 		log.debug("Alarm saved " + alarm);
+	}
+
+	@Override
+	public Set<IAlarmStateChangeEventProcessor> getAlarmStateChangedEventProcessors(IAlarmV2 alarm) {
+		return alarmTypeProvider.getAlarmStateChangedEventProcessors();
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public void addAlarmStateChangeActionToAlarm(Long alarmId, AlarmStateChangeAction action) {
+		IAlarmV2 alarm = getAlarmOrDefault(alarmId, null);
+		
+		Set<IAlarmStateChangeAction> set = Optional.ofNullable(alarm.getActions()).orElse(new LinkedHashSet());
+		set.add(action);
+		alarm.setActions(set);
+		
+		saveAlarm(alarm);
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public void deleteAlarmStateChangeActionFromAlarm(Long alarmId, Long actionId) {
+		IAlarmV2 alarm = getAlarmOrDefault(alarmId, null);
+		
+		Set<IAlarmStateChangeAction> set = Optional.ofNullable(alarm.getActions()).orElse(new LinkedHashSet());
+		
+		IAlarmStateChangeAction action = set.stream().filter( a-> a.getId().equals(a.getId())).findFirst().orElse(null);
+		
+		Optional.ofNullable(action).ifPresent( a -> set.remove(a));
+		
+		alarm.setActions(set);
+		saveAlarm(alarm);
+	}
+
+	@Override
+	public IAlarmV2 getAlarm(Long id, ItemType it) {
+		if(it == null && id!=null && id>0) {
+			IAlarmV2 al = getAlarmByFilter(alarm -> id.equals(alarm.getId())).orElse(null);
+			if(al!=null) {
+				return al;
+			}
+			
+		}
+		return getAlarmOrDefault(id, newAlarm(it));
 	}
 
 }

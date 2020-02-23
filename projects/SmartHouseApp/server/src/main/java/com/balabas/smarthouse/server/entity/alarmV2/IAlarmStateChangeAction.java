@@ -4,9 +4,15 @@ import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 
 public interface IAlarmStateChangeAction extends IItemAbstract{
 
+	AlarmState getNewState();
+	AlarmState getOldState();
+	
+	Long getInterval();
+	void setInterval(Long interval);
+	
 	boolean accepts(AlarmState oldState, AlarmState newState);
 	
-	String getAlarmDescription(IItemAbstract item);
+	String executeAction(IItemAbstract item);
 	
 	String getStringFormatted();
 	void setStringFormatted(String stringFormatted);
@@ -21,4 +27,6 @@ public interface IAlarmStateChangeAction extends IItemAbstract{
 
 	boolean isDispatchIfSameState();
 	void setDispatchIfSameState(boolean dispatchIfSameState);
+
+	String getAlarmDescription(IItemAbstract item);
 }

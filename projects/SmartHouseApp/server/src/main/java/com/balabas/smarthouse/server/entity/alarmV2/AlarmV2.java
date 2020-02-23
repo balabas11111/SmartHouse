@@ -1,8 +1,11 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,7 +18,9 @@ import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @MappedSuperclass
 public abstract class AlarmV2 implements IAlarmV2 {
 
@@ -42,27 +47,48 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@Getter @Setter
 	private Integer messageInterval = NO_MESSAGE_SEND_REPEATS;
 	
-	@Getter
 	@Setter
-	@ManyToMany(targetEntity = AlarmStateChangeAction.class, fetch = FetchType.EAGER)
+	@ManyToMany(targetEntity = AlarmStateChangeAction.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<IAlarmStateChangeAction> actions;
 	
 	@Transient
 	@Getter @Setter
 	private AlarmV2Checker checker;
 	
-	@Setter
 	@Transient
 	private AlarmState alarmState;
 	
 	@Setter
 	@Transient
 	private AlarmState previousAlarmState;
+	
+	@Override
+	public void setAlarmState(AlarmState newState) {
+		this.previousAlarmState = alarmState;
+		this.alarmState = newState;
+	}
 
+	@Override
+	public Set<IAlarmStateChangeAction> getActions() {
+		return this.actions;
+	}
+	
+	@Override
+	public List<IAlarmStateChangeAction>	getActionsList() {
+		Set<IAlarmStateChangeAction> result = getActions();
+		List<IAlarmStateChangeAction> list = result.stream().collect(Collectors.toList());
+		return list;
+	}
+	
 	@Override
 	public boolean check(IItemAbstract item) {
 		setItem(item);
-		return checker.check(this);
+		if(checker!=null) {
+			return checker.check(this);
+		} else {
+			log.error("Null pointer as checker");
+		}
+		return false;
 	}
 	
 	@Override
@@ -86,39 +112,13 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	}
 	
 	@Override
-	public IAlarmStateChangeAction getCurrentAction() {
-		IAlarmStateChangeAction result = null;
+	public List<IAlarmStateChangeAction> getCurrentActions() {
 		
-		for(IAlarmStateChangeAction action : getActions()) {
-			if(action.accepts(getPreviousAlarmState(), getAlarmState())) {
-				result = action;
-				break;
-			}
-		}
+		List<IAlarmStateChangeAction> result = getActions().stream().filter(
+				action -> action.accepts(getPreviousAlarmState(), getAlarmState())
+				).collect(Collectors.toList());
 		
-		if(result != null) {
-			boolean stateChanged = !getPreviousAlarmState().equals(getAlarmState()); 
-			if( stateChanged) {
-				if(result.isDispatchIfSameState()) {
-					return result;
-				}
-			} else {
-				return result;
-			}
-			
-		}
-		
-		return null;
-	}
-	
-	@Override
-	public String getAlarmDescriptionByState() {
-		IAlarmStateChangeAction action = getCurrentAction();
-		if(action!=null) {
-			return action.getAlarmDescription(getItem());
-		} else {
-			return getAlarmDescriptionDefault();
-		}
+		return result;
 	}
 	
 	@Override
@@ -153,11 +153,4 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	}
 	*/
 	
-	protected String getAlarmDescriptionDefault() {
-		StringBuilder builder = new StringBuilder();
-		
-		
-		return builder.toString();
-	}
-
 }

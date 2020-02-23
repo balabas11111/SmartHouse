@@ -13,7 +13,8 @@ public class AlarmStateChangeEventProcessorSendStateChanged extends AlarmStateCh
 	}
 	
 	@Override
-	public void processEvent(IAlarmStateChangeEvent event) {
+	public void processEvent(IItemEvent event) {
+		String actionResult = event.getChangeAction().executeAction(event.getItem());
 		log.info("processEvent AlarmStateChangeEventProcessorSendStateChanged " + event);
 	}
 

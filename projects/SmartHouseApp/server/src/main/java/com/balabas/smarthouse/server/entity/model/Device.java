@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = "groups")
@@ -44,15 +46,11 @@ public class Device extends ItemAbstract implements IDevice {
 
 	@Transient
 	private boolean initialized;
-/*
-	@Transient
-	private ActionTimer timer;
-*/
-	
-	public Device() {
-		//this.timer = new ActionTimer(ItemType.DEVICE.getRefreshInterval());
-	}
 
+	@Transient
+	@Getter @Setter
+	private long lastUpdated;
+	
 	@Override
 	public Group getGroup(String groupName) {
 		if (getGroups() == null) {

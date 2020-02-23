@@ -1,7 +1,9 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -40,13 +42,34 @@ public class Alarmv2TypeProvider implements IAlarmv2TypeProvider {
 	}
 	
 	@Override
-	public IAlarmStateChangeEventProcessor getAlarmStateChangedEventProcessor(IAlarmStateChangeEvent event) {
-		return stateChangedProcessors.getOrDefault(event.getChangeAction().getTargetBeanName(), null);
+	public IAlarmStateChangeEventProcessor getAlarmStateChangedEventProcessor(IItemEvent event) {
+		String targetBeanName = event.getChangeAction().getTargetBeanName();
+		
+		IAlarmStateChangeEventProcessor result = getFromMapByKeyIgnoreCase(stateChangedProcessors, targetBeanName);
+		
+		return result; 
 	}
 
 	@Override
 	public AlarmV2Checker getAlarmV2checker(String name) {
-		return alarmv2Checkers.getOrDefault(name, null);
+		return getFromMapByKeyIgnoreCase(alarmv2Checkers, name);
+	}
+	
+	private <T> T getFromMapByKeyIgnoreCase(Map<String, T> map, String key) {
+		T result = map.getOrDefault(key, null);
+		
+		if(result == null) {
+			for(String keyMap : map.keySet()) {
+				if(keyMap.equalsIgnoreCase(key)) {
+					result =  map.getOrDefault(keyMap, null);
+				}
+			}
+		}
+		
+		if(result == null) {
+			System.out.println("Item not found");
+		}
+		return result;
 	}
 
 	@Override
@@ -57,6 +80,12 @@ public class Alarmv2TypeProvider implements IAlarmv2TypeProvider {
 	@Override
 	public List<AlarmV2Checker> getCheckersByTargetItemClass(Class<?> targetItemClass) {
 		return alarmv2Checkers.values().stream().filter(ch -> ch.isCorrectTarget(targetItemClass)).collect(Collectors.toList());
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public Set<IAlarmStateChangeEventProcessor> getAlarmStateChangedEventProcessors() {
+		return new LinkedHashSet(stateChangedProcessors.values());
 	}
 
 }
