@@ -11,4 +11,32 @@ public interface IItemEvent {
 	IItemAbstract getItem();
 	
 	IAlarmStateChangeAction getChangeAction();
+	
+	default String getDescription() {
+		return getChangeAction().getAlarmDescription(getItem());
+	}
+	
+	default String executeAction() {
+		return getChangeAction().executeAction(getItem());
+	}
+	
+	default AlarmState getOldState() {
+		return getChangeAction().getOldState();
+	}
+	
+	default AlarmState getNewState() {
+		return getChangeAction().getNewState();
+	}
+	
+	default String getOldStateName() {
+		return getChangeAction().getOldState().name;
+	}
+	
+	default String getNewStateName() {
+		return getChangeAction().getNewState().name;
+	}
+	
+	default boolean isSameState() {
+		return getOldState().equals(getNewState());
+	}
 }

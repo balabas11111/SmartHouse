@@ -144,6 +144,9 @@ public class AlarmV2Service implements IAlarmV2Service {
 		List<IAlarmStateChangeAction> action = alarm.getCurrentActions();
 
 		action.stream().forEach( a -> {
+			if(alarm.getMessageInterval()!=null && alarm.getMessageInterval()>0 ) {
+				a.setInterval(alarm.getMessageInterval());
+			}
 			events.add(new ItemChangeEvent(alarm.getItem(), a));
 		});
 		return events;

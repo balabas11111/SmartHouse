@@ -4,7 +4,6 @@ import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,8 +36,13 @@ public class ViewAlarmController {
 	private IAlarmV2Service alarmService;
 
 	@GetMapping("/alarmsList")
-	public String getAllAlarms(Model model) {
+	public String getAllAlarms(@RequestParam(name = "itemType", required = false) String itemType, Model model) {
+		if(StringUtils.isEmpty(itemType)) {
+			itemType = ItemType.DEVICE.name();
+		}
+		
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
+		model.addAttribute("itemType", itemType);
 		model.addAttribute("alarms", alarmService.getAlarmsGrouppedByItemClassName());
 
 		return "alarms/alarmsList.html";
