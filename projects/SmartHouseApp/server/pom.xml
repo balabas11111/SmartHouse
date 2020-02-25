@@ -19,6 +19,7 @@
 		<pi4j.version>1.2</pi4j.version>
 		<junit.jupiter.version>5.5.2</junit.jupiter.version>
 		<junit.platform.version>1.5.2</junit.platform.version>
+		<io.springfox.version>2.9.2</io.springfox.version>
 	</properties>
 
 	<dependencies>
@@ -87,23 +88,37 @@
 			<artifactId>jinq-jpa</artifactId>
 			<version>1.8.29</version>
 		</dependency>
-
-<!--    <dependency>
+ 
+		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
-			<version>3.0.0-SNAPSHOT</version>
-		</dependency>
-        <dependency>
+			<version>${io.springfox.version}</version>
+			<exclusions>
+			    <exclusion>
+			      <groupId>org.springframework.plugin</groupId>
+			      <artifactId>spring-plugin-core</artifactId>
+			    </exclusion>
+			</exclusions>
+		</dependency>  
+		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
-			<version>3.0.0-SNAPSHOT</version>
+			<version>${io.springfox.version}</version>
+			<exclusions>
+			    <exclusion>
+			      <groupId>org.springframework.plugin</groupId>
+			      <artifactId>spring-plugin-core</artifactId>
+			    </exclusion>
+			</exclusions>
 		</dependency>
+		<!-- 
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-data-rest</artifactId>
-			<version>3.0.0-SNAPSHOT</version>
+			<version>${io.springfox.version}</version>
 		</dependency>
--->
+		 -->
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -303,6 +318,11 @@
 	</build>
 
 	<repositories>
+		<repository>
+			<id>jcenter-snapshots</id>
+			<name>jcenter</name>
+			<url>http://oss.jfrog.org/artifactory/oss-snapshot-local/</url>
+		</repository>
 		<repository>
 			<id>spring-milestones</id>
 			<name>Spring Milestones</name>
