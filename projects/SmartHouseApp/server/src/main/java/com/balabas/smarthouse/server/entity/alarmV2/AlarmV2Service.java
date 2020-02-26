@@ -126,7 +126,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 			log.error("Null checker for alarm id=" + alarm.getId());
 		}
 		
-		checker.check(alarm);
+		checker.process(alarm);
 		return buildEvent(alarm);
 	}
 

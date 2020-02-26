@@ -3,4 +3,10 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 public class AlarmConstants {
 
 	public static final String DEFAULT_DESCRIPTION = "Тревога изменилась с %s на %s";
+	
+	public static final String CHECKER_DESCRIPTION_DEVICE_DISCONNECTED = "Проверка подключения Устройства";
+	
+	public static final String CHECKER_DESCRIPTION_DS18D20_DISCONNECTED = "Проверка подключения DS18D20";
+	public static final String CHECKER_DESCRIPTION_ENTITY_FIELD_TOO_HIGH = "Значение поля > максимального";
+	public static final String CHECKER_DESCRIPTION_ENTITY_FIELD_TOO_LOW = "Значение поля < минимального";
 }

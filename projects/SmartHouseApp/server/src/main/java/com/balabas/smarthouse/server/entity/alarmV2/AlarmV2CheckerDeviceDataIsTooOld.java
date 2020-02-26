@@ -15,7 +15,7 @@ public class AlarmV2CheckerDeviceDataIsTooOld implements AlarmV2Checker {
 	}
 
 	@Override
-	public boolean check(IAlarmV2 alarm) {
+	public void process(IAlarmV2 alarm) {
 		String param = alarm.getParameter();
 		
 		if(!StringUtils.isEmpty(param)) {
@@ -30,17 +30,13 @@ public class AlarmV2CheckerDeviceDataIsTooOld implements AlarmV2Checker {
 				
 				if(lastUpdated!=0 && diff > oldSeconds) {
 					alarm.setAlarmState(AlarmState.ALARM);
-					return true;
 				} else {
 					alarm.setAlarmState(AlarmState.OK);
-					return true;
 				}
 			}
 		} else {
 			alarm.setAlarmState(AlarmState.OK);
 		}
-		
-		return false;
 	}
 
 	@Override

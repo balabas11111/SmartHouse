@@ -4,10 +4,16 @@ import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 @SuppressWarnings("rawtypes")
-public class AlarmV2CheckerAbstractEntityFieldNumber {
+public abstract class AlarmV2CheckerAbstractEntityFieldNumber {
 
+	protected abstract boolean checkItemValue(IAlarmV2 alarm);
+	
 	public Class<?> getItemClass() {
 		return IEntityField.class;
+	}
+	
+	public void process(IAlarmV2 alarm) {
+		alarm.setAlarmStateByBooleanFlag(checkItemValue(alarm));
 	}
 	
 	public boolean isParameterValid(String value) {

@@ -20,7 +20,7 @@ public interface AlarmV2Checker {
 		return res;
 	}
 	
-	boolean check(IAlarmV2 alarm);
+	void process(IAlarmV2 alarm);
 
 	String getCheckerDescription();
 	
