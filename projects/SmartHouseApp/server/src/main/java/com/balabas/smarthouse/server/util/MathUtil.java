@@ -23,4 +23,18 @@ public class MathUtil {
 		}
 		return (new BigDecimal(value).setScale(precision, RoundingMode.HALF_UP)).floatValue();
 	}
+	
+	public static boolean isValidFloat(String value) {
+		try {
+			getAsFloat(value);
+		} catch(Exception e) {
+			return false;
+		}
+		return true;
+	}
+	
+
+	public static Float getAsFloat(String parameter) {
+		return Float.valueOf(parameter);
+	}
 }

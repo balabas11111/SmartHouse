@@ -2,11 +2,10 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 
 import org.springframework.stereotype.Component;
 
-import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.util.MathUtil;
 
 import lombok.Getter;
 
-@SuppressWarnings("rawtypes")
 @Component
 public class AlarmV2CheckerEntityFieldNumberMin extends AlarmV2CheckerAbstractEntityFieldNumber implements AlarmV2Checker {
 
@@ -15,8 +14,7 @@ public class AlarmV2CheckerEntityFieldNumberMin extends AlarmV2CheckerAbstractEn
 	
 	@Override
 	protected boolean checkItemValue(IAlarmV2 alarm) {
-		IEntityField item = (IEntityField) alarm.getItem();
-		return getEntityFieldValueFloat(item) < getAsFloat(alarm.getParameter());
+		return getEntityFieldValueFloat(getItemAsEntityField(alarm)) < MathUtil.getAsFloat(alarm.getParameter());
 	}
 
 }

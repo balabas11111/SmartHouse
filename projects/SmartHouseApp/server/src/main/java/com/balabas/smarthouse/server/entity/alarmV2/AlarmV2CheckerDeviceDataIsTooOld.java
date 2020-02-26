@@ -1,47 +1,39 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
-import java.util.Date;
-
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.util.DateTimeUtil;
 
 import lombok.Getter;
 
 @Component
-public class AlarmV2CheckerDeviceDataIsTooOld implements AlarmV2Checker {
+public class AlarmV2CheckerDeviceDataIsTooOld extends AlarmV2CheckerAbstractDevice implements AlarmV2Checker {
 
 	@Getter
 	private final String checkerDescription = AlarmConstants.CHECKER_DESCRIPTION_DEVICE_DISCONNECTED;
-	
-	public Class<?> getItemClass() {
-		return IDevice.class;
-	}
 
 	@Override
-	public void process(IAlarmV2 alarm) {
+	protected boolean checkItemValue(IAlarmV2 alarm) {
+		boolean result = true;
+
 		String param = alarm.getParameter();
-		
-		if(!StringUtils.isEmpty(param)) {
+
+		if (!StringUtils.isEmpty(param)) {
 			Integer oldSeconds = Integer.valueOf(param);
-			
-			IDevice device = (IDevice)alarm.getItem();
-			
-			if(oldSeconds!=null && oldSeconds > 1) {
-				long lastUpdated = device.getLastUpdated();
-				
-				long diff = (Math.abs((new Date()).getTime() - lastUpdated))/1000;
-				
-				if(lastUpdated!=0 && diff > oldSeconds) {
-					alarm.setAlarmState(AlarmState.ALARM);
-				} else {
-					alarm.setAlarmState(AlarmState.OK);
+
+			if (oldSeconds != null && oldSeconds > 1) {
+				long lastUpdated = getItemAsDevice(alarm).getLastUpdated();
+
+				long diff = (Math.abs(DateTimeUtil.now() - lastUpdated)) / 1000;
+
+				if (lastUpdated != 0 && diff > oldSeconds) {
+					result = false;
 				}
 			}
-		} else {
-			alarm.setAlarmState(AlarmState.OK);
 		}
+
+		return result;
 	}
-	
+
 }

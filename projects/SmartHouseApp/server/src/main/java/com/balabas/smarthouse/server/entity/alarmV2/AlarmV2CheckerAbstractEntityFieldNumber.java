@@ -2,6 +2,7 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.util.MathUtil;
 
 @SuppressWarnings("rawtypes")
 public abstract class AlarmV2CheckerAbstractEntityFieldNumber {
@@ -17,11 +18,11 @@ public abstract class AlarmV2CheckerAbstractEntityFieldNumber {
 	}
 	
 	public boolean isParameterValid(String value) {
-		return isValidFloat(value);
+		return MathUtil.isValidFloat(value);
 	}
 	
-	protected Float getAsFloat(String parameter) {
-		return Float.valueOf(parameter);
+	protected IEntityField getItemAsEntityField(IAlarmV2 alarm) {
+		return (IEntityField) alarm.getItem();
 	}
 	
 	protected Float getValueTmpAsFloat(IEntityField entityField) {
@@ -41,12 +42,5 @@ public abstract class AlarmV2CheckerAbstractEntityFieldNumber {
 		return ((Number) entityField.getValue()).floatValue();
 	}
 	
-	protected boolean isValidFloat(String value) {
-		try {
-			getAsFloat(value);
-		} catch(Exception e) {
-			return false;
-		}
-		return true;
-	}
+
 }
