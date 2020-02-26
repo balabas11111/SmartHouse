@@ -57,52 +57,41 @@ public class AlarmStateChangeAction extends ItemAbstract implements IAlarmStateC
 	
 	@Override
 	public String getAlarmDescription(IItemAbstract item) {
-		return executeAction(item);
+		if(!StringUtils.isEmpty(getStringFormatted())) {
+			if(!StringUtils.isEmpty(getStringParametersFormatted())) {
+				String[] methodNames = getStringParametersFormatted().split(";");
+				
+				List<Object> params = new ArrayList<>();
+				Object obj = item;
+				
+				for(String methodName : methodNames) {
+					try {
+						Method method = obj.getClass().getMethod(methodName);
+						Object result = method.invoke(obj);
+						params.add(result);
+					} catch (Exception e) {
+						e.printStackTrace();
+					} 
+				}
+				
+				if(params.size()>0) {
+					return String.format(getStringFormatted(), params.toArray());
+				}
+			}
+			
+			return getStringFormatted();
+		}
+		
+		if(!StringUtils.isEmpty(getDescription())) {
+			return getDescription();
+		}
+		
+		return IAlarmV2.getAlarmDescriptionDefault(getOldState(), getNewState());
 	}
 	
 	@Override
 	public String executeAction(IItemAbstract item) {
-		if(!StringUtils.isEmpty(this.stringParametersFormatted)) {
-			String[] methodNames = stringParametersFormatted.split(";");
-			
-			List<Object> params = new ArrayList<>();
-			Object obj = item;
-			
-			for(String methodName : methodNames) {
-				try {
-					Method method = obj.getClass().getMethod(methodName);
-					Object result = method.invoke(obj);
-					params.add(result);
-				} catch (Exception e) {
-					e.printStackTrace();
-				} 
-			}
-			
-			if(params.size()>0) {
-				return String.format(stringFormatted, params.toArray());
-			} else {
-				return stringFormatted;
-			}
-		} else {
-			return stringFormatted;
-		}
-	}
-	
-	@Override
-	public boolean accepts(AlarmState oldState, AlarmState newState) {
-		if(this.oldState == null) {
-			if(newState.equals(oldState)) {
-				return false;
-			}
-			return this.newState.equals(newState);
-		}
-		if(this.newState == null) {
-			if(newState.equals(oldState)) {
-				return false;
-			}
-			return this.newState.equals(newState);
-		}
-		return this.oldState.equals(oldState) && this.newState.equals(newState);
+		return getAlarmDescription(item);
 	}
 
 }

@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 public class AlarmStateChangeEventProcessorSendStateSimilar extends AlarmStateChangeEventProcessor {
 
 	@Override
-	public void processEvent(IItemEvent event) {
-		super.processEvent(event);
+	public void process(IItemEvent event) {
+		super.process(event);
 	}
 
 }

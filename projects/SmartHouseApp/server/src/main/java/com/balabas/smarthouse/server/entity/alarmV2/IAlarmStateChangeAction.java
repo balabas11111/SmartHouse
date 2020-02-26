@@ -10,8 +10,6 @@ public interface IAlarmStateChangeAction extends IItemAbstract{
 	Integer getInterval();
 	void setInterval(Integer interval);
 	
-	boolean accepts(AlarmState oldState, AlarmState newState);
-	
 	String executeAction(IItemAbstract item);
 	
 	String getStringFormatted();

@@ -17,7 +17,7 @@ public abstract class AlarmStateChangeEventProcessor implements IAlarmStateChang
 	}
 
 	@Override
-	public void processEvent(IItemEvent event) {
+	public void process(IItemEvent event) {
 		logEvent(event);
 	}
 	

@@ -20,7 +20,7 @@ public interface IAlarmv2TypeProvider {
 	
 	Map<String, IAlarmStateChangeEventProcessor> getStateChangedProcessors();
 	
-	void setAlarmCheckerByName(IAlarmV2 alarm);
+	AlarmV2Checker getAlarmChecker(IAlarmV2 alarm);
 
 	List<AlarmV2Checker> getCheckersByTargetItemClass(Class<?> targetItemClass);
 }

@@ -110,13 +110,6 @@ public class AlarmV2Service implements IAlarmV2Service {
 		List<IItemEvent> events = new ArrayList<IItemEvent>();
 
 		getAlarmsByItemUid(item).forEach(alarm -> {
-			String checkerName = alarm.getCheckerName();
-			AlarmV2Checker checker = alarmTypeProvider.getAlarmV2checker(checkerName);
-			if(checker == null) {
-				log.error("checker is null");
-			}
-			
-			alarm.setChecker(checker);
 			alarm.setItem(item);
 			events.addAll(checkForAlarm(alarm));
 		});
@@ -126,7 +119,14 @@ public class AlarmV2Service implements IAlarmV2Service {
 	}
 
 	private List<IItemEvent> checkForAlarm(IAlarmV2 alarm) {
-		alarm.check();
+		String checkerName = alarm.getCheckerName();
+		AlarmV2Checker checker = alarmTypeProvider.getAlarmV2checker(checkerName);
+		
+		if(checker == null) {
+			log.error("Null checker for alarm id=" + alarm.getId());
+		}
+		
+		checker.check(alarm);
 		return buildEvent(alarm);
 	}
 
@@ -134,7 +134,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 		IAlarmStateChangeEventProcessor processor = alarmTypeProvider.getAlarmStateChangedEventProcessor(event);
 
 		if (processor != null && processor.isTarget(event)) {
-			processor.processEvent(event);
+			processor.process(event);
 		}
 	}
 
@@ -163,7 +163,6 @@ public class AlarmV2Service implements IAlarmV2Service {
 			alarms.add(alarm);
 		}
 
-		alarms.stream().forEach(alarmTypeProvider::setAlarmCheckerByName);
 	}
 
 	private void removeAlarmFromCache(IAlarmV2 alarm) {

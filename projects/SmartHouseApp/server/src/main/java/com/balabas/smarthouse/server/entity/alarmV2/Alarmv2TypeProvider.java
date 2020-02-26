@@ -73,8 +73,8 @@ public class Alarmv2TypeProvider implements IAlarmv2TypeProvider {
 	}
 
 	@Override
-	public void setAlarmCheckerByName(IAlarmV2 alarm) {
-		alarm.setChecker(getAlarmV2checker(alarm.getCheckerName()));
+	public AlarmV2Checker getAlarmChecker(IAlarmV2 alarm) {
+		return getAlarmV2checker(alarm.getCheckerName());
 	}
 
 	@Override

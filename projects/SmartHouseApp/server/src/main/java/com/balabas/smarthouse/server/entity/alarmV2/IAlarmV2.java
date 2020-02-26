@@ -28,12 +28,16 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	
 	boolean isInBadState();
 	boolean isRepeatable();
-	
+	/*
 	AlarmV2Checker getChecker();
 	void setChecker(AlarmV2Checker checker);
 	
 	boolean check(IItemAbstract item);
 	
+	default boolean check() {
+		return check(getItem());
+	}
+	*/
 	void setMessageInterval(Integer messageInterval);
 	Integer getMessageInterval();
 	
@@ -42,19 +46,8 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	
 	List<IAlarmStateChangeAction> getCurrentActions();
 
-	static String getAlarmDescriptionByState(IAlarmStateChangeAction action, IItemAbstract item) {
-		if(action!=null) {
-			return action.getAlarmDescription(item);
-		} else {
-			return getAlarmDescriptionDefault();
-		}
-	}
-	
-	static String getAlarmDescriptionDefault() {
-		StringBuilder builder = new StringBuilder();
-		
-		
-		return builder.toString();
+	static String getAlarmDescriptionDefault(AlarmState oldState, AlarmState newState) {
+		return String.format(AlarmConstants.DEFAULT_DESCRIPTION, oldState.getDescription(), newState.getDescription());
 	}
 	
 	String getCheckerName();
@@ -64,10 +57,6 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 		return true;
 	}
 	
-	default boolean check() {
-		return check(getItem());
-	}
-
 	default boolean isSameStateAction() {
 		return getAlarmState().equals(getPreviousAlarmState());
 	}
@@ -77,5 +66,7 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	boolean setAlarmStateByBooleanFlag(boolean alarmed);
 
 	List<IAlarmStateChangeAction> getActionsList();
+
+	boolean isStateChanged();
 
 }

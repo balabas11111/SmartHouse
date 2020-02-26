@@ -5,5 +5,5 @@ import com.balabas.smarthouse.server.entity.model.INameable;
 public interface IAlarmStateChangeEventProcessor extends INameable {
 
 	boolean isTarget(IItemEvent event);
-	void processEvent(IItemEvent event);
+	void process(IItemEvent event);
 }

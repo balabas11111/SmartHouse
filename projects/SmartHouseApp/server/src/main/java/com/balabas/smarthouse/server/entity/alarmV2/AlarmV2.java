@@ -18,9 +18,7 @@ import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @MappedSuperclass
 public abstract class AlarmV2 implements IAlarmV2 {
 
@@ -52,10 +50,6 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	private Set<IAlarmStateChangeAction> actions;
 	
 	@Transient
-	@Getter @Setter
-	private AlarmV2Checker checker;
-	
-	@Transient
 	private AlarmState alarmState;
 	
 	@Setter
@@ -81,17 +75,6 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	}
 	
 	@Override
-	public boolean check(IItemAbstract item) {
-		setItem(item);
-		if(checker!=null) {
-			return checker.check(this);
-		} else {
-			log.error("Null pointer as checker");
-		}
-		return false;
-	}
-	
-	@Override
 	public AlarmState getAlarmState() {
 		return Optional.ofNullable(this.alarmState).orElse(AlarmState.NO_DATA);
 	}
@@ -113,12 +96,28 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	
 	@Override
 	public List<IAlarmStateChangeAction> getCurrentActions() {
-		
-		List<IAlarmStateChangeAction> result = getActions().stream().filter(
-				action -> action.accepts(getPreviousAlarmState(), getAlarmState())
-				).collect(Collectors.toList());
-		
-		return result;
+		return getActions().stream().filter(this::isCurrentAlarmStateChangeAction).collect(Collectors.toList());
+	}
+	
+	private boolean isCurrentAlarmStateChangeAction(IAlarmStateChangeAction action) {
+		if(action.getOldState() == null) {
+			if(!isStateChanged()) {
+				return false;
+			}
+			return this.getAlarmState().equals(action.getNewState());
+		}
+		if(action.getNewState() == null) {
+			if(!isStateChanged()) {
+				return false;
+			}
+			return this.getPreviousAlarmState().equals(action.getOldState());
+		}
+		return this.getAlarmState().equals(action.getNewState()) && this.getPreviousAlarmState().equals(action.getOldState());
+	}
+	
+	@Override
+	public boolean isStateChanged() {
+		return getPreviousAlarmState().equals(getAlarmState());
 	}
 	
 	@Override
