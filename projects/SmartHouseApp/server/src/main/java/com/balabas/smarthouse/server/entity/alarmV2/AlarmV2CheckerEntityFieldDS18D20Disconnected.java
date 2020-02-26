@@ -18,7 +18,7 @@ public class AlarmV2CheckerEntityFieldDS18D20Disconnected extends AlarmV2Checker
 		IEntityField item = (IEntityField) alarm.getItem();
 		int val = getValueTmpAsInteger((IEntityField) item).intValue();
 		
-		return val == -127 || val == 85;
+		return !(val == -127 || val == 85);
 	}
 	
 	@Override

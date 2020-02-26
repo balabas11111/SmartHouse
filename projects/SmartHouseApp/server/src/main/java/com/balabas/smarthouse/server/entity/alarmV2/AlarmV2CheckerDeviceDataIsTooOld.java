@@ -7,9 +7,14 @@ import org.springframework.util.StringUtils;
 
 import com.balabas.smarthouse.server.entity.model.IDevice;
 
+import lombok.Getter;
+
 @Component
 public class AlarmV2CheckerDeviceDataIsTooOld implements AlarmV2Checker {
 
+	@Getter
+	private final String checkerDescription = AlarmConstants.CHECKER_DESCRIPTION_DEVICE_DISCONNECTED;
+	
 	public Class<?> getItemClass() {
 		return IDevice.class;
 	}
@@ -37,11 +42,6 @@ public class AlarmV2CheckerDeviceDataIsTooOld implements AlarmV2Checker {
 		} else {
 			alarm.setAlarmState(AlarmState.OK);
 		}
-	}
-
-	@Override
-	public String getCheckerDescription() {
-		return "Checks if device data is too old";
 	}
 	
 }
