@@ -51,6 +51,8 @@
 						<th th:if="${!device.isVirtualized()}">Прошивка</th>
 						<th>Состояние</th>
 						<th  th:if="${!device.isVirtualized()}"></th>
+						<th>Время устр.</th>
+						<th>Время Страницы</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -76,14 +78,12 @@
 								</ul>
 							</div>
 						</td>
+						<td th:text="${device.getDeviceLastUpdateTimeStr()}">время устр</td>
+						<td th:text="${dateTime}">время стр</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
-
-		<p>
-			<h5 th:text="'Показания датчиков : ' + ${dateTime}"></h5>
-		</p>
 
 		<div id="sensorsContent" style="display: flex; flex-wrap: wrap;">
 			<div th:each="entity : ${sensors}" class="panel panel-default"

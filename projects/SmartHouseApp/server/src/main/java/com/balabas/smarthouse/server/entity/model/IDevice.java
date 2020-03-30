@@ -3,6 +3,7 @@ package com.balabas.smarthouse.server.entity.model;
 import java.util.Set;
 
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.util.DateTimeUtil;
 
 @SuppressWarnings("rawtypes")
 public interface IDevice extends IStateable, IItemAbstract {
@@ -34,5 +35,13 @@ public interface IDevice extends IStateable, IItemAbstract {
 	boolean isInOkState();
 	Set<IEntityField> getEntityFields();
 	long getLastUpdated();
+	void setLastUpdated(long lastUpdated);
+	
+	default String getDeviceLastUpdateTimeStr() {
+		return DateTimeUtil.getDateTimeStr(getLastUpdated());
+	}
+	default void setDeviceLastUpdateTimeNow() {
+		setLastUpdated(DateTimeUtil.now());
+	}
 	
 }

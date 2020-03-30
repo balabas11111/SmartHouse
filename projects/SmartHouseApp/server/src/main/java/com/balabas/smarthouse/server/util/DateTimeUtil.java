@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.util;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -18,6 +19,13 @@ public class DateTimeUtil {
 	public static String getDateTimeStr(LocalDateTime date, String pattern) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
 		return date.format(formatter);
+	}
+	
+	public static String getDateTimeStr(long lastUpdated) {
+		Date dt = new Date(lastUpdated);
+		
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
+		return simpleDateFormat.format(dt);
 	}
 	
 	public static long now() {
