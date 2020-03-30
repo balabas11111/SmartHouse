@@ -97,4 +97,8 @@ public interface IEntityField<T> extends IItemAbstract {
 	Set<IEntityFieldEnabledValue> getEntityFieldEnabledValues();
 
 	String getValueStrByEntityFieldEnabledValueDescription();
+	
+	default Entity getTargetEntity() {
+		return this.getEntity();
+	}
 }

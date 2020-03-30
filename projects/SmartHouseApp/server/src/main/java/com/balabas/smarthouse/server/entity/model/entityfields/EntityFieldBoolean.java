@@ -1,21 +1,49 @@
 package com.balabas.smarthouse.server.entity.model.entityfields;
 
-import javax.persistence.Entity;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import com.balabas.smarthouse.server.entity.model.Entity;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
-@Entity
+import lombok.Getter;
+import lombok.Setter;
+
+@javax.persistence.Entity
 public class EntityFieldBoolean extends EntityField<Boolean> implements IEntityField<Boolean> {
 
+	@ManyToOne
+	@JoinColumn(name="target_entity_field_id", nullable=true)
+	@Setter
+	private EntityFieldBoolean targetEntityField;
+	
+	@Transient
+	@JsonAlias("value")
+	@Getter @Setter
+	private Boolean valueB;
+	
 	@Override
 	public Class<Boolean> getClazz() {
 		return Boolean.class;
 	}
 	
-	@Transient
-	@JsonAlias("value")
-	private Boolean valueB;
+	@Override
+	public Entity getTargetEntity() {
+		return getRealField().getEntity();
+	}
+	
+	@Override
+	public Set<IEntityFieldEnabledValue> getEnabledValues() {
+		if(targetEntityField!=null) {
+			return targetEntityField.getEnabledValues();
+		}
+		return this.enabledValues;
+	}
 	
 	@Override
 	protected Boolean fromString(String value) {
@@ -37,15 +65,15 @@ public class EntityFieldBoolean extends EntityField<Boolean> implements IEntityF
 
 	@Override
 	public Boolean getValue() {
-		return this.valueB;
+		return getRealField().getValueB();
 	}
 
 	@Override
 	public boolean setValue(Boolean value) {
-		boolean equals = equalsAsValue(this.valueB, value);
+		boolean equals = equalsAsValue(getValue(), value);
 
 		if(!equals) {
-			this.valueB = value;
+			getRealField().setValueB(value);
 		}
 		
 		return !equals;
@@ -56,4 +84,10 @@ public class EntityFieldBoolean extends EntityField<Boolean> implements IEntityF
 		return getValue().booleanValue()? "Включено": "Отключено";
 	}
 
+	private EntityFieldBoolean getRealField() {
+		if(!isVirtualized()) {
+			return this;
+		}
+		return Optional.ofNullable(this.targetEntityField).orElse(this);
+	}
 }
