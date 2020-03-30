@@ -45,4 +45,9 @@ public class DeviceEntityFieldActionHolder {
 		
 		entityFieldActions.get(entityName).addAll(actions);
 	}
+	
+	public List<Action> getActionByName(String actionName) {
+		List<Action> result = getEntityFieldActions().get(actionName);
+		return result;
+	}
 }

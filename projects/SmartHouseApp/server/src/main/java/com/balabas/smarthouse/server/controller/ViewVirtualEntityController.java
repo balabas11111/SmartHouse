@@ -33,6 +33,7 @@ import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValueFloat;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldFloat;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.virtual.CalculatedEntityField;
@@ -339,11 +340,16 @@ public class ViewVirtualEntityController extends BaseController {
 	public String editVirtualEntityFields(@RequestParam(name = "id", required = true) Long id, Model model) {
 
 		IEntityField entityField = virtualEntityService.getEntityFieldById(id);
+		
 		String preffix = ControllerConstants.MSG_EDIT_ENTITY_FIELD;
 		if (entityField == null) {
 			preffix = ControllerConstants.MSG_NEW_ENTITY_FIELD;
 			entityField = virtualEntityService.createEntityFieldFloat(getVirtualName(VIRTUAL_ENTITY_FIELD_NAME),
 					VIRTUAL_ENTITY_FIELD_DESCR);
+		} else {
+			if(entityField.isBooleanCommandButtonOfGroupSensors()) {
+				return editVirtualEntityFieldBoolean(id, model);
+			}
 		}
 
 		Long entityId = getItemId(entityField.getEntity());
@@ -359,6 +365,36 @@ public class ViewVirtualEntityController extends BaseController {
 		model.addAttribute(PROP_BASE_URL, getBaseUrl());
 
 		return "virtual/entityField.html";
+	}
+	
+	@GetMapping(value = "/editEntityFieldBoolean")
+	public String editVirtualEntityFieldBoolean(@RequestParam(name = "id", required = true) Long id, Model model) {
+
+		IEntityField entityField = virtualEntityService.getEntityFieldById(id);
+		String preffix = ControllerConstants.MSG_EDIT_ENTITY_FIELD;
+		if (entityField == null) {
+			preffix = ControllerConstants.MSG_NEW_ENTITY_FIELD;
+			entityField = virtualEntityService.createEntityFieldBoolean(getVirtualName(VIRTUAL_ENTITY_FIELD_NAME),
+					VIRTUAL_ENTITY_FIELD_DESCR);
+		}
+
+		Long entityId = getItemId(entityField.getEntity());
+
+		List<IEntity> entities = virtualEntityService.getEntities();
+		List<IEntityField> targetEntityFields = virtualEntityService.getEntityFieldsNotVirtualCommandButtons();
+
+		addEmojisToModel(model, entityField);
+		model.addAttribute("entityField", entityField);
+
+		model.addAttribute("allEntities", entities);
+		model.addAttribute("targetEntityFields", targetEntityFields);
+		model.addAttribute("targetEntityFieldId", ((EntityFieldBoolean)entityField).getTargetEntityFieldId());
+		
+		model.addAttribute("entityId", entityId);
+		model.addAttribute(PROP_PAGE_HEADER, getPageHeader(preffix, entityField));
+		model.addAttribute(PROP_BASE_URL, getBaseUrl());
+
+		return "virtual/entityFieldBoolean.html";
 	}
 
 	@PostMapping(value = "/saveEntityField")
@@ -378,6 +414,43 @@ public class ViewVirtualEntityController extends BaseController {
 			ef.setNameDescriptionEmoji(entityField);
 			ef.setMeasure(entityField.getMeasure());
 
+			processEntityFieldSave(ef, entity, emojiCode);
+		}
+
+		return "redirect:/virtual/entityFields";
+	}
+	
+	@PostMapping(value = "/saveEntityFieldBoolean")
+	public String saveVirtualEntityFieldBoolean(@ModelAttribute("entityField") EntityFieldBoolean entityField,
+			@RequestParam(value = "emojiCode", required = false) String emojiCode,
+			@RequestParam(value = "entities", required = false) long[] entityIds,
+			@RequestParam(value = "entityFields", required = false) long[] entityFieldIds,Model model) {
+
+		Long entityId = getFirstIdOrNull(entityIds);
+
+		IEntity iEntity = virtualEntityService.getEntityById(entityId);
+		Entity entity = (iEntity == null) ? null : (Entity) iEntity;
+		
+		Long entityFieldId = getFirstIdOrNull(entityFieldIds);
+
+		IEntityField iEntityField = virtualEntityService.getEntityFieldById(entityFieldId);
+		EntityFieldBoolean targetEntityField = (iEntityField == null) ? null : (EntityFieldBoolean) iEntityField;
+
+		if(targetEntityField!=null) {
+			entityField.setTargetEntityField(targetEntityField);
+			entityField.setViewClass(targetEntityField.getViewClass());
+		}
+
+		if (IIdentifiable.isNew(entityField)) {
+			processEntityFieldSave(entityField, entity, emojiCode);
+		} else {
+			EntityFieldBoolean ef = (EntityFieldBoolean) virtualEntityService.getEntityFieldById(entityField.getId());
+			ef.setNameDescriptionEmoji(entityField);
+			ef.setMeasure(entityField.getMeasure());
+			if(targetEntityField!=null) {
+				ef.setTargetEntityField(targetEntityField);
+				ef.setViewClass(targetEntityField.getViewClass());
+			}
 			processEntityFieldSave(ef, entity, emojiCode);
 		}
 

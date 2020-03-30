@@ -200,7 +200,7 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 			return null;
 		}
 
-		return enabledValues.stream().filter(ev -> ev.getValue() != null && ev.getValue().equals(getValue()))
+		return enabledValues.stream().filter(ev -> (ev.getValue() != null && ev.getValue().equals(getValue())) || (getValue()==null && Boolean.FALSE.equals(ev.getValue())))
 				.findFirst().orElse(null);
 	}
 	

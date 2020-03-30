@@ -43,6 +43,7 @@ import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
@@ -217,6 +218,12 @@ public class DeviceManageService implements IDeviceManageService {
 	public IEntityField getEntityFieldById(Long id) {
 		return this.devices.stream().flatMap(d -> d.getGroups().stream()).flatMap(g -> g.getEntities().stream())
 				.flatMap(e -> e.getEntityFields().stream()).filter(e -> id.equals(e.getId())).findFirst().orElse(null);
+	}
+	
+	@Override
+	public List<IEntityField> getEntityFieldsByFilter(Predicate<? super IEntityField> predicate) {
+		return this.devices.stream().flatMap(d -> d.getGroups().stream()).flatMap(g -> g.getEntities().stream())
+				.flatMap(e -> e.getEntityFields().stream()).filter(predicate).collect(Collectors.toList());
 	}
 
 	@Override
@@ -605,8 +612,35 @@ public class DeviceManageService implements IDeviceManageService {
 			try {
 				preprocessSendDataToDevice(device, entity, values);
 				String result = deviceRequestor.executePostDataOnDeviceEntity(device, entity, values);
+				
 				processDataReceivedFromDevice((Device) device, result, false, false);
 
+				if(mock) {
+					Device device2 = getDeviceById(device.getId());
+					if(device2!=null) {
+						Entity entity2 = device2.getEntity(entity.getId());
+						if(entity2!=null) {
+							for(String entityFieldKey : values.keySet()) {
+								IEntityField entityField2 = entity2.getEntityField(entityFieldKey);
+								if(entityField2!=null) {
+									Long entityField2Id = entityField2.getId();
+									
+									IEntityField entityField3 = getEntityFieldById(entityField2Id);
+									
+									Object value2 = values.get(entityFieldKey);
+									try {
+										entityField3.setValueStr(value2.toString());
+									}catch(Exception e) {
+										
+									}
+									String val2 = entityField3.getValueStr();
+									log.debug(val2);
+								}
+							}
+						}
+					}
+				}
+				
 				if (requestDataAfterSendToDevice) {
 					actionTimerService.setActionForced(device);
 				}
@@ -907,6 +941,17 @@ public class DeviceManageService implements IDeviceManageService {
 
 		for (IEntityField entityField : entityFields) {
 			if (entityField.isButton() && !entityField.isReadOnly()) {
+				
+				if(Boolean.class.equals(entityField.getClazz())) {
+					EntityFieldBoolean efb = (EntityFieldBoolean) entityField;
+					Long targetId = efb.getTargetEntityFieldId(); 
+					if(targetId!=null) {
+						IEntityField target = getEntityFieldById(targetId);
+						if(target!=null) {
+							efb.setTargetEntityField((EntityFieldBoolean)target);
+						}
+					}
+				}
 				List<Action> actions = entityFieldService.getActionsForEntityField(ACTION_TYPE_SEND_DATA_TO_DEVICE,
 						entityField);
 				holder.addFieldAction(entityField.getEntity().getName(), actions);
@@ -1088,6 +1133,16 @@ public class DeviceManageService implements IDeviceManageService {
 		}
 		
 		return result;
+	}
+
+	@Override
+	public List<IEntityField> getEntityFieldsNotVirtual() {
+		return getEntityFieldsByFilter(ef -> !ef.isVirtualized() && ef.getEnabledValues().size()>0);
+	}
+
+	@Override
+	public List<IEntityField> getEntityFieldsNotVirtualCommandButtons() {
+		return getEntityFieldsByFilter(ef -> ef.isBooleanCommandButtonOfGroupSensors());
 	}
 
 }

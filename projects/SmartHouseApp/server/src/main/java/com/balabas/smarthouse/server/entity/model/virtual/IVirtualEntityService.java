@@ -49,4 +49,10 @@ public interface IVirtualEntityService {
 	void save(IEntityFieldEnabledValue entityFieldEnabledValue);
 
 	void deleteEntityFieldEnabledValue(Long id);
+
+	IEntityField createEntityFieldBoolean(String virtualName, String virtualEntityFieldDescr);
+
+	List<IEntityField> getEntityFieldsNotVirtual();
+	
+	List<IEntityField> getEntityFieldsNotVirtualCommandButtons();
 }

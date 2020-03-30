@@ -3,8 +3,10 @@ package com.balabas.smarthouse.server.entity.model.entityfields;
 import java.util.Date;
 import java.util.Set;
 
+import com.balabas.smarthouse.server.DeviceConstants;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.exception.BadValueException;
@@ -73,10 +75,40 @@ public interface IEntityField<T> extends IItemAbstract {
 	IEntityFieldEnabledValue getEntityFieldEnabledValueByValueStr(String value);
 
 	boolean isButton();
+	
+	default boolean isBooleanCommandButton() {
+		return !isVirtualized() 
+		&& isButton()
+		&& !isReadOnly()
+		&& getEnabledValues()!=null
+		&& getEnabledValues().size()>0;
+	}
+	
+	default boolean isBooleanCommandButtonOfGroup(String groupName) {
+		return !isVirtualized() 
+		&& isButton()
+		&& !isReadOnly()
+		&& getEnabledValues()!=null
+		&& getEnabledValues().size()>0
+		&& groupName.equalsIgnoreCase(getEntity().getGroup().getName());
+	}
+	
+	default boolean isBooleanCommandButtonOfGroupSensors() {
+		return 
+		isButton()
+		&& !isReadOnly()
+		&& getEnabledValues()!=null
+		&& getEnabledValues().size()>0
+		&& DeviceConstants.GROUP_SENSORS.equalsIgnoreCase(getEntity().getGroup().getName());
+	}
 
 	String getMeasure();
 	
 	String getFullName();
+	
+	default String getItemTypeEmoji() {
+		return isBooleanCommandButton()?Emoji.DIM_BUTTON.toString():"";
+	}
 	
 	public static int compareByIdChain(IEntityField ia1, IEntityField ia2) {
 		int result = -1;
@@ -101,4 +133,5 @@ public interface IEntityField<T> extends IItemAbstract {
 	default Entity getTargetEntity() {
 		return this.getEntity();
 	}
+
 }

@@ -133,6 +133,12 @@ public class Action {
 		if (!StringUtils.isEmpty(tId)) {
 			this.targetId = Long.valueOf(tId);
 		}
+		if(cols.length>7) {
+			tId = getColValueOrNull(8, cols);
+			if (!StringUtils.isEmpty(tId)) {
+				this.targetId2 = Long.valueOf(tId);
+			}
+		}
 
 		this.callbackData = buildCallBackData();
 		this.valid = isActionValid();
@@ -361,7 +367,8 @@ public class Action {
 
 	private String buildCallBackData() {
 		return buildCallbackData(CALLBACK_TYPE_ACTION, action, data, deviceName, groupName, entityName, idType,
-				(targetId == null) ? "" : targetId.toString());
+				(targetId == null) ? "" : targetId.toString(),
+				(targetId2 == null) ? "" : targetId2.toString());
 	}
 
 	private static String buildCallbackData(String... arg) {

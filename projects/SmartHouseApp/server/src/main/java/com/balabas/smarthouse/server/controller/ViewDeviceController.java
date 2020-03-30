@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.balabas.smarthouse.server.entity.model.Device;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.virtual.IVirtualEntityService;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.service.IServerManageService;
 import com.balabas.smarthouse.server.util.DateTimeUtil;
+import com.balabas.smarthouse.server.view.DeviceEntityFieldActionHolder;
 
 @Controller
 public class ViewDeviceController {
@@ -72,11 +74,13 @@ public class ViewDeviceController {
 			model.addAttribute(ControllerConstants.ATTR_PAGE_REFRESH_INTERVAL, deviceViewRefreshInterval);
 		}
 		
+		DeviceEntityFieldActionHolder holder = deviceService.getValueActionHolder(device.getId()); 
+		
 		model.addAttribute(ControllerConstants.ATTR_SERVER_NAME, serverName);
 		model.addAttribute("dateTime", DateTimeUtil.getDateTimeStr());
 		model.addAttribute("device", device);
 		model.addAttribute("sensors", deviceService.getEntitiesForDevice(device.getId()));
-		model.addAttribute("holder", deviceService.getValueActionHolder(device.getId()));
+		model.addAttribute("holder", holder);
 
 		return "devices/device.html";
 	}
@@ -88,11 +92,24 @@ public class ViewDeviceController {
 		return "redirect:/index";
 	}
 
-	@GetMapping("/executeAction_{deviceId}_{entityId}_{action}_")
+	@SuppressWarnings("rawtypes")
+	@GetMapping("/executeAction_{deviceId}_{entityId}_{action}_{entityFieldId}_")
 	public String executeEntityAction(@PathVariable(name = "deviceId") Long deviceId,
-			@PathVariable(name = "entityId") Long entityId, @PathVariable(name = "action") String action, Model model) {
+			@PathVariable(name = "entityId") Long entityId,
+			@PathVariable(name = "action") String action,
+			@PathVariable(name = "entityFieldId") Long entityFieldId,Model model) {
 
-		deviceService.sendDataToDevice(deviceId, entityId, action);
+		if(entityFieldId!=null) {
+			IEntityField targetField = deviceService.getEntityFieldById(entityFieldId); 
+			if(targetField!=null) {
+				Long targetEntityId = targetField.getEntity().getId();
+				Long targetDeviceId = targetField.getEntity().getDevice().getId();
+				
+				deviceService.sendDataToDevice(targetDeviceId, targetEntityId, action);
+			} 
+		} else {
+			deviceService.sendDataToDevice(deviceId, entityId, action);
+		}
 
 		return "redirect:/device?id=" + Long.toString(deviceId);
 
