@@ -960,6 +960,8 @@ public class DeviceManageService implements IDeviceManageService {
 			}
 		}
 
+		holder.sort();
+		
 		return holder;
 	}
 	
@@ -967,7 +969,7 @@ public class DeviceManageService implements IDeviceManageService {
 	public List<IEntityField> getCurrentEntityFieldsForDevice(Long deviceId) {
 		return getDeviceById(deviceId).getEntities().stream().flatMap(entity -> entity.getEntityFields().stream())
 				.filter(SmartHouseItemBuildService::isFieldCurrent)
-				.sorted(ItemAbstract::compareByName).collect(Collectors.toList());
+				.sorted(ItemAbstract::compareByDescriptionField).collect(Collectors.toList());
 	}
 
 	@Override

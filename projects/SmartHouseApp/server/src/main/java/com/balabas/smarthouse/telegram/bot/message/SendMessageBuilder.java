@@ -1,6 +1,5 @@
 package com.balabas.smarthouse.telegram.bot.message;
 
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,6 @@ import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
-import com.balabas.smarthouse.server.entity.model.ItemAbstractByDescriptionComparator;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -86,8 +84,6 @@ public class SendMessageBuilder {
 	@Autowired
 	private ItemTextHelper itemTextHelper;
 
-	Comparator<ItemAbstract> itemAbstractComparator = new ItemAbstractByDescriptionComparator();
-
 	public List<SendMessage> createServerStartedMessages(Long chatId, String serverName) {
 		List<SendMessage> msgs = Lists.newArrayList();
 		String text = String.format(BotMessageConstants.BOT_REGISTERED_MSG, Emoji.PERSON_RAISING_ONE_HAND, serverName,
@@ -118,7 +114,7 @@ public class SendMessageBuilder {
 	}
 
 	public List<Device> getDevices() {
-		return deviceService.getDevicesInitialized().stream().sorted(itemAbstractComparator)
+		return deviceService.getDevicesInitialized().stream().sorted(ItemAbstract::compareByDescriptionField)
 				.collect(Collectors.toList());
 	}
 	
@@ -526,7 +522,7 @@ public class SendMessageBuilder {
 				builder.append("\n\n");
 				builder.append(device.getState().getStateEmojiAndDescriptionFormatted());
 			} else {
-				group.getEntities().stream().sorted(itemAbstractComparator)
+				group.getEntities().stream().sorted(ItemAbstract::compareByDescriptionField)
 						.forEach(ent -> itemRendererBuilder.buildEntityView(ent, builder));
 
 				List<IEntityAlarm> alarms = alarmService.getEntityAlarmsWithAlarmDetected(device);

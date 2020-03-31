@@ -103,11 +103,36 @@ public class ItemAbstract implements IItemAbstract {
 	}
 	
 	public static int compareByName(IItemAbstract ia1, IItemAbstract ia2) {
-		return ia1.getName().compareTo(ia2.getName());
+		return compareByString(ia1, ia2, ia1.getName(), ia2.getName(), false);
 	}
 	
 	public static int compareByDescriptionField(IItemAbstract ia1, IItemAbstract ia2) {
-		return ia1.getDescriptionByDescriptionField().compareTo(ia2.getDescriptionByDescriptionField());
+		return compareByString(ia1, ia2, ia1.getDescriptionByDescriptionField(), ia2.getDescriptionByDescriptionField(), false);
+	}
+	
+	public static int compareByDescription(IItemAbstract o1, IItemAbstract o2) {
+		return compareByString(o1, o2, o1.getDescription(), o2.getDescription(), true);
 	}
 
+	public static int compareByString(IItemAbstract o1, IItemAbstract o2, String d1, String d2, boolean ignoreCase) {
+		if (o1 == null && o2 == null) {
+			return 0;
+		}
+
+		if (d1 == null && d2 == null) {
+			return 0;
+		}
+
+		if (d1 != null && d2 != null) {
+			return ignoreCase ? d1.compareToIgnoreCase(d2): d1.compareTo(d2);
+		}
+		if (d2 != null) {
+			return -1;
+		}
+		if(d1!=null) {
+			return 1;
+		}
+
+		return 0;
+	}
 }
