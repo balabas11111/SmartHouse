@@ -154,6 +154,7 @@
 					<form th:if="${!alarm.isNew()}" th:action="@{/saveAlarmEvent}" th:object="${alarmEvent}"
 						method="post">
 						<input type="hidden" name="alarmId" th:value="${alarm.id}">
+						<input type="hidden" name="itemType" th:value="${itemType}">
 						<input type="hidden" th:field="*{id}">
 						<table class="table table-dark table-striped">
 							<tr>

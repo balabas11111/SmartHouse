@@ -50,7 +50,7 @@ public interface IAlarmV2Service {
 
 	Set<IAlarmStateChangeEventProcessor> getAlarmStateChangedEventProcessors(IAlarmV2 alarm);
 
-	void addAlarmStateChangeActionToAlarm(Long alarmId, AlarmStateChangeAction action);
+	void addAlarmStateChangeActionToAlarm(Long alarmId, ItemType it, AlarmStateChangeAction action);
 
 	void deleteAlarmStateChangeActionFromAlarm(Long alarmId, Long actionId);
 

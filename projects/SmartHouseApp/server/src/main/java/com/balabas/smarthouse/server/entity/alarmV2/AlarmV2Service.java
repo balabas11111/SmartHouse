@@ -362,8 +362,8 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void addAlarmStateChangeActionToAlarm(Long alarmId, AlarmStateChangeAction action) {
-		IAlarmV2 alarm = getAlarmOrDefault(alarmId, null);
+	public void addAlarmStateChangeActionToAlarm(Long alarmId, ItemType it, AlarmStateChangeAction action) {
+		IAlarmV2 alarm = getAlarm(alarmId, it);
 		
 		Set<IAlarmStateChangeAction> set = Optional.ofNullable(alarm.getActions()).orElse(new LinkedHashSet());
 		set.add(action);

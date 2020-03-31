@@ -66,6 +66,7 @@ public class ViewAlarmController {
 
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
 		model.addAttribute("alarm", alarm);
+		model.addAttribute("itemType", itemType);
 		model.addAttribute("currentCheckerName", alarm.getCheckerName());
 		model.addAttribute("checkers", checkers);
 		model.addAttribute("targets", alarmService.getEnabledAlarmTargets(alarm));
@@ -88,7 +89,8 @@ public class ViewAlarmController {
 	@PostMapping("/saveAlarmEvent")
 	public String saveAlarmEvent(@ModelAttribute("alarmEvent") AlarmStateChangeAction action,
 			@RequestParam("alarmId") Long alarmId, @RequestParam("oldStateName") String oldStateName,
-			@RequestParam("newStateName") String newStateName, Model model) {
+			@RequestParam("newStateName") String newStateName,
+			@RequestParam("itemType") String itemType, Model model) {
 
 		AlarmState oldState = AlarmState.getByName(oldStateName);
 		AlarmState newState = AlarmState.getByName(newStateName);
@@ -96,9 +98,11 @@ public class ViewAlarmController {
 		action.setOldState(oldState);
 		action.setNewState(newState);
 
-		alarmService.addAlarmStateChangeActionToAlarm(alarmId, action);
+		ItemType it = ItemType.getItemTypeByName(itemType);
+		
+		alarmService.addAlarmStateChangeActionToAlarm(alarmId, it, action);
 
-		return "redirect:/editAlarm?id=" + alarmId;
+		return "redirect:/editAlarm?id=" + alarmId+ "&itemType=" + itemType;
 	}
 	
 	@GetMapping("/deleteAction")
