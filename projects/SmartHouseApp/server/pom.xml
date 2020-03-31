@@ -88,7 +88,7 @@
 			<artifactId>jinq-jpa</artifactId>
 			<version>1.8.29</version>
 		</dependency>
- 
+  <!-- 
  		<dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
@@ -99,7 +99,7 @@
               <artifactId>springdoc-openapi-webmvc-core</artifactId>
               <version>1.2.15</version>
         </dependency>
- <!-- 
+
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
@@ -159,13 +159,13 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<!-- <version>${junit.jupiter.version}</version> -->
+			<version>${junit.jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-runner</artifactId>
-			<!-- <version>${junit.platform.version}</version> -->
+			<version>${junit.platform.version}</version> 
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

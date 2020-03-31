@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.ICalculatedEntityFieldRepository;
@@ -81,6 +83,16 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 					IEntityField resultField = deviceService.getEntityFieldById(targetField.getId());
 					if (resultField != targetField) {
 						resultField.setValueStr(targetField.getValueStr());
+					}
+					
+					if(resultField!=null && resultField.isVirtualized()) {
+						IEntity entity = resultField.getEntity();
+						if( entity != null) {
+							IDevice targetDevice = entity.getDevice();
+							if( targetDevice != null && targetDevice.isVirtualized()) {
+								targetDevice.setDeviceLastUpdateTimeNow();
+							}
+						}
 					}
 					uniqueChangedTargets.put(resultField.getId(), resultField);
 					//changedFields.add(resultField);

@@ -10,10 +10,12 @@ import javax.persistence.Transient;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
 
+@SuppressWarnings("rawtypes")
 @javax.persistence.Entity
 public class EntityFieldBoolean extends EntityField<Boolean> implements IEntityField<Boolean> {
 
@@ -37,12 +39,35 @@ public class EntityFieldBoolean extends EntityField<Boolean> implements IEntityF
 		return getRealField().getEntity();
 	}
 	
+	public Long getTargetEntityFieldId() {
+		if(targetEntityField!=null) {
+			return targetEntityField.getId();
+		}
+		return null;
+	}
+	
+	public EntityFieldBoolean getTargetEntityField() {
+		return targetEntityField;
+	}
+	
 	@Override
 	public Set<IEntityFieldEnabledValue> getEnabledValues() {
 		if(targetEntityField!=null) {
 			return targetEntityField.getEnabledValues();
 		}
 		return this.enabledValues;
+	}
+	
+	@JsonIgnore
+	@Override
+	public IEntityFieldEnabledValue getEntityFieldEnabledValueByCurrentValue() {
+		IEntityFieldEnabledValue target = null;
+		if(this.targetEntityField!=null) {
+			target = this.targetEntityField.getEntityFieldEnabledValueByCurrentValue();
+		} else {
+			target = super.getEntityFieldEnabledValueByCurrentValue();
+		}
+		return target;
 	}
 	
 	@Override

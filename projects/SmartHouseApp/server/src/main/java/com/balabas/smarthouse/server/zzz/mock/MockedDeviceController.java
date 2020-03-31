@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.balabas.smarthouse.server.controller.ControllerConstants;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldBoolean;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.io.Resources;
@@ -37,6 +41,9 @@ public class MockedDeviceController {
 
 	@Autowired
 	private MockedDeviceService mockService;
+	
+	@Autowired
+	private IDeviceManageService deviceService;
 
 	boolean doAlert = false;
 
@@ -54,6 +61,7 @@ public class MockedDeviceController {
 		doChange = change;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@GetMapping("/mock_{deviceId}")
 	public ResponseEntity<String> executeMockGetDataOnDevice(@PathVariable(value = "deviceId") String deviceId,
 			@RequestHeader HttpHeaders headers,
@@ -92,7 +100,32 @@ public class MockedDeviceController {
 		}
 
 		log.debug("Mock result =" + result);
+		
+		JSONObject obj = new JSONObject(result);
+		
+		JSONObject deviceObj = obj.getJSONObject("device").getJSONObject("info");
+		JSONObject sensorsObj = obj.getJSONObject("sensors");
+		
+		String deviceName= deviceObj.getString("deviceId");
+		
+		for(IEntityField entityField: deviceService.getEntityFieldsNotVirtualCommandButtons()) {
+			EntityFieldBoolean targetEntityField = (EntityFieldBoolean) entityField;
+			
+			String targetEntityName = targetEntityField.getEntity().getName();
+			String targetDeviceName = targetEntityField.getEntity().getDevice().getName();
+			
+			if(deviceName.equals(targetDeviceName) && sensorsObj.has(targetEntityName)) {
+				JSONObject entityObj = sensorsObj.getJSONObject(targetEntityName);
+				String key = targetEntityField.getName();
+				Boolean valB = targetEntityField.getValue();
+				boolean value = (valB==null)?false:valB.booleanValue();
+				entityObj.put(key, new Boolean(value));
+				log.debug("Mock entityObj =" + entityObj);
+			}
+		}
 
+		result = obj.toString();
+		
 		return ResponseEntity.ok().body(result);
 	}
 

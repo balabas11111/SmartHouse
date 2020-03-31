@@ -28,7 +28,9 @@ import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstractByDescriptionComparator;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.model.virtual.IVirtualEntityService;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.entity.service.IGroupService;
 import com.balabas.smarthouse.server.entity.service.IViewChartEntityFieldsService;
@@ -58,6 +60,9 @@ public class SendMessageBuilder {
 
 	@Autowired
 	private IDeviceManageService deviceService;
+	
+	@Autowired
+	private IVirtualEntityService virtualEntityService;
 	
 	@Autowired
 	private IViewChartEntityFieldsService viewChartsService;
@@ -151,6 +156,24 @@ public class SendMessageBuilder {
 		List<Device> devices = getDevices();
 		cont.setText(getServerMainText(devices.size()));
 		msgs.add(cont.createMsg(inlineKeyboard.getInlineKeyboardViewOfMainCommands(devices)));
+		return msgs;
+	}
+	
+	public List<SendMessage> createViewOfDevicesVirtual(Action action, ReplyContext cont) {
+		List<SendMessage> msgs = Lists.newArrayList();
+		List<IDevice> devices = virtualEntityService.getDevices();
+		
+		if(devices.size()>1) {
+			List<Device> devicesObjList = devices.stream().map(d -> (Device) d).collect(Collectors.toList()); 
+			cont.setText(getServerMainText(devices.size()));
+			msgs.add(cont.createMsg(inlineKeyboard.getInlineKeyboardViewOfDevices(devicesObjList)));
+		} else {
+			if(devices.size()==1) {
+				action.setDeviceName(devices.get(0).getName());
+				action.setGroupName(DeviceConstants.GROUP_SENSORS);
+				msgs.addAll(createViewOfDeviceGroup(action, cont));
+			}
+		}
 		return msgs;
 	}
 	
@@ -525,7 +548,16 @@ public class SendMessageBuilder {
 				}
 
 				result.add(createHtmlMessage(context.getChatId(), builder.toString()));
-
+				group = deviceService.getGroupById(group.getId());
+				group.getEntities().stream().flatMap(ent -> ent.getEntityFields().stream()).forEach(entF -> {
+					if(entF.getClazz().equals(Boolean.class)) {
+						EntityFieldBoolean efb = (EntityFieldBoolean) entF;
+						if(efb.getTargetEntityField()!=null) {
+							efb.setTargetEntityField((EntityFieldBoolean)deviceService.getEntityFieldById(efb.getTargetEntityFieldId()));
+						}
+					}
+				});
+				
 				Optional.ofNullable(buildGroupCommandInterface(device, group, context.getChatId()))
 						.ifPresent(result::add);
 			}

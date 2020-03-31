@@ -18,6 +18,7 @@ import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldFloat;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
@@ -64,6 +65,13 @@ public class VirtualEntityService implements IVirtualEntityService {
 	@Override
 	public IEntityField createEntityFieldFloat(String name, String description) {
 		IEntityField item = new EntityFieldFloat();
+		setNameDescription(name, description, item);
+		return item;
+	}
+	
+	@Override
+	public IEntityField createEntityFieldBoolean(String name, String description) {
+		IEntityField item = new EntityFieldBoolean();
 		setNameDescription(name, description, item);
 		return item;
 	}
@@ -185,6 +193,16 @@ public class VirtualEntityService implements IVirtualEntityService {
 	@Override
 	public void deleteEntityFieldEnabledValue(Long id) {
 		deviceService.deleteEntityFieldEnabledValue(id);
+	}
+
+	@Override
+	public List<IEntityField> getEntityFieldsNotVirtual() {
+		return deviceService.getEntityFieldsNotVirtual();
+	}
+
+	@Override
+	public List<IEntityField> getEntityFieldsNotVirtualCommandButtons() {
+		return deviceService.getEntityFieldsNotVirtualCommandButtons();
 	}
 
 }

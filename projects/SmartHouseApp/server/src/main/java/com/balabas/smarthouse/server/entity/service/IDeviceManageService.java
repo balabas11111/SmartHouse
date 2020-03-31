@@ -137,4 +137,10 @@ public interface IDeviceManageService {
 
 	void deleteEntityFieldEnabledValue(Long id);
 
+	List<IEntityField> getEntityFieldsNotVirtual();
+
+	List<IEntityField> getEntityFieldsByFilter(Predicate<? super IEntityField> predicate);
+
+	List<IEntityField> getEntityFieldsNotVirtualCommandButtons();
+
 }

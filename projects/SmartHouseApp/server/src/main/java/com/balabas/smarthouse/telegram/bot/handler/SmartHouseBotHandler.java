@@ -164,7 +164,7 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 				msgs.addAll(messageBuilder.createViewOfDevices(action, context));
 				break;
 			case ACTION_TYPE_VIEW_ALL_METRICS:
-				msgs.addAll(messageBuilder.createViewOfMetrics(action, context));
+				msgs.addAll(messageBuilder.createViewOfDevicesVirtual(action, context));
 				break;
 			case ACTION_TYPE_VIEW_ENTITIES_OF_METRIC:
 				msgs.addAll(messageBuilder.createViewOfEntityMetrics(action, context));

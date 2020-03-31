@@ -27,9 +27,9 @@
 				<div class="row">
 					<div class="col-md-4">
 
-						<h1><a class="navbar-brand" th:href="@{~/device?id={id}(id=${device.id})}" data-0="line-height:90px;"
-								data-300="line-height:50px;" th:text="${device.description}"> Hidayah
-							</a></h1>
+						<h3><a class="navbar-brand" th:href="@{~/device?id={id}(id=${device.id})}" data-0="line-height:90px;"
+								data-300="line-height:50px;" th:text="${device.getEmojiDescriptionByDescriptionField()}"> Hidayah
+							</a></h3>
 
 					</div>
 
@@ -47,19 +47,10 @@
 			<table id="devicesTable" class="table table-dark table-striped">
 				<thead>
 					<tr>
-						<th>Идентификатор</th>
 						<th th:if="${!device.isVirtualized()}">Прошивка</th>
-						<th>Состояние</th>
-						<th  th:if="${!device.isVirtualized()}"></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td th:text="${device.getEmojiDescriptionByDescriptionField()}">Идентификатор</td>
 						<td  th:if="${!device.isVirtualized()}" th:text="${device.firmware}">Прошивка</td>
-						<!--<td th:text="${device.description}">Описание</td>-->
+						<th>Состояние</th>
 						<td th:text="${device.getStateEmoji()} + ' ' + ${device.getStateDescription()}">Состояние</td>
-						<!--<td th:text="${device.ip}">IP</td>-->
 						<td th:if="${!device.isVirtualized()}">
 							<div class="dropdown">
 								<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
@@ -76,14 +67,14 @@
 								</ul>
 							</div>
 						</td>
+						<th>Время устр.</th>
+						<td th:text="${device.getDeviceLastUpdateTimeStr()}">время устр</td>
+						<th>Время Страницы</th>
+						<td th:text="${dateTime}">время стр</td>
 					</tr>
-				</tbody>
+				</thead>
 			</table>
 		</div>
-
-		<p>
-			<h5 th:text="'Показания датчиков : ' + ${dateTime}"></h5>
-		</p>
 
 		<div id="sensorsContent" style="display: flex; flex-wrap: wrap;">
 			<div th:each="entity : ${sensors}" class="panel panel-default"
@@ -109,9 +100,22 @@
 								<td th:text="${entityField.getEntityFieldEnabledValueByCurrentValue().getEmoji()} + ' (' + ${entityField.getEntityFieldEnabledValueByCurrentValue().getDescription()} + ')'">value</td>
 								
 							</tr>
-							<tr th:each="entityAction : ${holder.getEntityFieldActions().get(entity.name)}">
+							<!--  <tr th:each="entityAction : ${holder.getActionByName(entity.name)}">
 								<td>
 									<a th:href="@{~/executeAction_{deviceId}_{entityId}_{action}_(deviceId=${device.id},entityId=${entityAction.getTargetId()},action=${entityAction.getData()})}"
+										class="btn btn-default" th:text="${entityAction.getDescription()}">value</a>
+									<a th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityAction.getTargetId2()})}">История</a>
+								</td>
+							</tr>
+							-->
+						</tbody>
+					</table>
+
+					<table id="actionsTable" class="table table-striped">
+						<tbody>
+							<tr th:each="entityAction : ${holder.getActionByName(entity.name)}">
+								<td>
+									<a th:href="@{~/executeAction_{deviceId}_{entityId}_{action}_{entityFieldId}_(deviceId=${device.id},entityId=${entityAction.getTargetId()},action=${entityAction.getData()},entityFieldId=${entityAction.getTargetId2()})}"
 										class="btn btn-default" th:text="${entityAction.getDescription()}">value</a>
 									<a th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityAction.getTargetId2()})}">История</a>
 								</td>

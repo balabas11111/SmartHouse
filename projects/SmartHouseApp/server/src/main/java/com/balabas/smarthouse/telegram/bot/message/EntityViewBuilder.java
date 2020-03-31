@@ -151,9 +151,11 @@ public class EntityViewBuilder {
 		}
 
 	}
-
+	
 	public void buildEntityBodyViewByFieldDescriptors(IEntity entity, StringBuilder builder) {
 		Set<IEntityField> entityFields = entity.getEntityFields();
+		
+		//TODO: add sorting here
 
 		List<String> invisibleFields = Arrays.asList(ENTITY_FIELD_SENSOR_ITEMS, ENTITY_FIELD_ID, ENTITY_FIELD_MESSAGE,
 				entity.getDescriptionField());
