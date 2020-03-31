@@ -2,7 +2,6 @@ package com.balabas.smarthouse.server.entity.service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.repository.IEntityRepository;
+import com.balabas.smarthouse.server.util.SortingUtility;
 import com.balabas.smarthouse.server.view.Action;
 
 @Service
@@ -32,7 +32,7 @@ public class EntityService implements IEntityService {
 	
 	@Override
 	public List<IEntityFieldEnabledValue> getEnabledEntityFieldWithCommandsForEntity(IEntity entity) {
-		Set<IEntityField> entFields = entity.getEntityFields();
+		List<IEntityField> entFields = SortingUtility.sort(entity.getEntityFields());
 
 		if (entFields == null || entFields.isEmpty()) {
 			return Collections.emptyList();

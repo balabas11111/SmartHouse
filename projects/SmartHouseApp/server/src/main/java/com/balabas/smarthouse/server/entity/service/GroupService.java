@@ -26,7 +26,8 @@ public class GroupService implements IGroupService {
 			return Collections.emptyList();
 		}
 
-		return group.getEntities().stream().flatMap(entity -> entityService.getActionsForEntity(actionName, entity).stream())
+		return group.getEntities().stream().flatMap(
+				entity -> entityService.getActionsForEntity(actionName, entity).stream())
 				.collect(Collectors.toList());
 	}
 

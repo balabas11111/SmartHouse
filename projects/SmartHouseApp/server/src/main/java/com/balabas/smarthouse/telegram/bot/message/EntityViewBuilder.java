@@ -27,6 +27,7 @@ import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.util.SortingUtility;
+import com.balabas.smarthouse.server.util.StringUtil;
 import com.balabas.smarthouse.server.view.chart.IMetrics;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -166,7 +167,7 @@ public class EntityViewBuilder {
 			if (!invisibleFields.contains(ef.getName())) {
 
 				builder.append((Optional.ofNullable(ef.getEmoji()).orElse(Emoji.EMPTY_EMOJI)).toString());
-				builder.append(ef.getDescription());
+				builder.append(StringUtil.setSize(ef.getDescription()));
 
 				IEntityFieldEnabledValue enVal = ef.getEntityFieldEnabledValueByCurrentValue();
 
