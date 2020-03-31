@@ -133,4 +133,9 @@ public class Device extends ItemAbstract implements IDevice {
 		return AbstractItemType.DEVICE;
 	}
 	
+	@Override
+	public String getParentNamesChain() {
+		return getDescriptionByDescriptionField();
+	}
+	
 }

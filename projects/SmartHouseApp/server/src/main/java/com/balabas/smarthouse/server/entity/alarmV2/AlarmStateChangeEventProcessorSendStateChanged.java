@@ -7,6 +7,8 @@ public class AlarmStateChangeEventProcessorSendStateChanged extends AlarmStateCh
 
 	@Override
 	public void process(IItemEvent event) {
+		alarmStateService.putSingleStateDescription(event);
+		alarmStateService.printStateDescription(event.getItem());
 		super.process(event);
 	}
 

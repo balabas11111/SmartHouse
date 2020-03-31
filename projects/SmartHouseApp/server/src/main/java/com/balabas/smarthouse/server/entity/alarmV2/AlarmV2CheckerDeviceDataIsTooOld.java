@@ -12,24 +12,28 @@ public class AlarmV2CheckerDeviceDataIsTooOld extends AlarmV2CheckerAbstractDevi
 
 	@Getter
 	private final String checkerDescription = AlarmConstants.CHECKER_DESCRIPTION_DEVICE_DISCONNECTED;
+	
+	private final Long DEFAULT_OLD_MILLISECONDS = 10000L;
 
 	@Override
 	protected boolean checkItemValue(IAlarmV2 alarm) {
-		boolean result = true;
+		boolean result = false;
 
 		String param = alarm.getParameter();
 
+		Long oldSeconds = DEFAULT_OLD_MILLISECONDS; 
+		
 		if (!StringUtils.isEmpty(param)) {
-			Integer oldSeconds = Integer.valueOf(param);
+			oldSeconds = Long.valueOf(param);
+		}
+		
+		if (oldSeconds != null && oldSeconds > 1) {
+			long lastUpdated = getItemAsDevice(alarm).getLastUpdated();
 
-			if (oldSeconds != null && oldSeconds > 1) {
-				long lastUpdated = getItemAsDevice(alarm).getLastUpdated();
+			long diff = (Math.abs(DateTimeUtil.now() - lastUpdated)) / 1000;
 
-				long diff = (Math.abs(DateTimeUtil.now() - lastUpdated)) / 1000;
-
-				if (lastUpdated != 0 && diff > oldSeconds) {
-					result = false;
-				}
+			if (lastUpdated > 10000 && diff > oldSeconds) {
+				result = true;
 			}
 		}
 

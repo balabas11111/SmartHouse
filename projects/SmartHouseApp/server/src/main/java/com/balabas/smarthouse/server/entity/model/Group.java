@@ -55,4 +55,9 @@ public class Group extends ItemAbstract implements IGroup {
 	public AbstractItemType getItemAbstractType() {
 		return AbstractItemType.GROUP;
 	}
+	
+	@Override
+	public String getParentNamesChain() {
+		return getDevice().getParentNamesChain() + "-" + getDescriptionByDescriptionField();
+	}
 }

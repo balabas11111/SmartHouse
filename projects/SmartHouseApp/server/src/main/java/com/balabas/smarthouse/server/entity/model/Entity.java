@@ -140,5 +140,10 @@ public class Entity extends ItemAbstract implements IEntity {
 	public AbstractItemType getItemAbstractType() {
 		return AbstractItemType.ENTITY;
 	}
+	
+	@Override
+	public String getParentNamesChain() {
+		return getDevice().getParentNamesChain() + "-" + getDescriptionByDescriptionField();
+	}
 
 }

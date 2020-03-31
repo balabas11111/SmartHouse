@@ -291,4 +291,8 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 		return AbstractItemType.ENTITY_FIELD;
 	}
 	
+	@Override
+	public String getParentNamesChain() {
+		return getEntity().getParentNamesChain() + "-" + getName()+":" + getDescriptionByDescriptionField();
+	}
 }

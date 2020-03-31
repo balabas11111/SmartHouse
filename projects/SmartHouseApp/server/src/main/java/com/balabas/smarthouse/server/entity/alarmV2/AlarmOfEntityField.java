@@ -7,6 +7,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.view.MessageHolder;
@@ -26,6 +27,10 @@ public class AlarmOfEntityField extends AlarmV2 {
 	@Getter
 	@Transient
 	private final Class<?> targetItemClass = EntityField.class;
+	
+	@Getter
+	@Transient
+	private final ItemType itemType = ItemType.ENTITY_FIELD;
 	
 	@Override
 	public IItemAbstract getItem() {

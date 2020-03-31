@@ -63,5 +63,7 @@ public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionabl
 		
 		return result;
 	}
+
+	String getParentNamesChain();
 	
 }

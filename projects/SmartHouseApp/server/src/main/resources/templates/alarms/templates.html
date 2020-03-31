@@ -3,7 +3,7 @@
 
 <body>
 
-	<table class="table table-dark table-striped" th:fragment="AlarmsList(alarms)">
+	<table class="table table-dark table-striped" th:fragment="AlarmsList(alarms,itemTypeName)">
 		<thead>
 			<tr>
 			    <th>Тип</th>
@@ -17,7 +17,7 @@
 			<tr th:each="alarm : ${alarms}">
 			    <td th:text="${alarm.description}"></td>
 				<td>
-					<a th:href="@{~/editAlarm?id={id}(id=${alarm.id})}" th:text="${alarm.getDescription()}"
+					<a th:href="@{~/editAlarm?id={id}&itemType={itemType}(id=${alarm.id},itemType=${itemTypeName})}" th:text="${alarm.getDescription()}"
 						class="btn btn-default" >&#x1F4DD;Просмотр</a> 
 				</td>
 				<td th:text="${alarm.getItem().getEmojiDescriptionByDescriptionField()}"></td>
@@ -29,7 +29,7 @@
 						<span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu">
-						<li><a th:href="@{~/editAlarm?id={id}(id=${alarm.id})}"
+						<li><a th:href="@{~/editAlarm?id={id}&itemType={itemType}(id=${alarm.id},itemType=${itemTypeName})}"
 						class="btn btn-default">&#x1F4DD;Просмотр</a></li>
 						<li><button type="button" class="btn btn-default" data-toggle="modal"
 						th:attr="data-target='#deleteAlarmModal' + ${alarm.id}">&#x274C;Удалить</button></li>

@@ -54,28 +54,28 @@
 			    <p>
 					<a th:href="@{~/editAlarm?id=0&itemType=Device}" class="btn btn-success">Новый</a>
 					
-					<table th:replace="alarms/templates :: AlarmsList(alarms=${alarms.get('Device')})"></table>	
+					<table th:replace="alarms/templates :: AlarmsList(alarms=${alarms.get('Device')},itemTypeName='Device')"></table>	
 				</p>
 			  </div>
 			  <div id="panelAlarmGroup" th:if="${itemType.equalsIgnoreCase('Group')}" class="tab-pane fade in active">
 			    <p>
 					<a th:href="@{~/editAlarm?id=0&itemType=Group}" class="btn btn-success">Новый</a>
 					
-					<table th:replace="alarms/templates :: AlarmsList(alarms=${alarms.get('Group')})"></table>
+					<table th:replace="alarms/templates :: AlarmsList(alarms=${alarms.get('Group')},itemTypeName='Group')"></table>
 				</p>
 			  </div>
 			  <div id="panelAlarmEntity" th:if="${itemType.equalsIgnoreCase('Entity')}" class="tab-pane fade in active">
 			    <p>
 					<a th:href="@{~/editAlarm?id=0&itemType=Entity}" class="btn btn-success">Новый</a>
 					
-					<table th:replace="alarms/templates :: AlarmsList(alarms=${alarms.get('Entity')})"></table>
+					<table th:replace="alarms/templates :: AlarmsList(alarms=${alarms.get('Entity')},itemTypeName='Entity')"></table>
 				</p>
 			  </div>
 			  <div id="panelAlarmEntityField" th:if="${itemType.equalsIgnoreCase('Entity_Field')}" class="tab-pane fade in active">
 			    <p>
 					<a th:href="@{~/editAlarm?id=0&itemType=Entity_Field}" class="btn btn-success">Новый</a>
 					
-					<table th:replace="alarms/templates :: AlarmsList(alarms=${alarms.get('Entity_Field')})"></table>
+					<table th:replace="alarms/templates :: AlarmsList(alarms=${alarms.get('EntityField')},itemTypeName='Entity_Field')"></table>
 				</p>
 			  </div>
 			</div>

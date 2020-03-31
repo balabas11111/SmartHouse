@@ -6,6 +6,7 @@ import java.util.Set;
 import com.balabas.smarthouse.server.entity.model.IDescriptionable;
 import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 
 public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 
@@ -13,6 +14,8 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	//void setItemId(Long itemId);
 	
 	Class<?> getTargetItemClass();
+	
+	ItemType getItemType();
 	
 	IItemAbstract getItem();
 	void setItem(IItemAbstract item);

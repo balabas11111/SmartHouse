@@ -6,6 +6,9 @@ import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 
 public interface IItemEvent {
 
+	Long getAlarmId();
+	void setAlarmId(Long alarmId);
+	
 	Date getDate();
 	
 	IItemAbstract getItem();
@@ -38,5 +41,9 @@ public interface IItemEvent {
 	
 	default boolean isSameState() {
 		return getOldState().equals(getNewState());
+	}
+	
+	default String getItemUid() {
+		return "IItemEvent"+ getAlarmId(); 
 	}
 }

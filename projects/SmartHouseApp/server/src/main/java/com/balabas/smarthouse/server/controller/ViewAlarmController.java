@@ -4,6 +4,8 @@ import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +24,7 @@ import com.balabas.smarthouse.server.entity.alarmV2.AlarmOfEntityField;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmState;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Checker;
+import com.balabas.smarthouse.server.entity.alarmV2.IAlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2Service;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
@@ -40,10 +43,10 @@ public class ViewAlarmController {
 		if(StringUtils.isEmpty(itemType)) {
 			itemType = ItemType.DEVICE.name();
 		}
-		
+		Map<String, List<IAlarmV2>> alarms = alarmService.getAlarmsGrouppedByItemClassName();
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
 		model.addAttribute("itemType", itemType);
-		model.addAttribute("alarms", alarmService.getAlarmsGrouppedByItemClassName());
+		model.addAttribute("alarms", alarms);
 
 		return "alarms/alarmsList.html";
 	}
@@ -71,8 +74,10 @@ public class ViewAlarmController {
 			model.addAttribute("alarmStates", AlarmState.getList());
 			model.addAttribute("alarmStateChangedEventProcessors",
 					alarmService.getAlarmStateChangedEventProcessors(alarm));
-
-			alarm.setActions(new HashSet(alarm.getActions()));
+			
+			Set<IAlarmStateChangeAction> actions = alarm.getActions();
+			
+			alarm.setActions(actions==null?new HashSet():new HashSet(actions));
 		}else {
 			alarm.setActions(new HashSet());
 		}

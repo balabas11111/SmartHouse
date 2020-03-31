@@ -14,7 +14,9 @@ public class AlarmV2CheckerEntityFieldNumberMax extends AlarmV2CheckerAbstractEn
 	
 	@Override
 	protected boolean checkItemValue(IAlarmV2 alarm) {
-		return getEntityFieldValueFloat(getItemAsEntityField(alarm)) > MathUtil.getAsFloat(alarm.getParameter());
+		Float fieldValue = getEntityFieldValueFloat(getItemAsEntityField(alarm));
+		Float maxValue = MathUtil.getAsFloat(alarm.getParameter());
+		return  fieldValue > maxValue; 
 	}
 	
 }

@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import lombok.Getter;
@@ -11,6 +12,9 @@ public abstract class AlarmStateChangeEventProcessor implements IAlarmStateChang
 
 	@Getter @Setter
 	private String name;
+	
+	@Autowired
+	protected IItemAlarmStateService alarmStateService;
 
 	public AlarmStateChangeEventProcessor() {
 		this.setName(this.getClass().getSimpleName());

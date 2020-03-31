@@ -7,6 +7,7 @@ import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,10 @@ public class AlarmOfEntity extends AlarmV2 {
 	@Getter
 	@Transient
 	private final Class<?> targetItemClass = Entity.class;
+	
+	@Getter
+	@Transient
+	private final ItemType itemType = ItemType.ENTITY;
 	
 	@Override
 	public IItemAbstract getItem() {

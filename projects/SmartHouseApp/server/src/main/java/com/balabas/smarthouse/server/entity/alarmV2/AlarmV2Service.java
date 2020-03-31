@@ -17,6 +17,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.balabas.smarthouse.server.DeviceConstants;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
@@ -147,7 +148,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 			if(alarm.getMessageInterval()!=null && alarm.getMessageInterval()>0 ) {
 				a.setInterval(alarm.getMessageInterval());
 			}
-			events.add(new ItemChangeEvent(alarm.getItem(), a));
+			events.add(new ItemChangeEvent(alarm.getItem(), a, alarm.getId()));
 		});
 		return events;
 	}
@@ -323,7 +324,8 @@ public class AlarmV2Service implements IAlarmV2Service {
 			result = deviceService.getEntities().stream().collect(Collectors.toSet());
 		}
 		if (IEntityField.class.isAssignableFrom(alarm.getTargetItemClass())) {
-			result = deviceService.getEntityFields().stream().collect(Collectors.toSet());
+			result = deviceService.getEntityFields().stream()
+					.filter(ef -> !ef.getClazz().equals(String.class) && DeviceConstants.GROUP_SENSORS.equalsIgnoreCase(ef.getEntity().getGroup().getName())).collect(Collectors.toSet());
 		}
 
 		return result;
@@ -387,8 +389,8 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Override
 	public IAlarmV2 getAlarm(Long id, ItemType it) {
-		if(it == null && id!=null && id>0) {
-			IAlarmV2 al = getAlarmByFilter(alarm -> id.equals(alarm.getId())).orElse(null);
+		if(id!=null && id>0) {
+			IAlarmV2 al = getAlarmByFilter(alarm -> alarm.getItemType().equals(it) && id.equals(alarm.getId())).orElse(null);
 			if(al!=null) {
 				return al;
 			}

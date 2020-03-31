@@ -135,4 +135,9 @@ public class ItemAbstract implements IItemAbstract {
 
 		return 0;
 	}
+
+	@Override
+	public String getParentNamesChain() {
+		return this.getClass().getSimpleName() + getName() + " " + getDescription();
+	}
 }
