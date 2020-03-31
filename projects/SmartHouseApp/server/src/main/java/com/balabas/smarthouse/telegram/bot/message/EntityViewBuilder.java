@@ -26,7 +26,7 @@ import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
-import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
+import com.balabas.smarthouse.server.util.SortingUtility;
 import com.balabas.smarthouse.server.view.chart.IMetrics;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -155,7 +155,7 @@ public class EntityViewBuilder {
 	}
 	
 	public void buildEntityBodyViewByFieldDescriptors(IEntity entity, StringBuilder builder) {
-		List<IEntityField> entityFields = IDeviceManageService.sort(entity.getEntityFields());
+		List<IEntityField> entityFields = SortingUtility.sort(entity.getEntityFields());
 		
 		//TODO: add sorting here
 

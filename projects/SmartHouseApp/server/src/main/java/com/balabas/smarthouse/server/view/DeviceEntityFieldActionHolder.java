@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
-import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
+import com.balabas.smarthouse.server.util.SortingUtility;
 import com.google.common.collect.Lists;
 
 import lombok.Getter;
@@ -54,9 +54,9 @@ public class DeviceEntityFieldActionHolder {
 	}
 	
 	public void sort() {
-		entityFieldsCalculated = IDeviceManageService.sort(entityFieldsCalculated);
-		entityFields = IDeviceManageService.sort(entityFields);
-		entityFieldsImageable = IDeviceManageService.sort(entityFieldsImageable);
+		entityFieldsCalculated = SortingUtility.sort(entityFieldsCalculated);
+		entityFields = SortingUtility.sort(entityFields);
+		entityFieldsImageable = SortingUtility.sort(entityFieldsImageable);
 		//entityFieldActions = sort(entityFieldActions);
 	}
 	

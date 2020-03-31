@@ -1,12 +1,10 @@
 package com.balabas.smarthouse.server.entity.service;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 
@@ -17,7 +15,6 @@ import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
-import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -146,27 +143,4 @@ public interface IDeviceManageService {
 
 	List<IEntityField> getEntityFieldsNotVirtualCommandButtons();
 
-	static final Class<?>[] classOrder = {String.class, Float.class, Long.class,  Boolean.class};
-	
-	static Map<String, List<IEntityField>> sort(Map<String, List<IEntityField>> targetMap) {
-		for(String key: targetMap.keySet()) {
-			List<IEntityField> sortedList = sort(targetMap.get(key));
-			targetMap.put(key, sortedList);
-		}
-		return targetMap;
-	}
-	
-	static List<IEntityField> sort(Collection<IEntityField> toSort) {
-		List<IEntityField> result = new ArrayList<>();
-		
-		for(Class<?> clazz : classOrder) {
-			result.addAll(getByFieldClassSorted(toSort, clazz));
-		}
-		
-		return result;
-	}
-
-	static List<IEntityField> getByFieldClassSorted(Collection<IEntityField> toSort, Class<?> clazz) {
-		return toSort.stream().filter(ef -> ef.getClazz().equals(clazz)).sorted(ItemAbstract::compareByDescriptionField).collect(Collectors.toList());
-	}
 }
