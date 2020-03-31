@@ -52,7 +52,7 @@ public interface IAlarmV2Service {
 
 	void addAlarmStateChangeActionToAlarm(Long alarmId, ItemType it, AlarmStateChangeAction action);
 
-	void deleteAlarmStateChangeActionFromAlarm(Long alarmId, Long actionId);
+	void deleteAlarmStateChangeActionFromAlarm(Long alarmId, ItemType it, Long actionId);
 
 	IAlarmV2 getAlarm(Long id, ItemType it);
 

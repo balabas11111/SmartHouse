@@ -108,11 +108,14 @@ public class ViewAlarmController {
 	@GetMapping("/deleteAction")
 	public String deleteAlarmEvent(@ModelAttribute("alarmEvent") AlarmStateChangeAction action,
 			@RequestParam("id") Long actionId,
-			@RequestParam("alarmId") Long alarmId, Model model) {
+			@RequestParam("alarmId") Long alarmId,
+			@RequestParam("itemType") String itemType, Model model) {
 		
-		alarmService.deleteAlarmStateChangeActionFromAlarm(alarmId, actionId);
+		ItemType it = ItemType.getItemTypeByName(itemType);
 		
-		return "redirect:/editAlarm?id=" + alarmId;
+		alarmService.deleteAlarmStateChangeActionFromAlarm(alarmId, it, actionId);
+		
+		return "redirect:/editAlarm?id=" + alarmId+ "&itemType=" + itemType;
 	}
 
 	@PostMapping(value = "/saveDeviceAlarm")
