@@ -23,6 +23,9 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	AlarmState getAlarmState();
 	void setAlarmState(AlarmState alarmState);
 	
+	List<String> getStateDescriptions();
+	void setStateDescriptions(List<String> list);
+	
 	AlarmState getPreviousAlarmState();
 	void setPreviousAlarmState(AlarmState previousAlarmState);
 	
@@ -62,6 +65,10 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	
 	default boolean isSameStateAction() {
 		return getAlarmState().equals(getPreviousAlarmState());
+	}
+	
+	default String getUid() {
+		return "Alarm_" + getItem().getItemClassId() + "_" + getId();
 	}
 
 	boolean setAlarmStateByState(AlarmState alarmState);

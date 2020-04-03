@@ -56,4 +56,15 @@ public interface IAlarmV2Service {
 
 	IAlarmV2 getAlarm(Long id, ItemType it);
 
+	Map<String, List<AlarmV2>> getAlarmsMap(List<IItemAbstract> items, List<AlarmState> states,
+			boolean withStateDescriptionOnly);
+
+	boolean isAlarmInState(IAlarmV2 alarm, List<AlarmState> states);
+
+	boolean attachAlarmDescriptions(IAlarmV2 alarm);
+
+	List<IAlarmV2> getAlarmsForItemClassWithDescriptions(Class<?> clazz);
+
+	Map<String, List<IAlarmV2>> getAlarmsGrouppedByItemClassNameWithAlarmDescriptions();
+
 }

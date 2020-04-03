@@ -10,7 +10,7 @@ import lombok.Setter;
 public class ItemChangeEvent implements IItemEvent {
 
 	@Getter @Setter
-	private Long alarmId;
+	private IAlarmV2 alarm;
 	
 	@Getter @Setter
 	private Date date;
@@ -21,12 +21,12 @@ public class ItemChangeEvent implements IItemEvent {
 	@Getter @Setter
 	private IAlarmStateChangeAction changeAction;
 
-	public ItemChangeEvent(IItemAbstract item, IAlarmStateChangeAction changeAction, Long alarmId) {
+	public ItemChangeEvent(IItemAbstract item, IAlarmStateChangeAction changeAction, IAlarmV2 alarm) {
 		super();
 		this.date = new Date();
 		this.item = item;
 		this.changeAction = changeAction;
-		this.alarmId = alarmId;
+		this.alarm = alarm;
 	}
 	
 }

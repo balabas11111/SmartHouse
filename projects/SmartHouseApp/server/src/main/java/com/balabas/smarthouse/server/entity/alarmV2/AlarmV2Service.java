@@ -3,6 +3,7 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Autowired
 	IAlarmV2RepositoryEntityField alarmRepositoryEntityField;
-	
+
 	@Autowired
 	IAlarmStateChangeActionRepository alarmStateChangeActionRepository;
 
@@ -51,6 +52,9 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Autowired
 	IDeviceManageService deviceService;
+	
+	@Autowired
+	IItemAlarmStateService itemAlarmStateService;
 
 	Map<String, List<IAlarmV2>> alarmMap = new HashMap<String, List<IAlarmV2>>();
 
@@ -64,6 +68,36 @@ public class AlarmV2Service implements IAlarmV2Service {
 		alarmRepositoryDevice.findAll().forEach(this::putAlarmToCache);
 		alarmRepositoryEntity.findAll().forEach(this::putAlarmToCache);
 		alarmRepositoryEntityField.findAll().forEach(this::putAlarmToCache);
+	}
+
+	@Override
+	public Map<String, List<AlarmV2>> getAlarmsMap(List<IItemAbstract> items, List<AlarmState> states,
+			boolean withStateDescriptionOnly) {
+		Map<String, List<AlarmV2>> result = new LinkedHashMap<>();
+
+		List<IAlarmV2> resultList = new ArrayList<>();
+
+		Predicate<IAlarmV2> filter = withStateDescriptionOnly ? alarm -> isAlarmInState(alarm, states) && attachAlarmDescriptions(alarm)
+				: alarm -> isAlarmInState(alarm, states);
+
+		items.stream().forEach(
+				item -> getAlarmsByItemUid(item).stream().filter(filter).forEach(alarm -> resultList.add(alarm)));
+
+		return result;
+	}
+
+	@Override
+	public boolean isAlarmInState(IAlarmV2 alarm, List<AlarmState> states) {
+		return states.contains(alarm.getAlarmState());
+	}
+	
+	@Override
+	public boolean attachAlarmDescriptions(IAlarmV2 alarm) {
+		List<String> descriptions = itemAlarmStateService.getStateDescriptions(alarm);
+		
+		alarm.setStateDescriptions(descriptions);
+		
+		return descriptions!=null && descriptions.size()>0; 
 	}
 
 	@Override
@@ -125,11 +159,11 @@ public class AlarmV2Service implements IAlarmV2Service {
 	private List<IItemEvent> checkForAlarm(IAlarmV2 alarm) {
 		String checkerName = alarm.getCheckerName();
 		AlarmV2Checker checker = alarmTypeProvider.getAlarmV2checker(checkerName);
-		
-		if(checker == null) {
+
+		if (checker == null) {
 			log.error("Null checker for alarm id=" + alarm.getId());
 		}
-		
+
 		checker.process(alarm);
 		return buildEvent(alarm);
 	}
@@ -147,11 +181,11 @@ public class AlarmV2Service implements IAlarmV2Service {
 		List<IItemEvent> events = new ArrayList<IItemEvent>();
 		List<IAlarmStateChangeAction> action = alarm.getCurrentActions();
 
-		action.stream().forEach( a -> {
-			if(alarm.getMessageInterval()!=null && alarm.getMessageInterval()>0 ) {
+		action.stream().forEach(a -> {
+			if (alarm.getMessageInterval() != null && alarm.getMessageInterval() > 0) {
 				a.setInterval(alarm.getMessageInterval());
 			}
-			events.add(new ItemChangeEvent(alarm.getItem(), a, alarm.getId()));
+			events.add(new ItemChangeEvent(alarm.getItem(), a, alarm));
 		});
 		return events;
 	}
@@ -219,10 +253,27 @@ public class AlarmV2Service implements IAlarmV2Service {
 		return getAlarmsByFilter(
 				alarm -> alarm.getItem() != null && clazz.isAssignableFrom(alarm.getTargetItemClass()));
 	}
+	
+	@Override
+	public List<IAlarmV2> getAlarmsForItemClassWithDescriptions(Class<?> clazz) {
+		List<IAlarmV2> result = getAlarmsForItemClass(clazz);
+		result.forEach(this::attachAlarmDescriptions);
+		
+		return result;
+	}
 
 	@Override
 	public Map<String, List<IAlarmV2>> getAlarmsGrouppedByItemClassName() {
 		return getAlarmsGrouppedBy(alarm -> alarm.getTargetItemClass().getSimpleName());
+	}
+	
+	@Override
+	public Map<String, List<IAlarmV2>> getAlarmsGrouppedByItemClassNameWithAlarmDescriptions() {
+		Map<String, List<IAlarmV2>> result = getAlarmsGrouppedBy(alarm -> alarm.getTargetItemClass().getSimpleName());
+		
+		result.values().stream().forEach(list -> list.forEach(this::attachAlarmDescriptions));
+		
+		return result;
 	}
 
 	@Override
@@ -242,6 +293,15 @@ public class AlarmV2Service implements IAlarmV2Service {
 	public List<IAlarmV2> getAlarmsByFilter(Predicate<? super IAlarmV2> predicate) {
 		return getAllAlarms().stream().filter(predicate).sorted(AlarmV2Service::compareByItemDescriptionField)
 				.collect(Collectors.toList());
+	}
+	
+	public List<IAlarmV2> getAlarmsByFilterWithDescriptions(Predicate<? super IAlarmV2> predicate) {
+		List<IAlarmV2> result =  getAllAlarms().stream().filter(predicate).sorted(AlarmV2Service::compareByItemDescriptionField)
+				.collect(Collectors.toList());
+		
+		result.forEach(this::attachAlarmDescriptions);
+		
+		return result;
 	}
 
 	public <T> Map<T, List<IAlarmV2>> getAlarmsGrouppedBy(Function<IAlarmV2, T> mapKeyFunc) {
@@ -328,12 +388,14 @@ public class AlarmV2Service implements IAlarmV2Service {
 		}
 		if (IEntityField.class.isAssignableFrom(alarm.getTargetItemClass())) {
 			result = deviceService.getEntityFields().stream()
-					.filter(ef -> !ef.getClazz().equals(String.class) && DeviceConstants.GROUP_SENSORS.equalsIgnoreCase(ef.getEntity().getGroup().getName())).collect(Collectors.toSet());
+					.filter(ef -> !ef.getClazz().equals(String.class)
+							&& DeviceConstants.GROUP_SENSORS.equalsIgnoreCase(ef.getEntity().getGroup().getName()))
+					.collect(Collectors.toSet());
 		}
 
 		return result;
 	}
-	
+
 	@Override
 	public IItemAbstract getEnabledAlarmTarget(Long itemId, Class<?> itemClass) {
 		if (IDevice.class.isAssignableFrom(itemClass)) {
@@ -345,7 +407,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 		if (IEntityField.class.isAssignableFrom(itemClass)) {
 			return deviceService.getEntityFieldById(itemId);
 		}
-		
+
 		return null;
 	}
 
@@ -353,7 +415,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 	public void createOrUpdateAlarm(IAlarmV2 alarm, Long itemId) {
 		IItemAbstract item = getEnabledAlarmTarget(itemId, alarm.getTargetItemClass());
 		alarm.setItem(item);
-		
+
 		saveAlarm(alarm);
 		log.debug("Alarm saved " + alarm);
 	}
@@ -367,42 +429,43 @@ public class AlarmV2Service implements IAlarmV2Service {
 	@Override
 	public void addAlarmStateChangeActionToAlarm(Long alarmId, ItemType it, AlarmStateChangeAction action) {
 		IAlarmV2 alarm = getAlarm(alarmId, it);
-		
+
 		Set<IAlarmStateChangeAction> set = Optional.ofNullable(alarm.getActions()).orElse(new LinkedHashSet());
 		set.add(action);
 		alarm.setActions(set);
-		
+
 		saveAlarm(alarm);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void deleteAlarmStateChangeActionFromAlarm(Long alarmId, ItemType it, Long actionId) {
 		IAlarmV2 alarm = getAlarm(alarmId, it);
-		
+
 		Set<IAlarmStateChangeAction> set = Optional.ofNullable(alarm.getActions()).orElse(new LinkedHashSet());
-		
-		IAlarmStateChangeAction action = set.stream().filter( a-> actionId.equals(a.getId())).findFirst().orElse(null);
-		
+
+		IAlarmStateChangeAction action = set.stream().filter(a -> actionId.equals(a.getId())).findFirst().orElse(null);
+
 		Optional.ofNullable(action).ifPresent(set::remove);
-		
+
 		alarm.setActions(set);
 		saveAlarm(alarm);
 		try {
 			alarmStateChangeActionRepository.deleteById(actionId);
-		}catch(Exception e) {
-			log.error("Error delete actionId="+actionId);
+		} catch (Exception e) {
+			log.error("Error delete actionId=" + actionId);
 		}
 	}
 
 	@Override
 	public IAlarmV2 getAlarm(Long id, ItemType it) {
-		if(id!=null && id>0) {
-			IAlarmV2 al = getAlarmByFilter(alarm -> alarm.getItemType().equals(it) && id.equals(alarm.getId())).orElse(null);
-			if(al!=null) {
+		if (id != null && id > 0) {
+			IAlarmV2 al = getAlarmByFilter(alarm -> alarm.getItemType().equals(it) && id.equals(alarm.getId()))
+					.orElse(null);
+			if (al != null) {
 				return al;
 			}
-			
+
 		}
 		return getAlarmOrDefault(id, newAlarm(it));
 	}

@@ -14,7 +14,7 @@ public interface IItemAlarmStateService {
 	Map<String, Map<String, List<String>>> getStateDescriptions();
 
 	default String getKey(IItemEvent event) {
-		return event.getItemUid();
+		return event.getUid();
 	}
 
 	default String getKey(IItemAbstract item) {
@@ -41,26 +41,32 @@ public interface IItemAlarmStateService {
 		addStateDescription(event);
 	}
 
-	default List<String> getStateDescriptions(IItemEvent item) {
-		String key = item.getItemUid();
-		Map<String, List<String>> stateDescriptions = getStateDescriptions(item.getItem());
+	default List<String> getStateDescriptions(IItemEvent event) {
+		return getStateDescriptions(event.getAlarm().getUid(), event.getItem().getItemUid());
+	}
+	
+	default List<String> getStateDescriptions(String alarmUid, String itemUid) {
+		Map<String, List<String>> stateDescriptions = getStateDescriptions(itemUid);
 
-		if (!stateDescriptions.containsKey(key)) {
-			stateDescriptions.put(key, new ArrayList<>());
+		if (!stateDescriptions.containsKey(alarmUid)) {
+			stateDescriptions.put(alarmUid, new ArrayList<>());
 		}
 
-		return stateDescriptions.get(key);
+		return stateDescriptions.get(alarmUid);
 	}
 
 	default Map<String, List<String>> getStateDescriptions(IItemAbstract item) {
-		String key = getKey(item);
+		return getStateDescriptions(item.getItemUid());
+	}
+	
+	default Map<String, List<String>> getStateDescriptions(String itemUid) {
 		Map<String, Map<String, List<String>>> stateDescriptions = getStateDescriptions();
 
-		if (!stateDescriptions.containsKey(key)) {
-			stateDescriptions.put(key, new HashMap<>());
+		if (!stateDescriptions.containsKey(itemUid)) {
+			stateDescriptions.put(itemUid, new HashMap<>());
 		}
 
-		return stateDescriptions.get(key);
+		return stateDescriptions.get(itemUid);
 	}
 	
 	default void printStateDescription(IItemEvent event) {
@@ -71,6 +77,10 @@ public interface IItemAlarmStateService {
 	default void printStateDescription(IItemAbstract item) {
 		Map<String, List<String>> descr = getStateDescriptions(item);
 		StringUtil.printMap(descr);
+	}
+
+	default List<String> getStateDescriptions(IAlarmV2 alarm) {
+		return getStateDescriptions(alarm.getUid(), alarm.getItem().getItemUid());
 	}
 
 }

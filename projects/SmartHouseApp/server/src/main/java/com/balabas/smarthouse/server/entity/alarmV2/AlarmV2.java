@@ -56,6 +56,10 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@Transient
 	private AlarmState previousAlarmState;
 	
+	@Getter @Setter
+	@Transient
+	private List<String> stateDescriptions;
+	
 	@Override
 	public void setAlarmState(AlarmState newState) {
 		this.previousAlarmState = alarmState;
