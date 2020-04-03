@@ -42,6 +42,9 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Autowired
 	IAlarmV2RepositoryEntityField alarmRepositoryEntityField;
+	
+	@Autowired
+	IAlarmStateChangeActionRepository alarmStateChangeActionRepository;
 
 	@Autowired
 	IAlarmv2TypeProvider alarmTypeProvider;
@@ -375,16 +378,21 @@ public class AlarmV2Service implements IAlarmV2Service {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void deleteAlarmStateChangeActionFromAlarm(Long alarmId, ItemType it, Long actionId) {
-		IAlarmV2 alarm = getAlarmOrDefault(alarmId, null);
+		IAlarmV2 alarm = getAlarm(alarmId, it);
 		
 		Set<IAlarmStateChangeAction> set = Optional.ofNullable(alarm.getActions()).orElse(new LinkedHashSet());
 		
-		IAlarmStateChangeAction action = set.stream().filter( a-> a.getId().equals(a.getId())).findFirst().orElse(null);
+		IAlarmStateChangeAction action = set.stream().filter( a-> actionId.equals(a.getId())).findFirst().orElse(null);
 		
-		Optional.ofNullable(action).ifPresent( a -> set.remove(a));
+		Optional.ofNullable(action).ifPresent(set::remove);
 		
 		alarm.setActions(set);
 		saveAlarm(alarm);
+		try {
+			alarmStateChangeActionRepository.deleteById(actionId);
+		}catch(Exception e) {
+			log.error("Error delete actionId="+actionId);
+		}
 	}
 
 	@Override
