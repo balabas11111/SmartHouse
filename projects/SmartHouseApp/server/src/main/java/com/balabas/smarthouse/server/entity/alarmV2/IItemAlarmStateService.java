@@ -80,7 +80,9 @@ public interface IItemAlarmStateService {
 	}
 
 	default List<String> getStateDescriptions(IAlarmV2 alarm) {
-		return getStateDescriptions(alarm.getUid(), alarm.getItem().getItemUid());
+		List<String> result = getStateDescriptions(alarm.getUid(), alarm.getItem().getItemUid());
+		alarm.setStateDescriptions(result);
+		return result;
 	}
 
 }

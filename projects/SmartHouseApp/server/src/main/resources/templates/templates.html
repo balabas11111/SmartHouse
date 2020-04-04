@@ -147,6 +147,18 @@
 		</tbody>
 	</table>
 	
+	<div th:fragment="AlarmState(alarms, item)">
+		<div th:if="${alarms.hasAlarms(item)}" th:remove="tag">
+<button	th:replace="templates :: AlarmStateButton(text=${alarms.getEmoji(item)},title=${alarms.getHint(item)})"></button>
+		</div>
+	</div>
+	
+	<button th:fragment="AlarmStateButton(text, title)" type="button" class="btn btn-secondary"
+		th:text="${text}"
+		data-toggle="tooltip"
+		th:title="${title}">
+	</button>
+	
 	<table class="table table-dark table-striped" th:fragment="ItemAbstractTableEntityFieldsList(items, chbxName, selectedId)">
 		<thead>
 			<tr>
@@ -176,6 +188,17 @@
 			</tr>
 		</tbody>
 	</table>
+
+	<th:block th:fragment="imports">
+	    <script src="js/jquery.min.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/jquery.isotope.min.js"></script>
+		<script src="js/fancybox/jquery.fancybox.pack.js"></script>
+		<script src="js/wow.min.js"></script>
+		<script src="js/functions.js"></script>
+		<script src="js/pageInit.js"></script>
+	</th:block>
 
 	<footer id="footer" th:fragment="footer">
 		<section id="footer" class="section footer">

@@ -24,11 +24,7 @@
 					th:text="${alarm.getDescription()}" class="btn btn-default">&#x1F4DD;Просмотр</a>
 				</td>
 				<td>
-					<button type="button" class="btn btn-secondary"
-						th:text="${alarm.getItem().getEmojiDescriptionByDescriptionField()}"
-						data-toggle="tooltip"
-						th:title="${alarm.getStateDescriptionsWithNextLine()}">
-					</button>
+					<button	th:replace="templates :: AlarmStateButton(text=${alarm.getItem().getEmojiDescriptionByDescriptionField()},title=${alarm.getStateDescriptionsWithNextLine()})"></button>
 				</td>
 				<td th:text="${alarm.getAlarmState().getEmojiDescription()}"></td>
 				<td>
@@ -81,7 +77,7 @@
 			</tr>
 		</tbody>
 	</table>
-	
+
 </body>
 
 </html>

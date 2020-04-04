@@ -7,7 +7,7 @@ import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 
 public enum AlarmState {
 
-	NO_DATA(Emoji.EMPTY_EMOJI, "No data", "Нет данных", false),
+	NO_DATA(Emoji.INFO, "No data", "Нет данных", false),
 	WARNING(Emoji.WARNING, "Warning", "Предупреждение", true),
 	ALARM(Emoji.CROSS_MARK_RED, "alarm", "Ошибка", true),
 	OK(Emoji.CHECK_MARK, "ok", "OK", false);

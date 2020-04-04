@@ -1,177 +1,272 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
 
 <body>
 
 	<tr th:fragment="EmojiRow(emojis, emojiCode)">
 		<td>Картинка</td>
-		<td>
-			<select class="mdb-select md-form" name="emojiCode">
-			  <option  th:each="e : ${emojis}" th:selected="${emojiCode.equals(e.getCode())}" th:value="${e.getCode()}" th:text="${e.toString()}">Option 1</option>
-			</select>
-		</td>
+		<td><select class="mdb-select md-form" name="emojiCode">
+				<option th:each="e : ${emojis}"
+					th:selected="${emojiCode.equals(e.getCode())}"
+					th:value="${e.getCode()}" th:text="${e.toString()}">Option
+					1</option>
+		</select></td>
 	</tr>
-	
-	<table class="table table-dark table-striped" th:fragment="VirtualDeviceListTable(devices)">
-					<thead>
-						<tr>
-							<th>Описание</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="device : ${devices}">
-							<td>
-								<a th:href="@{~/device?id={id}(id=${device.id})}" th:text="${device.getEmojiDescriptionByDescriptionField()}"
-									class="btn btn-default" >&#x1F4DD;Просмотр</a> 
-							</td>
-							<td>
-								<div class="dropdown">
-								<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-									&#x2699; Админ
-									<span class="caret"></span>
-								</button>
-								<ul class="dropdown-menu">
-									<li><a th:href="@{~/device?id={id}(id=${device.id})}"
-									class="btn btn-default">&#x1F4DD;Просмотр</a></li>
-									<li><button type="button" class="btn btn-default" data-toggle="modal"
+
+	<table class="table table-dark table-striped"
+		th:fragment="VirtualDeviceListTable(devices)">
+		<thead>
+			<tr>
+				<th>Описание</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="device : ${devices}">
+				<td><a th:href="@{~/device?id={id}(id=${device.id})}"
+					th:text="${device.getEmojiDescriptionByDescriptionField()}"
+					class="btn btn-default">&#x1F4DD;Просмотр</a></td>
+				<td>
+					<div class="dropdown">
+						<button class="btn btn-default dropdown-toggle" type="button"
+							data-toggle="dropdown">
+							&#x2699; Админ <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li><a th:href="@{~/device?id={id}(id=${device.id})}"
+								class="btn btn-default">&#x1F4DD;Просмотр</a></li>
+							<li><button type="button" class="btn btn-default"
+									data-toggle="modal"
 									th:attr="data-target='#deleteModal' + ${device.id}">&#x274C;Удалить</button></li>
-								</ul>
-							</div>
+						</ul>
+					</div>
 
-								<div class="modal fade" th:id="'deleteModal' + ${device.id}">
-									<div class="modal-dialog">
-										<div class="modal-content">
+					<div class="modal fade" th:id="'deleteModal' + ${device.id}">
+						<div class="modal-dialog">
+							<div class="modal-content">
 
-											<!-- Modal Header -->
-											<div class="modal-header">
-												<button type="button" class="close"
-													data-dismiss="modal">&times;</button>
-												<h4 class="modal-title"
-													th:text="'Действительно удалить ?    ' + ${device.description}">
-													Действительно удалить ?</h4>
-											</div>
-
-											<!-- Modal footer -->
-											<div class="modal-footer">
-											    <a th:href="@{~/deleteDevice_{id}(id=${device.id})}"
-													class="btn btn-success">Удалить</a>
-												<button type="button" class="btn btn-danger"
-													data-dismiss="modal">Отменить</button>
-											</div>
-										</div>
-									</div>
+								<!-- Modal Header -->
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal">&times;</button>
+									<h4 class="modal-title"
+										th:text="'Действительно удалить ?    ' + ${device.description}">
+										Действительно удалить ?</h4>
 								</div>
 
-							</td>
-						</tr>
-					</tbody>
-				</table>
-	
-	<table class="table table-dark table-striped" th:fragment="ItemAbstractListTable(devices)">
-					<thead>
-						<tr>
-							<th>Id</th>
-							<th>Имя</th>
-							<th>Прошивка</th>
-							<th>Описание</th>
-							<th>Состояние</th>
-							<th>IP</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="device : ${devices}">
-							<td th:text="${device.id}">Id</td>
-							<td th:text="${device.name}">Имя</td>
-							<td th:text="${device.firmware}">Прошивка</td>
-							<td>
-								<a th:href="@{~/device?id={id}(id=${device.id})}" th:text="${device.getEmojiDescriptionByDescriptionField()}"
-									class="btn btn-default" >&#x1F4DD;Просмотр</a> 
-							</td>
-							<td th:text="${device.getStateEmoji()} + ' ' + ${device.getStateDescription()}">Состояние
-							</td>
-							<td th:text="${device.ip}">IP</td>
-							<td>
-								<div class="dropdown">
-								<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-									&#x2699; Админ
-									<span class="caret"></span>
-								</button>
-								<ul class="dropdown-menu">
-									<li><a th:href="@{~/device?id={id}(id=${device.id})}"
-									class="btn btn-default">&#x1F4DD;Просмотр</a></li>
-									<li><button type="button" class="btn btn-default" data-toggle="modal"
-									th:attr="data-target='#deleteModal' + ${device.id}">&#x274C;Удалить</button></li>
-								</ul>
-							</div>
-
-								<div class="modal fade" th:id="'deleteModal' + ${device.id}">
-									<div class="modal-dialog">
-										<div class="modal-content">
-
-											<!-- Modal Header -->
-											<div class="modal-header">
-												<button type="button" class="close"
-													data-dismiss="modal">&times;</button>
-												<h4 class="modal-title"
-													th:text="'Действительно удалить ?    ' + ${device.description}">
-													Действительно удалить ?</h4>
-											</div>
-
-											<!-- Modal footer -->
-											<div class="modal-footer">
-											    <a th:href="@{~/deleteDevice_{id}(id=${device.id})}"
-													class="btn btn-success">Удалить</a>
-												<button type="button" class="btn btn-danger"
-													data-dismiss="modal">Отменить</button>
-											</div>
-										</div>
-									</div>
+								<!-- Modal footer -->
+								<div class="modal-footer">
+									<a th:href="@{~/deleteDevice_{id}(id=${device.id})}"
+										class="btn btn-success">Удалить</a>
+									<button type="button" class="btn btn-danger"
+										data-dismiss="modal">Отменить</button>
 								</div>
+							</div>
+						</div>
+					</div>
 
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				
-		<table class="table table-dark table-striped" th:fragment="EntityFieldsAbstractTable(items, chbxName, checkedItemMap)">
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<table th:fragment="EntityActionsHolder(device, entityActions)"
+		id="actionsTable" class="table table-striped">
+		<tbody>
+			<tr th:each="entityAction : ${entityActions}">
+				<th:block
+					th:replace="devices/templates :: EntityAction(device=${device}, entityAction=${entityAction})"></th:block>
+			</tr>
+		</tbody>
+	</table>
+
+	<th:block th:fragment="EntityFieldMeasured(entityField, alarms)">
+		<td th:text="${entityField.emoji}">Emoji</td>
+		<td><a
+			th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityField.id})}"
+			th:text="${entityField.getDescriptionByDescriptionField()}">description</a></td>
+		<td
+			th:text="${entityField.getValueStrByEntityFieldEnabledValueDescription()}">value</td>
+		<td th:text="${entityField.getMeasure()}">measure</td>
+		<td>
+			<div
+				th:replace="templates :: AlarmState(alarms=${alarms}, item=${entityField})"></div>
+		</td>
+	</th:block>
+
+	<th:block th:fragment="EntityFieldImageable(entityField, alarms)">
+		<td th:text="${entityField.emoji}">Emoji</td>
+		<!--<td th:text="${entityField.getDescriptionByDescriptionField()}">description</td>-->
+		<td><a
+			th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityField.id})}"
+			th:text="${entityField.getDescriptionByDescriptionField()}">description</a>
+		</td>
+		<td
+			th:text="${entityField.getEntityFieldEnabledValueByCurrentValue().getEmoji()} + ' (' + ${entityField.getEntityFieldEnabledValueByCurrentValue().getDescription()} + ')'">value</td>
+		<td>
+			<div
+				th:replace="templates :: AlarmState(alarms=${alarms}, item=${entityField})"></div>
+		</td>
+	</th:block>
+
+	<th:block th:fragment="EntityAction(device, entityAction)">
+		<td><a
+			th:href="@{~/executeAction_{deviceId}_{entityId}_{action}_{entityFieldId}_(deviceId=${device.id},entityId=${entityAction.getTargetId()},action=${entityAction.getData()},entityFieldId=${entityAction.getTargetId2()})}"
+			class="btn btn-default" th:text="${entityAction.getDescription()}">value</a>
+			<a
+			th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityAction.getTargetId2()})}">История</a>
+		</td>
+	</th:block>
+
+	<div th:fragment="DeviceHeader(device, holder)">
+		<table id="devicesTable" class="table table-dark table-striped">
 			<thead>
 				<tr>
-					<th></th>
-					<th>Устройство</th>
-					<th>Группа</th>
-					<th>Датчик</th>
-					<th>Показатель</th>
-					<th>Описание показателя</th>
-					<th>Измерение</th>
+					<td>
+						<div
+							th:replace="devices/templates :: TotalDeviceAlarmStates(alarms=${holder.getAlarms()})">
+						</div>
+					</td>
+					<th th:if="${!device.isVirtualized()}">Прошивка</th>
+					<td th:if="${!device.isVirtualized()}" th:text="${device.firmware}">Прошивка</td>
+					<th>Состояние</th>
+					<!--  <td th:remove="tag" th:text="${device.getStateEmoji()} + ' ' + ${device.getStateDescription()}">Состояние</td>-->
+					<td>
+						<div
+							th:replace="templates :: AlarmState(alarms=${holder.getAlarms()}, item=${device})"></div>
+					</td>
+					<td th:if="${!device.isVirtualized()}">
+						<div class="dropdown">
+							<button class="btn btn-default dropdown-toggle" type="button"
+								data-toggle="dropdown">
+								&#x2699; Админ <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu">
+								<li><a th:href="@{http://{addr}/info(addr=${device.ip})}"
+									class="btn">&#x2139; Информация</a></li>
+								<li><a th:href="@{http://{addr}/data(addr=${device.ip})}"
+									class="btn">&#x1F4DA; Данные</a></li>
+								<li><a th:href="@{http://{addr}/update(addr=${device.ip})}"
+									class="btn">&#x1F4F2; Прошивка</a></li>
+							</ul>
+						</div>
+					</td>
+					<th>Время устр.</th>
+					<td th:text="${device.getDeviceLastUpdateTimeStr()}">время
+						устр</td>
+					<th>Время Страницы</th>
+					<td th:text="${dateTime}">время стр</td>
 				</tr>
 			</thead>
-			<tbody>
-				<tr th:each="item : ${items}">
-					<td><input type="checkbox" th:name="${chbxName}"
-						th:value="${item.id}" th:checked="${checkedItemMap.containsKey(item.id)}" /></td>
-					<td><label
-						th:text="${item.entity.group.device.getDescriptionByDescriptionField()}"></label>
-					</td>
-					<td><label
-						th:text="${item.entity.group.getDescriptionByDescriptionField()}"></label>
-					</td>
-					<td><label
-						th:text="${item.entity.getDescriptionByDescriptionField()}"></label>
-					</td>
-					<td><label
-						th:text="${item.name}"></label>
-					</td>
-					<td><label
-						th:text="${item.getDescriptionByDescriptionField()}"></label>
-					</td>
-					<td><label
-						th:text="${item.measure}"></label>
-					</td>
-				</tr>
-			</tbody>
 		</table>
+	</div>
+
+	<div th:fragment="TotalDeviceAlarmStates(alarms)" th:remove="tag">
+		<button
+			th:replace="templates :: AlarmStateButton(text=${alarms.getAlarmStatistic()},title=' Проверки тревоги : ' + ${alarms.getAlarmStatisticHint()})"></button>
+	</div>
+	<table class="table table-dark table-striped"
+		th:fragment="ItemAbstractListTable(devices)">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Имя</th>
+				<th>Прошивка</th>
+				<th>Описание</th>
+				<th>Состояние</th>
+				<th>IP</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="device : ${devices}">
+				<td th:text="${device.id}">Id</td>
+				<td th:text="${device.name}">Имя</td>
+				<td th:text="${device.firmware}">Прошивка</td>
+				<td><a th:href="@{~/device?id={id}(id=${device.id})}"
+					th:text="${device.getEmojiDescriptionByDescriptionField()}"
+					class="btn btn-default">&#x1F4DD;Просмотр</a></td>
+				<td
+					th:text="${device.getStateEmoji()} + ' ' + ${device.getStateDescription()}">Состояние
+				</td>
+				<td th:text="${device.ip}">IP</td>
+				<td>
+					<div class="dropdown">
+						<button class="btn btn-default dropdown-toggle" type="button"
+							data-toggle="dropdown">
+							&#x2699; Админ <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li><a th:href="@{~/device?id={id}(id=${device.id})}"
+								class="btn btn-default">&#x1F4DD;Просмотр</a></li>
+							<li><button type="button" class="btn btn-default"
+									data-toggle="modal"
+									th:attr="data-target='#deleteModal' + ${device.id}">&#x274C;Удалить</button></li>
+						</ul>
+					</div>
+
+					<div class="modal fade" th:id="'deleteModal' + ${device.id}">
+						<div class="modal-dialog">
+							<div class="modal-content">
+
+								<!-- Modal Header -->
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal">&times;</button>
+									<h4 class="modal-title"
+										th:text="'Действительно удалить ?    ' + ${device.description}">
+										Действительно удалить ?</h4>
+								</div>
+
+								<!-- Modal footer -->
+								<div class="modal-footer">
+									<a th:href="@{~/deleteDevice_{id}(id=${device.id})}"
+										class="btn btn-success">Удалить</a>
+									<button type="button" class="btn btn-danger"
+										data-dismiss="modal">Отменить</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<table class="table table-dark table-striped"
+		th:fragment="EntityFieldsAbstractTable(items, chbxName, checkedItemMap)">
+		<thead>
+			<tr>
+				<th></th>
+				<th>Устройство</th>
+				<th>Группа</th>
+				<th>Датчик</th>
+				<th>Показатель</th>
+				<th>Описание показателя</th>
+				<th>Измерение</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="item : ${items}">
+				<td><input type="checkbox" th:name="${chbxName}"
+					th:value="${item.id}"
+					th:checked="${checkedItemMap.containsKey(item.id)}" /></td>
+				<td><label
+					th:text="${item.entity.group.device.getDescriptionByDescriptionField()}"></label>
+				</td>
+				<td><label
+					th:text="${item.entity.group.getDescriptionByDescriptionField()}"></label>
+				</td>
+				<td><label
+					th:text="${item.entity.getDescriptionByDescriptionField()}"></label>
+				</td>
+				<td><label th:text="${item.name}"></label></td>
+				<td><label th:text="${item.getDescriptionByDescriptionField()}"></label>
+				</td>
+				<td><label th:text="${item.measure}"></label></td>
+			</tr>
+		</tbody>
+	</table>
 
 </body>
 

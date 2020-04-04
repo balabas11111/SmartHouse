@@ -52,7 +52,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Autowired
 	IDeviceManageService deviceService;
-	
+
 	@Autowired
 	IItemAlarmStateService itemAlarmStateService;
 
@@ -77,7 +77,8 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 		List<IAlarmV2> resultList = new ArrayList<>();
 
-		Predicate<IAlarmV2> filter = withStateDescriptionOnly ? alarm -> isAlarmInState(alarm, states) && attachAlarmDescriptions(alarm)
+		Predicate<IAlarmV2> filter = withStateDescriptionOnly
+				? alarm -> isAlarmInState(alarm, states) && attachAlarmDescriptions(alarm)
 				: alarm -> isAlarmInState(alarm, states);
 
 		items.stream().forEach(
@@ -90,14 +91,14 @@ public class AlarmV2Service implements IAlarmV2Service {
 	public boolean isAlarmInState(IAlarmV2 alarm, List<AlarmState> states) {
 		return states.contains(alarm.getAlarmState());
 	}
-	
+
 	@Override
 	public boolean attachAlarmDescriptions(IAlarmV2 alarm) {
 		List<String> descriptions = itemAlarmStateService.getStateDescriptions(alarm);
-		
+
 		alarm.setStateDescriptions(descriptions);
-		
-		return descriptions!=null && descriptions.size()>0; 
+
+		return descriptions != null && descriptions.size() > 0;
 	}
 
 	@Override
@@ -253,12 +254,12 @@ public class AlarmV2Service implements IAlarmV2Service {
 		return getAlarmsByFilter(
 				alarm -> alarm.getItem() != null && clazz.isAssignableFrom(alarm.getTargetItemClass()));
 	}
-	
+
 	@Override
 	public List<IAlarmV2> getAlarmsForItemClassWithDescriptions(Class<?> clazz) {
 		List<IAlarmV2> result = getAlarmsForItemClass(clazz);
 		result.forEach(this::attachAlarmDescriptions);
-		
+
 		return result;
 	}
 
@@ -266,13 +267,13 @@ public class AlarmV2Service implements IAlarmV2Service {
 	public Map<String, List<IAlarmV2>> getAlarmsGrouppedByItemClassName() {
 		return getAlarmsGrouppedBy(alarm -> alarm.getTargetItemClass().getSimpleName());
 	}
-	
+
 	@Override
 	public Map<String, List<IAlarmV2>> getAlarmsGrouppedByItemClassNameWithAlarmDescriptions() {
 		Map<String, List<IAlarmV2>> result = getAlarmsGrouppedBy(alarm -> alarm.getTargetItemClass().getSimpleName());
-		
+
 		result.values().stream().forEach(list -> list.forEach(this::attachAlarmDescriptions));
-		
+
 		return result;
 	}
 
@@ -294,17 +295,17 @@ public class AlarmV2Service implements IAlarmV2Service {
 		return getAllAlarms().stream().filter(predicate).sorted(AlarmV2Service::compareByItemDescriptionField)
 				.collect(Collectors.toList());
 	}
-	
+
 	public List<IAlarmV2> getAlarmsByFilterNotSorted(Predicate<? super IAlarmV2> predicate) {
 		return getAllAlarms().stream().filter(predicate).collect(Collectors.toList());
 	}
-	
+
 	public List<IAlarmV2> getAlarmsByFilterWithDescriptions(Predicate<? super IAlarmV2> predicate) {
-		List<IAlarmV2> result =  getAllAlarms().stream().filter(predicate).sorted(AlarmV2Service::compareByItemDescriptionField)
-				.collect(Collectors.toList());
-		
+		List<IAlarmV2> result = getAllAlarms().stream().filter(predicate)
+				.sorted(AlarmV2Service::compareByItemDescriptionField).collect(Collectors.toList());
+
 		result.forEach(this::attachAlarmDescriptions);
-		
+
 		return result;
 	}
 
@@ -473,23 +474,24 @@ public class AlarmV2Service implements IAlarmV2Service {
 		}
 		return getAlarmOrDefault(id, newAlarm(it));
 	}
-	
+
 	@Override
 	public AlarmV2Container getAlarmsContainerWithChildren(IItemAbstract parent) {
 		List<IItemAbstract> children = parent.getAllChildren();
 		children.add(parent);
-		
+
 		List<IAlarmV2> alarms = new ArrayList<>();
-		
+
 		children.stream().forEach(item -> alarms.addAll(getAlarmsByItemUid(item)));
-		
+
 		AlarmV2Container result = new AlarmV2Container();
-		
-		alarms.forEach(result::putAlarm);
-		
+
+		alarms.forEach(alarm -> {
+			itemAlarmStateService.getStateDescriptions(alarm);
+			result.putAlarm(alarm);
+		});
+
 		return result;
 	}
-	
-	
 
 }

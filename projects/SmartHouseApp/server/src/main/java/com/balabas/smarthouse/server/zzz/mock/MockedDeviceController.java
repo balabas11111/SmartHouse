@@ -41,7 +41,7 @@ public class MockedDeviceController {
 
 	@Autowired
 	private MockedDeviceService mockService;
-	
+
 	@Autowired
 	private IDeviceManageService deviceService;
 
@@ -61,6 +61,14 @@ public class MockedDeviceController {
 		doChange = change;
 	}
 
+	@GetMapping("/devices")
+	public String changeAlertState() throws IOException {
+		log.info("Mocking doChange = " + !doChange);
+		doChange = !doChange;
+
+		return "redirect:/manage";
+	}
+
 	@SuppressWarnings("rawtypes")
 	@GetMapping("/mock_{deviceId}")
 	public ResponseEntity<String> executeMockGetDataOnDevice(@PathVariable(value = "deviceId") String deviceId,
@@ -70,8 +78,8 @@ public class MockedDeviceController {
 		String pref = "MockedDeviceId";
 		String index = deviceId.substring(deviceId.indexOf(pref) + pref.length());
 
-		String resource = (doChange)?"mock/dataSwgBig.json":"mock/dataSwg.json";
-		
+		String resource = (doChange) ? "mock/dataSwgBig.json" : "mock/dataSwg.json";
+
 		URL url = Resources.getResource(resource);
 		String result = Resources.toString(url, Charsets.UTF_8).replaceAll("%INDEX%", index);
 
@@ -100,32 +108,32 @@ public class MockedDeviceController {
 		}
 
 		log.debug("Mock result =" + result);
-		
+
 		JSONObject obj = new JSONObject(result);
-		
+
 		JSONObject deviceObj = obj.getJSONObject("device").getJSONObject("info");
 		JSONObject sensorsObj = obj.getJSONObject("sensors");
-		
-		String deviceName= deviceObj.getString("deviceId");
-		
-		for(IEntityField entityField: deviceService.getEntityFieldsNotVirtualCommandButtons()) {
+
+		String deviceName = deviceObj.getString("deviceId");
+
+		for (IEntityField entityField : deviceService.getEntityFieldsNotVirtualCommandButtons()) {
 			EntityFieldBoolean targetEntityField = (EntityFieldBoolean) entityField;
-			
+
 			String targetEntityName = targetEntityField.getEntity().getName();
 			String targetDeviceName = targetEntityField.getEntity().getDevice().getName();
-			
-			if(deviceName.equals(targetDeviceName) && sensorsObj.has(targetEntityName)) {
+
+			if (deviceName.equals(targetDeviceName) && sensorsObj.has(targetEntityName)) {
 				JSONObject entityObj = sensorsObj.getJSONObject(targetEntityName);
 				String key = targetEntityField.getName();
 				Boolean valB = targetEntityField.getValue();
-				boolean value = (valB==null)?false:valB.booleanValue();
+				boolean value = (valB == null) ? false : valB.booleanValue();
 				entityObj.put(key, new Boolean(value));
 				log.debug("Mock entityObj =" + entityObj);
 			}
 		}
 
 		result = obj.toString();
-		
+
 		return ResponseEntity.ok().body(result);
 	}
 

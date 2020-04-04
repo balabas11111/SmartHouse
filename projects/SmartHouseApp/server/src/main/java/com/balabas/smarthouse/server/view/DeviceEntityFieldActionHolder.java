@@ -30,6 +30,10 @@ public class DeviceEntityFieldActionHolder {
 	@Getter @Setter
 	private AlarmV2Container alarmContainer;
 	
+	public AlarmV2Container getAlarms() {
+		return getAlarmContainer();
+	}
+	
 	public void addFieldValue(IEntityField entityField) {
 		String entityName = entityField.getEntity().getName();
 		
