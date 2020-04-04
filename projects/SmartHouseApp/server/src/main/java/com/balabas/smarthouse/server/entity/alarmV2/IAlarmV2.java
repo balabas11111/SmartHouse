@@ -6,10 +6,19 @@ import java.util.Set;
 import com.balabas.smarthouse.server.entity.model.IDescriptionable;
 import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 
 public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 
+	default Emoji getEmoji() {
+		return getAlarmState().emoji;
+	}
+	
+	default String getEmojiStr() {
+		return getEmoji().toString();
+	}
+	
 	Long getItemId();
 	//void setItemId(Long itemId);
 	
@@ -25,6 +34,11 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	
 	List<String> getStateDescriptions();
 	void setStateDescriptions(List<String> list);
+	
+	default boolean hasStateDescriptions() {
+		List<String> list = getStateDescriptions();
+		return list!=null && !list.isEmpty();
+	}
 	
 	AlarmState getPreviousAlarmState();
 	void setPreviousAlarmState(AlarmState previousAlarmState);
@@ -78,5 +92,7 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	List<IAlarmStateChangeAction> getActionsList();
 
 	boolean isStateChanged();
+
+	String getStateDescriptionsWithNextLine();
 
 }

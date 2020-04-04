@@ -94,4 +94,9 @@ public class AlarmStateChangeAction extends ItemAbstract implements IAlarmStateC
 		return getAlarmDescription(item);
 	}
 
+	@Override
+	public List<IItemAbstract> getAllChildren() {
+		return new ArrayList<>();
+	}
+
 }

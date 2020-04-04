@@ -4,11 +4,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Container;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.util.SortingUtility;
 import com.google.common.collect.Lists;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @SuppressWarnings("rawtypes")
 public class DeviceEntityFieldActionHolder {
@@ -24,6 +26,9 @@ public class DeviceEntityFieldActionHolder {
 	
 	@Getter
 	private Map<String, List<Action>> entityFieldActions = new LinkedHashMap<>();
+	
+	@Getter @Setter
+	private AlarmV2Container alarmContainer;
 	
 	public void addFieldValue(IEntityField entityField) {
 		String entityName = entityField.getEntity().getName();

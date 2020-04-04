@@ -28,16 +28,20 @@ import com.balabas.smarthouse.server.entity.alarmV2.IAlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2Service;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
+import com.balabas.smarthouse.server.util.DateTimeUtil;
 
 @Controller
 public class ViewAlarmController {
 
+	@Value("${smarthouse.server.view.page.device.refresh.interval.sec:60}")
+	private Long deviceViewRefreshInterval;
+	
 	@Value("${smarthouse.server.name:#{null}}")
 	private String serverName;
 
 	@Autowired
 	private IAlarmV2Service alarmService;
-
+	
 	@GetMapping("/alarmsList")
 	public String getAllAlarms(@RequestParam(name = "itemType", required = false) String itemType, Model model) {
 		if(StringUtils.isEmpty(itemType)) {
@@ -47,6 +51,10 @@ public class ViewAlarmController {
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
 		model.addAttribute("itemType", itemType);
 		model.addAttribute("alarms", alarms);
+		if (deviceViewRefreshInterval != null && deviceViewRefreshInterval > 0) {
+			model.addAttribute(ControllerConstants.ATTR_PAGE_REFRESH_INTERVAL, deviceViewRefreshInterval);
+		}
+		model.addAttribute("dateTime", DateTimeUtil.getDateTimeStr());
 
 		return "alarms/alarmsList.html";
 	}

@@ -1,7 +1,9 @@
 package com.balabas.smarthouse.server.entity.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -136,6 +138,15 @@ public class Device extends ItemAbstract implements IDevice {
 	@Override
 	public String getParentNamesChain() {
 		return getDescriptionByDescriptionField();
+	}
+	
+	@Override
+	public List<IItemAbstract> getAllChildren() {
+		List<IItemAbstract> result = new ArrayList<>();
+		groups.stream().forEach(result::add);
+		groups.stream().forEach(entity -> result.addAll(entity.getAllChildren()));
+		
+		return result;
 	}
 	
 }

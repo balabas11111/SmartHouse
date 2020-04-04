@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.server.entity.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -59,5 +61,15 @@ public class Group extends ItemAbstract implements IGroup {
 	@Override
 	public String getParentNamesChain() {
 		return getDevice().getParentNamesChain() + "-" + getDescriptionByDescriptionField();
+	}
+	
+	@Override
+	public List<IItemAbstract> getAllChildren() {
+		List<IItemAbstract> result = new ArrayList<>();
+		entities.stream().forEach(result::add);
+		
+		entities.stream().forEach(entity -> result.addAll(entity.getAllChildren()));
+		
+		return result;
 	}
 }

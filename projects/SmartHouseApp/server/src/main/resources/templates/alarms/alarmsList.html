@@ -5,6 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta th:if="${#vars.containsVariable('refreshTimeout')}" http-equiv="refresh" th:attr="content=${refreshTimeout}">
 	<title th:text="'Режимы тревоги ' + ${serverName}">Устройства сервера</title>
 	<!-- Bootstrap -->
 	<link href="css/bootstrap.min.css" rel="stylesheet">
@@ -33,6 +34,13 @@
 	</header>
 	<!-- column content -->
 	<div id="main-content">
+
+		<table>
+			<tr>
+				<th>Время Страницы</th>
+				<td th:text="${dateTime}">время стр</td>
+			</tr>
+		</table>
 
 		<div class="container">
 			<h1>Сигналы тревоги</h1>
@@ -94,6 +102,10 @@
 	<script src="js/functions.js"></script>
 	<script type="text/javascript">
 		new WOW().init();
+
+		$(function () {
+		  $('[data-toggle="tooltip"]').tooltip()
+		})
 	</script>
 
 </body>

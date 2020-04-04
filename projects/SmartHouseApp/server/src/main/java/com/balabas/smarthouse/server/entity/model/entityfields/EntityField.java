@@ -2,6 +2,7 @@ package com.balabas.smarthouse.server.entity.model.entityfields;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnable
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.exception.BadValueException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.collect.Lists;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -294,5 +296,10 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	@Override
 	public String getParentNamesChain() {
 		return getEntity().getParentNamesChain() + "-" + getName()+":" + getDescriptionByDescriptionField();
+	}
+	
+	@Override
+	public List<IItemAbstract> getAllChildren() {
+		return Lists.newArrayList();
 	}
 }

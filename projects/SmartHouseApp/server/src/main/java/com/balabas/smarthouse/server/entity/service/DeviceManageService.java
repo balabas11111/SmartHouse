@@ -937,6 +937,7 @@ public class DeviceManageService implements IDeviceManageService {
 	@Override
 	public DeviceEntityFieldActionHolder getValueActionHolder(Long deviceId) {
 		DeviceEntityFieldActionHolder holder = new DeviceEntityFieldActionHolder();
+		IDevice device = getDeviceById(deviceId);
 		List<IEntityField> entityFields = getCurrentEntityFieldsForDevice(deviceId);
 
 		for (IEntityField entityField : entityFields) {
@@ -960,6 +961,7 @@ public class DeviceManageService implements IDeviceManageService {
 			}
 		}
 
+		holder.setAlarmContainer(alarmV2Service.getAlarmsContainerWithChildren(device));
 		holder.sort();
 		
 		return holder;

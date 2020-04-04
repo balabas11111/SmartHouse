@@ -1,8 +1,10 @@
 package com.balabas.smarthouse.server.entity.model;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -144,6 +146,11 @@ public class Entity extends ItemAbstract implements IEntity {
 	@Override
 	public String getParentNamesChain() {
 		return getDevice().getParentNamesChain() + "-" + getDescriptionByDescriptionField();
+	}
+	
+	@Override
+	public List<IItemAbstract> getAllChildren() {
+		return entityFields.stream().collect(Collectors.toList());
 	}
 
 }

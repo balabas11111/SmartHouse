@@ -67,4 +67,6 @@ public interface IAlarmV2Service {
 
 	Map<String, List<IAlarmV2>> getAlarmsGrouppedByItemClassNameWithAlarmDescriptions();
 
+	AlarmV2Container getAlarmsContainerWithChildren(IItemAbstract parent);
+
 }

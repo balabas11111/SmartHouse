@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.model;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.util.StringUtils;
@@ -65,5 +66,7 @@ public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionabl
 	}
 
 	String getParentNamesChain();
+
+	List<IItemAbstract> getAllChildren();
 	
 }

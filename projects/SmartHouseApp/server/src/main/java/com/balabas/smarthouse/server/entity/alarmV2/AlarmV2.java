@@ -148,6 +148,15 @@ public abstract class AlarmV2 implements IAlarmV2 {
 		IItemAbstract ia = getItem(); 
 		return ia != null?ia.getId():null;
 	}
+	
+	@Override
+	public String getStateDescriptionsWithNextLine() {
+		StringBuffer builder = new  StringBuffer();
+		
+		getStateDescriptions().forEach(str -> {builder.append(str);builder.append(";  ");}); 
+		
+		return builder.toString();
+	}
 /*
 	@Override
 	public void setItemId(Long itemId) {

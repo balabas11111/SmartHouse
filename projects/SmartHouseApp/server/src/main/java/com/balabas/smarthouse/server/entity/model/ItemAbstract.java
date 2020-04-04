@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.server.entity.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.Column;
@@ -18,7 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @MappedSuperclass
-public class ItemAbstract implements IItemAbstract {
+public abstract class ItemAbstract implements IItemAbstract {
 
 	public static final String PROP_ID = "id";
 	public static final String PROP_NAME = "name";
@@ -139,5 +141,10 @@ public class ItemAbstract implements IItemAbstract {
 	@Override
 	public String getParentNamesChain() {
 		return this.getClass().getSimpleName() + getName() + " " + getDescription();
+	}
+	
+	@Override
+	public List<IItemAbstract> getAllChildren() {
+		return new ArrayList<IItemAbstract>();
 	}
 }

@@ -295,6 +295,10 @@ public class AlarmV2Service implements IAlarmV2Service {
 				.collect(Collectors.toList());
 	}
 	
+	public List<IAlarmV2> getAlarmsByFilterNotSorted(Predicate<? super IAlarmV2> predicate) {
+		return getAllAlarms().stream().filter(predicate).collect(Collectors.toList());
+	}
+	
 	public List<IAlarmV2> getAlarmsByFilterWithDescriptions(Predicate<? super IAlarmV2> predicate) {
 		List<IAlarmV2> result =  getAllAlarms().stream().filter(predicate).sorted(AlarmV2Service::compareByItemDescriptionField)
 				.collect(Collectors.toList());
@@ -469,5 +473,23 @@ public class AlarmV2Service implements IAlarmV2Service {
 		}
 		return getAlarmOrDefault(id, newAlarm(it));
 	}
+	
+	@Override
+	public AlarmV2Container getAlarmsContainerWithChildren(IItemAbstract parent) {
+		List<IItemAbstract> children = parent.getAllChildren();
+		children.add(parent);
+		
+		List<IAlarmV2> alarms = new ArrayList<>();
+		
+		children.stream().forEach(item -> alarms.addAll(getAlarmsByItemUid(item)));
+		
+		AlarmV2Container result = new AlarmV2Container();
+		
+		alarms.forEach(result::putAlarm);
+		
+		return result;
+	}
+	
+	
 
 }
