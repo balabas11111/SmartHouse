@@ -108,6 +108,10 @@ public abstract class ItemAbstract implements IItemAbstract {
 		return compareByString(ia1, ia2, ia1.getName(), ia2.getName(), false);
 	}
 	
+	public static int compareByParentNameChain(IItemAbstract ia1, IItemAbstract ia2) {
+		return compareByString(ia1, ia2, ia1.getParentNamesChain(), ia2.getParentNamesChain(), false);
+	}
+	
 	public static int compareByDescriptionField(IItemAbstract ia1, IItemAbstract ia2) {
 		return compareByString(ia1, ia2, ia1.getDescriptionByDescriptionField(), ia2.getDescriptionByDescriptionField(), false);
 	}

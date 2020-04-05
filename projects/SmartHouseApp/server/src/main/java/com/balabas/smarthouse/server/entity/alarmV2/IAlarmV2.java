@@ -87,12 +87,18 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 
 	boolean setAlarmStateByState(AlarmState alarmState);
 
-	boolean setAlarmStateByBooleanFlag(boolean alarmed);
-
 	List<IAlarmStateChangeAction> getActionsList();
 
 	boolean isStateChanged();
 
 	String getStateDescriptionsWithNextLine();
+	
+	boolean setAlarmStateByBooleanFlagAlarm(boolean alarmed);
+	
+	boolean setAlarmStateByBooleanFlagWarning(boolean alarmed);
+
+	boolean setAlarmStateByBooleanFlag(boolean alarmed, AlarmState stateTrue, AlarmState stateFalse);
+
+	
 
 }

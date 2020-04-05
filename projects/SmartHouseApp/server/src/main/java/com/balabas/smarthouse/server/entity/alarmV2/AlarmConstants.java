@@ -9,4 +9,5 @@ public class AlarmConstants {
 	public static final String CHECKER_DESCRIPTION_DS18D20_DISCONNECTED = "Проверка подключения DS18D20";
 	public static final String CHECKER_DESCRIPTION_ENTITY_FIELD_TOO_HIGH = "Значение поля > максимального";
 	public static final String CHECKER_DESCRIPTION_ENTITY_FIELD_TOO_LOW = "Значение поля < минимального";
+	public static final String CHECKER_DESCRIPTION_ENTITY_FIELD_TOO_LOW_WARN = "Значение поля < минимального";
 }

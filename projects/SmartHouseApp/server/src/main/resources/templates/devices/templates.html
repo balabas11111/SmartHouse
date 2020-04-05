@@ -90,7 +90,7 @@
 		<td th:text="${entityField.getMeasure()}">measure</td>
 		<td>
 			<div
-				th:replace="templates :: AlarmState(alarms=${alarms}, item=${entityField})"></div>
+				th:replace="templates :: AlarmStates(alarms=${alarms}, item=${entityField})"></div>
 		</td>
 	</th:block>
 
@@ -105,7 +105,7 @@
 			th:text="${entityField.getEntityFieldEnabledValueByCurrentValue().getEmoji()} + ' (' + ${entityField.getEntityFieldEnabledValueByCurrentValue().getDescription()} + ')'">value</td>
 		<td>
 			<div
-				th:replace="templates :: AlarmState(alarms=${alarms}, item=${entityField})"></div>
+				th:replace="templates :: AlarmStates(alarms=${alarms}, item=${entityField})"></div>
 		</td>
 	</th:block>
 

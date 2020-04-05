@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.service;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -7,6 +8,7 @@ import java.util.Optional;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.view.Action;
 
 @SuppressWarnings("rawtypes")
@@ -18,7 +20,9 @@ public interface IEntityFieldService {
 
 	boolean isButton(IEntityField entityField);
 
-	void saveAll(List<EntityFieldValue> values);
+	void saveAll(List<IEntityFieldValue> values);
+	
+	void saveAllValues(Collection<IEntityField> values);
 
 	List<EntityFieldValue> getLastEntityFieldValuesForDevice(Long deviceId);
 
@@ -39,5 +43,9 @@ public interface IEntityFieldService {
 	Optional<IEntityField> getEntityFieldById(Long entityFieldId);
 
 	void deleteEntityFieldsForDevice(Long deviceId);
+
+	List<IEntityFieldValue> mapFieldToValue(Collection<IEntityField> changedSources);
+
+	IEntityFieldValue getEntityFieldValue(IEntityField entityField);
 
 }

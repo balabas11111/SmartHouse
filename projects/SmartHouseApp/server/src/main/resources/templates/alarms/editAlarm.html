@@ -89,9 +89,9 @@
 					<td>
 						<select th:name="itemId">
 								<option th:each="target : ${targets}"
-									th:value="${target.getId()}"
-									th:utext="${target.getParentNamesChain()}"
-									th:selected="${target.getId().equals(alarm.getItemId())}"/>
+									th:value="${target.id}"
+									th:utext="${target.name}"
+									th:selected="${target.isIdEqual(alarm.getItemId())}"/>
 						</select>
 					</td>
 				</tr>

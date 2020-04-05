@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 
 @Repository
 public interface IEntityFieldValueRepository extends CrudRepository<EntityFieldValue, Long>  {
@@ -64,7 +65,7 @@ public interface IEntityFieldValueRepository extends CrudRepository<EntityFieldV
 			nativeQuery = true)
 	void insertEntityFieldValueBoolean(@Param("date")Date date, @Param("value")Boolean value, @Param("entityFieldId")Long entityFieldId);
 	
-	default void saveEntityFieldValue(EntityFieldValue entityFieldValue) {
+	default void saveEntityFieldValue(IEntityFieldValue entityFieldValue) {
 		if(entityFieldValue.getClass().equals(EntityFieldValueNumber.class)) {
 			EntityFieldValueNumber value =(EntityFieldValueNumber) entityFieldValue;
 			

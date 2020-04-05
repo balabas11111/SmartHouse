@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.balabas.smarthouse.server.entity.model.AbstractTarget;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.google.common.collect.Lists;
 
@@ -64,6 +66,40 @@ public class AlarmV2Container {
 		});
 		return  results;
 	}
+	
+	public List<AbstractTarget> getStateHints(IItemAbstract item) {
+		List<AbstractTarget> result = new ArrayList<>();
+		
+		Map<AlarmState, List<IAlarmV2>> als = getAlarmsMap(item);
+		
+		als.keySet().forEach(state -> {
+			List<IAlarmV2> list = als.get(state);
+			
+			if(list!=null && !list.isEmpty()) {
+				int size = list.size();
+				
+				if(size>0) {
+					String name = state.emoji.toString();
+					
+					StringBuffer buf = new StringBuffer();
+					buf.append(name);
+					buf.append(" ");
+					buf.append(state.getDescription());
+					buf.append(": ");
+					list.stream().forEach(a -> buf.append(a.getStateDescriptionsWithNextLine()));
+					
+					if(size>1) {
+						name += "("+size+")";
+					}
+					
+					result.add(new AbstractTarget(0L, name, buf.toString()));
+				}
+				
+			}
+		});
+		
+		return result;
+	}
 		
 	private void append(StringBuffer buf, String emoji, int count) {
 		buf.append(emoji);
@@ -91,6 +127,25 @@ public class AlarmV2Container {
 		alarmMap.put(alarm.getId(), alarm);
 	}
 
+	public Map<AlarmState, List<IAlarmV2>> getAlarmsMap(IItemAbstract item) {
+		Map<AlarmState, List<IAlarmV2>> result = new LinkedHashMap<AlarmState, List<IAlarmV2>>();
+		
+		String uid = item.getItemUid();
+		if (alarms.containsKey(uid)){
+			Map<AlarmState,Map<Long,IAlarmV2>> map = alarms.get(uid);
+			
+			STATES_ORDERS_LIST.forEach(state -> {
+				Map<Long,IAlarmV2> mapAlarms = map.get(state);
+				if(mapAlarms!=null && !mapAlarms.isEmpty()) {
+					result.put(state, mapAlarms.values().stream().collect(Collectors.toList()));
+				}
+				
+			});
+			return result;
+		}
+		return result;
+	}
+	
 	public List<IAlarmV2> getAlarms(IItemAbstract item) {
 		if (alarms.containsKey(item.getItemUid())){
 			return alarms.get(item.getItemUid()).values().stream().flatMap(map -> map.values().stream()).collect(Collectors.toList());

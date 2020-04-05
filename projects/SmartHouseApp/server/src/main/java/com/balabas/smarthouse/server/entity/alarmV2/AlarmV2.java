@@ -141,12 +141,18 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	}
 
 	@Override
-	public boolean setAlarmStateByBooleanFlag(boolean alarmed) {
-		if (alarmed) {
-			return setAlarmStateByState(AlarmState.ALARM);
-		} else {
-			return setAlarmStateByState(AlarmState.OK);
-		}
+	public boolean setAlarmStateByBooleanFlagAlarm(boolean alarmed) {
+		return setAlarmStateByBooleanFlag(alarmed, AlarmState.ALARM, AlarmState.OK);
+	}
+	
+	@Override
+	public boolean setAlarmStateByBooleanFlagWarning(boolean alarmed) {
+		return setAlarmStateByBooleanFlag(alarmed, AlarmState.WARNING, AlarmState.OK);
+	}
+	
+	@Override
+	public boolean setAlarmStateByBooleanFlag(boolean alarmed, AlarmState stateTrue, AlarmState stateFalse) {
+		return setAlarmStateByState(alarmed ? stateTrue : stateFalse);
 	}
 
 	@Override
@@ -168,6 +174,11 @@ public abstract class AlarmV2 implements IAlarmV2 {
 			});
 		}
 
+		if (builder.length()==0 && this.getDescription()!=null && !this.getDescription().isEmpty()) {
+			builder.append(this.getDescription());
+			builder.append(";  ");
+		}
+		
 		return builder.toString();
 	}
 	/*

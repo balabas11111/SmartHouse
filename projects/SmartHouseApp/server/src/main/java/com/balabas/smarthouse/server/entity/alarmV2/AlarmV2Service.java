@@ -19,12 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.DeviceConstants;
+import com.balabas.smarthouse.server.entity.model.AbstractTarget;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
-import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
@@ -33,6 +33,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
+@SuppressWarnings("rawtypes")
 public class AlarmV2Service implements IAlarmV2Service {
 
 	@Autowired
@@ -116,17 +117,17 @@ public class AlarmV2Service implements IAlarmV2Service {
 	}
 
 	@Override
-	public void checkForAlarmsWithParentExecutePostActions(List<EntityFieldValue> changedValues) {
+	public void checkForAlarmsWithParentExecutePostActionsForFields(List<IEntityField> changedValues) {
 		Map<Long, IItemAbstract> entityFieldsChanged = new HashMap<>();
 		Map<Long, IItemAbstract> entitiesChanged = new HashMap<>();
 		Map<Long, IItemAbstract> groupsChanged = new HashMap<>();
 		Map<Long, IItemAbstract> devicesChanged = new HashMap<>();
 
-		for (IEntityFieldValue value : changedValues) {
-			putById(entityFieldsChanged, value.getEntityField());
-			putById(entitiesChanged, value.getEntityField().getEntity());
-			putById(groupsChanged, value.getEntityField().getEntity().getGroup());
-			putById(devicesChanged, value.getEntityField().getEntity().getGroup().getDevice());
+		for (IEntityField value : changedValues) {
+			putById(entityFieldsChanged, value);
+			putById(entitiesChanged, value.getEntity());
+			putById(groupsChanged, value.getEntity().getGroup());
+			putById(devicesChanged, value.getEntity().getGroup().getDevice());
 		}
 
 		checkForAlarmsExecutePostActions(devicesChanged.values());
@@ -402,6 +403,11 @@ public class AlarmV2Service implements IAlarmV2Service {
 	}
 
 	@Override
+	public List<AbstractTarget> getEnabledAlarmAbstractTargets(IAlarmV2 alarm) {
+		return getEnabledAlarmTargets(alarm).stream().sorted(ItemAbstract::compareByParentNameChain).map(ia -> new AbstractTarget(ia.getId(), ia.getParentNamesChain(), ia.getDescription())).collect(Collectors.toList());
+	}
+
+	@Override
 	public IItemAbstract getEnabledAlarmTarget(Long itemId, Class<?> itemClass) {
 		if (IDevice.class.isAssignableFrom(itemClass)) {
 			return deviceService.getDeviceById(itemId);
@@ -430,7 +436,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 		return alarmTypeProvider.getAlarmStateChangedEventProcessors();
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public void addAlarmStateChangeActionToAlarm(Long alarmId, ItemType it, AlarmStateChangeAction action) {
 		IAlarmV2 alarm = getAlarm(alarmId, it);
@@ -442,7 +448,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 		saveAlarm(alarm);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public void deleteAlarmStateChangeActionFromAlarm(Long alarmId, ItemType it, Long actionId) {
 		IAlarmV2 alarm = getAlarm(alarmId, it);
@@ -492,6 +498,13 @@ public class AlarmV2Service implements IAlarmV2Service {
 		});
 
 		return result;
+	}
+
+	@Override
+	public void checkForAlarmsWithParentExecutePostActions(List<IEntityFieldValue> changedValues) {
+		List<IEntityField> entityFields = changedValues.stream().map(value -> value.getEntityField())
+				.collect(Collectors.toList());
+		checkForAlarmsWithParentExecutePostActionsForFields(entityFields);
 	}
 
 }

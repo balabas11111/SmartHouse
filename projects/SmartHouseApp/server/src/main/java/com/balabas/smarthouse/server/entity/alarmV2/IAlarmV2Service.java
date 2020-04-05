@@ -5,13 +5,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.balabas.smarthouse.server.entity.model.AbstractTarget;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
-import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 
+@SuppressWarnings("rawtypes")
 public interface IAlarmV2Service {
 
-	void checkForAlarmsWithParentExecutePostActions(List<EntityFieldValue> changedValues);
+	void checkForAlarmsWithParentExecutePostActions(List<IEntityFieldValue> changedValues);
+	
+	//void checkForAlarmsWithParentExecutePostActionsForFields(Collection<IEntityField> changedValues);
 	
 	List<IItemEvent> checkForAlarmsExecutePostActions(Collection<IItemAbstract> items);
 	List<IItemEvent> checkForAlarmsExecutePostActions(IItemAbstract item);
@@ -68,5 +73,9 @@ public interface IAlarmV2Service {
 	Map<String, List<IAlarmV2>> getAlarmsGrouppedByItemClassNameWithAlarmDescriptions();
 
 	AlarmV2Container getAlarmsContainerWithChildren(IItemAbstract parent);
+
+	void checkForAlarmsWithParentExecutePostActionsForFields(List<IEntityField> changedValues);
+
+	List<AbstractTarget> getEnabledAlarmAbstractTargets(IAlarmV2 alarm);
 
 }

@@ -153,6 +153,12 @@
 		</div>
 	</div>
 	
+	<div th:fragment="AlarmStates(alarms, item)">
+		<div th:if="${alarms.hasAlarms(item)}" th:each="result : ${alarms.getStateHints(item)}" th:remove="tag">
+<button	th:replace="templates :: AlarmStateButton(text=${result.name},title=${result.description})"></button>
+		</div>
+	</div>
+	
 	<button th:fragment="AlarmStateButton(text, title)" type="button" class="btn btn-secondary"
 		th:text="${text}"
 		data-toggle="tooltip"

@@ -77,7 +77,7 @@ public class ViewAlarmController {
 		model.addAttribute("itemType", itemType);
 		model.addAttribute("currentCheckerName", alarm.getCheckerName());
 		model.addAttribute("checkers", checkers);
-		model.addAttribute("targets", alarmService.getEnabledAlarmTargets(alarm));
+		model.addAttribute("targets", alarmService.getEnabledAlarmAbstractTargets(alarm));
 		if (!alarm.isNew()) {
 			model.addAttribute("alarmEvent", new AlarmStateChangeAction());
 			model.addAttribute("alarmStates", AlarmState.getList());

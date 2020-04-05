@@ -14,7 +14,7 @@ public abstract class AlarmV2CheckerAbstractEntityFieldNumber {
 	}
 	
 	public void process(IAlarmV2 alarm) {
-		alarm.setAlarmStateByBooleanFlag(checkItemValue(alarm));
+		alarm.setAlarmStateByBooleanFlagAlarm(checkItemValue(alarm));
 	}
 	
 	public boolean isParameterValid(String value) {

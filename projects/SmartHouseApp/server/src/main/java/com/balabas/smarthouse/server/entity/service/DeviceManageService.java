@@ -5,6 +5,7 @@ import static com.balabas.smarthouse.server.DeviceConstants.HTTP_PREFFIX;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,6 +49,7 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.virtual.ICalculatedEntityFieldService;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldEnabledValueRepository;
@@ -324,7 +326,7 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Override
 	public void saveEntityFieldValues(List<IEntityField> fields) {
-		List<EntityFieldValue> changedValues = Lists.newArrayList();
+		List<IEntityFieldValue> changedValues = Lists.newArrayList();
 
 		fields.stream().filter(SmartHouseItemBuildService::isFieldValueSaveAble)
 				.forEach(entityField -> itemBuildService.processValueChange(entityField, null, changedValues));
@@ -348,7 +350,7 @@ public class DeviceManageService implements IDeviceManageService {
 				if (initOk) {
 					stateChanger.stateChanged(device, State.INIT_DATA_RECEIVED);
 
-					List<EntityFieldValue> changedValues = Lists.newArrayList();
+					List<IEntityFieldValue> changedValues = Lists.newArrayList();
 
 					device.getEntities().stream().flatMap(entity -> entity.getEntityFields().stream())
 							.filter(SmartHouseItemBuildService::isFieldValueSaveAble)
@@ -369,7 +371,7 @@ public class DeviceManageService implements IDeviceManageService {
 
 				doSave = true;
 			} else {
-				List<EntityFieldValue> changedValues = Lists.newArrayList();
+				List<IEntityFieldValue> changedValues = Lists.newArrayList();
 				// setDevice values
 				boolean ok = itemBuildService.updateDeviceEntityValuesFromJson(device, deviceJson, updateDeviceTimer,
 						updateGroupTimer, changedValues);
@@ -394,13 +396,13 @@ public class DeviceManageService implements IDeviceManageService {
 		device.setLastUpdated(DateTimeUtil.now());
 	}
 	
-	private void processChangedEntityFieldValuesList(List<EntityFieldValue> changedValues, IDevice device) {
+	private void processChangedEntityFieldValuesList(List<IEntityFieldValue> changedValues, IDevice device) {
 		if ((mock || logDeviceValuesChange) && changedValues.size() > 0) {
 			StringBuilder msg = new StringBuilder();
 
 			Map<String, String> changedValuesStrMap = Maps.newHashMap();
 
-			for (EntityFieldValue value : changedValues) {
+			for (IEntityFieldValue value : changedValues) {
 				String entityName = value.getEntityField().getEntity().getName();
 				if (!changedValuesStrMap.containsKey(entityName)) {
 					changedValuesStrMap.put(entityName, new String(""));
@@ -420,6 +422,19 @@ public class DeviceManageService implements IDeviceManageService {
 			log.info(msg);
 		}
 		
+		Collection<IEntityField> changedTargets = processChangedEntityFieldValuesList(changedValues, true);
+		
+		int iteration = 0;
+		
+		while(changedTargets!=null && !changedTargets.isEmpty()) {
+			iteration++;
+			changedTargets = processChangedEntityFieldValuesList(changedTargets, false);
+		}
+		
+		if(iteration>1) {
+			log.info("iterations="+iteration);
+		}
+		/*		
 		Map<Long, IEntityField> changedTargets = new HashMap<Long, IEntityField>();
 		
 		changedValues.stream().map(value-> value.getEntityField()).forEach(ef -> 
@@ -435,6 +450,44 @@ public class DeviceManageService implements IDeviceManageService {
 		
 		entityFieldService.saveAll(changedValues);
 		alarmV2Service.checkForAlarmsWithParentExecutePostActions(changedValues);
+		*/
+	}
+	
+	private Collection<IEntityField> processChangedEntityFieldValuesList(List<IEntityFieldValue> changedSources, boolean saveSources) {
+		Map<Long, IEntityField> changedTargets = new HashMap<Long, IEntityField>();
+		
+		changedSources.stream().map(efv -> efv.getEntityField()).forEach(ef -> 
+					calculatedFieldsService.dispatchEntityFieldValueChange(ef, changedTargets));
+		
+		int savedValues = 0;
+		
+		if(changedTargets.size()>0) {
+			if(logDeviceCalculatedValuesChange) {
+				log.info("total changedCalculatedFields " + changedTargets.size());
+			}
+			
+			saveEntityFieldValues(new ArrayList(changedTargets.values()));
+			savedValues += changedTargets.values().size();
+		}
+		
+		if(saveSources) {
+			entityFieldService.saveAll(changedSources);
+			savedValues += changedSources.size();
+		}
+		alarmV2Service.checkForAlarmsWithParentExecutePostActions(changedSources);
+		
+		if(savedValues!=0) {
+			log.info("Saved values =" + savedValues);
+		}
+		
+		return changedTargets.values();
+	}
+	
+	private Collection<IEntityField> processChangedEntityFieldValuesList(Collection<IEntityField> changedSources, boolean saveSources) {
+		List<IEntityFieldValue> changedSourcesValues = 
+				entityFieldService.mapFieldToValue(changedSources);
+		
+		return processChangedEntityFieldValuesList(changedSourcesValues, saveSources);
 	}
 
 	@Override
@@ -657,7 +710,7 @@ public class DeviceManageService implements IDeviceManageService {
 	private void preprocessSendDataToDevice(IDevice device, IEntity entity, Map<String, Object> values) {
 		if (saveDataBeforeSendToDevice) {
 
-			List<EntityFieldValue> changedValues = new ArrayList<>();
+			List<IEntityFieldValue> changedValues = new ArrayList<>();
 
 			for (String entityFieldName : values.keySet()) {
 				IEntityField entityField = entity.getEntityField(entityFieldName);

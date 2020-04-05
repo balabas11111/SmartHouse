@@ -74,10 +74,10 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldIp;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldLong;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldPassword;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldString;
-import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldIncorrectValueRepository;
 import com.balabas.smarthouse.server.util.MathUtil;
@@ -123,7 +123,7 @@ public class SmartHouseItemBuildService {
 	IEntityFieldIncorrectValueRepository entityFieldIncorrectValueRepository;
 
 	public boolean updateDeviceEntityValuesFromJson(Device device, JSONObject deviceJson, boolean updateDeviceTimer,
-			boolean updateGroupTimer, List<EntityFieldValue> changedValues) {
+			boolean updateGroupTimer, List<IEntityFieldValue> changedValues) {
 
 		boolean isOk = true;
 
@@ -145,7 +145,7 @@ public class SmartHouseItemBuildService {
 	}
 
 	private boolean updateGroupEntityValuesFromJson(Group group, JSONObject groupJson, boolean updateGroupTimer,
-			List<EntityFieldValue> changedValues) {
+			List<IEntityFieldValue> changedValues) {
 		boolean isOk = true;
 		for (String entityName : JSONObject.getNames(groupJson)) {
 
@@ -200,7 +200,7 @@ public class SmartHouseItemBuildService {
 	}
 
 	private boolean updateEntityValuesFromJson(Entity entity, JSONObject entityJson,
-			List<EntityFieldValue> changedValues) {
+			List<IEntityFieldValue> changedValues) {
 		boolean setOk = true;
 
 		for (String entityFieldName : JSONObject.getNames(entityJson)) {
@@ -263,7 +263,7 @@ public class SmartHouseItemBuildService {
 	}
 	
 	public void processValueChange(IEntityField entityField, String oldValueStr,
-			List<EntityFieldValue> changedValues) {
+			List<IEntityFieldValue> changedValues) {
 
 		boolean doSave = false;
 		boolean dataIsTooOld = entityField.getLastDate()==null || (new Date()).getTime() - entityField.getLastDate().getTime() > saveDataIfOlderSec;

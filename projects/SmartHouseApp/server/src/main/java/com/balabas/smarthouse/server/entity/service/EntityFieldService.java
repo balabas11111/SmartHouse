@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.service;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -12,7 +13,10 @@ import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueBoolean;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldEnabledValueRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldIncorrectValueRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
@@ -39,10 +43,8 @@ public class EntityFieldService implements IEntityFieldService {
 	IEntityFieldIncorrectValueRepository entityFieldIncorrectValueRepository;
 
 	@Override
-	public void saveAll(List<EntityFieldValue> values) {
-		// entityFieldValueRepository.saveAll(values);
-
-		for (EntityFieldValue entityFieldValue : values) {
+	public void saveAll(List<IEntityFieldValue> values) {
+		for (IEntityFieldValue entityFieldValue : values) {
 			if (entityFieldValue.getEntityField() != null && entityFieldValue.getEntityField().getId() != null) {
 				try {
 					entityFieldValueRepository.saveEntityFieldValue(entityFieldValue);
@@ -141,6 +143,29 @@ public class EntityFieldService implements IEntityFieldService {
 	public Optional<IEntityField> getEntityFieldById(Long entityFieldId) {
 		IEntityField result = entityFieldRepository.getEntityFieldbyId(entityFieldId);
 		return Optional.ofNullable(result);
+	}
+
+	@Override
+	public void saveAllValues(Collection<IEntityField> values) {
+		saveAll(mapFieldToValue(values));
+	}
+
+	@Override
+	public IEntityFieldValue getEntityFieldValue(IEntityField entityField) {
+		IEntityFieldValue result = null; 
+		
+		if (Number.class.isAssignableFrom(entityField.getClazz())) {
+		    result = new EntityFieldValueNumber(entityField, (Float)entityField.getValue());
+		} else if (Boolean.class.isAssignableFrom(entityField.getClazz())) {
+			result = new EntityFieldValueBoolean(entityField, (Boolean)entityField.getValue());
+		}
+		
+		return result;
+	}
+
+	@Override
+	public List<IEntityFieldValue> mapFieldToValue(Collection<IEntityField> changedSources) {
+		return changedSources.stream().map(this::getEntityFieldValue).filter(t -> t!=null).collect(Collectors.toList());
 	}
 
 }

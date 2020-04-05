@@ -1,6 +1,9 @@
-package com.balabas.smarthouse.server.entity.alarmV2;
+package com.balabas.smarthouse.server.entity.alarmV2.event.processors;
 
 import org.springframework.stereotype.Component;
+
+import com.balabas.smarthouse.server.entity.alarmV2.AlarmStateChangeEventProcessor;
+import com.balabas.smarthouse.server.entity.alarmV2.IItemEvent;
 
 @Component
 public class AlarmStateChangeEventProcessorSendStateSimilar extends AlarmStateChangeEventProcessor {
