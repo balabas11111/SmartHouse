@@ -22,6 +22,8 @@ public interface IEntityField<T> extends IItemAbstract {
 	String getValueTmp();
 	void setValueTmp(String valueTmp);
 	
+	Float getValueAsFloat();
+	
 	Float getValueTmpAsFloat();
 	Integer getValueTmpAsInteger();
 	
@@ -132,6 +134,11 @@ public interface IEntityField<T> extends IItemAbstract {
 	
 	default Entity getTargetEntity() {
 		return this.getEntity();
+	}
+	
+	static void buildEntityField(IEntityField entityField, Entity entity, Emoji emoji, String name, String description) {
+		IItemAbstract.setEmojiNameDescription(entityField, emoji, name, description);
+		entityField.setEntity(entity);
 	}
 
 }

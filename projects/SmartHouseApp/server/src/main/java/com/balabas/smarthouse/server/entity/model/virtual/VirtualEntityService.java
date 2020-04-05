@@ -16,6 +16,7 @@ import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldBoolean;
@@ -203,6 +204,65 @@ public class VirtualEntityService implements IVirtualEntityService {
 	@Override
 	public List<IEntityField> getEntityFieldsNotVirtualCommandButtons() {
 		return deviceService.getEntityFieldsNotVirtualCommandButtons();
+	}
+	
+	protected EntityFieldFloat buildFloatField(IEntity entity, ItemAbstractDto item) {
+		return buildField(new EntityFieldFloat(), entity, item, true);
+	}
+	
+	protected EntityFieldBoolean buildBooleanField(IEntity entity, ItemAbstractDto item) {
+		return buildField(new EntityFieldBoolean(), entity, item, false);
+	}
+	
+	protected <T extends IEntityField> T buildField(T field, IEntity entity, ItemAbstractDto item, boolean readOnly) {
+		field.setVirtualized(true);
+		item.toItem(field);
+		field.setParent(entity);
+		field.setReadOnly(readOnly);
+		
+		return field;
+	}
+	
+	@Override
+	public Entity getVirtualEntityOrCreateNew(Group group, ItemAbstractDto item) {
+		group = deviceService.getGroupById(group.getId());
+		
+		Entity entity = group.getEntity(item.getName());
+		if(entity == null) {
+			entity = new Entity();
+			item.toItem(entity);
+			entity.setVirtualized(true);
+			entity.setGroup(group);
+			entity = (Entity) deviceService.save(entity);
+		}
+		
+		return entity;
+	}
+	
+	@Override
+	public EntityFieldBoolean getVirtualEntityFieldBooleanOrCreateNew(IEntity entity, ItemAbstractDto item) {
+		entity = deviceService.getEntityById(entity.getId());
+		
+		IEntityField result = entity.getEntityField(item.getName());
+		if(result == null || !EntityFieldBoolean.class.isAssignableFrom(result.getClass())) {
+			result = buildBooleanField(entity, item);
+			result = deviceService.save(result);
+		}
+		
+		return (EntityFieldBoolean) result;
+	}
+	
+	@Override
+	public EntityFieldFloat getVirtualEntityFieldFloatOrCreateNew(IEntity entity, ItemAbstractDto item) {
+		entity = deviceService.getEntityById(entity.getId());
+		
+		IEntityField result = entity.getEntityField(item.getName());
+		if(result == null || !EntityFieldFloat.class.isAssignableFrom(result.getClass())) {
+			result = buildFloatField(entity, item);
+			result = deviceService.save(result);
+		}
+		
+		return (EntityFieldFloat) result;
 	}
 
 }

@@ -19,11 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.DeviceConstants;
-import com.balabas.smarthouse.server.entity.model.AbstractTarget;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
+import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
@@ -403,8 +403,8 @@ public class AlarmV2Service implements IAlarmV2Service {
 	}
 
 	@Override
-	public List<AbstractTarget> getEnabledAlarmAbstractTargets(IAlarmV2 alarm) {
-		return getEnabledAlarmTargets(alarm).stream().sorted(ItemAbstract::compareByParentNameChain).map(ia -> new AbstractTarget(ia.getId(), ia.getParentNamesChain(), ia.getDescription())).collect(Collectors.toList());
+	public List<ItemAbstractDto> getEnabledAlarmAbstractTargets(IAlarmV2 alarm) {
+		return getEnabledAlarmTargets(alarm).stream().sorted(ItemAbstract::compareByParentNameChain).map(ia -> ItemAbstractDto.fromItem(ia)).collect(Collectors.toList());
 	}
 
 	@Override

@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.balabas.smarthouse.server.entity.model.AbstractTarget;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
@@ -76,6 +76,6 @@ public interface IAlarmV2Service {
 
 	void checkForAlarmsWithParentExecutePostActionsForFields(List<IEntityField> changedValues);
 
-	List<AbstractTarget> getEnabledAlarmAbstractTargets(IAlarmV2 alarm);
+	List<ItemAbstractDto> getEnabledAlarmAbstractTargets(IAlarmV2 alarm);
 
 }

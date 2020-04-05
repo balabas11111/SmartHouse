@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.balabas.smarthouse.server.entity.model.AbstractTarget;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.google.common.collect.Lists;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -67,8 +67,8 @@ public class AlarmV2Container {
 		return  results;
 	}
 	
-	public List<AbstractTarget> getStateHints(IItemAbstract item) {
-		List<AbstractTarget> result = new ArrayList<>();
+	public List<ItemAbstractDto> getStateHints(IItemAbstract item) {
+		List<ItemAbstractDto> result = new ArrayList<>();
 		
 		Map<AlarmState, List<IAlarmV2>> als = getAlarmsMap(item);
 		
@@ -92,7 +92,7 @@ public class AlarmV2Container {
 						name += "("+size+")";
 					}
 					
-					result.add(new AbstractTarget(0L, name, buf.toString()));
+					result.add(new ItemAbstractDto(0L, null, name, buf.toString()));
 				}
 				
 			}

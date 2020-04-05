@@ -122,6 +122,17 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	}
 	
 	@Override
+	public Float getValueAsFloat() {
+		Float result = null;
+		
+		try {
+			result = Float.valueOf(getValueStr());	
+		}catch(Exception e) {}
+		
+		return result;
+	}
+	
+	@Override
 	public Float getValueTmpAsFloat() {
 		Float result = 0F;
 		
