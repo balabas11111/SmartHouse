@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.entity.behaviour;
+package com.balabas.smarthouse.server.entity.implementations;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 @SuppressWarnings("rawtypes")
-public class BoilerPumpsAccumulator implements ItemAbstractProcessor<IEntity> {
+public class BoilerPumpsAccumulator {
 
 	private static final ItemAbstractDto boilerEntity = new ItemAbstractDto(Emoji.BATTERY, "heatAccu",
 			"Теплоакамулятор");
@@ -96,6 +96,10 @@ public class BoilerPumpsAccumulator implements ItemAbstractProcessor<IEntity> {
 		@Getter
 		@Setter
 		private boolean boilerPumpRequiredState = false;
+		
+		@Getter
+		@Setter
+		private JSONObject params;
 	}
 
 	@Autowired
@@ -103,23 +107,36 @@ public class BoilerPumpsAccumulator implements ItemAbstractProcessor<IEntity> {
 	
 	@Autowired
 	protected IDeviceManageService deviceService;
+	
+	public IEntityHeater checkHeater(IEntity item, String parameter) {
+		JSONObject params = getParams(parameter);
 
-	@Override
-	public boolean process(IEntity item, String parameter) {
+		IEntityHeater h = getHeaterOrCreateNewOnEntityLevel(item);
+		h.setParams(params);
+		checkStateChangeRequired(h);
+
+		return h;
+	}
+	
+	public boolean executeStateChange(IEntityHeater heater) {
+		boolean result = true;
+
+		if (heater.isStateChangeRequired()) {
+			result = changeEntityFieldState(heater.getPumpBoiler(), heater.isBoilerPumpRequiredState());
+			result = changeEntityFieldState(heater.getPumpFloor(), heater.isFloorPumpRequiredState()) && result;
+		}
+
+		return result;
+	}
+	
+	private JSONObject getParams(String parameter) {
 		if (parameter == null || parameter.isEmpty()) {
 			parameter = getDefaultParameter();
 		}
 
-		JSONObject params = new JSONObject(parameter);
-
-		boolean result = false;
-		IEntityHeater h = getHeaterOrCreateNewOnEntityLevel(item);
-		checkStateChangeRequired(h, params);
-		result = executeStateChange(h, params);
-
-		return result;
+		return new JSONObject(parameter);
 	}
-
+	
 	@SuppressWarnings({ "unchecked" })
 	private IEntityHeater getHeaterOrCreateNewOnEntityLevel(IEntity entity) {
 		IEntityHeater h = new IEntityHeater();
@@ -144,15 +161,15 @@ public class BoilerPumpsAccumulator implements ItemAbstractProcessor<IEntity> {
 		return h;
 	}
 
-	private boolean checkStateChangeRequired(IEntityHeater heater, JSONObject params) {
+	private boolean checkStateChangeRequired(IEntityHeater heater) {
 		boolean result = false;
-		int max = params.getInt(MAX_BOILER);
+		int max = heater.getParams().getInt(MAX_BOILER);
 
 		boolean hasPowerInAccu = heater.getHeatAccuTop().getValueAsFloat() > max
 				|| heater.getHeatAccuMiddle().getValueAsFloat() > max
 				|| heater.getHeatAccuDown().getValueAsFloat() > max;
 
-		boolean isHeating = heater.getBoilerOutTemp().getValueAsFloat() > params.getInt(MAX_OUT_TEMP);
+		boolean isHeating = heater.getBoilerOutTemp().getValueAsFloat() > heater.getParams().getInt(MAX_OUT_TEMP);
 
 		boolean floorPumpIsOn = heater.getPumpFloor().getValue();
 		boolean boilerPumpIsOn = heater.getPumpBoiler().getValue();
@@ -165,6 +182,7 @@ public class BoilerPumpsAccumulator implements ItemAbstractProcessor<IEntity> {
 		result = floorPumpIsOn != floorPumpRequiredState || boilerPumpIsOn != boilerPumpRequiredState;
 
 		heater.setStateChangeRequired(result);
+		
 		heater.setBoilerPumpRequiredState(boilerPumpRequiredState);
 		heater.setFloorPumpRequiredState(floorPumpRequiredState);
 		
@@ -175,17 +193,6 @@ public class BoilerPumpsAccumulator implements ItemAbstractProcessor<IEntity> {
 		return result;
 	}
 
-	private boolean executeStateChange(IEntityHeater heater, JSONObject params) {
-		boolean result = true;
-
-		if (heater.isStateChangeRequired()) {
-			result = changeEntityFieldState(heater.getPumpBoiler(), heater.isBoilerPumpRequiredState());
-			result = changeEntityFieldState(heater.getPumpFloor(), heater.isFloorPumpRequiredState()) && result;
-		}
-
-		return result;
-	}
-	
 	public boolean changeEntityFieldState(IEntityField<Boolean> field, boolean requiredState) {
 		if(requiredState != field.getValue()) {
 			log.info("Change pump state name =" + field.getName() + " value = " + requiredState);
