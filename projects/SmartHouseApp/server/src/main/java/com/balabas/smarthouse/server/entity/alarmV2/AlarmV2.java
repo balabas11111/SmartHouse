@@ -105,24 +105,35 @@ public abstract class AlarmV2 implements IAlarmV2 {
 
 	@Override
 	public List<IAlarmStateChangeAction> getCurrentActions() {
-		return getActions().stream().filter(this::isCurrentAlarmStateChangeAction).collect(Collectors.toList());
+		Set<IAlarmStateChangeAction> actions = getActions();
+		
+		if(actions!=null) { 
+			return actions.stream().filter(this::isCurrentAlarmStateChangeAction).collect(Collectors.toList());
+		} 
+		
+		return java.util.Collections.emptyList();
 	}
 
 	private boolean isCurrentAlarmStateChangeAction(IAlarmStateChangeAction action) {
-		if (action.getOldState() == null) {
-			if (!isStateChanged()) {
-				return false;
+		try {
+			if (action.getOldState() == null) {
+				if (!isStateChanged()) {
+					return false;
+				}
+				return this.getAlarmState().equals(action.getNewState());
 			}
-			return this.getAlarmState().equals(action.getNewState());
-		}
-		if (action.getNewState() == null) {
-			if (!isStateChanged()) {
-				return false;
+			if (action.getNewState() == null) {
+				if (!isStateChanged()) {
+					return false;
+				}
+				return this.getPreviousAlarmState().equals(action.getOldState());
 			}
-			return this.getPreviousAlarmState().equals(action.getOldState());
+			return this.getAlarmState().equals(action.getNewState())
+					&& this.getPreviousAlarmState().equals(action.getOldState());
+		}catch(Exception e) {
+			System.out.println("AlarmV2 get Actions error");
+			throw e;
 		}
-		return this.getAlarmState().equals(action.getNewState())
-				&& this.getPreviousAlarmState().equals(action.getOldState());
 	}
 
 	@Override

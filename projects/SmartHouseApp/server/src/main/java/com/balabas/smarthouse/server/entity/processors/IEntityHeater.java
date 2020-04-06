@@ -34,8 +34,8 @@ public class IEntityHeater extends IEntityAbstractChangeBox {
 
 	public static final ItemAbstractDto fireringDto = new ItemAbstractDto(Emoji.FIRE, "firering", "Розжиг в процессе");
 	
-	public static final ItemAbstractDto fireringDtoTrue = new ItemAbstractDto(Emoji.FIRE, "разжечь", "Розжиг ВКЛ");
-	public static final ItemAbstractDto fireringDtoFalse = new ItemAbstractDto(Emoji.PHONE_OFF, "firering", "Розжиг ВЫКЛ");
+	public static final ItemAbstractDto fireringDtoTrue = new ItemAbstractDto(Emoji.FIRE, "Начать розжиг", "Розжиг ВКЛ");
+	public static final ItemAbstractDto fireringDtoFalse = new ItemAbstractDto(Emoji.PHONE_OFF, "Стоп розжиг", "Розжиг ВЫКЛ");
 
 	public static final String MAX_BOILER = "maxB";
 	public static final String MAX_OUT_TEMP = "maxO";
@@ -85,7 +85,7 @@ public class IEntityHeater extends IEntityAbstractChangeBox {
 	private boolean boilerPumpRequiredState = false;
 
 	@Getter
-	private final String defaultParameter = "{\"" + MAX_BOILER + "\":24, \"" + MAX_OUT_TEMP + "\":40}";
+	private final String defaultParameter = "{\"" + MAX_BOILER + "\":31, \"" + MAX_OUT_TEMP + "\":40}";
 	
 	@SuppressWarnings("unchecked")
 	@Override

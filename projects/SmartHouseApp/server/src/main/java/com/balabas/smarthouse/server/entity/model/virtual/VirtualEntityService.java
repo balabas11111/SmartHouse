@@ -299,6 +299,7 @@ public class VirtualEntityService implements IVirtualEntityService {
 		enVal.setEntityField((EntityField) field);
 		enVal.setValue(val);
 		enVal.fromDto(dto);
+		enVal.setViewClass(EntityFieldClassView.EDC_CLASS_VIEW_BUTTON_COMMAND);
 		
 		field.getEntityFieldEnabledValues().add(enVal);
 	}

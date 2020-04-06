@@ -72,7 +72,7 @@ public class EntityFieldService implements IEntityFieldService {
 
 		List<IEntityFieldEnabledValue> result = evals.stream()
 				.filter(ev -> ev.getViewClass() != null && ev.getViewClass().isButton()
-						&& (currentValue == null || (currentValue != null && !ev.equals(currentValue))))
+						&& (currentValue == null || (currentValue != null && ev.getClass().equals(currentValue.getClass()) && !ev.getId().equals(currentValue.getId()))))
 				.collect(Collectors.toList());
 
 		return result;

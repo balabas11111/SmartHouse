@@ -347,7 +347,7 @@ public class ViewVirtualEntityController extends BaseController {
 			entityField = virtualEntityService.createEntityFieldFloat(getVirtualName(VIRTUAL_ENTITY_FIELD_NAME),
 					VIRTUAL_ENTITY_FIELD_DESCR);
 		} else {
-			if(entityField.isBooleanCommandButtonOfGroupSensors()) {
+			if(entityField.isBooleanCommandButtonOfGroupSensorsNoEnablValsCheck()) {
 				return editVirtualEntityFieldBoolean(id, model);
 			}
 		}

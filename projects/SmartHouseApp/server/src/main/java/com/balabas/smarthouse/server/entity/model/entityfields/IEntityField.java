@@ -111,6 +111,13 @@ public interface IEntityField<T> extends IItemAbstract {
 		&& getEnabledValues().size()>0
 		&& DeviceConstants.GROUP_SENSORS.equalsIgnoreCase(getEntity().getGroup().getName());
 	}
+	
+	default boolean isBooleanCommandButtonOfGroupSensorsNoEnablValsCheck() {
+		return 
+		isButton()
+		&& !isReadOnly()
+		&& DeviceConstants.GROUP_SENSORS.equalsIgnoreCase(getEntity().getGroup().getName());
+	}
 
 	String getMeasure();
 	
