@@ -7,7 +7,7 @@ import com.balabas.smarthouse.server.entity.alarmV2.AlarmConstants;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Checker;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2CheckerAbstractEntity;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2;
-import com.balabas.smarthouse.server.entity.processors.BoilerPumpsAccumulatorProcessor;
+import com.balabas.smarthouse.server.entity.processors.BoilerPumpsAccumulator;
 
 import lombok.Getter;
 
@@ -18,7 +18,7 @@ public class AlarmV2CheckerEntityHeaterChecker extends AlarmV2CheckerAbstractEnt
 	private final String checkerDescription = AlarmConstants.CHECKER_DESCRIPTION_HEATER_ENTITY;
 	
 	@Autowired
-	private BoilerPumpsAccumulatorProcessor heaterProcessor;
+	private BoilerPumpsAccumulator heater;
 	
 	@Override
 	public void process(IAlarmV2 alarm) {
@@ -27,7 +27,7 @@ public class AlarmV2CheckerEntityHeaterChecker extends AlarmV2CheckerAbstractEnt
 	
 	@Override
 	protected boolean checkItemValue(IAlarmV2 alarm) {
-		return heaterProcessor.check(this.getItemAsEntity(alarm),alarm.getParameter());
+		return heater.check(this.getItemAsEntity(alarm),alarm.getParameter());
 	}
 	
 }
