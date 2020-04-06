@@ -40,4 +40,10 @@ public class EntityFieldEnabledValueIp extends EntityFieldEnabledValue<InetAddre
 	public String getValueStr() {
 		return this.value.toString();
 	}
+
+
+	@Override
+	public Class<?> getClazz() {
+		return InetAddress.class;
+	}
 }

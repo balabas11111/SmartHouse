@@ -21,4 +21,9 @@ public class EntityFieldEnabledValueInteger extends EntityFieldEnabledValue<Inte
 	public String getValueStr() {
 		return this.value.toString();
 	}
+
+	@Override
+	public Class<?> getClazz() {
+		return Integer.class;
+	}
 }

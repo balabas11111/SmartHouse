@@ -34,4 +34,9 @@ public class EntityFieldEnabledValueBoolean extends EntityFieldEnabledValue<Bool
 	public String getValueStr() {
 		return Boolean.toString(this.value);
 	}
+
+	@Override
+	public Class<?> getClazz() {
+		return Boolean.class;
+	}
 }

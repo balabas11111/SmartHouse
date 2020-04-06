@@ -13,6 +13,8 @@ public interface IEntityFieldEnabledValue<T> extends IIdentifiable {
 	EntityField getEntityField();
 	void setEntityField(EntityField entityField);
 	
+	Class<?> getClazz();
+	
 	T getValue();
 	void setValue(T value);
 	

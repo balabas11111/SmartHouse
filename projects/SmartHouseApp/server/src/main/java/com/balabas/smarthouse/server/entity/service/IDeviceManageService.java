@@ -143,4 +143,12 @@ public interface IDeviceManageService {
 
 	List<IEntityField> getEntityFieldsNotVirtualCommandButtons();
 
+	boolean setEntityFieldBooleanValueSendToDeviceIfNotVirtual(IEntityField<Boolean> field, boolean requiredState);
+
+	void sendActionToDevice(Long deviceId, Long entityId, Long entityFieldId, String action);
+
+	void sendActionToEntityField(IEntityField field, String action);
+
+	IItemAbstract getItemAbstract(IItemAbstract item);
+
 }

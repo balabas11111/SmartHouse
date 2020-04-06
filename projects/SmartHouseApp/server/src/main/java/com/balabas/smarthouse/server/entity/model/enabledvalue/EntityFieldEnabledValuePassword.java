@@ -21,4 +21,9 @@ public class EntityFieldEnabledValuePassword extends EntityFieldEnabledValue<Str
 	public String getValueStr() {
 		return this.value;
 	}
+
+	@Override
+	public Class<?> getClazz() {
+		return String.class;
+	}
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
@@ -19,8 +20,14 @@ public class ActionTimerService implements IActionTimerService {
 
 	private Map<ItemType, Map<Long, ActionTimer>> timers = new HashMap<>();
 	
+	
 	@Override
 	public ActionTimer getActionTimer(ItemType itemType, Long itemId) {
+		return getActionTimer(itemType, itemId, null);
+	}
+	
+	@Override
+	public ActionTimer getActionTimer(ItemType itemType, Long itemId, Long updateInterval) {
 		if(itemId==null || itemId==0) {
 			log.error("Cant  get ActionTimer: " + itemType.name() + " id=" + itemId);
 			return null;
@@ -34,7 +41,7 @@ public class ActionTimerService implements IActionTimerService {
 		Map<Long, ActionTimer> itemTypeTimers = timers.get(itemType);
 		
 		if(!itemTypeTimers.containsKey(itemId)) {
-			ActionTimer timer = buildTimer(itemType);
+			ActionTimer timer = buildTimer(itemType, updateInterval);
 			if(timer==null) {
 				return null;
 			}
@@ -59,6 +66,11 @@ public class ActionTimerService implements IActionTimerService {
 	@Override
 	public ActionTimer getActionTimer(IEntity entity) {
 		return getActionTimer(ItemType.ENTITY, entity.getId());
+	}
+	
+	@Override
+	public ActionTimer getActionTimer(IAlarmV2 entity) {
+		return getActionTimer(ItemType.ALARM, entity.getId(), entity.getMessageInterval().longValue()*1000);
 	}
 
 	@Override
@@ -85,11 +97,11 @@ public class ActionTimerService implements IActionTimerService {
 		timer.setActionSuccess();
 	}
 
-	private static ActionTimer buildTimer(ItemType itemType) {
-		Long updateInterval = itemType.getRefreshInterval();
+	private static ActionTimer buildTimer(ItemType itemType, Long updateInterval) {
+		Long interval = updateInterval==null || updateInterval < 1 ? itemType.getRefreshInterval() : updateInterval;
 
-		if (updateInterval > 0) {
-			ActionTimer updateTimer = new ActionTimer(updateInterval);
+		if (interval > 0) {
+			ActionTimer updateTimer = new ActionTimer(interval);
 			updateTimer.setActionForced(true);
 			return updateTimer;
 		}
@@ -103,5 +115,40 @@ public class ActionTimerService implements IActionTimerService {
 		timer.setActionForced(true);
 	}
 	
+	@Override
+	public void setActionForced(IAlarmV2 alarm) {
+		ActionTimer timer = getActionTimer(alarm);
+		timer.setActionForced(true);
+	}
 	
+	@Override
+	public void initAlarmScheduling(IAlarmV2 alarm) {
+		if(alarm.isRepeatable()) {
+			getActionTimer(alarm).update(false);
+		}
+	}
+	
+	@Override
+	public void nextAlarmScheduling(IAlarmV2 alarm) {
+		if(alarm.isRepeatable()) {
+			getActionTimer(alarm).update(false);
+		}
+	}
+	
+	@Override
+	public boolean requireScheduledCheck(IAlarmV2 alarm) {
+		if(!alarm.isRepeatable() || alarm.getItem() == null) {
+			return false;
+		}
+		ActionTimer timer = getActionTimer(alarm);
+		if(timer==null) {
+			return false;
+		}
+		boolean result = timer.isTimeToExecuteAction();
+		if(result) {
+			log.info("Alarm check scheduled " + alarm.getId());
+		}
+		return result;
+	}
+
 }

@@ -78,4 +78,6 @@ public interface IAlarmV2Service {
 
 	List<ItemAbstractDto> getEnabledAlarmAbstractTargets(IAlarmV2 alarm);
 
+	List<IItemEvent> checkForAlarmsExecutePostActions(IAlarmV2 alarm);
+
 }

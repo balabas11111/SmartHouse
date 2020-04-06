@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.balabas.smarthouse.server.entity.model.Device;
-import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.virtual.IVirtualEntityService;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.service.IServerManageService;
@@ -92,24 +91,14 @@ public class ViewDeviceController {
 		return "redirect:/index";
 	}
 
-	@SuppressWarnings("rawtypes")
+	
 	@GetMapping("/executeAction_{deviceId}_{entityId}_{action}_{entityFieldId}_")
 	public String executeEntityAction(@PathVariable(name = "deviceId") Long deviceId,
 			@PathVariable(name = "entityId") Long entityId,
 			@PathVariable(name = "action") String action,
 			@PathVariable(name = "entityFieldId") Long entityFieldId,Model model) {
 
-		if(entityFieldId!=null) {
-			IEntityField targetField = deviceService.getEntityFieldById(entityFieldId); 
-			if(targetField!=null) {
-				Long targetEntityId = targetField.getEntity().getId();
-				Long targetDeviceId = targetField.getEntity().getDevice().getId();
-				
-				deviceService.sendDataToDevice(targetDeviceId, targetEntityId, action);
-			} 
-		} else {
-			deviceService.sendDataToDevice(deviceId, entityId, action);
-		}
+		deviceService.sendActionToDevice(deviceId, entityId, entityFieldId, action);
 
 		return "redirect:/device?id=" + Long.toString(deviceId);
 

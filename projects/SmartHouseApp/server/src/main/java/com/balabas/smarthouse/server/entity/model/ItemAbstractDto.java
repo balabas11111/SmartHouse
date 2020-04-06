@@ -5,8 +5,10 @@ import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @AllArgsConstructor
+@ToString
 public class ItemAbstractDto {
 
 	@Getter @Setter

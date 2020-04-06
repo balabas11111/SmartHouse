@@ -9,7 +9,12 @@ public interface IEntityAbstractProvider {
 
 	IEntity getEntity(IEntity entity, ItemAbstractDto item);
 	
-	IEntityField getFieldBoolean(IEntity entity, ItemAbstractDto item);
+	IEntityField<Boolean> getFieldBoolean(IEntity pumps, ItemAbstractDto pumpboilerdto);
+	
+	IEntityField getFieldBoolean(IEntity entity, ItemAbstractDto item, ItemAbstractDto enabledValueTrue, ItemAbstractDto enabledValueFalse );
 
 	IEntityField getFieldFloat(IEntity entity, ItemAbstractDto item);
+
+	boolean changeEntityFieldState(IEntityField<Boolean> pumpBoiler, boolean boilerPumpRequiredState);
+
 }

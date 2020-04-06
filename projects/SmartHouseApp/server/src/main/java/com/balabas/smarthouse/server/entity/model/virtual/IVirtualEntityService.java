@@ -66,4 +66,7 @@ public interface IVirtualEntityService {
 	EntityFieldBoolean getVirtualEntityFieldBooleanOrCreateNew(IEntity entity, ItemAbstractDto item);
 
 	EntityFieldFloat getVirtualEntityFieldFloatOrCreateNew(IEntity entity, ItemAbstractDto item);
+
+	EntityFieldBoolean getVirtualEntityFieldBooleanOrCreateNew(IEntity entity, ItemAbstractDto item,
+			ItemAbstractDto enabledValueTrue, ItemAbstractDto enabledValueFalse);
 }

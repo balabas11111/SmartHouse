@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValueBoolean;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueBoolean;
@@ -56,12 +57,6 @@ public class EntityFieldService implements IEntityFieldService {
 						+ Optional.ofNullable(entityFieldValue.getEntityField().getName()).orElse("null"));
 			}
 		}
-	}
-
-	@Override
-	public List<Action> getActionsForEntityField(String actionName, IEntityField entityField) {
-		return getCommandsForEntityField(entityField).stream()
-				.map(ef -> Action.fromEntityFieldEnabledValue(actionName, ef)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -168,4 +163,26 @@ public class EntityFieldService implements IEntityFieldService {
 		return changedSources.stream().map(this::getEntityFieldValue).filter(t -> t!=null).collect(Collectors.toList());
 	}
 
+	@Override
+	public List<Action> getActionsForEntityField(String actionName, IEntityField entityField) {
+		return getCommandsForEntityField(entityField).stream()
+				.map(ef -> Action.fromEntityFieldEnabledValue(actionName, ef)).collect(Collectors.toList());
+	}
+
+	@SuppressWarnings("unused")
+	@Override
+	public Action getActionForEntityFieldBoolean(String actionName, IEntityField<Boolean> entityField,
+			boolean requiredState) {
+		List<IEntityFieldEnabledValue> enVals = getCommandsForEntityField(entityField);
+		
+		for(IEntityFieldEnabledValue value : enVals) {
+			if(Boolean.class.equals(value.getClazz())) {
+				EntityFieldEnabledValueBoolean valB = (EntityFieldEnabledValueBoolean) value;
+				if(valB!=null && valB.getValue()!=null && valB.getValue().booleanValue() == requiredState) {
+					return Action.fromEntityFieldEnabledValue(actionName, valB);
+				}
+			}
+		}
+		return null;
+	}
 }

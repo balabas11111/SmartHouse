@@ -39,6 +39,7 @@ import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
+import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValue;
@@ -56,6 +57,7 @@ import com.balabas.smarthouse.server.entity.repository.IEntityFieldEnabledValueR
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityRepository;
 import com.balabas.smarthouse.server.entity.repository.IGroupRepository;
+import com.balabas.smarthouse.server.exception.BadValueException;
 import com.balabas.smarthouse.server.service.DeviceRequestorService;
 import com.balabas.smarthouse.server.util.DateTimeUtil;
 import com.balabas.smarthouse.server.view.Action;
@@ -661,49 +663,66 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Override
 	public String sendDataToDevice(IDevice device, IEntity entity, Map<String, Object> values) {
-		if (!device.isVirtualized()) {
-			try {
-				preprocessSendDataToDevice(device, entity, values);
-				String result = deviceRequestor.executePostDataOnDeviceEntity(device, entity, values);
-				
-				processDataReceivedFromDevice((Device) device, result, false, false);
+		return !device.isVirtualized()? 
+				sendDataToHardDevice(device, entity, values) : sendDataToSoftDevice(device, entity, values);
+	}
+	
+	private String sendDataToHardDevice(IDevice device, IEntity entity, Map<String, Object> values) {
+		try {
+			preprocessSendDataToDevice(device, entity, values);
+			String result = deviceRequestor.executePostDataOnDeviceEntity(device, entity, values);
+			
+			processDataReceivedFromDevice((Device) device, result, false, false);
 
-				if(mock) {
-					Device device2 = getDeviceById(device.getId());
-					if(device2!=null) {
-						Entity entity2 = device2.getEntity(entity.getId());
-						if(entity2!=null) {
-							for(String entityFieldKey : values.keySet()) {
-								IEntityField entityField2 = entity2.getEntityField(entityFieldKey);
-								if(entityField2!=null) {
-									Long entityField2Id = entityField2.getId();
+			if(mock) {
+				Device device2 = getDeviceById(device.getId());
+				if(device2!=null) {
+					Entity entity2 = device2.getEntity(entity.getId());
+					if(entity2!=null) {
+						for(String entityFieldKey : values.keySet()) {
+							IEntityField entityField2 = entity2.getEntityField(entityFieldKey);
+							if(entityField2!=null) {
+								Long entityField2Id = entityField2.getId();
+								
+								IEntityField entityField3 = getEntityFieldById(entityField2Id);
+								
+								Object value2 = values.get(entityFieldKey);
+								try {
+									entityField3.setValueStr(value2.toString());
+								}catch(Exception e) {
 									
-									IEntityField entityField3 = getEntityFieldById(entityField2Id);
-									
-									Object value2 = values.get(entityFieldKey);
-									try {
-										entityField3.setValueStr(value2.toString());
-									}catch(Exception e) {
-										
-									}
-									String val2 = entityField3.getValueStr();
-									log.debug(val2);
 								}
+								String val2 = entityField3.getValueStr();
+								log.debug(val2);
 							}
 						}
 					}
 				}
-				
-				if (requestDataAfterSendToDevice) {
-					actionTimerService.setActionForced(device);
-				}
+			}
+			
+			if (requestDataAfterSendToDevice) {
+				actionTimerService.setActionForced(device);
+			}
 
-				return result;
-			} catch (Exception e) {
-				log.error(e);
-				throw e;
+			return result;
+		} catch (Exception e) {
+			log.error(e);
+			throw e;
+		}
+	}
+	
+	private String sendDataToSoftDevice(IDevice device, IEntity entity, Map<String, Object> values) {
+		
+		for(IEntityField field : entity.getEntityFields()) {
+			if(!field.isReadOnly() && field.isVirtualized() && field.getName()!=null && values.containsKey(field.getName())) {
+				try {
+					field.setValueStr(values.get(field.getName()).toString());
+				} catch (BadValueException e) {
+					log.error(e);
+				}
 			}
 		}
+		
 		return "";
 	}
 
@@ -996,16 +1015,8 @@ public class DeviceManageService implements IDeviceManageService {
 		for (IEntityField entityField : entityFields) {
 			if (entityField.isButton() && !entityField.isReadOnly()) {
 				
-				if(Boolean.class.equals(entityField.getClazz())) {
-					EntityFieldBoolean efb = (EntityFieldBoolean) entityField;
-					Long targetId = efb.getTargetEntityFieldId(); 
-					if(targetId!=null) {
-						IEntityField target = getEntityFieldById(targetId);
-						if(target!=null) {
-							efb.setTargetEntityField((EntityFieldBoolean)target);
-						}
-					}
-				}
+				fillEntityFieldTarget(entityField);
+				
 				List<Action> actions = entityFieldService.getActionsForEntityField(ACTION_TYPE_SEND_DATA_TO_DEVICE,
 						entityField);
 				holder.addFieldAction(entityField.getEntity().getName(), actions);
@@ -1018,6 +1029,20 @@ public class DeviceManageService implements IDeviceManageService {
 		holder.sort();
 		
 		return holder;
+	}
+	
+	private IEntityField fillEntityFieldTarget(IEntityField entityField) {
+		if(Boolean.class.equals(entityField.getClazz())) {
+			EntityFieldBoolean efb = (EntityFieldBoolean) entityField;
+			Long targetId = efb.getTargetEntityFieldId(); 
+			if(targetId!=null) {
+				IEntityField target = getEntityFieldById(targetId);
+				if(target!=null) {
+					efb.setTargetEntityField((EntityFieldBoolean)target);
+				}
+			}
+		}
+		return entityField;
 	}
 	
 	@Override
@@ -1200,6 +1225,70 @@ public class DeviceManageService implements IDeviceManageService {
 	@Override
 	public List<IEntityField> getEntityFieldsNotVirtualCommandButtons() {
 		return getEntityFieldsByFilter(ef -> ef.isBooleanCommandButtonOfGroupSensors());
+	}
+
+	@Override
+	public boolean setEntityFieldBooleanValueSendToDeviceIfNotVirtual(IEntityField<Boolean> entityField,
+			boolean requiredState) {
+		
+		entityField = getEntityFieldById(entityField.getId());
+		fillEntityFieldTarget(entityField);
+		
+		Action action = entityFieldService.getActionForEntityFieldBoolean(ACTION_TYPE_SEND_DATA_TO_DEVICE,
+				entityField, requiredState);
+		
+		if(action!=null) {
+			sendActionToEntityField(entityField, action.getAction());
+			return true;
+		} else {
+			log.error("Failed find action " + requiredState+ " field=" + ItemAbstractDto.fromItem(entityField));
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public void sendActionToEntityField(IEntityField field, String action) {
+		Long deviceId = field.getEntity().getDevice().getId();
+		Long entityId = field.getEntity().getId();
+		Long entityFieldId = field.getTargetEntity().getId();
+		
+		sendActionToDevice(deviceId, entityId, entityFieldId, action);
+	}
+
+	@Override
+	public void sendActionToDevice(Long deviceId, Long entityId, Long targetEntityFieldId, String action) {
+		Long targetDeviceId = deviceId;
+		Long targetEntityId = entityId;
+		
+		if(targetEntityFieldId!=null) {
+			IEntityField targetField = getEntityFieldById(targetEntityFieldId); 
+			if(targetField!=null) {
+				targetEntityId = targetField.getEntity().getId();
+				targetDeviceId = targetField.getEntity().getDevice().getId();
+				
+				sendDataToDevice(targetDeviceId, targetEntityId, action);
+			} 
+		} else {
+			sendDataToDevice(targetDeviceId, targetEntityId, action);
+		}
+	}
+
+	@Override
+	public IItemAbstract getItemAbstract(IItemAbstract item) {
+		Class<?> clazz = item.getClass();
+		Long id = item.getId();
+		
+		if(IDevice.class.isAssignableFrom(clazz)) {
+			return getDeviceById(id);
+		}else if(IGroup.class.isAssignableFrom(clazz)) {
+			return getGroupById(id);
+		}else if(IEntity.class.isAssignableFrom(clazz)) {
+			return getEntityById(id);
+		}if(IEntityField.class.isAssignableFrom(clazz)) {
+			return getEntityFieldById(id);
+		}
+		return null;
 	}
 
 }

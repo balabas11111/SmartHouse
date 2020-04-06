@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.DeviceConstants;
@@ -27,6 +28,7 @@ import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
+import com.balabas.smarthouse.server.entity.service.IActionTimerService;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 
 import lombok.extern.log4j.Log4j2;
@@ -56,6 +58,9 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Autowired
 	IItemAlarmStateService itemAlarmStateService;
+	
+	@Autowired
+	IActionTimerService actionTimerService;
 
 	Map<String, List<IAlarmV2>> alarmMap = new HashMap<String, List<IAlarmV2>>();
 
@@ -66,9 +71,9 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@PostConstruct
 	public void loadAlarms() {
-		alarmRepositoryDevice.findAll().forEach(this::putAlarmToCache);
-		alarmRepositoryEntity.findAll().forEach(this::putAlarmToCache);
-		alarmRepositoryEntityField.findAll().forEach(this::putAlarmToCache);
+		alarmRepositoryDevice.findAll().forEach(this::initAlarm);
+		alarmRepositoryEntity.findAll().forEach(this::initAlarm);
+		alarmRepositoryEntityField.findAll().forEach(this::initAlarm);
 	}
 
 	@Override
@@ -106,6 +111,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 	public void saveAlarm(IAlarmV2 alarm) {
 		getRepository(alarm).save(alarm);
 		putAlarmToCache(alarm);
+		actionTimerService.initAlarmScheduling(alarm);
 	}
 
 	@Override
@@ -144,6 +150,20 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 		return list;
 	}
+	
+	@Override
+	public List<IItemEvent> checkForAlarmsExecutePostActions(IAlarmV2 alarm) {
+		
+		IItemAbstract item =deviceService.getItemAbstract(alarm.getItem());
+		List<IItemEvent> events = new ArrayList<IItemEvent>();
+
+		alarm.setItem(item);
+		events.addAll(checkForAlarm(alarm));
+		
+		events.forEach(this::processEvent);
+
+		return events;
+	}
 
 	@Override
 	public List<IItemEvent> checkForAlarmsExecutePostActions(IItemAbstract item) {
@@ -167,6 +187,9 @@ public class AlarmV2Service implements IAlarmV2Service {
 		}
 
 		checker.process(alarm);
+		
+		actionTimerService.nextAlarmScheduling(alarm);
+		
 		return buildEvent(alarm);
 	}
 
@@ -191,6 +214,11 @@ public class AlarmV2Service implements IAlarmV2Service {
 		});
 		return events;
 	}
+	
+	private void initAlarm(IAlarmV2 alarm) {
+		putAlarmToCache(alarm);
+		actionTimerService.initAlarmScheduling(alarm);
+	}
 
 	private void putAlarmToCache(IAlarmV2 alarm) {
 		List<IAlarmV2> alarms = getAlarmsByItemUid(alarm.getItem());
@@ -202,7 +230,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 		} else {
 			alarms.add(alarm);
 		}
-
+		
 	}
 
 	private void removeAlarmFromCache(IAlarmV2 alarm) {
@@ -242,6 +270,17 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	private void putById(Map<Long, IItemAbstract> map, IItemAbstract item) {
 		map.put(item.getId(), item);
+	}
+	
+	private List<IAlarmV2> getAlarmsRequiredCheckBySchedule() {
+		return alarmMap.values().stream().flatMap(list -> list.stream()).filter(
+				actionTimerService::requireScheduledCheck)
+				.collect(Collectors.toList());
+	}
+	
+	@Scheduled(fixedRateString = "${smarthouse.server.alarm.request.interval:10000}")
+	public void checkScheduledAlarms() {
+		getAlarmsRequiredCheckBySchedule().stream().forEach(this::checkForAlarmsExecutePostActions);
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.entity.model.virtual;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -17,8 +18,11 @@ import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
+import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
+import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValueBoolean;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldFloat;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -27,7 +31,10 @@ import com.balabas.smarthouse.server.entity.service.IEntityFieldService;
 import com.balabas.smarthouse.server.entity.service.IEntityService;
 import com.balabas.smarthouse.server.entity.service.IGroupService;
 
+import lombok.extern.log4j.Log4j2;
+
 @Service
+@Log4j2
 @SuppressWarnings("rawtypes")
 public class VirtualEntityService implements IVirtualEntityService {
 
@@ -234,6 +241,8 @@ public class VirtualEntityService implements IVirtualEntityService {
 			entity.setVirtualized(true);
 			entity.setGroup(group);
 			entity = (Entity) deviceService.save(entity);
+			
+			log.info("New entity created " + ItemAbstractDto.fromItem(entity));
 		}
 		
 		return entity;
@@ -241,28 +250,57 @@ public class VirtualEntityService implements IVirtualEntityService {
 	
 	@Override
 	public EntityFieldBoolean getVirtualEntityFieldBooleanOrCreateNew(IEntity entity, ItemAbstractDto item) {
-		entity = deviceService.getEntityById(entity.getId());
-		
-		IEntityField result = entity.getEntityField(item.getName());
-		if(result == null || !EntityFieldBoolean.class.isAssignableFrom(result.getClass())) {
-			result = buildBooleanField(entity, item);
-			result = deviceService.save(result);
-		}
-		
-		return (EntityFieldBoolean) result;
+		return getVirtualEntityFieldBooleanOrCreateNew(entity, item,null, null);
 	}
 	
 	@Override
 	public EntityFieldFloat getVirtualEntityFieldFloatOrCreateNew(IEntity entity, ItemAbstractDto item) {
 		entity = deviceService.getEntityById(entity.getId());
 		
-		IEntityField result = entity.getEntityField(item.getName());
-		if(result == null || !EntityFieldFloat.class.isAssignableFrom(result.getClass())) {
-			result = buildFloatField(entity, item);
-			result = deviceService.save(result);
+		IEntityField field = entity.getEntityField(item.getName());
+		if(field == null || !EntityFieldFloat.class.isAssignableFrom(field.getClass())) {
+			field = buildFloatField(entity, item);
+			field = deviceService.save(field);
+			
+			log.info("New entityField Float created " + ItemAbstractDto.fromItem(field));
 		}
 		
-		return (EntityFieldFloat) result;
+		return (EntityFieldFloat) field;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public EntityFieldBoolean getVirtualEntityFieldBooleanOrCreateNew(IEntity entity, ItemAbstractDto item,
+			ItemAbstractDto enabledValueTrue, ItemAbstractDto enabledValueFalse) {
+		entity = deviceService.getEntityById(entity.getId());
+		
+		IEntityField field = entity.getEntityField(item.getName());
+		if(field == null || !EntityFieldBoolean.class.isAssignableFrom(field.getClass())) {
+			field = buildBooleanField(entity, item);
+			
+			if(enabledValueTrue!=null && enabledValueFalse!=null) {
+				field.setEnabledValues(new HashSet<IEntityFieldEnabledValue>());
+				
+				addEntityFieldEnabledValueBoolean(field, true, enabledValueTrue);
+				addEntityFieldEnabledValueBoolean(field, false, enabledValueFalse);
+			}
+			field.setViewClass(EntityFieldClassView.EDC_CLASS_VIEW_BUTTON_BOOLEAN);
+			field = deviceService.save(field);
+			
+			log.info("New entityField Boolean created " + ItemAbstractDto.fromItem(field));
+		}
+		
+		return (EntityFieldBoolean) field;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void addEntityFieldEnabledValueBoolean(IEntityField field, boolean val, ItemAbstractDto dto) {
+		EntityFieldEnabledValueBoolean enVal = new EntityFieldEnabledValueBoolean();
+		enVal.setEntityField((EntityField) field);
+		enVal.setValue(val);
+		enVal.fromDto(dto);
+		
+		field.getEntityFieldEnabledValues().add(enVal);
 	}
 
 }

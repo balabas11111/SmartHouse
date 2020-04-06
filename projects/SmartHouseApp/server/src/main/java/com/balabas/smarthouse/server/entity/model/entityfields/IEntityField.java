@@ -24,6 +24,14 @@ public interface IEntityField<T> extends IItemAbstract {
 	
 	Float getValueAsFloat();
 	
+	default float getValueAsfloat() {
+		Float result = getValueAsFloat();
+		if(result==null) {
+			return -1;
+		}
+		return result.floatValue();
+	}
+	
 	Float getValueTmpAsFloat();
 	Integer getValueTmpAsInteger();
 	

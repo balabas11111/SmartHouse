@@ -48,4 +48,7 @@ public interface IEntityFieldService {
 
 	IEntityFieldValue getEntityFieldValue(IEntityField entityField);
 
+	Action getActionForEntityFieldBoolean(String actionName, IEntityField<Boolean> entityField,
+			boolean requiredState);
+
 }

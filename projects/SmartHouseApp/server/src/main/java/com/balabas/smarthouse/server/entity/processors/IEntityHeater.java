@@ -33,6 +33,9 @@ public class IEntityHeater extends IEntityAbstractChangeBox {
 	public static final ItemAbstractDto pumpFloorDto = new ItemAbstractDto(Emoji.BULB, "pumpFloor", "Насос пол");
 
 	public static final ItemAbstractDto fireringDto = new ItemAbstractDto(Emoji.FIRE, "firering", "Розжиг в процессе");
+	
+	public static final ItemAbstractDto fireringDtoTrue = new ItemAbstractDto(Emoji.FIRE, "разжечь", "Розжиг ВКЛ");
+	public static final ItemAbstractDto fireringDtoFalse = new ItemAbstractDto(Emoji.PHONE_OFF, "firering", "Розжиг ВЫКЛ");
 
 	public static final String MAX_BOILER = "maxB";
 	public static final String MAX_OUT_TEMP = "maxO";
@@ -81,34 +84,9 @@ public class IEntityHeater extends IEntityAbstractChangeBox {
 	@Setter
 	private boolean boilerPumpRequiredState = false;
 
-	@Override
-	public boolean check() {
-		boolean result = false;
-		int max = getParams().getInt(IEntityHeater.MAX_BOILER);
-
-		boolean hasPowerInAccu = heatAccuTop.getValueAsFloat() > max || heatAccuMiddle.getValueAsFloat() > max
-				|| heatAccuDown.getValueAsFloat() > max;
-
-		boolean isHeating = boilerOutTemp.getValueAsFloat() > getParams().getInt(IEntityHeater.MAX_OUT_TEMP);
-
-		boolean floorPumpIsOn = pumpFloor.getValue();
-		boolean boilerPumpIsOn = pumpBoiler.getValue();
-
-		boolean isFireringInProgress = fireingInProgress.getValue();
-
-		boolean floorPumpRequiredState = isHeating || isFireringInProgress || hasPowerInAccu;
-		boolean boilerPumpRequiredState = isHeating || isFireringInProgress;
-
-		result = floorPumpIsOn != floorPumpRequiredState || boilerPumpIsOn != boilerPumpRequiredState;
-
-		setChange(result);
-
-		setBoilerPumpRequiredState(boilerPumpRequiredState);
-		setFloorPumpRequiredState(floorPumpRequiredState);
-
-		return result;
-	}
-
+	@Getter
+	private final String defaultParameter = "{\"" + MAX_BOILER + "\":24, \"" + MAX_OUT_TEMP + "\":40}";
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public IEntityAbstractChangeBox build(IEntityAbstractProvider p, IItemAbstract item) {
@@ -129,9 +107,49 @@ public class IEntityHeater extends IEntityAbstractChangeBox {
 		setPumpElectroBoiler(p.getFieldBoolean(pumps, pumpElectroBoilerDto));
 		setPumpFloor(p.getFieldBoolean(pumps, pumpFloorDto));
 
-		setFireingInProgress(p.getFieldBoolean(pumps, fireringDto));
+		setFireingInProgress(p.getFieldBoolean(pumps, fireringDto, fireringDtoTrue, fireringDtoFalse));
 		
 		return this;
+	}
+	
+	@Override
+	public boolean check() {
+		boolean result = false;
+		int max = getParams().getInt(IEntityHeater.MAX_BOILER);
+
+		boolean hasPowerInAccu = heatAccuTop.getValueAsfloat() > max || heatAccuMiddle.getValueAsfloat() > max
+				|| heatAccuDown.getValueAsfloat() > max;
+
+		boolean isHeating = boilerOutTemp.getValueAsfloat() > getParams().getInt(IEntityHeater.MAX_OUT_TEMP);
+
+		boolean floorPumpIsOn = getValOrFalse(pumpFloor);
+		boolean boilerPumpIsOn = getValOrFalse(pumpBoiler);
+
+		boolean isFireringInProgress = getValOrFalse(fireingInProgress);
+
+		boolean floorPumpRequiredState = isHeating || isFireringInProgress || hasPowerInAccu;
+		boolean boilerPumpRequiredState = isHeating || isFireringInProgress;
+
+		result = floorPumpIsOn != floorPumpRequiredState || boilerPumpIsOn != boilerPumpRequiredState;
+
+		setChange(result);
+
+		setBoilerPumpRequiredState(boilerPumpRequiredState);
+		setFloorPumpRequiredState(floorPumpRequiredState);
+
+		return result;
+	}
+
+	@Override
+	protected boolean executeChange(IEntityAbstractProvider p) {
+		boolean result = true;
+		//TODO: move this method into box
+		if (isChange()) {
+			result = p.changeEntityFieldState(getPumpBoiler(), isBoilerPumpRequiredState());
+			result = p.changeEntityFieldState(getPumpFloor(), isFloorPumpRequiredState()) && result;
+		}
+
+		return result;
 	}
 
 }

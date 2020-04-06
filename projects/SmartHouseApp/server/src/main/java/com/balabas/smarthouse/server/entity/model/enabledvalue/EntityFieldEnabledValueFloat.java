@@ -22,4 +22,9 @@ public class EntityFieldEnabledValueFloat extends EntityFieldEnabledValue<Float>
 		return this.value.toString();
 		
 	}
+
+	@Override
+	public Class<?> getClazz() {
+		return Float.class;
+	}
 }

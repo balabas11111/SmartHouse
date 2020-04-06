@@ -221,7 +221,7 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	@Override
 	public boolean isButton() {
 		return Boolean.class.equals(getClazz())
-				&& getViewClass().isButton();
+				&& getViewClass()!= null && getViewClass().isButton();
 	}
 	
 	@Override

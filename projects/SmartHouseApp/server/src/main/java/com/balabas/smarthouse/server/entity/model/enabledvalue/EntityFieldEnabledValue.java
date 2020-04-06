@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 
 import org.json.JSONObject;
 
+import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
@@ -58,6 +59,12 @@ public abstract class EntityFieldEnabledValue<T> implements IEntityFieldEnabledV
 	public String buildDataForCallBack() {
 		return new JSONObject()
 				.put(entityField.getName(), getValueStr()).toString();
+	}
+	
+	public void fromDto(ItemAbstractDto dto) {
+		this.emoji = dto.getEmoji();
+		this.actionDescription = dto.getName();
+		this.description = dto.getDescription();
 	}
 	
 }
