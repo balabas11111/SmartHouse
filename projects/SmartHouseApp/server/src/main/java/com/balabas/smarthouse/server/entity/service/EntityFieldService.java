@@ -165,21 +165,22 @@ public class EntityFieldService implements IEntityFieldService {
 
 	@Override
 	public List<Action> getActionsForEntityField(String actionName, IEntityField entityField) {
+		boolean isVirtual = entityField.isVirtualized();
 		return getCommandsForEntityField(entityField).stream()
-				.map(ef -> Action.fromEntityFieldEnabledValue(actionName, ef)).collect(Collectors.toList());
+				.map(ef -> Action.fromEntityFieldEnabledValue(actionName, ef, isVirtual)).collect(Collectors.toList());
 	}
 
-	@SuppressWarnings("unused")
 	@Override
 	public Action getActionForEntityFieldBoolean(String actionName, IEntityField<Boolean> entityField,
 			boolean requiredState) {
+		boolean isVirtual = entityField.isVirtualized();
 		List<IEntityFieldEnabledValue> enVals = getCommandsForEntityField(entityField);
 		
 		for(IEntityFieldEnabledValue value : enVals) {
 			if(Boolean.class.equals(value.getClazz())) {
 				EntityFieldEnabledValueBoolean valB = (EntityFieldEnabledValueBoolean) value;
 				if(valB!=null && valB.getValue()!=null && valB.getValue().booleanValue() == requiredState) {
-					return Action.fromEntityFieldEnabledValue(actionName, valB);
+					return Action.fromEntityFieldEnabledValue(actionName, valB, isVirtual);
 				}
 			}
 		}

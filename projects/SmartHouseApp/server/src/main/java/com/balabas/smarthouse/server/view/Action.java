@@ -24,6 +24,7 @@ import lombok.Setter;
 
 @AllArgsConstructor
 @Builder
+@SuppressWarnings("rawtypes")
 public class Action {
 
 	public static final String CALLBACK_SPLITTER = ";";
@@ -265,15 +266,17 @@ public class Action {
 				entity.getName());
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static Action fromEntityFieldEnabledValue(String actionName,
-			IEntityFieldEnabledValue entityFieldEnabledValue) {
+			IEntityFieldEnabledValue entityFieldEnabledValue, boolean virtual) {
 		EntityField entityField = entityFieldEnabledValue.getEntityField();
 		Entity entity = entityFieldEnabledValue.getEntityField().getEntity();
 
+		String entityDescription = virtual ? entityField.getDescriptionByDescriptionField() : entity.getDescription();
+		
 		String description = Optional.ofNullable(entityFieldEnabledValue.getEmoji()).orElse(Emoji.EMPTY_EMOJI)
-				.toString() + entity.getDescription() + " : " + entityFieldEnabledValue.getActionDescription();
+				.toString() + entityDescription + " : " + entityFieldEnabledValue.getActionDescription();
 
+		
 		return new Action(actionName, entityFieldEnabledValue.buildDataForCallBack(), description, ID_TYPE_ENTITY,
 				entity.getId(), entityField.getId());
 	}
@@ -322,12 +325,10 @@ public class Action {
 		return (new Action(actionName, data, "", actionType, targetId)).getCallbackData();
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static String callback(String actionName, IEntityField entityField) {
 		return Action.callback(actionName, entityField.getName(), entityField.getEntity());
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static String callback(String actionName, String data, IEntityField entityField) {
 		return Action.callback(actionName, data, entityField.getEntity());
 	}
@@ -393,6 +394,10 @@ public class Action {
 
 	public void rebuildCallbackData() {
 		this.callbackData = buildCallBackData();
+	}
+
+	public static Action  fromEntityFieldEnabledValue(String actionName, IEntityFieldEnabledValue ef) {
+		return fromEntityFieldEnabledValue(actionName, ef, false);
 	}
 
 }
