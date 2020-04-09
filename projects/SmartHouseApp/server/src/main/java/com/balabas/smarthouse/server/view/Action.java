@@ -31,7 +31,9 @@ public class Action {
 	public static final String CALLBACK_TYPE_ACTION = "Act";
 
 	public static final String ACTION_TYPE_UNKNOWN                  = "NUL";
+	public static final String ACTION_TYPE_VIEW_APP_BUTTONS         = "vab";
 	public static final String ACTION_TYPE_RESTART_APPLICATION      = "rea";
+	public static final String ACTION_TYPE_HIDE_REPLY_KEYBOARD      = "hrk";
 	public static final String ACTION_TYPE_VIEW_MAIN_COMMANDS       = "vmc";
 	public static final String ACTION_TYPE_VIEW_ALL_DEVICE_VALUE_LIST = "vdl";
 	public static final String ACTION_TYPE_VIEW_HELP                = "vhp";

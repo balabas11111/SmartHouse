@@ -28,6 +28,8 @@ import com.google.common.collect.Lists;
 
 import lombok.extern.log4j.Log4j2;
 
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_APP_BUTTONS;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_HIDE_REPLY_KEYBOARD;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE_EDIT_FIELDS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SAVE_DEVICE_PROPERTY;
@@ -157,8 +159,12 @@ public class SmartHouseBotHandler extends BaseLogPollingBotHandler {
 				msgs.add(messageBuilder.createServerWillBeRestartedMsg(context));
 				serverManageService.restartServer(5);
 				break;
+			case ACTION_TYPE_VIEW_APP_BUTTONS:
 			case ACTION_TYPE_VIEW_MAIN_COMMANDS:
-				msgs.addAll(messageBuilder.createViewOfMainCommands(action, context));
+				msgs.addAll(messageBuilder.createRefreshDevicesListReplyKeyboard(context));
+				break;
+			case ACTION_TYPE_HIDE_REPLY_KEYBOARD:
+				msgs.add(messageBuilder.createHideReplyKeyboardMessage(action, context));
 				break;
 			case ACTION_TYPE_VIEW_ALL_DEVICES:
 				msgs.addAll(messageBuilder.createViewOfDevices(action, context));

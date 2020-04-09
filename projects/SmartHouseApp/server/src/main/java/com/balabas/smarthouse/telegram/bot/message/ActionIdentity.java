@@ -7,6 +7,8 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_HELP;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_METRICS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_DEVICES;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_APP_BUTTONS;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_HIDE_REPLY_KEYBOARD;
 
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_HOME;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_ROOT;
@@ -14,6 +16,7 @@ import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.CO
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_ALARM;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_EDIT;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_HELP;
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_HIDE;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,8 +27,10 @@ import com.google.common.collect.Lists;
 public class ActionIdentity {
 
 	public static List<ActionIdentity> identities = Arrays.asList(
+			new ActionIdentity(null, Arrays.asList(COMMAND_HIDE), ACTION_TYPE_HIDE_REPLY_KEYBOARD),
+			new ActionIdentity(null, Arrays.asList(COMMAND_ROOT), ACTION_TYPE_VIEW_APP_BUTTONS),
 			new ActionIdentity(Arrays.asList(ItemTextHelper.getMetricsButton()),
-					Arrays.asList(COMMAND_HOME, COMMAND_ROOT), ACTION_TYPE_VIEW_ALL_METRICS),
+					Arrays.asList(COMMAND_HOME), ACTION_TYPE_VIEW_ALL_METRICS),
 			new ActionIdentity(Arrays.asList(ItemTextHelper.getDevicesListButton()),
 					Lists.newArrayList(), ACTION_TYPE_VIEW_ALL_DEVICES),
 			new ActionIdentity(Arrays.asList(ItemTextHelper.getSetupButton()), 
