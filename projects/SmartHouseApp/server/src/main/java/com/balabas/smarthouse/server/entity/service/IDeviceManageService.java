@@ -83,7 +83,7 @@ public interface IDeviceManageService {
 
 	List<EntityFieldValue> getLastEntityFieldValuesForEntity(Long entityId);
 
-	List<Entity> getEntitiesForDevice(Long deviceId);
+	List<IEntity> getEntitiesForDevice(Long deviceId);
 
 	DeviceEntityFieldActionHolder getValueActionHolder(Long deviceId);
 

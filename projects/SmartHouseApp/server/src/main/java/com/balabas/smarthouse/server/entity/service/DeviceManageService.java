@@ -999,7 +999,7 @@ public class DeviceManageService implements IDeviceManageService {
 	}
 
 	@Override
-	public List<Entity> getEntitiesForDevice(Long deviceId) {
+	public List<IEntity> getEntitiesForDevice(Long deviceId) {
 		Set<Entity> entities = getDeviceById(deviceId).getEntities(); 
 		return entities.stream()
 				.filter(e -> ItemType.SENSORS.equals(e.getGroup().getType())).sorted(ItemAbstract::compareByName)
@@ -1010,6 +1010,11 @@ public class DeviceManageService implements IDeviceManageService {
 	public DeviceEntityFieldActionHolder getValueActionHolder(Long deviceId) {
 		DeviceEntityFieldActionHolder holder = new DeviceEntityFieldActionHolder();
 		IDevice device = getDeviceById(deviceId);
+		
+		holder.setDevice(device);
+		
+		holder.setSensors(getEntitiesForDevice(device.getId()));
+		
 		List<IEntityField> entityFields = getCurrentEntityFieldsForDevice(deviceId);
 
 		for (IEntityField entityField : entityFields) {

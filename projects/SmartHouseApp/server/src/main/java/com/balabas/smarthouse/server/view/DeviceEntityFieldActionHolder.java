@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Container;
+import com.balabas.smarthouse.server.entity.model.IDevice;
+import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.util.SortingUtility;
 import com.google.common.collect.Lists;
@@ -14,6 +16,12 @@ import lombok.Setter;
 
 @SuppressWarnings("rawtypes")
 public class DeviceEntityFieldActionHolder {
+	
+	@Getter @Setter
+	private IDevice device;
+	
+	@Getter @Setter
+	private List<IEntity> sensors; 
 	
 	@Getter
 	private Map<String, List<IEntityField>> entityFieldsCalculated = new LinkedHashMap<>();

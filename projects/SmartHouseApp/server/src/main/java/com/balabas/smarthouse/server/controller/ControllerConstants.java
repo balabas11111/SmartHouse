@@ -10,6 +10,7 @@ public class ControllerConstants {
 	public static final String CROSS_ORIGIN_80 = "http://localhost:80";
 	public static final String MOCK = "/mock";
 	public static final String API_V1 = "/api/v1";
+	public static final String INDEX_ROOT = "/index";
 	public static final String DEVICES_ROOT = "/devices";
 	
 	public static final String DEVICES_ROOT_V1 = API_V1 + DEVICES_ROOT;
@@ -27,6 +28,12 @@ public class ControllerConstants {
 	public static final String ATTR_CHART_DATA_Y  = "chartDataY";
 	public static final String ATTR_CHART_DATA    = "chartData";
 	public static final String ATTR_PAGE_REFRESH_INTERVAL = "refreshTimeout";
+	public static final String ATTR_PAGE_TITLE = "pageTitle";
+	public static final String ATTR_PAGE_URL = "pageUrl";
+	public static final String ATTR_PAGE_DATETIME = "dateTime";
+	
+	public static final String ATTR_DEVICES = "devices";
+	public static final String ATTR_VIRTUAL = "virtual";
 	
 	//urls
 	public static final String URL_REDIRECT_PREFFIX   = "redirect:";

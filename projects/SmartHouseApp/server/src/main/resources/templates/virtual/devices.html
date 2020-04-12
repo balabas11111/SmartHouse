@@ -2,40 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title th:text="'Устройства сервера '">Устройства сервера</title>
-	<!-- Bootstrap -->
-	<link href="../css/bootstrap.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="../css/font-awesome.min.css" />
-	<link rel="stylesheet" href="../css/font-awesome.css" />
-	<link rel="stylesheet" href="../js/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="../css/isotope.css" media="screen" />
-	<link rel="stylesheet" href="../css/style.css">
-	
+	<title>Устройства сервера</title>
+	<th:block th:replace="templates :: headImports" ></th:block>
 </head>
 
 <body>
-	<header>
-		<div class="main-menu">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-4">
-						<h1><a class="navbar-brand" th:href="${baseUrl} + '/virtual/devices'" data-0="line-height:90px;" data-300="line-height:50px;"
-								> Виртуальные устройства
-							</a></h1>
-					</div>
-					<div th:replace="templates :: mainMenuFull"></div>
-				</div>
-			</div>
-		</div>
-	</header>
-	<!--
-  <div class="slider text-center">
-    <img src="img/main-bg.png" alt="" />
-  </div>
--->
+	<header th:replace="templates :: MainPageHeaderMenuFull(url=${baseUrl + '/virtual/devices'}, text=${'Виртуальные устройства'})"></header>
 	<div th:replace="templates :: link-content-virtual"></div>
 
 	<!-- column content -->
@@ -73,16 +45,7 @@
 	<!-- end column content -->
 	<footer th:replace="templates :: footer"></footer>
 
-	<script src="../js/jquery.min.js"></script>
-	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="../js/bootstrap.min.js"></script>
-	<script src="../js/jquery.isotope.min.js"></script>
-	<script src="../js/fancybox/jquery.fancybox.pack.js"></script>
-	<script src="../js/wow.min.js"></script>
-	<script src="../js/functions.js"></script>
-	<script type="text/javascript">
-		new WOW().init();
-	</script>
+	<div th:replace="templates :: imports" th:remove="tag"></div>
 
 </body>
 

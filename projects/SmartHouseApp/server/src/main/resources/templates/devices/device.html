@@ -2,67 +2,27 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta th:if="${#vars.containsVariable('refreshTimeout')}" http-equiv="refresh" th:attr="content=${refreshTimeout}">
-	<title th:text="'Устройство ' + ${device.description}">Устройство</title>
-
-	<!-- Bootstrap -->
-	<link href="css/bootstrap.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="css/font-awesome.min.css" />
-	<link rel="stylesheet" href="css/font-awesome.css" />
-	<link href="css/default.css" rel="stylesheet" />
-	<link rel="stylesheet" href="css/animate.css" />
-	<link rel="stylesheet" href="js/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="css/isotope.css" media="screen" />
-	<link rel="stylesheet" href="css/style.css">
-	
+	<th:block th:replace="templates :: headImports" ></th:block>
 </head>
 
 <body>
-	<header>
-		<div class="main-menu">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-4">
-
-						<h3><a class="navbar-brand" th:href="@{~/device?id={id}(id=${device.id})}" data-0="line-height:90px;"
-								data-300="line-height:50px;" th:text="${device.getEmojiDescriptionByDescriptionField()}"> Hidayah
-							</a>
-						</h3>
-					</div>
-
-					<div th:replace="templates :: mainMenu"></div>
-				</div>
-			</div>
-		</div>
-	</header>
+	<header th:replace="templates :: MainPageHeader(url=${pageUrl}, text=${pageTitle})"></header>
 
 	<div class="container">
 
-		<div th:replace="devices/templates :: DeviceHeader(device=${device}, holder=${holder})"></div>
+		<div th:replace="devices/templates :: DeviceHeader(device=${holder.device}, holder=${holder})"></div>
 
 		<div id="sensorsContent" style="display: flex; flex-wrap: wrap;">
-			<div th:each="entity : ${sensors}" class="panel panel-default"
+			<div th:each="entity : ${holder.sensors}" class="panel panel-default"
 				style="width: 400px; float: left; min-width: 300px; margin: 5px;">
-				<div>
-				 <label th:text="${entity.getEmojiDescriptionByDescriptionField()}" class="panel-heading">Entity Heading</label>
-				 <div th:replace="templates :: AlarmState(alarms=${holder.getAlarms()}, item=${entity})"></div>
-				</div>
+				
+				<div th:replace="devices/templates :: EntityHeader(entity=${entity}, holder=${holder})"></div>
+				
 				<div class="panel-body">
-					<table id="devicesTable" class="table table-striped">
-						<tbody>
-							<tr th:each="entityField : ${holder.getEntityFields().get(entity.name)}">
-								<th:block th:replace="devices/templates :: EntityFieldMeasured(entityField=${entityField}, alarms=${holder.getAlarms()})"></th:block>
-							</tr>
-							<tr th:each="entityField : ${holder.getEntityFieldsImageable().get(entity.name)}">
-								<th:block th:replace="devices/templates :: EntityFieldImageable(entityField=${entityField}, alarms=${holder.getAlarms()})"></th:block>
-							</tr>
-						</tbody>
-					</table>
+					<table tr:replace="devices/templates :: EntityFieldsHolder(entity=${entity}, holder=${holder})"></table>
 
-					<table th:replace="devices/templates :: EntityActionsHolder(device=${device}, entityActions=${holder.getActionByName(entity.name)})"></table>
+					<!--  <table th:replace="devices/templates :: EntityActionsHolder(entity=${entity), holder=${holder})"></table>
+					-->
 					
 				</div>
 			</div>

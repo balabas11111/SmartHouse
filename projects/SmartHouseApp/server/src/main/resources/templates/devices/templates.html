@@ -4,6 +4,24 @@
 
 <body>
 
+	<div id="link-content-devices" th:fragment="link-content-devices">
+		<a th:href="@{~/devices?v=true}" class="btn">Гаджеты</a>
+		<a th:href="@{~/devices?v=false}" class="btn">Устройства</a>
+	</div>
+	
+	<ul class="nav nav-tabs" th:fragment="link-content-tabs">
+	  <li class="active"><a data-toggle="tab" href="#panelVirtualDevices">Виртуальные устройства</a></li>
+	  <li><a data-toggle="tab" href="#panelDevices">Физические устройства</a></li>
+	</ul>
+	
+	<ul class="nav nav-tabs" th:fragment="link-content-devicesTabs">
+	  <li th:if="${virtual}" class="active"><a th:href="@{~/devices?v=true}" class="btn">Гаджеты</a></li>
+	  <li th:if="${virtual}"><a th:href="@{~/devices?v=false}" class="btn">Устройства</a></li>
+	   
+	  <li th:unless="${virtual}"><a th:href="@{~/devices?v=true}" class="btn">Гаджеты</a></li>
+	  <li th:unless="${virtual}" class="active"><a th:href="@{~/devices?v=false}" class="btn">Устройства</a></li>
+	</ul>
+
 	<tr th:fragment="EmojiRow(emojis, emojiCode)">
 		<td>Картинка</td>
 		<td><select class="mdb-select md-form" name="emojiCode">
@@ -13,6 +31,16 @@
 					1</option>
 		</select></td>
 	</tr>
+
+	<div th:fragment="DevicesTable(virtual, devices)">
+		<div th:if="${virtual}">
+			<a th:href="@{~/virtual/devices}" class="btn btn-default">Редактирование</a>
+			<table th:replace="devices/templates :: VirtualDeviceListTable(devices=${devices})"></table>
+		</div>
+		<div th:unless="${virtual}">
+			<table th:replace="devices/templates :: ItemAbstractListTable(devices=${devices})"></table>
+		</div>
+	</div>
 
 	<table class="table table-dark table-striped"
 		th:fragment="VirtualDeviceListTable(devices)">
@@ -69,13 +97,29 @@
 			</tr>
 		</tbody>
 	</table>
+	
+	<div th:fragment="EntityHeader(entity, holder)">
+	 	<label th:text="${entity.getEmojiDescriptionByDescriptionField()}" class="panel-heading">Entity Heading</label>
+	 	<div th:replace="templates :: AlarmState(alarms=${holder.getAlarms()}, item=${entity})"></div>
+	</div>
+	
+	<table th:fragment="EntityFieldsHolder(entity, holder)" id="devicesTable" class="table table-striped">
+		<tbody>
+			<tr th:each="entityField : ${holder.getEntityFields().get(entity.name)}">
+				<th:block th:replace="devices/templates :: EntityFieldMeasured(entityField=${entityField}, alarms=${holder.getAlarms()})"></th:block>
+			</tr>
+			<tr th:each="entityField : ${holder.getEntityFieldsImageable().get(entity.name)}">
+				<th:block th:replace="devices/templates :: EntityFieldImageable(entityField=${entityField}, alarms=${holder.getAlarms()})"></th:block>
+			</tr>
+		</tbody>
+	</table>
 
-	<table th:fragment="EntityActionsHolder(device, entityActions)"
+	<table th:fragment="EntityActionsHolder(entity, holder)"
 		id="actionsTable" class="table table-striped">
 		<tbody>
-			<tr th:each="entityAction : ${entityActions}">
+			<tr th:each="entityAction : ${holder.getActionByName(entity.name)}">
 				<th:block
-					th:replace="devices/templates :: EntityAction(device=${device}, entityAction=${entityAction})"></th:block>
+					th:replace="devices/templates :: EntityAction(device=${holder.device}, entityAction=${entityAction})"></th:block>
 			</tr>
 		</tbody>
 	</table>

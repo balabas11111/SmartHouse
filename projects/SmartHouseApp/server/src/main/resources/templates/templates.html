@@ -194,6 +194,23 @@
 			</tr>
 		</tbody>
 	</table>
+	
+	<th:block th:fragment="headImports">
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<meta th:if="${#vars.containsVariable('refreshTimeout')}" http-equiv="refresh" th:attr="content=${refreshTimeout}">
+		<title th:if="${#vars.containsVariable('pageTitle')}" th:text="pageTitle"></title>
+		
+	    <!-- Bootstrap -->
+		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" href="css/font-awesome.css" />
+		<link rel="stylesheet" href="js/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="css/isotope.css" media="screen" />
+		<link rel="stylesheet" href="css/style.css">
+	</th:block>
 
 	<th:block th:fragment="imports">
 	    <script src="js/jquery.min.js"></script>
@@ -205,6 +222,35 @@
 		<script src="js/functions.js"></script>
 		<script src="js/pageInit.js"></script>
 	</th:block>
+	
+	<header th:fragment="MainPageHeader(url, text)">
+		<div class="main-menu">
+			<div class="container">
+				<div class="row">
+					<div th:replace="templates :: MainPageText(url=${url}, text=${text})"></div>
+					<div th:replace="templates :: mainMenu"></div>
+				</div>
+			</div>
+		</div>
+	</header>
+	
+	<header th:fragment="MainPageHeaderMenuFull(url, text)">
+		<div class="main-menu">
+			<div class="container">
+				<div class="row">
+					<div th:replace="templates :: MainPageText(url=${url}, text=${text})"></div>
+					<div th:replace="templates :: mainMenuFull"></div>
+				</div>
+			</div>
+		</div>
+	</header>
+	
+	<div th:fragment="MainPageText(url, text)"  class="col-md-4">
+		<h1><a class="navbar-brand" th:href="${url}" data-0="line-height:90px;" data-300="line-height:50px;"
+				th:text="${text}"> Hidayah
+			</a>
+		</h1>
+	</div>
 
 	<footer id="footer" th:fragment="footer">
 		<section id="footer" class="section footer">
