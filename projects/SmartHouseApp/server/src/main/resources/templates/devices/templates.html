@@ -100,7 +100,7 @@
 	
 	<div th:fragment="EntityHeader(entity, holder)">
 	 	<label th:text="${entity.getEmojiDescriptionByDescriptionField()}" class="panel-heading">Entity Heading</label>
-	 	<div th:replace="templates :: AlarmState(alarms=${holder.getAlarms()}, item=${entity})"></div>
+	 	<div th:replace="templates :: AlarmStatesBlock(alarms=${holder.getAlarms()}, item=${entity})" th:remove="tag"></div>
 	</div>
 	
 	<table th:fragment="EntityFieldsHolder(entity, holder)" id="devicesTable" class="table table-striped">
