@@ -19,10 +19,26 @@
 				<div th:replace="devices/templates :: EntityHeader(entity=${entity}, holder=${holder})"></div>
 				
 				<div class="panel-body">
-					<table tr:replace="devices/templates :: EntityFieldsHolder(entity=${entity}, holder=${holder})"></table>
 
-					<!--  <table th:replace="devices/templates :: EntityActionsHolder(entity=${entity), holder=${holder})"></table>
-					-->
+					<table id="devicesTable" class="table table-striped">
+						<tbody>
+							<tr th:each="entityField : ${holder.getEntityFields().get(entity.name)}">
+								<th:block th:replace="devices/templates :: EntityFieldMeasured(entityField=${entityField}, alarms=${holder.getAlarms()})"></th:block>
+							</tr>
+							<tr th:each="entityField : ${holder.getEntityFieldsImageable().get(entity.name)}">
+								<th:block th:replace="devices/templates :: EntityFieldImageable(entityField=${entityField}, alarms=${holder.getAlarms()})"></th:block>
+							</tr>
+						</tbody>
+					</table>
+	
+					<table id="actionsTable" class="table table-striped">
+						<tbody>
+							<tr th:each="entityAction : ${holder.getActionByName(entity.name)}">
+								<th:block
+									th:replace="devices/templates :: EntityAction(device=${holder.device}, entityAction=${entityAction})"></th:block>
+							</tr>
+						</tbody>
+					</table>
 					
 				</div>
 			</div>

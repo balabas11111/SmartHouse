@@ -195,6 +195,23 @@
 		</tbody>
 	</table>
 	
+	<th:block th:fragment="headImportsUp">
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<meta th:if="${#vars.containsVariable('refreshTimeout')}" http-equiv="refresh" th:attr="content=${refreshTimeout}">
+		<title th:if="${#vars.containsVariable('pageTitle')}" th:text="pageTitle"></title>
+		
+	    <!-- Bootstrap -->
+		<link href="../css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../css/font-awesome.css" />
+		<link rel="stylesheet" href="../js/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="../css/isotope.css" media="screen" />
+		<link rel="stylesheet" href="../css/style.css">
+	</th:block>
+	
 	<th:block th:fragment="headImports">
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -210,6 +227,17 @@
 		<link rel="stylesheet" href="js/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
 		<link rel="stylesheet" type="text/css" href="css/isotope.css" media="screen" />
 		<link rel="stylesheet" href="css/style.css">
+	</th:block>
+
+	<th:block th:fragment="importsUp">
+	    <script src="../js/jquery.min.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="../js/bootstrap.min.js"></script>
+		<script src="../js/jquery.isotope.min.js"></script>
+		<script src="../js/fancybox/jquery.fancybox.pack.js"></script>
+		<script src="../js/wow.min.js"></script>
+		<script src="../js/functions.js"></script>
+		<script src="../js/pageInit.js"></script>
 	</th:block>
 
 	<th:block th:fragment="imports">

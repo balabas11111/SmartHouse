@@ -65,11 +65,7 @@ public class ViewDeviceController {
 
 	@GetMapping("/index")
 	public String getDevicesIndex(Model model) {
-		model.addAttribute(ATTR_SERVER_NAME, serverName);
-		model.addAttribute("realDevices", deviceService.getDevicesNotVirtualized());
-		model.addAttribute("virtualDevices", virtualDeviceService.getDevices());
-		
-		return "index.html";
+		return getRoot(model);
 	}
 	
 	@GetMapping(DEVICES_ROOT)
