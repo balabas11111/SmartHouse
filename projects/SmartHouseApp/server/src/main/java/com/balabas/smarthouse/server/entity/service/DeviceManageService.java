@@ -1243,7 +1243,8 @@ public class DeviceManageService implements IDeviceManageService {
 				entityField, requiredState);
 		
 		if(action!=null) {
-			sendActionToEntityField(entityField, action.getAction());
+			action.rebuildCallbackData();
+			sendActionToEntityField(entityField, action.getData());
 			return true;
 		} else {
 			log.error("Failed find action " + requiredState+ " field=" + ItemAbstractDto.fromItem(entityField));
@@ -1253,12 +1254,11 @@ public class DeviceManageService implements IDeviceManageService {
 	}
 	
 	@Override
-	public void sendActionToEntityField(IEntityField field, String action) {
+	public void sendActionToEntityField(IEntityField field, String actionData) {
 		Long deviceId = field.getEntity().getDevice().getId();
 		Long entityId = field.getEntity().getId();
-		Long entityFieldId = field.getTargetEntity().getId();
-		
-		sendActionToDevice(deviceId, entityId, entityFieldId, action);
+
+		sendActionToDevice(deviceId, entityId, field.getId(), actionData);
 	}
 
 	@Override
@@ -1267,7 +1267,12 @@ public class DeviceManageService implements IDeviceManageService {
 		Long targetEntityId = entityId;
 		
 		if(targetEntityFieldId!=null) {
-			IEntityField targetField = getEntityFieldById(targetEntityFieldId); 
+			IEntityField entityField = getEntityFieldById(targetEntityFieldId);
+			IEntityField targetField = entityField.getTargetEntityField(); 
+			if(targetField == null) {
+				targetField = entityField;
+			}
+			
 			if(targetField!=null) {
 				targetEntityId = targetField.getEntity().getId();
 				targetDeviceId = targetField.getEntity().getDevice().getId();

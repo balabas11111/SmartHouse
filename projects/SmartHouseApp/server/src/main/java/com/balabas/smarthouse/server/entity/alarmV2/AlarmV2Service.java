@@ -30,6 +30,7 @@ import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.service.IActionTimerService;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
+import com.balabas.smarthouse.server.util.DateTimeUtil;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -61,6 +62,9 @@ public class AlarmV2Service implements IAlarmV2Service {
 	
 	@Autowired
 	IActionTimerService actionTimerService;
+	
+	@Autowired
+	AlarmStateChangeEntityRepository alarmStateChangeEntityRepository;
 
 	Map<String, List<IAlarmV2>> alarmMap = new HashMap<String, List<IAlarmV2>>();
 
@@ -199,6 +203,35 @@ public class AlarmV2Service implements IAlarmV2Service {
 		if (processor != null && processor.isTarget(event)) {
 			processor.process(event);
 		}
+		
+		saveAlarmStateChange(event);
+	}
+
+	private void saveAlarmStateChange(IItemEvent event) {
+		if(event.getOldState()!=null && !event.getOldState().equals(event.getNewState())) {
+			AlarmStateChangeEntity entity = buildEntity(event, event.getOldState(), null);
+			alarmStateChangeEntityRepository.save(entity);
+			
+			entity = buildEntity(event, event.getNewState(), event.getDescription());
+			alarmStateChangeEntityRepository.save(entity);
+			
+			log.info("State change saved old=" + event.getOldState() + " new=" + event.getNewState());
+		}
+	}
+	
+	private AlarmStateChangeEntity buildEntity(IItemEvent event, AlarmState alarmState, String description) {
+		AlarmStateChangeEntity entity = new AlarmStateChangeEntity();
+		
+		entity.setDateTime(DateTimeUtil.getDate());
+		entity.setAlarmState(alarmState);
+		entity.setValueInt(alarmState.getValueInt());
+		entity.setTargetAlarmId(event.getAlarm().getId());
+		entity.setType(event.getItem().getItemType());
+		if(description!=null) {
+			entity.setDescription(description);
+		}
+		
+		return entity;
 	}
 
 	private List<IItemEvent> buildEvent(IAlarmV2 alarm) {

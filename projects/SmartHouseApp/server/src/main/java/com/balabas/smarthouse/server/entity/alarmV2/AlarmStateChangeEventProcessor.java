@@ -25,6 +25,8 @@ public abstract class AlarmStateChangeEventProcessor implements IAlarmStateChang
 		logEvent(event);
 	}
 	
+	
+	
 	@Override
 	public boolean isTarget(IItemEvent event) {
 		return event!=null && !StringUtils.isEmpty(event.getChangeAction().getTargetBeanName())

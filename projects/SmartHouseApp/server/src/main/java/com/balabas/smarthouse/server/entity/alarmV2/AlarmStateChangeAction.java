@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -97,6 +98,11 @@ public class AlarmStateChangeAction extends ItemAbstract implements IAlarmStateC
 	@Override
 	public List<IItemAbstract> getAllChildren() {
 		return new ArrayList<>();
+	}
+	
+	@Override
+	public ItemType getItemType() {
+		return ItemType.ALARM;
 	}
 
 }

@@ -72,4 +72,9 @@ public class Group extends ItemAbstract implements IGroup {
 		
 		return result;
 	}
+	
+	@Override
+	public ItemType getItemType() {
+		return ItemType.GROUP;
+	}
 }

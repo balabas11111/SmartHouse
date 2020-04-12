@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.google.common.collect.Lists;
@@ -44,4 +45,8 @@ public class Metric extends ItemAbstract implements IMetrics {
     inverseJoinColumns = {@JoinColumn(name = "entity_field_id")})
 	protected Set<IEntityField> entityFields;
 	
+	@Override
+	public ItemType getItemType() {
+		return ItemType.CUSTOM;
+	}
 }

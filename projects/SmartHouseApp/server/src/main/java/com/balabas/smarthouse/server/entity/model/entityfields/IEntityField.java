@@ -16,6 +16,10 @@ public interface IEntityField<T> extends IItemAbstract {
 
 	Class getClazz();
 	
+	default IEntityField getTargetEntityField() {
+		return this;
+	}
+	
 	T getValue();
 	void setValueWithCheck(T value) throws BadValueException;
 	

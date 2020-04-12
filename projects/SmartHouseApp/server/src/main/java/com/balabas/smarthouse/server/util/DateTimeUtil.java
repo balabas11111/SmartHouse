@@ -31,4 +31,8 @@ public class DateTimeUtil {
 	public static long now() {
 		return (new Date()).getTime();
 	}
+	
+	public static Date getDate() {
+		return new Date();
+	}
 }

@@ -18,6 +18,7 @@ import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.descriptor.AbstractItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -147,6 +148,11 @@ public class Device extends ItemAbstract implements IDevice {
 		groups.stream().forEach(entity -> result.addAll(entity.getAllChildren()));
 		
 		return result;
+	}
+
+	@Override
+	public ItemType getItemType() {
+		return ItemType.DEVICE;
 	}
 	
 }

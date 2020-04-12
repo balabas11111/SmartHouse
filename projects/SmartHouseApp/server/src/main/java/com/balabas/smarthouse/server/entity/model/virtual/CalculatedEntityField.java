@@ -10,6 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.exception.BadValueException;
@@ -72,6 +73,11 @@ public class CalculatedEntityField extends ItemAbstract implements ICalculatedEn
 		if (applied && getCalculator() != null) {
 			getCalculator().calculate(getTargetEntityField(), getSourceEntityFields(), parameter);
 		}
+	}
+	
+	@Override
+	public ItemType getItemType() {
+		return ItemType.ENTITY_FIELD;
 	}
 
 }

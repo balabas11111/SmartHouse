@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
 import javax.persistence.ManyToMany;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
@@ -20,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @MappedSuperclass
+@Inheritance
 public abstract class AlarmV2 implements IAlarmV2 {
 
 	public static final Integer NO_MESSAGE_SEND_REPEATS = -1;

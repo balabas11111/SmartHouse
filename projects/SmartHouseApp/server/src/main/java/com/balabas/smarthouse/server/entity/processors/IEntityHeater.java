@@ -32,7 +32,7 @@ public class IEntityHeater extends IEntityAbstractChangeBox {
 			"Насос електробойлер");
 	public static final ItemAbstractDto pumpFloorDto = new ItemAbstractDto(Emoji.BULB, "pumpFloor", "Насос пол");
 
-	public static final ItemAbstractDto fireringDto = new ItemAbstractDto(Emoji.FIRE, "firering", "Розжиг в процессе");
+	public static final ItemAbstractDto fireringDto = new ItemAbstractDto(Emoji.FIRE, "firering", "Розжиг ");
 	
 	public static final ItemAbstractDto fireringDtoTrue = new ItemAbstractDto(Emoji.FIRE, "Начать розжиг", "Розжиг ВКЛ");
 	public static final ItemAbstractDto fireringDtoFalse = new ItemAbstractDto(Emoji.PHONE_OFF, "Стоп розжиг", "Розжиг ВЫКЛ");

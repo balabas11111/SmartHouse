@@ -24,6 +24,7 @@ import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.AbstractItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.exception.BadValueException;
@@ -312,5 +313,10 @@ public abstract class EntityField<T> extends ItemAbstract implements IEntityFiel
 	@Override
 	public List<IItemAbstract> getAllChildren() {
 		return Lists.newArrayList();
+	}
+	
+	@Override
+	public ItemType getItemType() {
+		return ItemType.ENTITY_FIELD;
 	}
 }
