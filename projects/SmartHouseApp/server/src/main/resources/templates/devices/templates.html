@@ -157,8 +157,8 @@
 		<td><a
 			th:href="@{~/executeAction_{deviceId}_{entityId}_{action}_{entityFieldId}_(deviceId=${device.id},entityId=${entityAction.getTargetId()},action=${entityAction.getData()},entityFieldId=${entityAction.getTargetId2()})}"
 			class="btn btn-default" th:text="${entityAction.getDescription()}">value</a>
-			<a
-			th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityAction.getTargetId2()})}">История</a>
+			<a title="История"
+			th:href="@{~/entityField?id={entityFieldId}(entityFieldId=${entityAction.getTargetId2()})}">&#x1F4CA;</a>
 		</td>
 	</th:block>
 
