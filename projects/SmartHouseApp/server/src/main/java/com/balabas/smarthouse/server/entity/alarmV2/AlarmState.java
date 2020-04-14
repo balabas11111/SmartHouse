@@ -10,7 +10,8 @@ public enum AlarmState {
 	NO_DATA(Emoji.INFO, "No data", "Нет данных", false, 0),
 	OK(Emoji.CHECK_MARK, "ok", "OK", false, 1),
 	WARNING(Emoji.WARNING, "Warning", "Предупреждение", true, 2),
-	ALARM(Emoji.CROSS_MARK_RED, "alarm", "Ошибка", true, 3);
+	ALARM(Emoji.CROSS_MARK_RED, "alarm", "Ошибка", true, 3),
+	ANY(Emoji.EMPTY_EMOJI, "any", "any", false, -1);
 	
 	Emoji emoji;
 	String name;
@@ -33,6 +34,11 @@ public enum AlarmState {
 	public String getDescription() {
 		return description;
 	}
+	
+	public Emoji getEmoji() {
+		return emoji;
+	}
+	
 	
 	public String getEmojiDescription() {
 		return emoji.toString() + " " +getDescription();

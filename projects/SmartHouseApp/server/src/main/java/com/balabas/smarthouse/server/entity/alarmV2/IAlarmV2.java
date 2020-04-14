@@ -12,7 +12,19 @@ import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 
 	default Emoji getEmoji() {
-		return getAlarmState().emoji;
+		List<IAlarmStateChangeAction> actions = getCurrentActions();
+		
+		Emoji result = getAlarmState().getEmoji();
+		
+		if(actions!=null && !actions.isEmpty()) {
+			for(IAlarmStateChangeAction action : actions) {
+				if(!action.getEmoji().isEmpty()) {
+					result = action.getEmoji();
+					break;
+				}
+			}
+		}
+		return result;
 	}
 	
 	default String getEmojiStr() {
@@ -20,7 +32,6 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	}
 	
 	Long getItemId();
-	//void setItemId(Long itemId);
 	
 	Class<?> getTargetItemClass();
 	
@@ -48,16 +59,7 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	
 	boolean isInBadState();
 	boolean isRepeatable();
-	/*
-	AlarmV2Checker getChecker();
-	void setChecker(AlarmV2Checker checker);
-	
-	boolean check(IItemAbstract item);
-	
-	default boolean check() {
-		return check(getItem());
-	}
-	*/
+
 	void setMessageInterval(Integer messageInterval);
 	Integer getMessageInterval();
 	
@@ -84,6 +86,10 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	default String getUid() {
 		return "Alarm_" + getItem().getItemClassId() + "_" + getId();
 	}
+	
+	default String getAlarmStateEmojiDescription() {
+		return getAlarmState().getEmojiDescription();
+	}
 
 	boolean setAlarmStateByState(AlarmState alarmState);
 
@@ -98,6 +104,8 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	boolean setAlarmStateByBooleanFlagWarning(boolean alarmed);
 
 	boolean setAlarmStateByBooleanFlag(boolean alarmed, AlarmState stateTrue, AlarmState stateFalse);
+
+	
 
 	
 

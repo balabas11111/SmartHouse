@@ -27,4 +27,5 @@ public interface IAlarmStateChangeAction extends IItemAbstract{
 	void setDispatchIfSameState(boolean dispatchIfSameState);
 
 	String getAlarmDescription(IItemAbstract item);
+	
 }

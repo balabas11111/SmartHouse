@@ -11,5 +11,7 @@ public class AlarmConstants {
 	public static final String CHECKER_DESCRIPTION_ENTITY_FIELD_TOO_LOW = "Значение поля < минимального";
 	public static final String CHECKER_DESCRIPTION_ENTITY_FIELD_TOO_LOW_WARN = "Значение поля < минимального";
 	
+	public static final String CHECKER_DESCRIPTION_ENTITY_FIELD_GROWS = "Значение поля растет или падает";
+	
 	public static final String CHECKER_DESCRIPTION_HEATER_ENTITY = "Проверка системы отопления";
 }

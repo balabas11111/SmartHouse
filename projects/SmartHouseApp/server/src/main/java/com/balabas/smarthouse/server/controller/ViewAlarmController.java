@@ -27,8 +27,10 @@ import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Checker;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2Service;
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.util.DateTimeUtil;
+import com.google.common.collect.Lists;
 
 @Controller
 public class ViewAlarmController {
@@ -71,12 +73,13 @@ public class ViewAlarmController {
 		ItemType it = ItemType.getItemTypeByName(itemType);
 		IAlarmV2 alarm = id > 0 ? alarmService.getAlarm(id, it) : alarmService.newAlarm(it);
 		List<AlarmV2Checker> checkers = alarmService.getCheckersByTargetItemClass(alarm.getTargetItemClass());
-
+		
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
 		model.addAttribute("alarm", alarm);
 		model.addAttribute("itemType", itemType);
 		model.addAttribute("currentCheckerName", alarm.getCheckerName());
 		model.addAttribute("checkers", checkers);
+		model.addAttribute("emojies", Lists.newArrayList(Emoji.values()));
 		model.addAttribute("targets", alarmService.getEnabledAlarmAbstractTargets(alarm));
 		if (!alarm.isNew()) {
 			model.addAttribute("alarmEvent", new AlarmStateChangeAction());
@@ -98,6 +101,7 @@ public class ViewAlarmController {
 	public String saveAlarmEvent(@ModelAttribute("alarmEvent") AlarmStateChangeAction action,
 			@RequestParam("alarmId") Long alarmId, @RequestParam("oldStateName") String oldStateName,
 			@RequestParam("newStateName") String newStateName,
+			@RequestParam(name="emojiName", required = false) String emojiName,
 			@RequestParam("itemType") String itemType, Model model) {
 
 		AlarmState oldState = AlarmState.getByName(oldStateName);
@@ -107,6 +111,10 @@ public class ViewAlarmController {
 		action.setNewState(newState);
 
 		ItemType it = ItemType.getItemTypeByName(itemType);
+		
+		Emoji emoji = Emoji.getByValue(emojiName);
+		
+		action.setEmoji(emoji);
 		
 		alarmService.addAlarmStateChangeActionToAlarm(alarmId, it, action);
 

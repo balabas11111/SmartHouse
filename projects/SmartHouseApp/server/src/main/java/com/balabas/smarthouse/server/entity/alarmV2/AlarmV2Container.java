@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.google.common.collect.Lists;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -70,31 +71,77 @@ public class AlarmV2Container {
 	public List<ItemAbstractDto> getStateHints(IItemAbstract item) {
 		List<ItemAbstractDto> result = new ArrayList<>();
 		
-		Map<AlarmState, List<IAlarmV2>> als = getAlarmsMap(item);
+		Map<String, List<IAlarmV2>> als = getAlarmsByStateEmojiAndStateDescription(item);
 		
-		als.keySet().forEach(state -> {
-			List<IAlarmV2> list = als.get(state);
+		als.keySet().forEach(emojiStateDescr -> {
+			List<IAlarmV2> list = als.get(emojiStateDescr);
 			
 			if(list!=null && !list.isEmpty()) {
 				int size = list.size();
 				
 				if(size>0) {
-					String name = state.emoji.toString();
-					
 					StringBuffer buf = new StringBuffer();
-					buf.append(name);
-					buf.append(" ");
-					buf.append(state.getDescription());
+					buf.append(emojiStateDescr);
 					buf.append(": ");
 					list.stream().forEach(a -> buf.append(a.getStateDescriptionsWithNextLine()));
 					
 					if(size>1) {
-						name += "("+size+")";
+						emojiStateDescr += "("+size+")";
 					}
 					
-					result.add(new ItemAbstractDto(0L, null, name, buf.toString()));
+					result.add(new ItemAbstractDto(0L, null, emojiStateDescr, buf.toString()));
 				}
 				
+			}
+		});
+		
+		return result;
+	}
+	
+	public Map<Emoji, List<IAlarmV2>> getAlarmsByStateEmoji(IItemAbstract item) {
+		Map<Emoji, List<IAlarmV2>> result = new LinkedHashMap<Emoji, List<IAlarmV2>>();
+		
+		Map<AlarmState, List<IAlarmV2>> als = getAlarmsMap(item);
+
+		
+		als.keySet().forEach(state -> {
+			List<IAlarmV2> list = als.get(state);
+			
+			if(list!=null) {
+				list.stream().forEach(alarm -> {
+					Emoji emoji = alarm.getEmoji();
+					
+					if(!result.containsKey(emoji)) {
+						result.put(emoji, new ArrayList<IAlarmV2>());
+					}
+					
+					result.get(emoji).add(alarm);
+				});
+			}
+		});
+		
+		return result;
+	}
+	
+	public Map<String, List<IAlarmV2>> getAlarmsByStateEmojiAndStateDescription(IItemAbstract item) {
+		Map<String, List<IAlarmV2>> result = new LinkedHashMap<String, List<IAlarmV2>>();
+		
+		Map<AlarmState, List<IAlarmV2>> als = getAlarmsMap(item);
+		
+		als.keySet().forEach(state -> {
+			List<IAlarmV2> list = als.get(state);
+			
+			if(list!=null) {
+				list.stream().forEach(alarm -> {
+					
+					String key = alarm.getAlarmStateEmojiDescription();
+					
+					if(!result.containsKey(key)) {
+						result.put(key, new ArrayList<IAlarmV2>());
+					}
+					
+					result.get(key).add(alarm);
+				});
 			}
 		});
 		

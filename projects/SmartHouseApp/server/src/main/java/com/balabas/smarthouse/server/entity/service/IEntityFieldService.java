@@ -51,4 +51,8 @@ public interface IEntityFieldService {
 	Action getActionForEntityFieldBoolean(String actionName, IEntityField<Boolean> entityField,
 			boolean requiredState);
 
+	List<IEntityFieldValue> getEntityFieldValuesByDate(IEntityField entityField, Date date1, Date date2);
+	
+	Boolean isEntityFieldValuesListGrows(List<IEntityFieldValue> values);
+
 }

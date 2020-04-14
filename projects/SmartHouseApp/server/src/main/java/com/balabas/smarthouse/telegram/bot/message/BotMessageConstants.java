@@ -28,7 +28,7 @@ public class BotMessageConstants {
 	public static final String BUTTON = "%s %s";
 	
 	public static final String VIEW_DEVICES_BUTTON = "%s Просмотр показателей";
-	public static final String VIEW_METRICS_BUTTON = "%s Метрики";
+	public static final String VIEW_METRICS_BUTTON = "%s Гаджеты";
 	public static final String VIEW_DEVICES_LIST_BUTTON = "%s Устройства";
 	public static final String SETUP_BUTTON = "%s Настройки";
 	

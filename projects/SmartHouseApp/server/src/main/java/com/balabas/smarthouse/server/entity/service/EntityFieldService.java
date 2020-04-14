@@ -58,6 +58,18 @@ public class EntityFieldService implements IEntityFieldService {
 			}
 		}
 	}
+	
+	@Override
+	public List<IEntityFieldValue> getEntityFieldValuesByDate(IEntityField entityField, Date date1, Date date2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public Boolean isEntityFieldValuesListGrows(List<IEntityFieldValue> values) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public List<IEntityFieldEnabledValue> getCommandsForEntityField(IEntityField entityField) {
@@ -186,4 +198,5 @@ public class EntityFieldService implements IEntityFieldService {
 		}
 		return null;
 	}
+
 }

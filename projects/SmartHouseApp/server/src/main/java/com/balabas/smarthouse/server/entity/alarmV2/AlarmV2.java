@@ -118,10 +118,13 @@ public abstract class AlarmV2 implements IAlarmV2 {
 
 	private boolean isCurrentAlarmStateChangeAction(IAlarmStateChangeAction action) {
 		try {
-			if (action.getOldState() == null) {
+			if (action.getOldState() == null ) {
 				if (!isStateChanged()) {
 					return false;
 				}
+				return this.getAlarmState().equals(action.getNewState());
+			}
+			if(AlarmState.ANY.equals(action.getOldState())) {
 				return this.getAlarmState().equals(action.getNewState());
 			}
 			if (action.getNewState() == null) {
@@ -194,11 +197,5 @@ public abstract class AlarmV2 implements IAlarmV2 {
 		
 		return builder.toString();
 	}
-	/*
-	 * @Override public void setItemId(Long itemId) { // TODO Auto-generated method
-	 * stub
-	 * 
-	 * }
-	 */
 
 }

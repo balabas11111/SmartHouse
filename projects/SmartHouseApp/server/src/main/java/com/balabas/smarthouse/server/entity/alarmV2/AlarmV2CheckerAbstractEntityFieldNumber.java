@@ -7,7 +7,9 @@ import com.balabas.smarthouse.server.util.MathUtil;
 @SuppressWarnings("rawtypes")
 public abstract class AlarmV2CheckerAbstractEntityFieldNumber {
 
-	protected abstract boolean checkItemValue(IAlarmV2 alarm);
+	protected boolean checkItemValue(IAlarmV2 alarm) {
+		return false;
+	}
 	
 	public Class<?> getItemClass() {
 		return IEntityField.class;
@@ -40,6 +42,15 @@ public abstract class AlarmV2CheckerAbstractEntityFieldNumber {
 	
 	protected Float getEntityFieldValueFloat(IEntityField entityField) {
 		return ((Number) entityField.getValue()).floatValue();
+	}
+	
+	protected Long getAlarmParameterAsLongOrElse(IAlarmV2 alarm, Long defaul) {
+		Long interval = defaul;
+		String params = alarm.getParameter();
+		if(MathUtil.isValidFloat(params)) {
+			interval = MathUtil.getAsFloat(params).longValue();
+		}
+		return interval;
 	}
 	
 

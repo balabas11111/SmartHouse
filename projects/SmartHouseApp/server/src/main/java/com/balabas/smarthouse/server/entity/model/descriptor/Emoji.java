@@ -3,6 +3,8 @@ package com.balabas.smarthouse.server.entity.model.descriptor;
 import java.util.Collection;
 import java.util.Map;
 
+import org.springframework.util.StringUtils;
+
 import com.google.common.collect.Maps;
 
 public enum Emoji {
@@ -104,6 +106,10 @@ public enum Emoji {
     	return this.code;
     }
     
+    public boolean isEmpty() {
+    	return Emoji.EMPTY_EMOJI.equals(this);
+    }
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("");
@@ -123,6 +129,13 @@ public enum Emoji {
     		return null;
     	}
     	return codeMap.getOrDefault(code, null);
+    }
+    
+    public static Emoji getByValue(String value) {
+    	if(StringUtils.isEmpty(value)) {
+    		return null;
+    	}
+    	return getAllEmojis().stream().filter(emoji -> emoji.toString().equals(value)).findFirst().orElse(null);
     }
 
 	public static Collection<Emoji> getAllEmojis() {
