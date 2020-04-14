@@ -32,9 +32,9 @@ public class AlarmV2CheckerEntityFieldNumberGrows extends AlarmV2CheckerAbstract
 	public void process(IAlarmV2 alarm) {
 		IEntityField entityField = getItemAsEntityField(alarm);
 		
-		Date date1 = DateTimeUtil.getDate();
+		Date date2 = DateTimeUtil.getDate();
 		
-		Date date2 = new Date(date1.getTime() - getAlarmParameterAsLongOrElse(alarm, DEFAULT_TIME));
+		Date date1 = new Date(date2.getTime() - getAlarmParameterAsLongOrElse(alarm, DEFAULT_TIME));
 		
 		Boolean grows = entityFieldService.isEntityFieldValuesListGrows(entityFieldService.getEntityFieldValuesByDate(entityField, date1, date2));
 
