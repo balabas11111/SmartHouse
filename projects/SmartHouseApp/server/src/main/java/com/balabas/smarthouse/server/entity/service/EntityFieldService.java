@@ -61,6 +61,13 @@ public class EntityFieldService implements IEntityFieldService {
 	
 	@Override
 	public List<IEntityFieldValue> getEntityFieldValuesByDate(IEntityField entityField, Date date1, Date date2) {
+		
+		if(date2.getTime() < date1.getTime()) {
+			Date dateTmp = date1;
+			
+			date1 = date2;
+			date2 = dateTmp;
+		}
 		return entityFieldValueRepository.getEntityFieldValuesByDate(entityField.getId(), date1, date2);
 	}
 	
