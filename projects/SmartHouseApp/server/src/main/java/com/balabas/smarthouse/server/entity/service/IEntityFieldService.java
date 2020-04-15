@@ -14,6 +14,10 @@ import com.balabas.smarthouse.server.view.Action;
 @SuppressWarnings("rawtypes")
 public interface IEntityFieldService {
 
+	Float getMinAllowedDiff();
+	
+	boolean isValueChanged(Float val1, Float val2);
+	
 	List<Action> getActionsForEntityField(String actionName, IEntityField entityField);
 	
 	List<IEntityFieldEnabledValue> getCommandsForEntityField(IEntityField entityField);
@@ -51,8 +55,14 @@ public interface IEntityFieldService {
 	Action getActionForEntityFieldBoolean(String actionName, IEntityField<Boolean> entityField,
 			boolean requiredState);
 
-	List<IEntityFieldValue> getEntityFieldValuesByDate(IEntityField entityField, Date date1, Date date2);
+	List<IEntityFieldValue> getEntityFieldValuesByDateRange(IEntityField entityField, Date date1, Date date2);
 	
 	Boolean isEntityFieldValuesListGrows(List<IEntityFieldValue> values);
+
+	void insertEntityFieldIncorrectValue(IEntityField entityField, String value);
+
+	List<IEntityFieldValue> getEntityFieldValuesLessThanDates(IEntityField entityField, Date date1, Date date2);
+
+	IEntityFieldValue getEntityFieldValuesLessThanDate(IEntityField entityField, Date date);
 
 }

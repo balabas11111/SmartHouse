@@ -79,7 +79,6 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueN
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
-import com.balabas.smarthouse.server.entity.repository.IEntityFieldIncorrectValueRepository;
 import com.balabas.smarthouse.server.util.MathUtil;
 import com.balabas.smarthouse.server.DeviceConstants;
 import com.balabas.smarthouse.server.entity.behaviour.IEntityBehaviourService;
@@ -101,9 +100,6 @@ public class SmartHouseItemBuildService {
 
 	private static List<String> notParsedAsEntityNames = Arrays.asList(ENTITY_FIELD_DESCRIPTION, EDC_FIELD_EMOJI);
 
-	@Value("${smarthouse.server.fields.data.changed.if.diff:0.001}")
-	private Float minDiff;
-	
 	@Value("${smarthouse.server.fields.data.save.unchanged.if.older.sec:600}")
 	private Long saveDataIfOlderSec;
 	
@@ -120,7 +116,7 @@ public class SmartHouseItemBuildService {
 	IEntityBehaviourService entityBehaviourService;
 	
 	@Autowired
-	IEntityFieldIncorrectValueRepository entityFieldIncorrectValueRepository;
+	IEntityFieldService entityFieldService;
 
 	public boolean updateDeviceEntityValuesFromJson(Device device, JSONObject deviceJson, boolean updateDeviceTimer,
 			boolean updateGroupTimer, List<IEntityFieldValue> changedValues) {
@@ -228,11 +224,7 @@ public class SmartHouseItemBuildService {
 									processValueChange(entityField, oldValue, changedValues);
 								}
 							} else {
-								
-								if(entityField !=null) {
-									entityFieldIncorrectValueRepository.insertEntityFieldIncorrectValue(entityField.getId(), valStr, new Date());
-								} 
-								log.error(entity.getDevice().getName() +" " + entity.getName() + " " +entityField.getName() + " " +entityField.getDescription() + " INCORRECT value " +valStr);
+								entityFieldService.insertEntityFieldIncorrectValue(entityField, valStr);
 							}
 							
 							if(entityField !=null) {
@@ -286,7 +278,7 @@ public class SmartHouseItemBuildService {
 					value = Float.valueOf(newValueStr);
 					Float oldValue = MathUtil.precise(Float.valueOf(oldValueStr));
 
-					doSave = Math.abs(oldValue - value) > minDiff || dataIsTooOld;
+					doSave = entityFieldService.isValueChanged(oldValue, value) || dataIsTooOld;
 				}
 
 				if (doSave) {

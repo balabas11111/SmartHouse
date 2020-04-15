@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -8,7 +9,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValueBoolean;
@@ -24,6 +29,7 @@ import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldValueRepository;
 import com.balabas.smarthouse.server.view.Action;
 
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -31,6 +37,10 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class EntityFieldService implements IEntityFieldService {
 
+	@Getter
+	@Value("${smarthouse.server.fields.data.changed.if.diff:0.001}")
+	private Float minAllowedDiff;
+	
 	@Autowired
 	IEntityFieldRepository entityFieldRepository;
 	
@@ -42,7 +52,26 @@ public class EntityFieldService implements IEntityFieldService {
 
 	@Autowired
 	IEntityFieldIncorrectValueRepository entityFieldIncorrectValueRepository;
+	
+	@Autowired
+	EntityManager entityManager;
 
+	private static class DateContainer {
+		private Date start;
+		private Date end;
+		
+		public DateContainer(Date date1, Date date2) {
+			super();
+			if(date2.getTime() < date1.getTime()) {
+				start = date2;
+				end = date1;
+			} else {
+				start = date1;
+				end= date2;
+			}
+		}
+	}
+	
 	@Override
 	public void saveAll(List<IEntityFieldValue> values) {
 		for (IEntityFieldValue entityFieldValue : values) {
@@ -60,21 +89,48 @@ public class EntityFieldService implements IEntityFieldService {
 	}
 	
 	@Override
-	public List<IEntityFieldValue> getEntityFieldValuesByDate(IEntityField entityField, Date date1, Date date2) {
+	public List<IEntityFieldValue> getEntityFieldValuesByDateRange(IEntityField entityField, Date date1, Date date2) {
+		DateContainer cont = new DateContainer(date1, date2);
+		return entityFieldValueRepository.getEntityFieldValuesByDateRange(entityField.getId(), cont.start, cont.end);
+	}
+	
+	@Override
+	public List<IEntityFieldValue> getEntityFieldValuesLessThanDates(IEntityField entityField, Date date1, Date date2) {
+		DateContainer cont = new DateContainer(date1, date2);
+		List<IEntityFieldValue> result = new ArrayList<IEntityFieldValue>();
 		
-		if(date2.getTime() < date1.getTime()) {
-			Date dateTmp = date1;
-			
-			date1 = date2;
-			date2 = dateTmp;
-		}
-		return entityFieldValueRepository.getEntityFieldValuesByDate(entityField.getId(), date1, date2);
+		result.add(getEntityFieldValuesLessThanDate(entityField, cont.start));
+		result.add(getEntityFieldValuesLessThanDate(entityField, cont.end));
+		
+		return result;
+	}
+	
+	@Override
+	public IEntityFieldValue getEntityFieldValuesLessThanDate(IEntityField entityField, Date date) {
+		Query query = entityManager.createQuery("FROM EntityFieldValue efv where efv.entityField.id=:id efv.date <= :date");
+		
+		query.setParameter(":id", entityField.getId());
+		query.setParameter(":date", date);
+		
+		query.setFirstResult(0);
+		query.setMaxResults(1);
+		
+		return (IEntityFieldValue) query.getSingleResult();
 	}
 	
 	@Override
 	public Boolean isEntityFieldValuesListGrows(List<IEntityFieldValue> values) {
-		// TODO Auto-generated method stub
-		return null;
+		if (values == null || values.size()<=1) {
+			return null;
+		}
+		Float first = ((Number) values.get(0).getValue()).floatValue();
+		Float last = ((Number) values.get(values.size()-1).getValue()).floatValue();
+		
+		if(!isValueChanged(last, first)) {
+			return null;
+		}
+		
+		return last > first;
 	}
 
 	@Override
@@ -203,6 +259,24 @@ public class EntityFieldService implements IEntityFieldService {
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	public void insertEntityFieldIncorrectValue(IEntityField entityField, String value) {
+		
+		if(entityField !=null) {
+			entityFieldIncorrectValueRepository.insertEntityFieldIncorrectValue(entityField.getId(), value, new Date());
+			log.error(entityField.getEntity().getDevice().getName() +" " + entityField.getEntity().getName() + " " +entityField.getName() + " " +entityField.getDescription() + " INCORRECT value " +value);
+		} else {
+			log.error("UNKNOWN wrong value for NULL entity field");
+		}
+		
+	
+	}
+
+	@Override
+	public boolean isValueChanged(Float val1, Float val2) {
+		return Math.abs(val1 - val2) > getMinAllowedDiff();
 	}
 
 }

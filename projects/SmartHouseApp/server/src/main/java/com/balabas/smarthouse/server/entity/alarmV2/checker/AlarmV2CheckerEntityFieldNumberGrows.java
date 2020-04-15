@@ -33,10 +33,9 @@ public class AlarmV2CheckerEntityFieldNumberGrows extends AlarmV2CheckerAbstract
 		IEntityField entityField = getItemAsEntityField(alarm);
 		
 		Date date2 = DateTimeUtil.getDate();
-		
 		Date date1 = new Date(date2.getTime() - getAlarmParameterAsLongOrElse(alarm, DEFAULT_TIME));
 		
-		Boolean grows = entityFieldService.isEntityFieldValuesListGrows(entityFieldService.getEntityFieldValuesByDate(entityField, date1, date2));
+		Boolean grows = entityFieldService.isEntityFieldValuesListGrows(entityFieldService.getEntityFieldValuesLessThanDates(entityField, date1, date2));
 
 		AlarmState state = null;
 		

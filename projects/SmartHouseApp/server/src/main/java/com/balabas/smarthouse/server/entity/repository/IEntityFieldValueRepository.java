@@ -14,7 +14,6 @@ import org.springframework.stereotype.Repository;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueBoolean;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
-import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 
 @Repository
@@ -80,7 +79,6 @@ public interface IEntityFieldValueRepository extends CrudRepository<EntityFieldV
 			
 	}
 
-	@Query(value = "FROM EntityFieldValue efv where efv.entityField.id=:id and efv.date >= :date1 and efv.date <= :date2 order by efv.date desc ) ")
-	List<IEntityFieldValue> getEntityFieldValuesByDate(@Param("id")Long id, @Param("date1")Date date1, @Param("date2")Date date2);
-	
+	@Query(value = "FROM EntityFieldValue efv where efv.entityField.id=:id and efv.date >= :date1 and efv.date <= :date2 order by efv.date desc")
+	List<IEntityFieldValue> getEntityFieldValuesByDateRange(@Param("id")Long id, @Param("date1")Date date1, @Param("date2")Date date2);
 }
