@@ -107,7 +107,7 @@ public class ViewDeviceController {
 		DeviceEntityFieldActionHolder holder = deviceService.getValueActionHolder(device.getId()); 
 		
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
-		model.addAttribute(ATTR_PAGE_TITLE, (device.isVirtualized() ? "Гаджет ":"Устройство ") + device.getEmojiDescriptionByDescriptionField());
+		model.addAttribute(ATTR_PAGE_TITLE, device.getEmojiDescriptionByDescriptionField());
 		model.addAttribute(ATTR_PAGE_URL, DEVICES_ROOT + "?v="+device.isVirtualized());
 		model.addAttribute(ATTR_PAGE_DATETIME, DateTimeUtil.getDateTimeStr());
 		model.addAttribute("holder", holder);

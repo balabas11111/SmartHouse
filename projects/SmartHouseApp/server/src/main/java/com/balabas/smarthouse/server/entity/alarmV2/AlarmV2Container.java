@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
@@ -26,6 +27,7 @@ public class AlarmV2Container {
 		alarms = new HashMap();
 	}
 	
+	/*
 	public String getAlarmStatistic() {
 		Map<AlarmState, Integer> states = getStateCounts();
 		
@@ -53,8 +55,16 @@ public class AlarmV2Container {
 		
 		return buf.toString();
 	}
+	*/
+	public String getAlarmStatistic() {
+		return getAlarmGrouppedAsString(IAlarmV2::getEmojiStr);
+	}
+	
+	public String getAlarmStatisticHint() {
+		return getAlarmGrouppedAsString(IAlarmV2::getCurrentActionEmojiDescription);
+	}
 
-	private Map<AlarmState, Integer> getStateCounts() {
+	public Map<AlarmState, Integer> getStateCounts() {
 		Map<AlarmState, Integer> results = new HashMap<>();
 		STATES_ORDERS_LIST.forEach(state -> results.put(state, 0));
 		
@@ -74,6 +84,9 @@ public class AlarmV2Container {
 		Map<String, List<IAlarmV2>> als = getAlarmsByStateEmojiAndStateDescription(item);
 		
 		als.keySet().forEach(emojiStateDescr -> {
+			
+			int pos = emojiStateDescr.indexOf(" ");
+			String emoji = emojiStateDescr.substring(0, pos);
 			List<IAlarmV2> list = als.get(emojiStateDescr);
 			
 			if(list!=null && !list.isEmpty()) {
@@ -89,7 +102,7 @@ public class AlarmV2Container {
 						emojiStateDescr += "("+size+")";
 					}
 					
-					result.add(new ItemAbstractDto(0L, null, emojiStateDescr, buf.toString()));
+					result.add(new ItemAbstractDto(0L, null, emoji, buf.toString()));
 				}
 				
 			}
@@ -134,7 +147,7 @@ public class AlarmV2Container {
 			if(list!=null) {
 				list.stream().forEach(alarm -> {
 					
-					String key = alarm.getAlarmStateEmojiDescription();
+					String key = alarm.getCurrentActionEmojiDescription();
 					
 					if(!result.containsKey(key)) {
 						result.put(key, new ArrayList<IAlarmV2>());
@@ -146,13 +159,6 @@ public class AlarmV2Container {
 		});
 		
 		return result;
-	}
-		
-	private void append(StringBuffer buf, String emoji, int count) {
-		buf.append(emoji);
-		buf.append(" ");
-		buf.append(count);
-		buf.append("; ");
 	}
 
 	public void putAlarm(IAlarmV2 alarm) {
@@ -262,6 +268,45 @@ public class AlarmV2Container {
 		}
 
 		return result;
+	}
+	
+	private String getAlarmGrouppedAsString(Function<IAlarmV2, String> mapper) {
+		Map<String, Integer> hints = getStateCountsGroupped(mapper);
+		
+		StringBuffer buf = new StringBuffer();
+		
+		hints.entrySet().stream().filter(entry -> entry.getValue() != 0).forEach(entry -> {
+			append(buf, entry.getKey(), entry.getValue());
+		});
+		
+		return buf.toString();
+	}
+	
+	private Map<String, Integer> getStateCountsGroupped(Function<IAlarmV2, String> mapper) {
+		Map<String, Integer> results = new HashMap<>();
+		
+		alarms.values().stream().flatMap(map -> map.entrySet().stream())
+		.flatMap(entry -> entry.getValue().values().stream())
+		.forEach(alarm -> {
+			String key = mapper.apply(alarm);
+			
+			if(!results.containsKey(key)) {
+				results.put(key, 0);
+			}
+			
+			
+			int staterCount = results.get(key) + 1;
+				results.put(key, staterCount);
+		});
+		return  results;
+	}
+	
+	
+	private void append(StringBuffer buf, String emoji, int count) {
+		buf.append(emoji);
+		buf.append(" ");
+		buf.append(count);
+		buf.append("; ");
 	}
 
 }

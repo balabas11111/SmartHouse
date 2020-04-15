@@ -3,6 +3,8 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 import java.util.List;
 import java.util.Set;
 
+import org.thymeleaf.util.StringUtils;
+
 import com.balabas.smarthouse.server.entity.model.IDescriptionable;
 import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
@@ -19,12 +21,34 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 		if(actions!=null && !actions.isEmpty()) {
 			for(IAlarmStateChangeAction action : actions) {
 				if(!action.getEmoji().isEmpty()) {
-					result = action.getEmoji();
-					break;
+					return action.getEmoji();
 				}
 			}
 		}
 		return result;
+	}
+	
+	default String getCurrentActionEmojiDescription() {
+		List<IAlarmStateChangeAction> actions = getCurrentActions();
+		
+		if(actions!=null && !actions.isEmpty()) {
+			for(IAlarmStateChangeAction action : actions) {
+				if(!action.getEmoji().isEmpty()) {
+					String result = null;
+					if(!StringUtils.isEmpty(action.getDescription())) {
+						result = action.getDescription();
+					} else if(!StringUtils.isEmpty(action.getStringFormatted())) {
+						result = action.getStringFormatted();
+					}
+					
+					if(result !=null) {
+						return action.getEmoji().toString() + " " + result;
+					}
+					return action.getEmojiDescriptionByDescriptionField();
+				}
+			}
+		}
+		return getAlarmStateEmojiDescription();
 	}
 	
 	default String getEmojiStr() {

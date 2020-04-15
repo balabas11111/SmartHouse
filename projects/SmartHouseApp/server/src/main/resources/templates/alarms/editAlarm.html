@@ -90,7 +90,7 @@
 						<select th:name="itemId">
 								<option th:each="target : ${targets}"
 									th:value="${target.id}"
-									th:utext="${target.name}"
+									th:utext="${target.description}"
 									th:selected="${target.isIdEqual(alarm.getItemId())}"/>
 						</select>
 					</td>

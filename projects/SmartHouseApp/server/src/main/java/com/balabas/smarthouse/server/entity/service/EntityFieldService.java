@@ -107,10 +107,10 @@ public class EntityFieldService implements IEntityFieldService {
 	
 	@Override
 	public IEntityFieldValue getEntityFieldValuesLessThanDate(IEntityField entityField, Date date) {
-		Query query = entityManager.createQuery("FROM EntityFieldValue efv where efv.entityField.id=:id efv.date <= :date");
+		Query query = entityManager.createQuery("SELECT efv FROM EntityFieldValue efv WHERE efv.entityField.id=:id AND efv.date <= :date order by date desc");
 		
-		query.setParameter(":id", entityField.getId());
-		query.setParameter(":date", date);
+		query.setParameter("id", entityField.getId());
+		query.setParameter("date", date);
 		
 		query.setFirstResult(0);
 		query.setMaxResults(1);

@@ -76,9 +76,8 @@ public interface IEntityFieldValueRepository extends CrudRepository<EntityFieldV
 				
 				insertEntityFieldValueBoolean(new Date(), value.getValueBool(), value.getEntityField().getId());
 			}	
-			
 	}
 
-	@Query(value = "FROM EntityFieldValue efv where efv.entityField.id=:id and efv.date >= :date1 and efv.date <= :date2 order by efv.date desc")
+	@Query(value = "SELECT efv FROM EntityFieldValue efv where efv.entityField.id=:id and efv.date >= :date1 and efv.date <= :date2 order by efv.date desc")
 	List<IEntityFieldValue> getEntityFieldValuesByDateRange(@Param("id")Long id, @Param("date1")Date date1, @Param("date2")Date date2);
 }

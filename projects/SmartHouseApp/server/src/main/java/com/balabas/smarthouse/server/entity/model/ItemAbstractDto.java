@@ -31,6 +31,10 @@ public class ItemAbstractDto {
 		return new ItemAbstractDto(item.getId(), item.getEmoji(), item.getName(), item.getDescription());
 	}
 	
+	public static ItemAbstractDto fromItemByPath(IItemAbstract item) {
+		return new ItemAbstractDto(item.getId(), item.getEmoji(), item.getName(), item.getParentNamesChain());
+	}
+	
 	public IItemAbstract toItem(IItemAbstract item) {
 		item.setId(id);
 		item.setEmoji(emoji);

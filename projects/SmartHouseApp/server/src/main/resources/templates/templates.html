@@ -224,7 +224,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		
 		<meta th:if="${#vars.containsVariable('refreshTimeout')}" http-equiv="refresh" th:attr="content=${refreshTimeout}">
-		<title th:if="${#vars.containsVariable('pageTitle')}" th:text="pageTitle"></title>
+		<title th:if="${#vars.containsVariable('pageTitle')}" th:text="${pageTitle}"></title>
 		
 	    <!-- Bootstrap -->
 		<link href="css/bootstrap.min.css" rel="stylesheet">

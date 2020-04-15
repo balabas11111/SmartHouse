@@ -448,7 +448,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Override
 	public List<ItemAbstractDto> getEnabledAlarmAbstractTargets(IAlarmV2 alarm) {
-		return getEnabledAlarmTargets(alarm).stream().sorted(ItemAbstract::compareByParentNameChain).map(ia -> ItemAbstractDto.fromItem(ia)).collect(Collectors.toList());
+		return getEnabledAlarmTargets(alarm).stream().sorted(ItemAbstract::compareByParentNameChain).map(ItemAbstractDto::fromItemByPath).collect(Collectors.toList());
 	}
 
 	@Override
