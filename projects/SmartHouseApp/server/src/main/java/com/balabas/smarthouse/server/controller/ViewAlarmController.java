@@ -125,43 +125,55 @@ public class ViewAlarmController {
 	public String deleteAlarmEvent(@ModelAttribute("alarmEvent") AlarmStateChangeAction action,
 			@RequestParam("id") Long actionId,
 			@RequestParam("alarmId") Long alarmId,
-			@RequestParam("itemType") String itemType, Model model) {
+			@RequestParam("itemType") String itemTypeName, Model model) {
 		
-		ItemType it = ItemType.getItemTypeByName(itemType);
+		ItemType itemType = ItemType.getItemTypeByName(itemTypeName);
 		
-		alarmService.deleteAlarmStateChangeActionFromAlarm(alarmId, it, actionId);
+		alarmService.deleteAlarmStateChangeActionFromAlarm(alarmId, itemType, actionId);
 		
-		return "redirect:/editAlarm?id=" + alarmId+ "&itemType=" + itemType;
+		return "redirect:/editAlarm?id=" + alarmId+ "&" + getItemTypeParam(itemType);
 	}
 
 	@PostMapping(value = "/saveDeviceAlarm")
 	public String saveDeviceAlarm(@ModelAttribute("alarm") AlarmOfDevice alarm,
-			@RequestParam(value = "itemId", required = true) Long itemId, Model model) {
-		return saveAlarm(alarm, itemId);
+			@RequestParam(value = "targetId", required = true) Long targetId, Model model) {
+		return saveAlarm(alarm, targetId);
 	}
 
 	@PostMapping(value = "/saveEntityAlarm")
 	public String saveEntityAlarm(@ModelAttribute("alarm") AlarmOfEntity alarm,
-			@RequestParam(value = "itemId", required = true) Long itemId, Model model) {
-		return saveAlarm(alarm, itemId);
+			@RequestParam(value = "targetId", required = true) Long targetId, Model model) {
+		return saveAlarm(alarm, targetId);
 	}
 
 	@PostMapping(value = "/saveEntityFieldAlarm")
 	public String saveEntityFieldAlarm(@ModelAttribute("alarm") AlarmOfEntityField alarm,
-			@RequestParam(value = "itemId", required = true) Long itemId, Model model) {
-		return saveAlarm(alarm, itemId);
+			@RequestParam(value = "targetId", required = true) Long targetId, Model model) {
+		return saveAlarm(alarm, targetId);
 	}
 
-	@GetMapping("/deleteAlarm_{id}")
-	public String deleteEntityFieldEnabledValue(@PathVariable(name = "id", required = true) Long id, Model model) {
-		alarmService.deleteAlarm(id);
+	@GetMapping("/deleteAlarm_{id}_{itemType}")
+	public String deleteEntityFieldEnabledValue(
+			@PathVariable(name = "id", required = true) Long id,
+			@PathVariable(name = "itemType", required = true) String itemTypeName,Model model) {
+		
+		IAlarmV2 alarm = alarmService.getAlarm(id, itemTypeName);
+		alarmService.deleteAlarm(alarm);
 
-		return "redirect:/alarmsList";
+		return "redirect:/alarmsList?" + getItemTypeParam(alarm);
 	}
 
-	private String saveAlarm(IAlarmV2 alarm, Long itemId) {
-		alarmService.createOrUpdateAlarm(alarm, itemId);
-		return "redirect:/alarmsList";
+	private String saveAlarm(IAlarmV2 alarm, Long targetId) {
+		alarmService.createOrUpdateAlarm(alarm, targetId);
+		return "redirect:/alarmsList?" + getItemTypeParam(alarm);
+	}
+	
+	private String getItemTypeParam(IAlarmV2 alarm) {
+		return getItemTypeParam(alarm.getItemType());
+	}
+	
+	private String getItemTypeParam(ItemType it) {
+		return "itemType=" + it.name();
 	}
 
 }

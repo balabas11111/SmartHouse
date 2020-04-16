@@ -2,45 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta th:if="${#vars.containsVariable('refreshTimeout')}" http-equiv="refresh" th:attr="content=${refreshTimeout}">
-	<title th:text="'Режимы тревоги ' + ${serverName}">Устройства сервера</title>
-	<!-- Bootstrap -->
-	<link href="css/bootstrap.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="css/font-awesome.min.css" />
-	<link rel="stylesheet" href="css/font-awesome.css" />
-	<link rel="stylesheet" href="js/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="css/isotope.css" media="screen" />
-	<link rel="stylesheet" href="css/style.css">
-	
+	<title>Режимы тревоги</title>
+	<th:block th:replace="templates :: headImports" ></th:block>
 </head>
 
 <body>
-	<header>
-		<div class="main-menu">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-4">
-						<h1><a class="navbar-brand" href="index" data-0="line-height:90px;" data-300="line-height:50px;"
-								th:text="${serverName}"> Hidayah
-							</a></h1>
-					</div>
-					<div th:replace="templates :: mainMenu"></div>
-				</div>
-			</div>
-		</div>
-	</header>
+<header th:replace="templates :: MainPageHeader(url=${'index'}, text=${'Режимы тревоги'})"></header>
 	<!-- column content -->
 	<div id="main-content">
-
-		<table>
-			<tr>
-				<th>Время Страницы</th>
-				<td th:text="${dateTime}">время стр</td>
-			</tr>
-		</table>
 
 		<div class="container">
 			<h1>Сигналы тревоги</h1>

@@ -28,6 +28,12 @@ public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionabl
 	
 	void setParent(IItemAbstract parent);
 	
+	String getParentNamesChain();
+
+	List<IItemAbstract> getAllChildren();
+	
+	ItemType getItemType();
+	
 	default AbstractItemType getItemAbstractType() {
 		return AbstractItemType.UNKNOWN;
 	}
@@ -66,15 +72,10 @@ public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionabl
 		return result;
 	}
 
-	String getParentNamesChain();
-
-	List<IItemAbstract> getAllChildren();
-	
 	static void setEmojiNameDescription(IItemAbstract item, Emoji emoji, String name, String description) {
 		item.setEmoji(emoji);
 		item.setName(name);
 		item.setDescription(description);
 	}
-
-	ItemType getItemType();
+	
 }

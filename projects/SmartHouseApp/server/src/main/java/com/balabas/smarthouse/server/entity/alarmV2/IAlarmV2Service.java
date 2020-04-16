@@ -39,8 +39,6 @@ public interface IAlarmV2Service {
 
 	IAlarmV2 getAlarmOrDefault(Long id, IAlarmV2 def);
 
-	void deleteAlarm(Long id);
-
 	List<AlarmV2Checker> getCheckersByTargetItemClass(Class<?> targetItemClass);
 
 	IAlarmV2 newAlarm(ItemType itemType);
@@ -49,7 +47,7 @@ public interface IAlarmV2Service {
 	
 	IItemAbstract getEnabledAlarmTarget(Long itemId, Class<?> itemClass);
 	
-	void createOrUpdateAlarm(IAlarmV2 alarm, Long itemId);
+	void createOrUpdateAlarm(IAlarmV2 alarm, Long targetId);
 
 	IAlarmV2Repository getRepository(IAlarmV2 alarm);
 
@@ -57,7 +55,7 @@ public interface IAlarmV2Service {
 
 	void addAlarmStateChangeActionToAlarm(Long alarmId, ItemType it, AlarmStateChangeAction action);
 
-	void deleteAlarmStateChangeActionFromAlarm(Long alarmId, ItemType it, Long actionId);
+	void deleteAlarmStateChangeActionFromAlarm(Long alarmId, ItemType itemType, Long actionId);
 
 	IAlarmV2 getAlarm(Long id, ItemType it);
 
@@ -79,5 +77,10 @@ public interface IAlarmV2Service {
 	List<ItemAbstractDto> getEnabledAlarmAbstractTargets(IAlarmV2 alarm);
 
 	List<IItemEvent> checkForAlarmsExecutePostActions(IAlarmV2 alarm);
+
+	default IAlarmV2 getAlarm(Long id, String itemTypeName) {
+		ItemType it = ItemType.getItemTypeByName(itemTypeName);
+		return getAlarm(id, it);
+	}
 
 }

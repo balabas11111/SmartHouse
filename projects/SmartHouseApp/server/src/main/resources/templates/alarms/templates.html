@@ -64,7 +64,7 @@
 
 								<!-- Modal footer -->
 								<div class="modal-footer">
-									<a th:href="@{~/deleteAlarm_{id}(id=${alarm.id})}"
+									<a th:href="@{~/deleteAlarm_{id}_{itemType}(id=${alarm.id}, itemType=${alarm.itemType})}"
 										class="btn btn-success">Удалить</a>
 									<button type="button" class="btn btn-danger"
 										data-dismiss="modal">Отменить</button>

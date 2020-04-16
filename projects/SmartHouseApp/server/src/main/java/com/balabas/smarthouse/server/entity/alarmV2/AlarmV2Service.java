@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
@@ -19,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import com.balabas.smarthouse.server.DeviceConstants;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
@@ -58,10 +58,10 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Autowired
 	IItemAlarmStateService itemAlarmStateService;
-	
+
 	@Autowired
 	IActionTimerService actionTimerService;
-	
+
 	@Autowired
 	IAlarmStateChangeEntityService alarmStateChangeEntityService;
 
@@ -153,16 +153,16 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 		return list;
 	}
-	
+
 	@Override
 	public List<IItemEvent> checkForAlarmsExecutePostActions(IAlarmV2 alarm) {
-		
-		IItemAbstract item =deviceService.getItemAbstract(alarm.getItem());
+
+		IItemAbstract item = deviceService.getItemAbstract(alarm.getItem());
 		List<IItemEvent> events = new ArrayList<IItemEvent>();
 
 		alarm.setItem(item);
 		events.addAll(checkForAlarm(alarm));
-		
+
 		events.forEach(this::processEvent);
 
 		return events;
@@ -190,9 +190,9 @@ public class AlarmV2Service implements IAlarmV2Service {
 		}
 
 		checker.process(alarm);
-		
+
 		actionTimerService.nextAlarmScheduling(alarm);
-		
+
 		return buildEvent(alarm);
 	}
 
@@ -202,10 +202,10 @@ public class AlarmV2Service implements IAlarmV2Service {
 		if (processor != null && processor.isTarget(event)) {
 			processor.process(event);
 		}
-		
+
 		alarmStateChangeEntityService.saveAlarmStateChange(event);
 	}
-	
+
 	private List<IItemEvent> buildEvent(IAlarmV2 alarm) {
 
 		List<IItemEvent> events = new ArrayList<IItemEvent>();
@@ -219,7 +219,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 		});
 		return events;
 	}
-	
+
 	private void initAlarm(IAlarmV2 alarm) {
 		putAlarmToCache(alarm);
 		actionTimerService.initAlarmScheduling(alarm);
@@ -235,7 +235,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 		} else {
 			alarms.add(alarm);
 		}
-		
+
 	}
 
 	private void removeAlarmFromCache(IAlarmV2 alarm) {
@@ -276,13 +276,12 @@ public class AlarmV2Service implements IAlarmV2Service {
 	private void putById(Map<Long, IItemAbstract> map, IItemAbstract item) {
 		map.put(item.getId(), item);
 	}
-	
+
 	private List<IAlarmV2> getAlarmsRequiredCheckBySchedule() {
-		return alarmMap.values().stream().flatMap(list -> list.stream()).filter(
-				actionTimerService::requireScheduledCheck)
-				.collect(Collectors.toList());
+		return alarmMap.values().stream().flatMap(list -> list.stream())
+				.filter(actionTimerService::requireScheduledCheck).collect(Collectors.toList());
 	}
-	
+
 	@Scheduled(fixedRateString = "${smarthouse.server.alarm.request.interval:10000}")
 	public void checkScheduledAlarms() {
 		getAlarmsRequiredCheckBySchedule().stream().forEach(this::checkForAlarmsExecutePostActions);
@@ -387,68 +386,64 @@ public class AlarmV2Service implements IAlarmV2Service {
 	}
 
 	@Override
-	public void deleteAlarm(Long id) {
-		deleteAlarm(getAlarmOrDefault(id, null));
-	}
-
-	@Override
 	public List<AlarmV2Checker> getCheckersByTargetItemClass(Class<?> targetItemClass) {
 		return alarmTypeProvider.getCheckersByTargetItemClass(targetItemClass);
 	}
 
 	@Override
 	public IAlarmV2Repository getRepository(IAlarmV2 alarm) {
-		if (IDevice.class.isAssignableFrom(alarm.getTargetItemClass())) {
+		switch (alarm.getItemType()) {
+		case DEVICE:
 			return alarmRepositoryDevice;
-		}
-		if (IEntity.class.isAssignableFrom(alarm.getTargetItemClass())) {
+		case ENTITY:
 			return alarmRepositoryEntity;
-		}
-		if (IEntityField.class.isAssignableFrom(alarm.getTargetItemClass())) {
+		case ENTITY_FIELD:
 			return alarmRepositoryEntityField;
+		default:
+			return null;
 		}
-
-		return null;
 	}
 
 	@Override
 	public IAlarmV2 newAlarm(ItemType itemType) {
-		if (ItemType.DEVICE.equals(itemType)) {
+		switch (itemType) {
+		case DEVICE:
 			return new AlarmOfDevice();
-		}
-		if (ItemType.ENTITY.equals(itemType)) {
+		case ENTITY:
 			return new AlarmOfEntity();
-		}
-		if (ItemType.ENTITY_FIELD.equals(itemType)) {
+		case ENTITY_FIELD:
 			return new AlarmOfEntityField();
+		default:
+			return null;
 		}
-
-		return null;
 	}
 
 	@Override
 	public Set<IItemAbstract> getEnabledAlarmTargets(IAlarmV2 alarm) {
-		Set<IItemAbstract> result = null;
 
-		if (IDevice.class.isAssignableFrom(alarm.getTargetItemClass())) {
-			result = deviceService.getDevices().stream().collect(Collectors.toSet());
-		}
-		if (IEntity.class.isAssignableFrom(alarm.getTargetItemClass())) {
-			result = deviceService.getEntities().stream().collect(Collectors.toSet());
-		}
-		if (IEntityField.class.isAssignableFrom(alarm.getTargetItemClass())) {
-			result = deviceService.getEntityFields().stream()
-					.filter(ef -> !ef.getClazz().equals(String.class)
-							&& DeviceConstants.GROUP_SENSORS.equalsIgnoreCase(ef.getEntity().getGroup().getName()))
-					.collect(Collectors.toSet());
+		Stream<? extends IItemAbstract> stream = Stream.empty();
+
+		switch (alarm.getItemType()) {
+		case DEVICE:
+			stream = deviceService.getDevices().stream();
+			break;
+		case ENTITY:
+			stream = deviceService.getEntities().stream();
+			break;
+		case ENTITY_FIELD:
+			stream = deviceService.getEntityFields().stream().filter(IEntityField::isNotStringAndSensors);
+			break;
+		default:
+			stream = Stream.empty();
 		}
 
-		return result;
+		return stream.collect(Collectors.toSet());
 	}
 
 	@Override
 	public List<ItemAbstractDto> getEnabledAlarmAbstractTargets(IAlarmV2 alarm) {
-		return getEnabledAlarmTargets(alarm).stream().sorted(ItemAbstract::compareByParentNameChain).map(ItemAbstractDto::fromItemByPath).collect(Collectors.toList());
+		return getEnabledAlarmTargets(alarm).stream().sorted(ItemAbstract::compareByParentNameChain)
+				.map(ItemAbstractDto::fromItemByPath).collect(Collectors.toList());
 	}
 
 	@Override
@@ -467,9 +462,16 @@ public class AlarmV2Service implements IAlarmV2Service {
 	}
 
 	@Override
-	public void createOrUpdateAlarm(IAlarmV2 alarm, Long itemId) {
-		IItemAbstract item = getEnabledAlarmTarget(itemId, alarm.getTargetItemClass());
+	public void createOrUpdateAlarm(IAlarmV2 alarm, Long targetId) {
+		IItemAbstract item = getEnabledAlarmTarget(targetId, alarm.getTargetItemClass());
 		alarm.setItem(item);
+
+		if (!alarm.isNew()) {
+			IAlarmV2 existAlarm = getAlarm(alarm.getId(), alarm.getItemType());
+			if (existAlarm != null) {
+				alarm.setActions(existAlarm.getActions());
+			}
+		}
 
 		saveAlarm(alarm);
 		log.debug("Alarm saved " + alarm);
@@ -494,8 +496,8 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@SuppressWarnings({ "unchecked" })
 	@Override
-	public void deleteAlarmStateChangeActionFromAlarm(Long alarmId, ItemType it, Long actionId) {
-		IAlarmV2 alarm = getAlarm(alarmId, it);
+	public void deleteAlarmStateChangeActionFromAlarm(Long alarmId, ItemType itemType, Long actionId) {
+		IAlarmV2 alarm = getAlarm(alarmId, itemType);
 
 		Set<IAlarmStateChangeAction> set = Optional.ofNullable(alarm.getActions()).orElse(new LinkedHashSet());
 

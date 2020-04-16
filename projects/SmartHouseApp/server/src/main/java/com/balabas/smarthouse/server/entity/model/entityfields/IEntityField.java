@@ -159,5 +159,10 @@ public interface IEntityField<T> extends IItemAbstract {
 		IItemAbstract.setEmojiNameDescription(entityField, emoji, name, description);
 		entityField.setEntity(entity);
 	}
+	
+	static boolean isNotStringAndSensors(IEntityField ef) {
+		return !ef.getClazz().equals(String.class)
+		&& DeviceConstants.GROUP_SENSORS.equalsIgnoreCase(ef.getEntity().getGroup().getName());
+	}
 
 }
