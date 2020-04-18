@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.entity.alarmV2;
+package com.balabas.smarthouse.server.entity.alarmV2.model;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -6,6 +6,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;

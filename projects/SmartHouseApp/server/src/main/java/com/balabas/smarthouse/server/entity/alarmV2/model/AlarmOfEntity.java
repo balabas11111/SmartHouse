@@ -1,42 +1,42 @@
-package com.balabas.smarthouse.server.entity.alarmV2;
+package com.balabas.smarthouse.server.entity.alarmV2.model;
 
-import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
-import com.balabas.smarthouse.server.entity.model.Device;
+import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2;
+import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
-public class AlarmOfDevice extends AlarmV2 {
+@javax.persistence.Entity
+public class AlarmOfEntity extends AlarmV2 {
 
 	@ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="device_id", nullable=false)
+    @JoinColumn(name="entity_id", nullable=false)
 	@Getter @Setter
-	private Device device;
-
-	@Getter
-	@Transient
-	private final Class<?> targetItemClass = Device.class;
+	private Entity entity;
 	
 	@Getter
 	@Transient
-	private final ItemType itemType = ItemType.DEVICE;
+	private final Class<?> targetItemClass = Entity.class;
+	
+	@Getter
+	@Transient
+	private final ItemType itemType = ItemType.ENTITY;
 	
 	@Override
 	public IItemAbstract getItem() {
-		return device;
+		return entity;
 	}
 
 	@Override
 	public void setItem(IItemAbstract item) {
-		this.device = (Device) item;		
+		this.entity = (Entity) item;		
 	}
 	
 }

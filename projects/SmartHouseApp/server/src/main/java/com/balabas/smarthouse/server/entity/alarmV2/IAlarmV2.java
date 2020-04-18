@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.thymeleaf.util.StringUtils;
 
+import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
 import com.balabas.smarthouse.server.entity.model.IDescriptionable;
 import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;

@@ -20,6 +20,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmOfDevice;
+import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmOfEntity;
+import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmOfEntityField;
+import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
+import com.balabas.smarthouse.server.entity.alarmV2.repository.IAlarmStateChangeActionRepository;
+import com.balabas.smarthouse.server.entity.alarmV2.repository.IAlarmV2Repository;
+import com.balabas.smarthouse.server.entity.alarmV2.repository.IAlarmV2RepositoryDevice;
+import com.balabas.smarthouse.server.entity.alarmV2.repository.IAlarmV2RepositoryEntity;
+import com.balabas.smarthouse.server.entity.alarmV2.repository.IAlarmV2RepositoryEntityField;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;

@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.entity.alarmV2;
+package com.balabas.smarthouse.server.entity.alarmV2.model;
 
 import java.util.Arrays;
 import java.util.List;

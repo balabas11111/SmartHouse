@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 
 import org.springframework.util.StringUtils;
 
+import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;

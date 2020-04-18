@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
+import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
+import com.balabas.smarthouse.server.entity.alarmV2.repository.AlarmStateChangeEntityRepository;
 import com.balabas.smarthouse.server.util.DateTimeUtil;
 
 public interface IAlarmStateChangeEntityService {

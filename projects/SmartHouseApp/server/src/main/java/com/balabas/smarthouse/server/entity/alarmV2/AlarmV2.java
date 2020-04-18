@@ -17,6 +17,7 @@ import javax.persistence.Transient;
 
 import org.springframework.util.StringUtils;
 
+import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.google.common.collect.Lists;

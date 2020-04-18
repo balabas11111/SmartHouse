@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
 import com.balabas.smarthouse.server.entity.model.IDescriptionable;
 import com.balabas.smarthouse.server.entity.model.IItemTypeable;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;

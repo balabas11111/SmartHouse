@@ -1,6 +1,6 @@
 package com.balabas.smarthouse.server.entity.model;
 
-import com.balabas.smarthouse.server.entity.alarmV2.AlarmState;
+import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 
 import lombok.AllArgsConstructor;

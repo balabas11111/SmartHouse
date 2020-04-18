@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmConstants;
-import com.balabas.smarthouse.server.entity.alarmV2.AlarmState;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Checker;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2CheckerAbstractEntityFieldNumber;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2;
+import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
 import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
