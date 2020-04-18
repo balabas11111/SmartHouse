@@ -1,11 +1,12 @@
-package com.balabas.smarthouse.server.entity.alarmV2;
+package com.balabas.smarthouse.server.entity.alarmV2.model;
 
 import java.util.List;
 import java.util.Set;
 
 import org.thymeleaf.util.StringUtils;
 
-import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
+import com.balabas.smarthouse.server.entity.alarmV2.AlarmConstants;
+import com.balabas.smarthouse.server.entity.alarmV2.IAlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.model.IDescriptionable;
 import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;

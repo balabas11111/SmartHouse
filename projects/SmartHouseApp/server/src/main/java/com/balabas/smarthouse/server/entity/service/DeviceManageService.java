@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.balabas.smarthouse.server.controller.ControllerConstants;
 import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
-import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2Service;
+import com.balabas.smarthouse.server.entity.alarmV2.service.IAlarmV2Service;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;

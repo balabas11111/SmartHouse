@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.alarmV2;
 
+import com.balabas.smarthouse.server.entity.alarmV2.model.IAlarmV2;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 
 public interface AlarmV2Checker {

@@ -2,6 +2,7 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 
 import java.util.Date;
 
+import com.balabas.smarthouse.server.entity.alarmV2.model.IAlarmV2;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.entity.alarmV2;
+package com.balabas.smarthouse.server.entity.alarmV2.model;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +17,8 @@ import javax.persistence.Transient;
 
 import org.springframework.util.StringUtils;
 
-import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
+import com.balabas.smarthouse.server.entity.alarmV2.AlarmStateChangeAction;
+import com.balabas.smarthouse.server.entity.alarmV2.IAlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.google.common.collect.Lists;

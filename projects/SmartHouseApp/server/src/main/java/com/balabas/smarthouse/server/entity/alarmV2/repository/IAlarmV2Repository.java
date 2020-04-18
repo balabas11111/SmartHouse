@@ -1,6 +1,6 @@
 package com.balabas.smarthouse.server.entity.alarmV2.repository;
 
-import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2;
+import com.balabas.smarthouse.server.entity.alarmV2.model.IAlarmV2;
 
 public interface IAlarmV2Repository {
 

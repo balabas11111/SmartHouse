@@ -6,7 +6,7 @@ import org.springframework.util.StringUtils;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmConstants;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Checker;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2CheckerAbstractDevice;
-import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2;
+import com.balabas.smarthouse.server.entity.alarmV2.model.IAlarmV2;
 import com.balabas.smarthouse.server.util.DateTimeUtil;
 
 import lombok.Getter;

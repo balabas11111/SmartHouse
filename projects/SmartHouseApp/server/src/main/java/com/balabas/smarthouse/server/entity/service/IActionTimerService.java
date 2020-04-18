@@ -1,6 +1,6 @@
 package com.balabas.smarthouse.server.entity.service;
 
-import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2;
+import com.balabas.smarthouse.server.entity.alarmV2.model.IAlarmV2;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;

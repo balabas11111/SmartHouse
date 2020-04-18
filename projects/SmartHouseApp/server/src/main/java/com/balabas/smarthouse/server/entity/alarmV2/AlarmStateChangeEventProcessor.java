@@ -3,6 +3,8 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import com.balabas.smarthouse.server.entity.alarmV2.service.IItemAlarmStateService;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
