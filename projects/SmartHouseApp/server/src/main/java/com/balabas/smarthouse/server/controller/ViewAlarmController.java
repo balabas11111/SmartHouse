@@ -44,6 +44,11 @@ public class ViewAlarmController {
 	@Autowired
 	private IAlarmV2Service alarmService;
 	
+	@GetMapping("/alarms")
+	public String getAlarms(Model model) {
+		return "redirect:/alarmsList";
+	}
+	
 	@GetMapping("/alarmsList")
 	public String getAllAlarms(@RequestParam(name = "itemType", required = false) String itemType, Model model) {
 		if(StringUtils.isEmpty(itemType)) {

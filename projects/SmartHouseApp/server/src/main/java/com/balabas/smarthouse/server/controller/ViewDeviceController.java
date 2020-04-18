@@ -60,6 +60,7 @@ public class ViewDeviceController {
 	
 	@GetMapping("/manage")
 	public String getManagePage(Model model) {
+		model.addAttribute(ATTR_SERVER_NAME, serverName);
 		return "manage.html";
 	}
 

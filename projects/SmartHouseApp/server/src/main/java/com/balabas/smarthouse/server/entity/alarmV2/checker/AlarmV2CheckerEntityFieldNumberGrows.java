@@ -10,6 +10,8 @@ import com.balabas.smarthouse.server.entity.alarmV2.AlarmState;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Checker;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2CheckerAbstractEntityFieldNumber;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmV2;
+import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.service.IEntityFieldService;
 import com.balabas.smarthouse.server.util.DateTimeUtil;
@@ -33,19 +35,35 @@ public class AlarmV2CheckerEntityFieldNumberGrows extends AlarmV2CheckerAbstract
 		IEntityField entityField = getItemAsEntityField(alarm);
 		
 		Date date2 = DateTimeUtil.getDate();
-		Date date1 = new Date(date2.getTime() - getAlarmParameterAsLongOrElse(alarm, DEFAULT_TIME));
+		Long period = getAlarmParameterAsLongOrElse(alarm, DEFAULT_TIME);
+		Date date1 = new Date(date2.getTime() - period);
 		
 		Boolean grows = entityFieldService.isEntityFieldValuesListGrows(entityFieldService.getEntityFieldValuesLessThanDates(entityField, date1, date2));
 
 		AlarmState state = null;
+		Emoji resultEmoji = null;
+		String resultName = "";
+		String resultDescription = null;
+		String resultPref = "";
 		
 		if(grows == null) {
 			state = AlarmState.OK;
+			resultEmoji = Emoji.WHITE_SMALL_STAR;
+			resultPref = "Стабильно за ";
 		} else {
-			state = grows ? AlarmState.ALARM : AlarmState.WARNING;
+			state = AlarmState.WARNING;
+			resultEmoji = grows ? Emoji.ARROW_UP : Emoji.ARROW_DOWN;
+			resultPref =  grows ? "Растет последние " : "Падает последние ";
 		}
 		
+		resultName = "Изменение : ";
+		resultDescription = resultPref + period/1000 + " сек";
+		
 		alarm.setAlarmState(state);
+		alarm.setViewDescriptor(new ItemAbstractDto(resultEmoji, resultName, resultDescription));
+		
+		alarm.setStateDescription(resultDescription);
 	}
+	
 	
 }

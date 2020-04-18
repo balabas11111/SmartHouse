@@ -8,6 +8,7 @@ import org.thymeleaf.util.StringUtils;
 import com.balabas.smarthouse.server.entity.model.IDescriptionable;
 import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 
@@ -128,6 +129,12 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	boolean setAlarmStateByBooleanFlagWarning(boolean alarmed);
 
 	boolean setAlarmStateByBooleanFlag(boolean alarmed, AlarmState stateTrue, AlarmState stateFalse);
+
+	ItemAbstractDto getViewDescriptor();
+	
+	void setViewDescriptor(ItemAbstractDto itemAbstractDto);
+
+	void setStateDescription(String description);
 
 	
 

@@ -3,67 +3,32 @@
 	xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title th:text="'Управление сервером ' + ${serverName}">Устройства
 	сервера</title>
-<!-- Bootstrap -->
-<link href="css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="css/font-awesome.min.css" />
-<link rel="stylesheet" href="css/font-awesome.css" />
-<link rel="stylesheet" href="js/fancybox/jquery.fancybox.css"
-	type="text/css" media="screen" />
-<link rel="stylesheet" type="text/css" href="css/isotope.css"
-	media="screen" />
-<link rel="stylesheet" href="css/style.css">
-
+	
+<th:block th:replace="templates :: headImports" ></th:block>
 </head>
 
 <body>
-	<header>
-		<div class="main-menu">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-4">
-						<h1>
-							<a class="navbar-brand" href="index" data-0="line-height:90px;"
-								data-300="line-height:50px;" th:text="${serverName}">
-								Hidayah </a>
-						</h1>
-					</div>
-					<div th:replace="templates :: mainMenu"></div>
-				</div>
-			</div>
-		</div>
-	</header>
+	<header th:replace="templates :: MainPageHeader(url=${'index'}, text=${serverName})"></header>
 
 	<div id="main-content">
 
 		<div class="container">
-			<h3>Управление сервером</h3>
+			<h3>Сервер</h3>
 		</div>
 
 		<form th:action="@{/restartServer}" method="post">
-			<input type="submit" class="btn btn-default" value="Перезапустить" />
+			<input type="submit" class="btn btn-default" value="&#x267B;Перезапустить сервер" />
 
 		</form>
 
 		<div class="container">
-			<h3>Управление виртуальными устройствами</h3>
+			<h3>Управление</h3>
 		</div>
-		<a th:href="@{~/virtual/devices}" class="btn btn-default">&#x1F4DD;Редактирование</a>
+		<a th:href="@{~/virtual/devices}" class="btn btn-default">&#x1F4DF;Виртуальные устройства/поля/Гаджеты</a>
 
-		<div class="container">
-			<h3>Управление сигналами тревоги</h3>
-		</div>
-		<a th:href="@{~/alarmsList}" class="btn btn-default">&#x1F4DD;Редактирование</a>
-
-		<div class="container">
-			<h3>Управление тестовими устройствами</h3>
-		</div>
-		<a th:href="@{~/mock/devices}" class="btn btn-default">Тестирование</a>
-		
+		<a th:href="@{~/alarmsList}" class="btn btn-default">&#x26D4;Сигналы тревоги</a>
 
 	</div>
 

@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
 public enum Emoji {
     
 	ALEMBIC('\u2697',null,"2697"),
+	ARROW_UP('\u2B06', null, "2B06"),
 	ARROW_DOWN('\u2B07',null,"2B07"),
 	BATTERY('\uD83D','\uDD0B',"1F50B"),
 	BELL('\uD83D','\uDD14',"1F514"),
@@ -72,6 +73,7 @@ public enum Emoji {
 	
 	WARNING('\u26A0', null, "26A0"),
 	WAVING_HAND_SIGN('\uD83D','\uDC4B', "1F44B"),
+	WHITE_SMALL_STAR('\u2B52', null, "2B52"),
 	EMPTY_EMOJI(null,null, " ");
 	
 	

@@ -15,7 +15,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
+import org.springframework.util.StringUtils;
+
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
+import com.google.common.collect.Lists;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -67,6 +71,54 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@Transient
 	private List<String> stateDescriptions;
 
+	@Setter
+	@Transient
+	private ItemAbstractDto viewDescriptor;
+	
+	@Override
+	public void setStateDescription(String description) {
+		if(this.stateDescriptions==null) {
+			this.stateDescriptions = Lists.newArrayList();
+		} else {
+			stateDescriptions = Lists.newArrayList();
+		}
+		stateDescriptions.add(description);
+	}
+	
+	@Override
+	public ItemAbstractDto getViewDescriptor() {
+		if(this.viewDescriptor == null) {
+			AlarmState state = this.getAlarmState();
+			String descr = getStateDescription();
+			ItemAbstractDto result = new ItemAbstractDto(state.getEmoji(), state.getName(), descr);
+			return result;
+		}
+		
+		return viewDescriptor;
+	}
+	
+	public String getStateDescription() {
+		StringBuffer buf = new StringBuffer();
+		
+		if(stateDescriptions==null || stateDescriptions.isEmpty()) {
+			buf.append(getAlarmState().getDescription());
+		} else {
+			int size = stateDescriptions.size();
+			int ind =0;
+			for(String str : stateDescriptions) {
+				ind++;
+				if(!StringUtils.isEmpty(str)) {
+					buf.append(str);	
+				}
+				if(ind!=size) {
+					buf.append("; ");
+				}
+			}
+		}
+		
+		return buf.toString();
+	}
+	
 	@Override
 	public void setAlarmState(AlarmState newState) {
 		this.previousAlarmState = alarmState;

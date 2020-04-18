@@ -8,8 +8,8 @@
 		th:fragment="AlarmsList(alarms,itemTypeName)">
 		<thead>
 			<tr>
-				<th>Тип</th>
 				<th>Описание</th>
+				<th>Тревога описание</th>
 				<th>Объект</th>
 				<th>Состояние</th>
 				<th></th>
@@ -18,7 +18,7 @@
 		</thead>
 		<tbody>
 			<tr th:each="alarm : ${alarms}">
-				<td th:text="${alarm.description}"></td>
+				<td th:text="${alarm.getViewDescriptor().getHint()}"></td>
 				<td><a
 					th:href="@{~/editAlarm?id={id}&itemType={itemType}(id=${alarm.id},itemType=${itemTypeName})}"
 					th:text="${alarm.getDescription()}" class="btn btn-default">&#x1F4DD;Просмотр</a>

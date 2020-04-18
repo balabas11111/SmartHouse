@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.model;
 
+import com.balabas.smarthouse.server.entity.alarmV2.AlarmState;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 
 import lombok.AllArgsConstructor;
@@ -71,5 +72,15 @@ public class ItemAbstractDto {
 		this.description = description;
 	}
 	
+	public ItemAbstractDto(AlarmState alarmState) {
+		super();
+		this.emoji = alarmState.getEmoji();
+		this.name = alarmState.getName();
+		this.description = alarmState.getDescription();
+	}
+	
+	public String getHint() {
+		return this.emoji.toString() + " " + this.description;
+	}
 	
 }
