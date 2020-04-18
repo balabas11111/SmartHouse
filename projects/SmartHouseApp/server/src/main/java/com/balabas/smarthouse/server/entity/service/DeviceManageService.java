@@ -465,7 +465,7 @@ public class DeviceManageService implements IDeviceManageService {
 		
 		if(changedTargets.size()>0) {
 			if(logDeviceCalculatedValuesChange) {
-				log.info("total changedCalculatedFields " + changedTargets.size());
+				log.debug("total changedCalculatedFields " + changedTargets.size());
 			}
 			
 			saveEntityFieldValues(new ArrayList(changedTargets.values()));
@@ -479,7 +479,7 @@ public class DeviceManageService implements IDeviceManageService {
 		alarmV2Service.checkForAlarmsWithParentExecutePostActions(changedSources);
 		
 		if(savedValues!=0) {
-			log.info("Saved values =" + savedValues);
+			log.debug("Saved values =" + savedValues);
 		}
 		
 		return changedTargets.values();

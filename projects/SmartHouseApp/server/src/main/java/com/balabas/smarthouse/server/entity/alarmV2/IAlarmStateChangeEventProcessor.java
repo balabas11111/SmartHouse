@@ -17,4 +17,5 @@ public interface IAlarmStateChangeEventProcessor extends INameable {
 	default IEntityField getItemAsEntityField(IItemEvent event) {
 		return (IEntityField) event.getItem();
 	}
+	String getProcessorDescription();
 }

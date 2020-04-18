@@ -266,7 +266,7 @@ public class EntityFieldService implements IEntityFieldService {
 		
 		if(entityField !=null) {
 			entityFieldIncorrectValueRepository.insertEntityFieldIncorrectValue(entityField.getId(), value, new Date());
-			log.error(entityField.getEntity().getDevice().getName() +" " + entityField.getEntity().getName() + " " +entityField.getName() + " " +entityField.getDescription() + " INCORRECT value " +value);
+			log.debug(entityField.getEntity().getDevice().getName() +" " + entityField.getEntity().getName() + " " +entityField.getName() + " " +entityField.getDescription() + " INCORRECT value " +value);
 		} else {
 			log.error("UNKNOWN wrong value for NULL entity field");
 		}

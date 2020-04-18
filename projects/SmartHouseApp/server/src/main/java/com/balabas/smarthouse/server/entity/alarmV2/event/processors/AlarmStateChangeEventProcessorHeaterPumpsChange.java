@@ -7,9 +7,14 @@ import com.balabas.smarthouse.server.entity.alarmV2.AlarmStateChangeEventProcess
 import com.balabas.smarthouse.server.entity.alarmV2.IItemEvent;
 import com.balabas.smarthouse.server.entity.processors.BoilerPumpsAccumulator;
 
+import lombok.Getter;
+
 @Component
 public class AlarmStateChangeEventProcessorHeaterPumpsChange extends AlarmStateChangeEventProcessor {
 
+	@Getter
+	private final String processorDescription = "Переключить насосы в правильное положение";
+	
 	@Autowired
 	private BoilerPumpsAccumulator heater;
 	

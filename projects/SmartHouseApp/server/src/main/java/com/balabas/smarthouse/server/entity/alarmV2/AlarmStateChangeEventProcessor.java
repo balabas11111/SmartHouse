@@ -25,7 +25,8 @@ public abstract class AlarmStateChangeEventProcessor implements IAlarmStateChang
 		logEvent(event);
 	}
 	
-	
+	@Override
+	public abstract String getProcessorDescription();
 	
 	@Override
 	public boolean isTarget(IItemEvent event) {
