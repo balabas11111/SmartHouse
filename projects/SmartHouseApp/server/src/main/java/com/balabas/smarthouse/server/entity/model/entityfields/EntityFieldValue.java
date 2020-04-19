@@ -36,4 +36,9 @@ public abstract class EntityFieldValue implements IEntityFieldValue {
 	@Setter
 	protected Date date;
 	
+	@Override
+	public long getTime() {
+		return getDate().getTime();
+	}
+	
 }

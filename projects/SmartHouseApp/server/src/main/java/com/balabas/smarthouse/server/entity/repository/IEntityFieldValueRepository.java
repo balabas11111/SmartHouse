@@ -28,6 +28,9 @@ public interface IEntityFieldValueRepository extends CrudRepository<EntityFieldV
 	@Query("SELECT efv FROM EntityFieldValue efv JOIN FETCH efv.entityField WHERE efv.id in(select max(efvi.id) from EntityFieldValue efvi where efvi.entityField.id = :id and efvi.date < :date)")
 	EntityFieldValue getEntityFieldValueForEntityFieldOlderThanDate(@Param("id")Long entityFieldId, @Param("date")Date date);
 	
+	@Query("SELECT efv FROM EntityFieldValue efv JOIN FETCH efv.entityField WHERE efv.id in(select min(efvi.id) from EntityFieldValue efvi where efvi.entityField.id = :id and efvi.date < :date)")
+	EntityFieldValue getEntityFieldValueForEntityFieldOldestThanDate(@Param("id")Long entityFieldId, @Param("date")Date date);
+	
 	@Query("SELECT efv FROM EntityFieldValue efv JOIN FETCH efv.entityField WHERE efv.id in(select min(efvi.id) from EntityFieldValue efvi where efvi.entityField.id = :id and efvi.date > :date)")
 	EntityFieldValue getEntityFieldValueForEntityFieldNewerThanDate(@Param("id")Long entityFieldId, @Param("date")Date date);
 	

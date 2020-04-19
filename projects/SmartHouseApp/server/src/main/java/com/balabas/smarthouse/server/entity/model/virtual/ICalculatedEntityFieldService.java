@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 
 @SuppressWarnings("rawtypes")
 public interface ICalculatedEntityFieldService extends IEntityFieldValueChangeDispatcher {
@@ -32,4 +33,8 @@ public interface ICalculatedEntityFieldService extends IEntityFieldValueChangeDi
 	ICalculatedEntityField getCalculatedEntityFieldById(Long id);
 
 	void generateAllValues(CalculatedEntityField calcEntityField);
+
+	void attachCalculator(ICalculatedEntityField calcEntityField);
+
+	IEntityFieldValue getValue(ICalculatedEntityField calcEntityField, Map<String, IEntityFieldValue> entFieldMap);
 }

@@ -110,4 +110,12 @@ public class MathUtil {
 		
 		return targetValue;
 	}
+	
+
+	public static Float getY3(long x1, Float y1, long x2, Float y2, long x3) {
+		float a = (y2-y1) / (x2-x1);
+		float b = y1 - a*x1;
+		
+		return x3*a + b;
+	}
 }

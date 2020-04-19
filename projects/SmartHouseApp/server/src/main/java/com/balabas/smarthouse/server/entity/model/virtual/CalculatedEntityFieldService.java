@@ -161,6 +161,21 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 	}
 
 	@Override
+	public void attachCalculator(ICalculatedEntityField calcEntityField) {
+		if (calcEntityField.getCalculator() == null) {
+			calcEntityField.setCalculator(this.getCalculator(calcEntityField.getCalculatorName()));
+		}
+	}
+
+	@Override
+	public IEntityFieldValue getValue(ICalculatedEntityField calcEntityField,
+			Map<String, IEntityFieldValue> entFieldMap) {
+		attachCalculator(calcEntityField);
+
+		return calcEntityField.apply(entFieldMap);
+	}
+
+	@Override
 	public void save(ICalculatedEntityField calcEntityField) {
 		ICalculatedEntityField result = calculatedEntityFieldRepository.save((CalculatedEntityField) calcEntityField);
 
@@ -198,27 +213,16 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 
 		long now = DateTimeUtil.now();
 		long current = oldest.getTime();
-		Map<String, IEntityFieldValue> entFieldMap = new LinkedHashMap<String, IEntityFieldValue>();
 
 		long totalSaved = 0;
 
 		while (current < now) {
-			entFieldMap = new LinkedHashMap<String, IEntityFieldValue>();
+			IEntityFieldValue value = getValue(calcEntityField,
+					entityFieldService.getNearestValueToDate(source, current));
 
-			for (IEntityField entityField : source) {
-				IEntityFieldValue value = entityFieldService.getNearestValueToDate(source, current);
-
-				entFieldMap.put(entityField.getItemUid(), value);
-			}
-
-			if (calcEntityField.getCalculator() == null) {
-				calcEntityField.setCalculator(this.getCalculator(calcEntityField.getCalculatorName()));
-			}
-			IEntityFieldValue value = calcEntityField.apply(entFieldMap);
-			
 			if (value != null) {
 				value.setDate(new Date(current));
-				totalSaved+=entityFieldService.saveIfDifferent(value);
+				totalSaved += entityFieldService.saveIfDifferent(value);
 			}
 
 			current += recalculateInterval;

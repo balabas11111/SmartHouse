@@ -13,4 +13,6 @@ public interface IEntityFieldValue extends IFloatProvider  {
 	String getValueStr();
 	
 	Object getValue();
+	
+	long getTime();
 }

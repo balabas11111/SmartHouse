@@ -3,6 +3,7 @@ package com.balabas.smarthouse.server.entity.service;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -68,7 +69,7 @@ public interface IEntityFieldService {
 
 	IEntityFieldValue getEntityFieldValuesLessThanDate(IEntityField entityField, Date date);
 
-	IEntityFieldValue getNearestValueToDate(Set<IEntityField> entityFields, long current);
+	Map<String, IEntityFieldValue> getNearestValueToDate(Set<IEntityField> entityFields, long current);
 
 	Date getOldestEntityFieldValue(IEntityField entityField);
 

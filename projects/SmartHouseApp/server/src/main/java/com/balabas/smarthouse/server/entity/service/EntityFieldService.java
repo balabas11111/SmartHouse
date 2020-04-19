@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,6 +30,7 @@ import com.balabas.smarthouse.server.entity.repository.IEntityFieldIncorrectValu
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldValueRepository;
 import com.balabas.smarthouse.server.util.DateTimeUtil;
+import com.balabas.smarthouse.server.util.MathUtil;
 import com.balabas.smarthouse.server.view.Action;
 
 import lombok.Getter;
@@ -282,24 +285,36 @@ public class EntityFieldService implements IEntityFieldService {
 	}
 
 	@Override
-	public IEntityFieldValue getNearestValueToDate(Set<IEntityField> entityFields, long current) {
+	public Map<String, IEntityFieldValue> getNearestValueToDate(Set<IEntityField> entityFields, long current) {
+		Map<String, IEntityFieldValue> result = new LinkedHashMap();
+		
 		for(IEntityField entityField : entityFields) {
 			Date date = new Date(current);
 			
 			EntityFieldValue older = entityFieldValueRepository.getEntityFieldValueForEntityFieldOlderThanDate(entityField.getId(), date); 
 			EntityFieldValue newer = entityFieldValueRepository.getEntityFieldValueForEntityFieldNewerThanDate(entityField.getId(), date);
-
-			long olderDiff = Math.abs(older.getDate().getTime() - date.getTime());
-			long newerDiff = Math.abs(older.getDate().getTime() - date.getTime());
-			
-			return olderDiff < newerDiff ? older :newer;
+/*
+			long olderDiff = DateTimeUtil.getDiffMs(older.getDate(), date);
+			long newerDiff = DateTimeUtil.getDiffMs(newer.getDate(), date);
+	*/		
+			if(older.getTime() > newer.getTime()) {
+				EntityFieldValue tmp = older;
+				older = newer;
+				newer = tmp;
 			}
-		return null;
+			
+			Float currentFloat = MathUtil.getY3(older.getTime(), older.getValueAsFloat(), newer.getTime(), newer.getValueAsFloat(), current);
+			IEntityFieldValue value = new EntityFieldValueNumber(entityField, currentFloat);
+			value.setDate(date);
+			
+			result.put(entityField.getItemUid(), value);
+			}
+		return result;
 	}
 
 	@Override
 	public Date getOldestEntityFieldValue(IEntityField entityField) {
-		IEntityFieldValue older = entityFieldValueRepository.getEntityFieldValueForEntityFieldOlderThanDate(entityField.getId(), DateTimeUtil.getDate());
+		IEntityFieldValue older = entityFieldValueRepository.getEntityFieldValueForEntityFieldOldestThanDate(entityField.getId(), DateTimeUtil.getDate());
 		if(older == null) {
 			return DateTimeUtil.getDate();
 		}
