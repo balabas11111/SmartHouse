@@ -117,10 +117,10 @@ public class IEntityHeater extends IEntityAbstractChangeBox {
 		boolean result = false;
 		int max = getParams().getInt(IEntityHeater.MAX_BOILER);
 
-		boolean hasPowerInAccu = heatAccuTop.getValueAsfloat() > max || heatAccuMiddle.getValueAsfloat() > max
-				|| heatAccuDown.getValueAsfloat() > max;
+		boolean hasPowerInAccu = heatAccuTop.getValueAsFloat() > max || heatAccuMiddle.getValueAsFloat() > max
+				|| heatAccuDown.getValueAsFloat() > max;
 
-		boolean isHeating = boilerOutTemp.getValueAsfloat() > getParams().getInt(IEntityHeater.MAX_OUT_TEMP);
+		boolean isHeating = boilerOutTemp.getValueAsFloat() > getParams().getInt(IEntityHeater.MAX_OUT_TEMP);
 
 		boolean floorPumpIsOn = getValOrFalse(pumpFloor);
 		boolean boilerPumpIsOn = getValOrFalse(pumpBoiler);

@@ -36,4 +36,9 @@ public class EntityFieldValueNumber extends EntityFieldValue implements IEntityF
 	public Object getValue() {
 		return valueFlt;
 	}
+
+	@Override
+	public Float getValueAsFloat() {
+		return valueFlt;
+	}
 }

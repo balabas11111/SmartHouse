@@ -36,4 +36,12 @@ public class EntityFieldValueBoolean extends EntityFieldValue implements IEntity
 	public Object getValue() {
 		return valueBool;
 	}
+
+	@Override
+	public Float getValueAsFloat() {
+		if(valueBool==null) {
+			return null;
+		}
+		return valueBool ? 1F: 0F;
+	}
 }

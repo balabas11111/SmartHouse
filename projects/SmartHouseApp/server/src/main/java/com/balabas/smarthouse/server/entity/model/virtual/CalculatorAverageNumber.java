@@ -4,57 +4,38 @@ import java.util.Collection;
 
 import org.springframework.stereotype.Component;
 
+import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.exception.BadValueException;
+import com.balabas.smarthouse.server.util.MathUtil;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.Getter;
 
 @Component
 @CalculatedEntityFieldCalculator
 @SuppressWarnings("rawtypes")
-@Log4j2
 public class CalculatorAverageNumber implements ICalculatedEntityFieldCalculator {
 
-	@Override
-	public String getName() {
-		return this.getClass().getSimpleName();
-	}
+	@Getter
+	private final String name = this.getClass().getSimpleName();
 	
-	@Override
-	public String getDescription() {
-		return "Среднее значение полей поставщиков";
-	}
+	@Getter
+	private final String description = "Среднее значение полей поставщиков";
 	
-	@Override
-	public String getParameterDescription() {
-		return "";
-	}
+	@Getter
+	private final String parameterDescription = "";
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public IEntityField calculate(IEntityField targetEntityField, Collection<IEntityField> sourceEntityFields, String parameter) {
-		Float total = 0F;
-		int count = 0;
+		Float average = MathUtil.getAverageFloat(sourceEntityFields);
 		
-		for(IEntityField f : sourceEntityFields) {
+		if(average!=null) {
 			try {
-				Float val = getFieldValue(f, parameter);
-				
-				if(val!=null) {
-					total = total + val.floatValue();
-					count++;
-				}
-				
-			}catch(Exception e) {
-				log.error(e.getMessage(), e);
-			}
+				targetEntityField.setValueWithCheck(average);
+			} catch (BadValueException e) {}
 		}
-		
-		total = total / count;
-		
-		try {
-			targetEntityField.setValueWithCheck(total);
-		} catch (BadValueException e) {}
 		
 		return targetEntityField;
 	}
@@ -65,6 +46,12 @@ public class CalculatorAverageNumber implements ICalculatedEntityFieldCalculator
 			return null;
 		}
 		return val.floatValue();
+	}
+
+	@Override
+	public IEntityFieldValue calculateField(IEntityField targetEntityField, Collection<IEntityFieldValue> values,
+			String parameter) {
+		return new EntityFieldValueNumber(targetEntityField, MathUtil.getAverageFloat(values));
 	}
 
 }

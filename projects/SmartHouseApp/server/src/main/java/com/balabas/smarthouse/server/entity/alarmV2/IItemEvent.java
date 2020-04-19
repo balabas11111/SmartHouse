@@ -34,11 +34,11 @@ public interface IItemEvent {
 	}
 	
 	default String getOldStateName() {
-		return getChangeAction().getOldState().name;
+		return getChangeAction().getOldState().getName();
 	}
 	
 	default String getNewStateName() {
-		return getChangeAction().getNewState().name;
+		return getChangeAction().getNewState().getName();
 	}
 	
 	default boolean isSameState() {

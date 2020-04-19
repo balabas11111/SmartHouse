@@ -528,6 +528,7 @@ public class ViewVirtualEntityController extends BaseController {
 			calcEntityField.setSourceEntityFields(new HashSet(sourceEntityFields.values()));
 
 			calculatedEntityFieldService.save(calcEntityField);
+			calculatedEntityFieldService.generateAllValues(calcEntityField);
 		} else {
 			ICalculatedEntityField ent = calculatedEntityFieldService.getCalculatedEntityFieldById(calcEntityField.getId());
 

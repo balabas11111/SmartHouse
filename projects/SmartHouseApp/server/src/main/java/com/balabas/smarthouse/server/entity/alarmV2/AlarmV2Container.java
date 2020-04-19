@@ -217,7 +217,7 @@ public class AlarmV2Container {
 	}
 	
 	public String getEmoji(IItemAbstract item) {
-		return getMaxState(item).emoji.toString();
+		return getMaxState(item).getEmoji().toString();
 	}
 
 	public AlarmState getMaxState(IItemAbstract item) {

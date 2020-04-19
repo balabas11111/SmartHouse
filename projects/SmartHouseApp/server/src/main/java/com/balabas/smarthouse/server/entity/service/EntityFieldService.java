@@ -27,6 +27,7 @@ import com.balabas.smarthouse.server.entity.repository.IEntityFieldEnabledValueR
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldIncorrectValueRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldRepository;
 import com.balabas.smarthouse.server.entity.repository.IEntityFieldValueRepository;
+import com.balabas.smarthouse.server.util.DateTimeUtil;
 import com.balabas.smarthouse.server.view.Action;
 
 import lombok.Getter;
@@ -73,19 +74,22 @@ public class EntityFieldService implements IEntityFieldService {
 	}
 	
 	@Override
-	public void saveAll(List<IEntityFieldValue> values) {
-		for (IEntityFieldValue entityFieldValue : values) {
-			if (entityFieldValue.getEntityField() != null && entityFieldValue.getEntityField().getId() != null) {
-				try {
-					entityFieldValueRepository.saveEntityFieldValue(entityFieldValue);
-				} catch (Exception e) {
-					log.error(e);
-				}
-			} else {
-				log.error("Error save entityFieldValue id  is null name = "
-						+ Optional.ofNullable(entityFieldValue.getEntityField().getName()).orElse("null"));
+	public void save(IEntityFieldValue entityFieldValue) {
+		if (entityFieldValue.getEntityField() != null && entityFieldValue.getEntityField().getId() != null) {
+			try {
+				entityFieldValueRepository.saveEntityFieldValue(entityFieldValue);
+			} catch (Exception e) {
+				log.error(e);
 			}
+		} else {
+			log.error("Error save entityFieldValue id  is null name = "
+					+ Optional.ofNullable(entityFieldValue.getEntityField().getName()).orElse("null"));
 		}
+	}
+	
+	@Override
+	public void saveAll(List<IEntityFieldValue> values) {
+		values.stream().forEach(this::save);
 	}
 	
 	@Override
@@ -270,13 +274,36 @@ public class EntityFieldService implements IEntityFieldService {
 		} else {
 			log.error("UNKNOWN wrong value for NULL entity field");
 		}
-		
-	
 	}
 
 	@Override
 	public boolean isValueChanged(Float val1, Float val2) {
 		return Math.abs(val1 - val2) > getMinAllowedDiff();
+	}
+
+	@Override
+	public IEntityFieldValue getNearestValueToDate(Set<IEntityField> entityFields, long current) {
+		for(IEntityField entityField : entityFields) {
+			Date date = new Date(current);
+			
+			EntityFieldValue older = entityFieldValueRepository.getEntityFieldValueForEntityFieldOlderThanDate(entityField.getId(), date); 
+			EntityFieldValue newer = entityFieldValueRepository.getEntityFieldValueForEntityFieldNewerThanDate(entityField.getId(), date);
+
+			long olderDiff = Math.abs(older.getDate().getTime() - date.getTime());
+			long newerDiff = Math.abs(older.getDate().getTime() - date.getTime());
+			
+			return olderDiff < newerDiff ? older :newer;
+			}
+		return null;
+	}
+
+	@Override
+	public Date getOldestEntityFieldValue(IEntityField entityField) {
+		IEntityFieldValue older = entityFieldValueRepository.getEntityFieldValueForEntityFieldOlderThanDate(entityField.getId(), DateTimeUtil.getDate());
+		if(older == null) {
+			return DateTimeUtil.getDate();
+		}
+		return older.getDate();
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.model.virtual;
 
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.exception.BadValueException;
 
 import lombok.Getter;
@@ -78,6 +80,11 @@ public class CalculatedEntityField extends ItemAbstract implements ICalculatedEn
 	@Override
 	public ItemType getItemType() {
 		return ItemType.ENTITY_FIELD;
+	}
+
+	@Override
+	public IEntityFieldValue apply(Map<String, IEntityFieldValue> entFieldMap) {
+		return getCalculator().calculateField(getTargetEntityField(), entFieldMap.values(), parameter);
 	}
 
 }

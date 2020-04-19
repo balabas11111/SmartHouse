@@ -1,6 +1,8 @@
 package com.balabas.smarthouse.server.entity.model.virtual;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,9 +20,12 @@ import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.repository.ICalculatedEntityFieldRepository;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
+import com.balabas.smarthouse.server.entity.service.IEntityFieldService;
 import com.balabas.smarthouse.server.exception.BadValueException;
+import com.balabas.smarthouse.server.util.DateTimeUtil;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -39,8 +45,14 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 	private ICalculatedEntityFieldRepository calculatedEntityFieldRepository;
 
 	@Getter
-	List<ICalculatedEntityField> calculatedEntityFields = new ArrayList<ICalculatedEntityField>();
+	private List<ICalculatedEntityField> calculatedEntityFields = new ArrayList<ICalculatedEntityField>();
 
+	@Getter
+	private IEntityFieldService entityFieldService;
+	
+	@Value("${smarthouse.server.entityfields.recalculate.interval.ms:10000}")
+	private Long recalculateInterval;
+	
 	@PostConstruct
 	@Transactional
 	public void afterPropertiesSet() throws Exception {
@@ -165,5 +177,49 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 		return calculatedEntityFields.stream().filter(cef -> cef.getId().equals(id))
 				.findFirst().orElse(null);
 	}
+
+	@Override
+	public void generateAllValues(CalculatedEntityField calcEntityField) {
+		Date date1 = DateTimeUtil.getDate();
+		
+		Set<IEntityField> source = calcEntityField.getSourceEntityFields();
+		
+		Date oldest = null;
+		
+		for(IEntityField entityField : source) {
+			Date dateTmp = entityFieldService.getOldestEntityFieldValue(entityField);
+			
+			if( oldest == null ||dateTmp.getTime() > oldest.getTime()) {
+				oldest = dateTmp;
+			}
+		
+		}
+		
+		long now = DateTimeUtil.now();
+		long current = oldest.getTime();
+		Map<String, IEntityFieldValue> entFieldMap = new LinkedHashMap<String, IEntityFieldValue>();
+		
+		while( current < now) {
+			entFieldMap = new LinkedHashMap<String, IEntityFieldValue>();
+			
+			for(IEntityField entityField : source) {
+				IEntityFieldValue value = entityFieldService.getNearestValueToDate(source, current);
+				
+				entFieldMap.put(entityField.getItemUid(), value);
+			}
+			
+			if(calcEntityField.getCalculator() == null) {
+				calcEntityField.setCalculator(this.getCalculator(calcEntityField.getCalculatorName()));
+			}
+			
+			entityFieldService.save(calcEntityField.apply(entFieldMap));
+			
+			current += recalculateInterval;
+		}
+		
+		long total = DateTimeUtil.getDiffSecs(date1);
+		log.info("Calc field created values in total secs=" + total);
+	}
+	
 	
 }

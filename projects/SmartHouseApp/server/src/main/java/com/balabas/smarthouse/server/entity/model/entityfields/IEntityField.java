@@ -12,7 +12,7 @@ import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabl
 import com.balabas.smarthouse.server.exception.BadValueException;
 
 @SuppressWarnings("rawtypes")
-public interface IEntityField<T> extends IItemAbstract {
+public interface IEntityField<T> extends IItemAbstract, IFloatProvider {
 
 	Class getClazz();
 	
@@ -28,7 +28,7 @@ public interface IEntityField<T> extends IItemAbstract {
 	
 	Float getValueAsFloat();
 	
-	default float getValueAsfloat() {
+	default float getValueAsfloatSimple() {
 		Float result = getValueAsFloat();
 		if(result==null) {
 			return -1;

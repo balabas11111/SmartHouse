@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
@@ -24,6 +25,8 @@ public interface IEntityFieldService {
 
 	boolean isButton(IEntityField entityField);
 
+	void save(IEntityFieldValue entityFieldValue);
+	
 	void saveAll(List<IEntityFieldValue> values);
 	
 	void saveAllValues(Collection<IEntityField> values);
@@ -64,5 +67,9 @@ public interface IEntityFieldService {
 	List<IEntityFieldValue> getEntityFieldValuesLessThanDates(IEntityField entityField, Date date1, Date date2);
 
 	IEntityFieldValue getEntityFieldValuesLessThanDate(IEntityField entityField, Date date);
+
+	IEntityFieldValue getNearestValueToDate(Set<IEntityField> entityFields, long current);
+
+	Date getOldestEntityFieldValue(IEntityField entityField);
 
 }

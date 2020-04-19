@@ -30,4 +30,6 @@ public interface ICalculatedEntityFieldService extends IEntityFieldValueChangeDi
 	void save(ICalculatedEntityField calcEntityField);
 
 	ICalculatedEntityField getCalculatedEntityFieldById(Long id);
+
+	void generateAllValues(CalculatedEntityField calcEntityField);
 }

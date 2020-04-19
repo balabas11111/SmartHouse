@@ -35,4 +35,14 @@ public class DateTimeUtil {
 	public static Date getDate() {
 		return new Date();
 	}
+	
+	public static Long getDiffSecs(Date date1) {
+		return Math.abs(now()  - date1.getTime())/1000;
+		
+	}
+	
+	public static Long getDiffSecs(Date date1, Date date2) {
+		return Math.abs(date2.getTime()  - date1.getTime())/1000;
+		
+	}
 }
