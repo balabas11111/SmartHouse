@@ -72,4 +72,6 @@ public interface IEntityFieldService {
 
 	Date getOldestEntityFieldValue(IEntityField entityField);
 
+	long saveIfDifferent(IEntityFieldValue value);
+
 }

@@ -40,7 +40,7 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 
 	@Autowired
 	private IDeviceManageService deviceService;
-	
+
 	@Autowired
 	private ICalculatedEntityFieldRepository calculatedEntityFieldRepository;
 
@@ -49,10 +49,10 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 
 	@Getter
 	private IEntityFieldService entityFieldService;
-	
+
 	@Value("${smarthouse.server.entityfields.recalculate.interval.ms:10000}")
 	private Long recalculateInterval;
-	
+
 	@PostConstruct
 	@Transactional
 	public void afterPropertiesSet() throws Exception {
@@ -63,52 +63,53 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 
 		log.info("---Loaded persisted calculatedEntityField---");
 	}
-	
+
 	@Override
-	public void dispatchEntityFieldValueChange(IEntityField sourceEntityField, Map<Long, IEntityField> uniqueChangedTargets) {
+	public void dispatchEntityFieldValueChange(IEntityField sourceEntityField,
+			Map<Long, IEntityField> uniqueChangedTargets) {
 		List<ICalculatedEntityField> calcFields = getCalculatedEntityFieldsBySourceField(sourceEntityField);
 
-		//List<IEntityField> changedFields = Lists.newArrayList();
+		// List<IEntityField> changedFields = Lists.newArrayList();
 
-		if(calcFields.size()>0) {
-			//log.info("Total calcFields " + calcFields.size());
-		
+		if (calcFields.size() > 0) {
+			// log.info("Total calcFields " + calcFields.size());
+
 			for (ICalculatedEntityField cef : calcFields) {
-				
+
 				if (cef.getCalculator() == null) {
 					cef.setCalculator(entityFieldCalculatorService.getCalculator(cef.getCalculatorName()));
 				}
 				IEntityField targetField = deviceService.getEntityFieldById(cef.getTargetEntityField().getId());
-	
+
 				cef.setTargetEntityField(targetField);
-	
+
 				Set<IEntityField> fields = new LinkedHashSet<IEntityField>();
 				for (IEntityField f : cef.getSourceEntityFields()) {
 					fields.add(deviceService.getEntityFieldById(f.getId()));
 				}
-	
+
 				cef.setSourceEntityFields(fields);
-	
+
 				try {
 					cef.apply(sourceEntityField);
-	
+
 					IEntityField resultField = deviceService.getEntityFieldById(targetField.getId());
 					if (resultField != targetField) {
 						resultField.setValueStr(targetField.getValueStr());
 					}
-					
-					if(resultField!=null && resultField.isVirtualized()) {
+
+					if (resultField != null && resultField.isVirtualized()) {
 						IEntity entity = resultField.getEntity();
-						if( entity != null) {
+						if (entity != null) {
 							IDevice targetDevice = entity.getDevice();
-							if( targetDevice != null && targetDevice.isVirtualized()) {
+							if (targetDevice != null && targetDevice.isVirtualized()) {
 								targetDevice.setDeviceLastUpdateTimeNow();
 							}
 						}
 					}
 					uniqueChangedTargets.put(resultField.getId(), resultField);
-					//changedFields.add(resultField);
-	
+					// changedFields.add(resultField);
+
 				} catch (BadValueException e) {
 					e.printStackTrace();
 				}
@@ -124,7 +125,7 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 
 	@Override
 	public ICalculatedEntityField getCalculatedEntityField(Long id) {
-		return calculatedEntityFields.stream().filter( cef -> id.equals(cef.getId())).findFirst().orElse(null);
+		return calculatedEntityFields.stream().filter(cef -> id.equals(cef.getId())).findFirst().orElse(null);
 	}
 
 	@Override
@@ -136,7 +137,7 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 	public Set<IEntityField> getAllSourceFields() {
 		return deviceService.getCurrentEntityFields(ef -> !ef.isVirtualized());
 	}
-	
+
 	@Override
 	public Set<IEntityField> getAllTargetFields() {
 		return deviceService.getEntityFields(IItemAbstract::isVirtualized);
@@ -145,12 +146,12 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 	@Override
 	public ICalculatedEntityField createNewCalculatedEntityField(String name, String description) {
 		ICalculatedEntityField result = new CalculatedEntityField();
-		
+
 		result.setName(name);
 		result.setDescription(description);
-		
+
 		result.setCalculator(entityFieldCalculatorService.getDefaultCalculator());
-		
+
 		return result;
 	}
 
@@ -161,11 +162,11 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 
 	@Override
 	public void save(ICalculatedEntityField calcEntityField) {
-		ICalculatedEntityField result = calculatedEntityFieldRepository.save((CalculatedEntityField)calcEntityField);
-		
+		ICalculatedEntityField result = calculatedEntityFieldRepository.save((CalculatedEntityField) calcEntityField);
+
 		int index = deviceService.getItemIndexById(calculatedEntityFields, result.getId());
-			
-		if(index>-1) {
+
+		if (index > -1) {
 			calculatedEntityFields.set(index, result);
 		} else {
 			calculatedEntityFields.add(result);
@@ -174,52 +175,56 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 
 	@Override
 	public ICalculatedEntityField getCalculatedEntityFieldById(Long id) {
-		return calculatedEntityFields.stream().filter(cef -> cef.getId().equals(id))
-				.findFirst().orElse(null);
+		return calculatedEntityFields.stream().filter(cef -> cef.getId().equals(id)).findFirst().orElse(null);
 	}
 
 	@Override
 	public void generateAllValues(CalculatedEntityField calcEntityField) {
+		log.info("Calculated field values generation started");
 		Date date1 = DateTimeUtil.getDate();
-		
+
 		Set<IEntityField> source = calcEntityField.getSourceEntityFields();
-		
+
 		Date oldest = null;
-		
-		for(IEntityField entityField : source) {
+
+		for (IEntityField entityField : source) {
 			Date dateTmp = entityFieldService.getOldestEntityFieldValue(entityField);
-			
-			if( oldest == null ||dateTmp.getTime() > oldest.getTime()) {
+
+			if (oldest == null || dateTmp.getTime() > oldest.getTime()) {
 				oldest = dateTmp;
 			}
-		
+
 		}
-		
+
 		long now = DateTimeUtil.now();
 		long current = oldest.getTime();
 		Map<String, IEntityFieldValue> entFieldMap = new LinkedHashMap<String, IEntityFieldValue>();
-		
-		while( current < now) {
+
+		long totalSaved = 0;
+
+		while (current < now) {
 			entFieldMap = new LinkedHashMap<String, IEntityFieldValue>();
-			
-			for(IEntityField entityField : source) {
+
+			for (IEntityField entityField : source) {
 				IEntityFieldValue value = entityFieldService.getNearestValueToDate(source, current);
-				
+
 				entFieldMap.put(entityField.getItemUid(), value);
 			}
-			
-			if(calcEntityField.getCalculator() == null) {
+
+			if (calcEntityField.getCalculator() == null) {
 				calcEntityField.setCalculator(this.getCalculator(calcEntityField.getCalculatorName()));
 			}
+			IEntityFieldValue value = calcEntityField.apply(entFieldMap);
 			
-			entityFieldService.save(calcEntityField.apply(entFieldMap));
-			
+			if (value != null) {
+				value.setDate(new Date(current));
+				totalSaved+=entityFieldService.saveIfDifferent(value);
+			}
+
 			current += recalculateInterval;
 		}
-		
-		long total = DateTimeUtil.getDiffSecs(date1);
-		log.info("Calc field created values in total secs=" + total);
+
+		log.info("Calc field created values count=" + totalSaved + " in time secs=" + DateTimeUtil.getDiffSecs(date1));
 	}
-	
-	
+
 }

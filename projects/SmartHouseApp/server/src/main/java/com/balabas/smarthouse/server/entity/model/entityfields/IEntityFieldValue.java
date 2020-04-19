@@ -8,6 +8,7 @@ public interface IEntityFieldValue extends IFloatProvider  {
 	Long getId();
 	IEntityField getEntityField();
 	Date getDate();
+	void setDate(Date date);
 
 	String getValueStr();
 	

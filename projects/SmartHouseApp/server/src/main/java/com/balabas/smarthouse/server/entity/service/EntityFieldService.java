@@ -306,4 +306,16 @@ public class EntityFieldService implements IEntityFieldService {
 		return older.getDate();
 	}
 
+	@Override
+	public long saveIfDifferent(IEntityFieldValue value) {
+		IEntityFieldValue prevValue = getEntityFieldValuesLessThanDate(value.getEntityField(), value.getDate());
+		
+		if (isValueChanged(value.getValueAsFloat(), prevValue.getValueAsFloat()) ) {
+			save(value);
+			return 1;
+		}
+		
+		return 0;
+	}
+
 }

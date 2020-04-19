@@ -33,6 +33,7 @@ public abstract class EntityFieldValue implements IEntityFieldValue {
 	protected IEntityField entityField;
 	
 	@Getter
+	@Setter
 	protected Date date;
 	
 }
