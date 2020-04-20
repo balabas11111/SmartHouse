@@ -59,7 +59,7 @@ public enum AlarmState {
 	}
 
 	public static AlarmState getByName(String stateName) {
-		return getList().stream().filter(a -> a.name.equals(stateName)).findFirst().orElse(NO_DATA);
+		return getList().stream().filter(a -> a.name.equalsIgnoreCase(stateName)).findFirst().orElse(NO_DATA);
 	}
 
 	public static Integer getValueInt(AlarmState alarmState) {

@@ -94,4 +94,10 @@ public interface IAlarmV2Service {
 
 	Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap();
 
+	Map<ItemType, String> getItemMapNames();
+
+	Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(AlarmState maxState, boolean only);
+
+	String getAlarmsIconsString(AlarmState state, boolean only);
+
 }

@@ -6,77 +6,94 @@
 
 	<table class="table table-dark table-striped"
 		th:fragment="AlarmsList(alarms,itemTypeName)">
+		<th:block th:replace="alarms/templates :: AlarmHeader"></th:block>
+		<tbody>
+			<tr th:each="alarmIn : ${alarms}">
+				<th:block th:replace="alarms/templates :: AlarmRow(alarm=${alarmIn}, itemType=${itemTypeName})">
+			</tr>
+		</tbody>
+	</table>
+	
+	<table class="table table-dark table-striped"
+		th:fragment="AlarmsMap(alarms,itemType)">
+		<th:block th:replace="alarms/templates :: AlarmHeader"></th:block>
+		<tbody>
+			<th:block th:each="alarmName : ${alarms.get(itemType).keySet()}">
+			<tr th:each="alarmIn : ${alarms.get(itemType).get(alarmName)}">
+				<th:block th:replace="alarms/templates :: AlarmRow(alarm=${alarmIn}, itemType=${itemType})">
+			</tr>
+			</th:block>
+		</tbody>
+	</table>
+	
+	<th:block th:fragment="AlarmHeader">
 		<thead>
 			<tr>
+				<th></th>
 				<th>Описание</th>
-				<th>Тревога описание</th>
 				<th>Объект</th>
 				<th>Состояние</th>
 				<th></th>
 				<th></th>
 			</tr>
 		</thead>
-		<tbody>
-			<tr th:each="alarm : ${alarms}">
-				<td th:text="${alarm.getViewDescriptor().getHint()}"></td>
-				<td><a
-					th:href="@{~/editAlarm?id={id}&itemType={itemType}(id=${alarm.id},itemType=${itemTypeName})}"
-					th:text="${alarm.getDescription()}" class="btn btn-default">&#x1F4DD;Просмотр</a>
-				</td>
-				<td>
-					<button	th:replace="templates :: AlarmStateButton(text=${alarm.getItem().getEmojiDescriptionByDescriptionField()},title=${alarm.getStateDescriptionsWithNextLine()})"></button>
-				</td>
-				<td th:text="${alarm.getAlarmState().getEmojiDescription()}"></td>
-				<td>
-					<div th:if="${alarm.hasStateDescriptions()}">
-						<div th:each="alarmDescription : ${alarm.getStateDescriptions()}">
-							<label th:text="${alarmDescription}"></label>
-						</div>
+	</th:block>
+	
+	<th:block th:fragment="AlarmRow(alarm, itemType)">
+		<td th:text="${alarm.getDescription()}"></td>
+		<td th:text="${alarm.getViewDescriptor().getHint()}"></td>
+			<td>
+				<button th:href="@{~/editAlarm?id={id}&itemType={itemType}(id=${alarm.id},itemType=${itemTypeName})}" th:replace="templates :: AlarmStateButton(text=${alarm.getItem().getEmojiDescriptionByDescriptionField()},title=${alarm.getStateDescriptionsWithNextLine()})"></button>
+			</td>
+			<td th:text="${alarm.getAlarmState().getEmojiDescription()}"></td>
+			<td>
+				<div th:if="${alarm.hasStateDescriptions()}">
+					<div th:each="alarmDescription : ${alarm.getStateDescriptions()}">
+						<label th:text="${alarmDescription}"></label>
 					</div>
-				</td>
-				<td>
-					<div class="dropdown">
-						<button class="btn btn-default dropdown-toggle" type="button"
-							data-toggle="dropdown">
-							&#x2699; Админ <span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu">
-							<li><a
-								th:href="@{~/editAlarm?id={id}&itemType={itemType}(id=${alarm.id},itemType=${itemTypeName})}"
-								class="btn btn-default">&#x1F4DD;Просмотр</a></li>
-							<li><button type="button" class="btn btn-default"
-									data-toggle="modal"
-									th:attr="data-target='#deleteAlarmModal' + ${alarm.id}">&#x274C;Удалить</button></li>
-						</ul>
-					</div>
+				</div>
+			</td>
+			<td>
+				<div class="dropdown">
+					<button class="btn btn-default dropdown-toggle" type="button"
+						data-toggle="dropdown">
+						&#x2699; Админ <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li><a
+							th:href="@{~/editAlarm?id={id}&itemType={itemType}(id=${alarm.id},itemType=${itemTypeName})}"
+							class="btn btn-default">&#x1F4DD;Просмотр</a></li>
+						<li><button type="button" class="btn btn-default"
+								data-toggle="modal"
+								th:attr="data-target='#deleteAlarmModal' + ${alarm.id}">&#x274C;Удалить</button></li>
+					</ul>
+				</div>
 
-					<div class="modal fade" th:id="'deleteAlarmModal' + ${alarm.id}">
-						<div class="modal-dialog">
-							<div class="modal-content">
+				<div class="modal fade" th:id="'deleteAlarmModal' + ${alarm.id}">
+					<div class="modal-dialog">
+						<div class="modal-content">
 
-								<!-- Modal Header -->
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal">&times;</button>
-									<h4 class="modal-title"
-										th:text="'Действительно удалить ?    ' + ${alarm.description}">
-										Действительно удалить ?</h4>
-								</div>
+							<!-- Modal Header -->
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title"
+									th:text="'Действительно удалить ?    ' + ${alarm.description}">
+									Действительно удалить ?</h4>
+							</div>
 
-								<!-- Modal footer -->
-								<div class="modal-footer">
-									<a th:href="@{~/deleteAlarm_{id}_{itemType}(id=${alarm.id}, itemType=${alarm.itemType})}"
-										class="btn btn-success">Удалить</a>
-									<button type="button" class="btn btn-danger"
-										data-dismiss="modal">Отменить</button>
-								</div>
+							<!-- Modal footer -->
+							<div class="modal-footer">
+								<a th:href="@{~/deleteAlarm_{id}_{itemType}(id=${alarm.id}, itemType=${alarm.itemType})}"
+									class="btn btn-success">Удалить</a>
+								<button type="button" class="btn btn-danger"
+									data-dismiss="modal">Отменить</button>
 							</div>
 						</div>
 					</div>
+				</div>
 
-				</td>
-			</tr>
-		</tbody>
-	</table>
+			</td>
+	</th:block>
 
 </body>
 

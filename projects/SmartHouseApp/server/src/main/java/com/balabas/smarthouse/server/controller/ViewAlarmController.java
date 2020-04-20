@@ -1,6 +1,10 @@
 package com.balabas.smarthouse.server.controller;
 
+import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_PAGE_DATETIME;
+import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_PAGE_TITLE;
+import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_PAGE_URL;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_SERVER_NAME;
+import static com.balabas.smarthouse.server.controller.ControllerConstants.DEVICES_ROOT;
 
 import java.util.HashSet;
 import java.util.List;
@@ -45,8 +49,30 @@ public class ViewAlarmController {
 	private IAlarmV2Service alarmService;
 	
 	@GetMapping("/alarms")
-	public String getAlarms(Model model) {
-		return "redirect:/alarmsList";
+	public String getAlarms(
+			@RequestParam(name = "alarmState", required = false) String alarmState,
+			@RequestParam(name = "only", required = false) boolean only, Model model) {
+		
+		model.addAttribute(ATTR_SERVER_NAME, serverName);
+		model.addAttribute(ATTR_PAGE_TITLE, "Просмотр текущих тревог");
+		model.addAttribute(ATTR_PAGE_URL, DEVICES_ROOT);
+		model.addAttribute(ATTR_PAGE_DATETIME, DateTimeUtil.getDateTimeStr());
+		
+		if (deviceViewRefreshInterval != null && deviceViewRefreshInterval > 0) {
+			model.addAttribute(ControllerConstants.ATTR_PAGE_REFRESH_INTERVAL, deviceViewRefreshInterval);
+		}
+
+		AlarmState maxState = StringUtils.isEmpty(alarmState) ? null : AlarmState.getByName(alarmState);
+		
+		Map<ItemType, Map<AlarmState, List<IAlarmV2>>> map =alarmService.getAlarmsAsMap(maxState, only); 
+		
+		model.addAttribute("itemTypes", ItemType.ITEM_TYPES_ORDERED);
+		model.addAttribute("itemTypeNames", alarmService.getItemMapNames());
+		model.addAttribute("alarms", map);
+		model.addAttribute("alarmsIcons", alarmService.getAlarmsIconsString(maxState, only));
+		
+		
+		return "alarms/alarmsView.html";
 	}
 	
 	@GetMapping("/alarmsList")

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<title>Режимы тревоги</title>
+<th:block th:replace="templates :: headImports"></th:block>
+</head>
+
+<body>
+	<header
+		th:replace="templates :: MainPageHeader(url=${'index'}, text=${'Текущие тревоги'})"></header>
+	<!-- column content -->
+	<div id="main-content">
+
+		<div class="container">
+			<div class="btn-toolbar" role="toolbar"
+				aria-label="Toolbar with button groups">
+				<div class="btn-group mr-2" role="group" aria-label="First group">
+					<a th:href="@{~/alarmsList}" class="btn btn-default">&#x26D4;Редактировать
+						сигналы тревоги</a>
+				</div>
+				<div class="btn-group mr-2" role="group" aria-label="Выше состояния">
+					<a th:href="@{~/alarms?alarmState=alarm}" class="btn btn-default">&#x26D4;</a>
+					<a th:href="@{~/alarms?alarmState=Warning}" class="btn btn-default">&#x26D4;&#x26A0;</a>
+					<a th:href="@{~/alarms?alarmState=ok}" class="btn btn-default">&#x26D4;&#x26A0;&#x2705;</a>
+					<a th:href="@{~/alarms?alarmState=No data}" class="btn btn-default">&#x26D4;&#x26A0;&#x2705;&#x2139;</a>
+				</div>
+				<div class="btn-group mr-2" role="group" aria-label="Только состояния">
+					<a th:href="@{~/alarms?alarmState=alarm&only=true}" class="btn btn-default">&#x26D4;</a>
+					<a th:href="@{~/alarms?alarmState=Warning&only=true}" class="btn btn-default">&#x26A0;</a>
+					<a th:href="@{~/alarms?alarmState=ok&only=true}" class="btn btn-default">&#x2705;</a>
+				</div>
+				<div class="btn-group mr-2" role="group" aria-label="Отображены">
+					<label>Отображены</label>
+					<label th:text="${alarmsIcons}"></label>
+				</div>
+
+			</div>
+
+			<p></p>
+			<div class="tab-content">
+				<th:block th:each="itemTypeIt : ${itemTypes}">
+					<div th:if="${alarms.get(itemTypeIt).size()>0}">
+						<p>
+							<label th:text="${itemTypeNames.get(itemTypeIt)}"></label>
+						<table
+							th:replace="alarms/templates :: AlarmsMap(alarms=${alarms},itemType=${itemTypeIt})"></table>
+						</p>
+					</div>
+				</th:block>
+
+			</div>
+		</div>
+
+	</div>
+	<!-- end column content -->
+	<footer th:replace="templates :: footer"></footer>
+
+	<div th:replace="templates :: imports" th:remove="tag"></div>
+</body>
+
+</html>

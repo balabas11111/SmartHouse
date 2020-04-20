@@ -545,33 +545,21 @@ public class AlarmV2Service implements IAlarmV2Service {
 		}
 		return getAlarmOrDefault(id, newAlarm(it));
 	}
+	
+	@Override
+	public Map<ItemType, String> getItemMapNames() {
+		Map<ItemType, String> result =new LinkedHashMap<ItemType, String>();
+		
+		for (ItemType type : ItemType.ITEM_TYPES_ORDERED) {
+			result.put(type, type.getDescription());
+		}
+		
+		return result;
+	}
 
 	@Override
 	public Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap() {
-		Map<ItemType, Map<AlarmState, List<IAlarmV2>>> result = new LinkedHashMap<ItemType, Map<AlarmState, List<IAlarmV2>>>();
-
-		for (ItemType type : ItemType.ITEM_TYPES_ORDERED) {
-			result.put(type, new LinkedHashMap<AlarmState, List<IAlarmV2>>());
-			Map<AlarmState, List<IAlarmV2>> stateMap = result.get(type);
-
-			for (AlarmState state : AlarmState.ALARM_STATE_ORDER) {
-				stateMap.put(state, Lists.newArrayList());
-			}
-		}
-
-		getAllAlarms().stream().forEach(alarm -> result.get(alarm.getItemType()).get(alarm.getAlarmState()).add(alarm));
-
-		for (ItemType type : ItemType.ITEM_TYPES_ORDERED) {
-			for (AlarmState state : AlarmState.ALARM_STATE_ORDER) {
-				Map<AlarmState, List<IAlarmV2>> stateMap =result.get(type);
-				
-				List<IAlarmV2> list = stateMap.get(state).stream().sorted((al1, al2)->al1.getDescription().compareTo(al2.getDescription())).collect(Collectors.toList());
-				
-				stateMap.put(state, list);
-			}
-		}
-
-		return result;
+		return getAlarmsAsMap(null, false);
 	}
 
 	@Override
@@ -598,6 +586,80 @@ public class AlarmV2Service implements IAlarmV2Service {
 		List<IEntityField> entityFields = changedValues.stream().map(value -> value.getEntityField())
 				.collect(Collectors.toList());
 		checkForAlarmsWithParentExecutePostActionsForFields(entityFields);
+	}
+
+	@Override
+	public Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(AlarmState maxState, boolean only) {
+		Map<ItemType, Map<AlarmState, List<IAlarmV2>>> result = new LinkedHashMap<ItemType, Map<AlarmState, List<IAlarmV2>>>();
+
+		for (ItemType type : ItemType.ITEM_TYPES_ORDERED) {
+			result.put(type, new LinkedHashMap<AlarmState, List<IAlarmV2>>());
+			Map<AlarmState, List<IAlarmV2>> stateMap = result.get(type);
+
+			for (AlarmState state : AlarmState.ALARM_STATE_ORDER) {
+				if(only) {
+					if(!state.equals(maxState)) {
+						continue;
+					}
+				}
+				stateMap.put(state, Lists.newArrayList());
+				if(maxState!=null && state.equals(maxState)) {
+					break;
+				}
+			}
+		}
+
+		for(IAlarmV2 alarm : getAllAlarms()) {
+			if(result.containsKey(alarm.getItemType())) {
+				Map<AlarmState, List<IAlarmV2>> stateMap = result.get(alarm.getItemType());
+				if(stateMap.containsKey(alarm.getAlarmState())) {
+					result.get(alarm.getItemType()).get(alarm.getAlarmState()).add(alarm);
+				}
+			}
+		}
+
+		for (ItemType type : ItemType.ITEM_TYPES_ORDERED) {
+			for (AlarmState state : AlarmState.ALARM_STATE_ORDER) {
+				if(only) {
+					if(!state.equals(maxState)) {
+						continue;
+					}
+				}
+				Map<AlarmState, List<IAlarmV2>> stateMap =result.get(type);
+				
+				List<IAlarmV2> list = stateMap.get(state).stream().sorted((al1, al2)->al1.getDescription().compareTo(al2.getDescription())).collect(Collectors.toList());
+				if(list.size()>0) {
+					stateMap.put(state, list);
+				} else {
+					stateMap.remove(state);
+				}
+				if(maxState!=null && state.equals(maxState)) {
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public String getAlarmsIconsString(AlarmState state, boolean only) {
+		if(state==null) {
+			state = AlarmState.NO_DATA;
+		}
+		if(only) {
+			return state.getEmojiDescription();
+		}
+		StringBuffer buf = new StringBuffer();
+
+		for(AlarmState st : AlarmState.ALARM_STATE_ORDER) {
+			buf.append(st.getEmojiDescription());
+			buf.append(";  ");
+			if(state!=null && st.equals(state)) {
+				break;
+			}
+		}
+		
+		return buf.toString();
 	}
 
 }
