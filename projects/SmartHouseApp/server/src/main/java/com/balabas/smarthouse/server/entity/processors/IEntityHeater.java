@@ -1,5 +1,7 @@
 package com.balabas.smarthouse.server.entity.processors;
 
+import java.util.Optional;
+
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
@@ -116,11 +118,16 @@ public class IEntityHeater extends IEntityAbstractChangeBox {
 	public boolean check() {
 		boolean result = false;
 		int max = getParams().getInt(IEntityHeater.MAX_BOILER);
+		
+		Float aAccuTopflt = Optional.ofNullable(heatAccuTop.getValueAsFloat()).orElse(-2F);
+		Float aAccuMiddleflt = Optional.ofNullable(heatAccuMiddle.getValueAsFloat()).orElse(-2F);
+		Float aAccuDownflt = Optional.ofNullable(heatAccuDown.getValueAsFloat()).orElse(-2F);
+		Float aBoilerOutTempflt = Optional.ofNullable(boilerOutTemp.getValueAsFloat()).orElse(-2F);
 
-		boolean hasPowerInAccu = heatAccuTop.getValueAsFloat() > max || heatAccuMiddle.getValueAsFloat() > max
-				|| heatAccuDown.getValueAsFloat() > max;
+		boolean hasPowerInAccu = aAccuTopflt > max || aAccuMiddleflt > max
+				|| aAccuDownflt > max;
 
-		boolean isHeating = boilerOutTemp.getValueAsFloat() > getParams().getInt(IEntityHeater.MAX_OUT_TEMP);
+		boolean isHeating = aBoilerOutTempflt > getParams().getInt(IEntityHeater.MAX_OUT_TEMP);
 
 		boolean floorPumpIsOn = getValOrFalse(pumpFloor);
 		boolean boilerPumpIsOn = getValOrFalse(pumpBoiler);

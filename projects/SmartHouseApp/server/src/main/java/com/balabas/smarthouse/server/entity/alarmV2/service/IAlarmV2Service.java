@@ -92,4 +92,6 @@ public interface IAlarmV2Service {
 		return getAlarm(id, it);
 	}
 
+	Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap();
+
 }

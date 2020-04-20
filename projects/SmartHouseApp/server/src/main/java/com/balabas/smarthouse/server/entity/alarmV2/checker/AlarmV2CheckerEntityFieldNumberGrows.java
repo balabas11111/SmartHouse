@@ -52,8 +52,8 @@ public class AlarmV2CheckerEntityFieldNumberGrows extends AlarmV2CheckerAbstract
 			resultPref = "Стабильно за ";
 		} else {
 			state = AlarmState.WARNING;
-			resultEmoji = grows ? Emoji.ARROW_UP : Emoji.ARROW_DOWN;
-			resultPref =  grows ? "Растет последние " : "Падает последние ";
+			resultEmoji = grows ? Emoji.CHART_RISE : Emoji.CHART_FALLS;
+			resultPref =  grows ? Emoji.ARROW_UP.toString() + " Растет последние " : Emoji.ARROW_DOWN.toString() + " Падает последние ";
 		}
 		
 		resultName = "Изменение : ";

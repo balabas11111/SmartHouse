@@ -48,6 +48,7 @@ import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.service.IActionTimerService;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
+import com.google.common.collect.Lists;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -543,6 +544,34 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 		}
 		return getAlarmOrDefault(id, newAlarm(it));
+	}
+
+	@Override
+	public Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap() {
+		Map<ItemType, Map<AlarmState, List<IAlarmV2>>> result = new LinkedHashMap<ItemType, Map<AlarmState, List<IAlarmV2>>>();
+
+		for (ItemType type : ItemType.ITEM_TYPES_ORDERED) {
+			result.put(type, new LinkedHashMap<AlarmState, List<IAlarmV2>>());
+			Map<AlarmState, List<IAlarmV2>> stateMap = result.get(type);
+
+			for (AlarmState state : AlarmState.ALARM_STATE_ORDER) {
+				stateMap.put(state, Lists.newArrayList());
+			}
+		}
+
+		getAllAlarms().stream().forEach(alarm -> result.get(alarm.getItemType()).get(alarm.getAlarmState()).add(alarm));
+
+		for (ItemType type : ItemType.ITEM_TYPES_ORDERED) {
+			for (AlarmState state : AlarmState.ALARM_STATE_ORDER) {
+				Map<AlarmState, List<IAlarmV2>> stateMap =result.get(type);
+				
+				List<IAlarmV2> list = stateMap.get(state).stream().sorted((al1, al2)->al1.getDescription().compareTo(al2.getDescription())).collect(Collectors.toList());
+				
+				stateMap.put(state, list);
+			}
+		}
+
+		return result;
 	}
 
 	@Override

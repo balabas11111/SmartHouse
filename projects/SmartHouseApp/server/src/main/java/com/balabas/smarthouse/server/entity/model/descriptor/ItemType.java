@@ -11,6 +11,8 @@ public enum ItemType {
 	ENTITY_FIELD(-1, "Показатель", Emoji.BRIEFCASE, "EntityField"),
 	ALARM(1000*60, "Тревога", Emoji.BRIEFCASE, "alarm"),;
 
+	public static final ItemType[] ITEM_TYPES_ORDERED = {DEVICE, GROUP, ENTITY, ENTITY_FIELD};
+	
 	long refreshInterval;
 	String description;
 	Emoji emoji;

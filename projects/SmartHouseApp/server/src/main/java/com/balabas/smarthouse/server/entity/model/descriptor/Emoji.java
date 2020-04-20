@@ -17,6 +17,8 @@ public enum Emoji {
 	BELL_CANCEL('\uD83D','\uDD15',"1F515"),
 	BOOKMARK_TABS('\uD83D','\uDCD1',"1F4D1"),
 	BAR_CHART('\uD83D','\uDCCA',"1F4CA"),
+	CHART_RISE('\uD83D','\uDCC8',"1F4C8"),
+	CHART_FALLS('\uD83D','\uDCC9',"1F4C9"),
 	BRIEFCASE('\uD83D','\uDCBC',"1F4BC"),
 	BULB('\uD83D','\uDCA1',"1F4A1"),
 	CANDLE('\uD83D','\uDD6F',"1F56F"),

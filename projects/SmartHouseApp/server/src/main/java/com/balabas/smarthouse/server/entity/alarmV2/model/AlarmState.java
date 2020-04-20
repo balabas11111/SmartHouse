@@ -13,6 +13,8 @@ public enum AlarmState {
 	ALARM(Emoji.CROSS_MARK_RED, "alarm", "Ошибка", true, 3),
 	ANY(Emoji.EMPTY_EMOJI, "any", "any", false, -1);
 	
+	public static final AlarmState[] ALARM_STATE_ORDER = {ALARM, WARNING, OK, NO_DATA};
+	
 	Emoji emoji;
 	String name;
 	String description;
