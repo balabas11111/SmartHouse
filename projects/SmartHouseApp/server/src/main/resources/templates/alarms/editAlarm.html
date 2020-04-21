@@ -19,32 +19,24 @@
 			<input type="hidden" th:field="*{id}">
 			<table class="table table-dark table-striped">
 				<tr>
-					<td>itemClass</td>
 					<td th:text="${alarm.targetItemClass.getSimpleName()}"></td>
+					<td th:text="${alarm.getPreviousAlarmState().getEmoji().toString() + ' -> ' + alarm.getAlarmState().getEmoji().toString()}">itemClass</td>
 				</tr>
 				<tr>
-					<td>oldState</td>
-					<td th:text="${alarm.getPreviousAlarmState()}"></td>
-				</tr>
-				<tr>
-					<td>newState</td>
-					<td th:text="${alarm.getAlarmState()}"></td>
-				</tr>
-				<tr>
-					<td>description</td>
+					<td>Описание</td>
 					<td><input type="text" th:field="*{description}"></td>
 				</tr>
 				<tr>
-					<td>paramater</td>
+					<td>Параметр</td>
 					<td><input type="text" th:field="*{parameter}"></td>
 				</tr>
 				<tr>
-					<td>Message interval</td>
+					<td>Интервал</td>
 					<td><input type="number" th:field="*{messageInterval}"></td>
 				</tr>
 				
 				<tr>
-					<td>Checker</td>
+					<td>Процессор</td>
 					<td>
 						<select th:field="*{checkerName}">
 								<option th:each="checker : ${checkers}"
@@ -56,7 +48,7 @@
 				</tr>
 				
 				<tr>
-					<td>target</td>
+					<td>Цель процессинга</td>
 					<td>
 						<select th:name="targetId">
 								<option th:each="target : ${targets}"
@@ -70,20 +62,20 @@
 
 			<div th:if="${!alarm.isNew()}">
 				
-				<h4>Event actions</h4>			
+				<h4>События</h4>			
 				<button type="button" class="btn btn-default" data-toggle="modal"
-									th:attr="data-target='#addAlarmEventModal' + ${alarm.id}">Add event</button>
+									th:attr="data-target='#addAlarmEventModal' + ${alarm.id}">Новое событие</button>
 									
 				<table class="table table-dark table-striped">
 					<thead>
 						<tr>
 						    <th></th>
-							<th>Description</th>
-							<th>State1</th>
-							<th>State2</th>
-							<th>stringFormatted</th>
-							<th>string Parameters Formatted</th>
-							<th>event Process Bean</th>
+							<th>Описание</th>
+							<th>Состояние 1</th>
+							<th>Состояние 2</th>
+							<th>Строка</th>
+							<th>Параметры строки</th>
+							<th>Процессор событий</th>
 							<th></th>
 						</tr>
 					</thead>
@@ -99,7 +91,7 @@
 							
 							<td>
 								<a th:href="@{~/deleteAction?id={id}&alarmId={alarmId}&itemType={itemType}(id=${actionItem.id}, alarmId=${alarm.id}, itemType=${itemType})}"
-									class="btn btn-default">delete</a>
+									class="btn btn-default">Удалить</a>
 							</td>
 						</tr>
 					</tbody>
@@ -107,8 +99,8 @@
 			</div>
 
 			<div>
-				<input type="submit" class="btn btn-default" value="&#x1F4BE; Save alarm" />
-				<a th:href="@{~/alarmsList}" class="btn btn-default">&#x274C;Cancel alarm</a>
+				<input type="submit" class="btn btn-default" value="&#x1F4BE; Сохранить" />
+				<a th:href="@{~/alarmsList}" class="btn btn-default">&#x274C; Отменить</a>
 			</div>
 
 		</form>
@@ -121,7 +113,7 @@
 					<div class="modal-header">
 						<button type="button" class="close"
 							data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Add alarm state changed action</h4>
+						<h4 class="modal-title">Добавить событие</h4>
 					</div>
 
 					<form th:if="${!alarm.isNew()}" th:action="@{/saveAlarmEvent}" th:object="${alarmEvent}"
@@ -131,15 +123,15 @@
 						<input type="hidden" th:field="*{id}">
 						<table class="table table-dark table-striped">
 							<tr>
-								<td>name</td>
+								<td>Имя</td>
 								<td><input type="text" th:field="*{name}"></td>
 							</tr>
 						    <tr>
-								<td>description</td>
+								<td>Описание</td>
 								<td><input type="text" th:field="*{description}"></td>
 							</tr>
 							<tr>
-								<td>emoji</td>
+								<td>Емоджи</td>
 								<td>
 									<select name="emojiName">
 											<option th:each="emoji : ${emojies}"
@@ -150,7 +142,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>oldState</td>
+								<td>Старое состояние</td>
 								<td>
 									<select name="oldStateName">
 											<option th:each="state : ${alarmStates}"
@@ -161,7 +153,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>newState</td>
+								<td>Новое состояние</td>
 								<td>
 									<select name="newStateName">
 											<option th:each="state : ${alarmStates}"
@@ -172,7 +164,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>bean</td>
+								<td>Процессор</td>
 								<td>
 									<select th:field="*{targetBeanName}">
 											<option th:each="processor : ${alarmStateChangedEventProcessors}"
@@ -183,19 +175,19 @@
 								</td>
 							</tr>
 							<tr>
-								<td>stringFormatted</td>
+								<td>Строка</td>
 								<td>
 									<input type="text" th:field="*{stringFormatted}">
 								</td>
 							</tr>
 							<tr>
-								<td>stringParametersFormatted</td>
+								<td>Параметры строки</td>
 								<td>
 									<input type="text" th:field="*{stringParametersFormatted}">
 								</td>
 							</tr>
 							<tr>
-								<td>hint</td>
+								<td>Подсказка</td>
 								<td th:text="*{hint}">
 								</td>
 							</tr>
@@ -204,7 +196,7 @@
 								<td>
 									<input type="checkbox" th:field="*{dispatchIfSameState}">
 								</td>
-								<td>interval</td>
+								<td>Интервал</td>
 								<td>
 									<input type="number" th:field="*{interval}">
 								</td>
