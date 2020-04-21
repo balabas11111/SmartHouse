@@ -5,9 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
-import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
-import com.balabas.smarthouse.server.entity.alarm.IEntityFieldAlarm;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.Group;
@@ -24,15 +21,12 @@ import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENABLED_VALUE;
 import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENTITY;
 import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENTITY_FIELD;
 import static com.balabas.smarthouse.server.view.Action.ID_TYPE_GROUP;
-import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENTITY_ALARM;
-import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENTITY_ALARM_FIELD;
 
 import static com.balabas.smarthouse.server.DeviceConstants.ENTITY_DEVICE_DEVICE_DESCRIPTION;
 
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView.EDC_CLASS_VIEW_INPUT;
 import static com.balabas.smarthouse.server.entity.model.descriptor.EntityFieldClassView.EDC_CLASS_VIEW_LABEL;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.transaction.Transactional;
@@ -43,14 +37,10 @@ public class ActionService implements IActionService {
 
 	@Autowired
 	IDeviceManageService deviceService;
-
-	@Autowired
-	IEntityAlarmService alarmService;
 	
 	@Autowired
 	IEntityRepository entityRepository;
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public Action getDeviceGroupEntityNameActionByIdAction(Action action) {
 		if (StringUtils.isEmpty(action.getIdType())) {
@@ -102,21 +92,6 @@ public class ActionService implements IActionService {
 			deviceName = entityFieldEnabledValue.getEntityField().getEntity().getGroup().getDevice().getName();
 			groupName = entityFieldEnabledValue.getEntityField().getEntity().getGroup().getName();
 			entityName = entityFieldEnabledValue.getEntityField().getEntity().getName();
-			break;
-		case ID_TYPE_ENTITY_ALARM:
-			IEntityAlarm alarm = alarmService.getAlarmById(targetId);
-
-			deviceName = alarm.getWatchedItem().getDevice().getName();
-			groupName = alarm.getWatchedItem().getGroup().getName();
-			entityName = alarm.getWatchedItem().getName();
-			break;
-		case ID_TYPE_ENTITY_ALARM_FIELD:
-			List<IEntityFieldAlarm> alarmFields = alarmService.getEntityAlarmFieldById(targetId);
-			IEntityAlarm alarmP = alarmFields.get(0).getEntityAlarm();
-
-			deviceName = alarmP.getWatchedItem().getDevice().getName();
-			groupName = alarmP.getWatchedItem().getGroup().getName();
-			entityName = alarmP.getWatchedItem().getName();
 			break;
 		default:
 			throw new IllegalArgumentException("unknown id type");

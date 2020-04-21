@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.descriptor.Severity;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
@@ -30,9 +29,6 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 	
 	@Autowired
 	private IMessageSender sender;
-
-	@Autowired
-	IEntityAlarmService alarmService;
 	
 	@Autowired
 	IDeviceRepository deviceRepository;
@@ -89,7 +85,7 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 
 	private void onDeviceReRegistered(IDevice device) {
 		String message = buildMessage(MSG_DEVICE_RECONNECTED, device.getDescription());
-		alarmService.reattachAlarms(device);
+		//alarmService.reattachAlarms(device);
 		if(sendDeviceReconnect) {
 			sender.sendMessageToAllUsers(Severity.WARN, message);
 		}
@@ -98,9 +94,6 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 
 	private void onDeviceInitialDataReceived(IDevice device) {
 		// init data was received
-		alarmService.reattachAlarms(device);
-		alarmService.checkAlarmsSendNotifications(device);
-
 		String message = buildMessage(MSG_DEVICE_INITIALIZED, device.getDescription());
 		
 		sender.sendMessageToAllUsers(Severity.INFO,  message);
@@ -119,8 +112,6 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 	
 	private void onDeviceDataUpdated(IDevice device){
 		// device data was updated
-		alarmService.checkAlarmsSendNotifications(device);
-		
 		device.setState(State.CONNECTED);
 	}
 	

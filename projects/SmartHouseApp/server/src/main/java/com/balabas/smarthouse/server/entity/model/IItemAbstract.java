@@ -71,6 +71,12 @@ public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionabl
 		
 		return result;
 	}
+	default List<IItemAbstract> getItemAndAllChildren() {
+		List<IItemAbstract> result = this.getAllChildren();
+		result.add(0, this);
+		
+		return result;
+	}
 
 	static void setEmojiNameDescription(IItemAbstract item, Emoji emoji, String name, String description) {
 		item.setEmoji(emoji);

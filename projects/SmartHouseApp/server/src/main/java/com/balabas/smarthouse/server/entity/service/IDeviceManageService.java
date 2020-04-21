@@ -15,6 +15,7 @@ import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IGroup;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.IEntityFieldEnabledValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -150,5 +151,7 @@ public interface IDeviceManageService {
 	void sendActionToEntityField(IEntityField field, String action);
 
 	IItemAbstract getItemAbstract(IItemAbstract item);
+
+	IItemAbstract getItemAbstract(Long itemId, ItemType itemItemType);
 
 }

@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.json.JSONObject;
 import org.thymeleaf.util.StringUtils;
 
-import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
@@ -38,16 +37,17 @@ public class Action {
 	public static final String ACTION_TYPE_VIEW_ALL_DEVICE_VALUE_LIST = "vdl";
 	public static final String ACTION_TYPE_VIEW_HELP                = "vhp";
 	public static final String ACTION_TYPE_SETUP                    = "ats";
-	public static final String ACTION_TYPE_EDIT_ALARMS              = "aea";
-	public static final String ACTION_TYPE_SELECT_DEV_EDIT_ALARMS   = "sea";
+	//public static final String ACTION_TYPE_EDIT_ALARMS              = "aea";
+	//public static final String ACTION_TYPE_SELECT_DEV_EDIT_ALARMS   = "sea";
 	public static final String ACTION_TYPE_EDIT_DEVICE_SELECT_LIST  = "eds";
 	public static final String ACTION_TYPE_VIEW_GROUPS_OF_DEVICE    = "vgd";
 	public static final String ACTION_TYPE_VIEW_ALL_DEVICES         = "vad";
+	public static final String ACTION_TYPE_VIEW_ALL_ALARMS          = "vaa";
 	public static final String ACTION_TYPE_VIEW_ALL_METRICS         = "vam";
 	public static final String ACTION_TYPE_VIEW_ENTITIES_OF_GROUP   = "veg";
 	public static final String ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE  = "eeg";
 	public static final String ACTION_TYPE_VIEW_ENTITIES_OF_METRIC  = "vem";
-
+	/*
 	public static final String ACTION_TYPE_EDIT_ALARMS_OF_DEVICE         = "ead";
 	public static final String ACTION_TYPE_EDIT_ALARMS_OF_ENTITY         = "eae";
 	public static final String ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD   = "aef";
@@ -56,7 +56,6 @@ public class Action {
 	public static final String ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION  = "dae";
 	public static final String ACTION_ALARM_OF_ENTITY_CHANGE_SOUND       = "ecs";
 	public static final String ACTION_TYPE_EDIT_ALARM_INTERVAL_OF_ENTITY = "eai";
-	public static final String ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY  = "rai";
 	public static final String ACTION_SAVE_ALARM_INTERVAL_OF_ENTITY      = "sAi";
 
 	public static final String ACTION_DELETE_ENTITY_FIELD_ALARM          = "dfa";
@@ -64,7 +63,7 @@ public class Action {
 	public static final String ACTION_ADD_ENTITY_FIELD_ALARM             = "afa";
 	public static final String ACTION_SAVE_NEW_ENTITY_FIELD_ALARM        = "nfa";
 	public static final String ACTION_SAVE_ENTITY_FIELD_ALARM            = "sfa";
-
+*/
 	public static final String ACTION_TYPE_EDIT_DEVICE_DESCRIPTION = "edd";
 	public static final String ACTION_TYPE_EDIT_ENTITITY = "een";
 	public static final String ACTION_TYPE_EDIT_ENTITITY_FIELD = "eef";
@@ -315,12 +314,6 @@ public class Action {
 	public static String callback(String actionName, String data, IEntity entity) {
 		return (Action.fromColumnList(actionName, data, entity.getGroup().getDevice().getName(),
 				entity.getGroup().getName(), entity.getName())).getCallbackData();
-	}
-
-	public static String callback(String actionName, IEntityAlarm entityAlarm) {
-		return (Action.fromColumnList(actionName, entityAlarm.getId().toString(),
-				entityAlarm.getWatchedItem().getDevice().getName(), entityAlarm.getWatchedItem().getGroup().getName(),
-				entityAlarm.getWatchedItem().getName())).getCallbackData();
 	}
 
 	public static String callback(String actionName, String data, String actionType, Long targetId) {

@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import org.json.JSONObject;
 
+import com.balabas.smarthouse.server.entity.model.Group;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
@@ -60,7 +61,11 @@ public interface IEntityAbstractChangeBoxProcessor<T extends IEntityAbstractChan
 	}
 	
 	default IEntity getEntity(IEntity entity, ItemAbstractDto item) {
-		return getVirtualEntityService().getVirtualEntityOrCreateNew(entity.getGroup(), item);
+		if( entity == null ) {
+			return null;
+		}
+		Group group = entity.getGroup();
+		return getVirtualEntityService().getVirtualEntityOrCreateNew(group, item);
 	}
 	
 	default IEntityField getFieldBoolean(IEntity entity, ItemAbstractDto item, ItemAbstractDto enabledValueTrue,

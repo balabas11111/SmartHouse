@@ -10,6 +10,7 @@ import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Checker;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2CheckerAbstractEntityFieldNumber;
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
 import com.balabas.smarthouse.server.entity.alarmV2.model.IAlarmV2;
+import com.balabas.smarthouse.server.entity.alarmV2.service.IItemAlarmStateService;
 import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
@@ -28,6 +29,9 @@ public class AlarmV2CheckerEntityFieldNumberGrows extends AlarmV2CheckerAbstract
 	
 	@Autowired
 	IEntityFieldService entityFieldService;
+	
+	@Autowired
+	IItemAlarmStateService alarmStateService;
 	
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -63,6 +67,9 @@ public class AlarmV2CheckerEntityFieldNumberGrows extends AlarmV2CheckerAbstract
 		alarm.setViewDescriptor(new ItemAbstractDto(resultEmoji, resultName, resultDescription));
 		
 		alarm.setStateDescription(resultDescription);
+		
+		alarmStateService.putSingleStateDescription(alarm);
+		alarmStateService.printStateDescription(alarm.getItem());
 	}
 	
 	

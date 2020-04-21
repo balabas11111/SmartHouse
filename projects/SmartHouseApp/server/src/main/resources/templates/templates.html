@@ -171,6 +171,13 @@
 		th:title="${title}">
 	</button>
 	
+	<a th:fragment="LinkButton(text, title, url)" type="button" class="btn btn-secondary"
+		th:href="${url}"
+		th:text="${text}"
+		data-toggle="tooltip"
+		th:title="${title}">
+	</a>
+	
 	<table class="table table-dark table-striped" th:fragment="ItemAbstractTableEntityFieldsList(items, chbxName, selectedId)">
 		<thead>
 			<tr>

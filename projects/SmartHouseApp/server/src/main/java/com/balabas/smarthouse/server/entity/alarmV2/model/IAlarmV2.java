@@ -99,6 +99,10 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 		return String.format(AlarmConstants.DEFAULT_DESCRIPTION, oldState.getDescription(), newState.getDescription());
 	}
 	
+	static int compareByDescription(IAlarmV2 al1,IAlarmV2 al2) {
+		return al1.getDescription().compareTo(al2.getDescription());
+	}
+	
 	String getCheckerName();
 	void setCheckerName(String checkerName);
 	

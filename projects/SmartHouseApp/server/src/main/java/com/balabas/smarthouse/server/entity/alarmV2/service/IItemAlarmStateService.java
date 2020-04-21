@@ -16,7 +16,11 @@ public interface IItemAlarmStateService {
 	Map<String, Map<String, List<String>>> getStateDescriptions();
 
 	default String getKey(IItemEvent event) {
-		return event.getUid();
+		return getKey(event.getAlarm());
+	}
+	
+	default String getKey(IAlarmV2 alarm) {
+		return alarm.getUid();
 	}
 
 	default String getKey(IItemAbstract item) {
@@ -24,8 +28,13 @@ public interface IItemAlarmStateService {
 	}
 
 	default void removeAllStateDescription(IItemEvent event) {
-		Map<String, List<String>> stateDescriptions = getStateDescriptions(event.getItem());
-		String key = getKey(event);
+		event.getAlarm().setItem(event.getItem());
+		removeAllStateDescription(event.getAlarm());
+	}
+	
+	default void removeAllStateDescription(IAlarmV2 alarm) {
+		Map<String, List<String>> stateDescriptions = getStateDescriptions(alarm.getItem());
+		String key = getKey(alarm);
 
 		if (!stateDescriptions.containsKey(key)
 				|| (stateDescriptions.containsKey(key) && stateDescriptions.get(key).size() > 0)) {
@@ -33,6 +42,10 @@ public interface IItemAlarmStateService {
 		}
 	}
 
+	default void addStateDescription(IAlarmV2 alarm) {
+		getStateDescriptionsByAlarm(alarm).add(alarm.getCurrentActionEmojiDescription());
+	}
+	
 	default void addStateDescription(IItemEvent event) {
 		String message = event.getDescription();
 		getStateDescriptions(event).add(message);
@@ -42,9 +55,18 @@ public interface IItemAlarmStateService {
 		removeAllStateDescription(event);
 		addStateDescription(event);
 	}
+	
+	default void putSingleStateDescription(IAlarmV2 alarm) {
+		removeAllStateDescription(alarm);
+		addStateDescription(alarm);
+	}
 
 	default List<String> getStateDescriptions(IItemEvent event) {
 		return getStateDescriptions(event.getAlarm().getUid(), event.getItem().getItemUid());
+	}
+	
+	default List<String> getStateDescriptionsByAlarm(IAlarmV2 alarm) {
+		return getStateDescriptions(alarm.getUid(), alarm.getItem().getItemUid());
 	}
 	
 	default List<String> getStateDescriptions(String alarmUid, String itemUid) {

@@ -78,10 +78,10 @@ import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueB
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldValueNumber;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
+import com.balabas.smarthouse.server.entity.model.validator.IValidateService;
 import com.balabas.smarthouse.server.entity.repository.IDeviceRepository;
 import com.balabas.smarthouse.server.util.MathUtil;
 import com.balabas.smarthouse.server.DeviceConstants;
-import com.balabas.smarthouse.server.entity.behaviour.IEntityBehaviourService;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
 import com.balabas.smarthouse.server.entity.model.EntityStatus;
@@ -113,10 +113,10 @@ public class SmartHouseItemBuildService {
 	IActionTimerService actionTimerService; 
 	
 	@Autowired
-	IEntityBehaviourService entityBehaviourService;
+	IEntityFieldService entityFieldService;
 	
 	@Autowired
-	IEntityFieldService entityFieldService;
+	IValidateService validateService;
 
 	public boolean updateDeviceEntityValuesFromJson(Device device, JSONObject deviceJson, boolean updateDeviceTimer,
 			boolean updateGroupTimer, List<IEntityFieldValue> changedValues) {
@@ -211,11 +211,13 @@ public class SmartHouseItemBuildService {
 					if (entity.getDescriptionField().equals(entityFieldName)) {
 						entity.setDescriptionIfEmpty(valStr);
 					}
-
+					
 					if (entityField != null) {
+						entityField.setValueTmp(valStr);
+						
 						if (!entity.getDescriptionField().equals(entityField.getTemplateName())) {
 
-							if (entityBehaviourService.isValueCorrect(entity, valStr)) {
+							if (validateService.validate(entityField, valStr)) {
 								String oldValue = entityField.getValueStr();
 	
 								setOk = setEntityFieldValueWithNoCheck(entityField, valStr, setOk);
@@ -230,8 +232,6 @@ public class SmartHouseItemBuildService {
 							if(entityField !=null) {
 								entityField.setValueTmp(valStr);
 							}
-							
-							entityBehaviourService.processReceivedValueForAlarm(entityField, valStr);
 							
 						} else {
 							setOk = true;
@@ -437,11 +437,8 @@ public class SmartHouseItemBuildService {
 		String description = entityJson.optString(ENTITY_FIELD_DESCRIPTION, null);
 		Emoji emoji = Emoji.getByCode(descriptorJson.optString(EDC_FIELD_EMOJI, null));
 		String descriptionField = descriptorJson.optString(EDC_FIELD_DESCR_FIELD, ENTITY_FIELD_DESCRIPTION);
-		//int remoteId = descriptorJson.optInt(EDC_FIELD_ID, -1);
 		boolean hasMq = descriptorJson.has(ENTITY_FIELD_MQ);
-		/*EntityClass renderer = EntityClass.getByKey(
-				entityJson.optString(ENTITY_FIELD_ITEM_CLASS, descriptorJson.optString(ENTITY_FIELD_ITEM_CLASS, "")));
-*/
+
 		Entity entity = Optional.ofNullable(group.getEntity(entityName)).orElse(new Entity());
 
 		entity.setName(entityName);
@@ -450,10 +447,7 @@ public class SmartHouseItemBuildService {
 		entity.setEmoji(emoji);
 		entity.setDescriptionField(descriptionField);
 		entity.setHasMq(hasMq);
-		//entity.setRenderer(renderer);
 		
-		entityBehaviourService.cacheEntityBehaviourIfFound(entity);
-
 		Set<IEntityField> entityFields = new LinkedHashSet<>();
 
 		Map<String, Object> entityJsonObj = entityJson.toMap();

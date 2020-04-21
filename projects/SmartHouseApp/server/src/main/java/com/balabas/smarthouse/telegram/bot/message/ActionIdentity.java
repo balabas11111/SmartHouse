@@ -2,11 +2,11 @@ package com.balabas.smarthouse.telegram.bot.message;
 
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_UNKNOWN;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SETUP;
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_SELECT_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_HELP;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_METRICS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_DEVICES;
+import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_ALARMS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_APP_BUTTONS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_HIDE_REPLY_KEYBOARD;
 
@@ -14,6 +14,7 @@ import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.CO
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_ROOT;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_SETUP;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_ALARM;
+import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_ALARMS;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_EDIT;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_HELP;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.COMMAND_HIDE;
@@ -33,10 +34,10 @@ public class ActionIdentity {
 					Arrays.asList(COMMAND_HOME), ACTION_TYPE_VIEW_ALL_METRICS),
 			new ActionIdentity(Arrays.asList(ItemTextHelper.getDevicesListButton()),
 					Lists.newArrayList(), ACTION_TYPE_VIEW_ALL_DEVICES),
+			new ActionIdentity(Arrays.asList(ItemTextHelper.getAlarmsButton()),
+					Arrays.asList(COMMAND_ALARMS, COMMAND_ALARM), ACTION_TYPE_VIEW_ALL_ALARMS),
 			new ActionIdentity(Arrays.asList(ItemTextHelper.getSetupButton()), 
 					Arrays.asList(COMMAND_SETUP), ACTION_TYPE_SETUP),
-			new ActionIdentity(null, 
-					Arrays.asList(COMMAND_ALARM), ACTION_TYPE_EDIT_ALARMS),
 			new ActionIdentity(null, 
 					Arrays.asList(COMMAND_EDIT), ACTION_TYPE_EDIT_DEVICE_SELECT_LIST),
 			new ActionIdentity(null, Arrays.asList(COMMAND_HELP),

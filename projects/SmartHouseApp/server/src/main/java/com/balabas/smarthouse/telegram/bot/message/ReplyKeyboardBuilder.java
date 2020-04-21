@@ -36,6 +36,7 @@ public class ReplyKeyboardBuilder {
 
 	public KeyboardRow getMetricsDevicesEditRow() {
 		return getKeyboardRow(ItemTextHelper.getMetricsButton(), ItemTextHelper.getDevicesListButton(),
+				ItemTextHelper.getAlarmsButton(),
 				ItemTextHelper.getSetupButton());
 	}
 

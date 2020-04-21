@@ -3,10 +3,7 @@ package com.balabas.smarthouse.telegram.bot.message;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,8 +13,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import com.balabas.smarthouse.server.DeviceConstants;
-import com.balabas.smarthouse.server.entity.alarm.IEntityAlarm;
-import com.balabas.smarthouse.server.entity.alarm.IEntityFieldAlarm;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
@@ -37,10 +32,6 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_GROUPS_
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_DEVICES;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ALL_METRICS;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_GROUP;
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS;
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_OF_DEVICE;
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_OF_ENTITY;
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARMS_OF_ENTITY_FIELD;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_SELECT_LIST;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITIES_OF_DEVICE;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY;
@@ -48,32 +39,13 @@ import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_DEVICE_
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ENTITITY_FIELD;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE_EDIT_FIELDS;
 
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_CREATE_ALARM_OF_ENTITY;
-import static com.balabas.smarthouse.server.view.Action.ACTION_ALARM_OF_ENTITY_CHANGE_ACTIVATION;
-import static com.balabas.smarthouse.server.view.Action.ACTION_ALARM_OF_ENTITY_CHANGE_SOUND;
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_EDIT_ALARM_INTERVAL_OF_ENTITY;
-import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_REMOVE_ALARM_INTERVAL_ENTITY;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_VIEW_ENTITIES_OF_METRIC;
 
-import static com.balabas.smarthouse.server.view.Action.ACTION_DELETE_ENTITY_FIELD_ALARM;
-import static com.balabas.smarthouse.server.view.Action.ACTION_EDIT_ENTITY_FIELD_ALARM;
-import static com.balabas.smarthouse.server.view.Action.ACTION_ADD_ENTITY_FIELD_ALARM;
-
 import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENTITY;
-import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENTITY_FIELD;
-import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENTITY_ALARM;
-import static com.balabas.smarthouse.server.view.Action.ID_TYPE_ENTITY_ALARM_FIELD;
 
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_DEVICE;
 import static com.balabas.smarthouse.server.DeviceConstants.GROUP_SENSORS;
 
-import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_CREATE_MESSAGE;
-import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_DEACTIVATE_MESSAGE;
-import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_ACTIVATE_MESSAGE;
-import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_EDIT_INTERVAL_MESSAGE;
-import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_REMOVE_INTERVAL_MESSAGE;
-import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_ENABLE_SOUND_MESSAGE;
-import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_ALARM_DISABLE_SOUND_MESSAGE;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.SELECT_ALL_DEVICES;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.SELECT_ALL_METRICS;;
 
@@ -214,8 +186,8 @@ public class InlineKeyboardBuilder {
 		InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
 
-		rowsInline.add(createInlineKeyboardButtonRow(ItemTextHelper.getEditAlarmsButton(),
-				Action.callback(ACTION_TYPE_EDIT_ALARMS, "", "")));
+		/*rowsInline.add(createInlineKeyboardButtonRow(ItemTextHelper.getEditAlarmsButton(),
+				Action.callback(ACTION_TYPE_EDIT_ALARMS, "", "")));*/
 		rowsInline.add(createInlineKeyboardButtonRow(ItemTextHelper.getEditPropertiesButton(),
 				Action.callback(ACTION_TYPE_EDIT_DEVICE_SELECT_LIST, "", "")));
 		rowsInline.add(createInlineKeyboardButtonRow(ItemTextHelper.getRestartApplicationButton(),
@@ -225,7 +197,7 @@ public class InlineKeyboardBuilder {
 
 		return markup;
 	}
-
+/*
 	public InlineKeyboardMarkup getAlarmsMenuKeyboard(List<Device> devices) {
 		InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 
@@ -354,7 +326,7 @@ public class InlineKeyboardBuilder {
 
 		return markup;
 	}
-
+*/
 	public InlineKeyboardMarkup getDevicesOfServerInlineKeyboardEdit(List<Device> devices) {
 		InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 		List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();

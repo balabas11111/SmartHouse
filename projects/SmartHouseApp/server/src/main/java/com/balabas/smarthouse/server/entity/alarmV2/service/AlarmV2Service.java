@@ -564,21 +564,28 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Override
 	public AlarmV2Container getAlarmsContainerWithChildren(IItemAbstract parent) {
-		List<IItemAbstract> children = parent.getAllChildren();
-		children.add(parent);
-
-		List<IAlarmV2> alarms = new ArrayList<>();
-
-		children.stream().forEach(item -> alarms.addAll(getAlarmsByItemUid(item)));
-
 		AlarmV2Container result = new AlarmV2Container();
 
-		alarms.forEach(alarm -> {
+		getAlarmsWithItemChildren(parent).forEach(alarm -> {
 			itemAlarmStateService.getStateDescriptions(alarm);
 			result.putAlarm(alarm);
 		});
 
 		return result;
+	}
+	
+	@Override
+	public List<IAlarmV2> getAlarmsWithItemChildren(IItemAbstract item) {
+		return getAlarms(item.getItemAndAllChildren());
+	}
+	
+	@Override
+	public List<IAlarmV2> getAlarms(List<IItemAbstract> items) {
+		List<IAlarmV2> alarms = new ArrayList<>();
+
+		items.stream().forEach(i -> alarms.addAll(getAlarmsByItemUid(i)));
+
+		return alarms.stream().sorted(IAlarmV2::compareByDescription).collect(Collectors.toList());
 	}
 
 	@Override
@@ -590,6 +597,21 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Override
 	public Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(AlarmState maxState, boolean only) {
+		return getAlarmsAsMap(getAllAlarms(), maxState, only);
+	}
+	
+	@Override
+	public Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(IItemAbstract item, AlarmState maxState, boolean only) {
+		return getAlarmsAsMap(getAlarmsWithItemChildren(item), maxState, only);
+	}
+	
+	@Override
+	public Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(Long itemId, ItemType itemType, AlarmState maxState, boolean only) {
+		return getAlarmsAsMap(getAlarmsWithItemChildren(itemId,  itemType), maxState, only);
+	}
+	
+	@Override
+	public Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(List<IAlarmV2> alarmList, AlarmState maxState, boolean only) {
 		Map<ItemType, Map<AlarmState, List<IAlarmV2>>> result = new LinkedHashMap<ItemType, Map<AlarmState, List<IAlarmV2>>>();
 
 		for (ItemType type : ItemType.ITEM_TYPES_ORDERED) {
@@ -609,7 +631,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 			}
 		}
 
-		for(IAlarmV2 alarm : getAllAlarms()) {
+		for(IAlarmV2 alarm : alarmList) {
 			if(result.containsKey(alarm.getItemType())) {
 				Map<AlarmState, List<IAlarmV2>> stateMap = result.get(alarm.getItemType());
 				if(stateMap.containsKey(alarm.getAlarmState())) {
@@ -660,6 +682,11 @@ public class AlarmV2Service implements IAlarmV2Service {
 		}
 		
 		return buf.toString();
+	}
+
+	@Override
+	public List<IAlarmV2> getAlarmsWithItemChildren(Long itemId, ItemType itemItemType) {
+		return getAlarmsWithItemChildren(deviceService.getItemAbstract(itemId, itemItemType));
 	}
 
 }

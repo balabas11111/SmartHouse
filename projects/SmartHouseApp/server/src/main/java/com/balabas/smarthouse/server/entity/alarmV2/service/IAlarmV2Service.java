@@ -25,8 +25,6 @@ public interface IAlarmV2Service {
 
 	void checkForAlarmsWithParentExecutePostActions(List<IEntityFieldValue> changedValues);
 	
-	//void checkForAlarmsWithParentExecutePostActionsForFields(Collection<IEntityField> changedValues);
-	
 	List<IItemEvent> checkForAlarmsExecutePostActions(Collection<IItemAbstract> items);
 	List<IItemEvent> checkForAlarmsExecutePostActions(IItemAbstract item);
 	
@@ -87,11 +85,6 @@ public interface IAlarmV2Service {
 
 	List<IItemEvent> checkForAlarmsExecutePostActions(IAlarmV2 alarm);
 
-	default IAlarmV2 getAlarm(Long id, String itemTypeName) {
-		ItemType it = ItemType.getItemTypeByName(itemTypeName);
-		return getAlarm(id, it);
-	}
-
 	Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap();
 
 	Map<ItemType, String> getItemMapNames();
@@ -99,5 +92,25 @@ public interface IAlarmV2Service {
 	Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(AlarmState maxState, boolean only);
 
 	String getAlarmsIconsString(AlarmState state, boolean only);
+
+	Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(List<IAlarmV2> alarmList, AlarmState maxState,
+			boolean only);
+
+	Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(IItemAbstract item, AlarmState maxState,
+			boolean only);
+
+	List<IAlarmV2> getAlarmsWithItemChildren(IItemAbstract item);
+	
+	List<IAlarmV2> getAlarmsWithItemChildren(Long itemId, ItemType itemItemType);
+
+	List<IAlarmV2> getAlarms(List<IItemAbstract> items);
+	
+	default IAlarmV2 getAlarm(Long id, String itemTypeName) {
+		ItemType it = ItemType.getItemTypeByName(itemTypeName);
+		return getAlarm(id, it);
+	}
+
+	Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(Long itemId, ItemType itemType, AlarmState maxState,
+			boolean only);
 
 }

@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.balabas.smarthouse.server.entity.alarm.IEntityFieldAlarm;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.IEntity;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
@@ -19,8 +18,6 @@ import static com.balabas.smarthouse.telegram.bot.BotConstants.GROUP_SENSORS_NAM
 import static com.balabas.smarthouse.telegram.bot.BotConstants.GROUP_SERVICES_NAME;
 import static com.balabas.smarthouse.telegram.bot.BotConstants.GROUP_SETTINGS_NAME;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ADD_ALARM_BUTTON;
-import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.REMOVE_ALARM_BUTTON;
-import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.EDIT_ALARM_BUTTON;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.GROUP_VIEW_HEADER_MSG;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.GROUP_COMMAND_HEADER_MSG;
 import static com.balabas.smarthouse.telegram.bot.message.BotMessageConstants.ENTITY_DISPLAY_HEADER_MSG;
@@ -58,11 +55,9 @@ public class ItemTextHelper {
 	public static String getDevicesListButton() {
 		return String.format(BotMessageConstants.VIEW_DEVICES_LIST_BUTTON, Emoji.BOOKMARK_TABS);
 	}
-	/*
-	public static String getRefreshDeviceListButton() {
-		return String.format(BotMessageConstants.VIEW_DEVICES_BUTTON, Emoji.BOOKMARK_TABS);
+	public static String getAlarmsButton() {
+		return String.format(BotMessageConstants.VIEW_ALARMS, Emoji.STOP);
 	}
-*/
 	public static String getSetupButton() {
 		return String.format(BotMessageConstants.SETUP_BUTTON, Emoji.HAMMER_AND_WRENCH);
 	}
@@ -117,16 +112,6 @@ public class ItemTextHelper {
 	@SuppressWarnings("rawtypes")
 	public String getAddEntityFieldAlarmButton(Class clazz) {
 		return String.format(ADD_ALARM_BUTTON, Emoji.CHECK_MARK, clazz.getSimpleName());
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public String getEditEntityFieldAlarmButton(IEntityFieldAlarm entityFieldAlarm) {
-		return String.format(EDIT_ALARM_BUTTON, Emoji.MEMO, entityFieldAlarm.getClass().getSimpleName());
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public String getDeleteEntityFieldAlarmButton(IEntityFieldAlarm entityFieldAlarm) {
-		return String.format(REMOVE_ALARM_BUTTON, Emoji.ERROR, entityFieldAlarm.getClass().getSimpleName());
 	}
 	
 	public String getGroupHeader(String deviceDescription, String groupName) {

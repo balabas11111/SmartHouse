@@ -3,7 +3,12 @@ package com.balabas.smarthouse.server.entity.service;
 import static com.balabas.smarthouse.server.DeviceConstants.DEVICE_URL_DATA;
 import static com.balabas.smarthouse.server.DeviceConstants.HTTP_PREFFIX;
 import static com.balabas.smarthouse.server.view.Action.ACTION_TYPE_SEND_DATA_TO_DEVICE;
-
+/*
+import static com.balabas.smarthouse.server.entity.model.descriptor.ItemType.DEVICE;
+import static com.balabas.smarthouse.server.entity.model.descriptor.ItemType.GROUP;
+import static com.balabas.smarthouse.server.entity.model.descriptor.ItemType.ENTITY;
+import static com.balabas.smarthouse.server.entity.model.descriptor.ItemType.ENTITY_FIELD;
+*/
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.balabas.smarthouse.server.controller.ControllerConstants;
-import com.balabas.smarthouse.server.entity.alarm.IEntityAlarmService;
 import com.balabas.smarthouse.server.entity.alarmV2.service.IAlarmV2Service;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
@@ -102,9 +106,6 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Autowired
 	SmartHouseItemBuildService itemBuildService;
-
-	@Autowired
-	IEntityAlarmService alarmService;
 
 	@Autowired
 	IAlarmV2Service alarmV2Service;
@@ -361,7 +362,7 @@ public class DeviceManageService implements IDeviceManageService {
 
 					processChangedEntityFieldValuesList(changedValues, device);
 					
-					alarmService.loadAlarmsForDevice(device);
+					//alarmV2Service.loadAlarmsForDevice(device);
 
 					deviceMqService.initTopicsToFromDevice(device.getName());
 
@@ -786,8 +787,6 @@ public class DeviceManageService implements IDeviceManageService {
 			}
 		}
 		
-		alarmService.reattachAlarms(device);
-
 		log.debug("saved Device" + device.getName());
 
 		return device;
@@ -995,7 +994,7 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Override
 	public void reattachAlarmsForDevice(IDevice device) {
-		alarmService.reattachAlarms(device);
+		//alarmService.reattachAlarms(device);
 	}
 
 	@Override
@@ -1073,7 +1072,7 @@ public class DeviceManageService implements IDeviceManageService {
 		int index = getItemIndexById(devices, deviceId);
 		devices.remove(index);
 
-		alarmService.deleteAlarmsByDeviceId(deviceId);
+		//alarmService.deleteAlarmsByDeviceId(deviceId);
 
 		entityFieldService.deleteEntityFieldsForDevice(deviceId);
 		entityService.deleteEntitiesForDevice(deviceId);
@@ -1286,19 +1285,18 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Override
 	public IItemAbstract getItemAbstract(IItemAbstract item) {
-		Class<?> clazz = item.getClass();
-		Long id = item.getId();
-		
-		if(IDevice.class.isAssignableFrom(clazz)) {
-			return getDeviceById(id);
-		}else if(IGroup.class.isAssignableFrom(clazz)) {
-			return getGroupById(id);
-		}else if(IEntity.class.isAssignableFrom(clazz)) {
-			return getEntityById(id);
-		}if(IEntityField.class.isAssignableFrom(clazz)) {
-			return getEntityFieldById(id);
+		return getItemAbstract(item.getId(), item.getItemType());
+	}
+
+	@Override
+	public IItemAbstract getItemAbstract(Long itemId, ItemType itemItemType) {
+		switch(itemItemType) {
+			case DEVICE : return getDeviceById(itemId);
+			case GROUP : return getGroupById(itemId);
+			case ENTITY : return getEntityById(itemId);
+			case ENTITY_FIELD : return getEntityFieldById(itemId);
+			default: return null;
 		}
-		return null;
 	}
 
 }

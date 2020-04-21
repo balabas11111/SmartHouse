@@ -1,15 +1,20 @@
 package com.balabas.smarthouse.server.entity.model;
 
+import org.springframework.util.StringUtils;
+
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
+import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 @AllArgsConstructor
 @ToString
+@Builder
 public class ItemAbstractDto {
 
 	@Getter @Setter
@@ -24,16 +29,30 @@ public class ItemAbstractDto {
 	@Getter @Setter
 	private String description;
 	
+	@Getter @Setter
+	private ItemType itemType; 
+	
 	public boolean isIdEqual(Long otherId) {
 		return id.equals(otherId);
 	}
 	
 	public static ItemAbstractDto fromItem(IItemAbstract item) {
-		return new ItemAbstractDto(item.getId(), item.getEmoji(), item.getName(), item.getDescription());
+		return new ItemAbstractDto(item.getId(), item.getEmoji(), item.getName(), item.getDescription(), item.getItemType());
 	}
 	
 	public static ItemAbstractDto fromItemByPath(IItemAbstract item) {
-		return new ItemAbstractDto(item.getId(), item.getEmoji(), item.getName(), item.getParentNamesChain());
+		return new ItemAbstractDto(item.getId(), item.getEmoji(), item.getName(), item.getParentNamesChain(), item.getItemType());
+	}
+	
+	public static ItemAbstractDto fromShortName(String name) {
+		
+		if(name==null || StringUtils.isEmpty(name) || name.length()<3) {
+			return new ItemAbstractDto();
+		}
+		ItemType itemType = ItemType.getItemTypeByShortName(name.substring(0, 2));
+		Long id = Long.parseLong(name.substring(2));
+		
+		return ItemAbstractDto.builder().id(id).itemType(itemType).build();
 	}
 	
 	public IItemAbstract toItem(IItemAbstract item) {
@@ -81,6 +100,9 @@ public class ItemAbstractDto {
 	
 	public String getHint() {
 		return this.emoji.toString() + " " + this.description;
+	}
+
+	public ItemAbstractDto() {
 	}
 	
 }

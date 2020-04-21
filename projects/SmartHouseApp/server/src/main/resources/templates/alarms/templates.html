@@ -4,6 +4,23 @@
 
 <body>
 
+	<th:block th:fragment="AlarmsLink(itemType, itemTypeName, text)">
+		<li th:class="${itemType.equalsIgnoreCase(itemTypeName)} ? active : ''">
+      		<a th:href="@{~/alarmsList?itemType={itemTypeName}(itemTypeName=${itemTypeName})}" th:text=${text}>
+      		Устройство</a>
+      	</li>
+	</th:block>
+
+	<th:block th:fragment="AlarmsTable(alarms, itemTypeName)">
+		<div  class="tab-pane fade in active">
+		   <p>
+			<a th:href="@{~/editAlarm?id=0&itemType={itemTypeName}(itemTypeName=${itemTypeName})}" class="btn btn-success">Новый</a>
+			
+			<table th:replace="alarms/templates :: AlarmsList(alarms=${alarms.get(itemTypeName)},itemTypeName=itemTypeName)"></table>
+		   </p>
+		</div>
+	</th:block>
+
 	<table class="table table-dark table-striped"
 		th:fragment="AlarmsList(alarms,itemTypeName)">
 		<th:block th:replace="alarms/templates :: AlarmHeader"></th:block>
@@ -40,10 +57,17 @@
 	</th:block>
 	
 	<th:block th:fragment="AlarmRow(alarm, itemType)">
-		<td th:text="${alarm.getDescription()}"></td>
+		<td>
+			<a
+				th:href="@{~/editAlarm?id={id}&itemType={itemType}(id=${alarm.id},itemType=${alarm.itemType})}"
+				th:text="${alarm.getDescription()}"
+				class="btn btn-default">
+			</a>
+		</td>
 		<td th:text="${alarm.getViewDescriptor().getHint()}"></td>
 			<td>
-				<button th:href="@{~/editAlarm?id={id}&itemType={itemType}(id=${alarm.id},itemType=${itemTypeName})}" th:replace="templates :: AlarmStateButton(text=${alarm.getItem().getEmojiDescriptionByDescriptionField()},title=${alarm.getStateDescriptionsWithNextLine()})"></button>
+				<button th:href="@{~/editAlarm?id={id}&itemType={itemType}(id=${alarm.id},itemType=${alarm.itemType})}" 
+				th:replace="templates :: AlarmStateButton(text=${alarm.getItem().getEmojiDescriptionByDescriptionField()},title=${alarm.getStateDescriptionsWithNextLine()})"></button>
 			</td>
 			<td th:text="${alarm.getAlarmState().getEmojiDescription()}"></td>
 			<td>
@@ -54,22 +78,11 @@
 				</div>
 			</td>
 			<td>
-				<div class="dropdown">
-					<button class="btn btn-default dropdown-toggle" type="button"
-						data-toggle="dropdown">
-						&#x2699; Админ <span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu">
-						<li><a
-							th:href="@{~/editAlarm?id={id}&itemType={itemType}(id=${alarm.id},itemType=${itemTypeName})}"
-							class="btn btn-default">&#x1F4DD;Просмотр</a></li>
-						<li><button type="button" class="btn btn-default"
+				<button type="button" class="btn btn-default"
 								data-toggle="modal"
-								th:attr="data-target='#deleteAlarmModal' + ${alarm.id}">&#x274C;Удалить</button></li>
-					</ul>
-				</div>
+								th:attr="data-target='#deleteAlarmModal' + ${alarm.id}+${alarm.itemType}">&#x274C;Удалить</button>
 
-				<div class="modal fade" th:id="'deleteAlarmModal' + ${alarm.id}">
+				<div class="modal fade" th:id="'deleteAlarmModal' + ${alarm.id}+${alarm.itemType}">
 					<div class="modal-dialog">
 						<div class="modal-content">
 

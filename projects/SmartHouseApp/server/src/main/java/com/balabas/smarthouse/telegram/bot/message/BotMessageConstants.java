@@ -31,6 +31,7 @@ public class BotMessageConstants {
 	public static final String VIEW_METRICS_BUTTON = "%s Гаджеты";
 	public static final String VIEW_DEVICES_LIST_BUTTON = "%s Устройства";
 	public static final String SETUP_BUTTON = "%s Настройки";
+	public static final String VIEW_ALARMS = "%s Опасности";
 	
 	public static final String RESTART_APPLICATION_BUTTON = "%s Перезапустить сервер";
 	public static final String EDIT_ALARMS_BUTTON = "%s Режимы тревоги";
@@ -116,6 +117,7 @@ public class BotMessageConstants {
 	public static final String COMMAND_ROOT = "/";
 	public static final String COMMAND_HIDE = "/hide";
 	public static final String COMMAND_SETUP = "/setup";
+	public static final String COMMAND_ALARMS = "/alarms";
 	public static final String COMMAND_ALARM = "/alarm";
 	public static final String COMMAND_EDIT = "/alarm";
 	public static final String COMMAND_HELP = "/help";
