@@ -76,6 +76,8 @@ public interface IAlarmV2Service {
 	List<IAlarmV2> getAlarmsForItemClassWithDescriptions(Class<?> clazz);
 
 	Map<String, List<IAlarmV2>> getAlarmsGrouppedByItemClassNameWithAlarmDescriptions();
+	
+	Map<String, List<IAlarmV2>> getAlarmsGrouppedByItemTypeWithAlarmDescriptions();
 
 	AlarmV2Container getAlarmsContainerWithChildren(IItemAbstract parent);
 

@@ -6,9 +6,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 
+@Service
 public class ValidateService implements IValidateService {
 
 	@Autowired(required = false)

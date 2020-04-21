@@ -80,8 +80,9 @@ public class ViewAlarmController {
 		if(StringUtils.isEmpty(itemType)) {
 			itemType = ItemType.DEVICE.name();
 		}
-		Map<String, List<IAlarmV2>> alarms = alarmService.getAlarmsGrouppedByItemClassNameWithAlarmDescriptions();
+		Map<String, List<IAlarmV2>> alarms = alarmService.getAlarmsGrouppedByItemTypeWithAlarmDescriptions();
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
+		model.addAttribute("itemTypes", ItemType.ITEM_TYPES_ORDERED);
 		model.addAttribute("itemType", itemType);
 		model.addAttribute("alarms", alarms);
 		if (deviceViewRefreshInterval != null && deviceViewRefreshInterval > 0) {

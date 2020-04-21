@@ -207,7 +207,7 @@ public class SendMessageBuilder {
 		
 		StringBuilder builder = new StringBuilder();
 		
-		if(map==null || map.isEmpty()) {
+		if(map==null || map.keySet().isEmpty()) {
 			builder.append("Нет проверок на тревогу");
 		} else {
 			boolean first = true;
@@ -226,7 +226,10 @@ public class SendMessageBuilder {
 						builder.append("\n");
 						
 						als.forEach(alarm -> {
-							builder.append(alarm.getAlarmState().getEmoji().toString());
+							builder.append(alarm.getEmoji().toString());
+							if(!alarm.getEmoji().equals(alarm.getViewDescriptor().getEmoji())) {
+								builder.append(alarm.getViewDescriptor().getEmoji().toString());
+							}
 							builder.append(" ");
 							builder.append(alarm.getDescription());
 							builder.append(" ");
@@ -240,9 +243,9 @@ public class SendMessageBuilder {
 			}
 		}
 		
-		context.setText(builder.toString());
+		//context.setText(builder.toString());
 		//msgs.add(context.createMsg(inlineKeyboard.getSetupMenuKeyboard()));
-		msgs.add(createHtmlMessage(context));
+		msgs.add(createHtmlMessage(context, builder.toString()));
 		return msgs;
 	}
 
@@ -469,6 +472,11 @@ public class SendMessageBuilder {
 	
 	public SendMessage createHtmlMessage(ReplyContext context) {
 		return createHtmlMessage(context.getChatId(), context.getText(), context.getReplyToMessageIdIfUnknown());
+
+	}
+	
+	public SendMessage createHtmlMessage(ReplyContext context, String text) {
+		return createHtmlMessage(context.getChatId(), text, context.getReplyToMessageIdIfUnknown());
 
 	}
 

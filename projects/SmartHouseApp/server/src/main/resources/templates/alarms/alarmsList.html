@@ -12,8 +12,6 @@
 	<div id="main-content">
 
 		<div class="container">
-			<h1>Сигналы тревоги</h1>
-			<h2 th:text="${itemType}">qqq</h2>
 			
 			<ul class="nav nav-tabs">
 			  <th:block th:replace="alarms/templates :: AlarmsLink(itemType=${itemType},itemTypeName='Device', text='Устройство')"></th:block>	
@@ -23,14 +21,18 @@
 			</ul>
 			
 			<div class="tab-content">
-			  <th:block th:if="${itemType.equalsIgnoreCase('Device')}" 
-			  			th:replace="alarms/templates :: AlarmsTable(alarms=${alarms},itemTypeName='Device')"></th:block>
-			  <th:block th:if="${itemType.equalsIgnoreCase('Group')}" 
-			  			th:replace="alarms/templates :: AlarmsTable(alarms=${alarms},itemTypeName='Group')"></th:block>
-			  <th:block th:if="${itemType.equalsIgnoreCase('Entity')}" 
-			  			th:replace="alarms/templates :: AlarmsTable(alarms=${alarms},itemTypeName='Entity')"></th:block>
-			  <th:block th:if="${itemType.equalsIgnoreCase('Entity_Field')}" 
-			  			th:replace="alarms/templates :: AlarmsTable(alarms=${alarms},itemTypeName='Entity_Field')"></th:block>  
+			  <th:block th:if="${itemType.equalsIgnoreCase('DEVICE')}"> 
+			  		<th:block th:replace="alarms/templates :: AlarmsTable(alarms=${alarms},itemTypeName='DEVICE')"></th:block>
+			  </th:block>		
+			  <th:block th:if="${itemType.equalsIgnoreCase('GROUP')}"> 
+			  		<th:block th:replace="alarms/templates :: AlarmsTable(alarms=${alarms},itemTypeName='GROUP')"></th:block>
+			  </th:block>
+			  <th:block th:if="${itemType.equalsIgnoreCase('ENTITY')}"> 
+			  		<th:block th:replace="alarms/templates :: AlarmsTable(alarms=${alarms},itemTypeName='ENTITY')"></th:block>
+			  </th:block>
+			  <th:block th:if="${itemType.equalsIgnoreCase('ENTITY_FIELD')}"> 
+			  		<th:block th:replace="alarms/templates :: AlarmsTable(alarms=${alarms},itemTypeName='ENTITY_FIELD')"></th:block>
+			  </th:block>  
 			</div>
 		</div>
 			

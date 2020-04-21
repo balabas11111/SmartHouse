@@ -255,6 +255,10 @@ public class VirtualEntityService implements IVirtualEntityService {
 	
 	@Override
 	public EntityFieldFloat getVirtualEntityFieldFloatOrCreateNew(IEntity entity, ItemAbstractDto item) {
+		if(entity == null) {
+			return null;
+		}
+		
 		entity = deviceService.getEntityById(entity.getId());
 		
 		IEntityField field = entity.getEntityField(item.getName());

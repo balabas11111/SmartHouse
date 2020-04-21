@@ -339,6 +339,15 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 		return result;
 	}
+	
+	@Override
+	public Map<String, List<IAlarmV2>> getAlarmsGrouppedByItemTypeWithAlarmDescriptions() {
+		Map<String, List<IAlarmV2>> result = getAlarmsGrouppedBy(alarm -> alarm.getItemType().name());
+
+		result.values().stream().forEach(list -> list.forEach(this::attachAlarmDescriptions));
+
+		return result;
+	}
 
 	@Override
 	public List<IAlarmV2> getAlarmsByAlarmState(AlarmState alarmState) {
