@@ -41,6 +41,14 @@ public:
 		setColor(i, strip->Color(0, 0, 255));
 	}
 
+	void setYellow(uint16_t i = 0) {
+		setColor(i, strip->Color(255, 255, 0));
+	}
+
+	void setVoid(uint16_t i = 0) {
+		setColor(i, strip->Color(0, 0, 0));
+	}
+
 protected:
 	Adafruit_NeoPixel* strip;
 	uint8_t pin;

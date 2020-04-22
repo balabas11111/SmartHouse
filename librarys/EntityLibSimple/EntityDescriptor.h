@@ -67,6 +67,9 @@
 #define EDC_DESCR_ACTION_OFF      "Отключить"
 #define EDC_DESCR_ACTION_RESTART  "Перезапустить"
 
+#define EDC_DESCR_ACTION_PANIC_ON       "Начать панику"
+#define EDC_DESCR_ACTION_PANIC_OFF      "Стоп паника"
+
 //entities descriptions
 #define EDC_DESCR_NAMING        "Название"
 #define EDC_DESCR_DESCRIPTION   "Описание"

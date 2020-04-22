@@ -7,16 +7,11 @@
 #include "AnalogSensor.h"
 #include "pin/InputPin.h"
 
-#include "display/PageToDisplayAdapter.h"
-#include "display/DisplayToOledAdapter.h"
-#include "display/DisplayPage.h"
-#include "display/DisplayPageBoolean.h"
-
 #include "BeeperB.h"
 #include "BeeperSerial.h"
 
 #include "WS2811Led.h"
-#include "serve/Alarmer.h"
+#include "serve/AlarmManager.h"
 
 #define NAME_PUMP_GREB "Насос гребенка"
 #define NAME_PUMP_KOSV "Насос косвенник"
@@ -27,7 +22,7 @@ BeeperSerial beeperSerial(&beeper);
 
 WS2811Led strip(GPIO_NUM_12, 1);
 
-Alarmer alarmer(&beeperSerial, [](){return checkForAlarm();}, &strip);
+AlarmManager alarmer(&beeperSerial, &strip);
 
 DS18D20sensor ds18d20(GPIO_NUM_19, (char*) "Температура бак");
 DS18D20sensor ds18d20_2(GPIO_NUM_16, (char*) "Температура гребенка", "ds18d20_2");
@@ -39,9 +34,40 @@ MAX6675sensor heater(GPIO_NUM_5, GPIO_NUM_18, GPIO_NUM_23, (char*) "Темпер
 AnalogSensorPin mq2(GPIO_NUM_32, (char*) "Загазованость", "mq2", "Уровень ");
 InputPin button(GPIO_NUM_14, (char*) "button", []() {onButtonPressed();});
 
-Entity* entities[] = { &ds18d20, &ds18d20_2, &pump1, &pump2, &pump3, &heater, &mq2 };
+Entity* entities[] = { &ds18d20, &ds18d20_2, &pump1, &pump2, &pump3, &heater, &mq2, &alarmer };
 EntityUpdate* updateableEntities[] = { &ds18d20, &ds18d20_2, &pump1, &pump2,
 		&pump3, &heater, &mq2, &button, &beeperSerial, &alarmer };
+
+EntityApplication app("ESP32_DS18D20x2_MAX6675_MQ2_ImpulseRelay_OLED", (char*) "Lolin32 test", entities,
+		ARRAY_SIZE(entities), updateableEntities,
+		ARRAY_SIZE(updateableEntities), "1F321"/*, oled, pages,
+		ARRAY_SIZE(pages)*/);
+
+void setup() {
+	app.begin(true);
+	strip.setVoid();
+}
+
+void loop() {
+	app.loop();
+}
+
+void onButtonPressed() {
+	if(!button.isOn()) {
+		//app.getDisplayManager()->switchToNextPageOrTurnPowerOn();
+	}
+}
+
+bool checkForAlarm() {
+	return ds18d20.isAnyTempValueGreaterThan(75) || ds18d20.isAnyTempValueLessThan(10);
+}
+
+/*
+
+#include "display/PageToDisplayAdapter.h"
+#include "display/DisplayToOledAdapter.h"
+#include "display/DisplayPage.h"
+#include "display/DisplayPageBoolean.h"
 
 PageToDisplayAdapter* oled = new DisplayToOledAdapter();
 
@@ -81,28 +107,4 @@ DisplayPageBoolean pump3Page(&pump3, pumpFields, pumpFieldsDescr,
 
 DisplayPage* pages[] = { &ds18d20Page, &ds18d20_2Page, &heaterPage, &pump1Page,
 		&pump2Page, &pump3Page };
-
-EntityApplication app("ESP32_DS18D20x2_MAX6675_MQ2_ImpulseRelay_OLED", (char*) "Lolin32 test", entities,
-		ARRAY_SIZE(entities), updateableEntities,
-		ARRAY_SIZE(updateableEntities), "1F321", oled, pages,
-		ARRAY_SIZE(pages));
-
-void setup() {
-	strip.setRed();
-	app.begin(true);
-	strip.setGreen();
-}
-
-void loop() {
-	app.loop();
-}
-
-void onButtonPressed() {
-	if(!button.isOn()) {
-		//app.getDisplayManager()->switchToNextPageOrTurnPowerOn();
-	}
-}
-
-bool checkForAlarm() {
-	return ds18d20.isAnyTempValueGreaterThan(75) || ds18d20.isAnyTempValueLessThan(10);
-}
+*/

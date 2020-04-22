@@ -30,6 +30,9 @@
 //off
 #define EMOJI_RADIO_BUTTON         "1F518"
 
+#define EMOJI_PANIC_ON          "1F6A8"
+#define EMOJI_PANIC_OFF         "1F518"
+
 //temperature, DS18D20
 #define EMOJI_THERMOMETER  "1F321"
 #define EMOJI_FIRE         "1F525"

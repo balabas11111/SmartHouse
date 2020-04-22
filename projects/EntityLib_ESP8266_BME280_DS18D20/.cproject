@@ -53,6 +53,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/RF24-master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/RF24-master/utility}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/RF24}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/RF24/utility}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.413225290" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -92,6 +94,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/RF24-master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/RF24-master/utility}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/RF24}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/RF24/utility}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.288413945" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -131,6 +135,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/RF24-master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/RF24-master/utility}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/SPI}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/RF24}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/EntityLib_ESP8266_BME280_DS18D20/libraries/RF24/utility}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1024407333" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -141,7 +147,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="libraries/RF24Network/RPi|libraries/RF24Network/examples_RPi|libraries/RF24Mesh/examples_RPi|libraries/RF24-master/pyRF24|libraries/RF24-master/examples_linux|libraries/ArduinoJson/scripts|libraries/ArduinoJson/fuzzing|libraries/Adafruit_BME280/.github|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="libraries/RF24/pyRF24|libraries/RF24/examples_linux|libraries/RF24Network/RPi|libraries/RF24Network/examples_RPi|libraries/RF24Mesh/examples_RPi|libraries/RF24-master/pyRF24|libraries/RF24-master/examples_linux|libraries/ArduinoJson/scripts|libraries/ArduinoJson/fuzzing|libraries/Adafruit_BME280/.github|libraries/?*/**/?xamples/**|libraries/?*/**/?xtras/**|libraries/?*/**/test*/**|libraries/?*/**/third-party/**|libraries/**/._*|libraries/?*/utility/*/*" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
