@@ -17,19 +17,19 @@ public class AlarmStateChangeEventProcessorSendBooleanDataToEntityField extends 
 
 	@Getter
 	private final String processorDescription = "Отправить данные параметра в формате (1,0, true, false) в поле цель";
-	
+
 	@Autowired
 	private IDeviceManageService deviceService;
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void process(IItemEvent event) {
-		
+
 		boolean targetValue = MathUtil.getAsBoolean(event.getChangeAction().getParameter());
 		IEntityField targetField = event.getChangeAction().getTargetField();
-		
+
 		deviceService.changeEntityFieldStateBoolean(targetField, targetValue);
-		
+
 	}
 
 }

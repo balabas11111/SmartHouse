@@ -218,12 +218,16 @@ public class AlarmV2Service implements IAlarmV2Service {
 	private void processEvent(IItemEvent event) {
 		IAlarmStateChangeEventProcessor processor = alarmTypeProvider.getAlarmStateChangedEventProcessor(event);
 
-		if (processor != null && processor.isTarget(event)) {
-			Long targetFieldId = event.getChangeAction().getTargetFieldId(); 
-			if(targetFieldId!=null) {
-				event.getChangeAction().setTargetField(deviceService.getEntityFieldById(targetFieldId));
+		try {
+			if (processor != null && processor.isTarget(event)) {
+				Long targetFieldId = event.getChangeAction().getTargetFieldId(); 
+				if(targetFieldId!=null) {
+					event.getChangeAction().setTargetField(deviceService.getEntityFieldById(targetFieldId));
+				}
+				processor.process(event);
 			}
-			processor.process(event);
+		}catch(Exception e) {
+			e.printStackTrace();
 		}
 
 		alarmStateChangeEntityService.saveAlarmStateChange(event);

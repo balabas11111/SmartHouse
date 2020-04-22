@@ -10,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
-import com.balabas.smarthouse.server.entity.model.IDescriptionable;
 import com.balabas.smarthouse.server.entity.model.IItemTypeable;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 
@@ -18,7 +17,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-public class AlarmStateChangeEntity implements IItemTypeable, IDescriptionable {
+public class AlarmStateChangeEntity implements IItemTypeable {
 
 	@Getter @Setter
 	@Id
@@ -42,6 +41,4 @@ public class AlarmStateChangeEntity implements IItemTypeable, IDescriptionable {
 	@Getter @Setter
 	private Integer valueInt;
 	
-	@Getter @Setter
-	private String description;
 }

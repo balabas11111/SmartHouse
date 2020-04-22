@@ -32,9 +32,6 @@ public interface IAlarmStateChangeEntityService {
 		entity.setValueInt(alarmState.getValueInt());
 		entity.setTargetAlarmId(event.getAlarm().getId());
 		entity.setType(event.getItem().getItemType());
-		if(description!=null) {
-			entity.setDescription(description);
-		}
 		
 		return entity;
 	}

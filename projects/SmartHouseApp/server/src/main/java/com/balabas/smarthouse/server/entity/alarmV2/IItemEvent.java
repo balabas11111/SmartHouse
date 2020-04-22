@@ -27,19 +27,27 @@ public interface IItemEvent {
 	}
 	
 	default AlarmState getOldState() {
-		return getChangeAction().getOldState();
+		AlarmState state = getChangeAction().getOldState();
+		if(AlarmState.ANY.equals(state)) {
+			state = getAlarm().getPreviousAlarmState();
+		}
+		return state;
 	}
 	
 	default AlarmState getNewState() {
-		return getChangeAction().getNewState();
+		AlarmState state = getChangeAction().getNewState();
+		if(AlarmState.ANY.equals(state)) {
+			state = getAlarm().getAlarmState();
+		}
+		return state;
 	}
 	
 	default String getOldStateName() {
-		return getChangeAction().getOldState().getName();
+		return getOldState().getName();
 	}
 	
 	default String getNewStateName() {
-		return getChangeAction().getNewState().getName();
+		return getNewState().getName();
 	}
 	
 	default boolean isSameState() {
