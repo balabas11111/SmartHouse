@@ -1,6 +1,8 @@
 package com.balabas.smarthouse.server.entity.alarmV2.checker;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,8 +16,10 @@ import com.balabas.smarthouse.server.entity.alarmV2.service.IItemAlarmStateServi
 import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.service.IEntityFieldService;
 import com.balabas.smarthouse.server.util.DateTimeUtil;
+import com.balabas.smarthouse.server.util.MathUtil;
 
 import lombok.Getter;
 
@@ -42,26 +46,33 @@ public class AlarmV2CheckerEntityFieldNumberGrows extends AlarmV2CheckerAbstract
 		Long period = getAlarmParameterAsLongOrElse(alarm, DEFAULT_TIME);
 		Date date1 = new Date(date2.getTime() - period);
 		
-		Boolean grows = entityFieldService.isEntityFieldValuesListGrows(entityFieldService.getEntityFieldValuesLessThanDates(entityField, date1, date2));
+		List<IEntityFieldValue> vals = entityFieldService.getEntityFieldValuesLessThanDates(entityField, date1, date2);
+		Boolean grows = entityFieldService.isEntityFieldValuesListGrows(vals);
 
 		AlarmState state = null;
 		Emoji resultEmoji = null;
 		String resultName = "";
+		String diffStr ="";
 		String resultDescription = null;
 		String resultPref = "";
 		
+		float diff = MathUtil.findDiffFloat(vals);
+		if(diff != MathUtil.DEF_VAL_FLOAT) {
+			diffStr = " " + diff + " " + Optional.ofNullable(entityField.getMeasure()).orElse("");
+		}
+		
 		if(grows == null) {
 			state = AlarmState.OK;
-			resultEmoji = Emoji.WHITE_SMALL_STAR;
+			resultEmoji = Emoji.WAVY_DASH;
 			resultPref = "Стабильно за ";
 		} else {
 			state = AlarmState.WARNING;
 			resultEmoji = grows ? Emoji.CHART_RISE : Emoji.CHART_FALLS;
 			resultPref =  grows ? Emoji.ARROW_UP.toString() + " Растет последние " : Emoji.ARROW_DOWN.toString() + " Падает последние ";
 		}
-		
+
 		resultName = "Изменение : ";
-		resultDescription = resultPref + DateTimeUtil.getAsHrMinSec(period);
+		resultDescription = resultPref + DateTimeUtil.getAsHrMinSec(period) + diffStr;
 		
 		alarm.setAlarmState(state);
 		alarm.setViewDescriptor(new ItemAbstractDto(resultEmoji, resultName, resultDescription));

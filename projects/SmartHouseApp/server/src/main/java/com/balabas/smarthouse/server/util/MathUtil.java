@@ -3,20 +3,23 @@ package com.balabas.smarthouse.server.util;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collection;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.thymeleaf.util.StringUtils;
 
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.model.entityfields.IFloatProvider;
 
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
+
 public class MathUtil {
 
-	private static final Float DEF_VAL_FLOAT = -2F;
+	public static final Float DEF_VAL_FLOAT = -2F;
 	private static final String MAX = "max";
 	private static final String MIN = "min";
 	private static final String VAL = "val";
@@ -129,5 +132,20 @@ public class MathUtil {
 		}
 		
 		return false;
+	}
+	
+	public static float findDiffFloat(List<IEntityFieldValue> vals) {
+		float result = DEF_VAL_FLOAT;
+		
+		if(vals.size()>=2) {
+			IEntityFieldValue val1 = vals.get(0);
+			IEntityFieldValue val2 = vals.get(1);
+			
+			if(val1!=null && val2!=null && val1.getValueAsFloat()!=null && val2.getValueAsFloat()!=null) {
+				result = Math.abs(val2.getValueAsFloat() - val1.getValueAsFloat());
+			}
+		}
+		
+		return result;
 	}
 }

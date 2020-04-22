@@ -72,9 +72,9 @@ public enum Emoji {
 	TRIANGLE('\uD83D','\uDCD0',"1F4D0"),
 	UMBRELLA_WITH_DROPLETS('\u2614',null,"2614"),
 	
-	
 	WARNING('\u26A0', null, "26A0"),
 	WAVING_HAND_SIGN('\uD83D','\uDC4B', "1F44B"),
+	WAVY_DASH('\u3030',null,"3030"),
 	WHITE_SMALL_STAR('\u2B52', null, "2B52"),
 	EMPTY_EMOJI(null,null, " ");
 	
