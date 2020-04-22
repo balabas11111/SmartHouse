@@ -82,12 +82,8 @@ public interface IEntityAbstractChangeBoxProcessor<T extends IEntityAbstractChan
 		return getVirtualEntityService().getVirtualEntityFieldFloatOrCreateNew(entity, item);
 	}
 	
-	default boolean changeEntityFieldState(IEntityField<Boolean> field, boolean requiredState) {
-		if(requiredState != field.getValue()) {
-			return getDeviceService().setEntityFieldBooleanValueSendToDeviceIfNotVirtual(field, requiredState);
-		}
-		
-		return true;
+	default boolean changeEntityFieldStateBoolean(IEntityField<Boolean> field, boolean requiredState) {
+		return getDeviceService().changeEntityFieldStateBoolean(field, requiredState);
 	}
 
 }

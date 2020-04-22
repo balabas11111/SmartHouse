@@ -6,19 +6,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
-import javax.persistence.MappedSuperclass;
+
 import javax.persistence.Transient;
 
 import org.springframework.util.StringUtils;
 
-import com.balabas.smarthouse.server.entity.alarmV2.AlarmStateChangeAction;
-import com.balabas.smarthouse.server.entity.alarmV2.IAlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.google.common.collect.Lists;
@@ -26,8 +26,8 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 
-@MappedSuperclass
-@Inheritance
+@Inheritance(strategy = InheritanceType.JOINED)
+@Entity
 public abstract class AlarmV2 implements IAlarmV2 {
 
 	public static final Integer NO_MESSAGE_SEND_REPEATS = -1;
@@ -38,9 +38,6 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@Getter
 	@Setter
 	private Long id;
-	/*
-	 * @Getter @Setter private Long itemId;
-	 */
 	@Getter
 	@Setter
 	private String checkerName;

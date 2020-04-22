@@ -154,4 +154,6 @@ public interface IDeviceManageService {
 
 	IItemAbstract getItemAbstract(Long itemId, ItemType itemItemType);
 
+	boolean changeEntityFieldStateBoolean(IEntityField<Boolean> field, boolean requiredState);
+
 }

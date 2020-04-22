@@ -152,8 +152,8 @@ public class IEntityHeater extends IEntityAbstractChangeBox {
 		boolean result = true;
 		//TODO: move this method into box
 		if (isChange()) {
-			result = p.changeEntityFieldState(getPumpBoiler(), isBoilerPumpRequiredState());
-			result = p.changeEntityFieldState(getPumpFloor(), isFloorPumpRequiredState()) && result;
+			result = p.changeEntityFieldStateBoolean(getPumpBoiler(), isBoilerPumpRequiredState());
+			result = p.changeEntityFieldStateBoolean(getPumpFloor(), isFloorPumpRequiredState()) && result;
 		}
 
 		return result;

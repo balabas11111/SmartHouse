@@ -22,13 +22,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.balabas.smarthouse.server.entity.alarmV2.AlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Checker;
-import com.balabas.smarthouse.server.entity.alarmV2.IAlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmOfDevice;
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmOfEntity;
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmOfEntityField;
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
+import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmStateChangeAction;
+import com.balabas.smarthouse.server.entity.alarmV2.model.IAlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.alarmV2.model.IAlarmV2;
 import com.balabas.smarthouse.server.entity.alarmV2.service.IAlarmV2Service;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
@@ -113,6 +113,7 @@ public class ViewAlarmController {
 		model.addAttribute("checkers", checkers);
 		model.addAttribute("emojies", Lists.newArrayList(Emoji.values()));
 		model.addAttribute("targets", alarmService.getEnabledAlarmAbstractTargets(alarm));
+		model.addAttribute("targetFields", alarmService.getEnabledAlarmTargets(ItemType.ENTITY_FIELD));
 		if (!alarm.isNew()) {
 			model.addAttribute("alarmEvent", new AlarmStateChangeAction());
 			model.addAttribute("alarmStates", AlarmState.getList());

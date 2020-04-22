@@ -15,6 +15,6 @@ public interface IEntityAbstractProvider {
 
 	IEntityField getFieldFloat(IEntity entity, ItemAbstractDto item);
 
-	boolean changeEntityFieldState(IEntityField<Boolean> pumpBoiler, boolean boilerPumpRequiredState);
+	boolean changeEntityFieldStateBoolean(IEntityField<Boolean> targetField, boolean requiredState);
 
 }

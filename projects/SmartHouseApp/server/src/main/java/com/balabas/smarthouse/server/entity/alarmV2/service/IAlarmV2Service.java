@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.balabas.smarthouse.server.entity.alarmV2.AlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Checker;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Container;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmStateChangeEventProcessor;
 import com.balabas.smarthouse.server.entity.alarmV2.IItemEvent;
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
+import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmV2;
 import com.balabas.smarthouse.server.entity.alarmV2.model.IAlarmV2;
 import com.balabas.smarthouse.server.entity.alarmV2.repository.IAlarmV2Repository;
@@ -83,8 +83,6 @@ public interface IAlarmV2Service {
 
 	void checkForAlarmsWithParentExecutePostActionsForFields(List<IEntityField> changedValues);
 
-	List<ItemAbstractDto> getEnabledAlarmAbstractTargets(IAlarmV2 alarm);
-
 	List<IItemEvent> checkForAlarmsExecutePostActions(IAlarmV2 alarm);
 
 	Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap();
@@ -114,5 +112,9 @@ public interface IAlarmV2Service {
 
 	Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(Long itemId, ItemType itemType, AlarmState maxState,
 			boolean only);
+
+	List<ItemAbstractDto> getEnabledAlarmAbstractTargets(IAlarmV2 alarm);
+	
+	Set<IItemAbstract> getEnabledAlarmTargets(ItemType itemType);
 
 }

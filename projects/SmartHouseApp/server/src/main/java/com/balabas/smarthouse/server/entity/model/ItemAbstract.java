@@ -151,4 +151,9 @@ public abstract class ItemAbstract implements IItemAbstract {
 	public List<IItemAbstract> getAllChildren() {
 		return new ArrayList<IItemAbstract>();
 	}
+	
+	@Override
+	public String getFullName() {
+		return getParentNamesChain();
+	}
 }

@@ -20,10 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import com.balabas.smarthouse.server.entity.alarmV2.AlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Checker;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Container;
-import com.balabas.smarthouse.server.entity.alarmV2.IAlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmStateChangeEventProcessor;
 import com.balabas.smarthouse.server.entity.alarmV2.IItemEvent;
 import com.balabas.smarthouse.server.entity.alarmV2.ItemChangeEvent;
@@ -31,7 +29,9 @@ import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmOfDevice;
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmOfEntity;
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmOfEntityField;
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
+import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmV2;
+import com.balabas.smarthouse.server.entity.alarmV2.model.IAlarmStateChangeAction;
 import com.balabas.smarthouse.server.entity.alarmV2.model.IAlarmV2;
 import com.balabas.smarthouse.server.entity.alarmV2.repository.IAlarmStateChangeActionRepository;
 import com.balabas.smarthouse.server.entity.alarmV2.repository.IAlarmV2Repository;
@@ -219,6 +219,10 @@ public class AlarmV2Service implements IAlarmV2Service {
 		IAlarmStateChangeEventProcessor processor = alarmTypeProvider.getAlarmStateChangedEventProcessor(event);
 
 		if (processor != null && processor.isTarget(event)) {
+			Long targetFieldId = event.getChangeAction().getTargetFieldId(); 
+			if(targetFieldId!=null) {
+				event.getChangeAction().setTargetField(deviceService.getEntityFieldById(targetFieldId));
+			}
 			processor.process(event);
 		}
 
@@ -466,6 +470,28 @@ public class AlarmV2Service implements IAlarmV2Service {
 		}
 
 		return stream.collect(Collectors.toSet());
+	}
+	
+	@Override
+	public Set<IItemAbstract> getEnabledAlarmTargets(ItemType itemType) {
+
+		Stream<? extends IItemAbstract> stream = Stream.empty();
+
+		switch (itemType) {
+		case DEVICE:
+			stream = deviceService.getDevices().stream();
+			break;
+		case ENTITY:
+			stream = deviceService.getEntities().stream();
+			break;
+		case ENTITY_FIELD:
+			stream = deviceService.getEntityFields().stream().filter(IEntityField::isNotStringAndSensors);
+			break;
+		default:
+			stream = Stream.empty();
+		}
+
+		return stream.sorted((i1,i2) -> i1.getFullName().compareToIgnoreCase(i2.getFullName())).collect(Collectors.toSet());
 	}
 
 	@Override

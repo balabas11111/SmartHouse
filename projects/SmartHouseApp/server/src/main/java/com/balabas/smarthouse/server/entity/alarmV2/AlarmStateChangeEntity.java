@@ -3,6 +3,8 @@ package com.balabas.smarthouse.server.entity.alarmV2;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,6 +26,7 @@ public class AlarmStateChangeEntity implements IItemTypeable, IDescriptionable {
 	private Long id = 0L;
 	
 	@Getter @Setter
+	@Enumerated(EnumType.STRING)
 	private ItemType type;
 	
 	@Getter @Setter
@@ -33,6 +36,7 @@ public class AlarmStateChangeEntity implements IItemTypeable, IDescriptionable {
 	private Date dateTime;
 	
 	@Getter @Setter
+	@Enumerated(EnumType.STRING)
 	private AlarmState alarmState;
 	
 	@Getter @Setter

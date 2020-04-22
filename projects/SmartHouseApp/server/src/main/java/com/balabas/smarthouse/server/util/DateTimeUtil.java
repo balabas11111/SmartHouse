@@ -49,4 +49,27 @@ public class DateTimeUtil {
 	public static long getDiffMs(Date date1, Date date2) {
 		return Math.abs(date2.getTime()  - date1.getTime());
 	}
+	
+	public static String getAsHrMinSec(Long ms) {
+		long sec = ms/1000;
+		long min = sec /60;
+		sec = sec - min*60;
+		long hr = min / 60;
+		min = min - hr*60;
+		
+		StringBuffer buf = new StringBuffer();
+		
+		appendIfNotZero(hr, " ч ", buf);
+		appendIfNotZero(min, " мин ", buf);
+		appendIfNotZero(sec, " сек", buf);
+		
+		return buf.toString();
+	}
+	
+	private static void appendIfNotZero(long val, String str, StringBuffer buf) {
+		if(val!=0) {
+			buf.append(val);
+			buf.append(str);
+		}
+	}
 }

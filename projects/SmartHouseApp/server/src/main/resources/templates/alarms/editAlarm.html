@@ -76,6 +76,7 @@
 							<th>Строка</th>
 							<th>Параметры строки</th>
 							<th>Процессор событий</th>
+							<th>Показатель цель</th>
 							<th></th>
 						</tr>
 					</thead>
@@ -88,6 +89,7 @@
 							<td th:text="${actionItem.stringFormatted}"></td>
 							<td th:text="${actionItem.stringParametersFormatted}"></td>
 							<td th:text="${actionItem.targetBeanName}"></td>
+							<td th:text="${actionItem.targetFieldId}"></td>
 							
 							<td>
 								<a th:href="@{~/deleteAction?id={id}&alarmId={alarmId}&itemType={itemType}(id=${actionItem.id}, alarmId=${alarm.id}, itemType=${itemType})}"
@@ -175,13 +177,29 @@
 								</td>
 							</tr>
 							<tr>
-								<td>Строка</td>
+								<td>Параметр</td>
+								<td><input type="text" th:field="*{parameter}"></td>
+							</tr>
+							<tr>
+								<td>Поле цель</td>
+								<td>
+									<select th:field="*{targetFieldId}">
+										<option value=null>Не задано</option> 
+										<option th:each="targetField : ${targetFields}"
+											th:value="${targetField.id}"
+											th:utext="${targetField.getFullName()}"
+											th:selected="${targetField.id.equals(alarmEvent.targetFieldId)}"/>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td>Строка-сообщение</td>
 								<td>
 									<input type="text" th:field="*{stringFormatted}">
 								</td>
 							</tr>
 							<tr>
-								<td>Параметры строки</td>
+								<td>Параметры строки-сообщения</td>
 								<td>
 									<input type="text" th:field="*{stringParametersFormatted}">
 								</td>

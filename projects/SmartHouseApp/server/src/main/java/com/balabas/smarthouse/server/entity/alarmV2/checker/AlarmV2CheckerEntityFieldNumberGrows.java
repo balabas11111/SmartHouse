@@ -61,7 +61,7 @@ public class AlarmV2CheckerEntityFieldNumberGrows extends AlarmV2CheckerAbstract
 		}
 		
 		resultName = "Изменение : ";
-		resultDescription = resultPref + period/1000 + " сек";
+		resultDescription = resultPref + DateTimeUtil.getAsHrMinSec(period);
 		
 		alarm.setAlarmState(state);
 		alarm.setViewDescriptor(new ItemAbstractDto(resultEmoji, resultName, resultDescription));

@@ -1,8 +1,9 @@
-package com.balabas.smarthouse.server.entity.alarmV2;
+package com.balabas.smarthouse.server.entity.alarmV2.model;
 
-import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
+@SuppressWarnings("rawtypes")
 public interface IAlarmStateChangeAction extends IItemAbstract{
 
 	AlarmState getNewState();
@@ -10,6 +11,9 @@ public interface IAlarmStateChangeAction extends IItemAbstract{
 	
 	Integer getInterval();
 	void setInterval(Integer interval);
+	
+	String getParameter();
+	void setParameter(String parameter);
 	
 	String executeAction(IItemAbstract item);
 	
@@ -28,5 +32,11 @@ public interface IAlarmStateChangeAction extends IItemAbstract{
 	void setDispatchIfSameState(boolean dispatchIfSameState);
 
 	String getAlarmDescription(IItemAbstract item);
+	
+	IEntityField getTargetField();
+	void setTargetField(IEntityField targetField);
+	
+	Long getTargetFieldId();
+	void setTargetFieldId(Long id);
 	
 }

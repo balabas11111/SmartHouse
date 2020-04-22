@@ -1232,6 +1232,15 @@ public class DeviceManageService implements IDeviceManageService {
 	}
 
 	@Override
+	public boolean changeEntityFieldStateBoolean(IEntityField<Boolean> field, boolean requiredState) {
+		if(requiredState != field.getValue()) {
+			return setEntityFieldBooleanValueSendToDeviceIfNotVirtual(field, requiredState);
+		}
+		
+		return true;
+	}
+	
+	@Override
 	public boolean setEntityFieldBooleanValueSendToDeviceIfNotVirtual(IEntityField<Boolean> entityField,
 			boolean requiredState) {
 		

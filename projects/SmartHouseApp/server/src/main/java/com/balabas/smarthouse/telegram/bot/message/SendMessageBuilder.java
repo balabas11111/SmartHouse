@@ -195,6 +195,19 @@ public class SendMessageBuilder {
 		return msgs;
 	}
 	
+	private boolean isEmpty(Map<ItemType, Map<AlarmState, List<IAlarmV2>>> map) {
+		if(map==null || map.keySet().isEmpty()) {
+			return true;
+		}
+		boolean result = true;
+		
+		for(ItemType it : map.keySet()) {
+			result = map.get(it).isEmpty() && result;
+		}
+		
+		return result;
+	}
+	
 	public List<SendMessage> createViewOfValarmsV2(Action action, ReplyContext context) {
 		List<SendMessage> msgs = Lists.newArrayList();
 		
@@ -207,7 +220,7 @@ public class SendMessageBuilder {
 		
 		StringBuilder builder = new StringBuilder();
 		
-		if(map==null || map.keySet().isEmpty()) {
+		if(isEmpty(map)) {
 			builder.append("Нет проверок на тревогу");
 		} else {
 			boolean first = true;

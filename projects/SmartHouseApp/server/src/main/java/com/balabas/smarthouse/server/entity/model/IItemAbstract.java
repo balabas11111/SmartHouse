@@ -84,4 +84,6 @@ public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionabl
 		item.setDescription(description);
 	}
 	
+	 String getFullName();
+	
 }

@@ -7,6 +7,7 @@ import java.util.Collection;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.thymeleaf.util.StringUtils;
 
 import com.balabas.smarthouse.server.entity.model.entityfields.IFloatProvider;
 
@@ -117,5 +118,16 @@ public class MathUtil {
 		float b = y1 - a*x1;
 		
 		return x3*a + b;
+	}
+	
+	public static boolean getAsBoolean(String parameter) {
+		if(parameter==null || StringUtils.isEmpty(parameter)) {
+			return false;
+		}
+		if("1".equalsIgnoreCase(parameter.trim()) || "true".equalsIgnoreCase(parameter.trim())) {
+			return true;
+		}
+		
+		return false;
 	}
 }

@@ -1,4 +1,4 @@
-package com.balabas.smarthouse.server.entity.alarmV2;
+package com.balabas.smarthouse.server.entity.alarmV2.model;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -7,30 +7,45 @@ import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Transient;
 
 import org.springframework.util.StringUtils;
 
-import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
-import com.balabas.smarthouse.server.entity.alarmV2.model.IAlarmV2;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
+import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@SuppressWarnings("rawtypes")
 public class AlarmStateChangeAction extends ItemAbstract implements IAlarmStateChangeAction {
 
 	@Setter
+	@Enumerated(EnumType.STRING)
 	private AlarmState oldState;
 	
 	@Setter
+	@Enumerated(EnumType.STRING)
 	private AlarmState newState;
 	
 	@Getter @Setter
 	@Column(name = "interva", nullable = true)
 	private Integer interval = -1;
+	
+	@Getter @Setter
+	private String parameter;
+	
+	@Getter @Setter
+	private Long targetFieldId;
+	
+	@Getter @Setter
+	@Transient
+	private IEntityField targetField;
 	
 	@Override
 	public AlarmState getOldState() {
