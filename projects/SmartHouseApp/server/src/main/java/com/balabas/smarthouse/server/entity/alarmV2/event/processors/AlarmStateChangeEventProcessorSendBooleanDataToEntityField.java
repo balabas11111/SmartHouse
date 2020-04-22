@@ -28,7 +28,7 @@ public class AlarmStateChangeEventProcessorSendBooleanDataToEntityField extends 
 		boolean targetValue = MathUtil.getAsBoolean(event.getChangeAction().getParameter());
 		IEntityField targetField = event.getChangeAction().getTargetField();
 
-		deviceService.changeEntityFieldStateBoolean(targetField, targetValue);
+		deviceService.setEntityFieldBooleanValueSendToDeviceIfNotVirtual(targetField, targetValue);
 
 	}
 

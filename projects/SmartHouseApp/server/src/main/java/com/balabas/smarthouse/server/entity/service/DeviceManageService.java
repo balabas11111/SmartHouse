@@ -704,7 +704,7 @@ public class DeviceManageService implements IDeviceManageService {
 			if (requestDataAfterSendToDevice) {
 				actionTimerService.setActionForced(device);
 			}
-
+			
 			return result;
 		} catch (Exception e) {
 			log.error(e);
@@ -1253,6 +1253,7 @@ public class DeviceManageService implements IDeviceManageService {
 		if(action!=null) {
 			action.rebuildCallbackData();
 			sendActionToEntityField(entityField, action.getData());
+			log.info("Send data to field " + entityField.getName() + "=" + requiredState);
 			return true;
 		} else {
 			log.error("Failed find action " + requiredState+ " field=" + ItemAbstractDto.fromItem(entityField));
