@@ -2,6 +2,7 @@ package com.balabas.smarthouse.server.util;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import lombok.experimental.UtilityClass;
 public class MathUtil {
 
 	public static final Float DEF_VAL_FLOAT = -2F;
+	public static final DecimalFormat DEF_DEC_FORMAT = new DecimalFormat("#.##");
 	private static final String MAX = "max";
 	private static final String MIN = "min";
 	private static final String VAL = "val";
@@ -147,5 +149,37 @@ public class MathUtil {
 		}
 		
 		return result;
+	}
+	
+	public static int compareFloat(List<IEntityFieldValue> vals) {
+		int result = 0;
+		
+		if(vals.size()>=2) {
+			IEntityFieldValue val1 = vals.get(0);
+			IEntityFieldValue val2 = vals.get(1);
+			
+			if(val1!=null && val2!=null && val1.getValueAsFloat()!=null && val2.getValueAsFloat()!=null) {
+				result = val2.getValueAsFloat().compareTo(val1.getValueAsFloat());
+			}
+		}
+		
+		return result;
+	}
+	
+	public static String toStringWithPrecision(float val) {
+		return DEF_DEC_FORMAT.format(val);
+	}
+	
+	public static String toStringWithPrecision(float val, int size) {
+		StringBuilder buf = new StringBuilder();
+		
+		buf.append("#.");
+		for(int i=0; i<size; i++) {
+			buf.append("#");
+		}
+		
+		DecimalFormat df = new DecimalFormat(buf.toString());
+		
+		return df.format(val);
 	}
 }

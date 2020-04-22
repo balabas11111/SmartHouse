@@ -57,8 +57,20 @@ public class AlarmV2CheckerEntityFieldNumberGrows extends AlarmV2CheckerAbstract
 		String resultPref = "";
 		
 		float diff = MathUtil.findDiffFloat(vals);
+		
 		if(diff != MathUtil.DEF_VAL_FLOAT) {
-			diffStr = " " + diff + " " + Optional.ofNullable(entityField.getMeasure()).orElse("");
+			String sign =" ";
+			int compare = MathUtil.compareFloat(vals);
+			if(compare<-1) {compare = -1;}
+			else if(compare>1) {compare = 1;};
+			
+			switch(compare) {
+				case 0:sign="±";break;
+				case -1:sign="-";break;
+				case 1:sign="+";break;
+			}
+			
+			diffStr = sign + MathUtil.toStringWithPrecision(diff) + " " + Optional.ofNullable(entityField.getMeasure()).orElse("");
 		}
 		
 		if(grows == null) {
@@ -68,11 +80,11 @@ public class AlarmV2CheckerEntityFieldNumberGrows extends AlarmV2CheckerAbstract
 		} else {
 			state = AlarmState.WARNING;
 			resultEmoji = grows ? Emoji.CHART_RISE : Emoji.CHART_FALLS;
-			resultPref =  grows ? Emoji.ARROW_UP.toString() + " Растет последние " : Emoji.ARROW_DOWN.toString() + " Падает последние ";
+			resultPref =  grows ? Emoji.ARROW_UP.toString() + " растет " : Emoji.ARROW_DOWN.toString() + " падает ";
 		}
 
 		resultName = "Изменение : ";
-		resultDescription = resultPref + DateTimeUtil.getAsHrMinSec(period) + diffStr;
+		resultDescription = resultPref + diffStr + " за " + DateTimeUtil.getAsHrMinSec(period) ;
 		
 		alarm.setAlarmState(state);
 		alarm.setViewDescriptor(new ItemAbstractDto(resultEmoji, resultName, resultDescription));
