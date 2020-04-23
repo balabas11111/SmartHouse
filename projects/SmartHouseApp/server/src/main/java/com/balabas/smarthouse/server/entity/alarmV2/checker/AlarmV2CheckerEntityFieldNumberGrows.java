@@ -60,14 +60,11 @@ public class AlarmV2CheckerEntityFieldNumberGrows extends AlarmV2CheckerAbstract
 		
 		if(diff != MathUtil.DEF_VAL_FLOAT) {
 			String sign =" ";
-			int compare = MathUtil.compareFloat(vals);
-			if(compare<-1) {compare = -1;}
-			else if(compare>1) {compare = 1;};
-			
-			switch(compare) {
-				case 0:sign="±";break;
-				case -1:sign="-";break;
-				case 1:sign="+";break;
+
+			if(grows == null) {
+				sign="±";
+			} else {
+				sign = grows? "+" : "-";
 			}
 			
 			diffStr = sign + MathUtil.toStringWithPrecision(diff) + " " + Optional.ofNullable(entityField.getMeasure()).orElse("");
