@@ -38,7 +38,7 @@ public class EntityService implements IEntityService {
 			return Collections.emptyList();
 		}
 
-		return entFields.stream().flatMap(ef -> entityFieldService.getCommandsForEntityField(ef).stream()).collect(Collectors.toList());
+		return entFields.stream().flatMap(ef -> entityFieldService.getCommandsForEntityFieldExceptCurrent(ef).stream()).collect(Collectors.toList());
 	}
 
 	@Override

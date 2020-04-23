@@ -22,7 +22,7 @@ public interface IEntityFieldService {
 	
 	List<Action> getActionsForEntityField(String actionName, IEntityField entityField);
 	
-	List<IEntityFieldEnabledValue> getCommandsForEntityField(IEntityField entityField);
+	List<IEntityFieldEnabledValue> getCommandsForEntityFieldExceptCurrent(IEntityField entityField);
 
 	boolean isButton(IEntityField entityField);
 
@@ -74,5 +74,8 @@ public interface IEntityFieldService {
 	Date getOldestEntityFieldValue(IEntityField entityField);
 
 	long saveIfDifferent(IEntityFieldValue value);
+
+	Action getActionForEntityFieldBoolean(String actionName, IEntityField<Boolean> entityField,
+			Collection<IEntityFieldEnabledValue> enabledValues, boolean requiredState);
 
 }
