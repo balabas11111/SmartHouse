@@ -224,7 +224,19 @@ public class AlarmV2Service implements IAlarmV2Service {
 				if(targetFieldId!=null) {
 					event.getChangeAction().setTargetField(deviceService.getEntityFieldById(targetFieldId));
 				}
-				processor.process(event);
+				
+				boolean doProcess = false;
+				
+				if(event.getChangeAction()!=null) {
+					
+					boolean sse = Boolean.TRUE.equals(event.getChangeAction().isDisabledIfSameState());
+					
+					doProcess = sse ? !event.isSameState() : true;
+				}
+				
+				if(doProcess) {
+					processor.process(event);
+				}
 			}
 		}catch(Exception e) {
 			e.printStackTrace();

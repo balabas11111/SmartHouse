@@ -73,7 +73,7 @@ public class AlarmV2CheckerEntityFieldNumberGrows extends AlarmV2CheckerAbstract
 		if(grows == null) {
 			state = AlarmState.OK;
 			resultEmoji = Emoji.WAVY_DASH;
-			resultPref = "Стабильно за ";
+			resultPref = "Стабильно  ";
 		} else {
 			state = AlarmState.WARNING;
 			resultEmoji = grows ? Emoji.CHART_RISE : Emoji.CHART_FALLS;
@@ -89,7 +89,6 @@ public class AlarmV2CheckerEntityFieldNumberGrows extends AlarmV2CheckerAbstract
 		alarm.setStateDescription(resultDescription);
 		
 		alarmStateService.putSingleStateDescription(alarm);
-		alarmStateService.printStateDescription(alarm.getItem());
 	}
 	
 	

@@ -141,7 +141,7 @@ public class EntityFieldService implements IEntityFieldService {
 	}
 
 	@Override
-	public List<IEntityFieldEnabledValue> getCommandsForEntityField(IEntityField entityField) {
+	public List<IEntityFieldEnabledValue> getCommandsForEntityFieldExceptCurrent(IEntityField entityField) {
 		if (!Boolean.class.equals(entityField.getClazz()) || entityField.getEnabledValues() == null
 				|| entityField.getEnabledValues().isEmpty() || entityField.isReadOnly() || !entityField.getEntity().getDevice().isInOkState()) {
 			return Collections.emptyList();
@@ -247,17 +247,22 @@ public class EntityFieldService implements IEntityFieldService {
 	@Override
 	public List<Action> getActionsForEntityField(String actionName, IEntityField entityField) {
 		boolean isVirtual = entityField.isVirtualized();
-		return getCommandsForEntityField(entityField).stream()
+		return getCommandsForEntityFieldExceptCurrent(entityField).stream()
 				.map(ef -> Action.fromEntityFieldEnabledValue(actionName, ef, isVirtual)).collect(Collectors.toList());
 	}
 
 	@Override
 	public Action getActionForEntityFieldBoolean(String actionName, IEntityField<Boolean> entityField,
 			boolean requiredState) {
+		return getActionForEntityFieldBoolean(actionName, entityField, entityField.getEntityFieldEnabledValues(), requiredState);
+	}
+	
+	@Override
+	public Action getActionForEntityFieldBoolean(String actionName, IEntityField<Boolean> entityField, Collection<IEntityFieldEnabledValue> enabledValues,
+			boolean requiredState) {
 		boolean isVirtual = entityField.isVirtualized();
-		List<IEntityFieldEnabledValue> enVals = getCommandsForEntityField(entityField);
 		
-		for(IEntityFieldEnabledValue value : enVals) {
+		for(IEntityFieldEnabledValue value : enabledValues) {
 			if(Boolean.class.equals(value.getClazz())) {
 				EntityFieldEnabledValueBoolean valB = (EntityFieldEnabledValueBoolean) value;
 				if(valB!=null && valB.getValue()!=null && valB.getValue().booleanValue() == requiredState) {
