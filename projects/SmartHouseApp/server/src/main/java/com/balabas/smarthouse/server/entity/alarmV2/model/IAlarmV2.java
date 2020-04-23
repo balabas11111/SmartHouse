@@ -141,8 +141,6 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 
 	void setStateDescription(String description);
 
-	
-
-	
+	String getAsSingleString();
 
 }

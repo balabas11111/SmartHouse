@@ -248,5 +248,22 @@ public abstract class AlarmV2 implements IAlarmV2 {
 		
 		return builder.toString();
 	}
+	
+	@Override
+	public String getAsSingleString() {
+		StringBuilder buf = new StringBuilder();
+		
+		buf.append(getEmoji().toString());
+		if(!getEmoji().equals(getViewDescriptor().getEmoji())) {
+			buf.append(getViewDescriptor().getEmoji().toString());
+		}
+		buf.append(" ");
+		buf.append(getDescription());
+		buf.append(" ");
+		buf.append(getViewDescriptor().getDescription());
+		buf.append(";\n");
+		
+		return buf.toString();
+	}
 
 }

@@ -78,6 +78,7 @@
 							<th>Процессор событий</th>
 							<th>Показатель цель</th>
 							<th></th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -90,6 +91,7 @@
 							<td th:text="${actionItem.stringParametersFormatted}"></td>
 							<td th:text="${actionItem.targetBeanName}"></td>
 							<td th:text="${actionItem.targetFieldId}"></td>
+							<td th:text="${actionItem.disabledIfSameState}"></td>
 							
 							<td>
 								<a th:href="@{~/deleteAction?id={id}&alarmId={alarmId}&itemType={itemType}(id=${actionItem.id}, alarmId=${alarm.id}, itemType=${itemType})}"

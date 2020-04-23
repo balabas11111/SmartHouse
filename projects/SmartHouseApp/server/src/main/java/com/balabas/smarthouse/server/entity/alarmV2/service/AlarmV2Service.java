@@ -226,12 +226,15 @@ public class AlarmV2Service implements IAlarmV2Service {
 				}
 				
 				boolean doProcess = false;
+				boolean ssd = false;
+				boolean sameState = false;
 				
 				if(event.getChangeAction()!=null) {
 					
-					boolean sse = Boolean.TRUE.equals(event.getChangeAction().isDisabledIfSameState());
+					ssd = Boolean.TRUE.equals(event.getChangeAction().isDisabledIfSameState());
+					sameState = event.isSameState();
 					
-					doProcess = sse ? !event.isSameState() : true;
+					doProcess = ssd ? !sameState : true;
 				}
 				
 				if(doProcess) {

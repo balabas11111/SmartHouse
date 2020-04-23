@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmStateChangeEventProcessor;
 import com.balabas.smarthouse.server.entity.alarmV2.IItemEvent;
-import com.balabas.smarthouse.telegram.bot.service.BotService;
+import com.balabas.smarthouse.server.entity.service.IMessageSender;
 
 import lombok.Getter;
 
@@ -16,13 +16,14 @@ public class AlarmStateChangeEventProcessorSendStateChangedTelegram extends Alar
 	private final String processorDescription = "Отправить сообщение о изменении статуса в телеграм";
 	
 	@Autowired
-	private BotService bot;
+	private IMessageSender bot;
 	
 	@Override
 	public void process(IItemEvent event) {
 		alarmStateService.putSingleStateDescription(event);
+		String message = event.getAlarm().getAsSingleString();
 		
-		bot.sendHtmlMessageToAllUsers(event.getAlarm().getViewDescriptor().getHint());
+		bot.sendHtmlMessageToAllUsers(message);
 	}
 
 }

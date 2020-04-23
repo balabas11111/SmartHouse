@@ -238,17 +238,7 @@ public class SendMessageBuilder {
 						builder.append("</b>");
 						builder.append("\n");
 						
-						als.forEach(alarm -> {
-							builder.append(alarm.getEmoji().toString());
-							if(!alarm.getEmoji().equals(alarm.getViewDescriptor().getEmoji())) {
-								builder.append(alarm.getViewDescriptor().getEmoji().toString());
-							}
-							builder.append(" ");
-							builder.append(alarm.getDescription());
-							builder.append(" ");
-							builder.append(alarm.getViewDescriptor().getDescription());
-							builder.append(";\n");
-						});
+						als.forEach(alarm -> builder.append(alarm.getAsSingleString()));
 						
 						first = false;
 					}

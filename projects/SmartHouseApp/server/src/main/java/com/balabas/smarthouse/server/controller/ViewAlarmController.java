@@ -82,6 +82,7 @@ public class ViewAlarmController {
 		}
 		Map<String, List<IAlarmV2>> alarms = alarmService.getAlarmsGrouppedByItemTypeWithAlarmDescriptions();
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
+		model.addAttribute(ATTR_PAGE_TITLE, "Редактирование опасности");
 		model.addAttribute("itemTypes", ItemType.ITEM_TYPES_ORDERED);
 		model.addAttribute("itemType", itemType);
 		model.addAttribute("alarms", alarms);

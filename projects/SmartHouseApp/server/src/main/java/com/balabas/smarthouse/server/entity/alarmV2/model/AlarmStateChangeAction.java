@@ -41,7 +41,7 @@ public class AlarmStateChangeAction extends ItemAbstract implements IAlarmStateC
 	private String parameter;
 	
 	@Getter @Setter
-	private Long targetFieldId;
+	private Long targetFieldId ;
 	
 	@Getter @Setter
 	@Transient
@@ -65,7 +65,7 @@ public class AlarmStateChangeAction extends ItemAbstract implements IAlarmStateC
 	
 	@Getter
 	@Setter
-	boolean disabledIfSameState;
+	boolean disabledIfSameState = false;
 	
 	@Getter @Setter
 	private String targetBeanName;
