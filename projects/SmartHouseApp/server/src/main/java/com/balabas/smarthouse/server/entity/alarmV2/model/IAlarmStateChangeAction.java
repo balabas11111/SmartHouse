@@ -28,8 +28,8 @@ public interface IAlarmStateChangeAction extends IItemAbstract{
 	
 	String getHint();
 
-	boolean isDispatchIfSameState();
-	void setDispatchIfSameState(boolean dispatchIfSameState);
+	boolean isDisabledIfSameState();
+	void setDisabledIfSameState(boolean dispatchIfSameState);
 
 	String getAlarmDescription(IItemAbstract item);
 	

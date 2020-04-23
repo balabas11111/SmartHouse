@@ -65,7 +65,7 @@ public class AlarmStateChangeAction extends ItemAbstract implements IAlarmStateC
 	
 	@Getter
 	@Setter
-	boolean dispatchIfSameState;
+	boolean disabledIfSameState;
 	
 	@Getter @Setter
 	private String targetBeanName;
