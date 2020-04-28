@@ -31,7 +31,7 @@ public interface IAlarmStateChangeAction extends IItemAbstract{
 	boolean isDisabledIfSameState();
 	void setDisabledIfSameState(boolean dispatchIfSameState);
 
-	String getAlarmDescription(IItemAbstract item);
+	String getAlarmDescription(IItemAbstract item, boolean noDefaultDescription);
 	
 	IEntityField getTargetField();
 	void setTargetField(IEntityField targetField);

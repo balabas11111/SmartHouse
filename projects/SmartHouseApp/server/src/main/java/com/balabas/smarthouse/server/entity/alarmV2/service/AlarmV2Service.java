@@ -80,6 +80,9 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Autowired
 	IActionTimerService actionTimerService;
+	
+	@Autowired
+	IPostponedExecutorManager postponedManager;
 
 	@Autowired
 	IAlarmStateChangeEntityService alarmStateChangeEntityService;
@@ -182,7 +185,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 		alarm.setItem(item);
 		events.addAll(checkForAlarm(alarm));
 
-		events.forEach(this::processEvent);
+		processEvents(events, false);
 
 		return events;
 	}
@@ -195,7 +198,8 @@ public class AlarmV2Service implements IAlarmV2Service {
 			alarm.setItem(item);
 			events.addAll(checkForAlarm(alarm));
 		});
-		events.forEach(this::processEvent);
+		
+		processEvents(events, false);
 
 		return events;
 	}
@@ -212,10 +216,28 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 		actionTimerService.nextAlarmScheduling(alarm);
 
-		return buildEvent(alarm);
+		return buildEvent(alarm, false);
+	}
+	
+	private void processEvents(Collection<IItemEvent> events, boolean now) {
+		if(events!=null) {
+			for(IItemEvent event : events) {
+				processEvent(event, now);
+			}
+		}
 	}
 
-	private void processEvent(IItemEvent event) {
+	private void processEvent(IItemEvent event, boolean now) {
+		
+		if(!now) {
+			now = !event.getAlarm().isPostponed();
+		}
+		
+		if(!now) {
+			postponedManager.postponeExecution(event.getAlarm());
+			return;
+		}
+		
 		IAlarmStateChangeEventProcessor processor = alarmTypeProvider.getAlarmStateChangedEventProcessor(event);
 
 		try {
@@ -248,7 +270,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 		alarmStateChangeEntityService.saveAlarmStateChange(event);
 	}
 
-	private List<IItemEvent> buildEvent(IAlarmV2 alarm) {
+	private List<IItemEvent> buildEvent(IAlarmV2 alarm, boolean now) {
 
 		List<IItemEvent> events = new ArrayList<IItemEvent>();
 		List<IAlarmStateChangeAction> action = alarm.getCurrentActions();
@@ -257,7 +279,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 			if (alarm.getMessageInterval() != null && alarm.getMessageInterval() > 0) {
 				a.setInterval(alarm.getMessageInterval());
 			}
-			events.add(new ItemChangeEvent(alarm.getItem(), a, alarm));
+			events.add(new ItemChangeEvent(alarm.getItem(), a, alarm, now));
 		});
 		return events;
 	}
@@ -741,6 +763,11 @@ public class AlarmV2Service implements IAlarmV2Service {
 	@Override
 	public List<IAlarmV2> getAlarmsWithItemChildren(Long itemId, ItemType itemItemType) {
 		return getAlarmsWithItemChildren(deviceService.getItemAbstract(itemId, itemItemType));
+	}
+
+	@Override
+	public void executePostponed(IAlarmV2 alarm) {
+		processEvents(buildEvent(alarm, true), true);
 	}
 
 }

@@ -9,7 +9,7 @@ import com.balabas.smarthouse.server.entity.model.descriptor.AbstractItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 
-public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionable{
+public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionable, IItemTypeable{
 
 	String getDescriptionByDescriptionField();
 	

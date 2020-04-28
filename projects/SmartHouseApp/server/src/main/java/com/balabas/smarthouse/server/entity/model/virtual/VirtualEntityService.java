@@ -162,8 +162,8 @@ public class VirtualEntityService implements IVirtualEntityService {
 
 	@Override
 	public void save(IGroup group) {
-		if(group.getType()==null) {
-			group.setType(ItemType.SENSORS);
+		if(group.getItemType()==null) {
+			group.setItemType(ItemType.SENSORS);
 		}
 		group.setVirtualized(true);
 		deviceService.save(group);

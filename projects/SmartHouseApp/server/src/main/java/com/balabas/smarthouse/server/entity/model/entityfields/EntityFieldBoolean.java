@@ -108,6 +108,11 @@ public class EntityFieldBoolean extends EntityField<Boolean> implements IEntityF
 	public String getValueMeasureStr() {
 		return getValue().booleanValue()? "Включено": "Отключено";
 	}
+	
+	@Override
+	public Boolean getValueAsBoolean() {
+		return this.getValue();
+	}
 
 	private EntityFieldBoolean getRealField() {
 		if(!isVirtualized()) {

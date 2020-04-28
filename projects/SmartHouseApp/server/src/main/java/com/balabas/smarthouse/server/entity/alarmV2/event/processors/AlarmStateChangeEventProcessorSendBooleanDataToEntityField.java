@@ -21,14 +21,13 @@ public class AlarmStateChangeEventProcessorSendBooleanDataToEntityField extends 
 	@Autowired
 	private IDeviceManageService deviceService;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void process(IItemEvent event) {
 
 		boolean targetValue = MathUtil.getAsBoolean(event.getChangeAction().getParameter());
 		IEntityField targetField = event.getChangeAction().getTargetField();
 
-		deviceService.setEntityFieldBooleanValueSendToDeviceIfNotVirtual(targetField, targetValue);
+		deviceService.setEntityFieldBooleanValueSendToDeviceIfNotVirtualAndNotEqual(targetField, targetValue);
 
 	}
 

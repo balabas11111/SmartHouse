@@ -8,7 +8,9 @@ import com.balabas.smarthouse.server.entity.alarmV2.IItemEvent;
 import com.balabas.smarthouse.server.entity.service.IMessageSender;
 
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class AlarmStateChangeEventProcessorSendStateChangedTelegram extends AlarmStateChangeEventProcessor {
 
@@ -20,10 +22,10 @@ public class AlarmStateChangeEventProcessorSendStateChangedTelegram extends Alar
 	
 	@Override
 	public void process(IItemEvent event) {
-		alarmStateService.putSingleStateDescription(event);
 		String message = event.getAlarm().getAsSingleString();
 		
 		bot.sendHtmlMessageToAllUsers(message);
+		log.info("sent " + message);
 	}
 
 }

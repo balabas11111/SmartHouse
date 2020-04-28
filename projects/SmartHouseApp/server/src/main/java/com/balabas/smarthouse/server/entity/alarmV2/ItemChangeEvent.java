@@ -22,13 +22,17 @@ public class ItemChangeEvent implements IItemEvent {
 	
 	@Getter @Setter
 	private IAlarmStateChangeAction changeAction;
+	
+	@Getter @Setter
+	private boolean now;
 
-	public ItemChangeEvent(IItemAbstract item, IAlarmStateChangeAction changeAction, IAlarmV2 alarm) {
+	public ItemChangeEvent(IItemAbstract item, IAlarmStateChangeAction changeAction, IAlarmV2 alarm, boolean now) {
 		super();
 		this.date = new Date();
 		this.item = item;
 		this.changeAction = changeAction;
 		this.alarm = alarm;
+		this.now = now;
 	}
 	
 }

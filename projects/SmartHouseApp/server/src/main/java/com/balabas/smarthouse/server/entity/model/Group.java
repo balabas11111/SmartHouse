@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = "entities")
@@ -26,6 +27,7 @@ import lombok.EqualsAndHashCode;
 @Table(name = "groups")
 public class Group extends ItemAbstract implements IGroup {
 
+	@Getter
 	@Enumerated(EnumType.STRING)
 	private ItemType type;
 	
@@ -76,5 +78,10 @@ public class Group extends ItemAbstract implements IGroup {
 	@Override
 	public ItemType getItemType() {
 		return ItemType.GROUP;
+	}
+
+	@Override
+	public void setItemType(ItemType sensors) {
+		type = sensors;
 	}
 }

@@ -156,4 +156,6 @@ public interface IDeviceManageService {
 
 	boolean changeEntityFieldStateBoolean(IEntityField<Boolean> field, boolean requiredState);
 
+	void setEntityFieldBooleanValueSendToDeviceIfNotVirtualAndNotEqual(IEntityField targetField, boolean targetValue);
+
 }

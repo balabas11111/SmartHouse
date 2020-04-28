@@ -19,7 +19,7 @@ public interface IItemEvent {
 	IAlarmStateChangeAction getChangeAction();
 	
 	default String getDescription() {
-		return getChangeAction().getAlarmDescription(getItem());
+		return getChangeAction().getAlarmDescription(getItem(), true);
 	}
 	
 	default String executeAction() {

@@ -6,8 +6,6 @@ public interface IItemTypeable {
 
 	Long getId();
 	
-	ItemType getType();
-
-	void setType(ItemType itemType);
+	ItemType getItemType();
 
 }

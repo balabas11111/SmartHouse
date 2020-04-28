@@ -117,4 +117,6 @@ public interface IAlarmV2Service {
 	
 	Set<IItemAbstract> getEnabledAlarmTargets(ItemType itemType);
 
+	void executePostponed(IAlarmV2 alarm);
+
 }

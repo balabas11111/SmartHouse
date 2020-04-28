@@ -74,7 +74,7 @@ public class AlarmStateChangeAction extends ItemAbstract implements IAlarmStateC
 	final private String hint = "getDescriptionByDescriptionField;getDescription;getName;getValueStr;getValueTmp";
 	
 	@Override
-	public String getAlarmDescription(IItemAbstract item) {
+	public String getAlarmDescription(IItemAbstract item, boolean noDefaultDescription) {
 		if(!StringUtils.isEmpty(getStringFormatted())) {
 			if(!StringUtils.isEmpty(getStringParametersFormatted())) {
 				String[] methodNames = getStringParametersFormatted().split(";");
@@ -99,9 +99,15 @@ public class AlarmStateChangeAction extends ItemAbstract implements IAlarmStateC
 			
 			return getStringFormatted();
 		}
+	
+		
 		
 		if(!StringUtils.isEmpty(getDescription())) {
 			return getDescription();
+		}
+		
+		if(noDefaultDescription) {
+			return "";
 		}
 		
 		return IAlarmV2.getAlarmDescriptionDefault(getOldState(), getNewState());
@@ -109,7 +115,7 @@ public class AlarmStateChangeAction extends ItemAbstract implements IAlarmStateC
 	
 	@Override
 	public String executeAction(IItemAbstract item) {
-		return getAlarmDescription(item);
+		return getAlarmDescription(item, false);
 	}
 
 	@Override

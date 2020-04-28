@@ -165,4 +165,8 @@ public interface IEntityField<T> extends IItemAbstract, IFloatProvider {
 		&& DeviceConstants.GROUP_SENSORS.equalsIgnoreCase(ef.getEntity().getGroup().getName());
 	}
 
+	default Boolean getValueAsBoolean() {
+		return false;
+	}
+
 }

@@ -1,5 +1,6 @@
 package com.balabas.smarthouse.server.entity.alarmV2.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -58,6 +59,9 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	@ManyToMany(targetEntity = AlarmStateChangeAction.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<IAlarmStateChangeAction> actions;
 
+	@Getter @Setter
+	private boolean postponed = true;
+	
 	@Transient
 	private AlarmState alarmState;
 
@@ -88,7 +92,7 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	public ItemAbstractDto getViewDescriptor() {
 		if(this.viewDescriptor == null) {
 			AlarmState state = this.getAlarmState();
-			String descr = getStateDescription();
+			String descr = getStateDescription(true);
 			ItemAbstractDto result = new ItemAbstractDto(state.getEmoji(), state.getName(), descr);
 			return result;
 		}
@@ -96,11 +100,32 @@ public abstract class AlarmV2 implements IAlarmV2 {
 		return viewDescriptor;
 	}
 	
-	public String getStateDescription() {
+	public String actionsToSingleStringDescription(List<IAlarmStateChangeAction> actions) {
+		if(stateDescriptions == null) {
+			stateDescriptions = new ArrayList<String>();
+		} else {
+			stateDescriptions.clear();
+		}
+		
+		StringBuilder buf = new StringBuilder();
+		
+		for(IAlarmStateChangeAction action : actions) {
+			String str = action.getAlarmDescription(getItem(), true);
+			if(!StringUtils.isEmpty(str)) {
+				stateDescriptions.add(str);
+				buf.append(str);
+			}
+		}
+		
+		return buf.toString();
+	}
+	
+	public String getStateDescription(boolean force) {
 		StringBuffer buf = new StringBuffer();
 		
-		if(stateDescriptions==null || stateDescriptions.isEmpty()) {
-			buf.append(getAlarmState().getDescription());
+		if(force || stateDescriptions==null || stateDescriptions.isEmpty()) {
+			buf.append(actionsToSingleStringDescription(getCurrentActions()));
+			//buf.append(getAlarmState().getDescription());
 		} else {
 			int size = stateDescriptions.size();
 			int ind =0;

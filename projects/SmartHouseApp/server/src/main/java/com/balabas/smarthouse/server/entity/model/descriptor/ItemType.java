@@ -9,7 +9,8 @@ public enum ItemType {
 	GROUP(-1, "Группа", Emoji.BRIEFCASE, "group", "gr"),
 	ENTITY(-1, "Датчик", Emoji.BRIEFCASE, "entity", "en"),
 	ENTITY_FIELD(-1, "Показатель", Emoji.BRIEFCASE, "EntityField", "ef"),
-	ALARM(1000*60, "Тревога", Emoji.BRIEFCASE, "alarm", "al");
+	ALARM(1000*60, "Тревога", Emoji.BRIEFCASE, "alarm", "al"),
+	ALARM_STATE(-1, "Состояние тревоги", Emoji.BRIEFCASE, "alarmStae", "as");
 
 	public static final ItemType[] ITEM_TYPES_ORDERED = {DEVICE, GROUP, ENTITY, ENTITY_FIELD};
 	

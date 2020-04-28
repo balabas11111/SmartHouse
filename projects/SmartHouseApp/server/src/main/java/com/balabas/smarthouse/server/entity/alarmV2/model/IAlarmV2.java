@@ -9,11 +9,12 @@ import com.balabas.smarthouse.server.entity.alarmV2.AlarmConstants;
 import com.balabas.smarthouse.server.entity.model.IDescriptionable;
 import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
+import com.balabas.smarthouse.server.entity.model.IItemTypeable;
 import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 
-public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
+public interface IAlarmV2 extends IIdentifiable, IDescriptionable, IItemTypeable {
 
 	default Emoji getEmoji() {
 		List<IAlarmStateChangeAction> actions = getCurrentActions();
@@ -85,6 +86,9 @@ public interface IAlarmV2 extends IIdentifiable, IDescriptionable {
 	
 	boolean isInBadState();
 	boolean isRepeatable();
+	
+	boolean isPostponed();
+	void setPostponed(boolean postponed);
 
 	void setMessageInterval(Integer messageInterval);
 	Integer getMessageInterval();

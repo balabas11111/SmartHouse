@@ -19,6 +19,9 @@ import lombok.Setter;
 @Entity
 public class AlarmStateChangeEntity implements IItemTypeable {
 
+	@Getter
+	private final ItemType itemType = ItemType.ALARM_STATE;
+	
 	@Getter @Setter
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

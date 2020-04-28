@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.balabas.smarthouse.server.controller.ControllerConstants;
 import com.balabas.smarthouse.server.entity.alarmV2.service.IAlarmV2Service;
+import com.balabas.smarthouse.server.entity.alarmV2.service.IPostponedExecutorManager;
 import com.balabas.smarthouse.server.entity.model.ActionTimer;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.Entity;
@@ -139,6 +140,9 @@ public class DeviceManageService implements IDeviceManageService {
 	
 	@Autowired
 	ICalculatedEntityFieldService calculatedFieldsService;
+	
+	@Autowired
+	IPostponedExecutorManager postponedManager;
 
 	boolean isNotFirstIteration = false;
 
@@ -478,6 +482,8 @@ public class DeviceManageService implements IDeviceManageService {
 			savedValues += changedSources.size();
 		}
 		alarmV2Service.checkForAlarmsWithParentExecutePostActions(changedSources);
+		
+		postponedManager.executeAllPostponed();
 		
 		if(savedValues!=0) {
 			log.debug("Saved values =" + savedValues);
@@ -1307,6 +1313,18 @@ public class DeviceManageService implements IDeviceManageService {
 			case ENTITY_FIELD : return getEntityFieldById(itemId);
 			default: return null;
 		}
+	}
+
+	@Override
+	public void setEntityFieldBooleanValueSendToDeviceIfNotVirtualAndNotEqual(IEntityField targetField,
+			boolean targetValue) {
+		
+		if(targetField!=null && targetField.getValueAsBoolean()!=null && targetField.getValueAsBoolean().booleanValue() != targetValue) {
+			setEntityFieldBooleanValueSendToDeviceIfNotVirtual(targetField, targetValue);
+		} else {
+			log.info("No need to send boolean to field");
+		}
+		
 	}
 
 }
