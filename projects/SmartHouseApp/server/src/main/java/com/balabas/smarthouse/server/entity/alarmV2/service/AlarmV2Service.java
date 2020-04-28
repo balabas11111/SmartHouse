@@ -532,7 +532,8 @@ public class AlarmV2Service implements IAlarmV2Service {
 			stream = Stream.empty();
 		}
 
-		return stream.sorted((i1,i2) -> i1.getFullName().compareToIgnoreCase(i2.getFullName())).collect(Collectors.toSet());
+		return stream.sorted((i1,i2) -> i1.getFullName().compareToIgnoreCase(i2.getFullName()))
+				.collect(Collectors.toCollection( LinkedHashSet::new ));
 	}
 
 	@Override
