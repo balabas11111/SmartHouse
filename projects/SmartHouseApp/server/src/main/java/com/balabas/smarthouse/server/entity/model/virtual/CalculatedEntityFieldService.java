@@ -194,6 +194,7 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 
 	@Override
 	public void generateAllValues(CalculatedEntityField calcEntityField) {
+		/*
 		log.info("Calculated field values generation started");
 		Date date1 = DateTimeUtil.getDate();
 
@@ -202,16 +203,21 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 		Date oldest = null;
 
 		for (IEntityField entityField : source) {
+			
+			try {
 			Date dateTmp = entityFieldService.getOldestEntityFieldValue(entityField);
 
 			if (oldest == null || dateTmp.getTime() > oldest.getTime()) {
 				oldest = dateTmp;
 			}
+			}catch(Exception e) {
+				
+			}
 
 		}
 
 		long now = DateTimeUtil.now();
-		long current = oldest.getTime();
+		long current = oldest!=null ? oldest.getTime(): 0;
 
 		long totalSaved = 0;
 
@@ -228,6 +234,7 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 		}
 
 		log.info("Calc field created values count=" + totalSaved + " in time secs=" + DateTimeUtil.getDiffSecs(date1));
+		*/
 	}
 
 	@Override
