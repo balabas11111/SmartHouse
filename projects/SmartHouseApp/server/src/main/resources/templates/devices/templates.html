@@ -311,6 +311,39 @@
 			</tr>
 		</tbody>
 	</table>
+	
+	<table class="table table-dark table-striped"
+		th:fragment="EntityFieldsAbstractTableValues(items, chbxName, checkedItemMap)">
+		<thead>
+			<tr>
+				<th></th>
+				<th>Устройство</th>
+				<th>Датчик</th>
+				<th>Показатель</th>
+				<th>Описание</th>
+				<th>Значение</th>
+				<th>Измерение</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="item : ${items}">
+				<td><input type="checkbox" th:name="${chbxName}"
+					th:value="${item.id}"
+					th:checked="${checkedItemMap.containsKey(item.id)}" /></td>
+				<td><label
+					th:text="${item.entity.group.device.getDescriptionByDescriptionField()}"></label>
+				</td>
+				<td><label
+					th:text="${item.entity.getDescriptionByDescriptionField()}"></label>
+				</td>
+				<td><label th:text="${item.name}"></label></td>
+				<td><label th:text="${item.getDescriptionByDescriptionField()}"></label>
+				</td>
+				<td><label th:text="${item.getValueStr()}"></label></td>
+				<td><label th:text="${item.measure}"></label></td>
+			</tr>
+		</tbody>
+	</table>
 
 </body>
 

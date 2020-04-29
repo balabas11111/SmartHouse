@@ -230,4 +230,16 @@ public class CalculatedEntityFieldService implements ICalculatedEntityFieldServi
 		log.info("Calc field created values count=" + totalSaved + " in time secs=" + DateTimeUtil.getDiffSecs(date1));
 	}
 
+	@Override
+	public void delete(Long id) {
+		if(id==null) {
+			return;
+		}
+		
+		ICalculatedEntityField calcField = getCalculatedEntityField(id);
+		calculatedEntityFields.remove(calcField);
+		
+		calculatedEntityFieldRepository.delete((CalculatedEntityField)calcField);
+	}
+
 }

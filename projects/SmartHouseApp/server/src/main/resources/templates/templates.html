@@ -52,6 +52,33 @@
 				<td>
 					<a th:href="@{~/{url}?id={id}(id=${item.id}, url=${editName})}"
 						class="btn btn-default">&#x1F4DD;Редактировать</a>
+						
+						<button type="button" class="btn btn-default"
+								data-toggle="modal"
+								th:attr="data-target='#deleteCalcField' + ${item.id}">&#x274C;Удалить</button>
+
+						<div class="modal fade" th:id="'deleteCalcField' + ${item.id}">
+							<div class="modal-dialog">
+								<div class="modal-content">
+		
+									<!-- Modal Header -->
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal">&times;</button>
+										<h4 class="modal-title"
+											th:text="'Действительно удалить ?    ' + ${item.description}">
+											Действительно удалить ?</h4>
+									</div>
+		
+									<!-- Modal footer -->
+									<div class="modal-footer">
+										<a th:href="@{~/virtual/deleteCalcField?id={id}(id=${item.id})}"
+											class="btn btn-success">Удалить</a>
+										<button type="button" class="btn btn-danger"
+											data-dismiss="modal">Отменить</button>
+									</div>
+								</div>
+							</div>
+						</div>
 				</td>
 			</tr>
 		</tbody>

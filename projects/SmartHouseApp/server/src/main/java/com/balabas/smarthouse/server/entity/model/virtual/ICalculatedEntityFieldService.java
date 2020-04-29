@@ -37,4 +37,6 @@ public interface ICalculatedEntityFieldService extends IEntityFieldValueChangeDi
 	void attachCalculator(ICalculatedEntityField calcEntityField);
 
 	IEntityFieldValue getValue(ICalculatedEntityField calcEntityField, Map<String, IEntityFieldValue> entFieldMap);
+
+	void delete(Long id);
 }

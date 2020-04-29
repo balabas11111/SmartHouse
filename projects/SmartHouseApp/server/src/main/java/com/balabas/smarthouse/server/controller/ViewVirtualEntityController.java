@@ -498,6 +498,14 @@ public class ViewVirtualEntityController extends BaseController {
 		return "virtual/calculatedEntityField.html";
 	}
 	
+	@GetMapping(value = "/deleteCalcField")
+	public String deleteCalculatedEntityField(@RequestParam(name = "id", required = true) Long id, Model model) {
+		
+		calculatedEntityFieldService.delete(id);
+		
+		return "redirect:/virtual/calculatedEntityFields";
+	}
+	
 	@PostMapping(value = "/saveCalculatedEntityField")
 	public String saveCalculatedEntityField(@ModelAttribute("field") CalculatedEntityField calcEntityField,
 			@RequestParam(value = "calculators", required = false) String[] calculators,
