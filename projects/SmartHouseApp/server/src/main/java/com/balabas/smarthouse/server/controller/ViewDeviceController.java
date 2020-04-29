@@ -58,6 +58,13 @@ public class ViewDeviceController {
 		return URL_REDIRECT_PREFFIX + DEVICES_ROOT;
 	}
 	
+	
+	@GetMapping("/virtual/null/index")
+	public String getIndexPageRedirect(Model model) {
+		return "redirect:/";
+	}
+	
+	
 	@GetMapping("/virtual/null/manage")
 	public String getManagePageRedirect(Model model) {
 		return "redirect:/manage";

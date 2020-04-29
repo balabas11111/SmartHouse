@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.entity.model.virtual;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -51,7 +52,8 @@ public class CalculatorAverageNumber implements ICalculatedEntityFieldCalculator
 	@Override
 	public IEntityFieldValue calculateField(IEntityField targetEntityField, Collection<IEntityFieldValue> values,
 			String parameter) {
-		return new EntityFieldValueNumber(targetEntityField, MathUtil.getAverageFloat(values));
+		Collection<IEntityFieldValue> fieldsToProcess = values.stream().filter(val -> val.getValueAsFloat()!=null && val.getValueAsFloat().intValue() != -127 && val.getValueAsFloat().intValue() != 85).collect(Collectors.toList());
+		return new EntityFieldValueNumber(targetEntityField, MathUtil.getAverageFloat(fieldsToProcess));
 	}
 
 }
