@@ -57,8 +57,16 @@ public class CalculatedEntityField extends ItemAbstract implements ICalculatedEn
 
 	@Override
 	public boolean isImpacted(IEntityField field) {
-		IEntityField res = sourceEntityFields.stream().filter(f -> field.getId().equals(f.getId())).findFirst().orElse(null);
-		return res != null;
+		try {
+			if(sourceEntityFields==null || field == null || field.getId() == null) {
+				return false;
+			}
+			IEntityField res = sourceEntityFields.stream().filter(f -> field.getId().equals(f.getId())).findFirst().orElse(null);
+			return res != null;
+		}catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	@Override

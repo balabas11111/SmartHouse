@@ -14,7 +14,7 @@ import static com.balabas.smarthouse.server.DeviceMessageConstants.buildMessage;
 import java.util.function.Consumer;
 
 import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_RECONNECTED;
-import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_INITIALIZED;
+//import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_INITIALIZED;
 import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_DISCONNECTED;
 import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_BACK_FROM_DISCONNECT;
 
@@ -94,9 +94,9 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 
 	private void onDeviceInitialDataReceived(IDevice device) {
 		// init data was received
-		String message = buildMessage(MSG_DEVICE_INITIALIZED, device.getDescription());
+		//String message = buildMessage(MSG_DEVICE_INITIALIZED, device.getDescription());
 		
-		sender.sendMessageToAllUsers(Severity.INFO,  message);
+		//sender.sendMessageToAllUsers(Severity.INFO,  message);
 		device.setState(State.CONNECTED);
 		device.setInitialized(true);
 		

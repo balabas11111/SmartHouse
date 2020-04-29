@@ -13,5 +13,8 @@ public class AlarmConstants {
 	
 	public static final String CHECKER_DESCRIPTION_ENTITY_FIELD_GROWS = "Значение поля растет или падает";
 	
+	public static final String CHECKER_DESCRIPTION_ENTITY_FIELD_INT_VALUE = "Значение поля {\"ok\":0, \"warning\":1, \"alarm\":2}";
+	public static final String CHECKER_DESCRIPTION_ENTITY_FIELD_INT_VALUE_DEFAULT = "{\"ok\":0, \"warning\":1, \"alarm\":2}";
+	
 	public static final String CHECKER_DESCRIPTION_HEATER_ENTITY = "Проверка системы отопления";
 }

@@ -48,6 +48,11 @@ public class ViewAlarmController {
 	@Autowired
 	private IAlarmV2Service alarmService;
 	
+	@GetMapping("/virtual/null/alarms")
+	public String getManagePageRedirect(Model model) {
+		return "redirect:/alarms";
+	}
+	
 	@GetMapping("/alarms")
 	public String getAlarms(
 			@RequestParam(name = "alarmState", required = false) String alarmState,

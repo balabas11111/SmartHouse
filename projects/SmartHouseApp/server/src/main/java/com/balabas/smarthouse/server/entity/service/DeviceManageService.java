@@ -45,6 +45,7 @@ import com.balabas.smarthouse.server.entity.model.IIdentifiable;
 import com.balabas.smarthouse.server.entity.model.IItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstract;
 import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
+import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.enabledvalue.EntityFieldEnabledValue;
@@ -151,6 +152,11 @@ public class DeviceManageService implements IDeviceManageService {
 
 	@Getter
 	private Date lastDeviceDRUcheck;
+	
+	@Autowired
+	private IMessageSender bot;
+	
+	private boolean sentAllConnectedMessage = false;
 
 	@PostConstruct
 	@Transactional
@@ -390,6 +396,25 @@ public class DeviceManageService implements IDeviceManageService {
 
 				doSave = false;
 			}
+			
+			Set<IDevice> devs = this.getDevicesNotVirtualized();
+			
+			if(!sentAllConnectedMessage) {
+				boolean allInitialized = true;
+				
+				for(IDevice dev : devs) {
+					if(!dev.isInitialized()) {
+						allInitialized = false;
+						break;
+					}
+				}
+				
+				if(allInitialized) {
+					bot.sendHtmlMessageToAllUsers(Emoji.CHECK_MARK.toString() + " Все устройства инициализированы!");
+					sentAllConnectedMessage = true;
+				}
+			}
+			
 		} catch (Exception e) {
 			log.error(e);
 			stateChanger.stateChanged(device, State.BAD_DATA);

@@ -58,6 +58,16 @@ public class ViewDeviceController {
 		return URL_REDIRECT_PREFFIX + DEVICES_ROOT;
 	}
 	
+	@GetMapping("/virtual/null/manage")
+	public String getManagePageRedirect(Model model) {
+		return "redirect:/manage";
+	}
+	
+	@GetMapping("/virtual/manage")
+	public String getManagePageRedirect2(Model model) {
+		return "redirect:/manage";
+	}
+	
 	@GetMapping("/manage")
 	public String getManagePage(Model model) {
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
@@ -145,7 +155,7 @@ public class ViewDeviceController {
 	@PostMapping("/restartServer") 
 	public String restartServer(Model model){
 		serverManageService.restartServer(5);
-		return "redirect:/manage";
+		return "restartServer.html";
 	}
 	
 	private void addRefreshIntervalToModel(Model model) {
