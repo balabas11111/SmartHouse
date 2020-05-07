@@ -291,6 +291,27 @@
 		<script src="js/pageInit.js"></script>
 	</th:block>
 	
+	<th:block th:fragment="importsChart">
+		<script	src="js/moment-with-locales.js"></script>
+		<script	src="js/bootstrap-datetimepicker.min.js"></script>
+		<script src="chart/Chart.js"></script>
+
+		<script th:inline="javascript">
+			/*<![CDATA[*/
+			var afterDate = /*[[${afterDate}]]*/;
+			var beforeDate = /*[[${beforeDate}]]*/;
+	
+			var chartDataY = /*[[${chartDataY}]]*/;
+			var chartDataStr = /*[[${chartData}]]*/;
+			
+			var legendPosition = /*[[${legendPosition}]]*/;
+			/*]]>*/
+		</script>
+	
+		<script src="chart/defaultChartPageRedirect.js"></script>
+		<script src="chart/defaultChartBuilder.js"></script>
+	</th:block>
+	
 	<header th:fragment="MainPageHeader(url, text)">
 		<div class="main-menu">
 			<div class="container">
