@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -480,7 +481,7 @@ public class ViewVirtualEntityController extends BaseController {
 		String preffix = IIdentifiable.isNew(calculatedField)?
 			preffix = ControllerConstants.MSG_NEW_CALC_ENTITY_FIELD:ControllerConstants.MSG_EDIT_CALC_ENTITY_FIELD;
 		
-		Set<IEntityField> targetFields = calculatedEntityFieldService.getAllTargetFields();
+		List<IEntityField> targetFields = calculatedEntityFieldService.getAllTargetFields().stream().sorted((ef1, ef2) -> (ef1.getEntity().getEmojiDescriptionByDescriptionField() + " " + ef1.getDescription()).compareTo(ef2.getEntity().getEmojiDescriptionByDescriptionField() + " " + ef2.getDescription())).collect(Collectors.toList()) ;
 		Set<IEntityField> sourceFields = calculatedEntityFieldService.getAllSourceFields();
 		
 		Map<Long, Long> selectedSourceFields = getEntitiesMap(calculatedField.getSourceEntityFields()); 

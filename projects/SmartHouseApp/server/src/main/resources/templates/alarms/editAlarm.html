@@ -41,24 +41,28 @@
 				<tr>
 					<td>Процессор</td>
 					<td>
-						<select th:field="*{checkerName}">
+						<div th:replace="templates :: IItemAbstractSelectParentChecker(items=${checkers}, chbxName='checkerName', selectedName=${currentCheckerName})"></div>
+						<!-- <select th:field="*{checkerName}">
 								<option th:each="checker : ${checkers}"
 									th:value="${checker.getName()}"
 									th:utext="${checker.getName() + ' - ' + checker.getCheckerDescription()}"
 									th:selected="${checker.getName().equals(currentCheckerName)}"/>
 						</select>
+						 -->
 					</td>
 				</tr>
 				
 				<tr>
 					<td>Цель процессинга</td>
 					<td>
-						<select th:name="targetId">
+					<div th:replace="templates :: IItemAbstractSelectAlarmTarget(items=${targets}, chbxName='targetId', selectedId=${alarm.getItemId()})"></div>
+						<!-- <select th:name="targetId">
 								<option th:each="target : ${targets}"
 									th:value="${target.id}"
 									th:utext="${target.description}"
 									th:selected="${target.isIdEqual(alarm.getItemId())}"/>
 						</select>
+						 -->
 					</td>
 				</tr>
 			</table>

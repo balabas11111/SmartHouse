@@ -181,6 +181,26 @@
            th:checked="${item.id.equals(parentId)}">
         </div>
     </div>
+    
+    <div  th:fragment="IItemAbstractSelectParentChecker(items, chbxName, selectedName)" 
+		th:each="item : ${items}">
+        <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" th:name="${chbxName}" th:value="${item.getName()}" 
+            th:text="${item.getName() + ' - ' + item.getCheckerDescription()}" 
+            class="custom-control-input"
+           th:checked="${item.getName().equals(selectedName)}">
+        </div>
+    </div>
+    
+    <div  th:fragment="IItemAbstractSelectAlarmTarget(items, chbxName, selectedId)" 
+		th:each="item : ${items}">
+        <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" th:name="${chbxName}" th:value="${item.id}" 
+            th:text="${item.description}" 
+            class="custom-control-input"
+           th:checked="${item.isIdEqual(selectedId)}">
+        </div>
+    </div>
 	
 	<div  th:fragment="IEntityFieldDivParent(items, chbxName, parentId)" 
 		th:each="item : ${items}">
