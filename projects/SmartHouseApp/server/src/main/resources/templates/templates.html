@@ -201,7 +201,25 @@
            th:checked="${item.isIdEqual(selectedId)}">
         </div>
     </div>
-	
+    
+    <th:block  th:fragment="IItemAbstractLabelAlarmTarget(items, selectedId)">
+		<th:block th:each="item : ${items}">
+			<th:block th:if="${item.isIdEqual(selectedId)}">
+				<label th:text="${item.description}"></label>
+			</th:block>
+		</th:block>
+    </th:block>
+    
+    <div th:fragment="IItemAbstractAlarmProcessor(items, chbxName, selectedName)" 
+		th:each="item : ${items}">
+        <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" th:name="${chbxName}" th:value="${item.name}" 
+            th:text="${item.getName() + ' - ' + item.getProcessorDescription()}" 
+            class="custom-control-input"
+           th:checked="${item.getName().equalsIgnoreCase(selectedName)}">
+        </div>
+    </div>
+    
 	<div  th:fragment="IEntityFieldDivParent(items, chbxName, parentId)" 
 		th:each="item : ${items}">
         <div class="custom-control custom-radio custom-control-inline">
@@ -296,6 +314,19 @@
 	</th:block>
 	
 	<button th:fragment="AlarmStateButton(text, title)" type="button" class="btn btn-secondary"
+		th:text="${text}"
+		data-toggle="tooltip"
+		th:title="${title}">
+	</button>
+
+	<th:block th:fragment="AlarmStatesUrlBlock(alarms, item)">
+		<th:block  th:if="${alarms.hasAlarms(item)}"  th:each="result : ${alarms.getViewDescriptors(item)}">
+			<button	th:replace="templates :: LinkButton(text=${result.emoji},title=${result.description}, url=${'/viewAlarm?id=' + result.id})"></button>
+		</th:block>
+	</th:block>
+	
+	<button th:fragment="AlarmStateUrlButton(text, title, href)" type="button" class="btn btn-secondary"
+		th:href="${href}"
 		th:text="${text}"
 		data-toggle="tooltip"
 		th:title="${title}">

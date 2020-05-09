@@ -90,14 +90,21 @@ public abstract class AlarmV2 implements IAlarmV2 {
 	
 	@Override
 	public ItemAbstractDto getViewDescriptor() {
+		ItemAbstractDto result = null;
+		
 		if(this.viewDescriptor == null) {
 			AlarmState state = this.getAlarmState();
 			String descr = getStateDescription(true);
-			ItemAbstractDto result = new ItemAbstractDto(state.getEmoji(), state.getName(), descr);
-			return result;
+			result = new ItemAbstractDto(state.getEmoji(), state.getName(), descr);
+		} else {
+			result = viewDescriptor;
 		}
 		
-		return viewDescriptor;
+		if(result.getId() == null) {
+			result.setId(this.getId());
+		}
+		
+		return result;
 	}
 	
 	public String actionsToSingleStringDescription(List<IAlarmStateChangeAction> actions) {

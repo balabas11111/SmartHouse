@@ -2,6 +2,7 @@ package com.balabas.smarthouse.server.entity.alarmV2.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.balabas.smarthouse.server.entity.alarmV2.AlarmStateChangeEntity;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Checker;
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2Container;
 import com.balabas.smarthouse.server.entity.alarmV2.IAlarmStateChangeEventProcessor;
@@ -48,6 +50,7 @@ import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.service.IActionTimerService;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
+import com.balabas.smarthouse.server.view.chart.ChartDataSeries;
 import com.google.common.collect.Lists;
 
 import lombok.extern.log4j.Log4j2;
@@ -769,6 +772,33 @@ public class AlarmV2Service implements IAlarmV2Service {
 	@Override
 	public void executePostponed(IAlarmV2 alarm) {
 		processEvents(buildEvent(alarm, true), true);
+	}
+
+	@Override
+	public IAlarmV2 getAlarm(Long id) {
+		return getAlarmsByFilter(al -> al.getId().equals(id)).stream().findFirst().orElse(null);
+		
+	}
+
+	@Override
+	public List<ChartDataSeries> getAlarmStates(IAlarmV2 alarm, Date date1, Date date2) {
+		
+		List<ChartDataSeries> result = new ArrayList<ChartDataSeries>();
+		Map<AlarmState, List<AlarmStateChangeEntity>> map = alarmStateChangeEntityService.getAlarmStateChangeEntitiesForPeriod(alarm.getId(), date1, date2);
+		
+		for(AlarmState state : AlarmState.getList()) {
+			ChartDataSeries ser = new ChartDataSeries(state.getEmojiDescription(), state.getColor());
+			List<AlarmStateChangeEntity> list = map.get(state);
+			
+			for(AlarmStateChangeEntity entity : list) {
+				ser.addDataPoint(entity.getDateTime().getTime(), state.getValueInt());
+			}
+			
+			result.add(ser);
+		}
+				
+		
+		return result;
 	}
 
 }

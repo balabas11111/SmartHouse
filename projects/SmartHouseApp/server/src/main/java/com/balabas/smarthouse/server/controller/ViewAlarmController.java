@@ -1,11 +1,16 @@
 package com.balabas.smarthouse.server.controller;
 
+import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_CHART_DATA;
+import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_CHART_DATA_Y;
+import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_DATE_AFTER;
+import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_DATE_BEFORE;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_PAGE_DATETIME;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_PAGE_TITLE;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_PAGE_URL;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_SERVER_NAME;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.DEVICES_ROOT;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +39,9 @@ import com.balabas.smarthouse.server.entity.alarmV2.service.IAlarmV2Service;
 import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.util.DateTimeUtil;
+import com.balabas.smarthouse.server.view.chart.ChartDataSeries;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -44,6 +52,12 @@ public class ViewAlarmController {
 	
 	@Value("${smarthouse.server.name:#{null}}")
 	private String serverName;
+	
+	@Value("${smarthouse.server.chart.legendPosition:top}")
+	private String legendPosition;
+	
+	@Value("${smarthouse.server.view.page.chart.default.start.hr:4}")
+	private Integer defaultStartHrs;
 
 	@Autowired
 	private IAlarmV2Service alarmService;
@@ -135,6 +149,38 @@ public class ViewAlarmController {
 		
 		return "alarms/editAlarm.html";
 	}
+	
+	@GetMapping(value = "/viewAlarm")
+	public String viewAlarm(@RequestParam(name = "id", required = true) Long id,
+			@RequestParam(name = ATTR_DATE_AFTER, required = false) Long afterDate,
+			@RequestParam(name = ATTR_DATE_BEFORE, required = false) Long beforeDate, Model model) throws JsonProcessingException {
+		
+		IAlarmV2 alarm = alarmService.getAlarm(id);
+		
+		if(afterDate == null) {
+			afterDate = getDefaultStartDate();
+		}
+		
+		if(beforeDate == null) {
+			beforeDate = DateTimeUtil.now();
+		}
+		
+		Date date1 = new Date(afterDate);
+		Date date2 = new Date(beforeDate);
+		
+		List<ChartDataSeries> charts = alarmService.getAlarmStates(alarm,date1, date2);
+		
+		String chartData = (new ObjectMapper()).writeValueAsString(charts);
+		String chartYLabel = "Тревоги";
+		
+		model.addAttribute("legendPosition", legendPosition);
+		model.addAttribute(ATTR_CHART_DATA_Y, chartYLabel);
+		model.addAttribute(ATTR_CHART_DATA, chartData);
+		
+		model.addAttribute("alarm", alarm);
+		
+		return "alarms/viewAlarm.html";
+	}
 
 	@PostMapping("/saveAlarmEvent")
 	public String saveAlarmEvent(@ModelAttribute("alarmEvent") AlarmStateChangeAction action,
@@ -213,6 +259,10 @@ public class ViewAlarmController {
 	
 	private String getItemTypeParam(ItemType it) {
 		return "itemType=" + it.name();
+	}
+	
+	private long getDefaultStartDate() {
+		return (new Date()).getTime() - defaultStartHrs*60*60*1000;
 	}
 
 }

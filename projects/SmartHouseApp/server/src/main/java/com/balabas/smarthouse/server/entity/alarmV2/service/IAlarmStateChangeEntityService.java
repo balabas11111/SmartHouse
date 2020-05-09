@@ -1,5 +1,11 @@
 package com.balabas.smarthouse.server.entity.alarmV2.service;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.balabas.smarthouse.server.entity.alarmV2.AlarmStateChangeEntity;
 import com.balabas.smarthouse.server.entity.alarmV2.IItemEvent;
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
@@ -34,5 +40,21 @@ public interface IAlarmStateChangeEntityService {
 		entity.setType(event.getItem().getItemType());
 		
 		return entity;
+	}
+	
+	default Map<AlarmState, List<AlarmStateChangeEntity>> getAlarmStateChangeEntitiesForPeriod(Long targetId, Date date1, Date date2) {
+		List<AlarmStateChangeEntity> entities = getAlarmStateChangeEntityRepository().getAlarmStateChangeEntitiesForPeriod(targetId, date1, date2);
+		
+		Map<AlarmState, List<AlarmStateChangeEntity>> result = new HashMap<AlarmState, List<AlarmStateChangeEntity>>();
+		
+		for(AlarmStateChangeEntity entity : entities) {
+			if(!result.containsKey(entity.getAlarmState())) {
+				result.put(entity.getAlarmState(), new ArrayList<>());
+			}
+			
+			result.get(entity.getAlarmState()).add(entity);
+		}
+		
+		return result;
 	}
 }

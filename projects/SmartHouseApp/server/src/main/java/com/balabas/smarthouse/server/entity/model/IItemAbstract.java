@@ -85,5 +85,17 @@ public interface IItemAbstract extends IIdentifiable, INameable, IDescriptionabl
 	}
 	
 	 String getFullName();
+	 
+	 default boolean isIdEqual(Long targetId) {
+		 if( this.getId() == null && targetId ==null ) {
+			 return true;
+		 }
+		 
+		 if(this.getId()!=null) {
+			 return this.getId().equals(targetId);
+		 } 
+		 
+		 return false;
+	 }
 	
 }

@@ -1,6 +1,7 @@
 package com.balabas.smarthouse.server.entity.alarmV2.service;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,7 @@ import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
+import com.balabas.smarthouse.server.view.chart.ChartDataSeries;
 
 @SuppressWarnings("rawtypes")
 public interface IAlarmV2Service {
@@ -118,5 +120,9 @@ public interface IAlarmV2Service {
 	Set<IItemAbstract> getEnabledAlarmTargets(ItemType itemType);
 
 	void executePostponed(IAlarmV2 alarm);
+
+	IAlarmV2 getAlarm(Long id);
+
+	List<ChartDataSeries> getAlarmStates(IAlarmV2 alarm, Date date1, Date date2);
 
 }

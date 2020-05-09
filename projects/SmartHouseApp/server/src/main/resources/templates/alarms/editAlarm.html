@@ -2,9 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<title th:text="${pageHeader}">Устройство</title>
 <th:block th:replace="templates :: headImportsUp" ></th:block>
-
 </head>
 
 <body>
@@ -42,27 +40,42 @@
 					<td>Процессор</td>
 					<td>
 						<div th:replace="templates :: IItemAbstractSelectParentChecker(items=${checkers}, chbxName='checkerName', selectedName=${currentCheckerName})"></div>
-						<!-- <select th:field="*{checkerName}">
-								<option th:each="checker : ${checkers}"
-									th:value="${checker.getName()}"
-									th:utext="${checker.getName() + ' - ' + checker.getCheckerDescription()}"
-									th:selected="${checker.getName().equals(currentCheckerName)}"/>
-						</select>
-						 -->
 					</td>
 				</tr>
 				
 				<tr>
-					<td>Цель процессинга</td>
 					<td>
-					<div th:replace="templates :: IItemAbstractSelectAlarmTarget(items=${targets}, chbxName='targetId', selectedId=${alarm.getItemId()})"></div>
-						<!-- <select th:name="targetId">
-								<option th:each="target : ${targets}"
-									th:value="${target.id}"
-									th:utext="${target.description}"
-									th:selected="${target.isIdEqual(alarm.getItemId())}"/>
-						</select>
-						 -->
+						<div class="accordion" id="accordionExample">
+							  <div class="card">
+							    <div class="card-header" id="headingOne">
+							      <h2 class="mb-0">
+							      	<button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+							          Описание цели
+							        </button>
+							      </h2>
+							    </div>
+							
+							    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+							      <div class="card-body">
+							        <th:block th:replace="templates :: IItemAbstractLabelAlarmTarget(items=${targets}, selectedId=${alarm.getItemId()})"></th:block>
+							      </div>
+							    </div>
+							  </div>
+							  <div class="card">
+							    <div class="card-header" id="headingTwo">
+							      <h2 class="mb-0">
+							        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+							         Цель
+							        </button>
+							      </h2>
+							    </div>
+							    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+							      <div class="card-body">
+							       <div th:replace="templates :: IItemAbstractSelectAlarmTarget(items=${targets}, chbxName='targetId', selectedId=${alarm.getItemId()})"></div>
+							      </div>
+							    </div>
+							  </div>
+							</div>
 					</td>
 				</tr>
 			</table>
@@ -116,8 +129,8 @@
 
 		</form>
 		
-		<div class="modal fade" th:id="'addAlarmEventModal' + ${alarm.id}">
-			<div class="modal-dialog">
+		<div class="modal fade" th:id="'addAlarmEventModal' + ${alarm.id}" style="width: 100%">
+			<div class="modal-dialog"  style="width: 90%">
 				<div class="modal-content">
 
 					<!-- Modal Header -->
@@ -135,11 +148,11 @@
 						<table class="table table-dark table-striped">
 							<tr>
 								<td>Имя</td>
-								<td><input type="text" th:field="*{name}"></td>
+								<td><input type="text" th:field="*{name}" style="width: 90%"></td>
 							</tr>
 						    <tr>
 								<td>Описание</td>
-								<td><input type="text" th:field="*{description}"></td>
+								<td><input type="text" th:field="*{description}" style="width: 90%"></td>
 							</tr>
 							<tr>
 								<td>Емоджи</td>
@@ -177,17 +190,12 @@
 							<tr>
 								<td>Процессор</td>
 								<td>
-									<select th:field="*{targetBeanName}">
-											<option th:each="processor : ${alarmStateChangedEventProcessors}"
-												th:value="${processor.getName()}"
-												th:utext="${processor.getName() + ' - ' + processor.getProcessorDescription()}"
-												th:selected="${processor.getName().equalsIgnoreCase(alarmEvent.targetBeanName)}"/>
-									</select>
+									<div th:replace="templates :: IItemAbstractAlarmProcessor(items=${alarmStateChangedEventProcessors}, chbxName='targetBeanName', selectedName=${alarmEvent.targetBeanName})"></div>
 								</td>
 							</tr>
 							<tr>
 								<td>Параметр</td>
-								<td><input type="text" th:field="*{parameter}"></td>
+								<td><input type="text" th:field="*{parameter}" style="width: 90%"></td>
 							</tr>
 							<tr>
 								<td>Поле цель</td>
@@ -204,13 +212,13 @@
 							<tr>
 								<td>Строка-сообщение</td>
 								<td>
-									<input type="text" th:field="*{stringFormatted}">
+									<input type="text" th:field="*{stringFormatted}"  style="width: 90%">
 								</td>
 							</tr>
 							<tr>
 								<td>Параметры строки-сообщения</td>
 								<td>
-									<input type="text" th:field="*{stringParametersFormatted}">
+									<input type="text" th:field="*{stringParametersFormatted}"  style="width: 90%">
 								</td>
 							</tr>
 							<tr>
@@ -223,6 +231,8 @@
 								<td>
 									<input type="checkbox" th:field="*{disabledIfSameState}">
 								</td>
+							</tr>
+							<tr>
 								<td>Интервал</td>
 								<td>
 									<input type="number" th:field="*{interval}">
