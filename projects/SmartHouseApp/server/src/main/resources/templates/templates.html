@@ -152,6 +152,89 @@
 		</tbody>
 	</table>
 	
+	<div  th:fragment="IEntityFieldDivCalculators(items, field)" 
+		th:each="item : ${items}">
+        <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" th:name="calculators" th:value="${item.name}" 
+            th:text="${item.description + ' ' + item.getParameterDescription()}" 
+            class="custom-control-input"
+            th:checked="${item.name.equals(field.getCalculatorName())}">
+        </div>
+    </div>
+    
+    <div  th:fragment="IItemAbstractSelect(items, chbxName, checkedItemMap)" 
+		th:each="item : ${items}">
+        <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" th:name="${chbxName}" th:value="${item.id}" 
+            th:text="${item.name + ' ' + item.description}" 
+            class="custom-control-input"
+           th:checked="${checkedItemMap.containsKey(item.id)}">
+        </div>
+    </div>
+    
+    <div  th:fragment="IItemAbstractSelectParent(items, chbxName, parentId)" 
+		th:each="item : ${items}">
+        <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" th:name="${chbxName}" th:value="${item.id}" 
+            th:text="${item.name + ' ' + item.description}" 
+            class="custom-control-input"
+           th:checked="${item.id.equals(parentId)}">
+        </div>
+    </div>
+	
+	<div  th:fragment="IEntityFieldDivParent(items, chbxName, parentId)" 
+		th:each="item : ${items}">
+        <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" th:name="${chbxName}" th:value="${item.id}" 
+            th:text="${item.entity.getEmojiDescriptionByDescriptionField() + ' ' + item.description}" 
+            class="custom-control-input"
+            th:checked="${item.id.equals(parentId)}">
+           <!--   <label class="custom-control-label" th:for="${#ids.prev('carModel')}" th:text="${model}">model</label>
+           -->
+        </div>
+     <!-- 
+        <tr th:each="item : ${items}">
+				<td><input type="checkbox" th:name="${chbxName}"
+					th:value="${item.id}" th:checked="${item.id.equals(parentId)}" /></td>
+				<td><label
+					th:text="${item.name}"></label>
+				</td>
+				<td><label
+					th:text="${item.entity.getEmojiDescriptionByDescriptionField()}"></label>
+				</td>
+				<td><label
+					th:text="${item.description}"></label>
+				</td>
+			</tr>
+			 -->
+    </div>
+	
+	<table class="table table-dark table-striped" th:fragment="IEntityFieldTableParent(items, chbxName, parentId)">
+		<thead>
+			<tr>
+				<th></th>
+				<th>Наименование</th>
+				<th>Датчик</th>
+				<th>Описание</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="item : ${items}">
+				<td><input type="checkbox" th:name="${chbxName}"
+					th:value="${item.id}" th:checked="${item.id.equals(parentId)}" /></td>
+				<td><label
+					th:text="${item.name}"></label>
+				</td>
+				<td><label
+					th:text="${item.entity.getEmojiDescriptionByDescriptionField()}"></label>
+				</td>
+				<td><label
+					th:text="${item.description}"></label>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	
 	<table class="table table-dark table-striped" th:fragment="ItemAbstractTableParent(items, chbxName, parentId)">
 		<thead>
 			<tr>

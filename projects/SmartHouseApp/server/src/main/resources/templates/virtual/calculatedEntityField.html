@@ -3,24 +3,10 @@
 
 <head>
 <th:block th:replace="templates :: headImportsUp" ></th:block>
-
 </head>
 
 <body>
-	<header>
-		<div class="main-menu">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-4">
-
-						<h1><a class="navbar-brand" href="listChart" data-0="line-height:90px;" data-300="line-height:50px;">Графики</a></h1>
-					</div>
-
-					<div th:replace="templates :: mainMenuFull"></div>
-				</div>
-			</div>
-		</div>
-	</header>
+	<header th:replace="templates :: MainPageHeader(url=${'listChart'}, text=${'Графики'})"></header>
 
 	<div class="container">
 		<h4 th:text="${pageHeader}"></h4>
@@ -44,37 +30,13 @@
 			</table>
 
 			<h4>Вычислитель значения</h4>
-
-			<table class="table table-dark table-striped">
-				<thead>
-					<tr>
-						<th></th>
-						<th>Наименование</th>
-						<th>Описание</th>
-						<th>Описание Параметра</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="item : ${calculators}">
-						<td><input type="checkbox" th:name="calculators"
-							th:value="${item.name}" th:checked="${item.name.equals(field.getCalculatorName())}" /></td>
-						<td><label
-							th:text="${item.name}"></label>
-						</td>
-						<td><label
-							th:text="${item.description}"></label>
-						</td>
-						<td><label
-							th:text="${item.getParameterDescription()}"></label>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+			
+			<div th:replace="templates :: IEntityFieldDivCalculators(items=${calculators}, field=${field})"></div>
 			
 			<h4>Вычисляемое поле (Цель)</h4>
 			
-			<table th:replace="templates :: IEntityFieldTableParent(items=${targetFields}, chbxName='targetFields', parentId=${targetFieldId})"></table>
-
+			<table th:replace="templates :: IEntityFieldDivParent(items=${targetFields}, chbxName='targetFields', parentId=${targetFieldId})"></table>
+			
 			<h4>Поля - значения (Источник)</h4>
 
 			<table th:replace="devices/templates :: EntityFieldsAbstractTableValues(items=${sourceFields}, chbxName='sourceFields', checkedItemMap=${selectedSourceFields})"></table>
