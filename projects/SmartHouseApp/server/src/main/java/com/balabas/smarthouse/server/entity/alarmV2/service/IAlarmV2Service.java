@@ -125,4 +125,6 @@ public interface IAlarmV2Service {
 
 	List<ChartDataSeries> getAlarmStates(IAlarmV2 alarm, Date date1, Date date2);
 
+	List<ChartDataSeries> getAlarmStatesOrdered(IAlarmV2 alarm, Date date1, Date date2);
+
 }

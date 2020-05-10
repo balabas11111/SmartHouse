@@ -787,14 +787,51 @@ public class AlarmV2Service implements IAlarmV2Service {
 		Map<AlarmState, List<AlarmStateChangeEntity>> map = alarmStateChangeEntityService.getAlarmStateChangeEntitiesForPeriod(alarm.getId(), date1, date2);
 		
 		for(AlarmState state : AlarmState.getList()) {
-			ChartDataSeries ser = new ChartDataSeries(state.getEmojiDescription(), state.getColor());
-			List<AlarmStateChangeEntity> list = map.get(state);
+			if(!AlarmState.ANY.equals(state)) {
+				ChartDataSeries ser = new ChartDataSeries(state.getEmojiDescription(), state.getColor());
+				List<AlarmStateChangeEntity> list = map.get(state);
+				
+				for(AlarmStateChangeEntity entity : list) {
+					ser.addDataPoint(entity.getDateTime().getTime(), state.getValueInt());
+				}
+				
+				result.add(ser);
+			}
+		}
+				
+		
+		return result;
+	}
+	
+	@Override
+	public List<ChartDataSeries> getAlarmStatesOrdered(IAlarmV2 alarm, Date date1, Date date2) {
+		
+		List<ChartDataSeries> result = new ArrayList<ChartDataSeries>();
+		
+		List<AlarmStateChangeEntity> list = alarmStateChangeEntityService.getAlarmStateChangeEntitiesForPeriodList(alarm.getId(), date1, date2);
+
+		AlarmState prevState = null;
+		AlarmState state = null;
+		
+		ChartDataSeries ser = null;
+		
+		for(AlarmStateChangeEntity entity : list) {
+			state = entity.getAlarmState();
 			
-			for(AlarmStateChangeEntity entity : list) {
+			if(!state.equals(prevState) && !AlarmState.ANY.equals(state)) {
+				ser = new ChartDataSeries(state.getEmojiDescription(), state.getColor());
+				if(prevState!=null) {
+					ser.addDataPoint(entity.getDateTime().getTime(), prevState.getValueInt());
+				}
 				ser.addDataPoint(entity.getDateTime().getTime(), state.getValueInt());
+				result.add(ser);
+			} else {
+				if(ser!=null) {
+					ser.addDataPoint(entity.getDateTime().getTime(), state.getValueInt());
+				}
 			}
 			
-			result.add(ser);
+			prevState = state;
 		}
 				
 		

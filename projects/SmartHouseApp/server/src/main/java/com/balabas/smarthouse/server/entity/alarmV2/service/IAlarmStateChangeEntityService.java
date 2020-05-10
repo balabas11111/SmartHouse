@@ -42,17 +42,27 @@ public interface IAlarmStateChangeEntityService {
 		return entity;
 	}
 	
+	default List<AlarmStateChangeEntity> getAlarmStateChangeEntitiesForPeriodList(Long targetId, Date date1, Date date2) {
+		return getAlarmStateChangeEntityRepository().getAlarmStateChangeEntitiesForPeriod(targetId, date1, date2);
+	}
+	
 	default Map<AlarmState, List<AlarmStateChangeEntity>> getAlarmStateChangeEntitiesForPeriod(Long targetId, Date date1, Date date2) {
-		List<AlarmStateChangeEntity> entities = getAlarmStateChangeEntityRepository().getAlarmStateChangeEntitiesForPeriod(targetId, date1, date2);
-		
 		Map<AlarmState, List<AlarmStateChangeEntity>> result = new HashMap<AlarmState, List<AlarmStateChangeEntity>>();
 		
-		for(AlarmStateChangeEntity entity : entities) {
+		for(AlarmStateChangeEntity entity : getAlarmStateChangeEntitiesForPeriodList(targetId, date1, date2)) {
 			if(!result.containsKey(entity.getAlarmState())) {
 				result.put(entity.getAlarmState(), new ArrayList<>());
 			}
 			
 			result.get(entity.getAlarmState()).add(entity);
+		}
+		
+		for(AlarmState state : AlarmState.getList()) {
+			if(!AlarmState.ANY.equals(state)) {
+				if(!result.containsKey(state)) {
+					result.put(state, new ArrayList<>());
+				}
+			}
 		}
 		
 		return result;

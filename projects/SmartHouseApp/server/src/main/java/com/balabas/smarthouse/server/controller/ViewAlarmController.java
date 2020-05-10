@@ -168,7 +168,8 @@ public class ViewAlarmController {
 		Date date1 = new Date(afterDate);
 		Date date2 = new Date(beforeDate);
 		
-		List<ChartDataSeries> charts = alarmService.getAlarmStates(alarm,date1, date2);
+		List<ChartDataSeries> charts = alarmService.getAlarmStatesOrdered(alarm,date1, date2);
+		List<AlarmV2Checker> checkers = alarmService.getCheckersByTargetItemClass(alarm.getTargetItemClass());
 		
 		String chartData = (new ObjectMapper()).writeValueAsString(charts);
 		String chartYLabel = "Тревоги";
@@ -178,6 +179,9 @@ public class ViewAlarmController {
 		model.addAttribute(ATTR_CHART_DATA, chartData);
 		
 		model.addAttribute("alarm", alarm);
+		model.addAttribute("currentCheckerName", alarm.getCheckerName());
+		model.addAttribute("targets", alarmService.getEnabledAlarmAbstractTargets(alarm));
+		model.addAttribute("checkers", checkers);
 		
 		return "alarms/viewAlarm.html";
 	}
