@@ -75,6 +75,11 @@ public class ViewDeviceController {
 		return "redirect:/manage";
 	}
 	
+	@GetMapping("/virtual/index")
+	public String getManagePageRedirect3(Model model) {
+		return "redirect:/index";
+	}
+	
 	@GetMapping("/manage")
 	public String getManagePage(Model model) {
 		model.addAttribute(ATTR_SERVER_NAME, serverName);
