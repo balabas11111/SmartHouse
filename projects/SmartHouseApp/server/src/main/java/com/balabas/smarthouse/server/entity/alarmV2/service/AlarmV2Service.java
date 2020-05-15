@@ -50,6 +50,7 @@ import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.service.IActionTimerService;
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
+import com.balabas.smarthouse.server.view.chart.ChartDataPoint;
 import com.balabas.smarthouse.server.view.chart.ChartDataSeries;
 import com.google.common.collect.Lists;
 
@@ -83,7 +84,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Autowired
 	IActionTimerService actionTimerService;
-	
+
 	@Autowired
 	IPostponedExecutorManager postponedManager;
 
@@ -201,7 +202,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 			alarm.setItem(item);
 			events.addAll(checkForAlarm(alarm));
 		});
-		
+
 		processEvents(events, false);
 
 		return events;
@@ -221,52 +222,52 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 		return buildEvent(alarm, false);
 	}
-	
+
 	private void processEvents(Collection<IItemEvent> events, boolean now) {
-		if(events!=null) {
-			for(IItemEvent event : events) {
+		if (events != null) {
+			for (IItemEvent event : events) {
 				processEvent(event, now);
 			}
 		}
 	}
 
 	private void processEvent(IItemEvent event, boolean now) {
-		
-		if(!now) {
+
+		if (!now) {
 			now = !event.getAlarm().isPostponed();
 		}
-		
-		if(!now) {
+
+		if (!now) {
 			postponedManager.postponeExecution(event.getAlarm());
 			return;
 		}
-		
+
 		IAlarmStateChangeEventProcessor processor = alarmTypeProvider.getAlarmStateChangedEventProcessor(event);
 
 		try {
 			if (processor != null && processor.isTarget(event)) {
-				Long targetFieldId = event.getChangeAction().getTargetFieldId(); 
-				if(targetFieldId!=null) {
+				Long targetFieldId = event.getChangeAction().getTargetFieldId();
+				if (targetFieldId != null) {
 					event.getChangeAction().setTargetField(deviceService.getEntityFieldById(targetFieldId));
 				}
-				
+
 				boolean doProcess = false;
 				boolean ssd = false;
 				boolean sameState = false;
-				
-				if(event.getChangeAction()!=null) {
-					
+
+				if (event.getChangeAction() != null) {
+
 					ssd = Boolean.TRUE.equals(event.getChangeAction().isDisabledIfSameState());
 					sameState = event.isSameState();
-					
+
 					doProcess = ssd ? !sameState : true;
 				}
-				
-				if(doProcess) {
+
+				if (doProcess) {
 					processor.process(event);
 				}
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -387,7 +388,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 		return result;
 	}
-	
+
 	@Override
 	public Map<String, List<IAlarmV2>> getAlarmsGrouppedByItemTypeWithAlarmDescriptions() {
 		Map<String, List<IAlarmV2>> result = getAlarmsGrouppedBy(alarm -> alarm.getItemType().name());
@@ -515,7 +516,7 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 		return stream.collect(Collectors.toSet());
 	}
-	
+
 	@Override
 	public Set<IItemAbstract> getEnabledAlarmTargets(ItemType itemType) {
 
@@ -535,8 +536,8 @@ public class AlarmV2Service implements IAlarmV2Service {
 			stream = Stream.empty();
 		}
 
-		return stream.sorted((i1,i2) -> i1.getFullName().compareToIgnoreCase(i2.getFullName()))
-				.collect(Collectors.toCollection( LinkedHashSet::new ));
+		return stream.sorted((i1, i2) -> i1.getFullName().compareToIgnoreCase(i2.getFullName()))
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	@Override
@@ -625,15 +626,15 @@ public class AlarmV2Service implements IAlarmV2Service {
 		}
 		return getAlarmOrDefault(id, newAlarm(it));
 	}
-	
+
 	@Override
 	public Map<ItemType, String> getItemMapNames() {
-		Map<ItemType, String> result =new LinkedHashMap<ItemType, String>();
-		
+		Map<ItemType, String> result = new LinkedHashMap<ItemType, String>();
+
 		for (ItemType type : ItemType.ITEM_TYPES_ORDERED) {
 			result.put(type, type.getDescription());
 		}
-		
+
 		return result;
 	}
 
@@ -653,12 +654,12 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 		return result;
 	}
-	
+
 	@Override
 	public List<IAlarmV2> getAlarmsWithItemChildren(IItemAbstract item) {
 		return getAlarms(item.getItemAndAllChildren());
 	}
-	
+
 	@Override
 	public List<IAlarmV2> getAlarms(List<IItemAbstract> items) {
 		List<IAlarmV2> alarms = new ArrayList<>();
@@ -679,19 +680,22 @@ public class AlarmV2Service implements IAlarmV2Service {
 	public Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(AlarmState maxState, boolean only) {
 		return getAlarmsAsMap(getAllAlarms(), maxState, only);
 	}
-	
+
 	@Override
-	public Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(IItemAbstract item, AlarmState maxState, boolean only) {
+	public Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(IItemAbstract item, AlarmState maxState,
+			boolean only) {
 		return getAlarmsAsMap(getAlarmsWithItemChildren(item), maxState, only);
 	}
-	
+
 	@Override
-	public Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(Long itemId, ItemType itemType, AlarmState maxState, boolean only) {
-		return getAlarmsAsMap(getAlarmsWithItemChildren(itemId,  itemType), maxState, only);
+	public Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(Long itemId, ItemType itemType,
+			AlarmState maxState, boolean only) {
+		return getAlarmsAsMap(getAlarmsWithItemChildren(itemId, itemType), maxState, only);
 	}
-	
+
 	@Override
-	public Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(List<IAlarmV2> alarmList, AlarmState maxState, boolean only) {
+	public Map<ItemType, Map<AlarmState, List<IAlarmV2>>> getAlarmsAsMap(List<IAlarmV2> alarmList, AlarmState maxState,
+			boolean only) {
 		Map<ItemType, Map<AlarmState, List<IAlarmV2>>> result = new LinkedHashMap<ItemType, Map<AlarmState, List<IAlarmV2>>>();
 
 		for (ItemType type : ItemType.ITEM_TYPES_ORDERED) {
@@ -699,22 +703,22 @@ public class AlarmV2Service implements IAlarmV2Service {
 			Map<AlarmState, List<IAlarmV2>> stateMap = result.get(type);
 
 			for (AlarmState state : AlarmState.ALARM_STATE_ORDER) {
-				if(only) {
-					if(!state.equals(maxState)) {
+				if (only) {
+					if (!state.equals(maxState)) {
 						continue;
 					}
 				}
 				stateMap.put(state, Lists.newArrayList());
-				if(maxState!=null && state.equals(maxState)) {
+				if (maxState != null && state.equals(maxState)) {
 					break;
 				}
 			}
 		}
 
-		for(IAlarmV2 alarm : alarmList) {
-			if(result.containsKey(alarm.getItemType())) {
+		for (IAlarmV2 alarm : alarmList) {
+			if (result.containsKey(alarm.getItemType())) {
 				Map<AlarmState, List<IAlarmV2>> stateMap = result.get(alarm.getItemType());
-				if(stateMap.containsKey(alarm.getAlarmState())) {
+				if (stateMap.containsKey(alarm.getAlarmState())) {
 					result.get(alarm.getItemType()).get(alarm.getAlarmState()).add(alarm);
 				}
 			}
@@ -722,20 +726,22 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 		for (ItemType type : ItemType.ITEM_TYPES_ORDERED) {
 			for (AlarmState state : AlarmState.ALARM_STATE_ORDER) {
-				if(only) {
-					if(!state.equals(maxState)) {
+				if (only) {
+					if (!state.equals(maxState)) {
 						continue;
 					}
 				}
-				Map<AlarmState, List<IAlarmV2>> stateMap =result.get(type);
-				
-				List<IAlarmV2> list = stateMap.get(state).stream().sorted((al1, al2)->al1.getDescription().compareTo(al2.getDescription())).collect(Collectors.toList());
-				if(list.size()>0) {
+				Map<AlarmState, List<IAlarmV2>> stateMap = result.get(type);
+
+				List<IAlarmV2> list = stateMap.get(state).stream()
+						.sorted((al1, al2) -> al1.getDescription().compareTo(al2.getDescription()))
+						.collect(Collectors.toList());
+				if (list.size() > 0) {
 					stateMap.put(state, list);
 				} else {
 					stateMap.remove(state);
 				}
-				if(maxState!=null && state.equals(maxState)) {
+				if (maxState != null && state.equals(maxState)) {
 					break;
 				}
 			}
@@ -745,22 +751,22 @@ public class AlarmV2Service implements IAlarmV2Service {
 
 	@Override
 	public String getAlarmsIconsString(AlarmState state, boolean only) {
-		if(state==null) {
+		if (state == null) {
 			state = AlarmState.NO_DATA;
 		}
-		if(only) {
+		if (only) {
 			return state.getEmojiDescription();
 		}
 		StringBuffer buf = new StringBuffer();
 
-		for(AlarmState st : AlarmState.ALARM_STATE_ORDER) {
+		for (AlarmState st : AlarmState.ALARM_STATE_ORDER) {
 			buf.append(st.getEmojiDescription());
 			buf.append(";  ");
-			if(state!=null && st.equals(state)) {
+			if (state != null && st.equals(state)) {
 				break;
 			}
 		}
-		
+
 		return buf.toString();
 	}
 
@@ -777,64 +783,123 @@ public class AlarmV2Service implements IAlarmV2Service {
 	@Override
 	public IAlarmV2 getAlarm(Long id) {
 		return getAlarmsByFilter(al -> al.getId().equals(id)).stream().findFirst().orElse(null);
-		
+
 	}
 
 	@Override
 	public List<ChartDataSeries> getAlarmStates(IAlarmV2 alarm, Date date1, Date date2) {
-		
+
 		List<ChartDataSeries> result = new ArrayList<ChartDataSeries>();
-		Map<AlarmState, List<AlarmStateChangeEntity>> map = alarmStateChangeEntityService.getAlarmStateChangeEntitiesForPeriod(alarm.getId(), date1, date2);
-		
-		for(AlarmState state : AlarmState.getList()) {
-			if(!AlarmState.ANY.equals(state)) {
+		Map<AlarmState, List<AlarmStateChangeEntity>> map = alarmStateChangeEntityService
+				.getAlarmStateChangeEntitiesForPeriod(alarm.getId(), date1, date2);
+
+		for (AlarmState state : AlarmState.getList()) {
+			if (!AlarmState.ANY.equals(state)) {
 				ChartDataSeries ser = new ChartDataSeries(state.getEmojiDescription(), state.getColor());
 				List<AlarmStateChangeEntity> list = map.get(state);
-				
-				for(AlarmStateChangeEntity entity : list) {
+
+				for (AlarmStateChangeEntity entity : list) {
 					ser.addDataPoint(entity.getDateTime().getTime(), state.getValueInt());
 				}
-				
+
 				result.add(ser);
 			}
 		}
-				
-		
+
 		return result;
 	}
-	
+
 	@Override
 	public List<ChartDataSeries> getAlarmStatesOrdered(IAlarmV2 alarm, Date date1, Date date2) {
-		
+
 		List<ChartDataSeries> result = new ArrayList<ChartDataSeries>();
-		
-		List<AlarmStateChangeEntity> list = alarmStateChangeEntityService.getAlarmStateChangeEntitiesForPeriodList(alarm.getId(), date1, date2);
+
+		List<AlarmStateChangeEntity> list = alarmStateChangeEntityService
+				.getAlarmStateChangeEntitiesForPeriodList(alarm.getId(), date1, date2);
 
 		AlarmState prevState = null;
 		AlarmState state = null;
-		
+
 		ChartDataSeries ser = null;
-		
-		for(AlarmStateChangeEntity entity : list) {
+
+		for (AlarmStateChangeEntity entity : list) {
 			state = entity.getAlarmState();
-			
-			if(!state.equals(prevState) && !AlarmState.ANY.equals(state)) {
-				ser = new ChartDataSeries(state.getEmojiDescription(), state.getColor());
-				if(prevState!=null) {
+
+			if (!state.equals(prevState) && !AlarmState.ANY.equals(state)) {
+				if (prevState != null && ser != null) {
 					ser.addDataPoint(entity.getDateTime().getTime(), prevState.getValueInt());
 				}
+				ser = new ChartDataSeries(state.getEmojiDescription(), state.getColor());
 				ser.addDataPoint(entity.getDateTime().getTime(), state.getValueInt());
 				result.add(ser);
 			} else {
-				if(ser!=null) {
+				if (ser != null) {
 					ser.addDataPoint(entity.getDateTime().getTime(), state.getValueInt());
 				}
 			}
-			
+
 			prevState = state;
 		}
-				
-		
+
+		if (result.size() > 0) {
+			ChartDataSeries firstSeries = result.get(0);
+			ChartDataSeries lastSeries = result.get(result.size() - 1);
+
+			List<ChartDataPoint> dataFirst = firstSeries.getData();
+			List<ChartDataPoint> dataLast = lastSeries.getData();
+
+			if (dataFirst != null && !dataFirst.isEmpty()) {
+				ChartDataPoint firstPoint = dataFirst.get(0);
+
+				dataFirst.add(0, new ChartDataPoint(date1.getTime() + 10, firstPoint.getY()));
+			}
+
+			if (dataLast != null && !dataLast.isEmpty()) {
+				ChartDataPoint lastPoint = dataLast.get(dataLast.size() - 1);
+
+				dataLast.add(new ChartDataPoint(date2.getTime(), lastPoint.getY()));
+			}
+
+			for (ChartDataSeries chart : result) {
+				if (chart.getData() != null && chart.getData().size() > 2) {
+					List<ChartDataPoint> reducedPoints = new ArrayList<ChartDataPoint>();
+					reducedPoints.add(chart.getData().get(0));
+					reducedPoints.add(chart.getData().get(chart.getData().size() - 1));
+
+					chart.setData(reducedPoints);
+				}
+			}
+
+			int removed = 0;
+			int squashed = 0;
+
+			for (int i = result.size() - 1; i >= 0; i--) {
+				ChartDataSeries chart = result.get(i);
+
+				List<ChartDataPoint> data = chart.getData();
+				if (data.size() == 2 && Math.abs(data.get(1).getT() - data.get(0).getT()) < 1000) {
+					result.remove(i);
+					removed++;
+				}
+			}
+
+			if (result.size() > 2) {
+				for (int i = result.size() - 1; i >= 1; i--) {
+					ChartDataSeries chart = result.get(i);
+					ChartDataSeries chartPrev = result.get(i - 1);
+
+					if (chartPrev.getData().get(1).getY() == chart.getData().get(1).getY()) {
+						chartPrev.getData().get(1).setT(chart.getData().get(1).getT());
+
+						result.remove(i);
+						squashed++;
+					}
+				}
+			}
+
+			log.debug("removed = " + removed + " squashed=" + squashed);
+		}
+
 		return result;
 	}
 

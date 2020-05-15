@@ -1,9 +1,5 @@
 package com.balabas.smarthouse.server.entity.alarmV2.checker;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,13 +10,8 @@ import com.balabas.smarthouse.server.entity.alarmV2.AlarmV2CheckerAbstractEntity
 import com.balabas.smarthouse.server.entity.alarmV2.model.AlarmState;
 import com.balabas.smarthouse.server.entity.alarmV2.model.IAlarmV2;
 import com.balabas.smarthouse.server.entity.alarmV2.service.IItemAlarmStateService;
-import com.balabas.smarthouse.server.entity.model.ItemAbstractDto;
-import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
-import com.balabas.smarthouse.server.entity.model.entityfields.IEntityFieldValue;
 import com.balabas.smarthouse.server.entity.service.IEntityFieldService;
-import com.balabas.smarthouse.server.util.DateTimeUtil;
-import com.balabas.smarthouse.server.util.MathUtil;
 
 import lombok.Getter;
 
@@ -30,8 +21,6 @@ public class AlarmV2CheckerEntityFieldIntegerSelectedValue extends AlarmV2Checke
 
 	@Getter
 	private final String checkerDescription = AlarmConstants.CHECKER_DESCRIPTION_ENTITY_FIELD_INT_VALUE;
-
-	private static final Long DEFAULT_TIME = 120000L;
 
 	@Autowired
 	IEntityFieldService entityFieldService;
@@ -46,7 +35,7 @@ public class AlarmV2CheckerEntityFieldIntegerSelectedValue extends AlarmV2Checke
 
 		int val = entityField.getValueAsFloat().intValue();
 
-		String param = alarm.getParameter();
+		//String param = alarm.getParameter();
 		JSONObject obj = null;
 
 		try {

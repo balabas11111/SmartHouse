@@ -155,6 +155,7 @@ public class ViewAlarmController {
 			@RequestParam(name = ATTR_DATE_AFTER, required = false) Long afterDate,
 			@RequestParam(name = ATTR_DATE_BEFORE, required = false) Long beforeDate, Model model) throws JsonProcessingException {
 		
+		boolean defaultEndDate = false;
 		IAlarmV2 alarm = alarmService.getAlarm(id);
 		
 		if(afterDate == null) {
@@ -163,6 +164,7 @@ public class ViewAlarmController {
 		
 		if(beforeDate == null) {
 			beforeDate = DateTimeUtil.now();
+			defaultEndDate = true;
 		}
 		
 		Date date1 = new Date(afterDate);
@@ -172,11 +174,16 @@ public class ViewAlarmController {
 		List<AlarmV2Checker> checkers = alarmService.getCheckersByTargetItemClass(alarm.getTargetItemClass());
 		
 		String chartData = (new ObjectMapper()).writeValueAsString(charts);
-		String chartYLabel = "Тревоги";
+		String chartYLabel = "Тревоги по времени";
 		
 		model.addAttribute("legendPosition", legendPosition);
 		model.addAttribute(ATTR_CHART_DATA_Y, chartYLabel);
 		model.addAttribute(ATTR_CHART_DATA, chartData);
+		
+		model.addAttribute(ATTR_DATE_AFTER, afterDate);
+		if(!defaultEndDate) {
+			model.addAttribute(ATTR_DATE_BEFORE, beforeDate);
+		}
 		
 		model.addAttribute("alarm", alarm);
 		model.addAttribute("currentCheckerName", alarm.getCheckerName());
