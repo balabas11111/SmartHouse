@@ -2,15 +2,20 @@ package com.balabas.smarthouse.server.zzz.mock;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.balabas.smarthouse.server.controller.ControllerConstants;
 import com.balabas.smarthouse.server.entity.model.entityfields.EntityFieldBoolean;
@@ -48,6 +54,42 @@ public class MockedDeviceController {
 	boolean doAlert = false;
 
 	boolean doChange = false;
+	
+	private static List<String> mockedFiles = new ArrayList<String>();
+	private static List<Long> mockedSize = new ArrayList<Long>();
+	
+	private static String getFilesAsJson() {
+		initFiles();
+		JSONObject root = new JSONObject("{\"files\":{\"files\":[],\"size\":[]}}");
+		
+		JSONObject files = root.getJSONObject("files");
+		
+		JSONArray filesa = files.getJSONArray("files");
+		JSONArray sizea = files.getJSONArray("size");
+		
+		for(String mockedFile : mockedFiles) {
+			filesa.put(mockedFile);
+		}
+		
+		for(Long mockedSize : mockedSize) {
+			sizea.put(mockedSize);
+		}
+		
+		String result = root.toString();
+		
+		return result;
+	}
+	
+	private static void initFiles() {
+		if(mockedFiles.size()==0) {
+			addFile("txt/fileName.txt", 123);
+		}
+	}
+	
+	private static void addFile(String fileName, long size) {
+		mockedFiles.add(fileName);
+		mockedSize.add(size);
+	}
 
 	@GetMapping("/alert")
 	public void doAlert(@RequestParam(value = "doAlert") boolean alert) throws IOException {
@@ -71,7 +113,44 @@ public class MockedDeviceController {
 	
 	@GetMapping("/dir")
 	public ResponseEntity<String> getFiles() {
-		String res = "{\"files\":{\"files\":[\"txt/fileName.txt\"],\"size\":[123]}}";
+		String res = getFilesAsJson();
+		return ResponseEntity.ok().body(res); 
+	}
+	
+	@PostMapping("/files")
+	public ResponseEntity<String> postFiles(
+			@RequestParam(name="file", required = false) MultipartFile file,
+			@RequestParam(name="uploadfile", required = false) MultipartFile uploadFile,
+			@RequestParam(name="filename", required=false) String fileName,
+			@ModelAttribute(name="uploadfile") String uploadFileStr,
+			@ModelAttribute(name="filename") String fileNameStr) {
+		
+		if(uploadFileStr!=null) {
+			int pos = uploadFileStr.lastIndexOf("=");
+			
+			addFile(uploadFileStr.substring(pos + 1), 12312);
+		}
+		
+		String res = "ok";
+		return ResponseEntity.ok().body(res); 
+	}
+	
+	@DeleteMapping("/files")
+	public ResponseEntity<String> deleteFiles(
+			@RequestParam(name="fileName", required = false) String file,
+			@ModelAttribute(name="fileName") String fileName,
+			@ModelAttribute(name="filename") String fileNameStr) {
+		
+		for(int i = 0; i<mockedFiles.size(); i++ ) {
+			if(fileNameStr!=null && fileNameStr.equals(mockedFiles.get(i))) {
+				
+				mockedFiles.remove(i);
+				mockedSize.remove(i);
+				break;
+			}
+		}
+		
+		String res = "ok";
 		return ResponseEntity.ok().body(res); 
 	}
 
