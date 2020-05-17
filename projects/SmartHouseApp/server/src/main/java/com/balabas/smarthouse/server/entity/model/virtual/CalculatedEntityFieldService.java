@@ -1,7 +1,6 @@
 package com.balabas.smarthouse.server.entity.model.virtual;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,6 @@ import com.balabas.smarthouse.server.entity.repository.ICalculatedEntityFieldRep
 import com.balabas.smarthouse.server.entity.service.IDeviceManageService;
 import com.balabas.smarthouse.server.entity.service.IEntityFieldService;
 import com.balabas.smarthouse.server.exception.BadValueException;
-import com.balabas.smarthouse.server.util.DateTimeUtil;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;

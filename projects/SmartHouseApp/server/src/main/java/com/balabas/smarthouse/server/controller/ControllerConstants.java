@@ -32,6 +32,7 @@ public class ControllerConstants {
 	public static final String ATTR_PAGE_URL = "pageUrl";
 	public static final String ATTR_PAGE_DATETIME = "dateTime";
 	
+	public static final String ATTR_DEVICE = "device";
 	public static final String ATTR_DEVICES = "devices";
 	public static final String ATTR_VIRTUAL = "virtual";
 	

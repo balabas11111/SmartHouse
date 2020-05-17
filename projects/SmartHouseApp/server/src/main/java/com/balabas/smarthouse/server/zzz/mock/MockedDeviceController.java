@@ -68,6 +68,12 @@ public class MockedDeviceController {
 
 		return "redirect:/manage";
 	}
+	
+	@GetMapping("/dir")
+	public ResponseEntity<String> getFiles() {
+		String res = "{\"files\":{\"files\":[\"txt/fileName.txt\"],\"size\":[123]}}";
+		return ResponseEntity.ok().body(res); 
+	}
 
 	@SuppressWarnings("rawtypes")
 	@GetMapping("/mock_{deviceId}")

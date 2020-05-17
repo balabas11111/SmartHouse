@@ -56,42 +56,11 @@
 					th:text="${device.getEmojiDescriptionByDescriptionField()}"
 					class="btn btn-default">&#x1F4DD;Просмотр</a></td>
 				<td>
-					<div class="dropdown">
-						<button class="btn btn-default dropdown-toggle" type="button"
-							data-toggle="dropdown">
-							&#x2699; Админ <span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu">
-							<li><a th:href="@{~/device?id={id}(id=${device.id})}"
-								class="btn btn-default">&#x1F4DD;Просмотр</a></li>
-							<li><button type="button" class="btn btn-default"
-									data-toggle="modal"
-									th:attr="data-target='#deleteModal' + ${device.id}">&#x274C;Удалить</button></li>
-						</ul>
-					</div>
+					<th:block
+							th:replace="devices/templates :: DeviceMenuVirtual(device=${device})"></th:block>
 
-					<div class="modal fade" th:id="'deleteModal' + ${device.id}">
-						<div class="modal-dialog">
-							<div class="modal-content">
-
-								<!-- Modal Header -->
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal">&times;</button>
-									<h4 class="modal-title"
-										th:text="'Действительно удалить ?    ' + ${device.description}">
-										Действительно удалить ?</h4>
-								</div>
-
-								<!-- Modal footer -->
-								<div class="modal-footer">
-									<a th:href="@{~/deleteDevice_{id}(id=${device.id})}"
-										class="btn btn-success">Удалить</a>
-									<button type="button" class="btn btn-danger"
-										data-dismiss="modal">Отменить</button>
-								</div>
-							</div>
-						</div>
-					</div>
+					<th:block
+							th:replace="devices/templates :: DeviceDeleteModal(device=${device})"></th:block>
 
 				</td>
 			</tr>
@@ -153,6 +122,14 @@
 		</td>
 	</th:block>
 
+	<th:block th:fragment="RP5ruWidget(id)">
+		<div>
+			<a href="https://rp5.ua/509938/ua">
+				<img border=0 width=100 height=100 src="https://rp5.ua/informer/100x100x2.php?f=1&id=509938&lang=ua&um=00000">
+			</a>
+		</div>
+	</th:block>
+
 	<th:block th:fragment="EntityAction(device, entityAction)">
 		<td><a
 			th:href="@{~/executeAction_{deviceId}_{entityId}_{action}_{entityFieldId}_(deviceId=${device.id},entityId=${entityAction.getTargetId()},action=${entityAction.getData()},entityFieldId=${entityAction.getTargetId2()})}"
@@ -180,20 +157,8 @@
 							th:replace="templates :: AlarmState(alarms=${holder.getAlarms()}, item=${device})"></div>
 					</td>
 					<td th:if="${!device.isVirtualized()}">
-						<div class="dropdown">
-							<button class="btn btn-default dropdown-toggle" type="button"
-								data-toggle="dropdown">
-								&#x2699; Админ <span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu">
-								<li><a th:href="@{http://{addr}/info(addr=${device.ip})}"
-									class="btn">&#x2139; Информация</a></li>
-								<li><a th:href="@{http://{addr}/data(addr=${device.ip})}"
-									class="btn">&#x1F4DA; Данные</a></li>
-								<li><a th:href="@{http://{addr}/update(addr=${device.ip})}"
-									class="btn">&#x1F4F2; Прошивка</a></li>
-							</ul>
-						</div>
+						<th:block
+							th:replace="devices/templates :: DeviceMenu(device=${device})"></th:block>
 					</td>
 					<th>Время устр.</th>
 					<td th:text="${device.getDeviceLastUpdateTimeStr()}">время
@@ -235,47 +200,71 @@
 				</td>
 				<td th:text="${device.ip}">IP</td>
 				<td>
-					<div class="dropdown">
-						<button class="btn btn-default dropdown-toggle" type="button"
-							data-toggle="dropdown">
-							&#x2699; Админ <span class="caret"></span>
-						</button>
-						<ul class="dropdown-menu">
-							<li><a th:href="@{~/device?id={id}(id=${device.id})}"
-								class="btn btn-default">&#x1F4DD;Просмотр</a></li>
-							<li><button type="button" class="btn btn-default"
-									data-toggle="modal"
-									th:attr="data-target='#deleteModal' + ${device.id}">&#x274C;Удалить</button></li>
-						</ul>
-					</div>
+					<th:block
+							th:replace="devices/templates :: DeviceMenu(device=${device})"></th:block>
 
-					<div class="modal fade" th:id="'deleteModal' + ${device.id}">
-						<div class="modal-dialog">
-							<div class="modal-content">
-
-								<!-- Modal Header -->
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal">&times;</button>
-									<h4 class="modal-title"
-										th:text="'Действительно удалить ?    ' + ${device.description}">
-										Действительно удалить ?</h4>
-								</div>
-
-								<!-- Modal footer -->
-								<div class="modal-footer">
-									<a th:href="@{~/deleteDevice_{id}(id=${device.id})}"
-										class="btn btn-success">Удалить</a>
-									<button type="button" class="btn btn-danger"
-										data-dismiss="modal">Отменить</button>
-								</div>
-							</div>
-						</div>
-					</div>
-
+					<th:block
+							th:replace="devices/templates :: DeviceDeleteModal(device=${device})"></th:block>
 				</td>
 			</tr>
 		</tbody>
 	</table>
+	
+	<div class="dropdown" th:fragment="DeviceMenu(device)">
+		<button class="btn btn-default dropdown-toggle" type="button"
+			data-toggle="dropdown">
+			&#x2699; Админ <span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu">
+			<li><a th:href="@{~/device?id={id}(id=${device.id})}"
+				class="btn btn-default">&#x1F4DD;Просмотр</a></li>
+			<li><a th:href="@{http://{addr}/data(addr=${device.ip})}"
+					class="btn">&#x1F4DA; Данные</a></li>
+			<li><a th:href="@{~/fileManager?id={id}(id=${device.id})}"
+					class="btn">&#x1F4DA; Файлы</a></li>		
+			<li><button type="button" class="btn btn-default"
+					data-toggle="modal"
+					th:attr="data-target='#deleteModal' + ${device.id}">&#x274C;Удалить</button></li>
+		</ul>
+	</div>
+	
+	<div class="dropdown" th:fragment="DeviceMenuVirtual(device)">
+		<button class="btn btn-default dropdown-toggle" type="button"
+			data-toggle="dropdown">
+			&#x2699; Админ <span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu">
+			<li><a th:href="@{~/device?id={id}(id=${device.id})}"
+				class="btn btn-default">&#x1F4DD;Просмотр</a></li>
+			<li><button type="button" class="btn btn-default"
+					data-toggle="modal"
+					th:attr="data-target='#deleteModal' + ${device.id}">&#x274C;Удалить</button></li>
+		</ul>
+	</div>
+	
+	<div class="modal fade" th:id="'deleteModal' + ${device.id}" th:fragment="DeviceDeleteModal(device)">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title"
+						th:text="'Действительно удалить ?    ' + ${device.description}">
+						Действительно удалить ?</h4>
+				</div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<a th:href="@{~/deleteDevice_{id}(id=${device.id})}"
+						class="btn btn-success">Удалить</a>
+					<button type="button" class="btn btn-danger"
+						data-dismiss="modal">Отменить</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 
 	<table class="table table-dark table-striped"
 		th:fragment="EntityFieldsAbstractTable(items, chbxName, checkedItemMap)">

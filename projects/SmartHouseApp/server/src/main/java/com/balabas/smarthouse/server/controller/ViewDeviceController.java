@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.balabas.smarthouse.server.device.DeviceFile;
+import com.balabas.smarthouse.server.device.DeviceFileManager;
 import com.balabas.smarthouse.server.entity.model.Device;
 import com.balabas.smarthouse.server.entity.model.IDevice;
 import com.balabas.smarthouse.server.entity.model.virtual.IVirtualEntityService;
@@ -18,7 +20,9 @@ import com.balabas.smarthouse.server.service.IServerManageService;
 import com.balabas.smarthouse.server.util.DateTimeUtil;
 import com.balabas.smarthouse.server.view.DeviceEntityFieldActionHolder;
 
+import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import static com.balabas.smarthouse.server.controller.ControllerConstants.ATTR_SERVER_NAME;
 import static com.balabas.smarthouse.server.controller.ControllerConstants.URL_REDIRECT_PREFFIX;
@@ -52,7 +56,10 @@ public class ViewDeviceController {
 	
 	@Autowired
 	private IServerManageService serverManageService;
-
+	
+	@Autowired
+	private DeviceFileManager fileManager;
+	
 	@GetMapping("/")
 	public String getRoot(Model model) {
 		return URL_REDIRECT_PREFFIX + DEVICES_ROOT;
@@ -156,6 +163,38 @@ public class ViewDeviceController {
 
 		return "redirect:/device?id=" + Long.toString(deviceId);
 
+	}
+	
+	@GetMapping("/fileManager")
+	public String getDeviceFiles(@RequestParam(name="id") Long id, Model model) {
+		
+		IDevice device = deviceService.getDeviceById(id);
+		
+		List<DeviceFile> files = fileManager.getDeviceFiles(device);
+		
+		DeviceEntityFieldActionHolder holder = deviceService.getValueActionHolder(device.getId());
+		
+		model.addAttribute("device", device);
+		model.addAttribute("holder", holder);
+		model.addAttribute("files", files);
+		
+		return "devices/deviceFiles.html";
+	}
+	
+	@PostMapping("/fileManager")
+	public String postDeviceFiles(@RequestParam(name="id") Long id, @RequestParam(name="fileName") String fileName, Model model) throws IOException {
+		
+		fileManager.postFile(deviceService.getDeviceById(id), fileManager.getFromStorage(fileName), fileName);		
+		return "redirect:/fileManager?id="+id;
+	}
+	
+	@GetMapping("/deleteManager")
+	public String deleteDeviceFiles(@RequestParam(name="id") Long id, @RequestParam(name="fileName") String fileName, Model model) {
+		
+		IDevice device = deviceService.getDeviceById(id);
+		fileManager.deleteFile(device, fileName);
+		
+		return "redirect:/fileManager?id="+id;
 	}
 
 	@GetMapping("/settings")

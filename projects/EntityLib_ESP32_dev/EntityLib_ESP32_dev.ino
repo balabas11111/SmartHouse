@@ -13,6 +13,11 @@
 #include "WS2811Led.h"
 #include "serve/AlarmManager.h"
 
+//#define SETTINGS_DISPLAY_ENABLED
+//#define SETTINGS_ENTITIES_PERSISTANCE_ENABLED
+
+//#define SENSORS_MOCKED 0
+
 #define NAME_PUMP_GREB "Насос гребенка"
 #define NAME_PUMP_KOSV "Насос косвенник"
 #define NAME_PUMP_HEATER "Насос котел"

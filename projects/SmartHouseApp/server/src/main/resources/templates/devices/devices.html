@@ -16,11 +16,8 @@
 			
 			<div th:replace="devices/templates :: DevicesTable(virtual=${virtual}, devices=${devices})"></div>
 			
-			<div class="container">
-				<a href="https://rp5.ua/509938/ua">
-					<img border=0 width=100 height=100 src="https://rp5.ua/informer/100x100x2.php?f=1&id=509938&lang=ua&um=00000">
-				</a>
-			</div>
+			<th:block th:replace="devices/templates :: RP5ruWidget(id=${'509938'})"></th:block>
+			
 		</div>	
 	</div>
 	<!-- end column content -->
