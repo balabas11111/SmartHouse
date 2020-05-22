@@ -14,7 +14,7 @@ import static com.balabas.smarthouse.server.DeviceMessageConstants.buildMessage;
 import java.util.function.Consumer;
 
 import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_RECONNECTED;
-//import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_INITIALIZED;
+import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_INITIALIZED;
 import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_DISCONNECTED;
 import static com.balabas.smarthouse.server.DeviceMessageConstants.MSG_DEVICE_BACK_FROM_DISCONNECT;
 
@@ -24,8 +24,14 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class DeviceStateChangeService implements IDeviceStateChangeService {
 
-	@Value("${smarthouse.server.send.devicereconnect:true}")
+	@Value("${smarthouse.server.send.deviceInitialized:false}")
+	private boolean sendDeviceInitialized;
+	
+	@Value("${smarthouse.server.send.devicereconnect:false}")
 	private boolean sendDeviceReconnect;
+	
+	@Value("${smarthouse.server.send.deviceDisconnect:false}")
+	private boolean sendDeviceDisconnect;
 	
 	@Autowired
 	private IMessageSender sender;
@@ -84,19 +90,19 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 	}
 
 	private void onDeviceReRegistered(IDevice device) {
-		String message = buildMessage(MSG_DEVICE_RECONNECTED, device.getDescription());
 		//alarmService.reattachAlarms(device);
 		if(sendDeviceReconnect) {
+			String message = buildMessage(MSG_DEVICE_RECONNECTED, device.getDescription());
 			sender.sendMessageToAllUsers(Severity.WARN, message);
 		}
 		
 	}
 
 	private void onDeviceInitialDataReceived(IDevice device) {
-		// init data was received
-		//String message = buildMessage(MSG_DEVICE_INITIALIZED, device.getDescription());
-		
-		//sender.sendMessageToAllUsers(Severity.INFO,  message);
+		if(sendDeviceInitialized) {
+			String message = buildMessage(MSG_DEVICE_INITIALIZED, device.getDescription());
+			sender.sendMessageToAllUsers(Severity.INFO,  message);
+		}
 		device.setState(State.CONNECTED);
 		device.setInitialized(true);
 		
@@ -116,9 +122,11 @@ public class DeviceStateChangeService implements IDeviceStateChangeService {
 	}
 	
 	private void onDeviceDisconnected(IDevice device) {
-		String message = buildMessage(MSG_DEVICE_DISCONNECTED, device.getDescription());
-		log.error(message);
-		sender.sendMessageToAllUsers(Severity.ERROR, message);
+		if(sendDeviceDisconnect) {
+			String message = buildMessage(MSG_DEVICE_DISCONNECTED, device.getDescription());
+			log.error(message);
+			sender.sendMessageToAllUsers(Severity.ERROR, message);
+		}
 	}
 
 }

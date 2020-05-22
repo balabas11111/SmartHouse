@@ -249,19 +249,6 @@ public class DeviceManageService implements IDeviceManageService {
 				.filter(e -> id.equals(((IEntityFieldEnabledValue) e).getId())).findFirst().orElse(null);
 	}
 	
-/*
-	private int getDeviceIndex(Long id) {
-		if (id != null) {
-			for (int i = 0; i < devices.size(); i++) {
-				if (id.equals(devices.get(i).getId())) {
-					return i;
-				}
-			}
-		}
-
-		return -1;
-	}
-*/
 	@Override
 	@Transactional
 	public boolean processRegistrationRequest(Device device) {
@@ -322,14 +309,14 @@ public class DeviceManageService implements IDeviceManageService {
 	@Override
 	public void processDataReceivedFromDevice(Device device, String deviceResponse, boolean updateDeviceTimer,
 			boolean updateGroupTimer) {
-		try {
-			JSONObject deviceJson = new JSONObject(deviceResponse);
-			processDataReceivedFromDevice(device, deviceJson, updateDeviceTimer, updateGroupTimer);
 
+		JSONObject deviceJson = null;
+		try {
+			deviceJson = new JSONObject(deviceResponse);
 		} catch (Exception e) {
 			log.error(e);
-			stateChanger.stateChanged(device, State.BAD_DATA);
 		}
+		processDataReceivedFromDevice(device, deviceJson, updateDeviceTimer, updateGroupTimer);
 	}
 
 	@Override
@@ -372,8 +359,6 @@ public class DeviceManageService implements IDeviceManageService {
 
 					processChangedEntityFieldValuesList(changedValues, device);
 					
-					//alarmV2Service.loadAlarmsForDevice(device);
-
 					deviceMqService.initTopicsToFromDevice(device.getName());
 
 					log.info("Device initialized " + device.getName());
@@ -397,10 +382,9 @@ public class DeviceManageService implements IDeviceManageService {
 				doSave = false;
 			}
 			
-			Set<IDevice> devs = this.getDevicesNotVirtualized();
-			
 			if(!sentAllConnectedMessage) {
 				boolean allInitialized = true;
+				Set<IDevice> devs = this.getDevicesNotVirtualized();
 				
 				for(IDevice dev : devs) {
 					if(!dev.isInitialized()) {
@@ -415,17 +399,18 @@ public class DeviceManageService implements IDeviceManageService {
 				}
 			}
 			
+			if (doSave) {
+				device = save(device);
+				log.debug("device saved");
+			}
+			
+			device.setLastUpdated(DateTimeUtil.now());
+			
 		} catch (Exception e) {
 			log.error(e);
-			stateChanger.stateChanged(device, State.BAD_DATA);
+			//stateChanger.stateChanged(device, State.BAD_DATA);
 		}
 
-		if (doSave) {
-			device = save(device);
-			log.debug("device saved");
-		}
-		
-		device.setLastUpdated(DateTimeUtil.now());
 	}
 	
 	private void processChangedEntityFieldValuesList(List<IEntityFieldValue> changedValues, IDevice device) {
@@ -466,23 +451,6 @@ public class DeviceManageService implements IDeviceManageService {
 		if(iteration>1) {
 			log.info("iterations="+iteration);
 		}
-		/*		
-		Map<Long, IEntityField> changedTargets = new HashMap<Long, IEntityField>();
-		
-		changedValues.stream().map(value-> value.getEntityField()).forEach(ef -> 
-					calculatedFieldsService.dispatchEntityFieldValueChange(ef, changedTargets));
-		
-		if(changedTargets.size()>0) {
-			if(logDeviceCalculatedValuesChange) {
-				log.info("total changedCalculatedFields " + changedTargets.size());
-			}
-			
-			saveEntityFieldValues(new ArrayList(changedTargets.values()));
-		}
-		
-		entityFieldService.saveAll(changedValues);
-		alarmV2Service.checkForAlarmsWithParentExecutePostActions(changedValues);
-		*/
 	}
 	
 	private Collection<IEntityField> processChangedEntityFieldValuesList(List<IEntityFieldValue> changedSources, boolean saveSources) {
