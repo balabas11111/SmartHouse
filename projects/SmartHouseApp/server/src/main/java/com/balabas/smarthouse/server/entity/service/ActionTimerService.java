@@ -29,7 +29,7 @@ public class ActionTimerService implements IActionTimerService {
 	@Override
 	public ActionTimer getActionTimer(ItemType itemType, Long itemId, Long updateInterval) {
 		if(itemId==null || itemId==0) {
-			log.error("Cant  get ActionTimer: " + itemType.name() + " id=" + itemId);
+			//log.error("Cant  get ActionTimer: " + itemType.name() + " id=" + itemId);
 			return null;
 		}
 		

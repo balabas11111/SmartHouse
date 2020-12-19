@@ -183,6 +183,7 @@
 				<th>Прошивка</th>
 				<th>Описание</th>
 				<th>Состояние</th>
+				<th>Время</th>
 				<th>IP</th>
 				<th></th>
 			</tr>
@@ -198,6 +199,7 @@
 				<td
 					th:text="${device.getStateEmoji()} + ' ' + ${device.getStateDescription()}">Состояние
 				</td>
+				<td th:text="${device.getSecondsOld()}" class="time-ticker">Время</td>
 				<td th:text="${device.ip}">IP</td>
 				<td>
 					<th:block

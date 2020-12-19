@@ -21,6 +21,7 @@ import com.balabas.smarthouse.server.entity.model.descriptor.Emoji;
 import com.balabas.smarthouse.server.entity.model.descriptor.ItemType;
 import com.balabas.smarthouse.server.entity.model.descriptor.State;
 import com.balabas.smarthouse.server.entity.model.entityfields.IEntityField;
+import com.balabas.smarthouse.server.util.DateTimeUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
@@ -53,6 +54,11 @@ public class Device extends ItemAbstract implements IDevice {
 	@Transient
 	@Getter @Setter
 	private long lastUpdated;
+	
+	@Override
+	public long getSecondsOld() {
+		return (DateTimeUtil.now() - getLastUpdated()) / 1000;
+	}
 	
 	@Override
 	public Group getGroup(String groupName) {

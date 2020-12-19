@@ -200,7 +200,7 @@ public class MockedDeviceController {
 		JSONObject sensorsObj = obj.getJSONObject("sensors");
 
 		String deviceName = deviceObj.getString("deviceId");
-
+/*
 		for (IEntityField entityField : deviceService.getEntityFieldsNotVirtualCommandButtons()) {
 			EntityFieldBoolean targetEntityField = (EntityFieldBoolean) entityField;
 
@@ -212,11 +212,11 @@ public class MockedDeviceController {
 				String key = targetEntityField.getName();
 				Boolean valB = targetEntityField.getValue();
 				boolean value = (valB == null) ? false : valB.booleanValue();
-				entityObj.put(key, new Boolean(value));
+				entityObj.put(key, Boolean.valueOf(value));
 				log.debug("Mock entityObj =" + entityObj);
 			}
 		}
-
+*/
 		result = obj.toString();
 
 		return ResponseEntity.ok().body(result);

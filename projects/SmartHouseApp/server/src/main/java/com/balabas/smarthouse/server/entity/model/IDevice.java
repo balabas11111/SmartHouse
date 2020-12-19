@@ -43,5 +43,6 @@ public interface IDevice extends IStateable, IItemAbstract {
 	default void setDeviceLastUpdateTimeNow() {
 		setLastUpdated(DateTimeUtil.now());
 	}
+	long getSecondsOld();
 	
 }
